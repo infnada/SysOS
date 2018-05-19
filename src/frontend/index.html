@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en" ng-app="myApp">
+<head>
+  <meta charset="utf-8">
+  <title>SysOS</title>
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <link rel="stylesheet" href="css/vendor.css">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+
+  <div class="desktop" ng-controller="mainController as main" ng-click="main.handleDesktopClick($event)">
+
+    <task-bar></task-bar>
+
+    <application ng-repeat="application in main.opened_applications" ng-if="application.id != 'start'" app-id="application.id"></application>
+
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="js/vendor.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

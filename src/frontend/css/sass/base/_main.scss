@@ -1,0 +1,17 @@
+/*--------------------------------------*\
+	Main
+\*--------------------------------------*/
+
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+
+html {
+	overflow-y: scroll;
+	min-height: 100%;
+}
+
+body {
+  overflow: hidden;
+  font-family: 'Segoe UI', sans-serif;
+}
