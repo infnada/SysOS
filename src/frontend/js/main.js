@@ -1,4 +1,4 @@
-$(window).load(function () {
+$(window).on("load", function () {
 	var $container = $('.start-screen');
 
 	$container.masonry({
@@ -17,5 +17,6 @@ var myApp = angular.module('myApp', [
 	'ngSelectable',
 	'ui.bootstrap',
 	'angular-uuid',
-	'oc.lazyLoad'
+	'oc.lazyLoad',
+	'ui.sortable'
 ]);

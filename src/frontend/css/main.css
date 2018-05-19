@@ -2557,3 +2557,8 @@ ul.nav-wizard .active ~ li a:focus {
   color: #999999;
   background: #f9f9f9;
 }
+
+
+.ui-sortable-placeholder {
+  height: 24px;
+}

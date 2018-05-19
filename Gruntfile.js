@@ -65,7 +65,7 @@ module.exports = function (grunt) {
 			vendor_js: {
 				dest: '<%= dir.dist_frontend %>/js/vendor.js',
 				src: [
-					'node_modules/jquery/dist/jquery.min.js',
+					'node_modules/jquery/dist/jquery.js',
 					'bower_components/jquery-ui/jquery-ui.min.js',
 					'node_modules/masonry-layout/dist/masonry.pkgd.min.js',
 					'node_modules/peity/jquery.peity.min.js',
@@ -80,6 +80,7 @@ module.exports = function (grunt) {
 					'node_modules/angular-toastr/dist/angular-toastr.tpls.js',
 					'node_modules/angular-ui-bootstrap/dist/ui-bootstrap-tpls.js',
 					'node_modules/angular-ui-codemirror/src/ui-codemirror.js',
+					'node_modules/angular-ui-sortable/dist/sortable.js',
 					'node_modules/angular-uuid/angular-uuid.js',
 					'node_modules/ng-file-upload/dist/ng-file-upload-shim.js',
 					'node_modules/ng-file-upload/dist/ng-file-upload.js',

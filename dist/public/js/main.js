@@ -4,7 +4,7 @@ Systems OS - 0.0.1
 Copyright (c) 2018 Isart Navarro Farell
 License: MIT
 */
-$(window).load(function () {
+$(window).on("load", function () {
 	var $container = $('.start-screen');
 
 	$container.masonry({
@@ -23,7 +23,8 @@ var myApp = angular.module('myApp', [
 	'ngSelectable',
 	'ui.bootstrap',
 	'angular-uuid',
-	'oc.lazyLoad'
+	'oc.lazyLoad',
+	'ui.sortable'
 ]);
 
 (function () {
@@ -1374,166 +1375,175 @@ var myApp = angular.module('myApp', [
 }());
 
 (function () {
-  "use strict";
-  myApp.directive('taskBar', [function () {
-    return {
-      restrict: 'E',
-      scope: {},
-      templateUrl: 'templates/desktop/task_bar.html',
-      controllerAs: 'TB',
-      controller: ['$rootScope', '$scope', '$interval', 'ApplicationsFactory', function ($rootScope, $scope, $interval, ApplicationsFactory) {
+	"use strict";
+	myApp.directive('taskBar', [function () {
+		return {
+			restrict: 'E',
+			scope: {},
+			templateUrl: 'templates/desktop/task_bar.html',
+			controllerAs: 'TB',
+			controller: ['$rootScope', '$scope', '$interval', 'ApplicationsFactory', function ($rootScope, $scope, $interval, ApplicationsFactory) {
 
-        var _this = this;
+				var _this = this;
 
-        // Set task bar time
-        function calcTime () {
-          var a_p = "";
-          var d = new Date();
-          var curr_hour = d.getHours();
+				// Set task bar time
+				function calcTime () {
+					var a_p = "";
+					var d = new Date();
+					var curr_hour = d.getHours();
 
-          if (curr_hour < 12) {
-            a_p = "AM";
-          } else {
-            a_p = "PM";
-          }
+					if (curr_hour < 12) {
+						a_p = "AM";
+					} else {
+						a_p = "PM";
+					}
 
-          if (curr_hour === 0) {
-            curr_hour = 12;
-          }
+					if (curr_hour === 0) {
+						curr_hour = 12;
+					}
 
-          if (curr_hour > 12) {
-            curr_hour = curr_hour - 12;
-          }
+					if (curr_hour > 12) {
+						curr_hour = curr_hour - 12;
+					}
 
-          var curr_min = d.getMinutes();
+					var curr_min = d.getMinutes();
 
-          if (curr_min < 10) {
-            curr_min = '0' + curr_min;
-          }
+					if (curr_min < 10) {
+						curr_min = '0' + curr_min;
+					}
 
-          return curr_hour + ':' + curr_min + ' ' + a_p;
-        }
+					return curr_hour + ':' + curr_min + ' ' + a_p;
+				}
 
-        /*
-			   * Bindings
-			   */
-        $interval(function () {
-          _this.time = calcTime();
-        }, 1000);
+				/*
+			     * Bindings
+			     */
+				$interval(function () {
+					_this.time = calcTime();
+				}, 1000);
 
-        this.time = calcTime();
-        this.opened_applications = ApplicationsFactory.opened_applications();
-        this.taskbar_applications = ApplicationsFactory.taskbar_applications();
+				this.time = calcTime();
+				this.opened_applications = ApplicationsFactory.opened_applications();
+				this.taskbar_applications = ApplicationsFactory.taskbar_applications();
 
-        $scope.$watch(function () {
-          return ApplicationsFactory.opened_applications();
-        }, function (newValue) {
-          _this.opened_applications = newValue;
-        });
+				$scope.$watch(function () {
+					return ApplicationsFactory.opened_applications();
+				}, function (newValue) {
+					_this.opened_applications = newValue;
+				});
 
-        $scope.$watch(function () {
-          return ApplicationsFactory.taskbar_applications();
-        }, function (newValue) {
-          _this.taskbar_applications = newValue;
-        });
+				$scope.$watch(function () {
+					return ApplicationsFactory.taskbar_applications();
+				}, function (newValue) {
+					_this.taskbar_applications = newValue;
+				});
 
-        this.getApplicationById = function (id) {
-          return ApplicationsFactory.getApplicationById(id);
-        };
+				this.sortableOptions = {
+					'ui-floating': true,
+					items: "a:not(.not-sortable)",
+					axis: 'x',
+					'stop': function () {
+						ApplicationsFactory.saveTaskBarApplicationsOrder(_this.taskbar_applications);
+					}
+				};
 
-        this.appContextMenu = function (id) {
-          if (id === "start") return;
+				this.getApplicationById = function (id) {
+					return ApplicationsFactory.getApplicationById(id);
+				};
 
-          return [
-            [function ($itemScope) {
-              return '<span class="fa-stack"><i class="fa fa-stack-2x fa-' + _this.getApplicationById($itemScope.application.id).ico + '"></i></span> ' + _this.getApplicationById($itemScope.application.id).name;
-            }, function ($itemScope) {
+				this.appContextMenu = function (id) {
+					if (id === "start") return;
 
-              // Toggle application
-              _this.toggleApplication($itemScope.application.id);
+					return [
+						[function ($itemScope) {
+							return '<span class="fa-stack"><i class="fa fa-stack-2x fa-' + _this.getApplicationById($itemScope.application.id).ico + '"></i></span> ' + _this.getApplicationById($itemScope.application.id).name;
+						}, function ($itemScope) {
 
-            }, function () {
-              return true; // enabled = true, disabled = false
-            }],
-            null,
-            [function ($itemScope) {
-              if ($itemScope.application.pinned) {
-                return '<span class="fa-stack"><i class="fa fa-thumb-tack fa-stack-2x"></i><i class="fa fa-ban fa-stack-1x text-danger"></i></span> Unpin from Task Bar';
-              }
-              return '<span class="fa-stack"><i class="fa fa-stack-2x fa-thumb-tack fa-rotate-90"></i></span> Pin to Task Bar';
-            }, function ($itemScope) {
+							// Toggle application
+							_this.toggleApplication($itemScope.application.id);
 
-              // Pin application
-              ApplicationsFactory.registerTaskBarApplication({
-                id: $itemScope.application.id,
-                pinned: !$itemScope.application.pinned
-              }, true);
+						}, function () {
+							return true; // enabled = true, disabled = false
+						}],
+						null,
+						[function ($itemScope) {
+							if ($itemScope.application.pinned) {
+								return '<span class="fa-stack"><i class="fa fa-thumb-tack fa-stack-2x"></i><i class="fa fa-ban fa-stack-1x text-danger"></i></span> Unpin from Task Bar';
+							}
+							return '<span class="fa-stack"><i class="fa fa-stack-2x fa-thumb-tack fa-rotate-90"></i></span> Pin to Task Bar';
+						}, function ($itemScope) {
 
-            }, function () {
-              return true; // enabled = true, disabled = false
-            }],
-            [function () {
-              return '<span class="fa-stack"><i class="fa fa-stack-2x fa-times"></i></span> Close';
-            }, function ($itemScope) {
+							// Pin application
+							ApplicationsFactory.registerTaskBarApplication({
+								id: $itemScope.application.id,
+								pinned: !$itemScope.application.pinned
+							}, true);
 
-              // Close application
-              $scope.$parent.$broadcast('closeApplication', $itemScope.application.id);
+						}, function () {
+							return true; // enabled = true, disabled = false
+						}],
+						[function () {
+							return '<span class="fa-stack"><i class="fa fa-stack-2x fa-times"></i></span> Close';
+						}, function ($itemScope) {
 
-            }, function ($itemScope) {
-              if (isApplicationOpened($itemScope.application.id) !== -1) return true;
-              return false; // enabled = true, disabled = false
-            }]
-          ];
-        };
+							// Close application
+							$scope.$parent.$broadcast('closeApplication', $itemScope.application.id);
 
-        /*
-			   * ng-class functions
-			   */
+						}, function ($itemScope) {
+							if (isApplicationOpened($itemScope.application.id) !== -1) return true;
+							return false; // enabled = true, disabled = false
+						}]
+					];
+				};
 
-        var isApplicationOpened = function (id) {
-          return _this.opened_applications.map(function (e) {
-            return e.id;
-          }).indexOf(id);
-        };
+				/*
+			     * ng-class functions
+			     */
 
-        this.isStartOpened = function (id) {
-          return $rootScope.taskbar__item_open === id && id === 'start';
-        };
+				var isApplicationOpened = function (id) {
+					return _this.opened_applications.map(function (e) {
+						return e.id;
+					}).indexOf(id);
+				};
 
-        // And is not start application
-        this.isItemOpened = function (id) {
-          return isApplicationOpened(id) !== -1 && id !== 'start';
-        };
+				this.isStartOpened = function (id) {
+					return $rootScope.taskbar__item_open === id && id === 'start';
+				};
 
-        // And is not start application
-        this.isItemActive = function (id) {
-          return $rootScope.taskbar__item_open === id && id !== 'start';
-        };
+				// And is not start application
+				this.isItemOpened = function (id) {
+					return isApplicationOpened(id) !== -1 && id !== 'start';
+				};
 
-        /*
-			   * ng-click functions
-			   */
-        this.toggleApplication = function (id) {
+				// And is not start application
+				this.isItemActive = function (id) {
+					return $rootScope.taskbar__item_open === id && id !== 'start';
+				};
 
-          if (id === "start") return ApplicationsFactory.toggleApplication(id);
+				/*
+			     * ng-click functions
+			     */
+				this.toggleApplication = function (id) {
 
-          // Open application
-          if (isApplicationOpened(id) === -1) {
-            _this.opened_applications = ApplicationsFactory.openApplication(id);
-            ApplicationsFactory.toggleApplication(id);
-          }
+					if (id === "start") return ApplicationsFactory.toggleApplication(id);
 
-          // Emitting to application directives (minimize or maximize)
-          $scope.$parent.$broadcast('toggling', id);
-        };
+					// Open application
+					if (isApplicationOpened(id) === -1) {
+						_this.opened_applications = ApplicationsFactory.openApplication(id);
+						ApplicationsFactory.toggleApplication(id);
+					}
 
-        this.minimizeToDesktop = function () {
-          $scope.$parent.$broadcast('toggling', null);
-        };
+					// Emitting to application directives (minimize or maximize)
+					$scope.$parent.$broadcast('toggling', id);
+				};
 
-      }]
-    };
-  }]);
+				this.minimizeToDesktop = function () {
+					$scope.$parent.$broadcast('toggling', null);
+				};
+
+			}]
+		};
+	}]);
 }());
 
 (function () {
@@ -1621,252 +1631,268 @@ var myApp = angular.module('myApp', [
 }());
 
 (function () {
-  "use strict";
-  myApp.factory('ApplicationsFactory', ['$rootScope', 'ServerFactory', 'toastr', 'fileSystemFactory', function ($rootScope, ServerFactory, toastr, fileSystemFactory) {
+	"use strict";
+	myApp.factory('ApplicationsFactory', ['$rootScope', 'ServerFactory', 'toastr', 'fileSystemFactory', function ($rootScope, ServerFactory, toastr, fileSystemFactory) {
 
-    /*
-     * -----------------------
-     * PRIVATE FUNCTIONS
-     * -----------------------
-     */
+		/*
+		 * -----------------------
+		 * PRIVATE FUNCTIONS
+		 * -----------------------
+		 */
 
 
-    /*
-     * @Description
-     * Check if application is in Desktop Task Bar
-     *
-     * @params
-     * id {String} Application ID
-     */
-    var isApplicationInTaskBar = function (id) {
-      return taskbar_applications.map(function (e) {
-        return e.id;
-      }).indexOf(id);
-    };
+		/*
+		 * @Description
+		 * Check if application is in Desktop Task Bar
+		 *
+		 * @params
+		 * id {String} Application ID
+		 */
+		var isApplicationInTaskBar = function (id) {
+			return taskbar_applications.map(function (e) {
+				return e.id;
+			}).indexOf(id);
+		};
 
-    /*
-     * @Description
-     * Check if application is opened
-     *
-     * @params
-     * id {String} Application ID
-     */
-    var isApplicationOpened = function (id) {
-      return opened_applications.map(function (e) {
-        return e.id;
-      }).indexOf(id);
-    };
+		/*
+		 * @Description
+		 * Check if application is opened
+		 *
+		 * @params
+		 * id {String} Application ID
+		 */
+		var isApplicationOpened = function (id) {
+			return opened_applications.map(function (e) {
+				return e.id;
+			}).indexOf(id);
+		};
 
-    /*
-     * -----------------------
-     * PUBLIC FUNCTIONS
-     * -----------------------
-     */
+		/*
+		 * -----------------------
+		 * PUBLIC FUNCTIONS
+		 * -----------------------
+		 */
 
-    var applications = [
-      {id: "start", ico: "windows", name: "Start Menu", menu: true}
-    ];
+		var applications = [
+			{id: "start", ico: "windows", name: "Start Menu", menu: true}
+		];
 
-    var taskbar_applications = [];
-    var opened_applications = [];
+		var taskbar_applications = [];
+		var opened_applications = [];
 
-    var errorHandler = function (e) {
-      toastr.error(e, 'General Error');
+		var errorHandler = function (e) {
+			toastr.error(e, 'General Error');
 
-      return new Error(e);
-    };
+			return new Error(e);
+		};
 
-    /*
-     * @Description
-     * If and application is not registered it will not be accessible from Desktop or other applications
-     *
-     * @params
-     * data {Object}
-     */
-    var registerApplication = function (data) {
-      applications.push(data);
-    };
+		/*
+		 * @Description
+		 * If and application is not registered it will not be accessible from Desktop or other applications
+		 *
+		 * @params
+		 * data {Object}
+		 */
+		var registerApplication = function (data) {
+			applications.push(data);
+		};
 
-    /*
-     * @Description
-     * Set an application to be shown in Desktop Task Bar
-     *
-     * @params
-     * data {Object}
-     */
-    var registerTaskBarApplication = function (data, save) {
+		/*
+		 * @Description
+		 * Set an application to be shown in Desktop Task Bar
+		 *
+		 * @params
+		 * data {Object}
+		 */
+		var registerTaskBarApplication = function (data, save) {
 
-      var application_index = isApplicationInTaskBar(data.id);
+			var application_index = isApplicationInTaskBar(data.id);
 
-      // Applications already in Task Bar
-      if (application_index !== -1) {
+			// Applications already in Task Bar
+			if (application_index !== -1) {
 
-        // Delete if unpin application and is not opened
-        if (data.pinned === false && isApplicationOpened(data.id) === -1) {
-          taskbar_applications.splice(application_index, 1);
-        } else {
+				// Delete if unpin application and is not opened
+				if (data.pinned === false && isApplicationOpened(data.id) === -1) {
+					taskbar_applications.splice(application_index, 1);
+				} else {
 
-          // Pin or unpin opened application application
-          taskbar_applications[application_index].pinned = data.pinned;
-        }
+					// Pin or unpin opened application application
+					taskbar_applications[application_index].pinned = data.pinned;
+				}
 
-      } else {
+			} else {
 
-        // Application not in Task Bar
-        taskbar_applications.push(data);
-      }
+				// Application not in Task Bar
+				taskbar_applications.push(data);
+			}
 
-      // Save new config to file
-      if (save === true) {
-        var applications_to_save = taskbar_applications.filter(function (obj) {
-          return obj.pinned === true && obj.id !== "start";
-        });
+			// Save new config to file
+			if (save === true) {
+				var applications_to_save = taskbar_applications.filter(function (obj) {
+					return obj.pinned === true && obj.id !== "start";
+				});
 
-        return ServerFactory.saveConfigToFile(applications_to_save, 'desktop/task_bar.json', true);
-      }
-    };
+				return ServerFactory.saveConfigToFile(applications_to_save, 'desktop/task_bar.json', true);
+			}
+		};
 
-    /*
-     * @Description
-     * Closes an application
-     *
-     * @params
-     * id {String} Application ID
-     */
-    var closeApplication = function (id) {
+		/*
+		 * @Description
+		 * Closes an application
+		 *
+		 * @params
+		 * id {String} Application ID
+		 */
+		var closeApplication = function (id) {
 
-      // Delete application object
-      opened_applications = opened_applications.filter(function (el) {
-        return el.id !== id;
-      });
+			// Delete application object
+			opened_applications = opened_applications.filter(function (el) {
+				return el.id !== id;
+			});
 
-      // Remove from Desktop Task Bar
-      taskbar_applications = taskbar_applications.filter(function (el) {
-        return el.id !== id || el.pinned === true;
-      });
+			// Remove from Desktop Task Bar
+			taskbar_applications = taskbar_applications.filter(function (el) {
+				return el.id !== id || el.pinned === true;
+			});
 
-      // TODO: destroy application scopes
+			// TODO: destroy application scopes
 
-      return opened_applications;
-    };
+			return opened_applications;
+		};
 
-    /*
-     * @Description
-     * Opens a new application
-     *
-     * @params
-     * app {String/Object} Application name
-     */
-    var openApplication = function (app) {
+		/*
+		 * @Description
+		 * Opens a new application
+		 *
+		 * @params
+		 * app {String/Object} Application name
+		 */
+		var openApplication = function (app) {
 
-      // If app is not an object get all application data
-      if (angular.isString(app)) {
-        app = getApplicationById(app);
-      }
+			// If app is not an object get all application data
+			if (angular.isString(app)) {
+				app = getApplicationById(app);
+			}
 
-      // Check if application is already opened
-      if (isApplicationOpened(app.id) !== -1) return;
+			// Check if application is already opened
+			if (isApplicationOpened(app.id) !== -1) return;
 
-      // Application not in pinned list. Show it on Desktop Task Bar
-      if (isApplicationInTaskBar(app.id) === -1) {
-        registerTaskBarApplication({
-          id: app.id
-        });
-      }
+			// Application not in pinned list. Show it on Desktop Task Bar
+			if (isApplicationInTaskBar(app.id) === -1) {
+				registerTaskBarApplication({
+					id: app.id
+				});
+			}
 
-      //TODO: 'z-index' : zIndex++
+			//TODO: 'z-index' : zIndex++
 
-      // Create a new instance of the application
-      opened_applications.push(app);
-      return opened_applications;
-    };
+			// Create a new instance of the application
+			opened_applications.push(app);
+			return opened_applications;
+		};
 
-    /*
-     * @Description
-     * Puts an application active or at background
-     *
-     * @params
-     * id {String} Application ID
-     */
-    var toggleApplication = function (id) {
-      if (isActiveApplication(id)) return $rootScope.taskbar__item_open = null;
-      $rootScope.taskbar__item_open = id;
-    };
+		/*
+		 * @Description
+		 * Puts an application active or at background
+		 *
+		 * @params
+		 * id {String} Application ID
+		 */
+		var toggleApplication = function (id) {
+			if (isActiveApplication(id)) return $rootScope.taskbar__item_open = null;
+			$rootScope.taskbar__item_open = id;
+		};
 
-    /*
-     * @Description
-     * Check if application is active (not in background) on Desktop
-     *
-     * @params
-     * id {String} Application ID
-     */
-    var isActiveApplication = function (id) {
-      return $rootScope.taskbar__item_open === id;
-    };
+		/*
+		 * @Description
+		 * Check if application is active (not in background) on Desktop
+		 *
+		 * @params
+		 * id {String} Application ID
+		 */
+		var isActiveApplication = function (id) {
+			return $rootScope.taskbar__item_open === id;
+		};
 
-    /*
-     * @Description
-     * Check if application is pinned in Task Bar
-     *
-     * @params
-     * id {String} Application ID
-     */
-    var isApplicationPinned = function (id) {
+		/*
+		 * @Description
+		 * Check if application is pinned in Task Bar
+		 *
+		 * @params
+		 * id {String} Application ID
+		 */
+		var isApplicationPinned = function (id) {
 
-      var application = taskbar_applications.filter(function (obj) {
-        return obj.id === id;
-      })[0];
+			var application = taskbar_applications.filter(function (obj) {
+				return obj.id === id;
+			})[0];
 
-      if (application) return application.pinned;
-      return false;
+			if (application) return application.pinned;
+			return false;
 
-    };
+		};
 
-    /*
-     * @Description
-     * Return all application info
-     *
-     * @params
-     * id {String} Application ID
-     */
-    var getApplicationById = function (id) {
-      return applications.filter(function (obj) {
-        return obj.id === id;
-      })[0];
-    };
+		/*
+		 * @Description
+		 * Return all application info
+		 *
+		 * @params
+		 * id {String} Application ID
+		 */
+		var getApplicationById = function (id) {
+			return applications.filter(function (obj) {
+				return obj.id === id;
+			})[0];
+		};
 
-    /*
-     * Returns all scripts to load as SysOS applications
-     */
-    var getInstalledApplications = function () {
-	    return fileSystemFactory.getFileSystemPath('/bin/applications', function (data) {
-	      return data;
-        });
-    };
+		/*
+		 * Returns all scripts to load as SysOS applications
+		 */
+		var getInstalledApplications = function () {
+			return fileSystemFactory.getFileSystemPath('/bin/applications', function (data) {
+				return data;
+			});
+		};
 
-    return {
-      errorHandler: errorHandler,
-      registerApplication: registerApplication,
-      applications: function () {
-        return applications;
-      },
-      registerTaskBarApplication: registerTaskBarApplication,
-      taskbar_applications: function () {
-        return taskbar_applications;
-      },
-      opened_applications: function () {
-        return opened_applications;
-      },
-      closeApplication: closeApplication,
-      openApplication: openApplication,
-      toggleApplication: toggleApplication,
-      isActiveApplication: isActiveApplication,
-      isApplicationPinned: isApplicationPinned,
-      getApplicationById: getApplicationById,
-      getInstalledApplications: getInstalledApplications
-    };
+		/*
+		 * Function called after Sort taskbar applications
+		 */
+		var saveTaskBarApplicationsOrder = function (applications) {
+			console.log(applications);
+			var applications_to_save = applications.filter(function (obj) {
+				delete obj["$$hashKey"];
+				return obj.pinned === true && obj.id !== "start";
+			});
 
-  }]);
+			console.log(applications_to_save);
+
+			return ServerFactory.saveConfigToFile(applications_to_save, 'desktop/task_bar.json', true);
+		};
+
+		return {
+			errorHandler: errorHandler,
+			registerApplication: registerApplication,
+			applications: function () {
+				return applications;
+			},
+			registerTaskBarApplication: registerTaskBarApplication,
+			taskbar_applications: function () {
+				return taskbar_applications;
+			},
+			opened_applications: function () {
+				return opened_applications;
+			},
+			closeApplication: closeApplication,
+			openApplication: openApplication,
+			toggleApplication: toggleApplication,
+			isActiveApplication: isActiveApplication,
+			isApplicationPinned: isApplicationPinned,
+			getApplicationById: getApplicationById,
+			getInstalledApplications: getInstalledApplications,
+			saveTaskBarApplicationsOrder: saveTaskBarApplicationsOrder
+		};
+
+	}]);
 }());
 
 (function () {
@@ -4061,23 +4087,23 @@ var myApp = angular.module('myApp', [
 }());
 
 (function () {
-  "use strict";
-  myApp.run(['$templateCache', function ($templateCache) {
+	"use strict";
+	myApp.run(['$templateCache', function ($templateCache) {
 
-    $templateCache.put('templates/desktop/task_bar.html',
-      '<start-menu></start-menu> \
-		  <div class="taskbar"> \
-        <a ng-repeat="application in TB.taskbar_applications" class="taskbar__item taskbar__item--{{application.id}}"  ng-click="TB.toggleApplication(application.id)" context-menu="TB.appContextMenu(application.id)" ng-class="{\'start--open\' : TB.isStartOpened(application.id), \'taskbar__item--open\' : TB.isItemOpened(application.id), \'taskbar__item--active\' : TB.isItemActive(application.id)}"> \
-          <i class="fa fa-{{::TB.getApplicationById(application.id).ico}}"></i> \
-        </a> \
-		    <div class="taskbar__minimize" ng-click="TB.minimizeToDesktop()"></div> \
-        <div class="taskbar__tray"> \
-          <span class="time">{{TB.time}}</span> \
-        </div> \
-      </div>'
-    );
+		$templateCache.put('templates/desktop/task_bar.html',
+			'<start-menu></start-menu> \
+			<div class="taskbar" ui-sortable="TB.sortableOptions" ng-model="TB.taskbar_applications"> \
+				<a ng-repeat="application in TB.taskbar_applications" ng-class="{\'not-sortable\': application.id == \'start\'}" class="taskbar__item taskbar__item--{{application.id}}" ng-click="TB.toggleApplication(application.id)" context-menu="TB.appContextMenu(application.id)" ng-class="{\'start--open\' : TB.isStartOpened(application.id), \'taskbar__item--open\' : TB.isItemOpened(application.id), \'taskbar__item--active\' : TB.isItemActive(application.id)}"> \
+					<i class="fa fa-{{::TB.getApplicationById(application.id).ico}}"></i> \
+				</a> \
+				<div class="taskbar__minimize" ng-click="TB.minimizeToDesktop()"></div> \
+				<div class="taskbar__tray"> \
+					<span class="time">{{TB.time}}</span> \
+				</div> \
+			</div>'
+		);
 
-  }]);
+	}]);
 }());
 
 (function () {
