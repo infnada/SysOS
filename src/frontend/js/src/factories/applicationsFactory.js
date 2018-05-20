@@ -226,13 +226,10 @@
 		 * Function called after Sort taskbar applications
 		 */
 		var saveTaskBarApplicationsOrder = function (applications) {
-			console.log(applications);
 			var applications_to_save = applications.filter(function (obj) {
 				delete obj["$$hashKey"];
 				return obj.pinned === true && obj.id !== "start";
 			});
-
-			console.log(applications_to_save);
 
 			return ServerFactory.saveConfigToFile(applications_to_save, 'desktop/task_bar.json', true);
 		};
