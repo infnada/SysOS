@@ -67,6 +67,7 @@
         }
 
         else if (value === Object(value) && Object.keys(value).length === 1 && value.hasOwnProperty("xsi:type")) {
+          new_obj["xsi_type"] = value["xsi:type"];
           // Do nothing
         }
 
@@ -85,7 +86,7 @@
             }
 
             else if (k === "$" && v === Object(v) && Object.keys(v).length === 1 && v.hasOwnProperty("xsi:type")) {
-              // do nothing
+	            console.log(v);// do nothing
             }
 
             // Is an object
@@ -324,18 +325,32 @@
       });
     };
 
-    var getFileDataFromDatastore = function (credential, host, port, datastore, datastore_name, vmx_path, vmx_file) {
+    var getVMFileDataFromDatastore = function (credential, host, port, datastore, datastore_name, vmx_path, vmx_file) {
       var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><SearchDatastore_Task xmlns="urn:vim25"><_this type="HostDatastoreBrowser">datastoreBrowser-' + datastore + '</_this><datastorePath>[' + datastore_name + ']' + vmx_path + '</datastorePath><searchSpec><query xsi:type="FolderFileQuery" /><query /><details><fileType>true</fileType><fileSize>true</fileSize><modification>true</modification><fileOwner>false</fileOwner></details><matchPattern>' + vmx_file + '</matchPattern></searchSpec></SearchDatastore_Task></soap:Body></soap:Envelope>';
       return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
         if (data.data.status === "error") return errorHandler(data.data.data);
 
         var task_id = data.data.data.response["soapenv:Envelope"]["soapenv:Body"][0].SearchDatastore_TaskResponse[0].returnval[0]._;
 
-        return getTaskResults(credential, host, port, task_id).then(function (data) {
+        return getTaskStatus(credential, host, port, task_id).then(function (data) {
           return validResponse(data);
         });
 
       });
+    };
+
+    var getFilesDataFromDatastore = function (credential, host, port, datastore, datastore_name, path) {
+        var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><SearchDatastore_Task xmlns="urn:vim25"><_this type="HostDatastoreBrowser">datastoreBrowser-' + datastore + '</_this><datastorePath>[' + datastore_name + ']' + path + '</datastorePath><searchSpec><query xsi:type="FolderFileQuery" /><query /><details><fileType>true</fileType><fileSize>true</fileSize><modification>true</modification><fileOwner>false</fileOwner></details><sortFoldersFirst>true</sortFoldersFirst></searchSpec></SearchDatastore_Task></soap:Body></soap:Envelope>';
+        return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
+            if (data.data.status === "error") return errorHandler(data.data.data);
+
+            var task_id = data.data.data.response["soapenv:Envelope"]["soapenv:Body"][0].SearchDatastore_TaskResponse[0].returnval[0]._;
+
+            return getTaskStatus(credential, host, port, task_id).then(function (data) {
+                return validResponse(data);
+            });
+
+        });
     };
 
     var mountDatastore = function (credential, host, port, datastore_system, datastore_host, datastore_path, datastore_local_name) {
@@ -449,7 +464,8 @@
       getHostNetworkInfoConsoleVnic: getHostNetworkInfoConsoleVnic,
       getDatastores: getDatastores,
       getDatastoreProps: getDatastoreProps,
-      getFileDataFromDatastore: getFileDataFromDatastore,
+      getVMFileDataFromDatastore: getVMFileDataFromDatastore,
+      getFilesDataFromDatastore: getFilesDataFromDatastore,
       mountDatastore: mountDatastore,
       unmountDatastore: unmountDatastore,
       getVMState: getVMState,
