@@ -75,6 +75,12 @@
 					_this.showModal = true;
 				}
 			},
+			{
+				text: '<i class="fa fa-folder"></i> Create Folder',
+				click: function () {
+					_this.createFolder();
+				}
+			},
 			null,
 			[function () {
 				return '<i class="fa fa-clipboard"></i> Paste';
