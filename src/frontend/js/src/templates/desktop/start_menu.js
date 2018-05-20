@@ -27,7 +27,7 @@
             <a >Restart</a> \
           </div> \
           <ul class="start-menu__recent"> \
-            <li ng-repeat="application in SM.applications" class="start-menu__{{::application.id}}" ng-click="SM.openApplication(application.id)" ng-if="application.id !== \'start\'" context-menu="SM.appContextMenu()"> \
+            <li ng-repeat="application in SM.applications | orderBy:\'name\'"" class="start-menu__{{::application.id}}" ng-click="SM.openApplication(application.id)" ng-if="application.id !== \'start\'" context-menu="SM.appContextMenu()"> \
               <a > \
               <i class="fa fa-{{::application.ico}}"></i> \
               {{::application.name}} \
