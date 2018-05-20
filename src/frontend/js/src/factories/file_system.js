@@ -93,6 +93,14 @@
       });
     };
 
+    var copyFile = function (src, dst, callback) {
+	    return ServerFactory.copyFile(src, dst, function (data) {
+		    return callback(data.data);
+	    }, function (data) {
+		    console.log("Error: " + data);
+	    });
+    };
+
     return {
       getFileSystemPath: function (path, callback) {
         return getFileSystemPath(path, callback);
@@ -117,7 +125,8 @@
       },
       downloadFileFromInet: function (url, path, callback) {
         return downloadFileFromInet(url, path, callback);
-      }
+      },
+      copyFile: copyFile
     }
 
   }]);

@@ -2527,6 +2527,14 @@ var myApp = angular.module('myApp', [
       });
     };
 
+    var copyFile = function (src, dst, callback) {
+	    return ServerFactory.copyFile(src, dst, function (data) {
+		    return callback(data.data);
+	    }, function (data) {
+		    console.log("Error: " + data);
+	    });
+    };
+
     return {
       getFileSystemPath: function (path, callback) {
         return getFileSystemPath(path, callback);
@@ -2551,7 +2559,8 @@ var myApp = angular.module('myApp', [
       },
       downloadFileFromInet: function (url, path, callback) {
         return downloadFileFromInet(url, path, callback);
-      }
+      },
+      copyFile: copyFile
     }
 
   }]);
@@ -3746,6 +3755,14 @@ var myApp = angular.module('myApp', [
       });
     };
 
+    var copyFile = function (uuid, src, dst, callback) {
+        return ServerFactory.copyRemoteFile(uuid, src, dst, function (data) {
+            return callback(data.data.data);
+        }, function (data) {
+            console.log("Error: " + data);
+        });
+    };
+
 
     return {
       getPath: function (id, path, callback) {
@@ -3762,7 +3779,8 @@ var myApp = angular.module('myApp', [
       },
       renameFile: function (id, source, dest, callback) {
         return renameFile(id, source, dest, callback);
-      }
+      },
+      copyFile: copyFile
     }
 
   }]);
@@ -3818,6 +3836,12 @@ var myApp = angular.module('myApp', [
       },
       remoteDownloadFileFromInet: function (url, path, uuid, onSuccess, onError) {
         return doPost("/api/remoteFile/download_from_url", {url: url, path: path, uuid: uuid}, onSuccess, onError);
+      },
+      copyFile: function (src, dst, onSuccess, onError) {
+        return doPost("/api/file/copy", {src: src, dst: dst}, onSuccess, onError);
+      },
+      copyRemoteFile: function (uuid, src, dst, onSuccess, onError) {
+        return doPost("/api/remoteFile/copy", {uuid: uuid, src: src, dst: dst}, onSuccess, onError);
       },
       // Manage application data from config files API
       saveConfigToFile: function (data, file, full_save, onSuccess, onError) {
@@ -4093,7 +4117,7 @@ var myApp = angular.module('myApp', [
 		$templateCache.put('templates/desktop/task_bar.html',
 			'<start-menu></start-menu> \
 			<div class="taskbar" ui-sortable="TB.sortableOptions" ng-model="TB.taskbar_applications"> \
-				<a ng-repeat="application in TB.taskbar_applications" ng-class="{\'not-sortable\': application.id == \'start\'}" class="taskbar__item taskbar__item--{{application.id}}" ng-click="TB.toggleApplication(application.id)" context-menu="TB.appContextMenu(application.id)" ng-class="{\'start--open\' : TB.isStartOpened(application.id), \'taskbar__item--open\' : TB.isItemOpened(application.id), \'taskbar__item--active\' : TB.isItemActive(application.id)}"> \
+				<a ng-repeat="application in TB.taskbar_applications" class="taskbar__item taskbar__item--{{application.id}}" ng-click="TB.toggleApplication(application.id)" context-menu="TB.appContextMenu(application.id)" ng-class="{\'start--open\' : TB.isStartOpened(application.id), \'taskbar__item--open\' : TB.isItemOpened(application.id), \'taskbar__item--active\' : TB.isItemActive(application.id), \'not-sortable\': application.id == \'start\'}"> \
 					<i class="fa fa-{{::TB.getApplicationById(application.id).ico}}"></i> \
 				</a> \
 				<div class="taskbar__minimize" ng-click="TB.minimizeToDesktop()"></div> \

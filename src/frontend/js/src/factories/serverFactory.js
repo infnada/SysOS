@@ -54,6 +54,12 @@
       remoteDownloadFileFromInet: function (url, path, uuid, onSuccess, onError) {
         return doPost("/api/remoteFile/download_from_url", {url: url, path: path, uuid: uuid}, onSuccess, onError);
       },
+      copyFile: function (src, dst, onSuccess, onError) {
+        return doPost("/api/file/copy", {src: src, dst: dst}, onSuccess, onError);
+      },
+      copyRemoteFile: function (uuid, src, dst, onSuccess, onError) {
+        return doPost("/api/remoteFile/copy", {uuid: uuid, src: src, dst: dst}, onSuccess, onError);
+      },
       // Manage application data from config files API
       saveConfigToFile: function (data, file, full_save, onSuccess, onError) {
         return doPost("/api/configFiles/save", {data: data, file: file, full_save: full_save}, onSuccess, onError);

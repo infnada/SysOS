@@ -1,6 +1,7 @@
 (function () {
 	"use strict";
-	sftpApp.controller('sftpBodyServerController', ['$scope', '$timeout', 'fileSystemFactory', 'sftpFactory', function ($scope, $timeout, fileSystemFactory, sftpFactory) {
+	sftpApp.controller('sftpBodyServerController', ['$scope', '$timeout', 'fileSystemFactory', 'sftpFactory', 'remoteFileSystemFactory',
+		function ($scope, $timeout, fileSystemFactory, sftpFactory, remoteFileSystemFactory) {
 
 		var _this = this;
 		this.viewAsList = false;
@@ -53,10 +54,12 @@
 				console.log(_this.copyFrom);
 				console.log(_this.pasteTo);
 
-				// TODO: Do something
+				return remoteFileSystemFactory.copyFile(sftpB.activeConnection, _this.copyFrom, _this.pasteTo, function () {
+					_this.reloadPath();
+					_this.copyFrom = null;
+					_this.pasteTo = null;
+				});
 
-				_this.copyFrom = null;
-				_this.pasteTo = null;
 			}, function () {
 				if (_this.copyFrom === null) return false;
 				return true; // enabled = true, disabled = false
@@ -128,23 +131,6 @@
 					_this.copyFrom = sftpB.getActiveConnection().currentPath + $itemScope.file.filename;
 				}
 			},
-			[function () {
-				return '<i class="fa fa-clipboard"></i> Paste';
-			}, function ($itemScope) {
-				if (angular.isUndefined($itemScope.file)) $itemScope.file = $itemScope.$parent.file;
-
-				_this.pasteTo = sftpB.getActiveConnection().currentPath;
-				console.log(_this.copyFrom);
-				console.log(_this.pasteTo);
-
-				// TODO: Do something
-
-				_this.copyFrom = null;
-				_this.pasteTo = null;
-			}, function () {
-				if (_this.copyFrom === null) return false;
-				return true; // enabled = true, disabled = false
-			}],
 			{
 				text: '<i class="fa fa-scissors"></i> Cut',
 				click: function ($itemScope) {

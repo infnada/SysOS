@@ -42,6 +42,14 @@
       });
     };
 
+    var copyFile = function (uuid, src, dst, callback) {
+        return ServerFactory.copyRemoteFile(uuid, src, dst, function (data) {
+            return callback(data.data.data);
+        }, function (data) {
+            console.log("Error: " + data);
+        });
+    };
+
 
     return {
       getPath: function (id, path, callback) {
@@ -58,7 +66,8 @@
       },
       renameFile: function (id, source, dest, callback) {
         return renameFile(id, source, dest, callback);
-      }
+      },
+      copyFile: copyFile
     }
 
   }]);
