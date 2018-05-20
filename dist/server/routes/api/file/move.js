@@ -7,7 +7,7 @@ var path = require('path');
 var fs = require('fs-extra');
 
 /**
- * API file - Rename
+ * API file - Move File
  *
  * @description
  *

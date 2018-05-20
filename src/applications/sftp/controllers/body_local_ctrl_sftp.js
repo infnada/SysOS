@@ -7,7 +7,7 @@
 		this.showModal = false;
 		this.currentActive = 0;
 		this.selection = true;
-		this.cutfrom = null;
+		this.cutFrom = null;
 		this.copyFrom = null;
 		this.pasteTo = null;
 		this.lastPath = [];

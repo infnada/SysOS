@@ -9,9 +9,8 @@
 		this.currentActive = 0;
 		this.localFileSystemPath = '/';
 		this.selection = true;
-		this.cutfrom = null;
+		this.cutFrom = null;
 		this.copyFrom = null;
-		this.copyTo = null;
 		this.lastPath = [];
 		this.nextPath = [];
 

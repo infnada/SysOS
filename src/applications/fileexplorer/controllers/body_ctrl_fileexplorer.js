@@ -8,7 +8,7 @@
 		this.showModal = false;
 		this.currentActive = 0;
 		this.selection = true;
-		this.cutfrom = null;
+		this.cutFrom = null;
 		this.copyFrom = null;
 		this.pasteTo = null;
 		this.lastPath = [];
@@ -75,6 +75,12 @@
 					_this.showModal = true;
 				}
 			},
+			{
+				text: '<i class="fa fa-folder"></i> Create Folder',
+				click: function () {
+					_this.createFolder();
+				}
+			},
 			null,
 			[function () {
 				return '<i class="fa fa-clipboard"></i> Paste';
@@ -82,15 +88,24 @@
 				if (angular.isUndefined($itemScope.file)) $itemScope.file = $itemScope.$parent.file;
 
 				_this.pasteTo = _this.localFileSystem.currentPath;
-				console.log(_this.copyFrom);
-				console.log(_this.pasteTo);
 
-				// TODO: Do something
+				if (_this.cutFrom) {
+					return fileSystemFactory.moveFile(_this.cutFrom, _this.pasteTo, function () {
+						_this.reloadPath();
+						_this.cutFrom = null;
+						_this.pasteTo = null;
+					});
+				}
 
-				_this.copyFrom = null;
-				_this.pasteTo = null;
+				if (_this.copyFrom) {
+					return fileSystemFactory.copyFile(_this.copyFrom, _this.pasteTo, function () {
+						_this.reloadPath();
+						_this.copyFrom = null;
+						_this.pasteTo = null;
+					});
+				}
 			}, function () {
-				if (_this.copyFrom === null) return false;
+				if (_this.copyFrom === null && _this.cutFrom === null) return false;
 				return true; // enabled = true, disabled = false
 			}],
 			null,
@@ -137,30 +152,13 @@
 			null,
 			{
 				text: '<i class="fa fa-files-o"></i> Copy',
-				click: function ($itemScope, $event, modelValue, text, $li) {
+				click: function ($itemScope) {
 					if (angular.isUndefined($itemScope.file)) $itemScope.file = $itemScope.$parent.file;
 
 					_this.cutFrom = null;
 					_this.copyFrom = _this.localFileSystem.currentPath + $itemScope.file.filename;
 				}
 			},
-			[function () {
-				return '<i class="fa fa-clipboard"></i> Paste';
-			}, function ($itemScope) {
-				if (angular.isUndefined($itemScope.file)) $itemScope.file = $itemScope.$parent.file;
-
-				_this.pasteTo = _this.localFileSystem.currentPath;
-				console.log(_this.copyFrom);
-				console.log(_this.pasteTo);
-
-				// TODO: Do something
-
-				_this.copyFrom = null;
-				_this.pasteTo = null;
-			}, function () {
-				if (_this.copyFrom === null) return false;
-				return true; // enabled = true, disabled = false
-			}],
 			{
 				text: '<i class="fa fa-scissors"></i> Cut',
 				click: function ($itemScope) {
