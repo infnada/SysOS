@@ -14,12 +14,14 @@ module.exports = function (app, io) {
 	app.use('/api/file/get', require('./api/file/get.js'));
 	app.use('/api/file/download_from_url', require('./api/file/download_from_url.js'));
 	app.use('/api/file/copy', require('./api/file/copy.js'));
+	app.use('/api/file/move', require('./api/file/move.js'));
 
 	app.use('/api/remoteFile/chmod', require('./api/remoteFile/chmod.js'));
 	app.use('/api/remoteFile/delete', require('./api/remoteFile/delete.js'));
 	app.use('/api/remoteFile/rename', require('./api/remoteFile/rename.js'));
 	app.use('/api/remoteFile/download_from_url', require('./api/remoteFile/download_from_url.js'));
 	app.use('/api/remoteFile/copy', require('./api/remoteFile/copy.js'));
+	app.use('/api/remoteFile/move', require('./api/remoteFile/move.js'));
 	// upload & download called from socket.io
 
 	app.use('/api/folder/create', require('./api/folder/create.js'));

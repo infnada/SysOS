@@ -89,14 +89,24 @@
 
 				_this.pasteTo = _this.localFileSystem.currentPath;
 
-				return fileSystemFactory.copyFile(_this.copyFrom, _this.pasteTo, function () {
-					_this.reloadPath();
-					_this.copyFrom = null;
-					_this.pasteTo = null;
-				});
+				if (_this.cutFrom) {
+					return fileSystemFactory.moveFile(_this.cutFrom, _this.pasteTo, function () {
+						_this.reloadPath();
+						_this.cutFrom = null;
+						_this.pasteTo = null;
+					});
+				}
+
+				if (_this.copyFrom) {
+					return fileSystemFactory.copyFile(_this.copyFrom, _this.pasteTo, function () {
+						_this.reloadPath();
+						_this.copyFrom = null;
+						_this.pasteTo = null;
+					});
+				}
 
 			}, function () {
-				if (_this.copyFrom === null) return false;
+				if (_this.copyFrom === null && _this.cutFrom === null) return false;
 				return true; // enabled = true, disabled = false
 			}],
 			null,

@@ -60,6 +60,12 @@
       copyRemoteFile: function (uuid, src, dst, onSuccess, onError) {
         return doPost("/api/remoteFile/copy", {uuid: uuid, src: src, dst: dst}, onSuccess, onError);
       },
+      moveFile: function (src, dst, onSuccess, onError) {
+          return doPost("/api/file/move", {src: src, dst: dst}, onSuccess, onError);
+      },
+      moveRemoteFile: function (uuid, src, dst, onSuccess, onError) {
+          return doPost("/api/remoteFile/move", {uuid: uuid, src: src, dst: dst}, onSuccess, onError);
+      },
       // Manage application data from config files API
       saveConfigToFile: function (data, file, full_save, onSuccess, onError) {
         return doPost("/api/configFiles/save", {data: data, file: file, full_save: full_save}, onSuccess, onError);

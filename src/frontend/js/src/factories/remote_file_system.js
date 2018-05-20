@@ -34,8 +34,8 @@
       });
     };
 
-    var renameFile = function (id, source, dest, callback) {
-      return ServerFactory.renameRemoteFile(id, source, dest, function (data) {
+    var renameFile = function (uuid, src, dst, callback) {
+      return ServerFactory.renameRemoteFile(uuid, src, dst, function (data) {
         return callback(data.data.data);
       }, function (data) {
         console.log("Error: " + data);
@@ -48,6 +48,14 @@
         }, function (data) {
             console.log("Error: " + data);
         });
+    };
+
+    var moveFile = function (uuid, src, dst, callback) {
+	    return ServerFactory.moveRemoteFile(uuid, src, dst, function (data) {
+		    return callback(data.data.data);
+	    }, function (data) {
+		    console.log("Error: " + data);
+	    });
     };
 
 
@@ -67,7 +75,8 @@
       renameFile: function (id, source, dest, callback) {
         return renameFile(id, source, dest, callback);
       },
-      copyFile: copyFile
+      copyFile: copyFile,
+      moveFile: moveFile
     }
 
   }]);

@@ -2535,6 +2535,14 @@ var myApp = angular.module('myApp', [
 	    });
     };
 
+    var moveFile = function (src, dst, callback) {
+        return ServerFactory.moveFile(src, dst, function (data) {
+            return callback(data.data);
+        }, function (data) {
+            console.log("Error: " + data);
+        });
+    };
+
     return {
       getFileSystemPath: function (path, callback) {
         return getFileSystemPath(path, callback);
@@ -2560,7 +2568,8 @@ var myApp = angular.module('myApp', [
       downloadFileFromInet: function (url, path, callback) {
         return downloadFileFromInet(url, path, callback);
       },
-      copyFile: copyFile
+      copyFile: copyFile,
+      moveFile: moveFile
     }
 
   }]);
@@ -3747,8 +3756,8 @@ var myApp = angular.module('myApp', [
       });
     };
 
-    var renameFile = function (id, source, dest, callback) {
-      return ServerFactory.renameRemoteFile(id, source, dest, function (data) {
+    var renameFile = function (uuid, src, dst, callback) {
+      return ServerFactory.renameRemoteFile(uuid, src, dst, function (data) {
         return callback(data.data.data);
       }, function (data) {
         console.log("Error: " + data);
@@ -3761,6 +3770,14 @@ var myApp = angular.module('myApp', [
         }, function (data) {
             console.log("Error: " + data);
         });
+    };
+
+    var moveFile = function (uuid, src, dst, callback) {
+	    return ServerFactory.moveRemoteFile(uuid, src, dst, function (data) {
+		    return callback(data.data.data);
+	    }, function (data) {
+		    console.log("Error: " + data);
+	    });
     };
 
 
@@ -3780,7 +3797,8 @@ var myApp = angular.module('myApp', [
       renameFile: function (id, source, dest, callback) {
         return renameFile(id, source, dest, callback);
       },
-      copyFile: copyFile
+      copyFile: copyFile,
+      moveFile: moveFile
     }
 
   }]);
@@ -3842,6 +3860,12 @@ var myApp = angular.module('myApp', [
       },
       copyRemoteFile: function (uuid, src, dst, onSuccess, onError) {
         return doPost("/api/remoteFile/copy", {uuid: uuid, src: src, dst: dst}, onSuccess, onError);
+      },
+      moveFile: function (src, dst, onSuccess, onError) {
+          return doPost("/api/file/move", {src: src, dst: dst}, onSuccess, onError);
+      },
+      moveRemoteFile: function (uuid, src, dst, onSuccess, onError) {
+          return doPost("/api/remoteFile/move", {uuid: uuid, src: src, dst: dst}, onSuccess, onError);
       },
       // Manage application data from config files API
       saveConfigToFile: function (data, file, full_save, onSuccess, onError) {

@@ -51,17 +51,25 @@
 				if (angular.isUndefined($itemScope.file)) $itemScope.file = $itemScope.$parent.file;
 
 				_this.pasteTo = sftpB.getActiveConnection().currentPath;
-				console.log(_this.copyFrom);
-				console.log(_this.pasteTo);
 
-				return remoteFileSystemFactory.copyFile(sftpB.activeConnection, _this.copyFrom, _this.pasteTo, function () {
-					_this.reloadPath();
-					_this.copyFrom = null;
-					_this.pasteTo = null;
-				});
+				if (_this.cutFrom) {
+					return remoteFileSystemFactory.moveFile(sftpB.activeConnection, _this.cutFrom, _this.pasteTo, function () {
+						_this.reloadPath();
+						_this.cutFrom = null;
+						_this.pasteTo = null;
+					});
+				}
+
+				if (_this.copyFrom) {
+					return remoteFileSystemFactory.copyFile(sftpB.activeConnection, _this.copyFrom, _this.pasteTo, function () {
+						_this.reloadPath();
+						_this.copyFrom = null;
+						_this.pasteTo = null;
+					});
+				}
 
 			}, function () {
-				if (_this.copyFrom === null) return false;
+				if (_this.copyFrom === null && _this.cutFrom === null) return false;
 				return true; // enabled = true, disabled = false
 			}],
 			null,
