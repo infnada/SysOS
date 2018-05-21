@@ -62,6 +62,7 @@
 					data.esxi_port = host.connection_port;
 					data.esxi_host = host.host;
 					data.esxi_datastore_name = 'SysOS_' + data.volume_junction.substr(1);
+					data.esxi_datacenter = host.datacenter;
 
 					// Start restore
 					var modalInstanceRecovery = modalFactory.openLittleModal('PLEASE WAIT', 'Mounting ' + data.volume + ' from Snapshot...', '.window--backupsm .window__main', 'plain');
@@ -113,6 +114,7 @@
 					data.esxi_port = host.connection_port;
 					data.esxi_host = host.host;
 					data.esxi_datastore_name = 'SysOS_' + data.volume_junction.substr(1);
+					data.esxi_datacenter = host.datacenter;
 
 					// Start restore
 					var modalInstanceRecovery = modalFactory.openLittleModal('PLEASE WAIT', 'Restoring ' + data.volume + ' files from Snapshot...', '.window--backupsm .window__main', 'plain');

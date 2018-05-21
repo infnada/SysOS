@@ -810,8 +810,8 @@ var myApp = angular.module('myApp', [
 
 (function () {
 	"use strict";
-	myApp.run(['$rootScope', 'ServerFactory', 'ApplicationsFactory', 'socket', 'connectionsFactory', '$injector', '$ocLazyLoad',
-		function ($rootScope, ServerFactory, ApplicationsFactory, socket, connectionsFactory, $injector, $ocLazyLoad) {
+	myApp.run(['$rootScope', 'ServerFactory', 'ApplicationsFactory', 'socket', 'connectionsFactory', '$injector', '$ocLazyLoad', 'vmwareFactory',
+		function ($rootScope, ServerFactory, ApplicationsFactory, socket, connectionsFactory, $injector, $ocLazyLoad, vmwareFactory) {
 
 			angular.element(window).bind('dragover', function (e) {
 				e.preventDefault();
@@ -830,19 +830,27 @@ var myApp = angular.module('myApp', [
 			//netappFactory.getNFSExportRulesList("09303623-e55a-47dd-80b8-585737af0552", "172.27.24.5", "80", "MNFS", "NFSPROD3");
 			//netappFactory.getExportRules("09303623-e55a-47dd-80b8-585737af0552", "172.27.24.5", "80", "MNFS", "default");
 
-			/*vmwareFactory.connectvCenterSoap("adee0997-62ec-470e-aa81-045a446ceec5", "mvcenter01", 443).then(function () {
-			  vmwareFactory.acquireNFCTicket(
-				"adee0997-62ec-470e-aa81-045a446ceec5",
-				"mvcenter01",
-				443,
-				"host-10",
-				"datastore-12"
-			  ).then(function(data) {
-				console.log(data);
-			  });
+			vmwareFactory.connectvCenterSoap('059bab78-9b0f-41d5-aa54-b5b31d9cf3de', "mvcenter01", 443).then(function () {
+				  /*vmwareFactory.deleteFileFromDatastore(
+					  '059bab78-9b0f-41d5-aa54-b5b31d9cf3de', 'mvcenter01', 443, 'SysOS_VOLDEV', '/GEA', 'datacenter-2'
+				  ).then(function(data) {
+					console.log(data);
+				  });*/
+
+				/*vmwareFactory.moveFileFromDatastore(
+					'059bab78-9b0f-41d5-aa54-b5b31d9cf3de', 'mvcenter01', 443, 'SysOS_VOLDEV', '/ETER_renamed', 'datacenter-2', 'SysOS_VOLDEV', '/ETER', 'datacenter-2'
+				).then(function(data) {
+					console.log(data);
+				});*/
+
+				/*vmwareFactory.copyFileFromDatastore(
+					'059bab78-9b0f-41d5-aa54-b5b31d9cf3de', 'mvcenter01', 443, 'SysOS_VOLDEV', '/ETER', 'datacenter-2', 'SysOS_VOLDEV', '/ETER_copy', 'datacenter-2'
+				).then(function(data) {
+					console.log(data);
+				});*/
 			});
 
-			vmwareFactory.getClientVersion('192.168.5.250', 443).then(function (data) {
+			/*vmwareFactory.getClientVersion('192.168.5.250', 443).then(function (data) {
 			  console.log(data);
 			});*/
 
@@ -2583,17 +2591,28 @@ var myApp = angular.module('myApp', [
     /*
      * Opens a Modal and append it.
      */
-    var openLittleModal = function (tittle, text, query, type) {
+    var openLittleModal = function (tittle, text, query, type, button_text, inputValue) {
 
       var appendTo = angular.element($document[0].querySelector(query));
-      var templateUrl = (type === "plain" ? "templates/utils/modal.html" : (type === "ESXiSelectable" ? "templates/utils/ESXiSelectable.html" : (type === "question" ? "templates/utils/question.html" : type === "DatastoreSelectable" ? "templates/utils/DatastoreSelectable.html" : '')));
+      var templateUrl = (type === "plain" ?
+        "templates/utils/modal.html" : (type === "ESXiSelectable" ?
+          "templates/utils/ESXiSelectable.html" : (type === "question" ?
+            "templates/utils/question.html" : type === "DatastoreSelectable" ?
+              "templates/utils/DatastoreSelectable.html" : (type === "input" ?
+                "templates/utils/input.html" : ''
+              )
+            )
+          )
+        );
 
       if (appendTo.length) {
         modalInstances[query] = $uibModal.open({
           templateUrl: templateUrl,
-          controller: ['$scope', 'title', 'text', '$uibModalInstance', 'connectionsFactory', function ($scope, title, text, $uibModalInstance, connectionsFactory) {
+          controller: ['$scope', 'title', 'text', 'button_text', 'inputValue', '$uibModalInstance', 'connectionsFactory', function ($scope, title, text, button_text, inputValue, $uibModalInstance, connectionsFactory) {
             $scope.title = title;
             $scope.text = text;
+            $scope.button_text = button_text;
+            $scope.inputValue = inputValue;
 
             $scope.selectESXihost = function () {
               $uibModalInstance.close($scope.selectedHost);
@@ -2601,6 +2620,10 @@ var myApp = angular.module('myApp', [
 
             $scope.selectDatastore = function () {
                 $uibModalInstance.close($scope.selectedDatastore);
+            };
+
+            $scope.yes_input = function () {
+                $uibModalInstance.close($scope.inputValue);
             };
 
             $scope.yes = function () {
@@ -2624,7 +2647,8 @@ var myApp = angular.module('myApp', [
                           id: datastore.obj.name,
                           credential: connection.credential,
                           host: connection.host,
-                          port: connection.port
+                          port: connection.port,
+                          datacenter: connection.datacenters[0].datacenter // TODO: check datacenter per datastore (not always will be the 1st [0] datacenter)
                       });
                   });
               });
@@ -2641,6 +2665,12 @@ var myApp = angular.module('myApp', [
             },
             text: function () {
               return text;
+            },
+            button_text: function () {
+		          return button_text;
+            },
+            inputValue: function () {
+              return inputValue;
             }
           }
         });
@@ -3634,6 +3664,58 @@ var myApp = angular.module('myApp', [
         });
     };
 
+    var deleteFileFromDatastore = function (credential, host, port, datastore_name, path, datacenter) {
+        var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><DeleteDatastoreFile_Task xmlns="urn:vim25"><_this type="FileManager">FileManager</_this><name>[' + datastore_name + '] ' + path + '</name><datacenter type="Datacenter">' + datacenter + '</datacenter></DeleteDatastoreFile_Task></soap:Body></soap:Envelope>';
+        return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
+            if (data.data.status === "error") return errorHandler(data.data.data);
+
+            var task_id = data.data.data.response["soapenv:Envelope"]["soapenv:Body"][0].DeleteDatastoreFile_TaskResponse[0].returnval[0]._;
+
+            return getTaskStatus(credential, host, port, task_id).then(function (data) {
+                return validResponse(data);
+            });
+
+        });
+    };
+
+    var moveFileFromDatastore = function (credential, host, port, src_datastore_name, src_path, src_datacenter, dst_datastore_name, dst_path, dst_datacenter, force) {
+        var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><MoveDatastoreFile_Task xmlns="urn:vim25"><_this type="FileManager">FileManager</_this><sourceName>[' + src_datastore_name + '] ' + src_path + '</sourceName><sourceDatacenter type="Datacenter">' + src_datacenter + '</sourceDatacenter><destinationName>[' + dst_datastore_name + '] ' + dst_path + '</destinationName><destinationDatacenter type="Datacenter">' + dst_datacenter + '</destinationDatacenter>' + (force ? '<force>true</force>' : '') + '</MoveDatastoreFile_Task></soap:Body></soap:Envelope>';
+        return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
+            if (data.data.status === "error") return errorHandler(data.data.data);
+
+            var task_id = data.data.data.response["soapenv:Envelope"]["soapenv:Body"][0].MoveDatastoreFile_TaskResponse[0].returnval[0]._;
+
+            return getTaskStatus(credential, host, port, task_id).then(function (data) {
+                return validResponse(data);
+            });
+
+        });
+    };
+
+    var copyFileFromDatastore = function (credential, host, port, src_datastore_name, src_path, src_datacenter, dst_datastore_name, dst_path, dst_datacenter, force) {
+        var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><CopyDatastoreFile_Task xmlns="urn:vim25"><_this type="FileManager">FileManager</_this><sourceName>[' + src_datastore_name + '] ' + src_path + '</sourceName><sourceDatacenter type="Datacenter">' + src_datacenter + '</sourceDatacenter><destinationName>[' + dst_datastore_name + '] ' + dst_path + '</destinationName><destinationDatacenter type="Datacenter">' + dst_datacenter + '</destinationDatacenter>' + (force ? '<force>true</force>' : '') + '</CopyDatastoreFile_Task></soap:Body></soap:Envelope>';
+        return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
+            if (data.data.status === "error") return errorHandler(data.data.data);
+
+            var task_id = data.data.data.response["soapenv:Envelope"]["soapenv:Body"][0].CopyDatastoreFile_TaskResponse[0].returnval[0]._;
+
+            return getTaskStatus(credential, host, port, task_id).then(function (data) {
+                return validResponse(data);
+            });
+
+        });
+    };
+
+    var createFolderToDatastore = function (credential, host, port, datastore_name, path, datacenter) {
+        var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><MakeDirectory xmlns="urn:vim25"><_this type="FileManager">FileManager</_this><name>[' + datastore_name + '] ' + path + '</name><datacenter type="Datacenter">' + datacenter + '</datacenter><createParentDirectories>true</createParentDirectories></MakeDirectory></soap:Body></soap:Envelope>';
+        return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
+            if (data.data.status === "error") return errorHandler(data.data.data);
+
+            return data.data.data.response["soapenv:Envelope"]["soapenv:Body"][0].MakeDirectoryResponse[0];
+
+        });
+    };
+
     var mountDatastore = function (credential, host, port, datastore_system, datastore_host, datastore_path, datastore_local_name) {
       var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><CreateNasDatastore xmlns="urn:vim25"><_this type="HostDatastoreSystem">' + datastore_system + '</_this><spec><remoteHost>' + datastore_host + '</remoteHost><remotePath>/' + datastore_path + '/</remotePath><localPath>' + datastore_local_name + '</localPath><accessMode>readWrite</accessMode></spec></CreateNasDatastore></soap:Body></soap:Envelope>';
       return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
@@ -3747,6 +3829,10 @@ var myApp = angular.module('myApp', [
       getDatastoreProps: getDatastoreProps,
       getVMFileDataFromDatastore: getVMFileDataFromDatastore,
       getFilesDataFromDatastore: getFilesDataFromDatastore,
+      deleteFileFromDatastore: deleteFileFromDatastore,
+      moveFileFromDatastore: moveFileFromDatastore,
+      copyFileFromDatastore: copyFileFromDatastore,
+      createFolderToDatastore: createFolderToDatastore,
       mountDatastore: mountDatastore,
       unmountDatastore: unmountDatastore,
       getVMState: getVMState,
@@ -4241,6 +4327,26 @@ var myApp = angular.module('myApp', [
     );
 
   }]);
+}());
+
+(function () {
+	"use strict";
+	myApp.run(['$templateCache', function ($templateCache) {
+
+		$templateCache.put('templates/utils/input.html',
+			'<div class="modal-header"> \
+			  <div class="modal-title" id="modal-title">{{title}}</div> \
+			</div> \
+			<div class="modal-body" id="modal-body"> \
+			  <input type="text" class="form-control" set-focus placeholder="{{::text}}" ng-model="inputValue" /> \
+			</div> \
+			<div class="modal-footer"> \
+			  <button class="btn btn-primary" type="button" ng-click="no()">Cancel</button> \
+			  <button class="btn btn-default" type="button" ng-click="yes_input()">{{::button_text}}</button> \
+			</div>'
+		);
+
+	}]);
 }());
 
 (function () {

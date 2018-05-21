@@ -10,17 +10,28 @@
     /*
      * Opens a Modal and append it.
      */
-    var openLittleModal = function (tittle, text, query, type) {
+    var openLittleModal = function (tittle, text, query, type, button_text, inputValue) {
 
       var appendTo = angular.element($document[0].querySelector(query));
-      var templateUrl = (type === "plain" ? "templates/utils/modal.html" : (type === "ESXiSelectable" ? "templates/utils/ESXiSelectable.html" : (type === "question" ? "templates/utils/question.html" : type === "DatastoreSelectable" ? "templates/utils/DatastoreSelectable.html" : '')));
+      var templateUrl = (type === "plain" ?
+        "templates/utils/modal.html" : (type === "ESXiSelectable" ?
+          "templates/utils/ESXiSelectable.html" : (type === "question" ?
+            "templates/utils/question.html" : type === "DatastoreSelectable" ?
+              "templates/utils/DatastoreSelectable.html" : (type === "input" ?
+                "templates/utils/input.html" : ''
+              )
+            )
+          )
+        );
 
       if (appendTo.length) {
         modalInstances[query] = $uibModal.open({
           templateUrl: templateUrl,
-          controller: ['$scope', 'title', 'text', '$uibModalInstance', 'connectionsFactory', function ($scope, title, text, $uibModalInstance, connectionsFactory) {
+          controller: ['$scope', 'title', 'text', 'button_text', 'inputValue', '$uibModalInstance', 'connectionsFactory', function ($scope, title, text, button_text, inputValue, $uibModalInstance, connectionsFactory) {
             $scope.title = title;
             $scope.text = text;
+            $scope.button_text = button_text;
+            $scope.inputValue = inputValue;
 
             $scope.selectESXihost = function () {
               $uibModalInstance.close($scope.selectedHost);
@@ -28,6 +39,10 @@
 
             $scope.selectDatastore = function () {
                 $uibModalInstance.close($scope.selectedDatastore);
+            };
+
+            $scope.yes_input = function () {
+                $uibModalInstance.close($scope.inputValue);
             };
 
             $scope.yes = function () {
@@ -51,7 +66,8 @@
                           id: datastore.obj.name,
                           credential: connection.credential,
                           host: connection.host,
-                          port: connection.port
+                          port: connection.port,
+                          datacenter: connection.datacenters[0].datacenter // TODO: check datacenter per datastore (not always will be the 1st [0] datacenter)
                       });
                   });
               });
@@ -68,6 +84,12 @@
             },
             text: function () {
               return text;
+            },
+            button_text: function () {
+		          return button_text;
+            },
+            inputValue: function () {
+              return inputValue;
             }
           }
         });

@@ -353,6 +353,58 @@
         });
     };
 
+    var deleteFileFromDatastore = function (credential, host, port, datastore_name, path, datacenter) {
+        var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><DeleteDatastoreFile_Task xmlns="urn:vim25"><_this type="FileManager">FileManager</_this><name>[' + datastore_name + '] ' + path + '</name><datacenter type="Datacenter">' + datacenter + '</datacenter></DeleteDatastoreFile_Task></soap:Body></soap:Envelope>';
+        return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
+            if (data.data.status === "error") return errorHandler(data.data.data);
+
+            var task_id = data.data.data.response["soapenv:Envelope"]["soapenv:Body"][0].DeleteDatastoreFile_TaskResponse[0].returnval[0]._;
+
+            return getTaskStatus(credential, host, port, task_id).then(function (data) {
+                return validResponse(data);
+            });
+
+        });
+    };
+
+    var moveFileFromDatastore = function (credential, host, port, src_datastore_name, src_path, src_datacenter, dst_datastore_name, dst_path, dst_datacenter, force) {
+        var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><MoveDatastoreFile_Task xmlns="urn:vim25"><_this type="FileManager">FileManager</_this><sourceName>[' + src_datastore_name + '] ' + src_path + '</sourceName><sourceDatacenter type="Datacenter">' + src_datacenter + '</sourceDatacenter><destinationName>[' + dst_datastore_name + '] ' + dst_path + '</destinationName><destinationDatacenter type="Datacenter">' + dst_datacenter + '</destinationDatacenter>' + (force ? '<force>true</force>' : '') + '</MoveDatastoreFile_Task></soap:Body></soap:Envelope>';
+        return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
+            if (data.data.status === "error") return errorHandler(data.data.data);
+
+            var task_id = data.data.data.response["soapenv:Envelope"]["soapenv:Body"][0].MoveDatastoreFile_TaskResponse[0].returnval[0]._;
+
+            return getTaskStatus(credential, host, port, task_id).then(function (data) {
+                return validResponse(data);
+            });
+
+        });
+    };
+
+    var copyFileFromDatastore = function (credential, host, port, src_datastore_name, src_path, src_datacenter, dst_datastore_name, dst_path, dst_datacenter, force) {
+        var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><CopyDatastoreFile_Task xmlns="urn:vim25"><_this type="FileManager">FileManager</_this><sourceName>[' + src_datastore_name + '] ' + src_path + '</sourceName><sourceDatacenter type="Datacenter">' + src_datacenter + '</sourceDatacenter><destinationName>[' + dst_datastore_name + '] ' + dst_path + '</destinationName><destinationDatacenter type="Datacenter">' + dst_datacenter + '</destinationDatacenter>' + (force ? '<force>true</force>' : '') + '</CopyDatastoreFile_Task></soap:Body></soap:Envelope>';
+        return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
+            if (data.data.status === "error") return errorHandler(data.data.data);
+
+            var task_id = data.data.data.response["soapenv:Envelope"]["soapenv:Body"][0].CopyDatastoreFile_TaskResponse[0].returnval[0]._;
+
+            return getTaskStatus(credential, host, port, task_id).then(function (data) {
+                return validResponse(data);
+            });
+
+        });
+    };
+
+    var createFolderToDatastore = function (credential, host, port, datastore_name, path, datacenter) {
+        var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><MakeDirectory xmlns="urn:vim25"><_this type="FileManager">FileManager</_this><name>[' + datastore_name + '] ' + path + '</name><datacenter type="Datacenter">' + datacenter + '</datacenter><createParentDirectories>true</createParentDirectories></MakeDirectory></soap:Body></soap:Envelope>';
+        return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
+            if (data.data.status === "error") return errorHandler(data.data.data);
+
+            return data.data.data.response["soapenv:Envelope"]["soapenv:Body"][0].MakeDirectoryResponse[0];
+
+        });
+    };
+
     var mountDatastore = function (credential, host, port, datastore_system, datastore_host, datastore_path, datastore_local_name) {
       var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><CreateNasDatastore xmlns="urn:vim25"><_this type="HostDatastoreSystem">' + datastore_system + '</_this><spec><remoteHost>' + datastore_host + '</remoteHost><remotePath>/' + datastore_path + '/</remotePath><localPath>' + datastore_local_name + '</localPath><accessMode>readWrite</accessMode></spec></CreateNasDatastore></soap:Body></soap:Envelope>';
       return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
@@ -466,6 +518,10 @@
       getDatastoreProps: getDatastoreProps,
       getVMFileDataFromDatastore: getVMFileDataFromDatastore,
       getFilesDataFromDatastore: getFilesDataFromDatastore,
+      deleteFileFromDatastore: deleteFileFromDatastore,
+      moveFileFromDatastore: moveFileFromDatastore,
+      copyFileFromDatastore: copyFileFromDatastore,
+      createFolderToDatastore: createFolderToDatastore,
       mountDatastore: mountDatastore,
       unmountDatastore: unmountDatastore,
       getVMState: getVMState,

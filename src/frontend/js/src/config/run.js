@@ -17,26 +17,6 @@
 			 * Init
 			 */
 
-			//netappFactory.getNFSExportRulesList("09303623-e55a-47dd-80b8-585737af0552", "172.27.24.5", "80", "MNFS", "NFSPROD3");
-			//netappFactory.getExportRules("09303623-e55a-47dd-80b8-585737af0552", "172.27.24.5", "80", "MNFS", "default");
-
-			/*vmwareFactory.connectvCenterSoap("adee0997-62ec-470e-aa81-045a446ceec5", "mvcenter01", 443).then(function () {
-			  vmwareFactory.acquireNFCTicket(
-				"adee0997-62ec-470e-aa81-045a446ceec5",
-				"mvcenter01",
-				443,
-				"host-10",
-				"datastore-12"
-			  ).then(function(data) {
-				console.log(data);
-			  });
-			});
-
-			vmwareFactory.getClientVersion('192.168.5.250', 443).then(function (data) {
-			  console.log(data);
-			});*/
-
-
 			// Ensure no application is open
 			$rootScope.taskbar__item_open = null;
 

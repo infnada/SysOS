@@ -8,7 +8,6 @@
 				<div class="col-xs-12 ftp__body" > \
 					<div ng-include="\'templates/applications/actions-de-local.html\'" include-replace></div> \
 					<div id="local_body" selectable="deB.selection" selectable-list="deB.localFileSystem.currentData | filter:deB.search" selectable-out="selected" selectable-options="{delay:150, filter: \'a\'}" minus-index="2" class="folders" tabindex="0" ng-keydown="deB.handleItemKeyPress($event)" context-menu="deB.localContextMenu"> \
-					<div ng-include="\'templates/applications/folders-modal-de-local.html\'"></div> \
 					<div ng-include="\'templates/applications/folders-dropzone-de-local.html\'"></div> \
 					<a ng-if="deB.viewAsList == false"  ng-repeat="file in deB.localFileSystem.currentData | filter:deB.search" ng-class="{\'active\': deB.currentActive == $index}" ng-click="deB.setCurrentActive($index)" ng-dblclick="deB.doWithFile(file)" title="{{::file.path}}" context-menu="deB.fileContextMenu"> \
 					<i class="fa fa-{{::file.fileType}}"></i> \
