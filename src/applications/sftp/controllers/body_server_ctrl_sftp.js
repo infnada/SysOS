@@ -326,7 +326,7 @@
 			} else if (keyEvent.which === 37) {
 				_this.setCurrentActive(_this.currentActive - 1);
 			} else if (keyEvent.which === 8) {
-				// go back
+				_this.goPathBack();
 			} else if (keyEvent.which === 13) {
 				_this.doWithFile(sftpB.getActiveConnection().currentData[_this.currentActive]);
 			}
