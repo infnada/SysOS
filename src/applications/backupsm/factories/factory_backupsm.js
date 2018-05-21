@@ -35,6 +35,7 @@
 					return setRestoreStatus(data, "mounted");
 
 				}).catch(function (e) {
+					console.log(e);
 					return e;
 				});
 			};
@@ -81,19 +82,20 @@
 					if (res.status === "error") throw new Error("Failed to mount Datastore to host");
 
 					// Get mounted datastore name
-					data.esx_datastore = res.data;
+					data.esxi_datastore = res.data;
 					return setRestoreStatus(data, "mounted_to_esx");
 
 				}).then(function (res) {
 					console.log(res);
 					if (res.status === "error") throw new Error("Failed to get Datastores from vCenter");
 
-					return vmwareFactory.getDatastoreProps(data.esxi_credential, data.esxi_address, data.esxi_port, data.esx_datastore);
+					return vmwareFactory.getDatastoreProps(data.esxi_credential, data.esxi_address, data.esxi_port, data.esxi_datastore);
 
 				}).then(function (res) {
 					if (res.status === "error") throw new Error("Failed to get Datastore Properties from vCenter");
 
 				}).catch(function (e) {
+					console.log(e);
 					return e;
 				});
 			};
@@ -104,11 +106,11 @@
 			var registerVM = function (data) {
 
 				// Get VM in Datastore
-				return vmwareFactory.getFileDataFromDatastore(
+				return vmwareFactory.getVMFileDataFromDatastore(
 					data.esxi_credential,
 					data.esxi_address,
 					data.esxi_port,
-					data.esx_datastore,
+					data.esxi_datastore,
 					'SysOS_' + data.volume_junction.substr(1),
 					data.vm.path.substring(0, data.vm.path.lastIndexOf("/") + 1).substr(1),
 					data.vm.path.split('/').pop()
@@ -143,6 +145,7 @@
 					if (res && res.status === "error") throw new Error("Failed to power on VM on vCenter");
 
 				}).catch(function (e) {
+					console.log(e);
 					return e;
 				});
 
@@ -180,6 +183,7 @@
 					if (res instanceof Error) throw new Error("Failed to mount cloned volume from snapshot to ESXi host");
 
 				}).catch(function (e) {
+					console.log(e);
 					return e;
 				});
 
@@ -201,6 +205,7 @@
 					if (res instanceof Error) throw new Error("Failed to mount cloned volume from snapshot to ESXi host");
 
 				}).catch(function (e) {
+					console.log(e);
 					return e;
 				});
 
@@ -222,11 +227,11 @@
 					if (res instanceof Error) throw new Error("Failed to mount cloned volume from snapshot to ESXi host");
 
 					// Get VM in Datastore
-					return vmwareFactory.getFileDataFromDatastore(
+					return vmwareFactory.getVMFileDataFromDatastore(
 						data.esxi_credential,
 						data.esxi_address,
 						data.esxi_port,
-						data.esx_datastore,
+						data.esxi_datastore,
 						'SysOS_' + data.volume_junction.substr(1),
 						data.vm.path.substring(0, data.vm.path.lastIndexOf("/") + 1).substr(1),
 						data.vm.path.split('/').pop()
@@ -281,6 +286,7 @@
 					return res;
 
 				}).catch(function (e) {
+					console.log(e);
 					return e;
 				});
 
@@ -328,6 +334,7 @@
 
 					return setRestoreStatus(data, "unregistred_vm");
 				}).catch(function (e) {
+					console.log(e);
 					return e;
 				});
 
@@ -340,11 +347,12 @@
 
 				// Unregister Datastore
 				modalFactory.changeModalText('Unmounting datastore...', '.window--backupsm .window__main');
-				return vmwareFactory.unmountDatastore(data.esxi_credential, data.esxi_address, data.esxi_port, data.datastoreSystem, data.esx_datastore).then(function (res) {
+				return vmwareFactory.unmountDatastore(data.esxi_credential, data.esxi_address, data.esxi_port, data.datastoreSystem, data.esxi_datastore).then(function (res) {
 					if (res.status === "error") throw new Error("Failed to unmount datastore from vCenter");
 
 					return setRestoreStatus(data, "unmounted_datastore");
 				}).catch(function (e) {
+					console.log(e);
 					return e;
 				});
 
@@ -382,6 +390,7 @@
 
 					return setRestoreStatus(data, 3);
 				}).catch(function (e) {
+					console.log(e);
 					return e;
 				});
 			};

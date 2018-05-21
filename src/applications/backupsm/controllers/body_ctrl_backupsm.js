@@ -1,7 +1,7 @@
 (function () {
 	"use strict";
-	backupsmApp.controller('bmBodyController', ['$scope', '$filter', '$log', 'uuid', 'backupsmFactory', 'modalFactory', 'ApplicationsFactory', 'vmwareFactory',
-		function ($scope, $filter, $log, uuid, backupsmFactory, modalFactory, ApplicationsFactory, vmwareFactory) {
+	backupsmApp.controller('bmBodyController', ['$rootScope', '$scope', '$filter', '$timeout', '$log', 'uuid', 'backupsmFactory', 'modalFactory', 'ApplicationsFactory', 'vmwareFactory',
+		function ($rootScope, $scope, $filter, $timeout, $log, uuid, backupsmFactory, modalFactory, ApplicationsFactory, vmwareFactory) {
 
 			var _this = this;
 
@@ -52,7 +52,7 @@
 				backupsmFactory.setRestore(data);
 				backupsmFactory.setActiveRestore(data.uuid);
 
-				var modalInstance = modalFactory.openLittleModal('PLEASE WAIT', data.ESXihosts, '.window--backupsm .window__main', 'ESXiSelectable');
+				var modalInstance = modalFactory.openLittleModal('Select ESXi host', data.ESXihosts, '.window--backupsm .window__main', 'ESXiSelectable');
 				modalInstance.result.then(function (host) {
 
 					$log.debug("Backups Manager [%s] -> Received restore data from Modal -> esxi_host", data.uuid, host.host);
@@ -61,6 +61,7 @@
 					data.esxi_address = host.connection_address;
 					data.esxi_port = host.connection_port;
 					data.esxi_host = host.host;
+					data.esxi_datastore_name = 'SysOS_' + data.volume_junction.substr(1);
 
 					// Start restore
 					var modalInstanceRecovery = modalFactory.openLittleModal('PLEASE WAIT', 'Mounting ' + data.volume + ' from Snapshot...', '.window--backupsm .window__main', 'plain');
@@ -111,6 +112,7 @@
 					data.esxi_address = host.connection_address;
 					data.esxi_port = host.connection_port;
 					data.esxi_host = host.host;
+					data.esxi_datastore_name = 'SysOS_' + data.volume_junction.substr(1);
 
 					// Start restore
 					var modalInstanceRecovery = modalFactory.openLittleModal('PLEASE WAIT', 'Restoring ' + data.volume + ' files from Snapshot...', '.window--backupsm .window__main', 'plain');
@@ -122,6 +124,20 @@
 						if (res instanceof Error) throw new Error("Failed to restore snapshot into datastore files");
 
 						$log.debug("Backups Manager [%s] -> Restore finished successfully", data.uuid);
+
+						// Open Datastore Brower application
+						ApplicationsFactory.openApplication('datastoreexplorer');
+						ApplicationsFactory.toggleApplication('datastoreexplorer');
+
+						$timeout(function () {
+							$rootScope.$broadcast("datastoreexplorer__restore_datastore_files", {
+								credential: data.esxi_credential,
+								host: data.esxi_address,
+								port: data.esxi_port,
+								id: data.esxi_datastore,
+								name: data.esxi_datastore_name
+							});
+						}, 100);
 
 						modalInstanceRecovery.close();
 						return backupsmFactory.setRestoreStatus(data, 2);
@@ -161,6 +177,7 @@
 					data.esxi_address = host.connection_address;
 					data.esxi_port = host.connection_port;
 					data.esxi_host = host.host;
+					data.esxi_datastore_name = 'SysOS_' + data.volume_junction.substr(1);
 
 					// Start restore
 					var modalInstanceRecovery = modalFactory.openLittleModal('PLEASE WAIT', 'Restoring ' + data.vm.name + ' guest files from Snapshot...', '.window--backupsm .window__main', 'plain');
@@ -212,6 +229,7 @@
 					data.esxi_address = res.host.connection_address;
 					data.esxi_port = res.host.connection_port;
 					data.esxi_host = res.host.host;
+					data.esxi_datastore_name = 'SysOS_' + data.volume_junction.substr(1);
 					data.folder = res.folder.folder;
 					data.resource_pool = res.resource_pool.resource_pool;
 					data.vm_name = res.vm_name;
@@ -233,7 +251,7 @@
 					}).catch(function (e) {
 						modalInstanceRecovery.close();
 
-						return modalInstanceRestoreVM.errorHandler(e.message);
+						return ApplicationsFactory.errorHandler(e.message);
 					});
 
 				}, function (rejectionResponse) {
@@ -247,6 +265,24 @@
 			 */
 			this.toggleSide = function () {
 				_this.viewSide = !_this.viewSide;
+			};
+
+			this.openDatastoreBrowser = function () {
+				// Open Datastore Brower application
+				ApplicationsFactory.openApplication('datastoreexplorer');
+				ApplicationsFactory.toggleApplication('datastoreexplorer');
+
+				var data = _this.getActiveRestore();
+
+				$timeout(function () {
+					$rootScope.$broadcast("datastoreexplorer__restore_datastore_files", {
+						credential: data.esxi_credential,
+						host: data.esxi_address,
+						port: data.esxi_port,
+						id: data.esxi_datastore,
+						name: data.esxi_datastore_name
+					});
+				}, 100);
 			};
 
 			this.unpublishRestoredInstantVM = function () {

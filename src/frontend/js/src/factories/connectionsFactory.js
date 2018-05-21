@@ -521,6 +521,9 @@
 				disconnectConnection: disconnectConnection,
 				deleteConnection: deleteConnection,
 				getConnectionByUuid: getConnectionByUuid,
+				getConnectionByCategory: function (category) {
+					return connections[category];
+				},
 				setUuidMap: function (map) {
 					uuidMap = map;
 				},

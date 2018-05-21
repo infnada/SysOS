@@ -21,12 +21,14 @@
 				<div ng-if="bmB.getActiveRestore().type == \'mount_restore_datastore\'"> \
 				  <div ng-if ="bmB.getActiveRestore().status == 2"> \
 					<button class="btn btn-primary" type="button" ng-click="bmB.unpublishRestoredDatastore()">Stop Publishing Datastore</button> \
+					<button class="btn btn-primary" type="button" ng-click="bmB.openDatastoreBrowser()">Open Datastore Browser</button> \
 				  </div> \
 				  Restore status: {{bmB.getActiveRestore().status}} \
 				</div> \
 				<div ng-if="bmB.getActiveRestore().type == \'restore_datastore_files\'"> \
 				  <div ng-if ="bmB.getActiveRestore().status == 2"> \
 					<button class="btn btn-primary" type="button" ng-click="bmB.unpublishRestoredDatastore()">Stop Publishing Datastore</button> \
+					<button class="btn btn-primary" type="button" ng-click="bmB.openDatastoreBrowser()">Open Datastore Browser</button> \
 				  </div> \
 				  Restore status: {{bmB.getActiveRestore().status}} \
 				</div> \

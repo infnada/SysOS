@@ -13,7 +13,7 @@
             </tr> \
             <tr class="cursor-pointer" ng-click="smB.newConnection(\'netapp\')"> \
               <th class="col-sm-2 p-m"><img src="/img/netapp.png" width="75px"></th> \
-              <td class="lh-2">Adds NetApp FAS, FlexArray (V-Series), Edge VSA and IBM N series, NFS, Fibre Channel (FC) and iSCSI connectivity is supported.</td> \
+              <td class="lh-2">Adds NetApp FAS series. NFS, Fibre Channel (FC) and iSCSI connectivity is supported.</td> \
             </tr> \
             <tr class="cursor-pointer" ng-click="smB.newConnection(\'windows\')"> \
               <th class="col-sm-2 p-m"><i class="fa fa-windows"></i></th> \

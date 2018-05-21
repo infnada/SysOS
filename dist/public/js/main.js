@@ -1858,13 +1858,10 @@ var myApp = angular.module('myApp', [
 		 * Function called after Sort taskbar applications
 		 */
 		var saveTaskBarApplicationsOrder = function (applications) {
-			console.log(applications);
 			var applications_to_save = applications.filter(function (obj) {
 				delete obj["$$hashKey"];
 				return obj.pinned === true && obj.id !== "start";
 			});
-
-			console.log(applications_to_save);
 
 			return ServerFactory.saveConfigToFile(applications_to_save, 'desktop/task_bar.json', true);
 		};
@@ -2414,6 +2411,9 @@ var myApp = angular.module('myApp', [
 				disconnectConnection: disconnectConnection,
 				deleteConnection: deleteConnection,
 				getConnectionByUuid: getConnectionByUuid,
+				getConnectionByCategory: function (category) {
+					return connections[category];
+				},
 				setUuidMap: function (map) {
 					uuidMap = map;
 				},
@@ -2577,7 +2577,7 @@ var myApp = angular.module('myApp', [
 
 (function () {
   "use strict";
-  myApp.factory('modalFactory', ['$uibModal', '$document', 'ServerFactory', function ($uibModal, $document, ServerFactory) {
+  myApp.factory('modalFactory', ['$uibModal', '$document', function ($uibModal, $document) {
     var modalInstances = [];
 
     /*
@@ -2586,17 +2586,21 @@ var myApp = angular.module('myApp', [
     var openLittleModal = function (tittle, text, query, type) {
 
       var appendTo = angular.element($document[0].querySelector(query));
-      var templateUrl = (type === "plain" ? "templates/utils/modal.html" : (type === "ESXiSelectable" ? "templates/utils/ESXiSelectable.html" : (type === "question" ? "templates/utils/question.html" : '')));
+      var templateUrl = (type === "plain" ? "templates/utils/modal.html" : (type === "ESXiSelectable" ? "templates/utils/ESXiSelectable.html" : (type === "question" ? "templates/utils/question.html" : type === "DatastoreSelectable" ? "templates/utils/DatastoreSelectable.html" : '')));
 
       if (appendTo.length) {
         modalInstances[query] = $uibModal.open({
           templateUrl: templateUrl,
-          controller: ['$scope', 'title', 'text', '$uibModalInstance', function ($scope, title, text, $uibModalInstance) {
+          controller: ['$scope', 'title', 'text', '$uibModalInstance', 'connectionsFactory', function ($scope, title, text, $uibModalInstance, connectionsFactory) {
             $scope.title = title;
             $scope.text = text;
 
             $scope.selectESXihost = function () {
               $uibModalInstance.close($scope.selectedHost);
+            };
+
+            $scope.selectDatastore = function () {
+                $uibModalInstance.close($scope.selectedDatastore);
             };
 
             $scope.yes = function () {
@@ -2606,6 +2610,25 @@ var myApp = angular.module('myApp', [
             $scope.no = function () {
               $uibModalInstance.close(false);
             };
+
+            // Get all Datastores from managed ESXi/vCenter hosts
+            if (type === "DatastoreSelectable") {
+              var connections = connectionsFactory.getConnectionByCategory('virtual');
+
+              $scope.text = [];
+
+              angular.forEach(connections, function (connection) {
+	              angular.forEach(connection.datastores, function (datastore) {
+		              $scope.text.push({
+                          name: datastore.name,
+                          id: datastore.obj.name,
+                          credential: connection.credential,
+                          host: connection.host,
+                          port: connection.port
+                      });
+                  });
+              });
+            }
 
           }],
           backdropClass: 'absolute',
@@ -2640,7 +2663,7 @@ var myApp = angular.module('myApp', [
         modalInstances[query] = $uibModal.open({
           templateUrl: templateUrl,
           controllerAs: 'wmC',
-          controller: ['title', 'data', '$uibModalInstance', function (title, data, $uibModalInstance) {
+          controller: ['title', 'data', '$uibModalInstance', 'ServerFactory', function (title, data, $uibModalInstance, ServerFactory) {
 
             var _this = this;
             this.title = title;
@@ -3325,6 +3348,7 @@ var myApp = angular.module('myApp', [
         }
 
         else if (value === Object(value) && Object.keys(value).length === 1 && value.hasOwnProperty("xsi:type")) {
+          new_obj["xsi_type"] = value["xsi:type"];
           // Do nothing
         }
 
@@ -3343,7 +3367,7 @@ var myApp = angular.module('myApp', [
             }
 
             else if (k === "$" && v === Object(v) && Object.keys(v).length === 1 && v.hasOwnProperty("xsi:type")) {
-              // do nothing
+	            console.log(v);// do nothing
             }
 
             // Is an object
@@ -3582,18 +3606,32 @@ var myApp = angular.module('myApp', [
       });
     };
 
-    var getFileDataFromDatastore = function (credential, host, port, datastore, datastore_name, vmx_path, vmx_file) {
+    var getVMFileDataFromDatastore = function (credential, host, port, datastore, datastore_name, vmx_path, vmx_file) {
       var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><SearchDatastore_Task xmlns="urn:vim25"><_this type="HostDatastoreBrowser">datastoreBrowser-' + datastore + '</_this><datastorePath>[' + datastore_name + ']' + vmx_path + '</datastorePath><searchSpec><query xsi:type="FolderFileQuery" /><query /><details><fileType>true</fileType><fileSize>true</fileSize><modification>true</modification><fileOwner>false</fileOwner></details><matchPattern>' + vmx_file + '</matchPattern></searchSpec></SearchDatastore_Task></soap:Body></soap:Envelope>';
       return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
         if (data.data.status === "error") return errorHandler(data.data.data);
 
         var task_id = data.data.data.response["soapenv:Envelope"]["soapenv:Body"][0].SearchDatastore_TaskResponse[0].returnval[0]._;
 
-        return getTaskResults(credential, host, port, task_id).then(function (data) {
+        return getTaskStatus(credential, host, port, task_id).then(function (data) {
           return validResponse(data);
         });
 
       });
+    };
+
+    var getFilesDataFromDatastore = function (credential, host, port, datastore, datastore_name, path) {
+        var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><SearchDatastore_Task xmlns="urn:vim25"><_this type="HostDatastoreBrowser">datastoreBrowser-' + datastore + '</_this><datastorePath>[' + datastore_name + ']' + path + '</datastorePath><searchSpec><query xsi:type="FolderFileQuery" /><query /><details><fileType>true</fileType><fileSize>true</fileSize><modification>true</modification><fileOwner>false</fileOwner></details><sortFoldersFirst>true</sortFoldersFirst></searchSpec></SearchDatastore_Task></soap:Body></soap:Envelope>';
+        return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
+            if (data.data.status === "error") return errorHandler(data.data.data);
+
+            var task_id = data.data.data.response["soapenv:Envelope"]["soapenv:Body"][0].SearchDatastore_TaskResponse[0].returnval[0]._;
+
+            return getTaskStatus(credential, host, port, task_id).then(function (data) {
+                return validResponse(data);
+            });
+
+        });
     };
 
     var mountDatastore = function (credential, host, port, datastore_system, datastore_host, datastore_path, datastore_local_name) {
@@ -3707,7 +3745,8 @@ var myApp = angular.module('myApp', [
       getHostNetworkInfoConsoleVnic: getHostNetworkInfoConsoleVnic,
       getDatastores: getDatastores,
       getDatastoreProps: getDatastoreProps,
-      getFileDataFromDatastore: getFileDataFromDatastore,
+      getVMFileDataFromDatastore: getVMFileDataFromDatastore,
+      getFilesDataFromDatastore: getFilesDataFromDatastore,
       mountDatastore: mountDatastore,
       unmountDatastore: unmountDatastore,
       getVMState: getVMState,
@@ -4083,7 +4122,7 @@ var myApp = angular.module('myApp', [
             <a >Restart</a> \
           </div> \
           <ul class="start-menu__recent"> \
-            <li ng-repeat="application in SM.applications" class="start-menu__{{::application.id}}" ng-click="SM.openApplication(application.id)" ng-if="application.id !== \'start\'" context-menu="SM.appContextMenu()"> \
+            <li ng-repeat="application in SM.applications | orderBy:\'name\'"" class="start-menu__{{::application.id}}" ng-click="SM.openApplication(application.id)" ng-if="application.id !== \'start\'" context-menu="SM.appContextMenu()"> \
               <a > \
               <i class="fa fa-{{::application.ico}}"></i> \
               {{::application.name}} \
@@ -4148,6 +4187,31 @@ var myApp = angular.module('myApp', [
 				<div class="taskbar__tray"> \
 					<span class="time">{{TB.time}}</span> \
 				</div> \
+			</div>'
+		);
+
+	}]);
+}());
+
+(function () {
+	"use strict";
+	myApp.run(['$templateCache', function ($templateCache) {
+
+		$templateCache.put('templates/utils/DatastoreSelectable.html',
+			'<div class="modal-header"> \
+			  <div class="modal-title" id="modal-title">{{title}}</div> \
+			</div> \
+			<div class="modal-body" id="modal-body"> \
+			  <div class="form-group"> \
+				<div class="col-sm-12"> \
+				  <select class="form-control" ng-options="datastore as datastore.host + \' - \' + datastore.name for datastore in text | orderBy:[\'host\',\'name\']" ng-model="selectedDatastore"> \
+					<option value="">-- Select a managed Datastore --</option> \
+				  </select> \
+				</div> \
+			  </div> \
+			</div> \
+			<div class="modal-footer"> \
+			  <button class="btn btn-primary" type="button" ng-click="selectDatastore()">Select</button> \
 			</div>'
 		);
 

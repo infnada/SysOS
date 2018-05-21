@@ -4,7 +4,7 @@
 
 (function () {
   "use strict";
-  myApp.factory('modalFactory', ['$uibModal', '$document', 'ServerFactory', function ($uibModal, $document, ServerFactory) {
+  myApp.factory('modalFactory', ['$uibModal', '$document', function ($uibModal, $document) {
     var modalInstances = [];
 
     /*
@@ -13,17 +13,21 @@
     var openLittleModal = function (tittle, text, query, type) {
 
       var appendTo = angular.element($document[0].querySelector(query));
-      var templateUrl = (type === "plain" ? "templates/utils/modal.html" : (type === "ESXiSelectable" ? "templates/utils/ESXiSelectable.html" : (type === "question" ? "templates/utils/question.html" : '')));
+      var templateUrl = (type === "plain" ? "templates/utils/modal.html" : (type === "ESXiSelectable" ? "templates/utils/ESXiSelectable.html" : (type === "question" ? "templates/utils/question.html" : type === "DatastoreSelectable" ? "templates/utils/DatastoreSelectable.html" : '')));
 
       if (appendTo.length) {
         modalInstances[query] = $uibModal.open({
           templateUrl: templateUrl,
-          controller: ['$scope', 'title', 'text', '$uibModalInstance', function ($scope, title, text, $uibModalInstance) {
+          controller: ['$scope', 'title', 'text', '$uibModalInstance', 'connectionsFactory', function ($scope, title, text, $uibModalInstance, connectionsFactory) {
             $scope.title = title;
             $scope.text = text;
 
             $scope.selectESXihost = function () {
               $uibModalInstance.close($scope.selectedHost);
+            };
+
+            $scope.selectDatastore = function () {
+                $uibModalInstance.close($scope.selectedDatastore);
             };
 
             $scope.yes = function () {
@@ -33,6 +37,25 @@
             $scope.no = function () {
               $uibModalInstance.close(false);
             };
+
+            // Get all Datastores from managed ESXi/vCenter hosts
+            if (type === "DatastoreSelectable") {
+              var connections = connectionsFactory.getConnectionByCategory('virtual');
+
+              $scope.text = [];
+
+              angular.forEach(connections, function (connection) {
+	              angular.forEach(connection.datastores, function (datastore) {
+		              $scope.text.push({
+                          name: datastore.name,
+                          id: datastore.obj.name,
+                          credential: connection.credential,
+                          host: connection.host,
+                          port: connection.port
+                      });
+                  });
+              });
+            }
 
           }],
           backdropClass: 'absolute',
@@ -67,7 +90,7 @@
         modalInstances[query] = $uibModal.open({
           templateUrl: templateUrl,
           controllerAs: 'wmC',
-          controller: ['title', 'data', '$uibModalInstance', function (title, data, $uibModalInstance) {
+          controller: ['title', 'data', '$uibModalInstance', 'ServerFactory', function (title, data, $uibModalInstance, ServerFactory) {
 
             var _this = this;
             this.title = title;

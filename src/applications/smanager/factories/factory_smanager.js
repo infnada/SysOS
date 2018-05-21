@@ -1,7 +1,7 @@
 (function () {
   "use strict";
-  smanagerApp.factory('smanagerFactory', ['$rootScope', '$q', '$document', '$uibModal', 'socket', 'toastr', 'uuid', 'ServerFactory', '$filter', 'modalFactory', 'netappFactory', 'connectionsFactory', 'vmwareFactory',
-    function ($rootScope, $q, $document, $uibModal, socket, toastr, uuid, ServerFactory, $filter, modalFactory, netappFactory, connectionsFactory, vmwareFactory) {
+  smanagerApp.factory('smanagerFactory', ['$rootScope', '$q', '$document', 'socket', 'toastr', 'uuid', 'ServerFactory', '$filter', 'modalFactory', 'netappFactory', 'connectionsFactory', 'vmwareFactory',
+    function ($rootScope, $q, $document, socket, toastr, uuid, ServerFactory, $filter, modalFactory, netappFactory, connectionsFactory, vmwareFactory) {
 
     /*
 	   *
@@ -69,7 +69,7 @@
               // Link found!
               links.push({
                 virtual: uuid,
-                esx_datastore: datastore.obj.name,
+                esxi_datastore: datastore.obj.name,
                 storage: storage.uuid,
                 vserver: foundVserver,
                 volume: foundVolume
@@ -125,7 +125,7 @@
               // Link found!
               links.push({
                 virtual: virtual.uuid,
-                esx_datastore: datastore.obj.name,
+                esxi_datastore: datastore.obj.name,
                 storage: uuid,
                 vserver: foundVserver,
                 volume: foundVolume
