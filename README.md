@@ -2,9 +2,21 @@
 
 > **_This is a SUPER Alpha release, do not use on production environment._**
 
-SysOS started as a fun/test project and I realized that it can be a good tool to manage my GNU/Linux infrastructure. But finally I opted to do something which not require any Agent to **manage the whole** infrastructure of a business.
+SysOS started as a fun/test project and I realized that it can be a good tool to manage my GNU/Linux infrastructure. But finally I opted to do something which not require any Agent to **manage the whole infrastructure of a business**.
 
-The main purpose is the ability to **install and preconfigure any kind of service** like Apache, SMTP, LDAP... on a GNU/Linux system, and of course, **manage the system itself**; Firewall, IDS, PCI compliance...
+The main purpose is the ability to **disaster recovery tasks, monitor, install and preconfigure any kind of service** like Apache, SMTP, LDAP... on a GNU/Linux system, and of course, manage the system itself; Firewall, IDS, PCI compliance...
+
+## Requirements
+All tests are done with:
+- Windows 10 -> Git bash
+- Centos 7
+- Linux subsystem for Windows -> Ubuntu
+
+- vCenter 6.5
+- NetApp FAS2552 with ONTAP 9.1P10
+- NetApp FAS2220 with ONTAP 9.1P10
+
+- Right now Chrome is the only tested browser
 
 ## Installation
 
@@ -41,6 +53,8 @@ The main purpose is the ability to **install and preconfigure any kind of servic
     - Create Backup Jobs
         - NetApp Snapshots/SnapMirror/SnapVault of your vCenter/ESXi infrastructure
         - Mysql
+- Datastore Explorer
+    - Manage VMware Datastore files
 - File Explorer
     - Manage all your SysOS files
     - Download files to SysOS from URL
