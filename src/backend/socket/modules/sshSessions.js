@@ -1,7 +1,7 @@
 var sshSessions = {
 	ssh: [],
 	sftp: [],
-  smanager: []
+	smanager: []
 };
 
 module.exports = function () {
@@ -17,15 +17,15 @@ module.exports = function () {
 			sshSessions[type][uuid] = new SSH();
 
 			sshSessions[type][uuid].connect({
-		    	host: host,
-		    	port: port,
-		    	username: username,
-		    	password: password,
-		    	tryKeyboard: true,
-		    	algorithms: algorithms
-	    	});
+				host: host,
+				port: port,
+				username: username,
+				password: password,
+				tryKeyboard: true,
+				algorithms: algorithms
+			});
 
-	    	return callback(sshSessions[type][uuid]);
+			return callback(sshSessions[type][uuid]);
 		},
 		closeSession: function (type, uuid) {
 			return sshSessions[type][uuid].end();

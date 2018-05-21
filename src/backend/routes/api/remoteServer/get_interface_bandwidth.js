@@ -18,18 +18,18 @@ router.post("/", function (req, res) {
 	var apiGlobals = require('../globals.js')(req, res);
 	var sshSessions = require('../../../socket/modules/sshSessions.js')();
 
-  return sshSessions.getSession('smanager', uuid, function (conn) {
+	return sshSessions.getSession('smanager', uuid, function (conn) {
 
-  	var net = require('../../modules/net.js')(conn);
+		var net = require('../../modules/net.js')(conn);
 
-  	return net.get_interface_bandwidth(iface).then(function (data) {
-  		return apiGlobals.responseData(uuid, 'interface_bandwidth', data);
-  	});
+		return net.get_interface_bandwidth(iface).then(function (data) {
+			return apiGlobals.responseData(uuid, 'interface_bandwidth', data);
+		});
 
-  }).catch(function(e) {
-    console.log(e);
-    return apiGlobals.serverError(e);
-  });
+	}).catch(function (e) {
+		console.log(e);
+		return apiGlobals.serverError(e);
+	});
 
 });
 

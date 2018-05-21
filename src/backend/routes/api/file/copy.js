@@ -15,15 +15,15 @@ var fs = require('fs-extra');
 
 router.post("/", function (req, res) {
 
-  var apiGlobals = require('../globals.js')(req, res);
+	var apiGlobals = require('../globals.js')(req, res);
 
-  var file_name = req.body.src.split('/').pop();
+	var file_name = req.body.src.split('/').pop();
 
-  var oldDirname = path.join(__dirname, '../../../filesystem') + req.body.src;
-  var newDirname = path.join(__dirname, '../../../filesystem') + req.body.dst + file_name;
-  fs.copySync(oldDirname, newDirname);
+	var oldDirname = path.join(__dirname, '../../../filesystem') + req.body.src;
+	var newDirname = path.join(__dirname, '../../../filesystem') + req.body.dst + file_name;
+	fs.copySync(oldDirname, newDirname);
 
-  apiGlobals.validResponse();
+	apiGlobals.validResponse();
 
 });
 

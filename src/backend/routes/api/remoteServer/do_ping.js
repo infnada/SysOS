@@ -24,14 +24,14 @@ router.post("/", function (req, res) {
   	return apiGlobals.responseData(uuid, 'ping', data);
   });*/
 
-  var ping = require ("net-ping");
-	var session = ping.createSession ();
+	var ping = require("net-ping");
+	var session = ping.createSession();
 
-	session.pingHost (host, function (error, target) {
+	session.pingHost(host, function (error, target) {
 		console.log(error, target);
 
-    if (error) return apiGlobals.responseData(uuid, 'ping', error.toString());
-    else return apiGlobals.responseData(uuid, 'ping', "alive");
+		if (error) return apiGlobals.responseData(uuid, 'ping', error.toString());
+		else return apiGlobals.responseData(uuid, 'ping', "alive");
 	});
 
 });

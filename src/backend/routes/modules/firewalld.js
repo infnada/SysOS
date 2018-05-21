@@ -13,11 +13,11 @@ module.exports = function firewalld (conn) {
 	this.is_firewalld_running = function () {
 		return globals.execAsync('firewall-cmd --state').then(function (data) {
 
-			var status = data.replace(/\r?\n/,"");
+			var status = data.replace(/\r?\n/, "");
 
 			if (status === "running") return true;
 			return false;
-		}).catch(function(e) {
+		}).catch(function (e) {
 			return e
 		});
 	};
@@ -28,20 +28,20 @@ module.exports = function firewalld (conn) {
 	this.list_firewalld_zones = function (activeOnly) {
 		return globals.execAsync('firewall-cmd --list-all-zones ' + (activeOnly ? "" : "--permanent")).then(function (data) {
 
-	  	data = data.split(/\r?\n/);
+			data = data.split(/\r?\n/);
 
-	  	// Get default zone
-	  	return _this.get_default_zone().then(function (default_zone) {
+			// Get default zone
+			return _this.get_default_zone().then(function (default_zone) {
 
-	  		var zones = [];
-	  		var currentZone;
+				var zones = [];
+				var currentZone;
 
-	    	for (var i = 0, len = data.length; i < len; i++) {
-	    		//New zone
-				  if (/^(\S+)(\s+\(.*\))?/.test(data[i])) {
+				for (var i = 0, len = data.length; i < len; i++) {
+					//New zone
+					if (/^(\S+)(\s+\(.*\))?/.test(data[i])) {
 
-				  	// Push the last populated zone
-				  	if (currentZone) zones.push(currentZone);
+						// Push the last populated zone
+						if (currentZone) zones.push(currentZone);
 
 						currentZone = {
 							'name': data[i],
@@ -49,7 +49,7 @@ module.exports = function firewalld (conn) {
 							'options': []
 						};
 
-					// Option in some zone
+						// Option in some zone
 					} else if (/^\s+(\S+):\s*(.*)/.test(data[i])) {
 						var optionsData = data[i].split(/\s+/);
 						var optionName = optionsData[1];
@@ -66,11 +66,11 @@ module.exports = function firewalld (conn) {
 				zones.push(currentZone);
 
 				return zones;
-	  	}).catch(function(e) {
+			}).catch(function (e) {
 				return e
 			});
 
-		}).catch(function(e) {
+		}).catch(function (e) {
 			return e
 		});
 	};
@@ -95,7 +95,7 @@ module.exports = function firewalld (conn) {
 	// Adds a new allowed port to a zone. Returns undef on success or an error
 	// message on failure
 	this.create_firewalld_port = function (zone, port, proto) {
-		return globals.execAsync('firewall-cmd --zone ' + zone.name + ' --permanent --add-port ' + port + '/' + proto  + ' 2>&1').then(function (data) {
+		return globals.execAsync('firewall-cmd --zone ' + zone.name + ' --permanent --add-port ' + port + '/' + proto + ' 2>&1').then(function (data) {
 			console.log(data);
 			return data;
 		});
@@ -105,7 +105,7 @@ module.exports = function firewalld (conn) {
 	// Delete one existing port from a zone. Returns undef on success or an error
 	// message on failure
 	this.delete_firewalld_port = function (zone, port, proto) {
-		return globals.execAsync('firewall-cmd --zone ' + zone.name + ' --permanent --remove-port ' + port + '/' + proto  + ' 2>&1').then(function (data) {
+		return globals.execAsync('firewall-cmd --zone ' + zone.name + ' --permanent --remove-port ' + port + '/' + proto + ' 2>&1').then(function (data) {
 			console.log(data);
 			return data;
 		});
@@ -115,7 +115,7 @@ module.exports = function firewalld (conn) {
 	// Adds a new allowed service to a zone. Returns undef on success or an error
 	// message on failure
 	this.create_firewalld_service = function (zone, service) {
-		return globals.execAsync('firewall-cmd --zone ' + zone.name + ' --permanent --add-service ' + service  + ' 2>&1').then(function (data) {
+		return globals.execAsync('firewall-cmd --zone ' + zone.name + ' --permanent --add-service ' + service + ' 2>&1').then(function (data) {
 			console.log(data);
 			return data;
 		});
@@ -125,7 +125,7 @@ module.exports = function firewalld (conn) {
 	// Delete one existing service from a zone. Returns undef on success or an error
 	// message on failure
 	this.delete_firewalld_service = function (zone, service) {
-		return globals.execAsync('firewall-cmd --zone ' + zone.name + ' --permanent --remove-service ' + service  + ' 2>&1').then(function (data) {
+		return globals.execAsync('firewall-cmd --zone ' + zone.name + ' --permanent --remove-service ' + service + ' 2>&1').then(function (data) {
 			console.log(data);
 			return data;
 		});
@@ -206,7 +206,7 @@ module.exports = function firewalld (conn) {
 			var args;
 			var promises = [];
 			var oldifaces = zone.options.filter(function (el) {
-			  return el.option == "interfaces";
+				return el.option == "interfaces";
 			})[0].data;
 
 			for (var i = 0, len = data.length; i < len; i++) {

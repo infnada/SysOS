@@ -21,6 +21,6 @@ module.exports = function init (conn) {
 			return data;
 		});
 	};
-	
+
 	return this;
 };

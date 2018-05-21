@@ -19,15 +19,15 @@ router.post("/", function (req, res) {
 	var apiGlobals = require('../globals.js')(req, res);
 	var sshSessions = require('../../../socket/modules/sshSessions.js')();
 
-  return sshSessions.getSession('sftp', uuid, function (conn) {
+	return sshSessions.getSession('sftp', uuid, function (conn) {
 
-	  conn.sftpSession.readdir(currentPath, function(err, data) {
-        if (err) return apiGlobals.serverError(err);
+		conn.sftpSession.readdir(currentPath, function (err, data) {
+			if (err) return apiGlobals.serverError(err);
 
-        return apiGlobals.responseData(uuid, currentPath, data);
-      });
+			return apiGlobals.responseData(uuid, currentPath, data);
+		});
 
-  });
+	});
 
 });
 

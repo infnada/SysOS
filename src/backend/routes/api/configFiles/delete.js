@@ -15,21 +15,21 @@ var jsonfile = require('jsonfile');
 
 router.post("/", function (req, res) {
 
-  var apiGlobals = require('../globals.js')(req, res);
-  var uuid = req.body.uuid;
-  var file = req.body.file;
+	var apiGlobals = require('../globals.js')(req, res);
+	var uuid = req.body.uuid;
+	var file = req.body.file;
 
-  var config = require('read-config')(path.join(__dirname, '../../../filesystem/etc/' + file), { skipUnresolved: true });
+	var config = require('read-config')(path.join(__dirname, '../../../filesystem/etc/' + file), {skipUnresolved: true});
 
-  config = config.filter(function( obj ) {
-    return obj.uuid !== uuid;
-  });
+	config = config.filter(function (obj) {
+		return obj.uuid !== uuid;
+	});
 
-  return jsonfile.writeFile(path.join(__dirname, '../../../filesystem/etc/' + file), config, { flag: 'w' }, function (err) {
-    if (err) return console.log(err);
+	return jsonfile.writeFile(path.join(__dirname, '../../../filesystem/etc/' + file), config, {flag: 'w'}, function (err) {
+		if (err) return console.log(err);
 
-    return apiGlobals.validResponse();
-  });
+		return apiGlobals.validResponse();
+	});
 
 });
 

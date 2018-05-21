@@ -44,7 +44,7 @@ module.exports = function net (conn) {
 							pid: current_data[4],
 							ppid: current_data[5],
 							user: current_data[0],
-							cpu:  current_data[7] + " %",
+							cpu: current_data[7] + " %",
 							size: current_data[8] + " kB",
 							bytes: current_data[8] * 1024,
 							time: current_data[11],

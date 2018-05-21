@@ -14,9 +14,9 @@ var path = require('path');
 
 router.post("/", function (req, res) {
 
-  var file = req.body.file;
-  var config = require('read-config')(path.join(__dirname, '../../../filesystem/etc/' + file), { skipUnresolved: true });
-  res.json(config);
+	var file = req.body.file;
+	var config = require('read-config')(path.join(__dirname, '../../../filesystem/etc/' + file), {skipUnresolved: true});
+	res.json(config);
 
 });
 

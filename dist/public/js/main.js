@@ -810,8 +810,8 @@ var myApp = angular.module('myApp', [
 
 (function () {
 	"use strict";
-	myApp.run(['$rootScope', 'ServerFactory', 'ApplicationsFactory', 'socket', 'connectionsFactory', '$injector', '$ocLazyLoad', 'vmwareFactory',
-		function ($rootScope, ServerFactory, ApplicationsFactory, socket, connectionsFactory, $injector, $ocLazyLoad, vmwareFactory) {
+	myApp.run(['$rootScope', 'ServerFactory', 'ApplicationsFactory', 'socket', 'connectionsFactory', '$injector', '$ocLazyLoad',
+		function ($rootScope, ServerFactory, ApplicationsFactory, socket, connectionsFactory, $injector, $ocLazyLoad) {
 
 			angular.element(window).bind('dragover', function (e) {
 				e.preventDefault();
@@ -826,34 +826,6 @@ var myApp = angular.module('myApp', [
 			/*
 			 * Init
 			 */
-
-			//netappFactory.getNFSExportRulesList("09303623-e55a-47dd-80b8-585737af0552", "172.27.24.5", "80", "MNFS", "NFSPROD3");
-			//netappFactory.getExportRules("09303623-e55a-47dd-80b8-585737af0552", "172.27.24.5", "80", "MNFS", "default");
-
-			vmwareFactory.connectvCenterSoap('059bab78-9b0f-41d5-aa54-b5b31d9cf3de', "mvcenter01", 443).then(function () {
-				  /*vmwareFactory.deleteFileFromDatastore(
-					  '059bab78-9b0f-41d5-aa54-b5b31d9cf3de', 'mvcenter01', 443, 'SysOS_VOLDEV', '/GEA', 'datacenter-2'
-				  ).then(function(data) {
-					console.log(data);
-				  });*/
-
-				/*vmwareFactory.moveFileFromDatastore(
-					'059bab78-9b0f-41d5-aa54-b5b31d9cf3de', 'mvcenter01', 443, 'SysOS_VOLDEV', '/ETER_renamed', 'datacenter-2', 'SysOS_VOLDEV', '/ETER', 'datacenter-2'
-				).then(function(data) {
-					console.log(data);
-				});*/
-
-				/*vmwareFactory.copyFileFromDatastore(
-					'059bab78-9b0f-41d5-aa54-b5b31d9cf3de', 'mvcenter01', 443, 'SysOS_VOLDEV', '/ETER', 'datacenter-2', 'SysOS_VOLDEV', '/ETER_copy', 'datacenter-2'
-				).then(function(data) {
-					console.log(data);
-				});*/
-			});
-
-			/*vmwareFactory.getClientVersion('192.168.5.250', 443).then(function (data) {
-			  console.log(data);
-			});*/
-
 
 			// Ensure no application is open
 			$rootScope.taskbar__item_open = null;

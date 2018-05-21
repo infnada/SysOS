@@ -7,8 +7,12 @@ module.exports = function (socket) {
 		newConnection: function (type, uuid, host) {
 
 			snmpSession.createSession(type, uuid, host, function (session) {
-				session.on('close', function (err) { socketFactory.emitProp(type, "CONN CLOSE", uuid, 'status'); });
-				session.on('error', function (err) { socketFactory.emitProp(type, "CONN ERROR " + err, uuid, 'status'); });
+				session.on('close', function (err) {
+					socketFactory.emitProp(type, "CONN CLOSE", uuid, 'status');
+				});
+				session.on('error', function (err) {
+					socketFactory.emitProp(type, "CONN ERROR " + err, uuid, 'status');
+				});
 
 				socketFactory.emitProp(type, 'snmp://public@' + host + ':161', uuid, 'footer');
 				socketFactory.emitProp(type, 'SNMP CONNECTION ESTABLISHED', uuid, 'status');
