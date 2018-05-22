@@ -1,7 +1,7 @@
 (function () {
 	"use strict";
-	smanagerApp.controller('smBodyController', ['$rootScope', '$scope', '$interval', '$timeout', 'smanagerFactory', 'connectionsFactory', 'cmanagerFactory', 'ServerFactory', 'ApplicationsFactory', 'modalFactory', '$filter',
-		function ($rootScope, $scope, $interval, $timeout, smanagerFactory, connectionsFactory, cmanagerFactory, ServerFactory, ApplicationsFactory, modalFactory, $filter) {
+	smanagerApp.controller('smBodyController', ['$rootScope', '$scope', '$interval', '$timeout', 'smanagerFactory', 'connectionsFactory', 'cmanagerFactory', 'ServerFactory', 'ApplicationsFactory', 'modalFactory', '$filter', 'netappFactory', 'toastr',
+		function ($rootScope, $scope, $interval, $timeout, smanagerFactory, connectionsFactory, cmanagerFactory, ServerFactory, ApplicationsFactory, modalFactory, $filter, netappFactory, toastr) {
 
 			var _this = this;
 			var network_bandwidth_timer;
@@ -668,6 +668,58 @@
 				}
 			];
 
+			this.volumeContextMenu = [
+				{
+					text: '<i class="fa fa-database"></i> Create Snapshot',
+					click: function ($itemScope, $event, modelValue, text, $li) {
+
+						// Set _this.activeConnection manually to make sure _this.getActiveConnection() gets correct results
+						_this.activeConnection = $itemScope.$parent.$parent.volume["volume-id-attributes"].uuid;
+						_this.setActiveConnection($itemScope.$parent.$parent.volume["volume-id-attributes"].uuid);
+
+						return netappFactory.createSnapshot(
+							_this.getActiveConnection(2).credential,
+							_this.getActiveConnection(2).host,
+							_this.getActiveConnection(2).port,
+							$itemScope.$parent.$parent.volume["volume-id-attributes"]["owning-vserver-name"],
+							$itemScope.$parent.$parent.volume["volume-id-attributes"].name
+						).then(function (res) {
+							if (res.status === "error") {
+								toastr.error('Create Volume Snapshot', res.error);
+								throw new Error("Failed to create Volume Snapshot");
+							}
+
+							toastr.success('Create Volume Snapshot');
+
+							console.log(res);
+						});
+					}
+
+				},
+				null,
+				{
+					text: '<i class="fa fa-file"></i> Rescan Volume',
+					click: function ($itemScope, $event, modelValue, text, $li) {
+
+						// Set _this.activeConnection manually to make sure _this.getActiveConnection() gets correct results
+						_this.activeConnection = $itemScope.$parent.$parent.volume["volume-id-attributes"].uuid;
+						_this.setActiveConnection($itemScope.$parent.$parent.volume["volume-id-attributes"].uuid);
+
+						return smanagerFactory.getVolumeData({
+							uuid: _this.getActiveConnection(2).uuid,
+							credential: _this.getActiveConnection(2).credential,
+							host: _this.getActiveConnection(2).host,
+							port: _this.getActiveConnection(2).port,
+							vserver_name: $itemScope.$parent.$parent.volume["volume-id-attributes"]["owning-vserver-name"],
+							volume_name: $itemScope.$parent.$parent.volume["volume-id-attributes"].name,
+							volume_uuid: $itemScope.$parent.$parent.volume["volume-id-attributes"].uuid
+						});
+
+					}
+				}
+
+			];
+
 			this.snapshotContextMenu = [
 				{
 					text: '<i class="fa fa-database"></i> Mount as Datastore',
@@ -726,6 +778,7 @@
 
 					}
 				}
+
 			];
 
 			this.snapshotVMContextMenu = [

@@ -43,7 +43,6 @@
 				<div class="col-xs-12 ftp__body" > \
 					<div ng-include="\'templates/applications/actions-fe-local.html\'" include-replace></div> \
 					<div id="local_body" selectable="feB.selection" selectable-list="feB.localFileSystem.currentData | filter:feB.search" selectable-out="selected" selectable-options="{delay:150, filter: \'a\'}" minus-index="2" class="folders" tabindex="0" ng-keydown="feB.handleItemKeyPress($event)" context-menu="feB.localContextMenu"> \
-					<div ng-include="\'templates/applications/folders-modal-fe-local.html\'"></div> \
 					<div ng-include="\'templates/applications/folders-dropzone-fe-local.html\'"></div> \
 					<a ng-if="feB.viewAsList == false"  ng-repeat="file in feB.localFileSystem.currentData | filter:feB.search" ng-class="{\'active\': feB.currentActive == $index}" ng-click="feB.setCurrentActive($index)" ng-dblclick="feB.doWithFile(file)" title="{{::file.filename}}" context-menu="feB.fileContextMenu"> \
 					<i class="fa fa-{{::feB.getFileType(file.longname)}}"></i> \

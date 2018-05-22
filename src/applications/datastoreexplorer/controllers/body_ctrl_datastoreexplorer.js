@@ -104,6 +104,13 @@
 				}
 			},
 			null,
+			{
+				text: '<i class="fa fa-refresh"></i> Refresh',
+				click: function () {
+					_this.reloadPath();
+				}
+			},
+			null,
 			[function () {
 				return '<i class="fa fa-clipboard"></i> Paste';
 			}, function ($itemScope) {
@@ -187,7 +194,7 @@
 					if (angular.isUndefined($itemScope.file)) $itemScope.file = $itemScope.$parent.file;
 
 					_this.modalInputName = $itemScope.file.path;
-					var modalInstanceRemoveConnection = modalFactory.openLittleModal('Delete file ' + _this.modalInputName, 'Delete the selected file from datastore?', '.window--datastoreexplorer .window__main', 'question');
+					var modalInstanceRemoveConnection = modalFactory.openLittleModal('Delete file ' + _this.modalInputName, 'Delete ' + _this.modalInputName + ' from datastore?', '.window--datastoreexplorer .window__main', 'question');
 					modalInstanceRemoveConnection.result.then(function (res) {
 
 						if (res === true) return _this.deleteSelected();
@@ -534,7 +541,7 @@
 			if (keyEvent.which === 46) { // DEL
 				_this.modalInputName = _this.localFileSystem.currentData[_this.currentActive].path;
 
-				var modalInstanceRemoveConnection = modalFactory.openLittleModal('Delete file ' + _this.modalInputName, 'Delete the selected file from datastore?', '.window--datastoreexplorer .window__main', 'question');
+				var modalInstanceRemoveConnection = modalFactory.openLittleModal('Delete file ' + _this.modalInputName, 'Delete ' + _this.modalInputName + ' from datastore?', '.window--datastoreexplorer .window__main', 'question');
 				modalInstanceRemoveConnection.result.then(function (res) {
 
 					if (res === true) return _this.deleteSelected();

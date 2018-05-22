@@ -1,11 +1,10 @@
 (function () {
 	"use strict";
-	fileexplorerApp.controller('feBodyController', ['$rootScope', '$scope', '$timeout', 'fileSystemFactory', 'Upload', 'ApplicationsFactory',
-		function ($rootScope, $scope, $timeout, fileSystemFactory, Upload, ApplicationsFactory) {
+	fileexplorerApp.controller('feBodyController', ['$rootScope', '$scope', '$timeout', 'fileSystemFactory', 'ApplicationsFactory', 'modalFactory',
+		function ($rootScope, $scope, $timeout, fileSystemFactory, ApplicationsFactory, modalFactory) {
 
 		var _this = this;
 		this.viewAsList = false;
-		this.showModal = false;
 		this.currentActive = 0;
 		this.selection = true;
 		this.cutFrom = null;
@@ -70,15 +69,28 @@
 				click: function ($itemScope) {
 					if (angular.isUndefined($itemScope.file)) $itemScope.file = $itemScope.$parent.file;
 
-					_this.modalType = "Download from url";
-					_this.fileUrl = "";
-					_this.showModal = true;
+					var modalInstanceRemoveConnection = modalFactory.openLittleModal('Download file from URL', 'File URL', '.window--fileexplorer .window__main', 'input', 'Download');
+					modalInstanceRemoveConnection.result.then(function (res) {
+
+						return fileSystemFactory.downloadFileFromInet(res, _this.localFileSystem.currentPath, function () {
+
+							_this.reloadPath();
+
+						});
+					});
 				}
 			},
 			{
 				text: '<i class="fa fa-folder"></i> Create Folder',
 				click: function () {
 					_this.createFolder();
+				}
+			},
+			null,
+			{
+				text: '<i class="fa fa-refresh"></i> Refresh',
+				click: function () {
+					_this.reloadPath();
 				}
 			},
 			null,
@@ -174,10 +186,19 @@
 				click: function ($itemScope) {
 					if (angular.isUndefined($itemScope.file)) $itemScope.file = $itemScope.$parent.file;
 
-					_this.modalType = "Rename";
 					_this.fileToRename = $itemScope.file.filename;
-					_this.modalInputName = $itemScope.file.filename;
-					_this.showModal = true;
+
+					var modalInstanceRemoveConnection = modalFactory.openLittleModal('Rename file', 'File name', '.window--fileexplorer .window__main', 'input', 'Rename', $itemScope.file.filename);
+					modalInstanceRemoveConnection.result.then(function (res) {
+
+						//TODO: check backdrop click
+						if (res !== false) {
+							_this.modalInputName = res;
+							_this.renameFile();
+						}
+
+					});
+
 				}
 			},
 			{
@@ -185,9 +206,14 @@
 				click: function ($itemScope) {
 					if (angular.isUndefined($itemScope.file)) $itemScope.file = $itemScope.$parent.file;
 
-					_this.modalType = "Delete File";
 					_this.modalInputName = $itemScope.file.filename;
-					_this.showModal = true;
+					var modalInstanceRemoveConnection = modalFactory.openLittleModal('Delete file ' + _this.modalInputName, 'Delete ' + _this.modalInputName + ' from SysOS?', '.window--fileexplorer .window__main', 'question');
+					modalInstanceRemoveConnection.result.then(function (res) {
+
+						if (res === true) return _this.deleteSelected();
+
+					});
+
 				}
 			},
 			null,
@@ -318,18 +344,35 @@
 		 * Creates a new folder
 		 */
 		this.createFolder = function () {
-			_this.modalType = "Create Folder";
-			_this.modalInputName = "New Folder";
-			_this.showModal = true;
+			var modalInstanceRemoveConnection = modalFactory.openLittleModal('Create new folder', 'Folder name', '.window--fileexplorer .window__main', 'input', 'Create', 'NewFolder');
+			modalInstanceRemoveConnection.result.then(function (res) {
+
+				return fileSystemFactory.createFolder(_this.localFileSystem.currentPath, res, function () {
+
+					_this.reloadPath();
+
+				}).catch(function (e) {
+					console.log(e);
+				});
+			});
 		};
 
 		/*
 		 * Deletes selected files or folders
 		 */
 		this.deleteSelected = function () {
-			fileSystemFactory.deleteFile(_this.localFileSystem.currentPath, _this.modalInputName, function (data) {
+			console.log(_this.modalInputName);
+			return fileSystemFactory.deleteFile(_this.localFileSystem.currentPath, _this.modalInputName, function (data) {
 				_this.reloadPath();
-				_this.showModal = false;
+			});
+		};
+
+		/*
+		 * Rename file
+		 */
+		this.renameFile = function () {
+			return fileSystemFactory.renameFile(_this.localFileSystem.currentPath, _this.fileToRename, _this.modalInputName, function () {
+				_this.reloadPath();
 			});
 		};
 
@@ -367,17 +410,31 @@
 		 */
 		this.handleItemKeyPress = function (keyEvent) {
 			console.log(keyEvent);
-			if (_this.showModal === true) return;
 
 			if (keyEvent.which === 46) {
-				_this.modalType = "Delete File";
 				_this.modalInputName = _this.localFileSystem.currentData[_this.currentActive].filename;
-				_this.showModal = true;
+
+				var modalInstanceRemoveConnection = modalFactory.openLittleModal('Delete file ' + _this.modalInputName, 'Delete ' + _this.modalInputName + ' from SysOS?', '.window--fileexplorer .window__main', 'question');
+				modalInstanceRemoveConnection.result.then(function (res) {
+
+					if (res === true) return _this.deleteSelected();
+
+				});
 			} else if (keyEvent.which === 113) {
-				_this.modalType = "Rename";
 				_this.fileToRename = _this.localFileSystem.currentData[_this.currentActive].filename;
-				_this.modalInputName = _this.localFileSystem.currentData[_this.currentActive].filename;
-				_this.showModal = true;
+
+				var modalInstanceRemoveConnection = modalFactory.openLittleModal('Rename file', 'File name', '.window--fileexplorer .window__main', 'input', 'Rename', _this.fileToRename);
+				modalInstanceRemoveConnection.result.then(function (res) {
+
+					//TODO: check backdrop click
+					if (res !== false) {
+						_this.modalInputName = res;
+						_this.renameFile();
+					}
+
+				});
+
+
 			} else if (keyEvent.which === 39) {
 				_this.setCurrentActive(_this.currentActive + 1);
 			} else if (keyEvent.which === 37) {
@@ -388,40 +445,6 @@
 				_this.doWithFile(_this.localFileSystem.currentData[_this.currentActive]);
 			}
 		};
-
-		/*
-		 * Keypress on action modal
-		 */
-		this.handleKeyPress = function (keyEvent) {
-			console.log(keyEvent);
-			if (keyEvent.which === 13) {
-				if (_this.modalType === "Rename") {
-					fileSystemFactory.renameFile(_this.localFileSystem.currentPath, _this.fileToRename, _this.modalInputName, function () {
-						_this.reloadPath();
-						_this.showModal = false;
-					});
-				} else if (_this.modalType === "Create Folder") {
-					fileSystemFactory.createFolder(_this.localFileSystem.currentPath, _this.modalInputName, function () {
-						_this.reloadPath();
-						_this.showModal = false;
-					});
-				} else if (_this.modalType === "Delete File") {
-					fileSystemFactory.deleteFile(_this.localFileSystem.currentPath, _this.modalInputName, function () {
-						_this.reloadPath();
-						_this.showModal = false;
-					});
-				} else if (_this.modalType === "Download from url") {
-					fileSystemFactory.downloadFileFromInet(_this.fileUrl, _this.localFileSystem.currentPath, function () {
-						_this.reloadPath();
-						_this.showModal = false;
-					});
-				}
-			} else if (keyEvent.which === 27) {
-				_this.showModal = false;
-				_this.resetActive();
-			}
-		};
-
 
 	}]);
 }());

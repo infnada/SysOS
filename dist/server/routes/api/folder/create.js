@@ -15,12 +15,12 @@ var fs = require('fs-extra');
 
 router.post("/", function (req, res) {
 
-  var apiGlobals = require('../globals.js')(req, res);
+	var apiGlobals = require('../globals.js')(req, res);
 
-  var dirname = path.join(__dirname, '../../../filesystem') + req.body.path + req.body.name;
-  fs.mkdirSync(dirname);
+	var dirname = path.join(__dirname, '../../../filesystem') + req.body.path + req.body.name;
+	fs.mkdirSync(dirname);
 
-  apiGlobals.validResponse();
+	apiGlobals.validResponse();
 
 });
 

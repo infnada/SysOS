@@ -27,7 +27,7 @@
                         <!-- Volumes --> \
                         <div uib-accordion-group class="menu__item panel-default" ng-repeat="volume in vserver.volumes" is-open="false"> \
                           <uib-accordion-heading> \
-                            <i class="fa level-three" ng-class="{\'fa-chevron-down\': $parent.isOpen, \'fa-chevron-right p-r-xxs\': !$parent.isOpen}"></i> <i class="vs-icon vsphere-icon-datastore"></i> {{::volume[\'volume-id-attributes\'].name}} \
+                            <span context-menu="smB.volumeContextMenu"><i class="fa level-three" ng-class="{\'fa-chevron-down\': $parent.isOpen, \'fa-chevron-right p-r-xxs\': !$parent.isOpen}"></i> <i class="vs-icon vsphere-icon-datastore"></i> {{::volume[\'volume-id-attributes\'].name}}<span> \
                           </uib-accordion-heading> \
                           <!-- SnapShots --> \
                           <div class="menu__item panel-heading" ng-class="{\'active\': snapshot[\'snapshot-version-uuid\'] == smB.activeConnection}" ng-repeat="snapshot in volume.snapshots" ng-click="smB.getSnapshotFiles(storage.uuid, storage.hostname, vserver[\'vserver-name\'], volume[\'volume-id-attributes\'].name, snapshot.name); smB.setActiveConnection(snapshot, \'snapshot\')" context-menu="smB.snapshotContextMenu"> \

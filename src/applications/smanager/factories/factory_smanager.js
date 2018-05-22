@@ -525,6 +525,39 @@
       });
     };
 
+    var getVolumeData = function (data) {
+	    var uuidMap = connectionsFactory.getUuidMap();
+	    var vserver_index = connectionsFactory.getConnectionByUuid(data.uuid).vservers.findIndex(function(item){ return item['vserver-name'] === data.vserver_name});
+	    var volume_index = connectionsFactory.getConnectionByUuid(data.uuid).vservers[vserver_index].volumes.findIndex(function(item){ return item['volume-id-attributes'].name === data.volume_name});
+
+	    var modalInstance = modalFactory.openLittleModal('PLEASE WAIT', 'Getting NetApp Volume data...', '.window--smanager .window__main', 'plain');
+	    return modalInstance.opened.then(function () {
+		    return netappFactory.getSnapshots(data.credential, data.host, data.port, data.vserver_name, data.volume_name).then(function (snapshots) {
+			    if (snapshots.status === "error") throw new Error("Failed to get snapshots");
+
+			    //TODO: angular.merge?
+			    connectionsFactory.getConnectionByUuid(data.uuid).vservers[vserver_index].volumes[volume_index].snapshots = snapshots.data;
+
+			    // For each snapshot
+			    angular.forEach(snapshots.data, function (snapshot, s) {
+
+				    uuidMap.push({
+					    uuid: snapshot["snapshot-instance-uuid"],
+					    parent: data.volume_uuid,
+					    object: "snapshots[" + s + "]"
+				    });
+
+			    });
+		    }).then(function () {
+			    modalFactory.changeModalText('Saving connection to file', '.window--smanager .window__main');
+
+			    connectionsFactory.saveConnection(connectionsFactory.getConnectionByUuid(data.uuid));
+			    connectionsFactory.saveUuidMap(uuidMap);
+			    modalFactory.closeModal('.window--smanager .window__main');
+            })
+	    });
+    };
+
     /*
      * Fetch NetApp SnapShots
      */
@@ -693,6 +726,7 @@
       },
       getVMwareData: getVMwareData,
       getNetAppData: getNetAppData,
+      getVolumeData: getVolumeData,
       getESXihosts: getESXihosts,
       newData: newData,
       newProp: newProp

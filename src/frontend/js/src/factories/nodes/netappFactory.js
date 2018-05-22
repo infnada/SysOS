@@ -375,7 +375,7 @@
         if (data.data.status === "error") return errorHandler(data.data.data.errno);
         if (data.data.data.response.netapp.results[0]["$"].status === "failed") return errorHandler(data.data.data.response.netapp.results[0]["$"].reason);
 
-        return validResponse(data.data.data.response.netapp.results["0"].$.status);
+        return validResponse(data.data.data.response.netapp.results[0].$.status);
       });
     };
 
@@ -398,7 +398,7 @@
         if (data.data.status === "error") return errorHandler(data.data.data.errno);
         if (data.data.data.response.netapp.results[0]["$"].status === "failed") return errorHandler(data.data.data.response.netapp.results[0]["$"].reason);
 
-        return validResponse(data.data.data.response.netapp.results["0"].$.status);
+        return validResponse(data.data.data.response.netapp.results[0].$.status);
       });
     };
 
@@ -420,19 +420,18 @@
         if (data.data.status === "error") return errorHandler(data.data.data.errno);
         if (data.data.data.response.netapp.results[0]["$"].status === "failed") return errorHandler(data.data.data.response.netapp.results[0]["$"].reason);
 
-        return validResponse(data.data.data.response.netapp.results["0"].$.status);
+        return validResponse(data.data.data.response.netapp.results[0].$.status);
       });
     };
 
     var createSnapshot = function (credential, host, port, vfiler, volume) {
-      var xml = "<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin'" + (vfiler ? " vfiler='" + vfiler + "'" : "") + "><snapshot-create><async>False</async><snapshot>" + volume + "_SysOS_ss</snapshot><volume>" + volume + "</volume></snapshot-create></netapp></netapp>";
+      var xml = "<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin'" + (vfiler ? " vfiler='" + vfiler + "'" : "") + "><snapshot-create><async>False</async><snapshot>" + volume + "_SysOS_" + new Date().toISOString().split(".")[0].replace(/:/g,"") + "</snapshot><volume>" + volume + "</volume></snapshot-create></netapp>";
 
       return ServerFactory.callNetApp(credential, host, port, null, xml).then(function (data) {
         if (data.data.status === "error") return errorHandler(data.data.data.errno);
         if (data.data.data.response.netapp.results[0]["$"].status === "failed") return errorHandler(data.data.data.response.netapp.results[0]["$"].reason);
-        console.log(data);
 
-        return validResponse(data);
+        return validResponse(data.data.data.response.netapp.results[0].$.status);
       });
     };
 
@@ -508,9 +507,7 @@
       unmountVolume: unmountVolume,
       setVolumeOffline: setVolumeOffline,
       destroyVolume: destroyVolume,
-      createSnapshot: function (credential, host, port, vfiler, volume) {
-
-      },
+      createSnapshot: createSnapshot,
       getNFSExportRulesList: getNFSExportRulesList,
       getExportRules: getExportRules
     }

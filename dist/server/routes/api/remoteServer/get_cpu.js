@@ -17,17 +17,17 @@ router.post("/", function (req, res) {
 	var apiGlobals = require('../globals.js')(req, res);
 	var sshSessions = require('../../../socket/modules/sshSessions.js')();
 
-  return sshSessions.getSession('smanager', uuid, function (conn) {
+	return sshSessions.getSession('smanager', uuid, function (conn) {
 
-  	var server = require('../../modules/server.js')(conn);
+		var server = require('../../modules/server.js')(conn);
 
-  	return server.get_cpu().then(function (data) {
-  		return apiGlobals.responseData(uuid, 'cpu', data);
-  	});
+		return server.get_cpu().then(function (data) {
+			return apiGlobals.responseData(uuid, 'cpu', data);
+		});
 
-  }).catch(function(e) {
-  	console.log(e);
-    return apiGlobals.serverError(e);
+	}).catch(function (e) {
+		console.log(e);
+		return apiGlobals.serverError(e);
 	});
 
 });

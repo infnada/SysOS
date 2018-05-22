@@ -15,13 +15,13 @@ var fs = require('fs-extra');
 
 router.post("/", function (req, res) {
 
-  var apiGlobals = require('../globals.js')(req, res);
+	var apiGlobals = require('../globals.js')(req, res);
 
-  var oldDirname = path.join(__dirname, '../../../filesystem') + req.body.path + req.body.oldName;
-  var newDirname = path.join(__dirname, '../../../filesystem') + req.body.path + req.body.newName;
-  fs.renameSync(oldDirname, newDirname);
+	var oldDirname = path.join(__dirname, '../../../filesystem') + req.body.path + req.body.oldName;
+	var newDirname = path.join(__dirname, '../../../filesystem') + req.body.path + req.body.newName;
+	fs.renameSync(oldDirname, newDirname);
 
-  apiGlobals.validResponse();
+	apiGlobals.validResponse();
 
 });
 

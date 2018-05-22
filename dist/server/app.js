@@ -33,21 +33,21 @@ var csrf = require("csurf");
 var expressOptions = require('./expressOptions');
 
 var session = require('express-session')({
-  secret: config.session.secret,
-  name: config.session.name,
-  resave: true,
-  saveUninitialized: false,
-  unset: 'destroy'
+	secret: config.session.secret,
+	name: config.session.name,
+	resave: true,
+	saveUninitialized: false,
+	unset: 'destroy'
 });
 
 var app = express();
 app.use(session);
 
 app.use(compress({
-  filter: function (req, res) {
-    return (/json|text|javascript|css/).test(res.getHeader("Content-Type"));
-  },
-  level: 9
+	filter: function (req, res) {
+		return (/json|text|javascript|css/).test(res.getHeader("Content-Type"));
+	},
+	level: 9
 }));
 
 app.use(log4js.connectLogger(logger, {
@@ -58,7 +58,7 @@ app.use(log4js.connectLogger(logger, {
 
 
 app.use(bodyParser.urlencoded({
-  extended: true
+	extended: true
 }));
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(cookieParser());
@@ -68,9 +68,9 @@ app.use(helmet.noSniff());
 app.use(helmet.ieNoOpen());
 app.use(helmet.frameguard());
 app.use(helmet.hsts({
-  maxAge: 10886400000,     // Must be at least 18 weeks to be approved by Google
-  includeSubdomains: true, // Must be enabled to be approved by Google
-  preload: true
+	maxAge: 10886400000,     // Must be at least 18 weeks to be approved by Google
+	includeSubdomains: true, // Must be enabled to be approved by Google
+	preload: true
 }));
 app.disable("x-powered-by");
 app.use(cors());
@@ -100,8 +100,8 @@ require("./routes")(app, io);
 // socket.io
 // expose express session with socket.request.session
 io.use(function (socket, next) {
-  (socket.request.res) ? session(socket.request, socket.request.res, next)
-    : next()
+	(socket.request.res) ? session(socket.request, socket.request.res, next)
+		: next()
 });
 
 // bring up socket

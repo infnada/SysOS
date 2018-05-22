@@ -82,6 +82,13 @@
 				}
 			},
 			null,
+			{
+				text: '<i class="fa fa-refresh"></i> Refresh',
+				click: function () {
+					_this.reloadPath();
+				}
+			},
+			null,
 			[function () {
 				return '<i class="fa fa-clipboard"></i> Paste';
 			}, function ($itemScope) {
