@@ -165,14 +165,14 @@ demoApp.run(['$templateCache', function ($templateCache) {
 ```javascript
 demoApp.run(['$templateCache', function ($templateCache) {
     $templateCache.put('templates/applications/status-demo.html',
-        '<div class="window__status" ng-controller="demoStatusController as sftpdemoS"> \
+        '<div class="window__status" ng-controller="demoStatusController as demoS"> \
             This is the status bar \
         </div>'
     );
 }]);
 ```
 
-- Concat all your application files into a single filed name it as "application__[appName].min.js" and copy it to SysOS folder "/bin/applications/".
+- Concat all your application files into a single file and name it as "application__[appName].min.js", then, copy it to SysOS folder `/dist/server/filesystem/bin/applications/`.
 
 - We are good to Go! Refresh (F5) your SysOS browser page and the new application will appear on the Start Menu.
 
