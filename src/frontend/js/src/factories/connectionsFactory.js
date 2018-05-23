@@ -353,12 +353,12 @@
 						var terminalContainer = document.getElementById('terminal-container-' + connection.uuid);
 
 						SSHterminals[connection.uuid].open(terminalContainer, {
-							focus: true,
+							focus: true
 						});
 
 						socket.emit('ssh_session__geometry', SSHterminals[connection.uuid].cols, SSHterminals[connection.uuid].rows, connection.uuid);
 						socket.emit('session__new', 'ssh', connection.host, connection.credential, null, connection.uuid);
-					}, 500);
+					}, 100);
 
 				}
 

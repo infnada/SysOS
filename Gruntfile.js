@@ -71,7 +71,6 @@ module.exports = function (grunt) {
 					'node_modules/peity/jquery.peity.min.js',
 					'node_modules/sparkline/lib/sparkline.js',
 					'node_modules/xterm/dist/xterm.js',
-					'node_modules/xterm/dist/addons/fit/fit.js',
 					'node_modules/codemirror/lib/codemirror.js',
 					'<%= dir.dev_frontend %>/js/vendor/wmks.min.js',
 					'node_modules/angular/angular.js',

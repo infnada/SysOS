@@ -85,13 +85,16 @@
 			});
 
 			$scope.$watch(function () {
-				return [$element[0].offsetWidth, $element[0].offsetHeight].join('x');
+				if (!$element[0].children[1]) return false;
+
+				return [$element[0].children[1].offsetWidth, $element[0].children[1].offsetHeight].join('x');
 			}, function () {
 				$timeout.cancel(_this.resizeId);
 
 				_this.resizeId = $timeout(function () {
+					console.log("resize");
 					sshFactory.resizeTerminal();
-				}, 100);
+				}, 250);
 
 			});
 

@@ -262,6 +262,8 @@
 			if (type === "vmware") {
 				var modalInstance = modalFactory.openLittleModal('Select Datastore', '', '.window--datastoreexplorer .window__main', 'DatastoreSelectable');
 				modalInstance.result.then(function (datastore) {
+					if (!datastore) return;
+
 					_this.datastoreData = datastore;
 					_this.showExplorer = false;
 

@@ -1,7 +1,7 @@
 (function () {
 	"use strict";
-	sshApp.factory('sshFactory', ['socket', 'connectionsFactory', 'toastr',
-		function (socket, connectionsFactory, toastr) {
+	sshApp.factory('sshFactory', ['socket', 'connectionsFactory', 'toastr', '$timeout',
+		function (socket, connectionsFactory, toastr, $timeout) {
 
 			// Private
 			var activeConnection = null;
@@ -51,13 +51,40 @@
 
 				var terminals = connectionsFactory.getSSHTerminals();
 
-				terminals.forEach(function (terminal) {
-					terminal.fit();
-					cols = terminal.cols;
-					rows = terminal.rows;
+				for (var i in terminals){
+					if (terminals.hasOwnProperty(i)) {
 
-					socket.emit('session__geometry', cols, rows);
-				});
+						var term = terminals[i];
+						if (!term.element || !term.element.parentElement) {
+							return null;
+						}
+						var parentElementStyle = window.getComputedStyle(term.element.parentElement);
+						var parentElementHeight = parseInt(parentElementStyle.getPropertyValue('height'));
+						var parentElementWidth = Math.max(0, parseInt(parentElementStyle.getPropertyValue('width')));
+
+						if (!term.renderer.dimensions.actualCellWidth) term.renderer.dimensions.actualCellWidth = 9;
+						if (!term.renderer.dimensions.actualCellHeight) term.renderer.dimensions.actualCellHeight = 17;
+
+						var geometry = {
+							cols: Math.floor((parentElementWidth - 10) / term.renderer.dimensions.actualCellWidth),
+							rows: Math.floor(parentElementHeight / term.renderer.dimensions.actualCellHeight)
+						};
+
+						if (geometry) {
+							if (term.rows !== geometry.rows || term.cols !== geometry.cols) {
+								term.renderer.clear();
+								term.resize(geometry.cols, geometry.rows);
+							}
+						}
+
+						cols = terminals[i].cols;
+						rows = terminals[i].rows;
+
+						console.log(cols, rows);
+
+						socket.emit('ssh_session__geometry', cols, rows);
+					}
+				}
 
 			};
 
@@ -123,6 +150,7 @@
 				resizeTerminal: resizeTerminal,
 				setActiveConnection: function (uuid) {
 					activeConnection = uuid;
+					$timeout(function () {resizeTerminal();}, 100);
 				},
 				activeConnection: function () {
 					return activeConnection;

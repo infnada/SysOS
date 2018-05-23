@@ -8,4 +8,4 @@ yarn-error.log*
 bower_components
 node_modules/
 test/
-**/filesystem/**
+src/**/filesystem/**
