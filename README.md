@@ -4,19 +4,22 @@
 
 SysOS started as a fun/test project and I realized that it can be a good tool to manage my GNU/Linux infrastructure. But finally I opted to do something which not require any Agent to **manage the whole infrastructure of a business**.
 
-The main purpose is the ability to **disaster recovery tasks, monitor, install and preconfigure any kind of service** like Apache, SMTP, LDAP... on a GNU/Linux system, and of course, manage the system itself; Firewall, IDS, PCI compliance...
+The main purpose is the ability to do **disaster recovery tasks, monitor, install and preconfigure any kind of service** like Apache, SMTP, LDAP... on a GNU/Linux system, and of course, manage the system itself; Firewall, IDS, PCI compliance...
 
 ## Requirements
-All tests are done with:
-- Windows 10 -> Git bash
+All tests are done with nodejs >= 6.0 as backend on:
+- Windows 10 -> Running over Git bash
 - Centos 7
 - Linux subsystem for Windows -> Ubuntu
 
+All infrastructure management test are done over:
+- Centos 7
 - vCenter 6.5
 - NetApp FAS2552 with ONTAP 9.1P10
 - NetApp FAS2220 with ONTAP 9.1P10
 
-- Right now Chrome is the only tested browser
+As a client:
+- Right now Chrome is the only tested browser but should work with latest versions of any browser.
 
 ## Installation
 
@@ -30,10 +33,15 @@ All tests are done with:
 
 `http://localhost/index.html`
 
+## Configuration
 
-![alt text](https://isartnavarro.io/img/SysOS/smanager_app.png "Infrastructure Manager app")
+- How to change the default server port (80):
+
+Edit the main expressjs file located at `/dist/server/filesystem/etc/expressjs/config.json` and change `listen.port` option "80"
 
 ## Currently installed applications
+
+![alt text](https://isartnavarro.io/img/SysOS/smanager_app.png "Infrastructure Manager app")
 
 - Credentials Manager
     - Manage all your SysOS credentials to use in other installed applications.
@@ -157,14 +165,14 @@ demoApp.run(['$templateCache', function ($templateCache) {
 ```javascript
 demoApp.run(['$templateCache', function ($templateCache) {
     $templateCache.put('templates/applications/status-demo.html',
-        '<div class="window__status" ng-controller="demoStatusController as sftpdemoS"> \
+        '<div class="window__status" ng-controller="demoStatusController as demoS"> \
             This is the status bar \
         </div>'
     );
 }]);
 ```
 
-- Concat all your application files into a single filed name it as "application__[appName].min.js" and copy it to SysOS folder "/bin/applications/".
+- Concat all your application files into a single file and name it as "application__[appName].min.js", then, copy it to SysOS folder `/dist/server/filesystem/bin/applications/`.
 
 - We are good to Go! Refresh (F5) your SysOS browser page and the new application will appear on the Start Menu.
 

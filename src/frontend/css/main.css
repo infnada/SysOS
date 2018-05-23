@@ -986,7 +986,7 @@ li li .list__toggle:before {
 }
 
 
-.application_ssh__form, .application_sftp__form, .application_smanager__form, .application_cmanager__form, .application_backupsm__form {
+.main_form, .application_backupsm__form {
   padding: 40px;
   overflow-y: scroll;
   height: 100%;

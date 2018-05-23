@@ -3,7 +3,7 @@
 	sftpApp.run(['$templateCache', function ($templateCache) {
 
 		$templateCache.put('templates/applications/new-connection-sftp.html',
-			'<form class="application_sftp__form form-horizontal" name="sftpConnect_form" ng-submit="sftpB.sendConnect(sftpConnect_form)"> \
+			'<form class="main_form form-horizontal" name="sftpConnect_form" ng-submit="sftpB.sendConnect(sftpConnect_form)"> \
 			  <div class="form-group"> \
 				<div class="col-sm-12"> \
 				  <input type="text" class="form-control" name="inputDescription" placeholder="Description" ng-model="sftpB.Form.description"> \

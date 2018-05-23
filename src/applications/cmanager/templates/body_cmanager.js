@@ -21,7 +21,7 @@
 			  </div> \
 			  <div class="window__main no_padding"> \
 				<div> \
-				  <form class="application_cmanager__form form-horizontal" name="cmanagerCredential_form" ng-submit="cmanagerB.sendSave(cmanagerCredential_form)"> \
+				  <form class="main_form form-horizontal" name="cmanagerCredential_form" ng-submit="cmanagerB.sendSave(cmanagerCredential_form)"> \
 					<div class="form-group"> \
 					  <div class="col-sm-12"> \
 						<input type="text" class="form-control" name="inputDescription" placeholder="Description" ng-model="cmanagerB.Form.description" required> \

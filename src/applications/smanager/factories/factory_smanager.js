@@ -635,7 +635,6 @@
           angular.forEach(datacenter.hosts, function (host) {
             // Setup basic connection information required for "Backups Manager" application
             ESXihosts.push({
-              host : {
                 connection_uuid: vcenter.uuid,
                 connection_state: host.connection_state,
                 host: host.host,
@@ -643,9 +642,8 @@
                 power_state: host.power_state,
                 connection_credential: vcenter.credential,
                 connection_address: vcenter.host,
-                connection_port: port,
+                connection_port: vcenter.port,
                 datacenter: datacenter.datacenter
-              }
             });
           });
 
@@ -654,7 +652,6 @@
             angular.forEach(cluster.hosts, function (host) {
               // Setup basic connection information required for "Backups Manager" application
               ESXihosts.push({
-                host : {
                   connection_uuid: vcenter.uuid,
                   connection_state: host.connection_state,
                   host: host.host,
@@ -662,9 +659,8 @@
                   power_state: host.power_state,
                   connection_credential: vcenter.credential,
                   connection_address: vcenter.host,
-                  connection_port: port,
+                  connection_port: vcenter.port,
                   datacenter: datacenter.datacenter
-                }
               });
             });
           });

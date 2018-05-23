@@ -4,6 +4,7 @@
 		function ($rootScope, $scope, $timeout, fileSystemFactory, Upload, ApplicationsFactory, vmwareFactory, modalFactory) {
 
 		var _this = this;
+		this.showExplorer = false;
 		this.viewAsList = false;
 		this.currentActive = 0;
 		this.selection = true;
@@ -74,20 +75,6 @@
 
 			return init();
 		});
-
-		// Put inside $timeout to make sure DOM is loaded before launching the modal
-		$timeout(function () {
-
-			// Do not continue if have datastoreData fetched by a $broadcast backupsm__restore_datastore_files
-			if (_this.datastoreData) return;
-
-			var modalInstance = modalFactory.openLittleModal('Select Datastore', '', '.window--datastoreexplorer .window__main', 'DatastoreSelectable');
-			modalInstance.result.then(function (datastore) {
-				_this.datastoreData = datastore;
-
-				return init();
-			});
-		}, 500);
 
 		/*
 		 * Bindings
@@ -263,6 +250,30 @@
 		/*
 		 * ng-click functions
 		 */
+
+		/*
+		 * Main function on body template
+		 */
+		this.showDatastores = function (type) {
+
+			// Do not continue if have datastoreData fetched by a $broadcast backupsm__restore_datastore_files
+			if (_this.datastoreData) return;
+
+			if (type === "vmware") {
+				var modalInstance = modalFactory.openLittleModal('Select Datastore', '', '.window--datastoreexplorer .window__main', 'DatastoreSelectable');
+				modalInstance.result.then(function (datastore) {
+					_this.datastoreData = datastore;
+					_this.showExplorer = false;
+
+					return init();
+				});
+			}
+
+			// TODO
+			if (type === "netapp") {
+				modalFactory.openLittleModal('NetApp Volume Explorer', 'Not available in this release', '.window--datastoreexplorer .window__main', 'plain');
+			}
+		};
 
 		/*
 		 * Checks if is a file or folder and do something

@@ -3,7 +3,7 @@
   smanagerApp.run(['$templateCache', function($templateCache) {
 
     $templateCache.put('templates/applications/configure-connection-smanager.html',
-      '<form class="application_smanager__form form-horizontal" name="smanagerConfiguration_form" ng-submit="smB.sendConfiguration(smanagerConfiguration_form)"> \
+      '<form class="main_form form-horizontal" name="smanagerConfiguration_form" ng-submit="smB.sendConfiguration(smanagerConfiguration_form)"> \
         <div ng-if="smB.getActiveConnection().so == \'linux\'"> \
           <div class="form-group"> \
             <div class="col-sm-12"> \
