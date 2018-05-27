@@ -273,12 +273,10 @@
 					angular.forEach(res.data, function (file) {
 						if (file.name.indexOf(".lck") >= 0) return;
 
-						sfr_promises.push(function () {
+						sfr_promises.push(netappFactory.snapshotRestoreFile(data.netapp_credential, data.netapp_host, data.netapp_port, data.vserver["vserver-name"], data.volume["volume-id-attributes"].name, getSnapshotName(data), '/vol/' + data.volume["volume-id-attributes"].name + '/' + vm_path + '/' + file.name).then(function (res) {
 							$log.debug("Backups Manager [%s] -> Restoring file from storage snapshot -> storage [%s], vserver [%s], volume [%s], snapshot [%s], path [%s]", data.uuid, data.netapp_host, data.vserver["vserver-name"], data.volume["volume-id-attributes"].name, getSnapshotName(data), '/vol/' + data.volume["volume-id-attributes"].name + '/' + vm_path + '/' + file.name);
-							return netappFactory.snapshotRestoreFile(data.netapp_credential, data.netapp_host, data.netapp_port, data.vserver["vserver-name"], data.volume["volume-id-attributes"].name, getSnapshotName(data), '/vol/' + data.volume["volume-id-attributes"].name + '/' + vm_path + '/' + file.name).then(function (res) {
-								if (res.status === "error") throw new Error("Failed to restore file from storage snapshot");
-							});
-						});
+							if (res.status === "error") throw new Error("Failed to restore file from storage snapshot");
+						}));
 					});
 
 					return $q.all(sfr_promises);
@@ -298,8 +296,8 @@
 
 					if (data.vm_power_on) {
 						// Power On VM
-						$log.debug("Backups Manager [%s] -> Powering on vm -> host [%s], VM [%s]", data.uuid, data.vm.extended.runtime.host.name, data.vm.vm);
-						return vmwareFactory.powerOnVM(data.current_location.credential, data.current_location.host, data.current_location.port, data.vm.extended.runtime.host.name, data.vm.vm);
+						$log.debug("Backups Manager [%s] -> Powering on vm -> host [%s], VM [%s]", data.uuid, data.vm.runtime.host.name, data.vm.vm);
+						return vmwareFactory.powerOnVM(data.current_location.credential, data.current_location.host, data.current_location.port, data.vm.runtime.host.name, data.vm.vm);
 					}
 
 					return res;

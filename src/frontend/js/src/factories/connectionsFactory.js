@@ -156,6 +156,7 @@
 							uuid: connection.uuid,
 							host: connection.host,
 							port: connection.port,
+							so: connection.so,
 							category: connection.category,
 							description: connection.description,
 							credential: connection.credential,
@@ -300,6 +301,7 @@
 			 * connection {Object}
 			 */
 			var connect = function (connection) {
+
 				// TODO: this is an anti-pattern
 				var smanagerFactory = $injector.get('smanagerFactory');
 
@@ -320,7 +322,7 @@
 				 * VMWARE
 				 */
 				if (connection.category === "virtual") {
-					if (connection.type === "vCenter" || connection.so === "ESXi" || connection.so === "vmware") {
+					if (connection.so === "vmware") {
 						return smanagerFactory.getVMwareData(connection);
 					}
 				}
@@ -329,7 +331,7 @@
 				 * NETAPP
 				 */
 				if (connection.category === "storage") {
-					if (connection.type === "NetApp") {
+					if (connection.so === "netapp") {
 						return smanagerFactory.getNetAppData(connection);
 					}
 				}

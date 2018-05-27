@@ -86,12 +86,12 @@
                               </uib-accordion-heading> \
                               <uib-accordion close-others="false"> \
                                 <!-- VMs --> \
-                                <div class="menu__item panel-heading" ng-repeat="vm in cluster.vms | orderBy:\'name\'" ng-class="{\'active\': vm.uuid == smB.activeConnection}" ng-click="smB.setActiveConnection(vm, \'vm\')" context-menu="smB.VMContextMenu"> \
+                                <div class="menu__item panel-heading" ng-repeat="vm in virtual.vms | filter: { runtime: { host: {name: cluster.hosts.name}}} | orderBy:\'name\'" ng-class="{\'active\': vm.config.uuid == smB.activeConnection}" ng-click="smB.setActiveConnection(vm, \'vm\')" context-menu="smB.VMContextMenu"> \
                                   <h4 class="panel-title pull-left absolute"> \
-                                    <i class="vs-icon level-six p-l-sm" ng-class="{\'vsphere-icon-vm\': vm.power_state === \'POWERED_OFF\', \'vsphere-icon-vm-on\': vm.power_state === \'POWERED_ON\'}"></i> {{::vm.name}} \
+                                    <i class="vs-icon level-six p-l-sm" ng-class="{\'vsphere-icon-vm\': vm.runtime.powerState === \'poweredOff\', \'vsphere-icon-vm-on\': vm.runtime.powerState === \'poweredOn\', \'vsphere-icon-vm-suspended\': vm.runtime.powerState === \'suspended\'}"></i> {{::vm.name}} \
                                   </h4> \
                                   <i class="fa fa-circle pull-right" ng-class="{\'text-danger\': vm.type == \'disconnected\', \'text-success\': vm.type == \'connected\'}"></i> \
-                                  <i class="fa pull-right" ng-class="{\'fa-windows text-primary\': vm.extended.guest.guestFamily == \'windowsGuest\', \'fa-linux text-danger\': vm.extended.guest.guestFamily == \'linuxGuest\'}"></i> \
+                                  <i class="fa pull-right" ng-class="{\'fa-windows text-primary\': vm.guest.guestFamily == \'windowsGuest\', \'fa-linux text-danger\': vm.guest.guestFamily == \'linuxGuest\'}"></i> \
                                 </div> \
                               </uib-accordion> \
                             </div> \
@@ -110,12 +110,12 @@
                             </uib-accordion-heading> \
                             <uib-accordion close-others="false"> \
                               <!-- VMs --> \
-                              <div class="menu__item panel-heading" ng-repeat="vm in host.vms | orderBy:\'name\'" ng-class="{\'active\': vm.vm == smB.activeConnection}" ng-click="smB.setActiveConnection(vm, \'vm\')" context-menu="smB.VMContextMenu"> \
+                              <div class="menu__item panel-heading" ng-repeat="vm in virtual.vms | filter: { runtime: { host: {name: host.host}}} | orderBy:\'name\'" ng-class="{\'active\': vm.config.uuid == smB.activeConnection}" ng-click="smB.setActiveConnection(vm, \'vm\')" context-menu="smB.VMContextMenu"> \
                                 <h4 class="panel-title pull-left absolute"> \
-                                  <i class="vs-icon level-six p-l-sm" ng-class="{\'vsphere-icon-vm\': vm.power_state === \'POWERED_OFF\', \'vsphere-icon-vm-on\': vm.power_state === \'POWERED_ON\'}"></i> {{::vm.name}} \
+                                  <i class="vs-icon level-six p-l-sm" ng-class="{\'vsphere-icon-vm\': vm.runtime.powerState === \'poweredOff\', \'vsphere-icon-vm-on\': vm.runtime.powerState === \'poweredOn\', \'vsphere-icon-vm-suspended\': vm.runtime.powerState === \'suspended\'}"></i> {{::vm.name}} \
                                 </h4> \
                                 <i class="fa fa-circle pull-right" ng-class="{\'text-danger\': vm.type == \'disconnected\', \'text-success\': vm.type == \'connected\'}"></i> \
-                                <i class="fa pull-right" ng-class="{\'fa-windows text-primary\': vm.extended.guest.guestFamily == \'windowsGuest\', \'fa-linux text-danger\': vm.extended.guest.guestFamily == \'linuxGuest\'}"></i> \
+                                <i class="fa pull-right" ng-class="{\'fa-windows text-primary\': vm.guest.guestFamily == \'windowsGuest\', \'fa-linux text-danger\': vm.guest.guestFamily == \'linuxGuest\'}"></i> \
                               </div> \
                             </div> \
                           </uib-accordion> \

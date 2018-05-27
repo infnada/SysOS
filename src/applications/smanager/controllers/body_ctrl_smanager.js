@@ -411,7 +411,7 @@
 				if (type === "vm") {
 					_this.showVm = true;
 
-					return smanagerFactory.setActiveConnection(connection.uuid);
+					return smanagerFactory.setActiveConnection(connection.config.uuid);
 				}
 
 				if (type === "vcenter") {
@@ -794,13 +794,83 @@
 				},
 					[
 						['<i class="fa fa-play text-success"></i> Power On', function ($itemScope) {
-							//TODO
+							// Set _this.activeConnection manually to make sure _this.getActiveConnection() gets correct results
+							_this.activeConnection = $itemScope.vm.config.uuid;
+							_this.setActiveConnection($itemScope.vm.config.uuid);
+
+							var credential = _this.getActiveConnection(1).credential;
+							var host = _this.getActiveConnection(1).host;
+							var port = _this.getActiveConnection(1).port;
+
+							$timeout(function () {
+								return smanagerFactory.powerOnVM(credential, host, port, $itemScope.vm.vm);
+							}, 100);
 						}],
 						['<i class="fa fa-stop text-danger"></i> Power Off', function ($itemScope) {
-							//TODO
+							// Set _this.activeConnection manually to make sure _this.getActiveConnection() gets correct results
+							_this.activeConnection = $itemScope.vm.config.uuid;
+							_this.setActiveConnection($itemScope.vm.config.uuid);
+
+							var credential = _this.getActiveConnection(1).credential;
+							var host = _this.getActiveConnection(1).host;
+							var port = _this.getActiveConnection(1).port;
+
+							$timeout(function () {
+								return smanagerFactory.powerOffVM(credential, host, port, $itemScope.vm.vm);
+							}, 100);
 						}],
 						['<i class="fa fa-pause text-warning"></i> Suspend', function ($itemScope) {
-							//TODO
+							// Set _this.activeConnection manually to make sure _this.getActiveConnection() gets correct results
+							_this.activeConnection = $itemScope.vm.config.uuid;
+							_this.setActiveConnection($itemScope.vm.config.uuid);
+
+							var credential = _this.getActiveConnection(1).credential;
+							var host = _this.getActiveConnection(1).host;
+							var port = _this.getActiveConnection(1).port;
+
+							$timeout(function () {
+								return smanagerFactory.suspendVM(credential, host, port, $itemScope.vm.vm);
+							}, 100);
+						}],
+						['<i class="fa fa-refresh"></i> Reset', function ($itemScope) {
+							// Set _this.activeConnection manually to make sure _this.getActiveConnection() gets correct results
+							_this.activeConnection = $itemScope.vm.config.uuid;
+							_this.setActiveConnection($itemScope.vm.config.uuid);
+
+							var credential = _this.getActiveConnection(1).credential;
+							var host = _this.getActiveConnection(1).host;
+							var port = _this.getActiveConnection(1).port;
+
+							$timeout(function () {
+								return smanagerFactory.resetVM(credential, host, port, $itemScope.vm.vm);
+							}, 100);
+						}],
+						null,
+						['<i class="fa fa-stop text-danger"></i> Shut Down Guest OS', function ($itemScope) {
+							// Set _this.activeConnection manually to make sure _this.getActiveConnection() gets correct results
+							_this.activeConnection = $itemScope.vm.config.uuid;
+							_this.setActiveConnection($itemScope.vm.config.uuid);
+
+							var credential = _this.getActiveConnection(1).credential;
+							var host = _this.getActiveConnection(1).host;
+							var port = _this.getActiveConnection(1).port;
+
+							$timeout(function () {
+								return smanagerFactory.shutdownGuest(credential, host, port, $itemScope.vm.vm);
+							}, 100);
+						}],
+						['<i class="fa fa-refresh"></i> Restart Guest OS', function ($itemScope) {
+							// Set _this.activeConnection manually to make sure _this.getActiveConnection() gets correct results
+							_this.activeConnection = $itemScope.vm.config.uuid;
+							_this.setActiveConnection($itemScope.vm.config.uuid);
+
+							var credential = _this.getActiveConnection(1).credential;
+							var host = _this.getActiveConnection(1).host;
+							var port = _this.getActiveConnection(1).port;
+
+							$timeout(function () {
+								return smanagerFactory.rebootGuest(credential, host, port, $itemScope.vm.vm);
+							}, 100);
 						}]
 					]
 				],
@@ -811,8 +881,8 @@
 						ApplicationsFactory.openApplication("wmks");
 						ApplicationsFactory.toggleApplication("wmks");
 
-						_this.activeConnection = $itemScope.vm.uuid;
-						_this.setActiveConnection($itemScope.vm.uuid);
+						_this.activeConnection = $itemScope.vm.config.uuid;
+						_this.setActiveConnection($itemScope.vm.config.uuid);
 
 						console.log($itemScope);
 						console.log(_this.getActiveConnection(1));
@@ -841,17 +911,17 @@
 							ApplicationsFactory.toggleApplication('backupsm');
 
 							// Set _this.activeConnection manually to make sure _this.getActiveConnection() gets correct results
-							_this.activeConnection = $itemScope.vm.uuid;
-							_this.setActiveConnection($itemScope.vm.uuid);
+							_this.activeConnection = $itemScope.vm.config.uuid;
+							_this.setActiveConnection($itemScope.vm.config.uuid);
 
 							//TODO: $itemScope.vm.extended.datastore.ManagedObjectReference could be an array of 2 datastores or more
 							//TODO: if vm is inside a cluster or outside, _this.getActiveConnection(1).uuid could not match vCenter/ESXi connection
 							$timeout(function () {
 								$rootScope.$broadcast("backupsm__vm_instant_recovery", {
-									storage: connectionsFactory.getConnectionByUuid(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.extended.datastore.ManagedObjectReference.name).storage),
-									vserver: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.extended.datastore.ManagedObjectReference.name).vserver)),
-									volume: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.extended.datastore.ManagedObjectReference.name).volume)),
-									snapshots: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.extended.datastore.ManagedObjectReference.name).volume)).snapshots, //TODO: if only 1 snapshot this will be an object --> conver to array. TODO: some snapshots could not contain this VM
+									storage: connectionsFactory.getConnectionByUuid(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).storage),
+									vserver: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).vserver)),
+									volume: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).volume)),
+									snapshots: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).volume)).snapshots, //TODO: if only 1 snapshot this will be an object --> conver to array. TODO: some snapshots could not contain this VM
 									snapshot: '',
 									ESXihosts: smanagerFactory.getESXihosts(),
 									vm: $itemScope.vm,
@@ -869,17 +939,17 @@
 							ApplicationsFactory.toggleApplication('backupsm');
 
 							// Set _this.activeConnection manually to make sure _this.getActiveConnection() gets correct results
-							_this.activeConnection = $itemScope.vm.uuid;
-							_this.setActiveConnection($itemScope.vm.uuid);
+							_this.activeConnection = $itemScope.vm.config.uuid;
+							_this.setActiveConnection($itemScope.vm.config.uuid);
 
 							//TODO: $itemScope.vm.extended.datastore.ManagedObjectReference could be an array of 2 datastores or more
 							//TODO: if vm is inside a cluster or outside, _this.getActiveConnection(1).uuid could not match vCenter/ESXi connection
 							$timeout(function () {
 								$rootScope.$broadcast("backupsm__restore_vm", {
-									storage: connectionsFactory.getConnectionByUuid(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.extended.datastore.ManagedObjectReference.name).storage),
-									vserver: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.extended.datastore.ManagedObjectReference.name).vserver)),
-									volume: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.extended.datastore.ManagedObjectReference.name).volume)),
-									snapshots: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.extended.datastore.ManagedObjectReference.name).volume)).snapshots, //TODO: if only 1 snapshot this will be an object --> conver to array. TODO: some snapshots could not contain this VM
+									storage: connectionsFactory.getConnectionByUuid(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).storage),
+									vserver: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).vserver)),
+									volume: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).volume)),
+									snapshots: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).volume)).snapshots, //TODO: if only 1 snapshot this will be an object --> conver to array. TODO: some snapshots could not contain this VM
 									snapshot: '',
 									ESXihosts: smanagerFactory.getESXihosts(),
 									vm: $itemScope.vm,
@@ -897,17 +967,20 @@
 							ApplicationsFactory.toggleApplication('backupsm');
 
 							// Set _this.activeConnection manually to make sure _this.getActiveConnection() gets correct results
-							_this.activeConnection = $itemScope.vm.uuid;
-							_this.setActiveConnection($itemScope.vm.uuid);
+							_this.activeConnection = $itemScope.vm.config.uuid;
+							_this.setActiveConnection($itemScope.vm.config.uuid);
+
+
 
 							//TODO: $itemScope.vm.extended.datastore.ManagedObjectReference could be an array of 2 datastores or more
 							//TODO: if vm is inside a cluster or outside, _this.getActiveConnection(1).uuid could not match vCenter/ESXi connection
 							$timeout(function () {
+
 								$rootScope.$broadcast("backupsm__restore_vm_files", {
-									storage: connectionsFactory.getConnectionByUuid(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.extended.datastore.ManagedObjectReference.name).storage),
-									vserver: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.extended.datastore.ManagedObjectReference.name).vserver)),
-									volume: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.extended.datastore.ManagedObjectReference.name).volume)),
-									snapshots: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.extended.datastore.ManagedObjectReference.name).volume)).snapshots, //TODO: if only 1 snapshot this will be an object --> conver to array. TODO: some snapshots could not contain this VM
+									storage: connectionsFactory.getConnectionByUuid(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).storage),
+									vserver: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).vserver)),
+									volume: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).volume)),
+									snapshots: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).volume)).snapshots, //TODO: if only 1 snapshot this will be an object --> conver to array. TODO: some snapshots could not contain this VM
 									snapshot: '',
 									ESXihosts: smanagerFactory.getESXihosts(),
 									vm: $itemScope.vm,
@@ -929,18 +1002,32 @@
 						ApplicationsFactory.toggleApplication('backupsm');
 
 						// Set _this.activeConnection manually to make sure _this.getActiveConnection() gets correct results
-						_this.activeConnection = $itemScope.vm.uuid;
-						_this.setActiveConnection($itemScope.vm.uuid);
+						_this.activeConnection = $itemScope.vm.config.uuid;
+						_this.setActiveConnection($itemScope.vm.config.uuid);
 
 						//TODO
 						$timeout(function () {
 							$rootScope.$broadcast("backupsm__backup_vm", {
-								storage: connectionsFactory.getConnectionByUuid(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.extended.datastore.ManagedObjectReference.name).storage),
-								vserver: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.extended.datastore.ManagedObjectReference.name).vserver)),
-								volume: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.extended.datastore.ManagedObjectReference.name).volume)),
+								storage: connectionsFactory.getConnectionByUuid(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).storage),
+								vserver: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).vserver)),
+								volume: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).volume)),
 								vm: $itemScope.vm,
 								connection: _this.getActiveConnection(1)
 							});
+						}, 100);
+					}
+				},
+				null,
+				{
+					text: '<i class="fa fa-refresh"></i> Refresh',
+					click: function ($itemScope, $event, modelValue, text, $li) {
+						// Set _this.activeConnection manually to make sure _this.getActiveConnection() gets correct results
+						_this.activeConnection = $itemScope.vm.config.uuid;
+						_this.setActiveConnection($itemScope.vm.config.uuid);
+
+						//TODO
+						$timeout(function () {
+							return smanagerFactory.refreshVM(eval(connectionsFactory.getObjectByUuidMapping($itemScope.vm.config.uuid)), _this.getActiveConnection(1));
 						}, 100);
 					}
 				}

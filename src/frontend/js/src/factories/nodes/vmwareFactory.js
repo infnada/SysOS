@@ -538,7 +538,7 @@
 		};
 
 		var getVMs = function (credential, host, port, datacenter_folder) {
-			var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><RetrieveProperties xmlns="urn:vim25"><_this type="PropertyCollector">propertyCollector</_this><specSet><propSet><type>VirtualMachine</type><all>false</all><pathSet>config</pathSet><pathSet>layout</pathSet></propSet><objectSet><obj type="Folder">' + datacenter_folder + '</obj><skip>true</skip><selectSet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="TraversalSpec"><name>visitFolders</name><type>Folder</type><path>childEntity</path><skip>true</skip><selectSet><name>visitFolders</name></selectSet><selectSet xsi:type="TraversalSpec"><type>Datacenter</type><path>datastore</path><skip>false</skip><selectSet xsi:type="TraversalSpec"><type>Datastore</type><path>vm</path><skip>false</skip></selectSet></selectSet><selectSet xsi:type="TraversalSpec"><type>Datastore</type><path>vm</path><skip>false</skip></selectSet></selectSet></objectSet></specSet></RetrieveProperties></soap:Body></soap:Envelope>';
+			var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><RetrieveProperties xmlns="urn:vim25"><_this type="PropertyCollector">propertyCollector</_this><specSet><propSet><type>VirtualMachine</type><all>true</all></propSet><objectSet><obj type="Folder">' + datacenter_folder + '</obj><skip>true</skip><selectSet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="TraversalSpec"><name>visitFolders</name><type>Folder</type><path>childEntity</path><skip>true</skip><selectSet><name>visitFolders</name></selectSet><selectSet xsi:type="TraversalSpec"><type>Datacenter</type><path>datastore</path><skip>false</skip><selectSet xsi:type="TraversalSpec"><type>Datastore</type><path>vm</path><skip>false</skip></selectSet></selectSet><selectSet xsi:type="TraversalSpec"><type>Datastore</type><path>vm</path><skip>false</skip></selectSet></selectSet></objectSet></specSet></RetrieveProperties></soap:Body></soap:Envelope>';
 
 			return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
 				if (data.data.status === "error") return errorHandler(data.data.data);
@@ -690,6 +690,62 @@
 			});
 		};
 
+		var suspendVM = function (credential, host, port, vm) {
+			var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><SuspendVM_Task xmlns="urn:vim25"><_this type="VirtualMachine">' + vm + '</_this></SuspendVM_Task></soap:Body></soap:Envelope>';
+			return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
+				if (data.data.status === "error") return errorHandler(data.data.data);
+
+				var task_id = data.data.data.response["soapenv:Envelope"]["soapenv:Body"][0].SuspendVM_TaskResponse[0].returnval[0]._;
+
+				return getTaskStatus(credential, host, port, task_id).then(function (data) {
+					return validResponse(data);
+				});
+
+			});
+		};
+
+		var resetVM = function (credential, host, port, vm) {
+			var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><ResetVM_Task xmlns="urn:vim25"><_this type="VirtualMachine">' + vm + '</_this></ResetVM_Task></soap:Body></soap:Envelope>';
+			return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
+				if (data.data.status === "error") return errorHandler(data.data.data);
+
+				var task_id = data.data.data.response["soapenv:Envelope"]["soapenv:Body"][0].ResetVM_TaskResponse[0].returnval[0]._;
+
+				return getTaskStatus(credential, host, port, task_id).then(function (data) {
+					return validResponse(data);
+				});
+
+			});
+		};
+
+		var shutdownGuest = function (credential, host, port, vm) {
+			var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><ShutdownGuest xmlns="urn:vim25"><_this type="VirtualMachine">' + vm + '</_this></ShutdownGuest></soap:Body></soap:Envelope>';
+			return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
+				if (data.data.status === "error") return errorHandler(data.data.data);
+
+				var task_id = data.data.data.response["soapenv:Envelope"]["soapenv:Body"][0].ShutdownGuestResponse[0];
+
+				return getTaskStatus(credential, host, port, task_id).then(function (data) {
+					return validResponse(data);
+				});
+
+			});
+		};
+
+		var rebootGuest = function (credential, host, port, vm) {
+			var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><RebootGuest xmlns="urn:vim25"><_this type="VirtualMachine">' + vm + '</_this></RebootGuest></soap:Body></soap:Envelope>';
+			return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
+				if (data.data.status === "error") return errorHandler(data.data.data);
+
+				var task_id = data.data.data.response["soapenv:Envelope"]["soapenv:Body"][0].RebootGuestResponse[0];
+
+				return getTaskStatus(credential, host, port, task_id).then(function (data) {
+					return validResponse(data);
+				});
+
+			});
+		};
+
 		var reloadVM = function (credential, host, port, vm) {
 			var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><Reload xmlns="urn:vim25"><_this type="VirtualMachine">' + vm + '</_this></Reload></soap:Body></soap:Envelope>';
 			return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
@@ -792,6 +848,10 @@
 			unregisterVM: unregisterVM,
 			powerOnVM: powerOnVM,
 			powerOffVM: powerOffVM,
+			suspendVM: suspendVM,
+			resetVM: resetVM,
+			shutdownGuest: shutdownGuest,
+			rebootGuest: rebootGuest,
 			reloadVM: reloadVM,
 			createSnapShot: createSnapShot,
 			getVMSnapshots: getVMSnapshots,

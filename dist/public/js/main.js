@@ -810,8 +810,8 @@ var myApp = angular.module('myApp', [
 
 (function () {
 	"use strict";
-	myApp.run(['$rootScope', 'ServerFactory', 'ApplicationsFactory', 'socket', 'connectionsFactory', '$injector', '$ocLazyLoad',
-		function ($rootScope, ServerFactory, ApplicationsFactory, socket, connectionsFactory, $injector, $ocLazyLoad) {
+	myApp.run(['$rootScope', 'ServerFactory', 'ApplicationsFactory', 'socket', 'connectionsFactory', '$injector', '$ocLazyLoad', 'vmwareFactory',
+		function ($rootScope, ServerFactory, ApplicationsFactory, socket, connectionsFactory, $injector, $ocLazyLoad, vmwareFactory) {
 
 			angular.element(window).bind('dragover', function (e) {
 				e.preventDefault();
@@ -826,6 +826,84 @@ var myApp = angular.module('myApp', [
 			/*
 			 * Init
 			 */
+
+
+			/*vmwareFactory.connectvCenterSoap('e978f7ef-3e9a-4b69-b472-649b33d72201', "mvcenter01", 443).then(function () {
+				return vmwareFactory.getVMSnapshots('e978f7ef-3e9a-4b69-b472-649b33d72201', "mvcenter01", 443, 'vm-331');
+			}).then(function(data) {
+				console.log(data);
+			});*/
+
+			vmwareFactory.connectvCenterSoap('d4024889-d5e4-4bd3-a04b-4c8aa4f49a1e', "mvcenter01", 443).then(function () {
+				vmwareFactory.getVMs('d4024889-d5e4-4bd3-a04b-4c8aa4f49a1e', "mvcenter01", 443, 'group-d1').then(function (data) {
+					console.log("getVMState", data);
+					/*vmwareFactory.getDatastores('e978f7ef-3e9a-4b69-b472-649b33d72201', "mvcenter01", 443, 'group-d1').then(function (data) {
+						console.log("getDatastores", data);
+						vmwareFactory.getDatastoresWithVMsData('e978f7ef-3e9a-4b69-b472-649b33d72201', "mvcenter01", 443, 'group-d1').then(function (data) {
+							console.log("getDatastoresWithVMsData", data);
+							vmwareFactory.getDatastoreProps('e978f7ef-3e9a-4b69-b472-649b33d72201', "mvcenter01", 443, 'datastore-321').then(function (data) {
+								console.log("getDatastoreProps", data);
+								vmwareFactory.getFilesDataFromDatastore('e978f7ef-3e9a-4b69-b472-649b33d72201', "mvcenter01", 443, 'datastore-321', 'NFS_MAD', 'tt').then(function (data) {
+									console.log("getFilesDataFromDatastore", data);
+									vmwareFactory.queryVMEvents('e978f7ef-3e9a-4b69-b472-649b33d72201', "mvcenter01", 443, 'vm-322').then(function (data) {
+										console.log("queryVMEvents", data);
+										vmwareFactory.searchIndexVM('e978f7ef-3e9a-4b69-b472-649b33d72201', "mvcenter01", 443, '502197e9-abe7-06e7-7d88-667c0a8b01ea').then(function (data) {
+											console.log("searchIndex", data);
+
+													vmwareFactory.createTask('e978f7ef-3e9a-4b69-b472-649b33d72201', "mvcenter01", 443, 'com.sysos.management.backup').then(function (data) {
+														console.log("createTask", data);
+														var task_id = data.data.key;
+
+														vmwareFactory.setTaskState('e978f7ef-3e9a-4b69-b472-649b33d72201', "mvcenter01", 443, task_id, 'running').then(function (data) {
+															console.log("setTaskState", data);
+															vmwareFactory.updateTaskProgress('e978f7ef-3e9a-4b69-b472-649b33d72201', "mvcenter01", 443, task_id, 20).then(function (data) {
+																console.log("updateTaskProgress", data);
+																vmwareFactory.searchIndexVM('e978f7ef-3e9a-4b69-b472-649b33d72201', "mvcenter01", 443, '502197e9-abe7-06e7-7d88-667c0a8b01ea').then(function (data) {
+																	console.log("searchIndex", data);
+																	vmwareFactory.getVMs('e978f7ef-3e9a-4b69-b472-649b33d72201', "mvcenter01", 443, 'group-d1').then(function (data) {
+																		console.log("getVMs", data);
+																		vmwareFactory.createSnapShot('e978f7ef-3e9a-4b69-b472-649b33d72201', "mvcenter01", 443, 'vm-322', 'smvi_32bd5146-dcdc-4929-aaa7-5273aa750722', 'SMVI Snapshot generated for backup backup_db406d9b7b5977b00e8320858f12a879 with ID 32bd5146-dcdc-4929-aaa7-5273aa750722', false, true).then(function (data) {
+																			console.log("createSnapShot", data);
+																			vmwareFactory.setTaskState('e978f7ef-3e9a-4b69-b472-649b33d72201', "mvcenter01", 443, task_id, 'success').then(function (data) {
+																				console.log("setTaskState", data);
+																			});
+																		});
+																	});
+																});
+															});
+														});
+													});
+
+										});
+									});
+								});
+							});
+						});*/
+					});
+				});
+				  /*vmwareFactory.deleteFileFromDatastore(
+					  '059bab78-9b0f-41d5-aa54-b5b31d9cf3de', 'mvcenter01', 443, 'SysOS_VOLDEV', '/GEA', 'datacenter-2'
+				  ).then(function(data) {
+					console.log(data);
+				  });*/
+
+				/*vmwareFactory.moveFileFromDatastore(
+					'059bab78-9b0f-41d5-aa54-b5b31d9cf3de', 'mvcenter01', 443, 'SysOS_VOLDEV', '/ETER_renamed', 'datacenter-2', 'SysOS_VOLDEV', '/ETER', 'datacenter-2'
+				).then(function(data) {
+					console.log(data);
+				});*/
+
+				/*vmwareFactory.copyFileFromDatastore(
+					'059bab78-9b0f-41d5-aa54-b5b31d9cf3de', 'mvcenter01', 443, 'SysOS_VOLDEV', '/ETER', 'datacenter-2', 'SysOS_VOLDEV', '/ETER_copy', 'datacenter-2'
+				).then(function(data) {
+					console.log(data);
+				});*/
+			//});
+
+			/*vmwareFactory.getClientVersion('192.168.5.250', 443).then(function (data) {
+			  console.log(data);
+			});*/
+
 
 			// Ensure no application is open
 			$rootScope.taskbar__item_open = null;
@@ -2026,6 +2104,7 @@ var myApp = angular.module('myApp', [
 							uuid: connection.uuid,
 							host: connection.host,
 							port: connection.port,
+							so: connection.so,
 							category: connection.category,
 							description: connection.description,
 							credential: connection.credential,
@@ -2170,6 +2249,7 @@ var myApp = angular.module('myApp', [
 			 * connection {Object}
 			 */
 			var connect = function (connection) {
+
 				// TODO: this is an anti-pattern
 				var smanagerFactory = $injector.get('smanagerFactory');
 
@@ -2190,7 +2270,7 @@ var myApp = angular.module('myApp', [
 				 * VMWARE
 				 */
 				if (connection.category === "virtual") {
-					if (connection.type === "vCenter" || connection.so === "ESXi" || connection.so === "vmware") {
+					if (connection.so === "vmware") {
 						return smanagerFactory.getVMwareData(connection);
 					}
 				}
@@ -2199,7 +2279,7 @@ var myApp = angular.module('myApp', [
 				 * NETAPP
 				 */
 				if (connection.category === "storage") {
-					if (connection.type === "NetApp") {
+					if (connection.so === "netapp") {
 						return smanagerFactory.getNetAppData(connection);
 					}
 				}
@@ -3837,7 +3917,7 @@ var myApp = angular.module('myApp', [
 		};
 
 		var getVMs = function (credential, host, port, datacenter_folder) {
-			var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><RetrieveProperties xmlns="urn:vim25"><_this type="PropertyCollector">propertyCollector</_this><specSet><propSet><type>VirtualMachine</type><all>false</all><pathSet>config</pathSet><pathSet>layout</pathSet></propSet><objectSet><obj type="Folder">' + datacenter_folder + '</obj><skip>true</skip><selectSet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="TraversalSpec"><name>visitFolders</name><type>Folder</type><path>childEntity</path><skip>true</skip><selectSet><name>visitFolders</name></selectSet><selectSet xsi:type="TraversalSpec"><type>Datacenter</type><path>datastore</path><skip>false</skip><selectSet xsi:type="TraversalSpec"><type>Datastore</type><path>vm</path><skip>false</skip></selectSet></selectSet><selectSet xsi:type="TraversalSpec"><type>Datastore</type><path>vm</path><skip>false</skip></selectSet></selectSet></objectSet></specSet></RetrieveProperties></soap:Body></soap:Envelope>';
+			var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><RetrieveProperties xmlns="urn:vim25"><_this type="PropertyCollector">propertyCollector</_this><specSet><propSet><type>VirtualMachine</type><all>true</all></propSet><objectSet><obj type="Folder">' + datacenter_folder + '</obj><skip>true</skip><selectSet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="TraversalSpec"><name>visitFolders</name><type>Folder</type><path>childEntity</path><skip>true</skip><selectSet><name>visitFolders</name></selectSet><selectSet xsi:type="TraversalSpec"><type>Datacenter</type><path>datastore</path><skip>false</skip><selectSet xsi:type="TraversalSpec"><type>Datastore</type><path>vm</path><skip>false</skip></selectSet></selectSet><selectSet xsi:type="TraversalSpec"><type>Datastore</type><path>vm</path><skip>false</skip></selectSet></selectSet></objectSet></specSet></RetrieveProperties></soap:Body></soap:Envelope>';
 
 			return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
 				if (data.data.status === "error") return errorHandler(data.data.data);
@@ -3989,6 +4069,62 @@ var myApp = angular.module('myApp', [
 			});
 		};
 
+		var suspendVM = function (credential, host, port, vm) {
+			var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><SuspendVM_Task xmlns="urn:vim25"><_this type="VirtualMachine">' + vm + '</_this></SuspendVM_Task></soap:Body></soap:Envelope>';
+			return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
+				if (data.data.status === "error") return errorHandler(data.data.data);
+
+				var task_id = data.data.data.response["soapenv:Envelope"]["soapenv:Body"][0].SuspendVM_TaskResponse[0].returnval[0]._;
+
+				return getTaskStatus(credential, host, port, task_id).then(function (data) {
+					return validResponse(data);
+				});
+
+			});
+		};
+
+		var resetVM = function (credential, host, port, vm) {
+			var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><ResetVM_Task xmlns="urn:vim25"><_this type="VirtualMachine">' + vm + '</_this></ResetVM_Task></soap:Body></soap:Envelope>';
+			return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
+				if (data.data.status === "error") return errorHandler(data.data.data);
+
+				var task_id = data.data.data.response["soapenv:Envelope"]["soapenv:Body"][0].ResetVM_TaskResponse[0].returnval[0]._;
+
+				return getTaskStatus(credential, host, port, task_id).then(function (data) {
+					return validResponse(data);
+				});
+
+			});
+		};
+
+		var shutdownGuest = function (credential, host, port, vm) {
+			var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><ShutdownGuest xmlns="urn:vim25"><_this type="VirtualMachine">' + vm + '</_this></ShutdownGuest></soap:Body></soap:Envelope>';
+			return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
+				if (data.data.status === "error") return errorHandler(data.data.data);
+
+				var task_id = data.data.data.response["soapenv:Envelope"]["soapenv:Body"][0].ShutdownGuestResponse[0];
+
+				return getTaskStatus(credential, host, port, task_id).then(function (data) {
+					return validResponse(data);
+				});
+
+			});
+		};
+
+		var rebootGuest = function (credential, host, port, vm) {
+			var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><RebootGuest xmlns="urn:vim25"><_this type="VirtualMachine">' + vm + '</_this></RebootGuest></soap:Body></soap:Envelope>';
+			return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
+				if (data.data.status === "error") return errorHandler(data.data.data);
+
+				var task_id = data.data.data.response["soapenv:Envelope"]["soapenv:Body"][0].RebootGuestResponse[0];
+
+				return getTaskStatus(credential, host, port, task_id).then(function (data) {
+					return validResponse(data);
+				});
+
+			});
+		};
+
 		var reloadVM = function (credential, host, port, vm) {
 			var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><Reload xmlns="urn:vim25"><_this type="VirtualMachine">' + vm + '</_this></Reload></soap:Body></soap:Envelope>';
 			return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
@@ -4091,6 +4227,10 @@ var myApp = angular.module('myApp', [
 			unregisterVM: unregisterVM,
 			powerOnVM: powerOnVM,
 			powerOffVM: powerOffVM,
+			suspendVM: suspendVM,
+			resetVM: resetVM,
+			shutdownGuest: shutdownGuest,
+			rebootGuest: rebootGuest,
 			reloadVM: reloadVM,
 			createSnapShot: createSnapShot,
 			getVMSnapshots: getVMSnapshots,

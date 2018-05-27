@@ -167,9 +167,8 @@
       var dc_promises = [];
       var ct_promises = [];
       var ht_promises = [];
-      var svm_promises = [];
-      var vm_promises = [];
       var uuidMap = connectionsFactory.getUuidMap();
+      var foundDatacenterFolder;
 
       var modalInstance = modalFactory.openLittleModal('PLEASE WAIT', 'Connecting to vCenter/ESXi...', '.window--smanager .window__main', 'plain');
 
@@ -237,30 +236,6 @@
                 connectionsFactory.getConnectionByUuid(connection.uuid).datacenters[key].hosts[i].resource_pools = data.data.data.response.value;
               }));
 
-              // Get VMs per Host
-              ht_promises.push(ServerFactory.callVcenter(connection.host, '/rest/vcenter/vm?filter.hosts=' + host.host).then(function (data) {
-                connectionsFactory.getConnectionByUuid(connection.uuid).datacenters[key].hosts[i].vms = data.data.data.response.value;
-
-                // For each VM
-                angular.forEach(connectionsFactory.getConnectionByUuid(connection.uuid).datacenters[key].hosts[i].vms, function (vm, x) {
-
-                  return vmwareFactory.getVMState(connection.credential, connection.host, connection.port, vm.vm, true).then(function (res) {
-                    if (res.status === "error") throw new Error("Failed to get VM state from " + connectionsFactory.getConnectionByUuid(connection.uuid).type);
-
-                    uuidMap.push({
-                      uuid: res.data.config.uuid,
-                      parent: connection.uuid,
-                      object: "datacenters[" + key + "].hosts[" + i + "].vms[" + x + "]"
-                    });
-
-                    connectionsFactory.getConnectionByUuid(connection.uuid).datacenters[key].hosts[i].vms[x].uuid = res.data.config.uuid;
-                    connectionsFactory.getConnectionByUuid(connection.uuid).datacenters[key].hosts[i].vms[x].extended = res.data
-                  });
-
-                });
-
-                return $q.all(svm_promises);
-              }));
             });
 
             return $q.all(ht_promises);
@@ -292,30 +267,6 @@
                 connectionsFactory.getConnectionByUuid(connection.uuid).datacenters[key].clusters[c].hosts = data.data.data.response.value;
               }));
 
-              // Get VMs per Cluster
-              ct_promises.push(ServerFactory.callVcenter(connection.host, '/rest/vcenter/vm?filter.datacenters=' + datacenter.datacenter + '&filter.clusters=' + cluster.cluster).then(function (data) {
-                connectionsFactory.getConnectionByUuid(connection.uuid).datacenters[key].clusters[c].vms = data.data.data.response.value;
-
-                // For each VM
-                angular.forEach(connectionsFactory.getConnectionByUuid(connection.uuid).datacenters[key].clusters[c].vms, function (vm, x) {
-
-                  return vmwareFactory.getVMState(connection.credential, connection.host, connection.port, vm.vm, true).then(function (res) {
-                    if (res.status === "error") throw new Error("Failed to get VM state from " + connectionsFactory.getConnectionByUuid(connection.uuid).type);
-
-                    uuidMap.push({
-                      uuid: res.data.config.uuid,
-                      parent: connection.uuid,
-                      object: "datacenters[" + key + "].clusters[" + c + "].vms[" + x + "]"
-                    });
-
-                    connectionsFactory.getConnectionByUuid(connection.uuid).datacenters[key].clusters[c].vms[x].uuid = res.data.config.uuid;
-                    connectionsFactory.getConnectionByUuid(connection.uuid).datacenters[key].clusters[c].vms[x].extended = res.data
-                  });
-
-                });
-
-                return $q.all(vm_promises);
-              }));
             });
 
             return $q.all(ct_promises);
@@ -334,9 +285,30 @@
 
         //TODO: more than 1 datacenter?¿??¿?¿
 
-        var foundDatacenterFolder = $filter('filter')(res.data.data.response.value, {
+        foundDatacenterFolder = $filter('filter')(res.data.data.response.value, {
 	        type: "DATACENTER"
         })[0];
+
+        // Get all VMs
+        return vmwareFactory.getVMs(connection.credential, connection.host, connection.port, foundDatacenterFolder.folder);
+
+      }).then(function (res) {
+        if (res.status === "error") throw new Error("Failed to get VMs from " + connectionsFactory.getConnectionByUuid(connection.uuid).type);
+
+        connectionsFactory.getConnectionByUuid(connection.uuid).vms = res.data;
+
+        // For each VM
+        angular.forEach(connectionsFactory.getConnectionByUuid(connection.uuid).vms, function (vm, x) {
+
+          vm.vm = vm.obj.name;
+
+	      uuidMap.push({
+		      uuid: vm.config.uuid,
+		      parent: connection.uuid,
+		      object: "vms[" + x + "]"
+	      });
+
+        });
 
         return vmwareFactory.getDatastores(connection.credential, connection.host, connection.port, foundDatacenterFolder.folder);
 
@@ -704,6 +676,139 @@
       return ESXihosts;
     };
 
+    /*
+     * VM operations
+     */
+    var powerOnVM = function (credential, host, port, vm) {
+	    return vmwareFactory.connectvCenterSoap(credential, host, port).then(function (res) {
+		    if (res.status === "error") throw new Error("Failed to connect to vCenter");
+
+		    return vmwareFactory.getVMRuntime(credential, host, port, vm);
+	    }).then(function (res) {
+		    if (res.status === "error") throw new Error("Failed to get VM runtime");
+		    if (res.data.propSet.runtime.powerState === "poweredOn") return res;
+
+		    return vmwareFactory.powerOnVM(credential, host, port, res.data.propSet.runtime.host.name, vm);
+
+	    }).then(function (res) {
+		    if (res.status === "error") throw new Error("Failed to power on VM");
+
+	    }).catch(function (e) {
+		    console.log(e);
+	    });
+    };
+
+    var powerOffVM = function (credential, host, port, vm) {
+	    return vmwareFactory.connectvCenterSoap(credential, host, port).then(function (res) {
+		    if (res.status === "error") throw new Error("Failed to connect to vCenter");
+
+		    return vmwareFactory.getVMRuntime(credential, host, port, vm);
+	    }).then(function (res) {
+		    if (res.status === "error") throw new Error("Failed to get VM runtime");
+		    if (res.data.propSet.runtime.powerState === "poweredOff") return res;
+
+		    return vmwareFactory.powerOffVM(credential, host, port, vm);
+
+	    }).then(function (res) {
+		    if (res.status === "error") throw new Error("Failed to power off VM");
+
+	    }).catch(function (e) {
+		    console.log(e);
+	    });
+    };
+
+    var suspendVM = function (credential, host, port, vm) {
+	    return vmwareFactory.connectvCenterSoap(credential, host, port).then(function (res) {
+		    if (res.status === "error") throw new Error("Failed to connect to vCenter");
+
+		    return vmwareFactory.getVMRuntime(credential, host, port, vm);
+	    }).then(function (res) {
+		    if (res.status === "error") throw new Error("Failed to get VM runtime");
+
+		    if (res.data.propSet.runtime.powerState !== "poweredOn") return res;
+		    return vmwareFactory.suspendVM(credential, host, port, vm);
+
+	    }).then(function (res) {
+		    if (res.status === "error") throw new Error("Failed to suspend VM");
+
+	    }).catch(function (e) {
+		    console.log(e);
+	    });
+    };
+
+    var resetVM = function (credential, host, port, vm) {
+	    return vmwareFactory.connectvCenterSoap(credential, host, port).then(function (res) {
+		    if (res.status === "error") throw new Error("Failed to connect to vCenter");
+
+		    return vmwareFactory.getVMRuntime(credential, host, port, vm);
+	    }).then(function (res) {
+		    if (res.status === "error") throw new Error("Failed to get VM runtime");
+		    if (res.data.propSet.runtime.powerState !== "poweredOn") return res;
+
+		    return vmwareFactory.resetVM(credential, host, port, vm);
+
+	    }).then(function (res) {
+		    if (res.status === "error") throw new Error("Failed to reset VM");
+
+	    }).catch(function (e) {
+		    console.log(e);
+	    });
+    };
+
+    var shutdownGuest = function (credential, host, port, vm) {
+	    return vmwareFactory.connectvCenterSoap(credential, host, port).then(function (res) {
+		    if (res.status === "error") throw new Error("Failed to connect to vCenter");
+
+		    return vmwareFactory.getVMRuntime(credential, host, port, vm);
+	    }).then(function (res) {
+		    if (res.status === "error") throw new Error("Failed to get VM runtime");
+		    if (res.data.propSet.runtime.powerState !== "poweredOn") return res;
+
+		    return vmwareFactory.shutdownGuest(credential, host, port, vm);
+
+	    }).then(function (res) {
+		    if (res.status === "error") throw new Error("Failed to shutdown VM Guest OS");
+
+	    }).catch(function (e) {
+		    console.log(e);
+	    });
+    };
+
+    var rebootGuest = function (credential, host, port, vm) {
+	    return vmwareFactory.connectvCenterSoap(credential, host, port).then(function (res) {
+		    if (res.status === "error") throw new Error("Failed to connect to vCenter");
+
+		    return vmwareFactory.getVMRuntime(credential, host, port, vm);
+	    }).then(function (res) {
+		    if (res.status === "error") throw new Error("Failed to get VM runtime");
+		    if (res.data.propSet.runtime.powerState !== "poweredOn") return res;
+
+		    return vmwareFactory.rebootGuest(credential, host, port, vm);
+
+	    }).then(function (res) {
+		    if (res.status === "error") throw new Error("Failed to restart VM Guest OS");
+
+	    }).catch(function (e) {
+		    console.log(e);
+	    });
+    };
+
+    var refreshVM = function (vm, connection) {
+      return vmwareFactory.connectvCenterSoap(connection.credential, connection.host, connection.port).then(function (res) {
+          if (res.status === "error") throw new Error("Failed to connect to vCenter");
+
+	      return vmwareFactory.getVMState(connection.credential, connection.host, connection.port, vm.vm, true);
+      }).then(function (res) {
+          if (res.status === "error") throw new Error("Failed to refresh VM");
+	      vm.extended = res.data;
+
+	      connectionsFactory.saveConnection(connectionsFactory.getConnectionByUuid(connection.uuid));
+
+      }).catch(function (e) {
+	      console.log(e);
+      });
+    };
+
     var newData = function (data) {
       if (data.type === "interface_bandwidth") {
 
@@ -761,6 +866,13 @@
       getNetAppData: getNetAppData,
       getVolumeData: getVolumeData,
       getESXihosts: getESXihosts,
+      powerOnVM: powerOnVM,
+      powerOffVM: powerOffVM,
+      suspendVM: suspendVM,
+      resetVM: resetVM,
+      shutdownGuest: shutdownGuest,
+      rebootGuest: rebootGuest,
+      refreshVM: refreshVM,
       newData: newData,
       newProp: newProp
     };
