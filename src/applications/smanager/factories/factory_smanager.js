@@ -2,12 +2,13 @@
   "use strict";
   smanagerApp.factory('smanagerFactory', ['$rootScope', '$q', '$document', 'socket', 'toastr', 'uuid', 'ServerFactory', '$filter', 'modalFactory', 'netappFactory', 'connectionsFactory', 'vmwareFactory',
     function ($rootScope, $q, $document, socket, toastr, uuid, ServerFactory, $filter, modalFactory, netappFactory, connectionsFactory, vmwareFactory) {
+	    var links = [];
 
     /*
-	   *
-	   * PRIVATE FUNCTIONS
-	   *
-	   */
+     *
+     * PRIVATE FUNCTIONS
+     *
+     */
     var activeConnection = null;
 
     /*
@@ -18,7 +19,6 @@
     var checkLinkBetweenManagedNodes = function (type, uuid) {
 
       var connection = connectionsFactory.getConnectionByUuid(uuid);
-      var links = [];
 
       if (type === "vmware") {
 
@@ -71,8 +71,8 @@
                 virtual: uuid,
                 esxi_datastore: datastore.obj.name,
                 storage: storage.uuid,
-                vserver: foundVserver,
-                volume: foundVolume
+                vserver: foundVserver.uuid,
+                volume: foundVolume["volume-id-attributes"].uuid
               });
 
             }// end NetApp
@@ -127,8 +127,8 @@
                 virtual: virtual.uuid,
                 esxi_datastore: datastore.obj.name,
                 storage: uuid,
-                vserver: foundVserver,
-                volume: foundVolume
+                vserver: foundVserver.uuid,
+                volume: foundVolume["volume-id-attributes"].uuid
               });
 
             });// end datastore
@@ -141,10 +141,20 @@
     };
 
     /*
-	   *
-	   * PUBLIC FUNCTIONS
-	   *
-	   */
+     *
+     * PUBLIC FUNCTIONS
+     *
+     */
+
+    /*
+     * Return a link if found
+     */
+    var getLinkByVMwareDatastore = function (virtual_uuid, esxi_datastore) {
+      return $filter('filter')(links, {
+        virtual: virtual_uuid,
+        esxi_datastore: esxi_datastore
+      })[0];
+    };
 
     /*
      * Get all data from VMware vCenter node
@@ -191,6 +201,18 @@
       }).then(function (res) {
         if (res.status === "error") throw new Error("Failed to connect to " + connectionsFactory.getConnectionByUuid(connection.uuid).type);
 
+        modalFactory.changeModalText('Checking SysOS extension...', '.window--smanager .window__main');
+
+        // Get SysOS management extension
+        return vmwareFactory.findSysOSExtension(connection.credential, connection.host, connection.port);
+
+      }).then(function (data) {
+
+        // Register extension if not registered
+        if (!data.data.returnval) return vmwareFactory.registerExtension(connection.credential, connection.host, connection.port);
+
+      }).then(function () {
+
         modalFactory.changeModalText('Getting data...', '.window--smanager .window__main');
 
         // Get Datacenters
@@ -222,16 +244,16 @@
                 // For each VM
                 angular.forEach(connectionsFactory.getConnectionByUuid(connection.uuid).datacenters[key].hosts[i].vms, function (vm, x) {
 
-                  return vmwareFactory.getVMState(connection.credential, connection.host, connection.port, vm.vm).then(function (res) {
+                  return vmwareFactory.getVMState(connection.credential, connection.host, connection.port, vm.vm, true).then(function (res) {
                     if (res.status === "error") throw new Error("Failed to get VM state from " + connectionsFactory.getConnectionByUuid(connection.uuid).type);
 
                     uuidMap.push({
-                      uuid: res.data["summary.config"].uuid,
+                      uuid: res.data.config.uuid,
                       parent: connection.uuid,
                       object: "datacenters[" + key + "].hosts[" + i + "].vms[" + x + "]"
                     });
 
-                    connectionsFactory.getConnectionByUuid(connection.uuid).datacenters[key].hosts[i].vms[x].uuid = res.data["summary.config"].uuid;
+                    connectionsFactory.getConnectionByUuid(connection.uuid).datacenters[key].hosts[i].vms[x].uuid = res.data.config.uuid;
                     connectionsFactory.getConnectionByUuid(connection.uuid).datacenters[key].hosts[i].vms[x].extended = res.data
                   });
 
@@ -277,16 +299,16 @@
                 // For each VM
                 angular.forEach(connectionsFactory.getConnectionByUuid(connection.uuid).datacenters[key].clusters[c].vms, function (vm, x) {
 
-                  return vmwareFactory.getVMState(connection.credential, connection.host, connection.port, vm.vm).then(function (res) {
+                  return vmwareFactory.getVMState(connection.credential, connection.host, connection.port, vm.vm, true).then(function (res) {
                     if (res.status === "error") throw new Error("Failed to get VM state from " + connectionsFactory.getConnectionByUuid(connection.uuid).type);
 
                     uuidMap.push({
-                      uuid: res.data["summary.config"].uuid,
+                      uuid: res.data.config.uuid,
                       parent: connection.uuid,
                       object: "datacenters[" + key + "].clusters[" + c + "].vms[" + x + "]"
                     });
 
-                    connectionsFactory.getConnectionByUuid(connection.uuid).datacenters[key].clusters[c].vms[x].uuid = res.data["summary.config"].uuid;
+                    connectionsFactory.getConnectionByUuid(connection.uuid).datacenters[key].clusters[c].vms[x].uuid = res.data.config.uuid;
                     connectionsFactory.getConnectionByUuid(connection.uuid).datacenters[key].clusters[c].vms[x].extended = res.data
                   });
 
@@ -304,19 +326,24 @@
 
       }).then(function () {
 
-        return vmwareFactory.getDatastores(connection.credential, connection.host, connection.port).then(function (res) {
-          if (res.status === "error") throw new Error("Failed to get Datastores from " + connectionsFactory.getConnectionByUuid(connection.uuid).type);
+	      return ServerFactory.callVcenter(connection.host, '/rest/vcenter/folder');
 
-          connectionsFactory.getConnectionByUuid(connection.uuid).datastores = res.data;
-        });
+      }).then(function (res) {
 
-      }).then(function () {
+        connectionsFactory.getConnectionByUuid(connection.uuid).folders = res.data.data.response.value;
 
-        return ServerFactory.callVcenter(connection.host, '/rest/vcenter/folder');
+        //TODO: more than 1 datacenter?¿??¿?¿
 
-      }).then(function (data) {
+        var foundDatacenterFolder = $filter('filter')(res.data.data.response.value, {
+	        type: "DATACENTER"
+        })[0];
 
-        connectionsFactory.getConnectionByUuid(connection.uuid).folders = data.data.data.response.value;
+        return vmwareFactory.getDatastores(connection.credential, connection.host, connection.port, foundDatacenterFolder.folder);
+
+      }).then(function (res) {
+	      if (res.status === "error") throw new Error("Failed to get Datastores from " + connectionsFactory.getConnectionByUuid(connection.uuid).type);
+
+	      connectionsFactory.getConnectionByUuid(connection.uuid).datastores = res.data;
 
         // Check if any datastore is from a managed storage system and link it.
         return checkLinkBetweenManagedNodes('vmware', connection.uuid);
@@ -352,11 +379,11 @@
     };
 
     /*
-	   * Get all data from NetApp node
-	   *
-	   * @params
-	   * connection {Object}
-	   */
+     * Get all data from NetApp node
+     *
+     * @params
+     * connection {Object}
+     */
     var getNetAppData = function (connection) {
       var main_promises = [];
       var vs_promises = [];
@@ -525,6 +552,12 @@
       });
     };
 
+    /*
+     * Refresh NetApp volume data
+     *
+     * @params
+     * connection {Object}
+     */
     var getVolumeData = function (data) {
 	    var uuidMap = connectionsFactory.getUuidMap();
 	    var vserver_index = connectionsFactory.getConnectionByUuid(data.uuid).vservers.findIndex(function(item){ return item['vserver-name'] === data.vserver_name});
@@ -713,6 +746,10 @@
     };
 
     return {
+      getLinkByVMwareDatastore: getLinkByVMwareDatastore,
+      setLinks: function (data) {
+        links = data;
+      },
       getSnapshotFiles: getSnapshotFiles,
       setActiveConnection: function (uuid) {
         activeConnection = uuid;

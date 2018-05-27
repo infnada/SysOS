@@ -2,7 +2,7 @@ var smanagerApp = angular.module('smanagerApp', []);
 
 (function () {
 	"use strict";
-	smanagerApp.run(['ApplicationsFactory', 'ServerFactory', 'connectionsFactory', function (ApplicationsFactory, ServerFactory, connectionsFactory) {
+	smanagerApp.run(['ApplicationsFactory', 'ServerFactory', 'connectionsFactory', 'smanagerFactory', function (ApplicationsFactory, ServerFactory, connectionsFactory, smanagerFactory) {
 
 		ApplicationsFactory.registerApplication({
 			id: "smanager",
@@ -26,6 +26,14 @@ var smanagerApp = angular.module('smanagerApp', []);
 		ServerFactory
 		.getConfigFile('applications/smanager/map.json', function (data) {
 			return connectionsFactory.setUuidMap(data.data);
+		}, function (data) {
+			console.log("Error");
+		});
+
+		// Get servers mapping
+		ServerFactory
+		.getConfigFile('applications/smanager/links.json', function (data) {
+			return smanagerFactory.setLinks(data.data);
 		}, function (data) {
 			console.log("Error");
 		});

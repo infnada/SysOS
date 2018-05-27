@@ -572,60 +572,6 @@
 			/*
 			 * CONTEXT MENUS
 			 */
-			this.VMContextMenu = [
-				['<i class="fa fa-power-off"></i> Power', function ($itemScope) {
-					// Code
-				},
-					[
-						['<i class="fa fa-play text-success"></i> Power On', function ($itemScope) {
-							// Code
-						}],
-						['<i class="fa fa-stop text-danger"></i> Power Off', function ($itemScope) {
-							// Code
-						}],
-						['<i class="fa fa-pause text-warning"></i> Suspend', function ($itemScope) {
-							// Code
-						}]
-					]
-				],
-				{
-					text: '<i class="fa fa-television"></i> Open Remote Console',
-					click: function ($itemScope, $event, modelValue, text, $li) {
-
-						ApplicationsFactory.openApplication("wmks");
-						ApplicationsFactory.toggleApplication("wmks");
-
-						_this.activeConnection = $itemScope.vm.uuid;
-						_this.setActiveConnection($itemScope.vm.uuid);
-
-						console.log($itemScope);
-						console.log(_this.getActiveConnection(1));
-						console.log(_this.getActiveConnection(2));
-						console.log(_this.getActiveConnection(3));
-						console.log(_this.getActiveConnection());
-
-						$timeout(function () {
-							$rootScope.$broadcast("wmks__new_data", {
-								vm: $itemScope.vm.vm,
-								host: $itemScope.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.virtual.host,
-								port: $itemScope.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.virtual.port,
-								credential: $itemScope.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.virtual.credential
-							});
-						}, 100);
-
-					}
-				},
-				{
-					text: '<i class="fa fa-server"></i> Restore VM files',
-					click: function ($itemScope, $event, modelValue, text, $li) {
-						ApplicationsFactory.openApplication('backupsm');
-						ApplicationsFactory.toggleApplication('backupsm');
-
-
-					}
-				}
-			];
-
 			this.storageContextMenu = [
 				{
 					text: '<i class="fa fa-pencil"></i> Edit Connection',
@@ -636,6 +582,8 @@
 				{
 					text: '<i class="fa fa-refresh"></i> Rescan Storage',
 					click: function ($itemScope, $event, modelValue, text, $li) {
+						//TODO: delete current links
+						//TODO: delete current maps
 						_this.refreshConnection($itemScope.$parent.$parent.storage);
 					}
 				},
@@ -643,27 +591,6 @@
 					text: '<i class="fa fa-trash text-danger"></i> Delete Connection',
 					click: function ($itemScope, $event, modelValue, text, $li) {
 						_this.deleteConnection($itemScope.$parent.$parent.storage.uuid);
-					}
-				}
-			];
-
-			this.virtualContextMenu = [
-				{
-					text: '<i class="fa fa-pencil"></i> Edit Connection',
-					click: function ($itemScope, $event, modelValue, text, $li) {
-						_this.editConnection($itemScope.$parent.$parent.virtual.uuid);
-					}
-				},
-				{
-					text: '<i class="fa fa-refresh"></i> Rescan vCenter',
-					click: function ($itemScope, $event, modelValue, text, $li) {
-						_this.refreshConnection($itemScope.$parent.$parent.virtual);
-					}
-				},
-				{
-					text: '<i class="fa fa-trash text-danger"></i> Delete Connection',
-					click: function ($itemScope, $event, modelValue, text, $li) {
-						_this.deleteConnection($itemScope.$parent.$parent.virtual.uuid);
 					}
 				}
 			];
@@ -701,6 +628,9 @@
 					text: '<i class="fa fa-file"></i> Rescan Volume',
 					click: function ($itemScope, $event, modelValue, text, $li) {
 
+						//TODO: delete current links
+						//TODO: delete current maps
+
 						// Set _this.activeConnection manually to make sure _this.getActiveConnection() gets correct results
 						_this.activeConnection = $itemScope.$parent.$parent.volume["volume-id-attributes"].uuid;
 						_this.setActiveConnection($itemScope.$parent.$parent.volume["volume-id-attributes"].uuid);
@@ -733,17 +663,11 @@
 
 						$timeout(function () {
 							$rootScope.$broadcast("backupsm__mount_restore_datastore", {
-								volume: $itemScope.snapshot.volume,
-								snapshot: $itemScope.snapshot.name,
-								volume_junction: _this.getActiveConnection(1)["volume-id-attributes"]["junction-path"],
-								vserver: $itemScope.snapshot.vserver,
-								netapp_credential: _this.getActiveConnection(3).credential,
-								netapp_host: _this.getActiveConnection(3).host,
-								netapp_port: _this.getActiveConnection(3).port,
-								netapp_nfs_ip: $filter('filter')(_this.getActiveConnection(3).netifaces, {
-									vserver: _this.getActiveConnection().vserver,
-									"current-node": _this.getActiveConnection(1)["volume-id-attributes"].node
-								}),
+								storage: _this.getActiveConnection(3),
+								vserver: _this.getActiveConnection(2),
+								volume: _this.getActiveConnection(1),
+								snapshots: _this.getActiveConnection(1).snapshots, //TODO: if only 1 snapshot this will be an object --> conver to array
+								snapshot: $itemScope.snapshot["snapshot-instance-uuid"],
 								ESXihosts: smanagerFactory.getESXihosts()
 							});
 						}, 100);
@@ -760,22 +684,22 @@
 						_this.setActiveConnection($itemScope.snapshot["snapshot-instance-uuid"]);
 
 						$timeout(function () {
-							$rootScope.$broadcast("backupsm__mount_restore_datastore", {
-								volume: $itemScope.snapshot.volume,
-								snapshot: $itemScope.snapshot.name,
-								volume_junction: _this.getActiveConnection(1)["volume-id-attributes"]["junction-path"],
-								vserver: $itemScope.snapshot.vserver,
-								netapp_credential: _this.getActiveConnection(3).credential,
-								netapp_host: _this.getActiveConnection(3).host,
-								netapp_port: _this.getActiveConnection(3).port,
-								netapp_nfs_ip: $filter('filter')(_this.getActiveConnection(3).netifaces, {
-									vserver: _this.getActiveConnection().vserver,
-									"current-node": _this.getActiveConnection(1)["volume-id-attributes"].node
-								}),
+							$rootScope.$broadcast("backupsm__restore_datastore_files", {
+								storage: _this.getActiveConnection(3),
+								vserver: _this.getActiveConnection(2),
+								volume: _this.getActiveConnection(1),
+								snapshots: _this.getActiveConnection(1).snapshots, //TODO: if only 1 snapshot this will be an object --> conver to array
+								snapshot: $itemScope.snapshot["snapshot-instance-uuid"],
 								ESXihosts: smanagerFactory.getESXihosts()
 							});
 						}, 100);
 
+					}
+				},
+				{
+					text: '<i class="fa fa-delete"></i> Delete SnapShot',
+					click: function ($itemScope, $event, modelValue, text, $li) {
+						//TODO
 					}
 				}
 
@@ -784,65 +708,242 @@
 			this.snapshotVMContextMenu = [
 				{
 					text: '<i class="fa fa-server"></i> Instant VM',
-					click: function ($itemScope, $event, modelValue, text, $li) {
+					click: function ($itemScope) {
 						ApplicationsFactory.openApplication('backupsm');
 						ApplicationsFactory.toggleApplication('backupsm');
 
 						$timeout(function () {
 							$rootScope.$broadcast("backupsm__vm_instant_recovery", {
-								vm: $itemScope.vm,
-								snapshot: _this.getActiveConnection().name,
-								volume: _this.getActiveConnection().volume,
-								volume_junction: _this.getActiveConnection(1)["volume-id-attributes"]["junction-path"],
-								vserver: _this.getActiveConnection().vserver,
-								netapp_credential: _this.getActiveConnection(3).credential,
-								netapp_host: _this.getActiveConnection(3).host,
-								netapp_port: _this.getActiveConnection(3).port,
-								netapp_nfs_ip: $filter('filter')(_this.getActiveConnection(3).netifaces, {
-									vserver: _this.getActiveConnection().vserver,
-									"current-node": _this.getActiveConnection(1)["volume-id-attributes"].node
-								}),
-								ESXihosts: smanagerFactory.getESXihosts()
+								storage: _this.getActiveConnection(3),
+								vserver: _this.getActiveConnection(2),
+								volume: _this.getActiveConnection(1),
+								snapshots: [ _this.getActiveConnection() ],
+								snapshot: _this.getActiveConnection()["snapshot-instance-uuid"],
+								ESXihosts: smanagerFactory.getESXihosts(),
+								vm: $itemScope.vm
 							});
 						}, 100);
 					}
 				},
 				{
-					text: '<i class="fa fa-server"></i> Restore virtual disks',
-					click: function ($itemScope, $event, modelValue, text, $li) {
-					}
-				},
-				{
 					text: '<i class="fa fa-server"></i> Restore VM files',
-					click: function ($itemScope, $event, modelValue, text, $li) {
+					click: function ($itemScope) {
+						ApplicationsFactory.openApplication('backupsm');
+						ApplicationsFactory.toggleApplication('backupsm');
+
+						$timeout(function () {
+							$rootScope.$broadcast("backupsm__restore_vm_files", {
+								storage: _this.getActiveConnection(3),
+								vserver: _this.getActiveConnection(2),
+								volume: _this.getActiveConnection(1),
+								snapshots: [ _this.getActiveConnection() ],
+								snapshot: _this.getActiveConnection()["snapshot-instance-uuid"],
+								ESXihosts: smanagerFactory.getESXihosts(),
+								vm: $itemScope.vm
+							});
+						}, 100);
 					}
 				},
 				{
 					text: '<i class="fa fa-server"></i> Restore Guest files',
-					click: function ($itemScope, $event, modelValue, text, $li) {
+					click: function ($itemScope) {
 						ApplicationsFactory.openApplication('backupsm');
 						ApplicationsFactory.toggleApplication('backupsm');
 
 						$timeout(function () {
 							$rootScope.$broadcast("backupsm__restore_vm_guest_files", {
-								vm: $itemScope.vm,
-								snapshot: _this.getActiveConnection().name,
-								volume: _this.getActiveConnection().volume,
-								volume_junction: _this.getActiveConnection(1)["volume-id-attributes"]["junction-path"],
-								vserver: _this.getActiveConnection().vserver,
-								netapp_credential: _this.getActiveConnection(3).credential,
-								netapp_host: _this.getActiveConnection(3).host,
-								netapp_port: _this.getActiveConnection(3).port,
-								netapp_nfs_ip: $filter('filter')(_this.getActiveConnection(3).netifaces, {
-									vserver: _this.getActiveConnection().vserver,
-									"current-node": _this.getActiveConnection(1)["volume-id-attributes"].node
-								}),
-								ESXihosts: smanagerFactory.getESXihosts()
+								storage: _this.getActiveConnection(3),
+								vserver: _this.getActiveConnection(2),
+								volume: _this.getActiveConnection(1),
+								snapshots: [ _this.getActiveConnection() ],
+								snapshot: _this.getActiveConnection()["snapshot-instance-uuid"],
+								ESXihosts: smanagerFactory.getESXihosts(),
+								vm: $itemScope.vm
 							});
 						}, 100);
 					}
 				}
 			];
 
+			this.virtualContextMenu = [
+				{
+					text: '<i class="fa fa-pencil"></i> Edit Connection',
+					click: function ($itemScope, $event, modelValue, text, $li) {
+						_this.editConnection($itemScope.$parent.$parent.virtual.uuid);
+					}
+				},
+				{
+					text: '<i class="fa fa-refresh"></i> Rescan vCenter',
+					click: function ($itemScope, $event, modelValue, text, $li) {
+						//TODO: delete current links
+						//TODO: delete current maps
+						_this.refreshConnection($itemScope.$parent.$parent.virtual);
+					}
+				},
+				{
+					text: '<i class="fa fa-trash text-danger"></i> Delete Connection',
+					click: function ($itemScope, $event, modelValue, text, $li) {
+						_this.deleteConnection($itemScope.$parent.$parent.virtual.uuid);
+					}
+				}
+			];
+
+			this.VMContextMenu = [
+				['<i class="fa fa-power-off"></i> Power', function ($itemScope) {
+					// Code
+				},
+					[
+						['<i class="fa fa-play text-success"></i> Power On', function ($itemScope) {
+							//TODO
+						}],
+						['<i class="fa fa-stop text-danger"></i> Power Off', function ($itemScope) {
+							//TODO
+						}],
+						['<i class="fa fa-pause text-warning"></i> Suspend', function ($itemScope) {
+							//TODO
+						}]
+					]
+				],
+				{
+					text: '<i class="fa fa-television"></i> Open Remote Console',
+					click: function ($itemScope, $event, modelValue, text, $li) {
+
+						ApplicationsFactory.openApplication("wmks");
+						ApplicationsFactory.toggleApplication("wmks");
+
+						_this.activeConnection = $itemScope.vm.uuid;
+						_this.setActiveConnection($itemScope.vm.uuid);
+
+						console.log($itemScope);
+						console.log(_this.getActiveConnection(1));
+						console.log(_this.getActiveConnection(2));
+						console.log(_this.getActiveConnection(3));
+						console.log(_this.getActiveConnection());
+
+						//TODO: remove $parents...
+						$timeout(function () {
+							$rootScope.$broadcast("wmks__new_data", {
+								vm: $itemScope.vm.vm,
+								host: $itemScope.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.virtual.host,
+								port: $itemScope.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.virtual.port,
+								credential: $itemScope.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.virtual.credential
+							});
+						}, 100);
+
+					}
+				},
+				['<i class="fa fa-server"></i> Restore', function ($itemScope) {
+					// Code
+				},
+					[
+						['<i class="fa fa-server"></i> Instant VM', function ($itemScope) {
+							ApplicationsFactory.openApplication('backupsm');
+							ApplicationsFactory.toggleApplication('backupsm');
+
+							// Set _this.activeConnection manually to make sure _this.getActiveConnection() gets correct results
+							_this.activeConnection = $itemScope.vm.uuid;
+							_this.setActiveConnection($itemScope.vm.uuid);
+
+							//TODO: $itemScope.vm.extended.datastore.ManagedObjectReference could be an array of 2 datastores or more
+							//TODO: if vm is inside a cluster or outside, _this.getActiveConnection(1).uuid could not match vCenter/ESXi connection
+							$timeout(function () {
+								$rootScope.$broadcast("backupsm__vm_instant_recovery", {
+									storage: connectionsFactory.getConnectionByUuid(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.extended.datastore.ManagedObjectReference.name).storage),
+									vserver: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.extended.datastore.ManagedObjectReference.name).vserver)),
+									volume: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.extended.datastore.ManagedObjectReference.name).volume)),
+									snapshots: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.extended.datastore.ManagedObjectReference.name).volume)).snapshots, //TODO: if only 1 snapshot this will be an object --> conver to array. TODO: some snapshots could not contain this VM
+									snapshot: '',
+									ESXihosts: smanagerFactory.getESXihosts(),
+									vm: $itemScope.vm,
+									current_location: {
+										uuid: _this.getActiveConnection(1).uuid,
+										credential: _this.getActiveConnection(1).credential,
+										host: _this.getActiveConnection(1).host,
+										port: _this.getActiveConnection(1).port
+									}
+								});
+							}, 100);
+						}],
+						['<i class="fa fa-server"></i> Restore entire VM', function ($itemScope) {
+							ApplicationsFactory.openApplication('backupsm');
+							ApplicationsFactory.toggleApplication('backupsm');
+
+							// Set _this.activeConnection manually to make sure _this.getActiveConnection() gets correct results
+							_this.activeConnection = $itemScope.vm.uuid;
+							_this.setActiveConnection($itemScope.vm.uuid);
+
+							//TODO: $itemScope.vm.extended.datastore.ManagedObjectReference could be an array of 2 datastores or more
+							//TODO: if vm is inside a cluster or outside, _this.getActiveConnection(1).uuid could not match vCenter/ESXi connection
+							$timeout(function () {
+								$rootScope.$broadcast("backupsm__restore_vm", {
+									storage: connectionsFactory.getConnectionByUuid(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.extended.datastore.ManagedObjectReference.name).storage),
+									vserver: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.extended.datastore.ManagedObjectReference.name).vserver)),
+									volume: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.extended.datastore.ManagedObjectReference.name).volume)),
+									snapshots: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.extended.datastore.ManagedObjectReference.name).volume)).snapshots, //TODO: if only 1 snapshot this will be an object --> conver to array. TODO: some snapshots could not contain this VM
+									snapshot: '',
+									ESXihosts: smanagerFactory.getESXihosts(),
+									vm: $itemScope.vm,
+									current_location: {
+										uuid: _this.getActiveConnection(1).uuid,
+										credential: _this.getActiveConnection(1).credential,
+										host: _this.getActiveConnection(1).host,
+										port: _this.getActiveConnection(1).port
+									}
+								});
+							}, 100);
+						}],
+						['<i class="fa fa-server"></i> Restore VM files', function ($itemScope) {
+							ApplicationsFactory.openApplication('backupsm');
+							ApplicationsFactory.toggleApplication('backupsm');
+
+							// Set _this.activeConnection manually to make sure _this.getActiveConnection() gets correct results
+							_this.activeConnection = $itemScope.vm.uuid;
+							_this.setActiveConnection($itemScope.vm.uuid);
+
+							//TODO: $itemScope.vm.extended.datastore.ManagedObjectReference could be an array of 2 datastores or more
+							//TODO: if vm is inside a cluster or outside, _this.getActiveConnection(1).uuid could not match vCenter/ESXi connection
+							$timeout(function () {
+								$rootScope.$broadcast("backupsm__restore_vm_files", {
+									storage: connectionsFactory.getConnectionByUuid(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.extended.datastore.ManagedObjectReference.name).storage),
+									vserver: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.extended.datastore.ManagedObjectReference.name).vserver)),
+									volume: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.extended.datastore.ManagedObjectReference.name).volume)),
+									snapshots: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.extended.datastore.ManagedObjectReference.name).volume)).snapshots, //TODO: if only 1 snapshot this will be an object --> conver to array. TODO: some snapshots could not contain this VM
+									snapshot: '',
+									ESXihosts: smanagerFactory.getESXihosts(),
+									vm: $itemScope.vm,
+									current_location: {
+										uuid: _this.getActiveConnection(1).uuid,
+										credential: _this.getActiveConnection(1).credential,
+										host: _this.getActiveConnection(1).host,
+										port: _this.getActiveConnection(1).port
+									}
+								});
+							}, 100);
+						}]
+					]
+				],
+				{
+					text: '<i class="fa fa-server"></i> Backup',
+					click: function ($itemScope, $event, modelValue, text, $li) {
+						ApplicationsFactory.openApplication('backupsm');
+						ApplicationsFactory.toggleApplication('backupsm');
+
+						// Set _this.activeConnection manually to make sure _this.getActiveConnection() gets correct results
+						_this.activeConnection = $itemScope.vm.uuid;
+						_this.setActiveConnection($itemScope.vm.uuid);
+
+						//TODO
+						$timeout(function () {
+							$rootScope.$broadcast("backupsm__backup_vm", {
+								storage: connectionsFactory.getConnectionByUuid(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.extended.datastore.ManagedObjectReference.name).storage),
+								vserver: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.extended.datastore.ManagedObjectReference.name).vserver)),
+								volume: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.extended.datastore.ManagedObjectReference.name).volume)),
+								vm: $itemScope.vm,
+								connection: _this.getActiveConnection(1)
+							});
+						}, 100);
+					}
+				}
+			];
 		}]);
 }());

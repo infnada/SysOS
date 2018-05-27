@@ -320,7 +320,7 @@
 				 * VMWARE
 				 */
 				if (connection.category === "virtual") {
-					if (connection.so === "vCenter" || connection.so === "ESXi" || connection.so === "vmware") {
+					if (connection.type === "vCenter" || connection.so === "ESXi" || connection.so === "vmware") {
 						return smanagerFactory.getVMwareData(connection);
 					}
 				}
@@ -329,7 +329,7 @@
 				 * NETAPP
 				 */
 				if (connection.category === "storage") {
-					if (connection.so === "netapp") {
+					if (connection.type === "NetApp") {
 						return smanagerFactory.getNetAppData(connection);
 					}
 				}

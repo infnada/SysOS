@@ -933,7 +933,7 @@ li li .list__toggle:before {
   outline: none;
 }
 
-.folders > a {
+.folders > a, .folders > div > a {
   display: inline-block;
   margin: 4px;
   padding: 4px;
@@ -944,16 +944,17 @@ li li .list__toggle:before {
   color: #607D8B;
   cursor: pointer;
 }
-.folders > a:hover,.folders > a.active,.folders > a.ui-selected,.folders > a.ui-selecting {
+.folders > a:hover,.folders > a.active,.folders > a.ui-selected,.folders > a.ui-selecting,
+.folders > div > a:hover,.folders > div > a.active,.folders > div > a.ui-selected,.folders > div > a.ui-selecting{
   color: #1976D2;
   border: 1px solid rgba(124, 162, 239, 0.67);
   background-color: rgba(10, 28, 247, 0.17);
 }
-.folders > a > i {
+.folders > a > i, .folders > div > a > i {
   display: block;
   font-size: 32px;
 }
-.folders > a > span {
+.folders > a > span, .folders > div > a > span  {
   display: block;
   white-space: nowrap;
   overflow: hidden;

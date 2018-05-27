@@ -30,7 +30,17 @@ var compress = require("compression");
 var cors = require("cors");
 var helmet = require("helmet");
 var csrf = require("csurf");
-var expressOptions = require('./expressOptions');
+var expressOptions = {
+	dotfiles: 'ignore',
+	etag: false,
+	extensions: ['htm', 'html'],
+	index: false,
+	maxAge: '1s',
+	redirect: false,
+	setHeaders: function (res, path, stat) {
+		res.set('x-timestamp', Date.now())
+	}
+};
 
 var session = require('express-session')({
 	secret: config.session.secret,

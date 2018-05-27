@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  myApp.factory('netappFactory', ['ApplicationsFactory', 'ServerFactory', '$q', 'toastr', function (ApplicationsFactory, ServerFactory, $q, toastr) {
+  myApp.factory('netappFactory', ['ApplicationsFactory', 'ServerFactory', '$q', function (ApplicationsFactory, ServerFactory, $q) {
 
     //netapp-manageability-sdk-ontap-9.3-api-documentation/doc/WebHelp/index.htm
 
@@ -280,7 +280,6 @@
     var getSnapshotFiles = function (credential, host, port, vfiler, volume, snapshot, path, results, next_tag) {
       var di_promises = [];
 
-      if (!path) path = "";
       var xml = "<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin'" + (vfiler ? " vfiler='" + vfiler + "'" : "") + "><file-list-directory-iter><path>/vol/" + volume + "/.snapshot/" + snapshot + "" + path + "</path>" + (next_tag ? "<tag>" + next_tag + "</tag>" : "") + "</file-list-directory-iter></netapp>";
 
       return ServerFactory.callNetApp(credential, host, port, null, xml).then(function (data) {
@@ -331,6 +330,17 @@
       });
     };
 
+    var snapshotRestoreFile = function (credential, host, port, vfiler, volume, snapshot, dst) {
+        var xml = "<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin'" + (vfiler ? " vfiler='" + vfiler + "'" : "") + "><snapshot-restore-file><path>" + dst + "</path><snapshot>" + snapshot + "</snapshot><volume>" + volume + "</volume></snapshot-restore-file></netapp>";
+
+        return ServerFactory.callNetApp(credential, host, port, null, xml).then(function (data) {
+            if (data.data.status === "error") return errorHandler(data.data.data.errno);
+            if (data.data.data.response.netapp.results[0]["$"].status === "failed") return errorHandler(data.data.data.response.netapp.results[0]["$"].reason);
+
+            return validResponse(data.data.data.response.netapp);
+        });
+    };
+
     var getLuns = function (credential, host, port, vfiler, volume, results, next_tag) {
       var xml = "<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin'" + (vfiler ? " vfiler='" + vfiler + "'" : "") + "><lun-get-iter><max-records>10</max-records>" + (volume ? "<query><lun-info><volume>" + volume + "</volume></lun-info></query>" : "") + "" + (next_tag ? "<tag>" + next_tag + "</tag>" : "") + "</lun-get-iter></netapp>";
 
@@ -364,9 +374,6 @@
       });
     };
 
-    /*
-     * RESTORE
-     */
     var cloneVolumeFromSnapshot = function (credential, host, port, vfiler, volume, snapshot) {
       // TODO: check if this snapshot volume is already created by another restore
       var xml = "<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin'" + (vfiler ? " vfiler='" + vfiler + "'" : "") + "><volume-clone-create><parent-volume>" + volume + "</parent-volume><volume>SysOS_" + volume + "_Restore</volume><space-reserve>none</space-reserve><parent-snapshot>" + snapshot + "</parent-snapshot></volume-clone-create></netapp>";
@@ -495,9 +502,11 @@
       getSnapshots: function (credential, host, port, vfiler, volume) {
         return getSnapshots(credential, host, port, vfiler, volume, []);
       },
-      getSnapshotFiles: function (credential, host, port, vfiler, volume, snapshot) {
-        return getSnapshotFiles(credential, host, port, vfiler, volume, snapshot, "", []);
+      getSnapshotFiles: function (credential, host, port, vfiler, volume, snapshot, path) {
+        if (!path) path = "";
+        return getSnapshotFiles(credential, host, port, vfiler, volume, snapshot, path, []);
       },
+      snapshotRestoreFile: snapshotRestoreFile,
       getLuns: function (credential, host, port, vfiler, volume) {
         return getLuns(credential, host, port, vfiler, volume, []);
       },

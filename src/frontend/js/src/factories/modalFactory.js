@@ -112,7 +112,7 @@
         modalInstances[query] = $uibModal.open({
           templateUrl: templateUrl,
           controllerAs: 'wmC',
-          controller: ['title', 'data', '$uibModalInstance', 'ServerFactory', function (title, data, $uibModalInstance, ServerFactory) {
+          controller: ['title', 'data', '$uibModalInstance', 'ServerFactory', '$filter', function (title, data, $uibModalInstance, ServerFactory, $filter) {
 
             var _this = this;
             this.title = title;
@@ -120,14 +120,24 @@
             this.data = data;
 
             this.vmName = data.vm.name;
+            this.powerVM = false;
+
+            this.getSnapshotName = function () {
+	            return $filter('filter')(data.snapshots, {
+		            "snapshot-instance-uuid": data.snapshot
+	            })[0].name;
+            };
 
             this.selectData = function () {
+              if ((!_this.selectedHost || !_this.selectedFolder || !_this.selectedPool) && _this.restoreType === "new") return _this.step = 3;
+
               $uibModalInstance.close({
                 host: _this.selectedHost,
                 folder: _this.selectedFolder,
                 resource_pool: _this.selectedPool,
                 vm_name: _this.vmName,
                 vm_power_on: _this.powerVM,
+                restore_location: _this.restoreType,
               });
             };
 

@@ -29,36 +29,38 @@
 		 */
 		var init = function () {
 			modalFactory.openLittleModal('PLEASE WAIT', 'Connecting to Datastore...', '.window--datastoreexplorer .window__main', 'plain');
+
 			return vmwareFactory.connectvCenterSoap(_this.datastoreData.credential, _this.datastoreData.host, _this.datastoreData.port).then(function (data) {
 				if (data.status === "error") throw new Error("Failed to connect to vCenter");
 
 				modalFactory.changeModalText('Getting data...', '.window--datastoreexplorer .window__main');
 
-				return vmwareFactory.getFilesDataFromDatastore(_this.datastoreData.credential, _this.datastoreData.host, _this.datastoreData.port, _this.datastoreData.id, _this.datastoreData.name, '/').then(function (data) {
-					if (data.status === "error") throw new Error("Failed to get Datastore files");
+				return vmwareFactory.getFilesDataFromDatastore(_this.datastoreData.credential, _this.datastoreData.host, _this.datastoreData.port, _this.datastoreData.id, _this.datastoreData.name, '/');
 
-					var obj = data.data[0].propSet.info.result;
+			}).then(function (data) {
+				if (data.status === "error") throw new Error("Failed to get Datastore files");
 
-					delete obj.datastore;
-					delete obj.folderPath;
-					delete obj.xsi_type;
+				var obj = data.data[0].propSet.info.result;
 
-					data = Object.keys(obj).map(function(key) {
-						var toReturn = obj[key];
+				delete obj.datastore;
+				delete obj.folderPath;
+				delete obj.xsi_type;
 
-						if (toReturn.xsi_type === "FolderFileInfo") {
-							toReturn.fileType = "folder";
-						} else {
-							toReturn.fileType = _this.getFileType(toReturn);
-						}
-						return toReturn;
-					});
+				data = Object.keys(obj).map(function(key) {
+					var toReturn = obj[key];
 
-					_this.search = undefined;
-					_this.localFileSystem.currentData = data;
-					_this.resetActive();
-					modalFactory.closeModal('.window--datastoreexplorer .window__main');
+					if (toReturn.xsi_type === "FolderFileInfo") {
+						toReturn.fileType = "folder";
+					} else {
+						toReturn.fileType = _this.getFileType(toReturn);
+					}
+					return toReturn;
 				});
+
+				_this.search = undefined;
+				_this.localFileSystem.currentData = data;
+				_this.resetActive();
+				modalFactory.closeModal('.window--datastoreexplorer .window__main');
 
 			}).catch(function (e) {
 				console.log(e);
@@ -72,6 +74,7 @@
 
 		$scope.$on('datastoreexplorer__restore_datastore_files', function (event, data) {
 			_this.datastoreData = data;
+			_this.showExplorer = true;
 
 			return init();
 		});
@@ -119,6 +122,15 @@
 		 * File contextmenu
 		 */
 		this.fileContextMenu = [
+			[function ($itemScope) {
+				return '<i class="fa fa-download"></i> Restore to original location (not yet)';
+			}, function ($itemScope) {
+
+
+			}, function () {
+				if (_this.datastoreData.original_datastore) return true;
+				return false; // enabled = true, disabled = false
+			}],
 			{
 				text: '<i class="fa fa-download"></i> Download to SysOS (not yet)',
 				click: function ($itemScope) {
@@ -256,16 +268,13 @@
 		 */
 		this.showDatastores = function (type) {
 
-			// Do not continue if have datastoreData fetched by a $broadcast backupsm__restore_datastore_files
-			if (_this.datastoreData) return;
-
 			if (type === "vmware") {
 				var modalInstance = modalFactory.openLittleModal('Select Datastore', '', '.window--datastoreexplorer .window__main', 'DatastoreSelectable');
 				modalInstance.result.then(function (datastore) {
 					if (!datastore) return;
 
 					_this.datastoreData = datastore;
-					_this.showExplorer = false;
+					_this.showExplorer = true;
 
 					return init();
 				});
