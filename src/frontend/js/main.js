@@ -8,7 +8,7 @@ $(window).on('load', function () {
 
 });
 
-var myApp = angular.module('myApp', [
+var SysOS = angular.module('SysOS', [
     'btford.socket-io',
     'ngFileUpload',
     'ui.codemirror',
