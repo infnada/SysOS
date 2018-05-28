@@ -5,6 +5,7 @@
         $templateCache.put('applications/backupsm/modals/recoveryWizard.html',
             '<div class="modal-header"> \
               <div class="modal-title" id="modal-title">{{wmC.title}}</div> \
+              <div class="window__controls window__controls--right"><a class="window__close" ng-click="wmC.close(); $event.stopPropagation();"><i class="fa fa-close"></i></a></div> \
             </div> \
             <div class="modal-body modal-recovery-wizard" id="modal-body"> \
               <div class="wizard"> \
@@ -86,6 +87,12 @@
                       <div ng-if="wmC.restoreType == \'original\'"> \
                         <h5>This VM will be restored to same location as original VM.</h5> \
                         <h6><i class="fa fa-exclamation text-warning"></i> Original VM will be powered down during restore.</h6> \
+                        <div class="form-group"> \
+                            <div class="col-sm-12 p-m"> \
+                                Power ON VM \
+                                <switch class="pull-right" name="powerON" ng-model="wmC.powerVM" on="on" off="off"></switch> \
+                            </div> \
+                        </div> \
                       </div> \
                     </div> \
                     <div class="tab-pane" ng-if="wmC.step == 4" ng-class="{\'active\': wmC.step == 4}"> \
@@ -95,7 +102,8 @@
                       <ul> \
                         <li>VM: {{wmC.data.vm.name}} from <strong>{{wmC.getSnapshotName()}}</strong></li> \
                         <li>Original Datastore: {{wmC.data.volume[\'volume-id-attributes\'].name}}</li> \
-                        <li>Host: {{wmC.selectedHost.name}}</li> \
+                        <li ng-if="wmC.restoreType == \'new\'">Host: {{wmC.selectedHost.name}}</li> \
+                        <li ng-if="wmC.restoreType == \'original\'">Host: {{wmC.data.vm.runtime.host.name}}</li> \
                         <li>New VM name: {{wmC.vmName}}</li> \
                         <li>Power ON VM: {{wmC.powerVM}}</li> \
                       </ul> \

@@ -47,7 +47,7 @@
                         return vmwareFactory.revertToSnapshot(data.esxi_credential, data.esxi_address, data.esxi_port, last_snapshot.snapshot.name);
                     }
 
-                    $log.debug('Backups Manager [%s] -> Last snapshot is not from SysOS backup -> snapshot [%s]', data.uuid, last_snapshot.snapshot.name);
+                    $log.debug('Backups Manager [%s] -> Last snapshot is not from SysOS backup -> snapshot [%s], snapshot_id [%s]', data.uuid, last_snapshot.name, last_snapshot.snapshot.name);
                     return res;
 
                 }).then(function (res) {

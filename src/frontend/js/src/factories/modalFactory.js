@@ -36,6 +36,7 @@
                     controllerAs: registredModals[modalId].controllerAs,
                     backdropClass: 'absolute',
                     windowClass: 'absolute',
+	                backdrop: 'static',
                     size: registredModals[modalId].size,
                     appendTo: appendTo,
                     resolve: resolve
@@ -71,7 +72,9 @@
 
             //TODO: change pmC.text to dynamic controllerAs.text
 
-            if (appendTo.length) angular.element($document[0].querySelector(query + ' .modal')).scope().pmC.text = text;
+            if (appendTo.length) {
+                if (angular.element($document[0].querySelector(query + ' .modal')).length) angular.element($document[0].querySelector(query + ' .modal')).scope().pmC.text = text;
+            }
 
         };
 
@@ -90,9 +93,13 @@
             templateUrl: 'templates/utils/modal.html',
             size: 'sm',
             controllerAs: 'pmC',
-            controller: ['title', 'text', function (title, text) {
+            controller: ['title', 'text', '$uibModalInstance', function (title, text, $uibModalInstance) {
                 this.title = title;
                 this.text = text;
+
+	            this.close = function () {
+		            $uibModalInstance.close("close");
+	            };
             }]
         });
 
@@ -112,6 +119,10 @@
                 this.no = function () {
                     $uibModalInstance.close(false);
                 };
+
+	            this.close = function () {
+		            $uibModalInstance.close("close");
+	            };
             }]
         });
 
@@ -134,6 +145,10 @@
                 this.no = function () {
                     $uibModalInstance.close(false);
                 };
+
+	            this.close = function () {
+		            $uibModalInstance.close("close");
+	            };
             }]
         });
 

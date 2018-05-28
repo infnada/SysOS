@@ -2590,6 +2590,7 @@ var SysOS = angular.module('SysOS', [
                     controllerAs: registredModals[modalId].controllerAs,
                     backdropClass: 'absolute',
                     windowClass: 'absolute',
+	                backdrop: 'static',
                     size: registredModals[modalId].size,
                     appendTo: appendTo,
                     resolve: resolve
@@ -2625,7 +2626,9 @@ var SysOS = angular.module('SysOS', [
 
             //TODO: change pmC.text to dynamic controllerAs.text
 
-            if (appendTo.length) angular.element($document[0].querySelector(query + ' .modal')).scope().pmC.text = text;
+            if (appendTo.length) {
+                if (angular.element($document[0].querySelector(query + ' .modal')).length) angular.element($document[0].querySelector(query + ' .modal')).scope().pmC.text = text;
+            }
 
         };
 
@@ -2644,9 +2647,13 @@ var SysOS = angular.module('SysOS', [
             templateUrl: 'templates/utils/modal.html',
             size: 'sm',
             controllerAs: 'pmC',
-            controller: ['title', 'text', function (title, text) {
+            controller: ['title', 'text', '$uibModalInstance', function (title, text, $uibModalInstance) {
                 this.title = title;
                 this.text = text;
+
+	            this.close = function () {
+		            $uibModalInstance.close("close");
+	            };
             }]
         });
 
@@ -2666,6 +2673,10 @@ var SysOS = angular.module('SysOS', [
                 this.no = function () {
                     $uibModalInstance.close(false);
                 };
+
+	            this.close = function () {
+		            $uibModalInstance.close("close");
+	            };
             }]
         });
 
@@ -2688,6 +2699,10 @@ var SysOS = angular.module('SysOS', [
                 this.no = function () {
                     $uibModalInstance.close(false);
                 };
+
+	            this.close = function () {
+		            $uibModalInstance.close("close");
+	            };
             }]
         });
 
@@ -4539,6 +4554,7 @@ var SysOS = angular.module('SysOS', [
         $templateCache.put('templates/utils/input.html',
             '<div class="modal-header"> \
               <div class="modal-title" id="modal-title">{{imC.title}}</div> \
+              <div class="window__controls window__controls--right"><a class="window__close" ng-click="imC.close(); $event.stopPropagation();"><i class="fa fa-close"></i></a></div> \
             </div> \
             <div class="modal-body" id="modal-body"> \
               <input type="text" class="form-control" set-focus placeholder="{{::imC.text}}" ng-model=imC."inputValue" /> \
@@ -4559,6 +4575,7 @@ var SysOS = angular.module('SysOS', [
         $templateCache.put('templates/utils/modal.html',
             '<div class="modal-header">\n' +
             ' <div class="modal-title" id="modal-title">{{pmC.title}}</div>\n' +
+            ' <div class="window__controls window__controls--right"><a class="window__close" ng-click="pmC.close(); $event.stopPropagation();"><i class="fa fa-close"></i></a></div>\n' +
             '</div>\n' +
             '<div class="modal-body" id="modal-body">\n' +
             ' <span>\n' +
@@ -4577,6 +4594,7 @@ var SysOS = angular.module('SysOS', [
         $templateCache.put('templates/utils/question.html',
             '<div class="modal-header"> \
               <div class="modal-title" id="modal-title">{{qmC.title}}</div> \
+              <div class="window__controls window__controls--right"><a class="window__close" ng-click="qmC.close(); $event.stopPropagation();"><i class="fa fa-close"></i></a></div> \
             </div> \
             <div class="modal-body" id="modal-body"> \
               {{::qmC.text}} \

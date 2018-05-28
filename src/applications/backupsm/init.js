@@ -10,7 +10,7 @@ var backupsmApp = angular.module('backupsmApp', []);
             name: 'Backups Manager',
             menu: true,
             actions: true,
-            style: 'width:870px;height:600px;top:7%;left:10%;'
+            style: 'width:1070px;height:700px;top:5%;left:20%;'
         });
 
         // Get restores
@@ -34,6 +34,10 @@ var backupsmApp = angular.module('backupsmApp', []);
                 this.title = title;
                 this.ESXihosts = ESXihosts;
 
+	            this.close = function () {
+		            $uibModalInstance.close("close");
+	            };
+
                 this.selectESXihost = function () {
                     $uibModalInstance.close(_this.selectedHost);
                 };
@@ -43,7 +47,7 @@ var backupsmApp = angular.module('backupsmApp', []);
         modalFactory.registerModal({
             modalId: 'recoveryWizard',
             templateUrl: 'applications/backupsm/modals/recoveryWizard.html',
-            size: 'sm',
+            size: 'lg',
             controllerAs: 'wmC',
             controller: ['title', 'data', '$uibModalInstance', 'ServerFactory', '$filter', function (title, data, $uibModalInstance, ServerFactory, $filter) {
                 var _this = this;
@@ -53,6 +57,10 @@ var backupsmApp = angular.module('backupsmApp', []);
 
                 this.vmName = data.vm.name;
                 this.powerVM = false;
+
+	            this.close = function () {
+		            $uibModalInstance.close("close");
+	            };
 
                 this.getSnapshotName = function () {
                     return $filter('filter')(data.snapshots, {

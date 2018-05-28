@@ -5,6 +5,7 @@
         $templateCache.put('templates/utils/input.html',
             '<div class="modal-header"> \
               <div class="modal-title" id="modal-title">{{imC.title}}</div> \
+              <div class="window__controls window__controls--right"><a class="window__close" ng-click="imC.close(); $event.stopPropagation();"><i class="fa fa-close"></i></a></div> \
             </div> \
             <div class="modal-body" id="modal-body"> \
               <input type="text" class="form-control" set-focus placeholder="{{::imC.text}}" ng-model=imC."inputValue" /> \
