@@ -810,8 +810,8 @@ var myApp = angular.module('myApp', [
 
 (function () {
 	"use strict";
-	myApp.run(['$rootScope', 'ServerFactory', 'ApplicationsFactory', 'socket', 'connectionsFactory', '$injector', '$ocLazyLoad', 'vmwareFactory',
-		function ($rootScope, ServerFactory, ApplicationsFactory, socket, connectionsFactory, $injector, $ocLazyLoad, vmwareFactory) {
+	myApp.run(['$rootScope', 'ServerFactory', 'ApplicationsFactory', 'socket', 'connectionsFactory', '$injector', '$ocLazyLoad',
+		function ($rootScope, ServerFactory, ApplicationsFactory, socket, connectionsFactory, $injector, $ocLazyLoad) {
 
 			angular.element(window).bind('dragover', function (e) {
 				e.preventDefault();
@@ -2558,218 +2558,149 @@ var myApp = angular.module('myApp', [
 }());
 
 (function () {
-  "use strict";
-  myApp.factory('modalFactory', ['$uibModal', '$document', function ($uibModal, $document) {
-    var modalInstances = [];
+    "use strict";
+    myApp.factory('modalFactory', ['$uibModal', '$document', function ($uibModal, $document) {
+        var modalInstances = [];
+        var registredModals = [];
 
-    /*
-     * Opens a Modal and append it.
-     */
-    var openLittleModal = function (tittle, text, query, type, button_text, inputValue) {
+        /*
+         * @param data {object} {
+         *      modalId:
+         *      controller:
+         *      controllerAs:
+         *      templateUrl:
+         *      size:
+         *      resolve:
+         * }
+         */
+        var registerModal = function (data) {
+            registredModals[data.modalId] = data;
+        };
 
-      var appendTo = angular.element($document[0].querySelector(query));
-      var templateUrl = (type === "plain" ?
-        "templates/utils/modal.html" : (type === "ESXiSelectable" ?
-          "templates/utils/ESXiSelectable.html" : (type === "question" ?
-            "templates/utils/question.html" : type === "DatastoreSelectable" ?
-              "templates/utils/DatastoreSelectable.html" : (type === "input" ?
-                "templates/utils/input.html" : ''
-              )
-            )
-          )
-        );
+        /*
+         * Opens a registered modal
+         */
+        var openRegistredModal = function (modalId, query, resolve) {
 
-      if (appendTo.length) {
-        modalInstances[query] = $uibModal.open({
-          templateUrl: templateUrl,
-          controller: ['$scope', 'title', 'text', 'button_text', 'inputValue', '$uibModalInstance', 'connectionsFactory', function ($scope, title, text, button_text, inputValue, $uibModalInstance, connectionsFactory) {
-            $scope.title = title;
-            $scope.text = text;
-            $scope.button_text = button_text;
-            $scope.inputValue = inputValue;
+            var appendTo = angular.element($document[0].querySelector(query));
 
-            $scope.selectESXihost = function () {
-              $uibModalInstance.close($scope.selectedHost);
-            };
-
-            $scope.selectDatastore = function () {
-                $uibModalInstance.close($scope.selectedDatastore);
-            };
-
-            $scope.yes_input = function () {
-                $uibModalInstance.close($scope.inputValue);
-            };
-
-            $scope.yes = function () {
-              $uibModalInstance.close(true);
-            };
-
-            $scope.no = function () {
-              $uibModalInstance.close(false);
-            };
-
-            // Get all Datastores from managed ESXi/vCenter hosts
-            if (type === "DatastoreSelectable") {
-              var connections = connectionsFactory.getConnectionByCategory('virtual');
-
-              $scope.text = [];
-
-              angular.forEach(connections, function (connection) {
-	              angular.forEach(connection.datastores, function (datastore) {
-		              $scope.text.push({
-                          name: datastore.name,
-                          id: datastore.obj.name,
-                          credential: connection.credential,
-                          host: connection.host,
-                          port: connection.port,
-                          datacenter: connection.datacenters[0].datacenter // TODO: check datacenter per datastore (not always will be the 1st [0] datacenter)
-                      });
-                  });
-              });
-            }
-
-          }],
-          backdropClass: 'absolute',
-          windowClass: 'absolute',
-          size: 'sm',
-          appendTo: appendTo,
-          resolve: {
-            title: function () {
-              return tittle;
-            },
-            text: function () {
-              return text;
-            },
-            button_text: function () {
-		          return button_text;
-            },
-            inputValue: function () {
-              return inputValue;
-            }
-          }
-        });
-
-        return modalInstances[query];
-
-      }
-
-    };
-
-    /*
-     * Opens a Modal and append it.
-     */
-    var openWizardModal = function (tittle, data, query, type) {
-
-      var appendTo = angular.element($document[0].querySelector(query));
-      var templateUrl = (type === "recoveryWizard" ? "templates/utils/recoveryWizard.html" : '');
-
-      if (appendTo.length) {
-        modalInstances[query] = $uibModal.open({
-          templateUrl: templateUrl,
-          controllerAs: 'wmC',
-          controller: ['title', 'data', '$uibModalInstance', 'ServerFactory', '$filter', function (title, data, $uibModalInstance, ServerFactory, $filter) {
-
-            var _this = this;
-            this.title = title;
-            this.step = 1;
-            this.data = data;
-
-            this.vmName = data.vm.name;
-            this.powerVM = false;
-
-            this.getSnapshotName = function () {
-	            return $filter('filter')(data.snapshots, {
-		            "snapshot-instance-uuid": data.snapshot
-	            })[0].name;
-            };
-
-            this.selectData = function () {
-              if ((!_this.selectedHost || !_this.selectedFolder || !_this.selectedPool) && _this.restoreType === "new") return _this.step = 3;
-
-              $uibModalInstance.close({
-                host: _this.selectedHost,
-                folder: _this.selectedFolder,
-                resource_pool: _this.selectedPool,
-                vm_name: _this.vmName,
-                vm_power_on: _this.powerVM,
-                restore_location: _this.restoreType,
-              });
-            };
-
-            /*
-             * Load Folders and Resource Pools
-             */
-            this.loadESXidata = function () {
-              var modalInstanceText = openLittleModal('PLEASE WAIT', 'Connecting to vCenter...', '.modal-recovery-wizard', 'plain');
-
-              return ServerFactory.connectVcenter(_this.selectedHost.connection_address, _this.selectedHost.connection_credential).then(function (con) {
-                if (con.data.status === "error") throw new Error(con.data.data);
-
-                changeModalText('Getting data...', '.modal-recovery-wizard');
-
-                // Get VM folders in selected vCenter
-                return ServerFactory.callVcenter(_this.selectedHost.connection_address, '/rest/vcenter/folder?filter.type=VIRTUAL_MACHINE').then(function(data_folder) {
-                  if (data_folder.data.status === "error") throw new Error(data_folder.data.data);
-                  _this.data.folders = data_folder.data.data.response.value;
-
-                  // Get Resource Pools from selected host
-                  return ServerFactory.callVcenter(_this.selectedHost.connection_address, '/rest/vcenter/resource-pool').then(function(resource_pool) {
-                    if (resource_pool.data.status === "error") throw new Error(resource_pool.data.data);
-
-                    _this.data.resource_pools = resource_pool.data.data.response.value;
-
-                    modalInstanceText.close();
-                  });
+            if (appendTo.length) {
+                modalInstances[query] = $uibModal.open({
+                    templateUrl: registredModals[modalId].templateUrl,
+                    controller: registredModals[modalId].controller,
+                    controllerAs: registredModals[modalId].controllerAs,
+                    backdropClass: 'absolute',
+                    windowClass: 'absolute',
+                    size: registredModals[modalId].size,
+                    appendTo: appendTo,
+                    resolve: resolve
                 });
-              });
-            };
 
-          }],
-          backdropClass: 'absolute',
-          windowClass: 'absolute',
-          appendTo: appendTo,
-          resolve: {
-            title: function () {
-              return tittle;
-            },
-            data: function () {
-              return data;
+                return modalInstances[query];
             }
-          }
+
+        };
+
+        /*
+         * "alias" to open "plain" modalId
+         */
+        var openLittleModal = function (title, text, query, modalId) {
+
+            return openRegistredModal(modalId, query, {
+                title: function () {
+                    return title;
+                },
+                text: function () {
+                    return text;
+                }
+            });
+
+        };
+
+        /*
+         * Change text of already created modal
+         */
+        var changeModalText = function (text, query) {
+
+            var appendTo = angular.element($document[0].querySelector(query));
+
+            //TODO: change pmC.text to dynamic controllerAs.text
+
+            if (appendTo.length) angular.element($document[0].querySelector(query + ' .modal')).scope().pmC.text = text;
+
+        };
+
+        /*
+         * Close already created modal
+         */
+        var closeModal = function (query) {
+            if (modalInstances[query]) modalInstances[query].close('ok');
+        };
+
+        /*
+         * Register basic modals
+         */
+        registerModal({
+            modalId: "plain",
+            templateUrl: "templates/utils/modal.html",
+            size: "sm",
+            controllerAs: "pmC",
+            controller: ['title', 'text', function (title, text) {
+                this.title = title;
+                this.text = text;
+            }]
         });
 
-        return modalInstances[query];
+        registerModal({
+            modalId: "question",
+            templateUrl: "templates/utils/question.html",
+            size: "sm",
+            controllerAs: "qmC",
+            controller: ['title', 'text', '$uibModalInstance', function (title, text, $uibModalInstance) {
+                this.title = title;
+                this.text = text;
 
-      }
+                this.yes = function () {
+                    $uibModalInstance.close(true);
+                };
 
-    };
+                this.no = function () {
+                    $uibModalInstance.close(false);
+                };
+            }]
+        });
 
-    /*
-     * Change text of already created modal
-     */
-    var changeModalText = function (text, query) {
+        registerModal({
+            modalId: "input",
+            templateUrl: "templates/utils/input.html",
+            size: "sm",
+            controllerAs: "imC",
+            controller: ['title', 'text', 'button_text', 'inputValue', '$uibModalInstance', function (title, text, button_text, inputValue, $uibModalInstance) {
+                var _this = this;
+                this.title = title;
+                this.text = text;
+                this.button_text = button_text;
+                this.inputValue = inputValue;
 
-      var appendTo = angular.element($document[0].querySelector(query));
+                this.yes = function () {
+                    $uibModalInstance.close(_this.inputValue);
+                };
 
-      if (appendTo.length) angular.element($document[0].querySelector(query + ' .modal')).scope().text = text;
+                this.no = function () {
+                    $uibModalInstance.close(false);
+                };
+            }]
+        });
 
-    };
+        return {
+            registerModal: registerModal,
+            openLittleModal: openLittleModal,
+            openRegistredModal: openRegistredModal,
+            changeModalText: changeModalText,
+            closeModal: closeModal
+        };
 
-    /*
-     * Close already created modal
-     */
-    var closeModal = function (query) {
-      if (modalInstances[query]) modalInstances[query].close('ok');
-    };
-
-    return {
-      openLittleModal: openLittleModal,
-      openWizardModal: openWizardModal,
-      changeModalText: changeModalText,
-      closeModal: closeModal
-    };
-
-  }]);
+    }]);
 
 }());
 
@@ -4604,66 +4535,16 @@ var myApp = angular.module('myApp', [
 	"use strict";
 	myApp.run(['$templateCache', function ($templateCache) {
 
-		$templateCache.put('templates/utils/DatastoreSelectable.html',
-			'<div class="modal-header"> \
-			  <div class="modal-title" id="modal-title">{{title}}</div> \
-			</div> \
-			<div class="modal-body" id="modal-body"> \
-			  <div class="form-group"> \
-				<div class="col-sm-12"> \
-				  <select class="form-control" ng-options="datastore as datastore.host + \' - \' + datastore.name for datastore in text | orderBy:[\'host\',\'name\']" ng-model="selectedDatastore"> \
-					<option value="">-- Select a managed Datastore --</option> \
-				  </select> \
-				</div> \
-			  </div> \
-			</div> \
-			<div class="modal-footer"> \
-			  <button class="btn btn-primary" type="button" ng-click="selectDatastore()">Select</button> \
-			</div>'
-		);
-
-	}]);
-}());
-
-(function () {
-  "use strict";
-  myApp.run(['$templateCache', function ($templateCache) {
-
-    $templateCache.put('templates/utils/ESXiSelectable.html',
-      '<div class="modal-header"> \
-        <div class="modal-title" id="modal-title">{{title}}</div> \
-      </div> \
-      <div class="modal-body" id="modal-body"> \
-        <div class="form-group"> \
-          <div class="col-sm-12"> \
-            <select class="form-control" ng-options="host as host.name for host in text" ng-model="selectedHost"> \
-              <option value="">-- Select a managed ESXi host --</option> \
-            </select> \
-          </div> \
-        </div> \
-      </div> \
-      <div class="modal-footer"> \
-        <button class="btn btn-primary" type="button" ng-click="selectESXihost()">Select</button> \
-      </div>'
-    );
-
-  }]);
-}());
-
-(function () {
-	"use strict";
-	myApp.run(['$templateCache', function ($templateCache) {
-
 		$templateCache.put('templates/utils/input.html',
 			'<div class="modal-header"> \
-			  <div class="modal-title" id="modal-title">{{title}}</div> \
+			  <div class="modal-title" id="modal-title">{{imC.title}}</div> \
 			</div> \
 			<div class="modal-body" id="modal-body"> \
-			  <input type="text" class="form-control" set-focus placeholder="{{::text}}" ng-model="inputValue" /> \
+			  <input type="text" class="form-control" set-focus placeholder="{{::imC.text}}" ng-model=imC."inputValue" /> \
 			</div> \
 			<div class="modal-footer"> \
-			  <button class="btn btn-primary" type="button" ng-click="no()">Cancel</button> \
-			  <button class="btn btn-default" type="button" ng-click="yes_input()">{{::button_text}}</button> \
+			  <button class="btn btn-primary" type="button" ng-click="imC.no()">Cancel</button> \
+			  <button class="btn btn-default" type="button" ng-click="imC.yes()">{{::imC.button_text}}</button> \
 			</div>'
 		);
 
@@ -4676,11 +4557,11 @@ var myApp = angular.module('myApp', [
 
     $templateCache.put('templates/utils/modal.html',
       '<div class="modal-header">\n' +
-      ' <div class="modal-title" id="modal-title">{{title}}</div>\n' +
+      ' <div class="modal-title" id="modal-title">{{pmC.title}}</div>\n' +
       '</div>\n' +
       '<div class="modal-body" id="modal-body">\n' +
       ' <span>\n' +
-      '   {{text}}\n' +
+      '   {{pmC.text}}\n' +
       ' </span>\n' +
       '</div>'
     );
@@ -4694,139 +4575,14 @@ var myApp = angular.module('myApp', [
 
     $templateCache.put('templates/utils/question.html',
       '<div class="modal-header"> \
-        <div class="modal-title" id="modal-title">{{title}}</div> \
+        <div class="modal-title" id="modal-title">{{qmC.title}}</div> \
       </div> \
       <div class="modal-body" id="modal-body"> \
-        {{::text}} \
+        {{::qmC.text}} \
       </div> \
       <div class="modal-footer"> \
-        <button class="btn btn-primary" type="button" ng-click="no()">No</button> \
-        <button class="btn btn-default" type="button" ng-click="yes()">Yes</button> \
-      </div>'
-    );
-
-  }]);
-}());
-
-(function () {
-  "use strict";
-  myApp.run(['$templateCache', function ($templateCache) {
-
-    $templateCache.put('templates/utils/recoveryWizard.html',
-      '<div class="modal-header"> \
-        <div class="modal-title" id="modal-title">{{wmC.title}}</div> \
-      </div> \
-      <div class="modal-body modal-recovery-wizard" id="modal-body"> \
-        <div class="wizard"> \
-          <ul class="nav nav-wizard"> \
-            <li ng-class="{\'active\': wmC.step == 1}"> \
-              <a ng-click="wmC.step = 1">SnapShot</a> \
-            </li> \
-            <li ng-class="{\'active\': wmC.step == 2}"> \
-              <a ng-click="wmC.step = 2">Recovery mode</a> \
-            </li> \
-            <li ng-class="{\'active\': wmC.step == 3}"> \
-              <a ng-click="wmC.step = 3">Destination</a> \
-            </li> \
-            <li ng-class="{\'active\': wmC.step == 4}"> \
-              <a ng-click="wmC.step = 4">Ready to apply</a> \
-            </li> \
-          </ul> \
-          <form> \
-            <div class="tab-content"> \
-              <div class="tab-pane" ng-if="wmC.step == 1" ng-class="{\'active\': wmC.step == 1}"> \
-                <table class="table table-hover m-t-xl"> \
-                  <tbody> \
-                    <tr class="cursor-pointer" ng-repeat="snapshot in wmC.data.snapshots"> \
-                      <th class="col-sm-1"><input type="radio" name="snapshot" ng-model="wmC.data.snapshot" ng-value="snapshot[\'snapshot-instance-uuid\']"></th> \
-                      <th class="col-sm-1">{{::snapshot.name}}</th> \
-                    </tr> \
-                  </tbody> \
-                </table> \
-              </div> \
-              <div class="tab-pane" ng-if="wmC.step == 2" ng-class="{\'active\': wmC.step == 2}"> \
-                <table class="table table-hover m-t-xl"> \
-                 <tbody> \
-                    <tr class="cursor-pointer"> \
-                       <th class="col-sm-1"><input type="radio" name="restore" ng-model="wmC.restoreType" value="original"></th> \
-                       <td class="lh-2"><h5>Restore to the original location</h5>Quickly initiate restore of selected VMs to the original location, and with the original name and settings. This option minimizes the chance of user input error.<br/><i class="fa fa-exclamation text-warning"></i> This virtual machine will be powered down during the restore process.</td> \
-                    </tr> \
-                    <tr class="cursor-pointer"> \
-                       <th class="col-sm-1"><input type="radio" name="restore" ng-model="wmC.restoreType" value="new"></th> \
-                       <td class="lh-2"><h5>Restore to a new location, or with different settings</h5>Customize restored VM location, and change its settings. The wizard will automatically populate all controls with the original VM settings as the default settings.</td> \
-                    </tr> \
-                 </tbody> \
-              </table> \
-              </div> \
-              <div class="tab-pane" ng-if="wmC.step == 3" ng-class="{\'active\': wmC.step == 3}"> \
-                <div ng-if="wmC.restoreType == \'new\'"> \
-                  <div class="form-group"> \
-                    <div class="col-sm-12"> \
-                      <select class="form-control" ng-options="host as host.name for host in wmC.data.ESXihosts" ng-model="wmC.selectedHost" ng-change="wmC.loadESXidata()"> \
-                        <option value="">-- Select a managed ESXi host --</option> \
-                      </select> \
-                    </div> \
-                  </div> \
-                  <div class="form-group"> \
-                    <div class="col-sm-12"> \
-                      <select class="form-control" ng-options="folder as folder.name for folder in wmC.data.folders" ng-model="wmC.selectedFolder"> \
-                        <option value="">-- Select a VM folder --</option> \
-                      </select> \
-                    </div> \
-                  </div> \
-                  <div class="form-group"> \
-                    <div class="col-sm-12"> \
-                      <select class="form-control" ng-options="pool as pool.name for pool in wmC.data.resource_pools" ng-model="wmC.selectedPool"> \
-                        <option value="">-- Select a Resource Pool --</option> \
-                      </select> \
-                    </div> \
-                  </div> \
-                  <div class="form-group"> \
-                    <div class="col-sm-12"> \
-                      <input class="form-control" type="text" placeholder="Select a VM name" ng-model="wmC.vmName" required> \
-                    </div> \
-                  </div> \
-                  <div class="form-group"> \
-                    <div class="col-sm-12"> \
-                      Power ON VM \
-                      <switch class="pull-right" name="powerON" ng-model="wmC.powerVM" on="on" off="off"></switch> \
-                    </div> \
-                  </div> \
-                </div> \
-                <div ng-if="wmC.restoreType == \'original\'"> \
-                  <h5>This VM will be restored to same location as original VM.</h5> \
-                  <h6><i class="fa fa-exclamation text-warning"></i> Original VM will be powered down during restore.</h6> \
-                </div> \
-              </div> \
-              <div class="tab-pane" ng-if="wmC.step == 4" ng-class="{\'active\': wmC.step == 4}"> \
-                <h5> \
-                  Instant VM recovery settings: \
-                </h5> \
-                <ul> \
-                  <li>VM: {{wmC.data.vm.name}} from <strong>{{wmC.getSnapshotName()}}</strong></li> \
-                  <li>Original Datastore: {{wmC.data.volume[\'volume-id-attributes\'].name}}</li> \
-                  <li>Host: {{wmC.selectedHost.name}}</li> \
-                  <li>New VM name: {{wmC.vmName}}</li> \
-                  <li>Power ON VM: {{wmC.powerVM}}</li> \
-                </ul> \
-                <p> \
-                  After you click Restore, the selected VM will be instantly recovered into your production environment. To finalize the recovery use Storage VMotion to move running VM to the production storage.<br/> \
-                  Alternatively, you can perform cold VM migration during your next maintenance window. \
-                </p> \
-                <p> \
-                  If you are performing manual recovery testing, remember to change VM network to non-production before powering on the VM. \
-                </p> \
-              </div> \
-              <div class="clearfix"></div> \
-            </div> \
-          </form> \
-        </div> \
-      </div> \
-      <div class="modal-footer"> \
-        <button class="btn btn-primary" type="button" ng-if="wmC.step == 1" ng-click="wmC.step = 2">Next</button> \
-        <button class="btn btn-primary" type="button" ng-if="wmC.step == 2" ng-click="wmC.step = 3">Next</button> \
-        <button class="btn btn-primary" type="button" ng-if="wmC.step == 3" ng-click="wmC.step = 4">Next</button> \
-        <button class="btn btn-primary" type="button" ng-if="wmC.step == 4" ng-click="wmC.selectData()">Restore</button> \
+        <button class="btn btn-primary" type="button" ng-click="qmC.no()">No</button> \
+        <button class="btn btn-default" type="button" ng-click="qmC.yes()">Yes</button> \
       </div>'
     );
 

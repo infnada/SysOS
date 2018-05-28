@@ -72,7 +72,16 @@
 				backupsmFactory.setRestore(data);
 				backupsmFactory.setActiveRestore(data.uuid);
 
-				var modalInstance = modalFactory.openLittleModal('Select ESXi host', data.ESXihosts, '.window--backupsm .window__main', 'ESXiSelectable');
+                var modalInstance = modalFactory.openRegistredModal("ESXiSelectable", ".window--backupsm .window__main",
+                    {
+                        title: function () {
+                            return "Select ESXi host";
+                        },
+                        ESXihosts: function () {
+                            return data.ESXihosts;
+                        }
+                    }
+                );
 				modalInstance.result.then(function (res) {
 
 					$log.debug("Backups Manager [%s] -> Received restore data from Modal -> esxi_host", data.uuid, res.host);
@@ -134,7 +143,16 @@
 				backupsmFactory.setRestore(data);
 				backupsmFactory.setActiveRestore(data.uuid);
 
-				var modalInstance = modalFactory.openLittleModal('Select ESXi host', data.ESXihosts, '.window--backupsm .window__main', 'ESXiSelectable');
+				var modalInstance = modalFactory.openRegistredModal("ESXiSelectable", ".window--backupsm .window__main",
+                    {
+                        title: function () {
+                            return "Select ESXi host";
+                        },
+                        ESXihosts: function () {
+                            return data.ESXihosts;
+                        }
+                    }
+                );
 				modalInstance.result.then(function (res) {
 
 					$log.debug("Backups Manager [%s] -> Received restore data from Modal -> esxi_host", data.uuid, res.host);
@@ -213,7 +231,16 @@
 				backupsmFactory.setRestore(data);
 				backupsmFactory.setActiveRestore(data.uuid);
 
-				var modalInstance = modalFactory.openLittleModal('PLEASE WAIT', data.ESXihosts, '.window--backupsm .window__main', 'ESXiSelectable');
+				var modalInstance = modalFactory.openRegistredModal("ESXiSelectable", ".window--backupsm .window__main",
+                    {
+                        title: function () {
+                            return "Select ESXi host";
+                        },
+                        ESXihosts: function () {
+                            return data.ESXihosts;
+                        }
+                    }
+                );
 				modalInstance.result.then(function (res) {
 
 					$log.debug("Backups Manager [%s] -> Received restore data from Modal -> esxi_host", data.uuid, res.host);
@@ -279,7 +306,16 @@
 				backupsmFactory.setActiveRestore(data.uuid);
 
 				// User must select ESXi host and its data
-				var modalInstanceRestoreVM = modalFactory.openWizardModal('Select required data for Instant VM (' + data.vm.name + ')', data, '.window--backupsm .window__main', 'recoveryWizard');
+				var modalInstanceRestoreVM = modalFactory.openRegistredModal("recoveryWizard", ".window--backupsm .window__main",
+                    {
+                        title: function () {
+                            return "Select required data for Instant VM (" + data.vm.name + ")";
+                        },
+                        data: function () {
+                            return data;
+                        }
+                    }
+                );
 				modalInstanceRestoreVM.result.then(function (res) {
 
 					if (res.restore_location === "original") {
@@ -363,7 +399,16 @@
 				backupsmFactory.setActiveRestore(data.uuid);
 
 				// User must select ESXi host and its data
-				var modalInstanceRestoreVM = modalFactory.openWizardModal('Select required data for Restore VM (' + data.vm.name + ')', data, '.window--backupsm .window__main', 'recoveryWizard');
+				var modalInstanceRestoreVM = modalFactory.openRegistredModal("recoveryWizard", ".window--backupsm .window__main",
+                    {
+                        title: function () {
+                            return "Select required data for Restore VM (" + data.vm.name + ")";
+                        },
+                        data: function () {
+                            return data;
+                        }
+                    }
+                );
 				modalInstanceRestoreVM.result.then(function (res) {
 
 					if (res.restore_location === "original") {

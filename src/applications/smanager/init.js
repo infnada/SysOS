@@ -2,7 +2,8 @@ var smanagerApp = angular.module('smanagerApp', []);
 
 (function () {
 	"use strict";
-	smanagerApp.run(['ApplicationsFactory', 'ServerFactory', 'connectionsFactory', 'smanagerFactory', function (ApplicationsFactory, ServerFactory, connectionsFactory, smanagerFactory) {
+	smanagerApp.run(['ApplicationsFactory', 'ServerFactory', 'connectionsFactory', 'smanagerFactory', 'modalFactory',
+		function (ApplicationsFactory, ServerFactory, connectionsFactory, smanagerFactory, modalFactory) {
 
 		ApplicationsFactory.registerApplication({
 			id: "smanager",

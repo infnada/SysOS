@@ -4,14 +4,14 @@
 
     $templateCache.put('templates/utils/question.html',
       '<div class="modal-header"> \
-        <div class="modal-title" id="modal-title">{{title}}</div> \
+        <div class="modal-title" id="modal-title">{{qmC.title}}</div> \
       </div> \
       <div class="modal-body" id="modal-body"> \
-        {{::text}} \
+        {{::qmC.text}} \
       </div> \
       <div class="modal-footer"> \
-        <button class="btn btn-primary" type="button" ng-click="no()">No</button> \
-        <button class="btn btn-default" type="button" ng-click="yes()">Yes</button> \
+        <button class="btn btn-primary" type="button" ng-click="qmC.no()">No</button> \
+        <button class="btn btn-default" type="button" ng-click="qmC.yes()">Yes</button> \
       </div>'
     );
 

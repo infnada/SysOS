@@ -69,8 +69,23 @@
 				click: function ($itemScope) {
 					if (angular.isUndefined($itemScope.file)) $itemScope.file = $itemScope.$parent.file;
 
-					var modalInstanceRemoveConnection = modalFactory.openLittleModal('Download file from URL', 'File URL', '.window--fileexplorer .window__main', 'input', 'Download');
-					modalInstanceRemoveConnection.result.then(function (res) {
+					var modalInstanceDownloadFromURL = modalFactory.openRegistredModal("input", ".window--fileexplorer .window__main",
+                        {
+                            title: function () {
+                                return "Download file from URL";
+                            },
+                            text: function () {
+                                return "File URL";
+                            },
+                            button_text: function () {
+                                return "Download";
+                            },
+                            inputValue: function () {
+                                return "";
+                            }
+                        }
+                    );
+					modalInstanceDownloadFromURL.result.then(function (res) {
 
 						return fileSystemFactory.downloadFileFromInet(res, _this.localFileSystem.currentPath, function () {
 
@@ -188,8 +203,23 @@
 
 					_this.fileToRename = $itemScope.file.filename;
 
-					var modalInstanceRemoveConnection = modalFactory.openLittleModal('Rename file', 'File name', '.window--fileexplorer .window__main', 'input', 'Rename', $itemScope.file.filename);
-					modalInstanceRemoveConnection.result.then(function (res) {
+					var modalInstanceRenameFile = modalFactory.openRegistredModal("input", ".window--datastoreexplorer .window__main",
+                        {
+                            title: function () {
+                                return "Rename file";
+                            },
+                            text: function () {
+                                return "File name";
+                            },
+                            button_text: function () {
+                                return "Rename";
+                            },
+                            inputValue: function () {
+                                return $itemScope.file.filename;
+                            }
+                        }
+                    );
+					modalInstanceRenameFile.result.then(function (res) {
 
 						//TODO: check backdrop click
 						if (res !== false) {
@@ -207,8 +237,17 @@
 					if (angular.isUndefined($itemScope.file)) $itemScope.file = $itemScope.$parent.file;
 
 					_this.modalInputName = $itemScope.file.filename;
-					var modalInstanceRemoveConnection = modalFactory.openLittleModal('Delete file ' + _this.modalInputName, 'Delete ' + _this.modalInputName + ' from SysOS?', '.window--fileexplorer .window__main', 'question');
-					modalInstanceRemoveConnection.result.then(function (res) {
+					var modalInstanceDeleteFile = modalFactory.openRegistredModal("question", ".window--fileexplorer .window__main",
+                        {
+                            title: function () {
+                                return "Delete file " + _this.modalInputName;
+                            },
+                            text: function () {
+                                return "Delete " + _this.modalInputName + " from SysOS?";
+                            }
+                        }
+                    );
+					modalInstanceDeleteFile.result.then(function (res) {
 
 						if (res === true) return _this.deleteSelected();
 
@@ -344,8 +383,23 @@
 		 * Creates a new folder
 		 */
 		this.createFolder = function () {
-			var modalInstanceRemoveConnection = modalFactory.openLittleModal('Create new folder', 'Folder name', '.window--fileexplorer .window__main', 'input', 'Create', 'NewFolder');
-			modalInstanceRemoveConnection.result.then(function (res) {
+			var modalInstanceCreateFolder = modalFactory.openRegistredModal("input", ".window--fileexplorer .window__main",
+                {
+                    title: function () {
+                        return "Create new folder";
+                    },
+                    text: function () {
+                        return "Folder name";
+                    },
+                    button_text: function () {
+                        return "Create";
+                    },
+                    inputValue: function () {
+                        return "NewFolder";
+                    }
+                }
+            );
+			modalInstanceCreateFolder.result.then(function (res) {
 
 				return fileSystemFactory.createFolder(_this.localFileSystem.currentPath, res, function () {
 
@@ -414,8 +468,17 @@
 			if (keyEvent.which === 46) {
 				_this.modalInputName = _this.localFileSystem.currentData[_this.currentActive].filename;
 
-				var modalInstanceRemoveConnection = modalFactory.openLittleModal('Delete file ' + _this.modalInputName, 'Delete ' + _this.modalInputName + ' from SysOS?', '.window--fileexplorer .window__main', 'question');
-				modalInstanceRemoveConnection.result.then(function (res) {
+				var modalInstanceDeleteFile = modalFactory.openRegistredModal("question", ".window--fileexplorer .window__main",
+                    {
+                        title: function () {
+                            return "Delete file " + _this.modalInputName;
+                        },
+                        text: function () {
+                            return "Delete " + _this.modalInputName + " from SysOS?";
+                        }
+                    }
+                );
+                modalInstanceDeleteFile.result.then(function (res) {
 
 					if (res === true) return _this.deleteSelected();
 
@@ -423,8 +486,23 @@
 			} else if (keyEvent.which === 113) {
 				_this.fileToRename = _this.localFileSystem.currentData[_this.currentActive].filename;
 
-				var modalInstanceRemoveConnection = modalFactory.openLittleModal('Rename file', 'File name', '.window--fileexplorer .window__main', 'input', 'Rename', _this.fileToRename);
-				modalInstanceRemoveConnection.result.then(function (res) {
+				var modalInstanceRenameFile = modalFactory.openRegistredModal("input", ".window--fileexplorer .window__main",
+                    {
+                        title: function () {
+                            return "Rename file";
+                        },
+                        text: function () {
+                            return "File name";
+                        },
+                        button_text: function () {
+                            return "Rename";
+                        },
+                        inputValue: function () {
+                            return _this.fileToRename;
+                        }
+                    }
+                );
+                modalInstanceRenameFile.result.then(function (res) {
 
 					//TODO: check backdrop click
 					if (res !== false) {

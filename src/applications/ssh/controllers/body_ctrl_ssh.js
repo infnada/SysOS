@@ -142,7 +142,16 @@
 				_this.activeConnection = connection.uuid;
 				_this.setActiveConnection(connection);
 
-				var modalInstanceRemoveConnection = modalFactory.openLittleModal('Delete connection ' + (_this.getActiveConnection().description ? _this.getActiveConnection().description : _this.getActiveConnection().hostname), 'Remove the selected connection from the inventory?', '.window--ssh .window__main', 'question');
+				var modalInstanceRemoveConnection = modalFactory.openRegistredModal("question", ".window--ssh .window__main",
+                    {
+                        title: function () {
+                            return "Delete connection " + (_this.getActiveConnection().description ? _this.getActiveConnection().description : _this.getActiveConnection().hostname);
+                        },
+                        text: function () {
+                            return "Remove the selected connection from the inventory?";
+                        }
+                    }
+                );
 				modalInstanceRemoveConnection.result.then(function (res) {
 					if (res === true) connectionsFactory.deleteConnection(connection.uuid);
 

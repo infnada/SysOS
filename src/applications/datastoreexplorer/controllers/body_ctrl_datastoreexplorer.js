@@ -175,8 +175,23 @@
 
 					_this.fileToRename = $itemScope.file.path;
 
-					var modalInstanceRemoveConnection = modalFactory.openLittleModal('Rename file', 'File name', '.window--datastoreexplorer .window__main', 'input', 'Rename', $itemScope.file.path);
-					modalInstanceRemoveConnection.result.then(function (res) {
+					var modalInstanceRenameFile = modalFactory.openRegistredModal("input", ".window--datastoreexplorer .window__main",
+                        {
+                            title: function () {
+                                return "Rename file";
+                            },
+                            text: function () {
+                                return "File name";
+                            },
+                            button_text: function () {
+                                return "Rename";
+                            },
+                            inputValue: function () {
+                                return $itemScope.file.path;
+                            }
+                        }
+                    );
+					modalInstanceRenameFile.result.then(function (res) {
 
 						//TODO: check backdrop click
 						if (res !== false) {
@@ -193,8 +208,17 @@
 					if (angular.isUndefined($itemScope.file)) $itemScope.file = $itemScope.$parent.file;
 
 					_this.modalInputName = $itemScope.file.path;
-					var modalInstanceRemoveConnection = modalFactory.openLittleModal('Delete file ' + _this.modalInputName, 'Delete ' + _this.modalInputName + ' from datastore?', '.window--datastoreexplorer .window__main', 'question');
-					modalInstanceRemoveConnection.result.then(function (res) {
+					var modalInstanceDeleteFile = modalFactory.openRegistredModal("question", ".window--datastoreexplorer .window__main",
+                        {
+                            title: function () {
+                                return "Delete file " + _this.modalInputName;
+                            },
+                            text: function () {
+                                return "Delete " + _this.modalInputName + " from datastore?";
+                            }
+                        }
+                    );
+					modalInstanceDeleteFile.result.then(function (res) {
 
 						if (res === true) return _this.deleteSelected();
 
@@ -269,7 +293,13 @@
 		this.showDatastores = function (type) {
 
 			if (type === "vmware") {
-				var modalInstance = modalFactory.openLittleModal('Select Datastore', '', '.window--datastoreexplorer .window__main', 'DatastoreSelectable');
+				var modalInstance = modalFactory.openRegistredModal("DatastoreSelectable", ".window--datastoreexplorer .window__main",
+                    {
+                        title: function () {
+                            return "Select Datastore";
+                        }
+                    }
+                );
 				modalInstance.result.then(function (datastore) {
 					if (!datastore) return;
 
@@ -378,8 +408,23 @@
 		 */
 		this.createFolder = function () {
 
-			var modalInstanceRemoveConnection = modalFactory.openLittleModal('Create new folder', 'Folder name', '.window--datastoreexplorer .window__main', 'input', 'Create', 'NewFolder');
-			modalInstanceRemoveConnection.result.then(function (res) {
+			var modalInstanceCreateFolder = modalFactory.openRegistredModal("input", ".window--datastoreexplorer .window__main",
+                {
+                    title: function () {
+                        return "Create new folder";
+                    },
+                    text: function () {
+                        return "Folder name";
+                    },
+                    button_text: function () {
+                        return "Create";
+                    },
+                    inputValue: function () {
+                        return "NewFolder";
+                    }
+                }
+            );
+			modalInstanceCreateFolder.result.then(function (res) {
 
 				//TODO: check backdrop click
 				if (res !== false) {
@@ -563,8 +608,17 @@
 			if (keyEvent.which === 46) { // DEL
 				_this.modalInputName = _this.localFileSystem.currentData[_this.currentActive].path;
 
-				var modalInstanceRemoveConnection = modalFactory.openLittleModal('Delete file ' + _this.modalInputName, 'Delete ' + _this.modalInputName + ' from datastore?', '.window--datastoreexplorer .window__main', 'question');
-				modalInstanceRemoveConnection.result.then(function (res) {
+				var modalInstanceDeleteFile = modalFactory.openRegistredModal("question", ".window--datastoreexplorer .window__main",
+                    {
+                        title: function () {
+                            return "Delete file " + _this.modalInputName;
+                        },
+                        text: function () {
+                            return "Delete " + _this.modalInputName + " from datastore?";
+                        }
+                    }
+                );
+				modalInstanceDeleteFile.result.then(function (res) {
 
 					if (res === true) return _this.deleteSelected();
 
@@ -573,8 +627,23 @@
 			} else if (keyEvent.which === 113) { // F2
 				_this.fileToRename = _this.localFileSystem.currentData[_this.currentActive].path;
 
-				var modalInstanceRemoveConnection = modalFactory.openLittleModal('Rename file', 'File name', '.window--datastoreexplorer .window__main', 'input', 'Rename', _this.fileToRename);
-				modalInstanceRemoveConnection.result.then(function (res) {
+				var modalInstanceRenameFile = modalFactory.openRegistredModal("input", ".window--datastoreexplorer .window__main",
+                    {
+                        title: function () {
+                            return "Rename file";
+                        },
+                        text: function () {
+                            return "File name";
+                        },
+                        button_text: function () {
+                            return "Rename";
+                        },
+                        inputValue: function () {
+                            return _this.fileToRename;
+                        }
+                    }
+                );
+				modalInstanceRenameFile.result.then(function (res) {
 
 					//TODO: check backdrop click
 					if (res !== false) {

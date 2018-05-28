@@ -362,7 +362,16 @@
 				_this.activeConnection = uuid;
 				_this.setActiveConnection(uuid);
 
-				var modalInstanceRemoveConnection = modalFactory.openLittleModal('Delete connection ' + (_this.getActiveConnection().description ? _this.getActiveConnection().description : _this.getActiveConnection().hostname), 'Remove the selected connection from the inventory?', '.window--smanager .window__main', 'question');
+				var modalInstanceRemoveConnection = modalFactory.openRegistredModal("question", ".window--smanager .window__main",
+                    {
+                        title: function () {
+                            return "Delete connection " + (_this.getActiveConnection().description ? _this.getActiveConnection().description : _this.getActiveConnection().hostname);
+                        },
+                        text: function () {
+                            return "Remove the selected connection from the inventory?";
+                        }
+                    }
+                );
 				modalInstanceRemoveConnection.result.then(function (res) {
 
 					if (res === true) connectionsFactory.deleteConnection(uuid);

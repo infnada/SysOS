@@ -4,14 +4,14 @@
 
 		$templateCache.put('templates/utils/input.html',
 			'<div class="modal-header"> \
-			  <div class="modal-title" id="modal-title">{{title}}</div> \
+			  <div class="modal-title" id="modal-title">{{imC.title}}</div> \
 			</div> \
 			<div class="modal-body" id="modal-body"> \
-			  <input type="text" class="form-control" set-focus placeholder="{{::text}}" ng-model="inputValue" /> \
+			  <input type="text" class="form-control" set-focus placeholder="{{::imC.text}}" ng-model=imC."inputValue" /> \
 			</div> \
 			<div class="modal-footer"> \
-			  <button class="btn btn-primary" type="button" ng-click="no()">Cancel</button> \
-			  <button class="btn btn-default" type="button" ng-click="yes_input()">{{::button_text}}</button> \
+			  <button class="btn btn-primary" type="button" ng-click="imC.no()">Cancel</button> \
+			  <button class="btn btn-default" type="button" ng-click="imC.yes()">{{::imC.button_text}}</button> \
 			</div>'
 		);
 

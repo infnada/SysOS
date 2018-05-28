@@ -1,8 +1,8 @@
 (function () {
   "use strict";
-  myApp.run(['$templateCache', function ($templateCache) {
+    backupsmApp.run(['$templateCache', function ($templateCache) {
 
-    $templateCache.put('templates/utils/recoveryWizard.html',
+    $templateCache.put('applications/backupsm/modals/recoveryWizard.html',
       '<div class="modal-header"> \
         <div class="modal-title" id="modal-title">{{wmC.title}}</div> \
       </div> \
