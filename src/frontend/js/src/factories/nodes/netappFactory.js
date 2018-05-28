@@ -432,7 +432,10 @@
     };
 
     var createSnapshot = function (credential, host, port, vfiler, volume) {
-      var xml = "<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin'" + (vfiler ? " vfiler='" + vfiler + "'" : "") + "><snapshot-create><async>False</async><snapshot>" + volume + "_SysOS_" + new Date().toISOString().split(".")[0].replace(/:/g,"") + "</snapshot><volume>" + volume + "</volume></snapshot-create></netapp>";
+      var snapshot_name = volume + "_SysOS_" + new Date().toISOString().split(".")[0].replace(/:/g,"");
+
+
+      var xml = "<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin'" + (vfiler ? " vfiler='" + vfiler + "'" : "") + "><snapshot-create><async>False</async><snapshot>" + snapshot_name + "</snapshot><volume>" + volume + "</volume></snapshot-create></netapp>";
 
       return ServerFactory.callNetApp(credential, host, port, null, xml).then(function (data) {
         if (data.data.status === "error") return errorHandler(data.data.data.errno);

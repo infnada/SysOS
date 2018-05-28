@@ -58,7 +58,7 @@
 
 					if (last_snapshot.name.startsWith("SysOS_backup_")) {
 						$log.debug("Backups Manager [%s] -> Deleting VM snapshot -> snapshot [%s]", data.uuid, last_snapshot.snapshot.name);
-						return vmwareFactory.removeSnapshot(data.esxi_credential, data.esxi_address, data.esxi_port, last_snapshot.snapshot.name);
+						return vmwareFactory.removeSnapshot(data.esxi_credential, data.esxi_address, data.esxi_port, last_snapshot.snapshot.name, true);
 					}
 
 					return res;

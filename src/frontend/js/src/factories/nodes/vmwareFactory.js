@@ -287,8 +287,8 @@
 			});
 		};
 
-		var createTask = function (credential, host, port, task_id) {
-			var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><CreateTask xmlns="urn:vim25"><_this type="TaskManager">TaskManager</_this><obj type="VirtualMachine">vm-322</obj><taskTypeId>' + task_id + '</taskTypeId><initiatedBy>VSPHERE.LOCAL\\Administrator</initiatedBy><cancelable>false</cancelable></CreateTask></soap:Body></soap:Envelope>';
+		var createTask = function (credential, host, port, taskTypeId, objectType, objectId) {
+			var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><CreateTask xmlns="urn:vim25"><_this type="TaskManager">TaskManager</_this><obj type="' + objectType + '">' + objectId + '</obj><taskTypeId>' + taskTypeId + '</taskTypeId><initiatedBy>SysOS Administrator</initiatedBy><cancelable>false</cancelable></CreateTask></soap:Body></soap:Envelope>';
 			return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
 				if (data.data.status === "error") return errorHandler(data.data.data);
 
@@ -297,7 +297,7 @@
 		};
 
 		var setTaskState = function (credential, host, port, task_id, state) {
-			var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><SetTaskState xmlns="urn:vim25"><_this type="Task">' + task_id + '</_this><state>' + state + '</state></SetTaskState></soap:Body></soap:Envelope>';
+			var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><SetTaskState xmlns="urn:vim25"><_this type="Task">' + task_id + '</_this><state>' + state + '</state>' + (state === 'error' ? '<fault><faultMessage><key>0</key><message>Error</message></faultMessage></fault>': '') + '</SetTaskState></soap:Body></soap:Envelope>';
 			return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
 				if (data.data.status === "error") return errorHandler(data.data.data);
 
@@ -310,7 +310,7 @@
 			return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
 				if (data.data.status === "error") return errorHandler(data.data.data);
 
-				return validResponse(parseVMwareObject(data.data.data.response["soapenv:Envelope"]["soapenv:Body"][0].SetTaskStateResponse[0]));
+				return validResponse(parseVMwareObject(data.data.data.response["soapenv:Envelope"]["soapenv:Body"][0].UpdateProgressResponse[0]));
 			});
 		};
 
@@ -798,8 +798,8 @@
 			});
 		};
 
-		var removeSnapshot = function (credential, host, port, snapshot) {
-			var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><RemoveSnapshot_Task xmlns="urn:vim25"><_this type="VirtualMachineSnapshot">' + snapshot + '</_this><removeChildren>true</removeChildren></RemoveSnapshot_Task></soap:Body></soap:Envelope>';
+		var removeSnapshot = function (credential, host, port, snapshot, remove_children) {
+			var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><RemoveSnapshot_Task xmlns="urn:vim25"><_this type="VirtualMachineSnapshot">' + snapshot + '</_this><removeChildren>' + remove_children + '</removeChildren></RemoveSnapshot_Task></soap:Body></soap:Envelope>';
 			return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
 				if (data.data.status === "error") return errorHandler(data.data.data);
 
