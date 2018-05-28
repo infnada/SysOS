@@ -3,8 +3,8 @@
  */
 
 (function () {
-    "use strict";
-    myApp.factory('modalFactory', ['$uibModal', '$document', function ($uibModal, $document) {
+    'use strict';
+    SysOS.factory('modalFactory', ['$uibModal', '$document', function ($uibModal, $document) {
         var modalInstances = [];
         var registredModals = [];
 
@@ -86,10 +86,10 @@
          * Register basic modals
          */
         registerModal({
-            modalId: "plain",
-            templateUrl: "templates/utils/modal.html",
-            size: "sm",
-            controllerAs: "pmC",
+            modalId: 'plain',
+            templateUrl: 'templates/utils/modal.html',
+            size: 'sm',
+            controllerAs: 'pmC',
             controller: ['title', 'text', function (title, text) {
                 this.title = title;
                 this.text = text;
@@ -97,10 +97,10 @@
         });
 
         registerModal({
-            modalId: "question",
-            templateUrl: "templates/utils/question.html",
-            size: "sm",
-            controllerAs: "qmC",
+            modalId: 'question',
+            templateUrl: 'templates/utils/question.html',
+            size: 'sm',
+            controllerAs: 'qmC',
             controller: ['title', 'text', '$uibModalInstance', function (title, text, $uibModalInstance) {
                 this.title = title;
                 this.text = text;
@@ -116,10 +116,10 @@
         });
 
         registerModal({
-            modalId: "input",
-            templateUrl: "templates/utils/input.html",
-            size: "sm",
-            controllerAs: "imC",
+            modalId: 'input',
+            templateUrl: 'templates/utils/input.html',
+            size: 'sm',
+            controllerAs: 'imC',
             controller: ['title', 'text', 'button_text', 'inputValue', '$uibModalInstance', function (title, text, button_text, inputValue, $uibModalInstance) {
                 var _this = this;
                 this.title = title;

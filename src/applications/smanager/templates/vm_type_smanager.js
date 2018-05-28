@@ -1,14 +1,14 @@
 (function () {
-  "use strict";
-  smanagerApp.run(['$templateCache', function($templateCache) {
+    'use strict';
+    smanagerApp.run(['$templateCache', function ($templateCache) {
 
-    $templateCache.put('templates/applications/vm-type-smanager.html',
-      '<div class="row"> \
-        <div class="col-lg-12"> \
-          <div class="col-sm-4">{{smB.getActiveConnection()}}</div> \
-        </div> \
-      </div>'
-    );
+        $templateCache.put('templates/applications/vm-type-smanager.html',
+            '<div class="row"> \
+              <div class="col-lg-12"> \
+                <div class="col-sm-4">{{smB.getActiveConnection()}}</div> \
+              </div> \
+            </div>'
+        );
 
-  }]);
+    }]);
 }());

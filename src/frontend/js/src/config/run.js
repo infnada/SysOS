@@ -1,118 +1,117 @@
 (function () {
-	"use strict";
-	myApp.run(['$rootScope', 'ServerFactory', 'ApplicationsFactory', 'socket', 'connectionsFactory', '$injector', '$ocLazyLoad',
-		function ($rootScope, ServerFactory, ApplicationsFactory, socket, connectionsFactory, $injector, $ocLazyLoad) {
+    'use strict';
+    SysOS.run(['$rootScope', 'ServerFactory', 'ApplicationsFactory', 'socket', 'connectionsFactory', '$injector', '$ocLazyLoad',
+        function ($rootScope, ServerFactory, ApplicationsFactory, socket, connectionsFactory, $injector, $ocLazyLoad) {
 
-			angular.element(window).bind('dragover', function (e) {
-				e.preventDefault();
-			});
-			angular.element(window).bind('drop', function (e) {
-				e.preventDefault();
-			});
-			angular.element(window).bind('contextmenu', function (e) {
-				e.preventDefault();
-			});
+            angular.element(window).bind('dragover', function (e) {
+                e.preventDefault();
+            });
+            angular.element(window).bind('drop', function (e) {
+                e.preventDefault();
+            });
+            angular.element(window).bind('contextmenu', function (e) {
+                e.preventDefault();
+            });
 
-			/*
-			 * Init
-			 */
+            /*
+             * Init
+             */
 
-			// Ensure no application is open
-			$rootScope.taskbar__item_open = null;
+            // Ensure no application is open
+            $rootScope.taskbar__item_open = null;
 
-			ApplicationsFactory.getInstalledApplications().then(function (data) {
+            ApplicationsFactory.getInstalledApplications().then(function (data) {
 
-				angular.forEach(data, function (application) {
+                angular.forEach(data, function (application) {
 
-					var module = application.filename.replace("application__","").replace(".min.js","");
+                    var module = application.filename.replace('application__', '').replace('.min.js', '');
 
-					$ocLazyLoad.load({
-						name: module + 'App',
-						files: ['/getApplicationFile/' + application.filename]
-					}).then(function () {
-						//console.log($injector.get(module + 'App'));
-						//var module = application.filename.replace("application__","").replace(".min.js","");
-						//$injector.get(module + 'App').run();
-					});
+                    $ocLazyLoad.load({
+                        name: module + 'App',
+                        files: ['/getApplicationFile/' + application.filename]
+                    }).then(function () {
+                        //console.log($injector.get(module + 'App'));
+                        //var module = application.filename.replace("application__","").replace(".min.js","");
+                        //$injector.get(module + 'App').run();
+                    });
 
-				});
-			});
+                });
+            });
 
-			// Get Task Bar pinned applications
-			ServerFactory
-			.getConfigFile('desktop/task_bar.json', function (data) {
+            // Get Task Bar pinned applications
+            ServerFactory
+            .getConfigFile('desktop/task_bar.json', function (data) {
 
-				// Register Start button
-				ApplicationsFactory.registerTaskBarApplication({"id": "start", "pinned": true});
+                // Register Start button
+                ApplicationsFactory.registerTaskBarApplication({'id': 'start', 'pinned': true});
 
-				// Register every pinned application
-				angular.forEach(data.data, function (application) {
-					ApplicationsFactory.registerTaskBarApplication(application);
-				});
-			}, function () {
-				console.log("Error");
-			});
+                // Register every pinned application
+                angular.forEach(data.data, function (application) {
+                    ApplicationsFactory.registerTaskBarApplication(application);
+                });
+            }, function () {
+                console.log('Error');
+            });
 
-			// Get express session
-			ServerFactory
-			.getSession(function () {
+            // Get express session
+            ServerFactory
+            .getSession(function () {
 
-				socket.on('connect', function () {
+                socket.on('connect', function () {
 
 
+                });
+                socket.on('disconnect', function (err) {
+                    console.log(err);
+                    socket.io.reconnection(false);
+                });
+                socket.on('error', function (err) {
+                    console.log(err);
+                });
 
-				});
-				socket.on('disconnect', function (err) {
-					console.log(err);
-					socket.io.reconnection(false)
-				});
-				socket.on('error', function (err) {
-					console.log(err);
-				});
+                //SMANAGER
+                socket.on('smanager__prop', function (data) {
+                    var smanagerFactory = $injector.get('smanagerFactory');
 
-				//SMANAGER
-				socket.on('smanager__prop', function (data) {
-					var smanagerFactory = $injector.get('smanagerFactory');
+                    if (angular.isObject(data)) console.log(data);
+                    smanagerFactory.newProp(data);
+                });
 
-					if (angular.isObject(data)) console.log(data);
-					smanagerFactory.newProp(data);
-				});
+                //SSH
+                socket.on('ssh__prop', function (data) {
+                    var sshFactory = $injector.get('sshFactory');
 
-				//SSH
-				socket.on('ssh__prop', function (data) {
-					var sshFactory = $injector.get('sshFactory');
+                    if (angular.isObject(data)) console.log(data);
+                    sshFactory.newProp(data);
+                });
+                socket.on('ssh__data', function (data) {
+                    var sshFactory = $injector.get('sshFactory');
 
-					if (angular.isObject(data)) console.log(data);
-					sshFactory.newProp(data);
-				});
-				socket.on('ssh__data', function (data) {
-					var sshFactory = $injector.get('sshFactory');
+                    sshFactory.newData(data);
+                });
 
-					sshFactory.newData(data);
-				});
+                //SFTP
+                socket.on('sftp__prop', function (data) {
+                    var sftpFactory = $injector.get('sftpFactory');
 
-				//SFTP
-				socket.on('sftp__prop', function (data) {
-					var sftpFactory = $injector.get('sftpFactory');
+                    if (angular.isObject(data)) console.log(data);
+                    sftpFactory.newProp(data);
+                });
+                socket.on('sftp__data', function (data) {
+                    var sftpFactory = $injector.get('sftpFactory');
 
-					if (angular.isObject(data)) console.log(data);
-					sftpFactory.newProp(data);
-				});
-				socket.on('sftp__data', function (data) {
-					var sftpFactory = $injector.get('sftpFactory');
+                    sftpFactory.newData(data);
+                });
+                socket.on('sftp__progress', function (data) {
+                    var sftpFactory = $injector.get('sftpFactory');
 
-					sftpFactory.newData(data);
-				});
-				socket.on('sftp__progress', function (data) {
-					var sftpFactory = $injector.get('sftpFactory');
+                    sftpFactory.newProgress(data);
+                });
 
-					sftpFactory.newProgress(data);
-				});
+            }, function () {
+                //Error
+                console.log('error');
+            });
 
-			}, function () {
-				//Error
-				console.log("error");
-			});
-
-		}]);
+        }]);
 }());

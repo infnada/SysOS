@@ -1,10 +1,10 @@
 (function () {
-  "use strict";
-  myApp.config(function (toastrConfig) {
-    angular.extend(toastrConfig, {
-      progressBar: true,
-      tapToDismiss: true,
-      timeOut: 10000,
+    'use strict';
+    SysOS.config(function (toastrConfig) {
+        angular.extend(toastrConfig, {
+            progressBar: true,
+            tapToDismiss: true,
+            timeOut: 10000
+        });
     });
-  });
 }());

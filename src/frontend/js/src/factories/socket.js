@@ -3,15 +3,15 @@
  */
 
 (function () {
-  "use strict";
-  myApp.factory('socket', ['socketFactory', function (socketFactory) {
+    'use strict';
+    SysOS.factory('socket', ['socketFactory', function (socketFactory) {
 
-    var myIoSocket = io.connect("localhost");
+        var myIoSocket = io.connect('localhost');
 
-    return socketFactory({
-      ioSocket: myIoSocket
-    });
+        return socketFactory({
+            ioSocket: myIoSocket
+        });
 
-  }]);
+    }]);
 
 }());

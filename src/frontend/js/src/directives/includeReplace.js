@@ -1,12 +1,12 @@
 (function () {
-  "use strict";
-  myApp.directive('includeReplace', [function () {
-    return {
-      require: 'ngInclude',
-      restrict: 'A', /* optional */
-      link: function (scope, el, attrs) {
-        el.replaceWith(el.children());
-      }
-    };
-  }]);
+    'use strict';
+    SysOS.directive('includeReplace', [function () {
+        return {
+            require: 'ngInclude',
+            restrict: 'A',
+            link: function (scope, el) {
+                el.replaceWith(el.children());
+            }
+        };
+    }]);
 }());
