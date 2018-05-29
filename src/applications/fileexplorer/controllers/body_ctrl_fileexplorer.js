@@ -221,8 +221,7 @@
                         );
                         modalInstanceRenameFile.result.then(function (res) {
 
-                            //TODO: check backdrop click
-                            if (res !== false) {
+                            if (res) {
                                 _this.modalInputName = res;
                                 _this.renameFile();
                             }
@@ -415,7 +414,6 @@
              * Deletes selected files or folders
              */
             this.deleteSelected = function () {
-                console.log(_this.modalInputName);
                 return fileSystemFactory.deleteFile(_this.localFileSystem.currentPath, _this.modalInputName, function (data) {
                     _this.reloadPath();
                 });
@@ -504,8 +502,7 @@
                     );
                     modalInstanceRenameFile.result.then(function (res) {
 
-                        //TODO: check backdrop click
-                        if (res !== false) {
+                        if (res) {
                             _this.modalInputName = res;
                             _this.renameFile();
                         }

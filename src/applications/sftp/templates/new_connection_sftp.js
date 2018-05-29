@@ -24,7 +24,7 @@
                   </select> \
                 </div> \
                 <div class="col-sm-12"> \
-                  <small class="pull-left text-primary cursor-pointer" ng-click="sftpB.manageCredentials()">Manage Credentials</small> \
+                  <small class="pull-left text-primary cursor-pointer" ng-click="sftpB.manageCredentials(); $event.stopPropagation();">Manage Credentials</small> \
                 </div> \
               </div> \
               <div class="form-group"> \

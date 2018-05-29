@@ -98,7 +98,7 @@
                 this.text = text;
 
 	            this.close = function () {
-		            $uibModalInstance.close("close");
+		            $uibModalInstance.close();
 	            };
             }]
         });
@@ -117,11 +117,11 @@
                 };
 
                 this.no = function () {
-                    $uibModalInstance.close(false);
+                    $uibModalInstance.close();
                 };
 
 	            this.close = function () {
-		            $uibModalInstance.close("close");
+		            $uibModalInstance.close();
 	            };
             }]
         });
@@ -143,11 +143,11 @@
                 };
 
                 this.no = function () {
-                    $uibModalInstance.close(false);
+                    $uibModalInstance.close();
                 };
 
 	            this.close = function () {
-		            $uibModalInstance.close("close");
+		            $uibModalInstance.close();
 	            };
             }]
         });

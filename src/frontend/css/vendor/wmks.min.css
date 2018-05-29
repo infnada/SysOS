@@ -10,7 +10,6 @@
  *    Use CSS3 for touch devices as jquery effects break when browser handles
  *    orientation changes, or page bouncing.
  *
- *    TODO: Need to handle Retina mode for iPad.
  */
 
 /*

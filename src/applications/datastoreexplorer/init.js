@@ -26,7 +26,7 @@ var datastoreexplorerApp = angular.module('datastoreexplorerApp', []);
                 this.datastores = [];
 
 	            this.close = function () {
-		            $uibModalInstance.close("close");
+		            $uibModalInstance.close();
 	            };
 
                 this.selectDatastore = function () {

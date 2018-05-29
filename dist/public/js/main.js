@@ -2652,7 +2652,7 @@ var SysOS = angular.module('SysOS', [
                 this.text = text;
 
 	            this.close = function () {
-		            $uibModalInstance.close("close");
+		            $uibModalInstance.close();
 	            };
             }]
         });
@@ -2671,11 +2671,11 @@ var SysOS = angular.module('SysOS', [
                 };
 
                 this.no = function () {
-                    $uibModalInstance.close(false);
+                    $uibModalInstance.close();
                 };
 
 	            this.close = function () {
-		            $uibModalInstance.close("close");
+		            $uibModalInstance.close();
 	            };
             }]
         });
@@ -2697,11 +2697,11 @@ var SysOS = angular.module('SysOS', [
                 };
 
                 this.no = function () {
-                    $uibModalInstance.close(false);
+                    $uibModalInstance.close();
                 };
 
 	            this.close = function () {
-		            $uibModalInstance.close("close");
+		            $uibModalInstance.close();
 	            };
             }]
         });
@@ -4557,10 +4557,10 @@ var SysOS = angular.module('SysOS', [
               <div class="window__controls window__controls--right"><a class="window__close" ng-click="imC.close(); $event.stopPropagation();"><i class="fa fa-close"></i></a></div> \
             </div> \
             <div class="modal-body" id="modal-body"> \
-              <input type="text" class="form-control" set-focus placeholder="{{::imC.text}}" ng-model=imC."inputValue" /> \
+              <input type="text" class="form-control" set-focus placeholder="{{::imC.text}}" ng-model="imC.inputValue" /> \
             </div> \
             <div class="modal-footer"> \
-              <button class="btn btn-primary" type="button" ng-click="imC.no()">Cancel</button> \
+              <button class="btn btn-primary" type="button" ng-click="imC.no()" autofocus>Cancel</button> \
               <button class="btn btn-default" type="button" ng-click="imC.yes()">{{::imC.button_text}}</button> \
             </div>'
         );
@@ -4600,7 +4600,7 @@ var SysOS = angular.module('SysOS', [
               {{::qmC.text}} \
             </div> \
             <div class="modal-footer"> \
-              <button class="btn btn-primary" type="button" ng-click="qmC.no()">No</button> \
+              <button class="btn btn-primary" type="button" ng-click="qmC.no()" autofocus>No</button> \
               <button class="btn btn-default" type="button" ng-click="qmC.yes()">Yes</button> \
             </div>'
         );

@@ -24,7 +24,7 @@
                   </select> \
                 </div> \
                 <div class="col-sm-12"> \
-                  <small class="pull-left text-primary cursor-pointer" ng-click="smB.manageCredentials()">Manage Credentials</small> \
+                  <small class="pull-left text-primary cursor-pointer" ng-click="smB.manageCredentials(); $event.stopPropagation();">Manage Credentials</small> \
                 </div> \
               </div> \
               <div class="form-group" ng-if="smB.Form.so != \'windows\'"> \

@@ -11,7 +11,7 @@
               {{::qmC.text}} \
             </div> \
             <div class="modal-footer"> \
-              <button class="btn btn-primary" type="button" ng-click="qmC.no()">No</button> \
+              <button class="btn btn-primary" type="button" ng-click="qmC.no()" autofocus>No</button> \
               <button class="btn btn-default" type="button" ng-click="qmC.yes()">Yes</button> \
             </div>'
         );

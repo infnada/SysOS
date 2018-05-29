@@ -193,8 +193,7 @@
                         );
                         modalInstanceRenameFile.result.then(function (res) {
 
-                            //TODO: check backdrop click
-                            if (res !== false) {
+                            if (res) {
                                 _this.modalInputName = res;
                                 _this.renameFile();
                             }
@@ -426,8 +425,7 @@
                 );
                 modalInstanceCreateFolder.result.then(function (res) {
 
-                    //TODO: check backdrop click
-                    if (res !== false) {
+                    if (res) {
                         modalFactory.openLittleModal('PLEASE WAIT', 'Creating folder...', '.window--datastoreexplorer .window__main', 'plain');
 
                         return vmwareFactory.createFolderToDatastore(
@@ -645,8 +643,7 @@
                     );
                     modalInstanceRenameFile.result.then(function (res) {
 
-                        //TODO: check backdrop click
-                        if (res !== false) {
+                        if (res) {
                             _this.modalInputName = res;
                             _this.renameFile();
                         }

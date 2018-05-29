@@ -35,7 +35,7 @@ var backupsmApp = angular.module('backupsmApp', []);
                 this.ESXihosts = ESXihosts;
 
 	            this.close = function () {
-		            $uibModalInstance.close("close");
+		            $uibModalInstance.close();
 	            };
 
                 this.selectESXihost = function () {
@@ -59,7 +59,7 @@ var backupsmApp = angular.module('backupsmApp', []);
                 this.powerVM = false;
 
 	            this.close = function () {
-		            $uibModalInstance.close("close");
+		            $uibModalInstance.close();
 	            };
 
                 this.getSnapshotName = function () {
