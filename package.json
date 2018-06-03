@@ -22,6 +22,7 @@
     "angular-ui-codemirror": "^0.3.0",
     "angular-ui-sortable": "^0.18.0",
     "angular-ui-switch": "^0.1.1",
+    "angular-ui-tree": "^2.22.6",
     "angular-uuid": "0.0.4",
     "bootstrap": "^3.3.7",
     "codemirror": "^5.37.0",

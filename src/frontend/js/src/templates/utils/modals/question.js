@@ -2,7 +2,7 @@
     'use strict';
     SysOS.run(['$templateCache', function ($templateCache) {
 
-        $templateCache.put('templates/utils/question.html',
+        $templateCache.put('templates/utils/modals/question.html',
             '<div class="modal-header"> \
               <div class="modal-title" id="modal-title">{{qmC.title}}</div> \
               <div class="window__controls window__controls--right"><a class="window__close" ng-click="qmC.close(); $event.stopPropagation();"><i class="fa fa-close"></i></a></div> \

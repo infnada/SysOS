@@ -90,7 +90,7 @@
          */
         registerModal({
             modalId: 'plain',
-            templateUrl: 'templates/utils/modal.html',
+            templateUrl: 'templates/utils/modals/plain.html',
             size: 'sm',
             controllerAs: 'pmC',
             controller: ['title', 'text', '$uibModalInstance', function (title, text, $uibModalInstance) {
@@ -105,7 +105,7 @@
 
         registerModal({
             modalId: 'question',
-            templateUrl: 'templates/utils/question.html',
+            templateUrl: 'templates/utils/modals/question.html',
             size: 'sm',
             controllerAs: 'qmC',
             controller: ['title', 'text', '$uibModalInstance', function (title, text, $uibModalInstance) {
@@ -128,7 +128,7 @@
 
         registerModal({
             modalId: 'input',
-            templateUrl: 'templates/utils/input.html',
+            templateUrl: 'templates/utils/modals/input.html',
             size: 'sm',
             controllerAs: 'imC',
             controller: ['title', 'text', 'button_text', 'inputValue', '$uibModalInstance', function (title, text, button_text, inputValue, $uibModalInstance) {

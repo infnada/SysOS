@@ -71,6 +71,7 @@ module.exports = function (grunt) {
                     'node_modules/codemirror/lib/codemirror.css',
                     'node_modules/angular-toastr/dist/angular-toastr.min.css',
                     'node_modules/angular-ui-switch/angular-ui-switch.css',
+	                'node_modules/angular-ui-tree/dist/angular-ui-tree.min.css',
                     '<%= dir.dev_frontend %>/css/vendor/wmks.min.css'
                 ]
             },
@@ -91,6 +92,7 @@ module.exports = function (grunt) {
                     'node_modules/angular-toastr/dist/angular-toastr.tpls.js',
                     'node_modules/angular-ui-bootstrap/dist/ui-bootstrap-tpls.js',
                     'node_modules/angular-ui-codemirror/src/ui-codemirror.js',
+	                'node_modules/angular-ui-tree/dist/angular-ui-tree.min.js',
                     'node_modules/angular-ui-sortable/dist/sortable.js',
                     'node_modules/angular-uuid/angular-uuid.js',
                     'node_modules/ng-file-upload/dist/ng-file-upload-shim.js',

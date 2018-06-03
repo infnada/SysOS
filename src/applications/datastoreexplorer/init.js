@@ -30,6 +30,7 @@ var datastoreexplorerApp = angular.module('datastoreexplorerApp', []);
 	            };
 
                 this.selectDatastore = function () {
+	                if (!_this.selectedDatastore || _this.selectedDatastore == null) return;
                     $uibModalInstance.close(_this.selectedDatastore);
                 };
 

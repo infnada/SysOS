@@ -16,6 +16,7 @@
              * type {String} [vmware, netapp] New node type to check against
              * uuid {uuid} Main node uuid
              */
+            //TODO: some storages could have the same LIF IP!!! and links will be wrong
             var checkLinkBetweenManagedNodes = function (type, uuid) {
 
                 var connection = connectionsFactory.getConnectionByUuid(uuid);

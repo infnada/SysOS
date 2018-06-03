@@ -431,8 +431,8 @@
             });
         };
 
-        var createSnapshot = function (credential, host, port, vfiler, volume) {
-            var snapshot_name = volume + '_SysOS_' + new Date().toISOString().split('.')[0].replace(/:/g, '');
+        var createSnapshot = function (credential, host, port, vfiler, volume, name) {
+            var snapshot_name = volume + '_SysOS_' + (name ? name : '') + '_' + new Date().toISOString().split('.')[0].replace(/:/g, '');
 
 
             var xml = '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'' + (vfiler ? ' vfiler=\'' + vfiler + '\'' : '') + '><snapshot-create><async>False</async><snapshot>' + snapshot_name + '</snapshot><volume>' + volume + '</volume></snapshot-create></netapp>';

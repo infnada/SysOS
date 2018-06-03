@@ -454,6 +454,13 @@
 
             };
 
+            this.getLinkByVMwareDatastore = function (virtual_uuid, datastore_name) {
+                var link = smanagerFactory.getLinkByVMwareDatastore(virtual_uuid, datastore_name);
+
+                if (link) return connectionsFactory.getConnectionByUuid(link.storage);
+		        return false;
+            };
+
             /*
              * LINUX MONITOR
              */
@@ -712,7 +719,7 @@
                     }
                 },
                 {
-                    text: '<i class="fa fa-delete"></i> Delete SnapShot',
+                    text: '<i class="fa fa-trash"></i> Delete SnapShot',
                     click: function ($itemScope, $event, modelValue, text, $li) {
                         //TODO
                     }
@@ -1029,23 +1036,20 @@
                 ],
                 {
                     text: '<i class="fa fa-server"></i> Backup',
-                    click: function ($itemScope, $event, modelValue, text, $li) {
-                        ApplicationsFactory.openApplication('backupsm');
-                        ApplicationsFactory.toggleApplication('backupsm');
+                    click: function ($itemScope) {
 
                         // Set _this.activeConnection manually to make sure _this.getActiveConnection() gets correct
                         // results
                         _this.activeConnection = $itemScope.vm.config.uuid;
                         _this.setActiveConnection($itemScope.vm.config.uuid);
 
-                        //TODO
+	                    if (!smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name)) return modalFactory.openLittleModal('Error while creating Backup', 'Not found any compatible NetApp storage. Make sure VMs that you want to backup are inside a NetApp volume and this is managed by SysOS.', '.window--smanager .window__main', 'plain');
+
+	                    ApplicationsFactory.openApplication('backupsm');
+	                    ApplicationsFactory.toggleApplication('backupsm');
+
                         $timeout(function () {
                             $rootScope.$broadcast('backupsm__backup_vm', {
-                                storage: connectionsFactory.getConnectionByUuid(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).storage),
-                                /* jshint ignore:start */
-                                vserver: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).vserver)),
-                                volume: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).volume)),
-                                /* jshint ignore:end */
                                 vm: $itemScope.vm,
                                 connection: _this.getActiveConnection(1)
                             });
@@ -1061,7 +1065,6 @@
                         _this.activeConnection = $itemScope.vm.config.uuid;
                         _this.setActiveConnection($itemScope.vm.config.uuid);
 
-                        //TODO
                         $timeout(function () {
                             return smanagerFactory.refreshVM(eval(connectionsFactory.getObjectByUuidMapping($itemScope.vm.config.uuid)), _this.getActiveConnection(1)); // jshint ignore:line
                         }, 100);

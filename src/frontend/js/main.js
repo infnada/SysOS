@@ -18,5 +18,6 @@ var SysOS = angular.module('SysOS', [
     'ui.bootstrap',
     'angular-uuid',
     'oc.lazyLoad',
-    'ui.sortable'
+    'ui.sortable',
+    'ui.tree'
 ]);

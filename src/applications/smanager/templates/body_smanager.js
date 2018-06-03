@@ -129,9 +129,11 @@
                           </uib-accordion-heading> \
                           <uib-accordion close-others="false"> \
                             <!-- Datastores --> \
-                            <div class="menu__item panel-heading" ng-repeat="datastore in virtual.datastores" ng-class="{\'active\': datastore.obj.name == smB.activeConnection}" ng-click="smB.setActiveConnection(datastore, \'datastore\')"> \
+                            <div class="menu__item panel-heading" ng-repeat="datastore in virtual.datastores | orderBy:\'info.name\'" ng-class="{\'active\': datastore.obj.name == smB.activeConnection}" ng-click="smB.setActiveConnection(datastore, \'datastore\')"> \
                               <h4 class="panel-title"> \
-                                <i class="vs-icon vsphere-icon-datastore level-four p-l-sm"></i> {{::datastore.info.name}} \
+                                <i class="vs-icon vsphere-icon-datastore level-four p-l-sm"></i> \
+                                <img class="m-s-xss" src="/img/NetApp-logo.png" width="16px" src="/img/NetApp-logo.png" ng-if="::smB.getLinkByVMwareDatastore(virtual.uuid, datastore.obj.name).type === \'NetApp\'" uib-tooltip="{{::smB.getLinkByVMwareDatastore(virtual.uuid, datastore.obj.name).name}}"> \
+                                {{::datastore.info.name}} \
                               </h4> \
                             </div> \
                           </uib-accordion> \

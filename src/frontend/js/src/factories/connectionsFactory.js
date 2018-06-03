@@ -304,7 +304,6 @@
              */
             var connect = function (connection) {
 
-                // TODO: this is an anti-pattern
                 var smanagerFactory = $injector.get('smanagerFactory');
 
                 // New connection

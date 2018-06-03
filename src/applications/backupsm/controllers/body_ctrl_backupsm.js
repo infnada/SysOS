@@ -9,7 +9,7 @@
             this.showNewBackupType = true;
             this.showRestore = false;
             this.restores = [];
-            this.activeRestore = null;
+            this.active = null;
 
             /*
              * Bindings
@@ -20,10 +20,16 @@
                 _this.restores = newValue;
             });
 
+	        $scope.$watch(function () {
+		        return backupsmFactory.getBackups();
+	        }, function (newValue) {
+		        _this.backups = newValue;
+	        });
+
             $scope.$watch(function () {
-                return backupsmFactory.getActiveRestore();
+                return backupsmFactory.getActive();
             }, function (newValue) {
-                _this.activeRestore = newValue;
+                _this.active = newValue;
             });
 
             /*
@@ -37,8 +43,8 @@
             /*
              * Returns restore data from active restore
              */
-            this.getActiveRestore = function () {
-                return $filter('filter')(_this.restores, {uuid: _this.activeRestore})[0];
+            this.getActive = function () {
+                return $filter('filter')(_this.restores, {uuid: _this.active})[0];
             };
 
             /*
@@ -70,7 +76,7 @@
                 $log.debug('Backups Manager [%s] -> Received event [%s] -> Initializing mount of datastore [%s] from -> storage [%s], vserver [%s], snapshot [%s]', data.uuid, event.name, data.volume['volume-id-attributes'].name, data.netapp_host, data.vserver['vserver-name'], data.snapshot);
 
                 backupsmFactory.setRestore(data);
-                backupsmFactory.setActiveRestore(data.uuid);
+                backupsmFactory.setActive(data.uuid);
 
                 var modalInstance = modalFactory.openRegistredModal('ESXiSelectable', '.window--backupsm .window__main',
                     {
@@ -141,7 +147,7 @@
                 $log.debug('Backups Manager [%s] -> Received event [%s] -> Initializing restore of datastore files [%s] from -> storage [%s], vserver [%s], snapshot [%s]', data.uuid, event.name, data.volume['volume-id-attributes'].name, data.netapp_host, data.vserver['vserver-name'], data.snapshot);
 
                 backupsmFactory.setRestore(data);
-                backupsmFactory.setActiveRestore(data.uuid);
+                backupsmFactory.setActive(data.uuid);
 
                 var modalInstance = modalFactory.openRegistredModal('ESXiSelectable', '.window--backupsm .window__main',
                     {
@@ -229,7 +235,7 @@
                 $log.debug('Backups Manager [%s] -> Received event [%s] -> Initializing restore of VM guest files [%s] from -> storage [%s], vserver [%s], datastore [%s], snapshot [%s]', data.uuid, event.name, data.vm.name, data.storage.host, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name, data.snapshot);
 
                 backupsmFactory.setRestore(data);
-                backupsmFactory.setActiveRestore(data.uuid);
+                backupsmFactory.setActive(data.uuid);
 
                 var modalInstance = modalFactory.openRegistredModal('ESXiSelectable', '.window--backupsm .window__main',
                     {
@@ -303,7 +309,7 @@
                 $log.debug('Backups Manager [%s] -> Received event [%s] -> Initializing restore of VM [%s] from -> storage [%s], vserver [%s], datastore [%s], snapshot [%s]', data.uuid, event.name, data.vm.name, data.storage.host, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name, data.snapshot);
 
                 backupsmFactory.setRestore(data);
-                backupsmFactory.setActiveRestore(data.uuid);
+                backupsmFactory.setActive(data.uuid);
 
                 // User must select ESXi host and its data
                 var modalInstanceRestoreVM = modalFactory.openRegistredModal('recoveryWizard', '.window--backupsm .window__main',
@@ -397,7 +403,7 @@
                 $log.debug('Backups Manager [%s] -> Received event [%s] -> Initializing restore of VM [%s] from -> storage [%s], vserver [%s], datastore [%s], snapshot [%s]', data.uuid, event.name, data.vm.name, data.storage.host, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name, data.snapshot);
 
                 backupsmFactory.setRestore(data);
-                backupsmFactory.setActiveRestore(data.uuid);
+                backupsmFactory.setActive(data.uuid);
 
                 // User must select ESXi host and its data
                 var modalInstanceRestoreVM = modalFactory.openRegistredModal('recoveryWizard', '.window--backupsm .window__main',
@@ -463,142 +469,57 @@
              */
             $scope.$on('backupsm__backup_vm', function (event, data) {
                 console.log(data);
-                var task_id;
-                var stanpshot;
 
                 data.type = 'backup_vm';
-                data.restore_name = 'VM backup (' + data.vm.name + ')';
+                data.backup_name = 'VM backup (' + data.vm.name + ')';
                 data.uuid = uuid.v4();
 
-                data.esxi_credential = data.connection.credential;
-                data.esxi_address = data.connection.host;
-                data.esxi_port = data.connection.port;
-                data.netapp_credential = data.storage.credential;
-                data.netapp_host = data.storage.host;
-                data.netapp_port = data.storage.port;
+	            $log.debug('Backups Manager [%s] -> Received event [%s] -> Initializing backup', data.uuid, event.name);
 
-                //TODO:
-                return vmwareFactory.connectvCenterSoap(data.esxi_credential, data.esxi_address, data.esxi_port).then(function (res) {
-                    if (res.status === 'error') throw new Error('Failed to connect to vCenter');
+	            backupsmFactory.setBackup(data);
+	            backupsmFactory.setActive(data.uuid);
 
-                    return vmwareFactory.getVMState(data.esxi_credential, data.esxi_address, data.esxi_port, data.vm.vm, true);
-                }).then(function (res) {
-                    if (res.status === 'error') throw new Error('Failed to get VM data');
-
-                    console.log('getVMState', res);
-                    return vmwareFactory.getDatastores(data.esxi_credential, data.esxi_address, data.esxi_port, 'group-d1');
-                }).then(function (res) {
-                    if (res.status === 'error') throw new Error('Failed to get datastores');
-
-                    console.log('getDatastores', res);
-                    return vmwareFactory.getDatastoresWithVMsData(data.esxi_credential, data.esxi_address, data.esxi_port, 'group-d1');
-                }).then(function (res) {
-                    if (res.status === 'error') throw new Error('Failed to get datastores with VM data');
-
-                    console.log('getDatastoresWithVMsData', res);
-                    return vmwareFactory.getDatastoreProps(data.esxi_credential, data.esxi_address, data.esxi_port, 'datastore-321');
-                }).then(function (res) {
-                    if (res.status === 'error') throw new Error('Failed to get datastore');
-
-                    console.log('getDatastoreProps', res);
-                    return vmwareFactory.getFilesDataFromDatastore(data.esxi_credential, data.esxi_address, data.esxi_port, 'datastore-321', 'NFS_MAD', 'tt');
-                }).then(function (res) {
-                    if (res.status === 'error') throw new Error('Failed to get files from datastores');
-
-                    console.log('getFilesDataFromDatastore', res);
-                    return vmwareFactory.queryVMEvents(data.esxi_credential, data.esxi_address, data.esxi_port, data.vm.vm);
-                }).then(function (res) {
-                    if (res.status === 'error') throw new Error('Failed to query VM events');
-
-                    console.log('queryVMEvents', res);
-                    return vmwareFactory.searchIndexVM(data.esxi_credential, data.esxi_address, data.esxi_port, '502197e9-abe7-06e7-7d88-667c0a8b01ea');
-                }).then(function (res) {
-                    if (res.status === 'error') throw new Error('Failed to searchIndex');
-
-                    console.log('searchIndex', res);
-                    return vmwareFactory.createTask(data.esxi_credential, data.esxi_address, data.esxi_port, 'com.sysos.management.backup', 'VirtualMachine', data.vm.vm);
-                }).then(function (res) {
-                    if (res.status === 'error') throw new Error('Failed to create task');
-
-                    console.log('createTask', res);
-
-                    task_id = res.data.key;
-
-                    return vmwareFactory.setTaskState(data.esxi_credential, data.esxi_address, data.esxi_port, task_id, 'running');
-                }).then(function (res) {
-                    if (res.status === 'error') throw new Error('Failed to set task state');
-
-                    console.log('setTaskState', res);
-                    return vmwareFactory.updateTaskProgress(data.esxi_credential, data.esxi_address, data.esxi_port, task_id, 20);
-                }).then(function (res) {
-                    if (res.status === 'error') throw new Error('Failed to update task progress');
-
-                    console.log('updateTaskProgress', res);
-                    return vmwareFactory.searchIndexVM(data.esxi_credential, data.esxi_address, data.esxi_port, '502197e9-abe7-06e7-7d88-667c0a8b01ea');
-                }).then(function (res) {
-                    if (res.status === 'error') throw new Error('Failed to searchIndex');
-
-                    console.log('searchIndex', res);
-                    return vmwareFactory.getVMs(data.esxi_credential, data.esxi_address, data.esxi_port, 'group-d1');
-                }).then(function (res) {
-                    if (res.status === 'error') throw new Error('Failed to get VMs');
-
-                    console.log('getVMs', res);
-                    return vmwareFactory.createSnapShot(data.esxi_credential, data.esxi_address, data.esxi_port, data.vm.vm, 'SysOS_backup_' + data.uuid, 'SysOS temporary snapshot. Do not delete this snapshot while a backup is running.', false, true);
-                }).then(function (res) {
-                    if (res.status === 'error') throw new Error('Failed to create snapshot');
-
-                    console.log('createSnapShot', res);
-
-                    stanpshot = res.data[0].propSet.info.result.name;
-
-                    return vmwareFactory.updateTaskProgress(data.esxi_credential, data.esxi_address, data.esxi_port, task_id, 40);
-                }).then(function (res) {
-                    if (res.status === 'error') throw new Error('Failed to update task progress');
-
-                    console.log('updateTaskProgress', res);
-                    return netappFactory.createSnapshot(data.netapp_credential, data.netapp_host, data.netapp_port, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name);
-                }).then(function (res) {
-                    if (res.status === 'error') throw new Error('Failed to create Volume Snapshot');
-
-                    console.log('createSnapShot', res);
-                    return vmwareFactory.updateTaskProgress(data.esxi_credential, data.esxi_address, data.esxi_port, task_id, 60);
-                }).then(function (res) {
-                    if (res.status === 'error') throw new Error('Failed to update task progress');
-
-                    console.log('updateTaskProgress', res);
-                    return vmwareFactory.removeSnapshot(data.esxi_credential, data.esxi_address, data.esxi_port, stanpshot, false);
-                }).then(function (res) {
-                    if (res.status === 'error') throw new Error('Failed to delete snapshot');
-
-                    console.log('removeSnapshot', res);
-                    return vmwareFactory.updateTaskProgress(data.esxi_credential, data.esxi_address, data.esxi_port, task_id, 80);
-                }).then(function (res) {
-                    if (res.status === 'error') throw new Error('Failed to update task progress');
-
-                    console.log('updateTaskProgress', res);
-                    return vmwareFactory.setTaskState(data.esxi_credential, data.esxi_address, data.esxi_port, task_id, 'success');
-                }).then(function (res) {
-                    if (res.status === 'error') throw new Error('Failed to set task state');
-
-                    console.log('setTaskState', res);
-                }).catch(function (e) {
-                    console.log(e);
-
-                    // Remove snapshot if exists on error and finish task
-                    if (stanpshot) {
-                        return vmwareFactory.removeSnapshot(data.esxi_credential, data.esxi_address, data.esxi_port, stanpshot, false).then(function () {
-                            return vmwareFactory.setTaskState(data.esxi_credential, data.esxi_address, data.esxi_port, task_id, 'error');
-                        }).catch(function (e) {
-                            return vmwareFactory.setTaskState(data.esxi_credential, data.esxi_address, data.esxi_port, task_id, 'error');
-                        });
+	            var modalInstanceBackup = modalFactory.openRegistredModal('backupWizard', '.window--backupsm .window__main', {
+		            title: function () {
+			            return "Backup Wizard";
+		            },
+                    backupObject: function () {
+	                    return data.vm;
                     }
+	            });
+	            modalInstanceBackup.result.then(function (res) {
+		            console.log(res);
 
-                    // Finish task on error
-                    if (task_id) return vmwareFactory.setTaskState(data.esxi_credential, data.esxi_address, data.esxi_port, task_id, 'error');
+		            data.backup_name = 'VM backup (' + res.backupName + ')';
+		            res.uuid = data.uuid;
 
-                });
+		            $log.debug('Backups Manager [%s] -> Received backup data from Modal -> name [%s]', data.uuid, res.backupName);
+
+		            // Start backup
+		            var modalInstanceBackup = modalFactory.openLittleModal('PLEASE WAIT', 'Backing up ' + res.backupName + '...', '.window--backupsm .window__main', 'plain');
+
+		            return modalInstanceBackup.opened.then(function () {
+
+			            return backupsmFactory.startVMBackup(res);
+		            }).then(function (res) {
+			            if (res instanceof Error) throw new Error('Failed to backup VM');
+
+			            $log.debug('Backups Manager [%s] -> Backup finished successfully', data.uuid);
+
+			            modalInstanceBackup.close();
+			            return backupsmFactory.setBackupStatus(data, 2);
+		            }).catch(function (e) {
+			            modalInstanceBackup.close();
+
+			            console.log(e);
+			            return ApplicationsFactory.errorHandler(e.message);
+		            });
+
+	            }, function (rejectionResponse) {
+		            console.log(2, rejectionResponse);
+	            });
             });
+
             /*
              * ng-click functions
              */
@@ -611,7 +532,7 @@
                 ApplicationsFactory.openApplication('datastoreexplorer');
                 ApplicationsFactory.toggleApplication('datastoreexplorer');
 
-                var data = _this.getActiveRestore();
+                var data = _this.getActive();
 
                 $timeout(function () {
                     $rootScope.$broadcast('datastoreexplorer__restore_datastore_files', {
@@ -626,7 +547,7 @@
             };
 
             this.unpublishRestoredInstantVM = function () {
-                var current_restore = _this.getActiveRestore();
+                var current_restore = _this.getActive();
 
                 var modalInstanceRecovery = modalFactory.openLittleModal('PLEASE WAIT', 'Initializing restore from Snapshot rollback...', '.window--backupsm .window__main', 'plain');
 
@@ -663,7 +584,7 @@
             };
 
             this.unpublishRestoredDatastore = function () {
-                var current_restore = _this.getActiveRestore();
+                var current_restore = _this.getActive();
 
                 var modalInstanceRecovery = modalFactory.openLittleModal('PLEASE WAIT', 'Initializing restore from Snapshot rollback...', '.window--backupsm .window__main', 'plain');
 
@@ -695,10 +616,10 @@
 
             };
 
-            this.setActiveRestore = function (restore) {
+            this.setActive = function (restore) {
                 _this.showNewBackupType = false;
                 _this.showRestore = true;
-                return backupsmFactory.setActiveRestore(restore.uuid);
+                return backupsmFactory.setActive(restore.uuid);
             };
 
             this.doDatastoreBackup = function () {

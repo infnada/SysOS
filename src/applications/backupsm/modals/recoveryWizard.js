@@ -26,6 +26,7 @@
                 <form> \
                   <div class="tab-content"> \
                     <div class="tab-pane" ng-if="wmC.step == 1" ng-class="{\'active\': wmC.step == 1}"> \
+                      <hr class="hr-text" data-content="Select a backup Snapshot"> \
                       <table class="table table-hover m-t-xl"> \
                         <tbody> \
                           <tr class="cursor-pointer" ng-repeat="snapshot in wmC.data.snapshots"> \
@@ -36,6 +37,7 @@
                       </table> \
                     </div> \
                     <div class="tab-pane" ng-if="wmC.step == 2" ng-class="{\'active\': wmC.step == 2}"> \
+                      <hr class="hr-text" data-content="Select a restore location"> \
                       <table class="table table-hover m-t-xl"> \
                        <tbody> \
                           <tr class="cursor-pointer"> \
@@ -50,6 +52,7 @@
                     </table> \
                     </div> \
                     <div class="tab-pane" ng-if="wmC.step == 3" ng-class="{\'active\': wmC.step == 3}"> \
+                      <hr class="hr-text" data-content="Virtual Machine options"> \
                       <div ng-if="wmC.restoreType == \'new\'"> \
                         <div class="form-group"> \
                           <div class="col-sm-12"> \
@@ -96,9 +99,7 @@
                       </div> \
                     </div> \
                     <div class="tab-pane" ng-if="wmC.step == 4" ng-class="{\'active\': wmC.step == 4}"> \
-                      <h5> \
-                        Instant VM recovery settings: \
-                      </h5> \
+                      <hr class="hr-text" data-content="Summary"> \
                       <ul> \
                         <li>VM: {{wmC.data.vm.name}} from <strong>{{wmC.getSnapshotName()}}</strong></li> \
                         <li>Original Datastore: {{wmC.data.volume[\'volume-id-attributes\'].name}}</li> \
