@@ -375,7 +375,7 @@
         };
 
         var cloneVolumeFromSnapshot = function (credential, host, port, vfiler, volume, snapshot) {
-            // TODO: check if this snapshot volume is already created by another restore
+            // TODO: check if this snapshot volume is already created by another restore. Issue #4 #5
             var xml = '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'' + (vfiler ? ' vfiler=\'' + vfiler + '\'' : '') + '><volume-clone-create><parent-volume>' + volume + '</parent-volume><volume>SysOS_' + volume + '_Restore</volume><space-reserve>none</space-reserve><parent-snapshot>' + snapshot + '</parent-snapshot></volume-clone-create></netapp>';
 
             return ServerFactory.callNetApp(credential, host, port, null, xml).then(function (data) {
@@ -387,7 +387,7 @@
         };
 
         var mountVolume = function (credential, host, port, vfiler, volume) {
-            // TODO: check if this junction path is in use by another restore
+            // TODO: check if this junction path is in use by another restore. Issue #4 #5
             var xml = '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'' + (vfiler ? ' vfiler=\'' + vfiler + '\'' : '') + '><volume-mount><activate-junction>true</activate-junction><junction-path>/SysOS_' + volume + '_Restore</junction-path><volume-name>SysOS_' + volume + '_Restore</volume-name><export-policy-override>false</export-policy-override></volume-mount></netapp>';
 
             return ServerFactory.callNetApp(credential, host, port, null, xml).then(function (data) {

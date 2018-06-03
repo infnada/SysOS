@@ -132,8 +132,8 @@
             getVMwareClientVersion: function (host, port, onSuccess, onError) {
                 return doPost('/api/vcenter/getClientVersion', {host: host, port: port}, onSuccess, onError);
             },
-            connectVcenter: function (host, credential, onSuccess, onError) {
-                return doPost('/api/vcenter/connect', {host: host, credential: credential}, onSuccess, onError);
+            connectVcenter: function (host, credential, port, onSuccess, onError) {
+                return doPost('/api/vcenter/connect', {host: host, credential: credential, port: port}, onSuccess, onError);
             },
             connectvCenterSoap: function (credential, host, port, onSuccess, onError) {
                 return doPost('/api/vcenter/connectSoap', {
@@ -142,8 +142,8 @@
                     port: port
                 }, onSuccess, onError);
             },
-            callVcenter: function (host, path, onSuccess, onError) {
-                return doPost('/api/vcenter/call', {host: host, path: path}, onSuccess, onError);
+            callVcenter: function (host, port, path, onSuccess, onError) {
+                return doPost('/api/vcenter/call', {host: host, port: port, path: path}, onSuccess, onError);
             },
             callVcenterSoap: function (credential, host, port, action, xml, onSuccess, onError) {
                 return doPost('/api/vcenter/callSoap', {

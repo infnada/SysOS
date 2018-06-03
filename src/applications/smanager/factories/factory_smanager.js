@@ -195,7 +195,7 @@
                     });
 
                     // Login to vmware
-                    return ServerFactory.connectVcenter(connection.host, connection.credential);
+                    return ServerFactory.connectVcenter(connection.host, connection.credential, connection.port);
                 }).then(function (data) {
                     if (data.data.status === 'error') throw new Error(data.data.data);
 
@@ -218,7 +218,7 @@
                     modalFactory.changeModalText('Getting data...', '.window--smanager .window__main');
 
                     // Get Datacenters
-                    return ServerFactory.callVcenter(connection.host, '/rest/vcenter/datacenter');
+                    return ServerFactory.callVcenter(connection.host, connection.port, '/rest/vcenter/datacenter');
 
                 }).then(function (data) {
 
@@ -228,14 +228,14 @@
                     angular.forEach(connectionsFactory.getConnectionByUuid(connection.uuid).datacenters, function (datacenter, key) {
 
                         // Get Host not in Cluster (standalone)
-                        dt_promises.push(ServerFactory.callVcenter(connection.host, '/rest/vcenter/host?filter.datacenters=' + datacenter.datacenter + '&filter.standalone=true').then(function (data) {
+                        dt_promises.push(ServerFactory.callVcenter(connection.host, connection.port, '/rest/vcenter/host?filter.datacenters=' + datacenter.datacenter + '&filter.standalone=true').then(function (data) {
                             connectionsFactory.getConnectionByUuid(connection.uuid).datacenters[key].hosts = data.data.data.response.value;
 
                             // For each Host
                             angular.forEach(connectionsFactory.getConnectionByUuid(connection.uuid).datacenters[key].hosts, function (host, i) {
 
                                 // Get resource pools per Host
-                                ht_promises.push(ServerFactory.callVcenter(connection.host, '/rest/vcenter/resource-pool?filter.hosts=' + host.host).then(function (data) {
+                                ht_promises.push(ServerFactory.callVcenter(connection.host, connection.port, '/rest/vcenter/resource-pool?filter.hosts=' + host.host).then(function (data) {
                                     connectionsFactory.getConnectionByUuid(connection.uuid).datacenters[key].hosts[i].resource_pools = data.data.data.response.value;
                                 }));
 
@@ -253,7 +253,7 @@
                     angular.forEach(connectionsFactory.getConnectionByUuid(connection.uuid).datacenters, function (datacenter, key) {
 
                         // Get Clusters
-                        dc_promises.push(ServerFactory.callVcenter(connection.host, '/rest/vcenter/cluster?filter.datacenters=' + datacenter.datacenter).then(function (data) {
+                        dc_promises.push(ServerFactory.callVcenter(connection.host, connection.port, '/rest/vcenter/cluster?filter.datacenters=' + datacenter.datacenter).then(function (data) {
 
                             connectionsFactory.getConnectionByUuid(connection.uuid).datacenters[key].clusters = data.data.data.response.value;
 
@@ -261,12 +261,12 @@
                             angular.forEach(connectionsFactory.getConnectionByUuid(connection.uuid).datacenters[key].clusters, function (cluster, c) {
 
                                 // Get resource pools per cluster
-                                ct_promises.push(ServerFactory.callVcenter(connection.host, '/rest/vcenter/resource-pool?filter.datacenters=' + datacenter.datacenter + '&filter.clusters=' + cluster.cluster).then(function (data) {
+                                ct_promises.push(ServerFactory.callVcenter(connection.host, connection.port, '/rest/vcenter/resource-pool?filter.datacenters=' + datacenter.datacenter + '&filter.clusters=' + cluster.cluster).then(function (data) {
                                     connectionsFactory.getConnectionByUuid(connection.uuid).datacenters[key].clusters[c].resource_pools = data.data.data.response.value;
                                 }));
 
                                 // Get Host per Cluster
-                                ct_promises.push(ServerFactory.callVcenter(connection.host, '/rest/vcenter/host?filter.datacenters=' + datacenter.datacenter + '&filter.clusters=' + cluster.cluster).then(function (data) {
+                                ct_promises.push(ServerFactory.callVcenter(connection.host, connection.port, '/rest/vcenter/host?filter.datacenters=' + datacenter.datacenter + '&filter.clusters=' + cluster.cluster).then(function (data) {
                                     connectionsFactory.getConnectionByUuid(connection.uuid).datacenters[key].clusters[c].hosts = data.data.data.response.value;
                                 }));
 
@@ -280,7 +280,7 @@
 
                 }).then(function () {
 
-                    return ServerFactory.callVcenter(connection.host, '/rest/vcenter/folder');
+                    return ServerFactory.callVcenter(connection.host, connection.port, '/rest/vcenter/folder');
 
                 }).then(function (res) {
 

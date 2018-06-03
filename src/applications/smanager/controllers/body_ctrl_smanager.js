@@ -681,12 +681,14 @@
                         _this.setActiveConnection($itemScope.snapshot['snapshot-instance-uuid']);
 
                         $timeout(function () {
+                            var snapshots = _this.getActiveConnection(1).snapshots;
+                            if (!Array.isArray(snapshots)) snapshots = [snapshots];
+
                             $rootScope.$broadcast('backupsm__mount_restore_datastore', {
                                 storage: _this.getActiveConnection(3),
                                 vserver: _this.getActiveConnection(2),
                                 volume: _this.getActiveConnection(1),
-                                snapshots: _this.getActiveConnection(1).snapshots, //TODO: if only 1 snapshot this will
-                                                                                   // be an object --> conver to array
+                                snapshots: snapshots,
                                 snapshot: $itemScope.snapshot['snapshot-instance-uuid'],
                                 ESXihosts: smanagerFactory.getESXihosts()
                             });
@@ -705,12 +707,14 @@
                         _this.setActiveConnection($itemScope.snapshot['snapshot-instance-uuid']);
 
                         $timeout(function () {
+	                        var snapshots = _this.getActiveConnection(1).snapshots;
+	                        if (!Array.isArray(snapshots)) snapshots = [snapshots];
+
                             $rootScope.$broadcast('backupsm__restore_datastore_files', {
                                 storage: _this.getActiveConnection(3),
                                 vserver: _this.getActiveConnection(2),
                                 volume: _this.getActiveConnection(1),
-                                snapshots: _this.getActiveConnection(1).snapshots, //TODO: if only 1 snapshot this will
-                                                                                   // be an object --> conver to array
+                                snapshots: snapshots,
                                 snapshot: $itemScope.snapshot['snapshot-instance-uuid'],
                                 ESXihosts: smanagerFactory.getESXihosts()
                             });
@@ -961,7 +965,10 @@
                                         uuid: _this.getActiveConnection(1).uuid,
                                         credential: _this.getActiveConnection(1).credential,
                                         host: _this.getActiveConnection(1).host,
-                                        port: _this.getActiveConnection(1).port
+                                        port: _this.getActiveConnection(1).port,
+                                        esxi_host: $itemScope.vm.runtime.host.name,
+	                                    resource_pool: $itemScope.vm.resourcePool.name,
+                                        folder: $itemScope.vm.parent.name
                                     }
                                 });
                             }, 100);

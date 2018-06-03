@@ -18,11 +18,12 @@ router.post("/", function (req, res) {
 	var apiCookie = 'api-session';
 
 	var host = req.body.host;
+	var port = req.body.port;
 	var path = req.body.path;
 
 	if (!req.cookies[apiCookie]) return apiGlobals.serverError("no_vmware_login_cookie");
 
-	return vcenter.callApi(host, path, req.cookies[apiCookie]).then(function (body) {
+	return vcenter.callApi(host, port, path, req.cookies[apiCookie]).then(function (body) {
 
 		return apiGlobals.responseJsonData(JSON.parse(body));
 

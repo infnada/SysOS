@@ -20,8 +20,8 @@ router.post("/", function (req, res) {
 
 	var description = req.body.description;
 	var host = req.body.host;
-	var credential = req.body.credential;
 	var port = req.body.port;
+	var credential = req.body.credential;
 
 	//get username and password from credential
 	var credentials = require('read-config')(path.join(__dirname, '../../../filesystem/etc/applications/cmanager/config.json'));
@@ -30,7 +30,7 @@ router.post("/", function (req, res) {
 		return obj.uuid === credential;
 	})[0];
 
-	return vcenter.connect(host, credential.username, credential.password).then(function (response) {
+	return vcenter.connect(host, port, credential.username, credential.password).then(function (response) {
 
 		if (response.statusCode < 400) {
 

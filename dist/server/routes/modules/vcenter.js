@@ -35,13 +35,20 @@ exports.getClientVersion = function (host, port) {
 
 };
 
-// TODO: port
-exports.connect = function (host, username, password) {
+exports.connect = function (host, port, username, password) {
+
+	var proto;
+
+	if (port === "80") {
+		proto = 'http';
+	} else {
+		proto = 'https';
+	}
 
 	return new Promise(function (resolve, reject) {
 
 		return request({
-			url: 'https://' + host + '/rest/com/vmware/cis/session',
+			url: proto + '://' + host + ':' + port + '/rest/com/vmware/cis/session',
 			method: 'POST',
 			strictSSL: false,
 			headers: {
@@ -59,15 +66,22 @@ exports.connect = function (host, username, password) {
 
 };
 
-// TODO: port
-exports.callApi = function (host, path, cookie) {
+exports.callApi = function (host, port, path, cookie) {
 
 	//https://code.vmware.com/apis/191/vsphere-automation
+
+	var proto;
+
+	if (port === "80") {
+		proto = 'http';
+	} else {
+		proto = 'https';
+	}
 
 	return new Promise(function (resolve, reject) {
 
 		return request({
-			url: 'https://' + host + '' + path,
+			url: proto + '://' + host + ':' + port + '' + path,
 			method: 'GET',
 			strictSSL: false,
 			headers: {

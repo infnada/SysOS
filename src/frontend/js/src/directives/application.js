@@ -151,7 +151,7 @@
                     // Close application in taskbar
                     ApplicationsFactory.toggleApplication(null);
 
-                    // TODO: Set closest application active
+                    // TODO: Set closest application active. Issue #3
                     //var closest = $('.window').not('.window--minimized, .window--closing,
                     // .window--opening').filter(function() { return $(this).css('z-index') < zIndex }).first();
 

@@ -328,6 +328,10 @@
                         data.esxi_credential = data.current_location.credential;
                         data.esxi_address = data.current_location.host;
                         data.esxi_port = data.current_location.port;
+	                    data.esxi_host = data.current_location.esxi_host;
+	                    data.folder = data.current_location.folder;
+	                    data.resource_pool = data.current_location.resource_pool;
+	                    data.vm.name = res.vm_name;
 	                    data.vm_power_on = res.vm_power_on;
 
                         $log.debug('Backups Manager [%s] -> Received restore data from Modal as Original location -> vm_power_on [%s]', data.uuid, data.vm_power_on);

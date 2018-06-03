@@ -172,6 +172,9 @@
              */
             var registerVM = function (data) {
 
+            	data.vm.path = data.vm.summary.config.vmPathName.split("]").pop();
+	            data.vm.path = data.vm.path.substring(0, data.vm.path.lastIndexOf('/') + 1).substr(1);
+
                 // Get VM in Datastore
                 //TODO: this is required?
                 return vmwareFactory.getVMFileDataFromDatastore(
@@ -180,20 +183,20 @@
                     data.esxi_port,
                     data.esxi_datastore,
                     'SysOS_' + data.volume_junction.substr(1),
-                    data.vm.path.substring(0, data.vm.path.lastIndexOf('/') + 1).substr(1),
-                    data.vm.path.split('/').pop()
+	                data.vm.path,
+                    data.vm.summary.config.vmPathName.split('/').pop()
                 ).then(function (res) {
                     if (res.status === 'error') throw new Error('Failed to get files from datastore');
 
                     // Register VM
                     //TODO: check if VM with same name exists
-                    $log.debug('Backups Manager [%s] -> Register VM to ESXi -> host [%s], vmx_file [%s], vm_name [%s], folder [%s], resource_pool [%s]', data.uuid, data.esxi_host, '[SysOS_' + data.volume_junction.substr(1) + '] ' + data.vm.path, data.vm.name, data.folder, data.resource_pool);
+                    $log.debug('Backups Manager [%s] -> Register VM to ESXi -> host [%s], vmx_file [%s], vm_name [%s], folder [%s], resource_pool [%s]', data.uuid, data.esxi_host, '[SysOS_' + data.volume_junction.substr(1) + '] ' + data.vm.summary.config.vmPathName.split("]").pop(), data.vm.name, data.folder, data.resource_pool);
                     return vmwareFactory.registerVM(
                         data.esxi_credential,
                         data.esxi_address,
                         data.esxi_port,
                         data.esxi_host,
-                        '[SysOS_' + data.volume_junction.substr(1) + '] ' + data.vm.path,
+                        '[SysOS_' + data.volume_junction.substr(1) + '] ' + data.vm.summary.config.vmPathName.split("]").pop().substr(1),
                         data.vm.name,
                         data.folder,
                         data.resource_pool
@@ -215,6 +218,8 @@
                         // Power On VM
                         $log.debug('Backups Manager [%s] -> Powering on vm -> host [%s], VM [%s], ', data.uuid, data.esxi_host, data.vm.vm);
                         return vmwareFactory.powerOnVM(data.esxi_credential, data.esxi_address, data.esxi_port, data.esxi_host, data.vm.vm);
+
+                        //TODO: answerVMquestion "copied"
                     }
 
                 }).then(function (res) {
@@ -299,6 +304,8 @@
                         // Power On VM
                         $log.debug('Backups Manager [%s] -> Powering on vm -> host [%s], VM [%s]', data.uuid, data.vm.runtime.host.name, data.vm.vm);
                         return vmwareFactory.powerOnVM(data.current_location.credential, data.current_location.host, data.current_location.port, data.vm.runtime.host.name, data.vm.vm);
+
+	                    //TODO: answerVMquestion "copied"
                     }
 
                     return res;
@@ -396,6 +403,9 @@
                 }).then(function (res) {
                     if (res instanceof Error) throw new Error('Failed to mount cloned volume from snapshot to ESXi host');
 
+	                data.vm.path = data.vm.summary.config.vmPathName.split("]").pop();
+	                data.vm.path = data.vm.path.substring(0, data.vm.path.lastIndexOf('/') + 1).substr(1);
+
                     // Get VM in Datastore
                     return vmwareFactory.getVMFileDataFromDatastore(
                         data.esxi_credential,
@@ -403,8 +413,8 @@
                         data.esxi_port,
                         data.esxi_datastore,
                         'SysOS_' + data.volume_junction.substr(1),
-                        data.vm.path.substring(0, data.vm.path.lastIndexOf('/') + 1).substr(1),
-                        data.vm.path.split('/').pop()
+	                    data.vm.path,
+	                    data.vm.summary.config.vmPathName.split('/').pop()
                     );
 
                 }).then(function (res) {
@@ -417,7 +427,7 @@
                         data.esxi_address,
                         data.esxi_port,
                         data.esxi_host,
-                        '[SysOS_' + data.volume_junction.substr(1) + '] ' + data.vm.path,
+                        '[SysOS_' + data.volume_junction.substr(1) + '] ' + data.vm.summary.config.vmPathName.split("]").pop().substring(1),
                         data.vm.name,
                         data.folder,
                         data.resource_pool

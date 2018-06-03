@@ -70,7 +70,7 @@
 
             var appendTo = angular.element($document[0].querySelector(query));
 
-            //TODO: change pmC.text to dynamic controllerAs.text
+            //TODO: change pmC.text to dynamic controllerAs.text . Issue #2
 
             if (appendTo.length) {
                 if (angular.element($document[0].querySelector(query + ' .modal')).length) angular.element($document[0].querySelector(query + ' .modal')).scope().pmC.text = text;

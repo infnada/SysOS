@@ -354,7 +354,7 @@ var backupsmApp = angular.module('backupsmApp', []);
                 this.step = 1;
                 this.data = data;
 
-                this.vmName = data.vm.name;
+                this.vmName = data.vm.name + '-restore';
                 this.powerVM = false;
 
 	            this.close = function () {
@@ -368,9 +368,9 @@ var backupsmApp = angular.module('backupsmApp', []);
                 };
 
                 this.selectData = function () {
-	                if (!_this.selectedHost || _this.selectedHost == null && _this.restoreType === 'new') return _this.step = 3;
-	                if (!_this.selectedFolder || _this.selectedFolder == null && _this.restoreType === 'new') return _this.step = 3;
-	                if (!_this.selectedPool || _this.selectedPool == null && _this.selectedPool === 'new') return _this.step = 3;
+	                if ((!_this.selectedHost || _this.selectedHost == null) && _this.restoreType === 'new') return _this.step = 3;
+	                if ((!_this.selectedFolder || _this.selectedFolder == null) && _this.restoreType === 'new') return _this.step = 3;
+	                if ((!_this.selectedPool || _this.selectedPool == null) && _this.selectedPool === 'new') return _this.step = 3;
 
                     $uibModalInstance.close({
                         host: _this.selectedHost,
@@ -388,18 +388,18 @@ var backupsmApp = angular.module('backupsmApp', []);
                 this.loadESXidata = function () {
                     var modalInstanceText = modalFactory.openLittleModal('PLEASE WAIT', 'Connecting to vCenter...', '.modal-recovery-wizard', 'plain');
 
-                    return ServerFactory.connectVcenter(_this.selectedHost.connection_address, _this.selectedHost.connection_credential).then(function (con) {
+                    return ServerFactory.connectVcenter(_this.selectedHost.connection_address, _this.selectedHost.connection_credential, _this.selectedHost.connection_port).then(function (con) {
                         if (con.data.status === 'error') throw new Error(con.data.data);
 
                         modalFactory.changeModalText('Getting data...', '.modal-recovery-wizard');
 
                         // Get VM folders in selected vCenter
-                        return ServerFactory.callVcenter(_this.selectedHost.connection_address, '/rest/vcenter/folder?filter.type=VIRTUAL_MACHINE').then(function (data_folder) {
+                        return ServerFactory.callVcenter(_this.selectedHost.connection_address, _this.selectedHost.connection_port, '/rest/vcenter/folder?filter.type=VIRTUAL_MACHINE').then(function (data_folder) {
                             if (data_folder.data.status === 'error') throw new Error(data_folder.data.data);
                             _this.data.folders = data_folder.data.data.response.value;
 
                             // Get Resource Pools from selected host
-                            return ServerFactory.callVcenter(_this.selectedHost.connection_address, '/rest/vcenter/resource-pool').then(function (resource_pool) {
+                            return ServerFactory.callVcenter(_this.selectedHost.connection_address, _this.selectedHost.connection_port, '/rest/vcenter/resource-pool').then(function (resource_pool) {
                                 if (resource_pool.data.status === 'error') throw new Error(resource_pool.data.data);
 
                                 _this.data.resource_pools = resource_pool.data.data.response.value;

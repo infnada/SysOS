@@ -15,7 +15,6 @@
 
                     angular.element($event.currentTarget.parentElement.parentElement).toggleClass('side__list--open');
 
-                    // TODO: This is jQuery
                     angular.element($event.currentTarget.parentElement.nextElementSibling).animate({
                         'height': 'toggle',
                         'opacity': 'toggle'

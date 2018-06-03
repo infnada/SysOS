@@ -136,8 +136,6 @@
                 return el.id !== id || el.pinned === true;
             });
 
-            // TODO: destroy application scopes
-
             return opened_applications;
         };
 
@@ -164,8 +162,6 @@
                     id: app.id
                 });
             }
-
-            //TODO: 'z-index' : zIndex++
 
             // Create a new instance of the application
             opened_applications.push(app);

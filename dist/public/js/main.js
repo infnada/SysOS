@@ -1140,7 +1140,7 @@ var SysOS = angular.module('SysOS', [
                     // Close application in taskbar
                     ApplicationsFactory.toggleApplication(null);
 
-                    // TODO: Set closest application active
+                    // TODO: Set closest application active. Issue #3
                     //var closest = $('.window').not('.window--minimized, .window--closing,
                     // .window--opening').filter(function() { return $(this).css('z-index') < zIndex }).first();
 
@@ -1620,7 +1620,6 @@ var SysOS = angular.module('SysOS', [
 
                     angular.element($event.currentTarget.parentElement.parentElement).toggleClass('side__list--open');
 
-                    // TODO: This is jQuery
                     angular.element($event.currentTarget.parentElement.nextElementSibling).animate({
                         'height': 'toggle',
                         'opacity': 'toggle'
@@ -1807,8 +1806,6 @@ var SysOS = angular.module('SysOS', [
                 return el.id !== id || el.pinned === true;
             });
 
-            // TODO: destroy application scopes
-
             return opened_applications;
         };
 
@@ -1835,8 +1832,6 @@ var SysOS = angular.module('SysOS', [
                     id: app.id
                 });
             }
-
-            //TODO: 'z-index' : zIndex++
 
             // Create a new instance of the application
             opened_applications.push(app);
@@ -2668,7 +2663,7 @@ var SysOS = angular.module('SysOS', [
 
             var appendTo = angular.element($document[0].querySelector(query));
 
-            //TODO: change pmC.text to dynamic controllerAs.text
+            //TODO: change pmC.text to dynamic controllerAs.text . Issue #2
 
             if (appendTo.length) {
                 if (angular.element($document[0].querySelector(query + ' .modal')).length) angular.element($document[0].querySelector(query + ' .modal')).scope().pmC.text = text;
@@ -3139,7 +3134,7 @@ var SysOS = angular.module('SysOS', [
         };
 
         var cloneVolumeFromSnapshot = function (credential, host, port, vfiler, volume, snapshot) {
-            // TODO: check if this snapshot volume is already created by another restore
+            // TODO: check if this snapshot volume is already created by another restore. Issue #4 #5
             var xml = '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'' + (vfiler ? ' vfiler=\'' + vfiler + '\'' : '') + '><volume-clone-create><parent-volume>' + volume + '</parent-volume><volume>SysOS_' + volume + '_Restore</volume><space-reserve>none</space-reserve><parent-snapshot>' + snapshot + '</parent-snapshot></volume-clone-create></netapp>';
 
             return ServerFactory.callNetApp(credential, host, port, null, xml).then(function (data) {
@@ -3151,7 +3146,7 @@ var SysOS = angular.module('SysOS', [
         };
 
         var mountVolume = function (credential, host, port, vfiler, volume) {
-            // TODO: check if this junction path is in use by another restore
+            // TODO: check if this junction path is in use by another restore. Issue #4 #5
             var xml = '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'' + (vfiler ? ' vfiler=\'' + vfiler + '\'' : '') + '><volume-mount><activate-junction>true</activate-junction><junction-path>/SysOS_' + volume + '_Restore</junction-path><volume-name>SysOS_' + volume + '_Restore</volume-name><export-policy-override>false</export-policy-override></volume-mount></netapp>';
 
             return ServerFactory.callNetApp(credential, host, port, null, xml).then(function (data) {
@@ -4542,8 +4537,8 @@ var SysOS = angular.module('SysOS', [
             getVMwareClientVersion: function (host, port, onSuccess, onError) {
                 return doPost('/api/vcenter/getClientVersion', {host: host, port: port}, onSuccess, onError);
             },
-            connectVcenter: function (host, credential, onSuccess, onError) {
-                return doPost('/api/vcenter/connect', {host: host, credential: credential}, onSuccess, onError);
+            connectVcenter: function (host, credential, port, onSuccess, onError) {
+                return doPost('/api/vcenter/connect', {host: host, credential: credential, port: port}, onSuccess, onError);
             },
             connectvCenterSoap: function (credential, host, port, onSuccess, onError) {
                 return doPost('/api/vcenter/connectSoap', {
@@ -4552,8 +4547,8 @@ var SysOS = angular.module('SysOS', [
                     port: port
                 }, onSuccess, onError);
             },
-            callVcenter: function (host, path, onSuccess, onError) {
-                return doPost('/api/vcenter/call', {host: host, path: path}, onSuccess, onError);
+            callVcenter: function (host, port, path, onSuccess, onError) {
+                return doPost('/api/vcenter/call', {host: host, port: port, path: path}, onSuccess, onError);
             },
             callVcenterSoap: function (credential, host, port, action, xml, onSuccess, onError) {
                 return doPost('/api/vcenter/callSoap', {
