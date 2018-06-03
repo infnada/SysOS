@@ -960,16 +960,7 @@
                                     /* jshint ignore:end */
                                     snapshot: '',
                                     ESXihosts: smanagerFactory.getESXihosts(),
-                                    vm: $itemScope.vm,
-                                    current_location: {
-                                        uuid: _this.getActiveConnection(1).uuid,
-                                        credential: _this.getActiveConnection(1).credential,
-                                        host: _this.getActiveConnection(1).host,
-                                        port: _this.getActiveConnection(1).port,
-                                        esxi_host: $itemScope.vm.runtime.host.name,
-	                                    resource_pool: $itemScope.vm.resourcePool.name,
-                                        folder: $itemScope.vm.parent.name
-                                    }
+                                    vm: $itemScope.vm
                                 });
                             }, 100);
                         }],

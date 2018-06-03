@@ -40,11 +40,11 @@
                       <hr class="hr-text" data-content="Select a restore location"> \
                       <table class="table table-hover m-t-xl"> \
                        <tbody> \
-                          <tr class="cursor-pointer"> \
+                          <tr class="cursor-pointer" ng-if="!wmC.hideCurrentLocation"> \
                              <th class="col-sm-1"><input type="radio" name="restore" ng-model="wmC.restoreType" value="original"></th> \
                              <td class="lh-2"><h5>Restore to the original location</h5>Quickly initiate restore of selected VMs to the original location, and with the original name and settings. This option minimizes the chance of user input error.<br/><i class="fa fa-exclamation text-warning"></i> This virtual machine will be powered down during the restore process.</td> \
                           </tr> \
-                          <tr class="cursor-pointer"> \
+                          <tr class="cursor-pointer" ng-if="!wmC.hideNewLocation"> \
                              <th class="col-sm-1"><input type="radio" name="restore" ng-model="wmC.restoreType" value="new"></th> \
                              <td class="lh-2"><h5>Restore to a new location, or with different settings</h5>Customize restored VM location, and change its settings. The wizard will automatically populate all controls with the original VM settings as the default settings.</td> \
                           </tr> \

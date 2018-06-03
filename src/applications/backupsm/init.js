@@ -350,12 +350,27 @@ var backupsmApp = angular.module('backupsmApp', []);
             controllerAs: 'wmC',
             controller: ['title', 'data', '$uibModalInstance', 'ServerFactory', '$filter', function (title, data, $uibModalInstance, ServerFactory, $filter) {
                 var _this = this;
-                this.title = title;
-                this.step = 1;
-                this.data = data;
 
-                this.vmName = data.vm.name + '-restore';
-                this.powerVM = false;
+	            this.data = data;
+	            this.title = title;
+	            this.step = 1;
+	            this.hideCurrentLocation = false;
+	            this.hideNewLocation = false;
+	            this.restoreType = 'original';
+	            this.vmName = this.data.vm.name;
+	            this.powerVM = false;
+
+                if (this.data.type === 'vm_instant_recovery') {
+                	this.hideCurrentLocation = true;
+                	this.restoreType = 'new';
+	                this.vmName = this.data.vm.name + '-IVM';
+                }
+
+	            if (this.data.type === 'restore_vm') {
+		            this.hideNewLocation = true;
+		            this.restoreType = 'original';
+		            this.vmName = this.data.vm.name;
+	            }
 
 	            this.close = function () {
 		            $uibModalInstance.close();

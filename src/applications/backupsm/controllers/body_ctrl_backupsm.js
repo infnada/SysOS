@@ -324,29 +324,16 @@
                 );
                 modalInstanceRestoreVM.result.then(function (res) {
 
-                    if (res.restore_location === 'original') {
-                        data.esxi_credential = data.current_location.credential;
-                        data.esxi_address = data.current_location.host;
-                        data.esxi_port = data.current_location.port;
-	                    data.esxi_host = data.current_location.esxi_host;
-	                    data.folder = data.current_location.folder;
-	                    data.resource_pool = data.current_location.resource_pool;
-	                    data.vm.name = res.vm_name;
-	                    data.vm_power_on = res.vm_power_on;
+                    data.esxi_credential = res.host.connection_credential;
+                    data.esxi_address = res.host.connection_address;
+                    data.esxi_port = res.host.connection_port;
+                    data.esxi_host = res.host.host;
+                    data.folder = res.folder.folder;
+                    data.resource_pool = res.resource_pool.resource_pool;
+                    data.vm.name = res.vm_name;
+                    data.vm_power_on = res.vm_power_on;
 
-                        $log.debug('Backups Manager [%s] -> Received restore data from Modal as Original location -> vm_power_on [%s]', data.uuid, data.vm_power_on);
-                    } else if (res.restore_location === 'new') {
-                        data.esxi_credential = res.host.connection_credential;
-                        data.esxi_address = res.host.connection_address;
-                        data.esxi_port = res.host.connection_port;
-                        data.esxi_host = res.host.host;
-                        data.folder = res.folder.folder;
-                        data.resource_pool = res.resource_pool.resource_pool;
-                        data.vm.name = res.vm_name;
-                        data.vm_power_on = res.vm_power_on;
-
-                        $log.debug('Backups Manager [%s] -> Received restore data from Modal as new location -> esxi_host [%s], folder [%s], resource_pool [%s], vm_name [%s], vm_power_on [%s]', data.uuid, res.host.host, res.folder.folder, res.resource_pool.resource_pool, res.vm_name, res.vm_power_on);
-                    }
+                    $log.debug('Backups Manager [%s] -> Received restore data from Modal as new location -> esxi_host [%s], folder [%s], resource_pool [%s], vm_name [%s], vm_power_on [%s]', data.uuid, res.host.host, res.folder.folder, res.resource_pool.resource_pool, res.vm_name, res.vm_power_on);
 
                     // Start restore
                     var modalInstanceRecovery = modalFactory.openLittleModal('PLEASE WAIT', 'Restoring ' + data.vm.name + ' from Snapshot...', '.window--backupsm .window__main', 'plain');
@@ -422,25 +409,12 @@
                 );
                 modalInstanceRestoreVM.result.then(function (res) {
 
-                    if (res.restore_location === 'original') {
-                        data.esxi_credential = data.current_location.credential;
-                        data.esxi_address = data.current_location.host;
-                        data.esxi_port = data.current_location.port;
-	                    data.vm_power_on = res.vm_power_on;
+                    data.esxi_credential = data.current_location.credential;
+                    data.esxi_address = data.current_location.host;
+                    data.esxi_port = data.current_location.port;
+                    data.vm_power_on = res.vm_power_on;
 
-                        $log.debug('Backups Manager [%s] -> Received restore data from Modal as Original location -> instant_vm [%s]', data.uuid, data.vm_power_on);
-                    } else if (res.restore_location === 'new') {
-                        data.esxi_credential = res.host.connection_credential;
-                        data.esxi_address = res.host.connection_address;
-                        data.esxi_port = res.host.connection_port;
-                        data.esxi_host = res.host.host;
-                        data.folder = res.folder.folder;
-                        data.resource_pool = res.resource_pool.resource_pool;
-                        data.vm.name = res.vm_name;
-                        data.vm_power_on = res.vm_power_on;
-
-                        $log.debug('Backups Manager [%s] -> Received restore data from Modal as new location-> esxi_host [%s], folder [%s], resource_pool [%s], vm_name [%s], vm_power_on [%s]', data.uuid, res.host.host, res.folder.folder, res.resource_pool.resource_pool, res.vm_name, res.vm_power_on);
-                    }
+                    $log.debug('Backups Manager [%s] -> Received restore data from Modal as Original location -> instant_vm [%s]', data.uuid, data.vm_power_on);
 
                     // Start restore
                     var modalInstanceRecovery = modalFactory.openLittleModal('PLEASE WAIT', 'Restoring ' + data.vm.name + ' from Snapshot...', '.window--backupsm .window__main', 'plain');
