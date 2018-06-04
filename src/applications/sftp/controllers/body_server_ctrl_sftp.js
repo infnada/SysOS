@@ -1,7 +1,7 @@
 (function () {
     'use strict';
-    sftpApp.controller('sftpBodyServerController', ['$scope', '$timeout', 'fileSystemFactory', 'sftpFactory', 'remoteFileSystemFactory',
-        function ($scope, $timeout, fileSystemFactory, sftpFactory, remoteFileSystemFactory) {
+    sftpApp.controller('sftpBodyServerController', ['$scope', '$timeout', 'fileSystemFactory', 'sftpFactory', 'remoteFileSystemFactory', 'toastr',
+        function ($scope, $timeout, fileSystemFactory, sftpFactory, remoteFileSystemFactory, toastr) {
 
             var _this = this;
             this.viewAsList = false;
@@ -362,9 +362,9 @@
                         }, 200);
                     } else if (_this.modalType === 'Download from url') {
                         sftpFactory.downloadFileFromInet(_this.fileUrl, sftpB.getActiveConnection().currentPath, sftpB.activeConnection, function (data) {
-                            console.log(data);
                             _this.reloadPath();
                             _this.showModal = false;
+                            toastr.success('Download file from URL', 'File downloaded to '+ sftpB.getActiveConnection().currentPath);
                         });
                     }
                 } else if (keyEvent.which === 27) {

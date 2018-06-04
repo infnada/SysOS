@@ -1,7 +1,7 @@
 (function () {
     'use strict';
-    fileexplorerApp.controller('feBodyController', ['$rootScope', '$scope', '$timeout', 'fileSystemFactory', 'ApplicationsFactory', 'modalFactory',
-        function ($rootScope, $scope, $timeout, fileSystemFactory, ApplicationsFactory, modalFactory) {
+    fileexplorerApp.controller('feBodyController', ['$rootScope', '$scope', '$timeout', 'fileSystemFactory', 'ApplicationsFactory', 'modalFactory', 'toastr',
+        function ($rootScope, $scope, $timeout, fileSystemFactory, ApplicationsFactory, modalFactory, toastr) {
 
             var _this = this;
             this.viewAsList = false;
@@ -88,9 +88,8 @@
                         modalInstanceDownloadFromURL.result.then(function (res) {
 
                             return fileSystemFactory.downloadFileFromInet(res, _this.localFileSystem.currentPath, '', function () {
-
                                 _this.reloadPath();
-
+                                toastr.success('Download file from URL', 'File downloaded to '+ this.localFileSystem.currentPath);
                             });
                         });
                     }

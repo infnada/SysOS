@@ -1,7 +1,7 @@
 (function () {
     'use strict';
-    datastoreexplorerApp.controller('deBodyController', ['$rootScope', '$scope', '$timeout', 'fileSystemFactory', 'Upload', 'ApplicationsFactory', 'vmwareFactory', 'modalFactory', 'ServerFactory',
-        function ($rootScope, $scope, $timeout, fileSystemFactory, Upload, ApplicationsFactory, vmwareFactory, modalFactory, ServerFactory) {
+    datastoreexplorerApp.controller('deBodyController', ['$rootScope', '$scope', '$timeout', 'fileSystemFactory', 'Upload', 'ApplicationsFactory', 'vmwareFactory', 'modalFactory', 'ServerFactory', 'toastr',
+        function ($rootScope, $scope, $timeout, fileSystemFactory, Upload, ApplicationsFactory, vmwareFactory, modalFactory, ServerFactory, toastr) {
 
             var _this = this;
             this.showExplorer = false;
@@ -149,9 +149,8 @@
 
                             fileSystemFactory.downloadFileFromInet('https://' + _this.datastoreData.host + '/folder' + _this.localFileSystem.currentPath + $itemScope.file.path + '?dcPath=' + datacenter + '&dsName=' + _this.datastoreData.name, '/home/downloads/', _this.datastoreData.credential, function () {
                                 modalFactory.closeModal('.window--datastoreexplorer .window__main');
-                                modalFactory.openLittleModal('Download file to SysOS', 'File downloaded to /home/downloads/' + $itemScope.file.path, '.window--datastoreexplorer .window__main', 'plain');
+                                toastr.success('Download file to SysOS', 'File downloaded to /home/downloads/' + $itemScope.file.path);
                             });
-
                         });
 
                     }

@@ -1,6 +1,8 @@
 (function () {
     'use strict';
-    sftpApp.controller('sftpBodyLocalController', ['$rootScope', '$scope', '$timeout', 'fileSystemFactory', 'Upload', 'ApplicationsFactory', 'sftpFactory', function ($rootScope, $scope, $timeout, fileSystemFactory, Upload, ApplicationsFactory, sftpFactory) {
+    sftpApp.controller('sftpBodyLocalController', ['$rootScope', '$scope', '$timeout', 'fileSystemFactory', 'Upload', 'ApplicationsFactory', 'sftpFactory', 'toastr',
+        function ($rootScope, $scope, $timeout, fileSystemFactory, Upload, ApplicationsFactory, sftpFactory, toastr) {
+
 
         var _this = this;
         this.viewAsList = false;
@@ -446,6 +448,7 @@
                     fileSystemFactory.downloadFileFromInet(_this.fileUrl, _this.localFileSystem.currentPath, '', function () {
                         _this.reloadPath();
                         _this.showModal = false;
+                        toastr.success('Download file from URL', 'File downloaded to '+ _this.localFileSystem.currentPath);
                     });
                 }
             } else if (keyEvent.which === 27) {
