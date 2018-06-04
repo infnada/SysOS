@@ -1,7 +1,9 @@
 (function () {
     'use strict';
-    SysOS.run(['$rootScope', 'ServerFactory', 'ApplicationsFactory', 'socket', 'connectionsFactory', '$injector', '$ocLazyLoad',
-        function ($rootScope, ServerFactory, ApplicationsFactory, socket, connectionsFactory, $injector, $ocLazyLoad) {
+    SysOS.run(['$rootScope', '$log', 'ServerFactory', 'ApplicationsFactory', 'socket', 'connectionsFactory', '$injector', '$ocLazyLoad',
+        function ($rootScope, $log, ServerFactory, ApplicationsFactory, socket, connectionsFactory, $injector, $ocLazyLoad) {
+
+            $log.debug('SysOS -> Init');
 
             angular.element(window).bind('dragover', function (e) {
                 e.preventDefault();
@@ -13,13 +15,18 @@
                 e.preventDefault();
             });
 
-            /*
+            /**
+             *
              * Init
+             *
              */
 
             // Ensure no application is open
             $rootScope.taskbar__item_open = null;
 
+            /**
+             * Get Installed Applications
+             */
             ApplicationsFactory.getInstalledApplications().then(function (data) {
 
                 angular.forEach(data, function (application) {
@@ -38,20 +45,10 @@
                 });
             });
 
-            // Get Task Bar pinned applications
-            ServerFactory
-            .getConfigFile('desktop/task_bar.json', function (data) {
-
-                // Register Start button
-                ApplicationsFactory.registerTaskBarApplication({'id': 'start', 'pinned': true});
-
-                // Register every pinned application
-                angular.forEach(data.data, function (application) {
-                    ApplicationsFactory.registerTaskBarApplication(application);
-                });
-            }, function () {
-                console.log('Error');
-            });
+            /**
+             * Get TaskBar Applications
+             */
+            ApplicationsFactory.getTaskBarApplications();
 
             // Get express session
             ServerFactory

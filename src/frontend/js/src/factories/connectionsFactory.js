@@ -79,7 +79,7 @@
                 return ServerFactory.saveConfigToFile(connection, configFile, false, function () {
                     $log.debug('Connections Factory [%s] -> Saved connection successfully -> category [%s], host [%s]', connection.uuid, connection.category, connection.host);
                 }, function (data) {
-                    $log.error('Connections Factory [%s] -> Error while saving connection -> category [%s], host [%s] -> [%s]', connection.uuid, connection.category, connection.host, data.error);
+                    $log.error('Connections Factory [%s] -> Error while saving connection -> category [%s], host [%s] -> ', connection.uuid, connection.category, connection.host, data.error);
                     toastr.error('Infrastructure Manager', 'Error while saving connection!');
                 });
 
@@ -452,7 +452,7 @@
                     $log.debug('Connections Factory [%s] -> Connection deleted successfully', uuid);
                     toastr.success('Infrastructure Manager', 'Connection deleted!');
                 }, function (data) {
-                    $log.error('Connections Factory [%s] -> Error while deleting connection -> [%s]', uuid, data.error);
+                    $log.error('Connections Factory [%s] -> Error while deleting connection -> ', uuid, data.error);
                     toastr.error('Infrastructure Manager', 'Error while deleting connection!');
                 });
             };
@@ -498,7 +498,7 @@
                 return ServerFactory.saveConfigToFile(uuidMap, 'applications/smanager/map.json', true, function () {
                     $log.debug('Connections Factory -> uuidMap saved successfully');
                 }, function (data) {
-                    $log.error('Connections Factory -> Error while saving uuidMap -> [%s]', data.error);
+                    $log.error('Connections Factory -> Error while saving uuidMap -> ', data.error);
                     toastr.error('Infrastructure Manager', 'Error while saving Uuid Map!');
                 });
 
@@ -520,7 +520,7 @@
                 return ServerFactory.saveConfigToFile(linksMap, 'applications/smanager/links.json', true, function () {
                     $log.debug('Connections Factory -> linksMap saved successfully');
                 }, function (data) {
-                    $log.error('Connections Factory -> Error while saving linksMap -> [%s]', data.error);
+                    $log.error('Connections Factory -> Error while saving linksMap -> ', data.error);
                     toastr.error('Infrastructure Manager', 'Error while saving Links Map!');
                 });
 

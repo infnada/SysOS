@@ -1,6 +1,6 @@
 (function () {
     'use strict';
-    SysOS.factory('ApplicationsFactory', ['$rootScope', 'ServerFactory', 'toastr', 'fileSystemFactory', function ($rootScope, ServerFactory, toastr, fileSystemFactory) {
+    SysOS.factory('ApplicationsFactory', ['$rootScope', '$log', 'ServerFactory', 'toastr', 'fileSystemFactory', function ($rootScope, $log, ServerFactory, toastr, fileSystemFactory) {
 
         var applications = [
             {id: 'start', ico: 'windows', name: 'Start Menu', menu: true}
@@ -9,34 +9,37 @@
         var taskbar_applications = [];
         var opened_applications = [];
 
-        /*
+        /**
          * -----------------------
          * PRIVATE FUNCTIONS
          * -----------------------
          */
 
-
-        /*
+        /**
          * @Description
          * Check if application is in Desktop Task Bar
          *
          * @params
-         * id {String} Application ID
+         * id* {String} Application ID
          */
         var isApplicationInTaskBar = function (id) {
+            if (!id) throw new Error('id_not_found');
+
             return taskbar_applications.map(function (e) {
                 return e.id;
             }).indexOf(id);
         };
 
-        /*
+        /**
          * @Description
          * Check if application is opened
          *
          * @params
-         * id {String} Application ID
+         * id* {String} Application ID
          */
         var isApplicationOpened = function (id) {
+            if (!id) throw new Error('id_not_found');
+
             return opened_applications.map(function (e) {
                 return e.id;
             }).indexOf(id);
@@ -48,31 +51,48 @@
          * -----------------------
          */
 
+        /**
+         * @description
+         * Main error handler
+         *
+         * @params
+         * e* {String}
+         */
         var errorHandler = function (e) {
-            toastr.error(e, 'General Error');
+            if (!e) throw new Error('e_not_found');
 
+            toastr.error(e, 'General Error');
+            $log.error('Applications Factory ->General Error -> [%s]', e);
             return new Error(e);
         };
 
-        /*
+        /**
          * @Description
          * If and application is not registered it will not be accessible from Desktop or other applications
          *
          * @params
-         * data {Object}
+         * data* {Object}
          */
         var registerApplication = function (data) {
+            if (!data) throw new Error('data_not_found');
+
+            $log.debug('Applications Factory -> New application registration -> id [%s], name [%s]', data.id, data.name);
+
             applications.push(data);
         };
 
-        /*
+        /**
          * @Description
          * Set an application to be shown in Desktop Task Bar
          *
          * @params
-         * data {Object}
+         * data* {Object}
+         * save {Bool}
          */
         var registerTaskBarApplication = function (data, save) {
+            if (!data) throw new Error('id_not_found');
+
+            $log.debug('Applications Factory -> Registering application in TaskBar -> id [%s], pinned [%s], save [%s]', data.id, data.pinned, save);
 
             var application_index = isApplicationInTaskBar(data.id);
 
@@ -90,6 +110,8 @@
 
             } else {
 
+                $log.debug('Applications Factory -> Register application in TaskBar -> id [%s], pinned [%s]', data.id, data.pinned);
+
                 // Application not in Task Bar
                 taskbar_applications.push(data);
             }
@@ -100,31 +122,40 @@
                     return obj.pinned === true && obj.id !== 'start';
                 });
 
-                return ServerFactory.saveConfigToFile(applications_to_save, 'desktop/task_bar.json', true);
+                return ServerFactory.saveConfigToFile(applications_to_save, 'desktop/task_bar.json', true, function () {
+                    $log.debug('Applications Factory -> TaskBar applications saved');
+                }, function (data) {
+                    $log.debug('Applications Factory -> Error while saving TaskBar applications -> ', data.error);
+                });
             }
         };
 
-        /*
+        /**
          * @Description
          * Return all application info
          *
          * @params
-         * id {String} Application ID
+         * id* {String} Application ID
          */
         var getApplicationById = function (id) {
+            if (!id) throw new Error('id_not_found');
+
             return applications.filter(function (obj) {
                 return obj.id === id;
             })[0];
         };
 
-        /*
+        /**
          * @Description
          * Closes an application
          *
          * @params
-         * id {String} Application ID
+         * id* {String} Application ID
          */
         var closeApplication = function (id) {
+            if (!id) throw new Error('id_not_found');
+
+            $log.debug('Applications Factory -> Closing application -> id [%s]', id);
 
             // Delete application object
             opened_applications = opened_applications.filter(function (el) {
@@ -139,18 +170,23 @@
             return opened_applications;
         };
 
-        /*
+        /**
          * @Description
          * Opens a new application
          *
          * @params
-         * app {String/Object} Application name
+         * app* {String} Application name
          */
-        var openApplication = function (app) {
+        var openApplication = function (id) {
+            if (!id) throw new Error('id_not_found');
+
+            var app;
+
+            $log.debug('Applications Factory -> Opening application -> id [%s]', id);
 
             // If app is not an object get all application data
-            if (angular.isString(app)) {
-                app = getApplicationById(app);
+            if (angular.isString(id)) {
+                app = getApplicationById(id);
             }
 
             // Check if application is already opened
@@ -168,37 +204,42 @@
             return opened_applications;
         };
 
-        /*
+        /**
          * @Description
          * Check if application is active (not in background) on Desktop
          *
          * @params
-         * id {String} Application ID
+         * id* {String} Application ID
          */
         var isActiveApplication = function (id) {
+            if (!id) throw new Error('id_not_found');
+
             return $rootScope.taskbar__item_open === id;
         };
 
-        /*
+        /**
          * @Description
          * Puts an application active or at background
          *
          * @params
-         * id {String} Application ID
+         * id* {String} Application ID
          */
         var toggleApplication = function (id) {
+            if (!id) throw new Error('id_not_found');
+
             if (isActiveApplication(id)) return $rootScope.taskbar__item_open = null;
             $rootScope.taskbar__item_open = id;
         };
 
-        /*
+        /**
          * @Description
          * Check if application is pinned in Task Bar
          *
          * @params
-         * id {String} Application ID
+         * id* {String} Application ID
          */
         var isApplicationPinned = function (id) {
+            if (!id) throw new Error('id_not_found');
 
             var application = taskbar_applications.filter(function (obj) {
                 return obj.id === id;
@@ -209,25 +250,62 @@
 
         };
 
-        /*
+        /**
+         * @description
          * Returns all scripts to load as SysOS applications
          */
         var getInstalledApplications = function () {
             return fileSystemFactory.getFileSystemPath('/bin/applications', function (data) {
+                $log.debug('Applications Factory -> Get Installed Applications successfully');
+
                 return data;
+            }, function (data) {
+                $log.error('Applications Factory -> Error while getting installed applications -> ', data.error);
             });
         };
 
-        /*
+        /**
+         * @description
+         * Returns all pinned applications
+         */
+        var getTaskBarApplications = function () {
+            ServerFactory.getConfigFile('desktop/task_bar.json', function (data) {
+
+                $log.debug('Applications Factory -> Get TaskBar Applications successfully');
+
+                // Register Start button
+                registerTaskBarApplication({'id': 'start', 'pinned': true});
+
+                // Register every pinned application
+                angular.forEach(data.data, function (application) {
+                    registerTaskBarApplication(application);
+                });
+
+            }, function (data) {
+                $log.error('Applications Factory -> Error while getting TaskBar applications -> ', data.error);
+            });
+        };
+
+        /**
+         * @description
          * Function called after Sort taskbar applications
+         *
+         * @params
+         * applications {Object}
          */
         var saveTaskBarApplicationsOrder = function (applications) {
+            if (!applications) throw new Error('applications_not_found');
+
             var applications_to_save = applications.filter(function (obj) {
                 delete obj['$$hashKey'];
                 return obj.pinned === true && obj.id !== 'start';
             });
 
-            return ServerFactory.saveConfigToFile(applications_to_save, 'desktop/task_bar.json', true);
+            return ServerFactory.saveConfigToFile(applications_to_save, 'desktop/task_bar.json', true, function () {
+                $log.debug('Applications Factory -> TaskBar applications saved');
+            }, function (data) {
+                $log.debug('Applications Factory -> Error while saving TaskBar applications -> ', data.error);
+            });
         };
 
         return {
@@ -250,6 +328,7 @@
             toggleApplication: toggleApplication,
             isApplicationPinned: isApplicationPinned,
             getInstalledApplications: getInstalledApplications,
+            getTaskBarApplications: getTaskBarApplications,
             saveTaskBarApplicationsOrder: saveTaskBarApplicationsOrder
         };
 

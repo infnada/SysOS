@@ -267,7 +267,6 @@
             };
 
             this.goToPath = function ($index, fullPath) {
-                var currentPath = sftpB.getActiveConnection().currentPath;
                 var path;
 
                 if ($index === false && fullPath) {
@@ -278,11 +277,15 @@
 
                     _this.resetActive();
                 } else {
-                    console.log("else");
                     path = sftpB.getActiveConnection().currentPath.split('/').splice(0, $index + 1).join('/') + '/';
 
+                    // Do nothing if path is the same as current path
+                    if (path === sftpB.getActiveConnection().currentPath) return;
+
+                    sftpFactory.goToPath(path, sftpB.activeConnection);
+
                     // Push the actual path to lastPath array (used by goPathBack())
-                    _this.lastPath.push(currentPath);
+                    _this.lastPath.push(path);
                     // Reset nextPath
                     _this.nextPath = [];
 

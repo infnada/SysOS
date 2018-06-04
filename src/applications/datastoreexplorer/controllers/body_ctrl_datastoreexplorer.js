@@ -143,7 +143,7 @@
                         return ServerFactory.connectVcenter(_this.datastoreData.host, _this.datastoreData.credential, _this.datastoreData.port).then(function (data) {
                             if (data.data.status === 'error') throw new Error(data.data.data);
 
-                            return ServerFactory.callVcenter(_this.datastoreData.host, _this.datastoreData.port, '/rest/vcenter/datacenter')
+                            return ServerFactory.callVcenter(_this.datastoreData.host, _this.datastoreData.port, '/rest/vcenter/datacenter');
                         }).then(function (data) {
                             datacenter = data.data.data.response.value[0].name;
 

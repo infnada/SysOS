@@ -16,8 +16,8 @@
 					if(node.items) {
 						//if the node has children call getSelected for each and concat to array
 						node.items.forEach(function(childNode) {
-							arr = arr.concat(getAllChildren(childNode,[]))
-						})
+							arr = arr.concat(getAllChildren(childNode,[]));
+						});
 					}
 					return arr;
 				}
@@ -26,7 +26,7 @@
 
 					var flattenedTree = getAllChildren(scope.node, []);
 					flattenedTree = flattenedTree.map(function (node) {
-						return node.isSelected
+						return node.isSelected;
 					});
 
 					var compactedTree = flattenedTree.filter(function (node) {
@@ -39,6 +39,6 @@
 				}, true);
 
 			}
-		}
+		};
 	}]);
 }());

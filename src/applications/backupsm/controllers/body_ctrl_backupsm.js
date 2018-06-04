@@ -20,11 +20,11 @@
                 _this.restores = newValue;
             });
 
-	        $scope.$watch(function () {
-		        return backupsmFactory.getBackups();
-	        }, function (newValue) {
-		        _this.backups = newValue;
-	        });
+            $scope.$watch(function () {
+                return backupsmFactory.getBackups();
+            }, function (newValue) {
+                _this.backups = newValue;
+            });
 
             $scope.$watch(function () {
                 return backupsmFactory.getActive();
@@ -442,50 +442,50 @@
                 data.backup_name = 'VM backup (' + data.vm.name + ')';
                 data.uuid = uuid.v4();
 
-	            $log.debug('Backups Manager [%s] -> Received event [%s] -> Initializing backup', data.uuid, event.name);
+                $log.debug('Backups Manager [%s] -> Received event [%s] -> Initializing backup', data.uuid, event.name);
 
-	            backupsmFactory.setBackup(data);
-	            backupsmFactory.setActive(data.uuid);
+                backupsmFactory.setBackup(data);
+                backupsmFactory.setActive(data.uuid);
 
-	            var modalInstanceBackup = modalFactory.openRegistredModal('backupWizard', '.window--backupsm .window__main', {
-		            title: function () {
-			            return "Backup Wizard";
-		            },
+                var modalInstanceBackup = modalFactory.openRegistredModal('backupWizard', '.window--backupsm .window__main', {
+                    title: function () {
+                        return 'Backup Wizard';
+                    },
                     backupObject: function () {
-	                    return data.vm;
+                        return data.vm;
                     }
-	            });
-	            modalInstanceBackup.result.then(function (res) {
-		            console.log(res);
+                });
+                modalInstanceBackup.result.then(function (res) {
+                    console.log(res);
 
-		            data.backup_name = 'VM backup (' + res.backupName + ')';
-		            res.uuid = data.uuid;
+                    data.backup_name = 'VM backup (' + res.backupName + ')';
+                    res.uuid = data.uuid;
 
-		            $log.debug('Backups Manager [%s] -> Received backup data from Modal -> name [%s]', data.uuid, res.backupName);
+                    $log.debug('Backups Manager [%s] -> Received backup data from Modal -> name [%s]', data.uuid, res.backupName);
 
-		            // Start backup
-		            var modalInstanceBackup = modalFactory.openLittleModal('PLEASE WAIT', 'Backing up ' + res.backupName + '...', '.window--backupsm .window__main', 'plain');
+                    // Start backup
+                    var modalInstanceBackup = modalFactory.openLittleModal('PLEASE WAIT', 'Backing up ' + res.backupName + '...', '.window--backupsm .window__main', 'plain');
 
-		            return modalInstanceBackup.opened.then(function () {
+                    return modalInstanceBackup.opened.then(function () {
 
-			            return backupsmFactory.startVMBackup(res);
-		            }).then(function (res) {
-			            if (res instanceof Error) throw new Error('Failed to backup VM');
+                        return backupsmFactory.startVMBackup(res);
+                    }).then(function (res) {
+                        if (res instanceof Error) throw new Error('Failed to backup VM');
 
-			            $log.debug('Backups Manager [%s] -> Backup finished successfully', data.uuid);
+                        $log.debug('Backups Manager [%s] -> Backup finished successfully', data.uuid);
 
-			            modalInstanceBackup.close();
-			            return backupsmFactory.setBackupStatus(data, 2);
-		            }).catch(function (e) {
-			            modalInstanceBackup.close();
+                        modalInstanceBackup.close();
+                        return backupsmFactory.setBackupStatus(data, 2);
+                    }).catch(function (e) {
+                        modalInstanceBackup.close();
 
-			            console.log(e);
-			            return ApplicationsFactory.errorHandler(e.message);
-		            });
+                        console.log(e);
+                        return ApplicationsFactory.errorHandler(e.message);
+                    });
 
-	            }, function (rejectionResponse) {
-		            console.log(2, rejectionResponse);
-	            });
+                }, function (rejectionResponse) {
+                    console.log(2, rejectionResponse);
+                });
             });
 
             /*
