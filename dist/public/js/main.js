@@ -2556,8 +2556,8 @@ var SysOS = angular.module('SysOS', [
             });
         };
 
-        var downloadFileFromInet = function (url, path, callback) {
-            return ServerFactory.downloadFileFromInet(url, path, function (data) {
+        var downloadFileFromInet = function (url, path, credential, callback) {
+            return ServerFactory.downloadFileFromInet(url, path, credential, function (data) {
                 return callback(data.data);
             }, function (data) {
                 console.log('Error: ' + data);
@@ -3659,7 +3659,7 @@ var SysOS = angular.module('SysOS', [
 		            return errorHandler(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault'][0]['detail'][0]);
 	            }
 
-                return validResponse(data.data.data.response['soapenv:Envelope']['soapenv:Body']['0'].RetrievePropertiesResponse['0'].returnval['0'].propSet['0'].val['0']._);
+                return validResponse(data.data.data.response['soapenv:Envelope']['soapenv:Body']['0'].RetrievePropertiesResponse[0].returnval[0].propSet[0].val[0]._);
             });
         };
 
@@ -3676,7 +3676,7 @@ var SysOS = angular.module('SysOS', [
 		            return errorHandler(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault'][0]['detail'][0]);
 	            }
 
-                return validResponse(data.data.data.response['soapenv:Envelope']['soapenv:Body']['0'].RetrievePropertiesResponse['0'].returnval['0'].propSet['0'].val['0']._);
+                return validResponse(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0].RetrievePropertiesResponse[0].returnval[0].propSet[0].val[0]._);
             });
         };
 
@@ -3693,7 +3693,7 @@ var SysOS = angular.module('SysOS', [
 		            return errorHandler(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault'][0]['detail'][0]);
 	            }
 
-                return validResponse(data.data.data.response['soapenv:Envelope']['soapenv:Body']['0'].RetrievePropertiesResponse['0'].returnval['0'].propSet['0'].val['0']._);
+                return validResponse(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0].RetrievePropertiesResponse[0].returnval[0].propSet[0].val[0]._);
             });
         };
 
@@ -4453,8 +4453,8 @@ var SysOS = angular.module('SysOS', [
             deleteRemoteFile: function (uuid, path, onSuccess, onError) {
                 return doPost('/api/remoteFile/delete', {uuid: uuid, path: path}, onSuccess, onError);
             },
-            downloadFileFromInet: function (url, path, onSuccess, onError) {
-                return doPost('/api/file/download_from_url', {url: url, path: path}, onSuccess, onError);
+            downloadFileFromInet: function (url, path, credential, onSuccess, onError) {
+                return doPost('/api/file/download_from_url', {url: url, path: path, credential: credential}, onSuccess, onError);
             },
             remoteDownloadFileFromInet: function (url, path, uuid, onSuccess, onError) {
                 return doPost('/api/remoteFile/download_from_url', {

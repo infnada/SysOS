@@ -25,7 +25,7 @@ router.post("/", function (req, res) {
 	return sshSessions.getSession('sftp', uuid, function (conn) {
 
 		var globals = require("../../modules/globals.js")(conn);
-		return globals.execAsync("curl -o " + DOWNLOAD_DIR + file_name + " " + file_url).then(function (data) {
+		return globals.execAsync("curl -k -o " + DOWNLOAD_DIR + file_name + " " + file_url).then(function (data) {
 			console.log(data);
 			return apiGlobals.validResponse();
 		}).catch(function (e) {

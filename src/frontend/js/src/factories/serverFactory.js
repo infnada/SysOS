@@ -48,8 +48,8 @@
             deleteRemoteFile: function (uuid, path, onSuccess, onError) {
                 return doPost('/api/remoteFile/delete', {uuid: uuid, path: path}, onSuccess, onError);
             },
-            downloadFileFromInet: function (url, path, onSuccess, onError) {
-                return doPost('/api/file/download_from_url', {url: url, path: path}, onSuccess, onError);
+            downloadFileFromInet: function (url, path, credential, onSuccess, onError) {
+                return doPost('/api/file/download_from_url', {url: url, path: path, credential: credential}, onSuccess, onError);
             },
             remoteDownloadFileFromInet: function (url, path, uuid, onSuccess, onError) {
                 return doPost('/api/remoteFile/download_from_url', {

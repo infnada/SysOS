@@ -154,11 +154,6 @@
                     return setRestoreStatus(data, 'mounted_to_esx');
 
                 }).then(function (res) {
-                    if (res.status === 'error') throw new Error('Failed to get Datastores from vCenter');
-                    //TODO: do something with this
-                    return vmwareFactory.getDatastoreProps(data.esxi_credential, data.esxi_address, data.esxi_port, data.esxi_datastore);
-
-                }).then(function (res) {
                     if (res.status === 'error') throw new Error('Failed to get Datastore Properties from vCenter');
 
                 }).catch(function (e) {
@@ -247,7 +242,6 @@
                     return vmwareFactory.getVMPath(data.esxi_credential, data.esxi_address, data.esxi_port, data.vm.vm);
                 }).then(function (res) {
                     if (res && res.status === 'error') throw new Error('Failed to get VM path');
-                    console.log(res);
 
                     var regex = /\[*\]\s(.*)\/.*\.vmx/gi;
                     var str = res.data.propSet['config.files.vmPathName'];

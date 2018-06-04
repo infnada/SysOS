@@ -87,7 +87,7 @@
                         );
                         modalInstanceDownloadFromURL.result.then(function (res) {
 
-                            return fileSystemFactory.downloadFileFromInet(res, _this.localFileSystem.currentPath, function () {
+                            return fileSystemFactory.downloadFileFromInet(res, _this.localFileSystem.currentPath, '', function () {
 
                                 _this.reloadPath();
 

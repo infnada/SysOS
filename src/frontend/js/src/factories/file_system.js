@@ -85,8 +85,8 @@
             });
         };
 
-        var downloadFileFromInet = function (url, path, callback) {
-            return ServerFactory.downloadFileFromInet(url, path, function (data) {
+        var downloadFileFromInet = function (url, path, credential, callback) {
+            return ServerFactory.downloadFileFromInet(url, path, credential, function (data) {
                 return callback(data.data);
             }, function (data) {
                 console.log('Error: ' + data);

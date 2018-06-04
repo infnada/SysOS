@@ -372,7 +372,7 @@
 		            return errorHandler(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault'][0]['detail'][0]);
 	            }
 
-                return validResponse(data.data.data.response['soapenv:Envelope']['soapenv:Body']['0'].RetrievePropertiesResponse['0'].returnval['0'].propSet['0'].val['0']._);
+                return validResponse(data.data.data.response['soapenv:Envelope']['soapenv:Body']['0'].RetrievePropertiesResponse[0].returnval[0].propSet[0].val[0]._);
             });
         };
 
@@ -389,7 +389,7 @@
 		            return errorHandler(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault'][0]['detail'][0]);
 	            }
 
-                return validResponse(data.data.data.response['soapenv:Envelope']['soapenv:Body']['0'].RetrievePropertiesResponse['0'].returnval['0'].propSet['0'].val['0']._);
+                return validResponse(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0].RetrievePropertiesResponse[0].returnval[0].propSet[0].val[0]._);
             });
         };
 
@@ -406,7 +406,7 @@
 		            return errorHandler(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault'][0]['detail'][0]);
 	            }
 
-                return validResponse(data.data.data.response['soapenv:Envelope']['soapenv:Body']['0'].RetrievePropertiesResponse['0'].returnval['0'].propSet['0'].val['0']._);
+                return validResponse(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0].RetrievePropertiesResponse[0].returnval[0].propSet[0].val[0]._);
             });
         };
 

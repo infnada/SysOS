@@ -443,7 +443,7 @@
                         _this.showModal = false;
                     });
                 } else if (_this.modalType === 'Download from url') {
-                    fileSystemFactory.downloadFileFromInet(_this.fileUrl, _this.localFileSystem.currentPath, function () {
+                    fileSystemFactory.downloadFileFromInet(_this.fileUrl, _this.localFileSystem.currentPath, '', function () {
                         _this.reloadPath();
                         _this.showModal = false;
                     });
