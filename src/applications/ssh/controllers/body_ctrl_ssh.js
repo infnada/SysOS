@@ -111,6 +111,8 @@
             };
 
             this.getActiveConnection = function () {
+                if (!_this.activeConnection) return null;
+
                 return connectionsFactory.getConnectionByUuid(_this.activeConnection);
             };
 
@@ -153,6 +155,7 @@
                     }
                 );
                 modalInstanceRemoveConnection.result.then(function (res) {
+
                     if (res === true) connectionsFactory.deleteConnection(connection.uuid);
 
                     _this.newConnection();

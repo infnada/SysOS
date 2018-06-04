@@ -362,16 +362,6 @@
             });
 
             /*
-             * Restore VM files
-             */
-            $scope.$on('backupsm__restore_vm_files', function (event, data) {
-                console.log(data);
-
-                //TODO:
-
-            });
-
-            /*
              * VM Restore from Storage Snapshot
              */
             $scope.$on('backupsm__restore_vm', function (event, data) {

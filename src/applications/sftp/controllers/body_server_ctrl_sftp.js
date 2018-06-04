@@ -1,11 +1,10 @@
 (function () {
     'use strict';
-    sftpApp.controller('sftpBodyServerController', ['$scope', '$timeout', 'fileSystemFactory', 'sftpFactory', 'remoteFileSystemFactory', 'toastr',
-        function ($scope, $timeout, fileSystemFactory, sftpFactory, remoteFileSystemFactory, toastr) {
+    sftpApp.controller('sftpBodyServerController', ['$scope', '$timeout', 'fileSystemFactory', 'sftpFactory', 'remoteFileSystemFactory', 'toastr', 'modalFactory',
+        function ($scope, $timeout, fileSystemFactory, sftpFactory, remoteFileSystemFactory, toastr, modalFactory) {
 
             var _this = this;
             this.viewAsList = false;
-            this.showModal = false;
             this.currentActive = 0;
             this.localFileSystemPath = '/';
             this.selection = true;
@@ -32,9 +31,32 @@
                     click: function ($itemScope) {
                         if (angular.isUndefined($itemScope.file)) $itemScope.file = $itemScope.$parent.file;
 
-                        _this.modalType = 'Download from url';
-                        _this.fileUrl = '';
-                        _this.showModal = true;
+                        var modalInstanceDownloadFromURL = modalFactory.openRegistredModal('input', '.window--sftp .window__main #server_body',
+                            {
+                                title: function () {
+                                    return 'Download file from URL';
+                                },
+                                text: function () {
+                                    return 'File URL';
+                                },
+                                button_text: function () {
+                                    return 'Download';
+                                },
+                                inputValue: function () {
+                                    return '';
+                                }
+                            }
+                        );
+                        modalInstanceDownloadFromURL.result.then(function (res) {
+
+                            if (!res) return;
+
+                            return sftpFactory.downloadFileFromInet(res, sftpB.getActiveConnection().currentPath, sftpB.activeConnection, function (data) {
+                                _this.reloadPath();
+                                toastr.success('Download file from URL', 'File downloaded to ' + sftpB.getActiveConnection().currentPath);
+                            });
+
+                        });
                     }
                 },
                 {
@@ -160,10 +182,32 @@
                     click: function ($itemScope) {
                         if (angular.isUndefined($itemScope.file)) $itemScope.file = $itemScope.$parent.file;
 
-                        _this.modalType = 'Rename';
                         _this.fileToRename = $itemScope.file.filename;
-                        _this.modalInputName = $itemScope.file.filename;
-                        _this.showModal = true;
+
+                        var modalInstanceRenameFile = modalFactory.openRegistredModal('input', '.window--sftp .window__main #server_body',
+                            {
+                                title: function () {
+                                    return 'Rename file';
+                                },
+                                text: function () {
+                                    return 'File name';
+                                },
+                                button_text: function () {
+                                    return 'Rename';
+                                },
+                                inputValue: function () {
+                                    return $itemScope.file.filename;
+                                }
+                            }
+                        );
+                        modalInstanceRenameFile.result.then(function (res) {
+
+                            if (!res) return;
+
+                            _this.modalInputName = res;
+                            _this.renameFile();
+
+                        });
                     }
                 },
                 {
@@ -171,9 +215,22 @@
                     click: function ($itemScope) {
                         if (angular.isUndefined($itemScope.file)) $itemScope.file = $itemScope.$parent.file;
 
-                        _this.modalType = 'Delete File';
                         _this.modalInputName = $itemScope.file.filename;
-                        _this.showModal = true;
+                        var modalInstanceDeleteFile = modalFactory.openRegistredModal('question', '.window--sftp .window__main #server_body',
+                            {
+                                title: function () {
+                                    return 'Delete file ' + _this.modalInputName;
+                                },
+                                text: function () {
+                                    return 'Delete ' + _this.modalInputName + ' from SysOS?';
+                                }
+                            }
+                        );
+                        modalInstanceDeleteFile.result.then(function (res) {
+
+                            if (res === true) return _this.deleteSelected();
+
+                        });
                     }
                 },
                 null,
@@ -221,6 +278,7 @@
 
                     _this.resetActive();
                 } else {
+                    console.log("else");
                     path = sftpB.getActiveConnection().currentPath.split('/').splice(0, $index + 1).join('/') + '/';
 
                     // Push the actual path to lastPath array (used by goPathBack())
@@ -271,9 +329,29 @@
             };
 
             this.createFolder = function () {
-                _this.modalType = 'Create Folder';
-                _this.modalInputName = 'New Folder';
-                _this.showModal = true;
+                var modalInstanceCreateFolder = modalFactory.openRegistredModal('input', '.window--sftp .window__main #server_body',
+                    {
+                        title: function () {
+                            return 'Create new folder';
+                        },
+                        text: function () {
+                            return 'Folder name';
+                        },
+                        button_text: function () {
+                            return 'Create';
+                        },
+                        inputValue: function () {
+                            return 'NewFolder';
+                        }
+                    }
+                );
+                modalInstanceCreateFolder.result.then(function (res) {
+
+                    if (!res) return;
+
+                    var serverPath = sftpB.getActiveConnection().currentPath;
+                    sftpFactory.createFolder(serverPath + res, sftpB.activeConnection);
+                });
             };
 
             this.toggleView = function () {
@@ -285,7 +363,15 @@
                 var serverPath = sftpB.getActiveConnection().currentPath;
 
                 sftpFactory.deleteFile(_this.modalInputName, serverPath, sftpB.activeConnection);
-                _this.showModal = false;
+            };
+
+            /*
+             * Rename file
+             */
+            this.renameFile = function () {
+                var serverPath = sftpB.getActiveConnection().currentPath;
+
+                sftpFactory.renameFile(_this.fileToRename, _this.modalInputName, serverPath, sftpB.activeConnection);
             };
 
             this.resetActive = function () {
@@ -317,17 +403,52 @@
              */
             this.handleItemKeyPress = function (keyEvent) {
                 console.log(keyEvent);
-                if (_this.showModal === true) return;
 
                 if (keyEvent.which === 46) {
-                    _this.modalType = 'Delete File';
                     _this.modalInputName = sftpB.getActiveConnection().currentData[_this.currentActive].filename;
-                    _this.showModal = true;
+
+                    var modalInstanceDeleteFile = modalFactory.openRegistredModal('question', '.window--sftp .window__main #server_body',
+                        {
+                            title: function () {
+                                return 'Delete file ' + _this.modalInputName;
+                            },
+                            text: function () {
+                                return 'Delete ' + _this.modalInputName + ' from SysOS?';
+                            }
+                        }
+                    );
+                    modalInstanceDeleteFile.result.then(function (res) {
+
+                        if (res === true) return _this.deleteSelected();
+
+                    });
                 } else if (keyEvent.which === 113) {
-                    _this.modalType = 'Rename';
                     _this.fileToRename = sftpB.getActiveConnection().currentData[_this.currentActive].filename;
-                    _this.modalInputName = sftpB.getActiveConnection().currentData[_this.currentActive].filename;
-                    _this.showModal = true;
+
+                    var modalInstanceRenameFile = modalFactory.openRegistredModal('input', '.window--sftp .window__main #server_body',
+                        {
+                            title: function () {
+                                return 'Rename file';
+                            },
+                            text: function () {
+                                return 'File name';
+                            },
+                            button_text: function () {
+                                return 'Rename';
+                            },
+                            inputValue: function () {
+                                return _this.fileToRename;
+                            }
+                        }
+                    );
+                    modalInstanceRenameFile.result.then(function (res) {
+
+                        if (!res) return;
+
+                        _this.modalInputName = res;
+                        _this.renameFile();
+
+                    });
                 } else if (keyEvent.which === 39) {
                     _this.setCurrentActive(_this.currentActive + 1);
                 } else if (keyEvent.which === 37) {
@@ -336,40 +457,6 @@
                     _this.goPathBack();
                 } else if (keyEvent.which === 13) {
                     _this.doWithFile(sftpB.getActiveConnection().currentData[_this.currentActive]);
-                }
-            };
-
-            /*
-             * Keypress on action modal
-             */
-            this.handleKeyPress = function (keyEvent) {
-                var serverPath;
-                console.log(_this.modalType);
-                if (keyEvent.which === 13) {
-                    if (_this.modalType === 'Rename') {
-                        serverPath = sftpB.getActiveConnection().currentPath;
-
-                        sftpFactory.renameFile(_this.fileToRename, _this.modalInputName, serverPath, sftpB.activeConnection);
-                        $timeout(function () {
-                            _this.showModal = false;
-                        }, 200);
-                    } else if (_this.modalType === 'Create Folder') {
-                        serverPath = sftpB.getActiveConnection().currentPath;
-
-                        sftpFactory.createFolder(serverPath + _this.modalInputName, sftpB.activeConnection);
-                        $timeout(function () {
-                            _this.showModal = false;
-                        }, 200);
-                    } else if (_this.modalType === 'Download from url') {
-                        sftpFactory.downloadFileFromInet(_this.fileUrl, sftpB.getActiveConnection().currentPath, sftpB.activeConnection, function (data) {
-                            _this.reloadPath();
-                            _this.showModal = false;
-                            toastr.success('Download file from URL', 'File downloaded to '+ sftpB.getActiveConnection().currentPath);
-                        });
-                    }
-                } else if (keyEvent.which === 27) {
-                    _this.showModal = false;
-                    _this.resetActive();
                 }
             };
 

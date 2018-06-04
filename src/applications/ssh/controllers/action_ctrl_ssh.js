@@ -24,6 +24,8 @@
             });
 
             this.getActiveConnection = function () {
+                if (!_this.activeConnection) return null;
+
                 return connectionsFactory.getConnectionByUuid(_this.activeConnection);
             };
 

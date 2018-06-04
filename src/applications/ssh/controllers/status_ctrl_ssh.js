@@ -22,6 +22,8 @@
             });
 
             this.getActiveConnection = function () {
+                if (!_this.activeConnection) return null;
+
                 return $filter('filter')(_this.connections, {uuid: _this.activeConnection})[0];
             };
 

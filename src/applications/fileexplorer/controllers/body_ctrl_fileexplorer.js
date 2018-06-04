@@ -87,9 +87,11 @@
                         );
                         modalInstanceDownloadFromURL.result.then(function (res) {
 
+                            if (!res) return;
+
                             return fileSystemFactory.downloadFileFromInet(res, _this.localFileSystem.currentPath, '', function () {
                                 _this.reloadPath();
-                                toastr.success('Download file from URL', 'File downloaded to '+ this.localFileSystem.currentPath);
+                                toastr.success('Download file from URL', 'File downloaded to ' + _this.localFileSystem.currentPath);
                             });
                         });
                     }
@@ -220,13 +222,12 @@
                         );
                         modalInstanceRenameFile.result.then(function (res) {
 
-                            if (res) {
-                                _this.modalInputName = res;
-                                _this.renameFile();
-                            }
+                            if (!res) return;
+
+                            _this.modalInputName = res;
+                            _this.renameFile();
 
                         });
-
                     }
                 },
                 {
@@ -250,7 +251,6 @@
                             if (res === true) return _this.deleteSelected();
 
                         });
-
                     }
                 },
                 null,
@@ -258,7 +258,6 @@
                     text: '<i class="fa fa-lock"></i> Permissions',
                     click: function ($itemScope) {
                         if (angular.isUndefined($itemScope.file)) $itemScope.file = $itemScope.$parent.file;
-
 
                     }
                 }
@@ -399,6 +398,8 @@
                 );
                 modalInstanceCreateFolder.result.then(function (res) {
 
+                    if (!res) return;
+
                     return fileSystemFactory.createFolder(_this.localFileSystem.currentPath, res, function () {
 
                         _this.reloadPath();
@@ -501,14 +502,12 @@
                     );
                     modalInstanceRenameFile.result.then(function (res) {
 
-                        if (res) {
-                            _this.modalInputName = res;
-                            _this.renameFile();
-                        }
+                        if (!res) return;
+
+                        _this.modalInputName = res;
+                        _this.renameFile();
 
                     });
-
-
                 } else if (keyEvent.which === 39) {
                     _this.setCurrentActive(_this.currentActive + 1);
                 } else if (keyEvent.which === 37) {

@@ -209,10 +209,10 @@
                         );
                         modalInstanceRenameFile.result.then(function (res) {
 
-                            if (res) {
-                                _this.modalInputName = res;
-                                _this.renameFile();
-                            }
+                            if (!res) return;
+
+                            _this.modalInputName = res;
+                            _this.renameFile();
 
                         });
                     }
@@ -441,27 +441,27 @@
                 );
                 modalInstanceCreateFolder.result.then(function (res) {
 
-                    if (res) {
-                        modalFactory.openLittleModal('PLEASE WAIT', 'Creating folder...', '.window--datastoreexplorer .window__main', 'plain');
+                    if (!res) return;
 
-                        return vmwareFactory.createFolderToDatastore(
-                            _this.datastoreData.credential,
-                            _this.datastoreData.host,
-                            _this.datastoreData.port,
-                            _this.datastoreData.name,
-                            _this.localFileSystem.currentPath + res, // folder name
-                            _this.datastoreData.datacenter
-                        ).then(function (data) {
-                            if (data.status === 'error') throw new Error('Failed to create folder');
+                    modalFactory.openLittleModal('PLEASE WAIT', 'Creating folder...', '.window--datastoreexplorer .window__main', 'plain');
 
-                            modalFactory.closeModal('.window--datastoreexplorer .window__main');
+                    return vmwareFactory.createFolderToDatastore(
+                        _this.datastoreData.credential,
+                        _this.datastoreData.host,
+                        _this.datastoreData.port,
+                        _this.datastoreData.name,
+                        _this.localFileSystem.currentPath + res, // folder name
+                        _this.datastoreData.datacenter
+                    ).then(function (data) {
+                        if (data.status === 'error') throw new Error('Failed to create folder');
 
-                            _this.reloadPath();
-                        }).catch(function (e) {
-                            console.log(e);
-                            modalFactory.closeModal('.window--datastoreexplorer .window__main');
-                        });
-                    }
+                        modalFactory.closeModal('.window--datastoreexplorer .window__main');
+
+                        _this.reloadPath();
+                    }).catch(function (e) {
+                        console.log(e);
+                        modalFactory.closeModal('.window--datastoreexplorer .window__main');
+                    });
 
                 });
 
@@ -659,10 +659,10 @@
                     );
                     modalInstanceRenameFile.result.then(function (res) {
 
-                        if (res) {
-                            _this.modalInputName = res;
-                            _this.renameFile();
-                        }
+                        if (!res) return;
+
+                        _this.modalInputName = res;
+                        _this.renameFile();
 
                     });
 
