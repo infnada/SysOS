@@ -50,7 +50,7 @@
               </div> \
               <div> \
                 <button type="button" class="btn btn-default" ng-if="smB.Form.save" ng-click="smB.saveConnection()">Save</button> \
-                <button type="button" class="btn btn-primary" ng-if="smB.Form.uuid" ng-click="smB.saveConnection(); smB.refreshConnection(smB.Form)">Save & Rescan</button> \
+                <button type="button" class="btn btn-primary" ng-if="smB.Form.uuid" ng-click="smB.saveConnection(); smB.sendConnect(smanagerConnect_form)">Save & Rescan</button> \
                 <button type="submit" class="btn btn-primary" ng-if="!smB.Form.uuid" ng-disabled="smB.getActiveConnection().type == \'connected\'">Connect</button> \
               </div> \
             </form>'

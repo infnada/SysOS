@@ -426,7 +426,11 @@
                         return el.uuid === connection.uuid;
                     })].uuid = res[3].data.cluster_uuid;
                     connectionsFactory.getConnectionByUuid(connection.uuid).uuid = res[3].data.cluster_uuid;
+
                     connection.uuid = res[3].data.cluster_uuid;
+
+                    // Set new uuid as activeConnection
+                    activeConnection = res[3].data.cluster_uuid;
 
                     angular.forEach(res[6].data, function (vserver, key) {
 
@@ -844,21 +848,21 @@
 
                 // CONN CLOSE
                 if (data.prop === 'status' && data.text === 'CONN CLOSE') {
-                    connectionsFactory.getConnectionByUuid(data.uuid).type = 'disconnected';
+                    connectionsFactory.getConnectionByUuid(data.uuid).state = 'disconnected';
 
                     // CON ERROR
                 } else if (data.prop === 'status' && data.text !== 'SSH CONNECTION ESTABLISHED' && data.text !== 'SNMP CONNECTION ESTABLISHED') {
 
                     // Error connecting
-                    if (connectionsFactory.getConnectionByUuid(data.uuid).type === 'new') {
-                        connectionsFactory.getConnectionByUuid(data.uuid).type = 'disconnected';
+                    if (connectionsFactory.getConnectionByUuid(data.uuid).state === 'new') {
+                        connectionsFactory.getConnectionByUuid(data.uuid).state = 'disconnected';
                     }
                     connectionsFactory.getConnectionByUuid(data.uuid).error = data.text;
                     toastr.error(data.text, 'Error (' + connectionsFactory.getConnectionByUuid(data.uuid).host + ')');
 
                     // CONN OK
                 } else if (data.text === 'SSH CONNECTION ESTABLISHED' || data.text === 'SNMP CONNECTION ESTABLISHED') {
-                    connectionsFactory.getConnectionByUuid(data.uuid).type = 'connected';
+                    connectionsFactory.getConnectionByUuid(data.uuid).state = 'connected';
                     connectionsFactory.getConnectionByUuid(data.uuid).error = null;
                     $rootScope.$broadcast('smanager__connection_connected', data.uuid);
                     toastr.success(data.text, 'Connected (' + connectionsFactory.getConnectionByUuid(data.uuid).host + ')');

@@ -181,13 +181,13 @@
                 <div ng-if="smB.showSnapshot == true"> \
                   <div ng-include="\'templates/applications/snapshot-type-smanager.html\'" include-replace></div> \
                 </div> \
-                <div ng-if="smB.showStandalone == true && smB.showNewConnection != true && smB.showNewConnectionType != true && smB.showConfigureConnection != true && smB.getActiveConnection().type != \'disconnected\'"> \
+                <div ng-if="smB.showStandalone == true && smB.getActiveConnection().state != \'disconnected\'"> \
                   <div ng-include="\'templates/applications/standalone-type-smanager.html\'" include-replace></div> \
                 </div> \
                 <div ng-if="smB.showNewConnectionType == true"> \
                   <div ng-include="\'templates/applications/new-connection-type-smanager.html\'" include-replace></div> \
                 </div> \
-                <div ng-if="smB.showNewConnection == true || smB.getActiveConnection().type == \'disconnected\'"> \
+                <div ng-if="smB.showNewConnection == true || smB.getActiveConnection().state == \'disconnected\'"> \
                   <div ng-include="\'templates/applications/new-connection-smanager.html\'" include-replace></div> \
                 </div> \
                 <div ng-if="smB.showConfigureConnection == true"> \

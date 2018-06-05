@@ -14,7 +14,7 @@
 
         $scope.$watch(function () {
             return cmanagerFactory.credentials();
-        }, function (newValue, oldValue) {
+        }, function (newValue) {
             _this.credentials = newValue;
         });
 

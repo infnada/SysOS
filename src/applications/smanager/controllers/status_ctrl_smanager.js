@@ -23,13 +23,13 @@
         this.getActiveConnection = function () {
             if (!_this.activeConnection) return null;
 
-            var filter_standalone = $filter('filter')(_this.connections.standalone, {uuid: _this.activeConnection})[0];
-            var filter_virtual = $filter('filter')(_this.connections.virtual, {uuid: _this.activeConnection})[0];
-            var filter_storage = $filter('filter')(_this.connections.storage, {uuid: _this.activeConnection})[0];
+            var foundByUuid = connectionsFactory.getConnectionByUuid(_this.activeConnection);
+            if (foundByUuid) return foundByUuid;
 
-            if (filter_standalone) return filter_standalone;
-            if (filter_virtual) return filter_virtual;
-            if (filter_storage) return filter_storage;
+            if (!foundByUuid) {
+                var foundByUuidMapping = connectionsFactory.getObjectByUuidMapping(_this.activeConnection, parent);
+                if (foundByUuidMapping) return eval(foundByUuidMapping); // jshint ignore:line
+            }
 
             return false;
         };

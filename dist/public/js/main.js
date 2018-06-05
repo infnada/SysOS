@@ -1686,8 +1686,7 @@ var SysOS = angular.module('SysOS', [
          * @Description
          * Check if application is in Desktop Task Bar
          *
-         * @params
-         * id* {String} Application ID
+         * @param id {String} Application ID
          */
         var isApplicationInTaskBar = function (id) {
             if (!id) throw new Error('id_not_found');
@@ -1701,8 +1700,7 @@ var SysOS = angular.module('SysOS', [
          * @Description
          * Check if application is opened
          *
-         * @params
-         * id* {String} Application ID
+         * @param id {String} Application ID
          */
         var isApplicationOpened = function (id) {
             if (!id) throw new Error('id_not_found');
@@ -1722,8 +1720,7 @@ var SysOS = angular.module('SysOS', [
          * @description
          * Main error handler
          *
-         * @params
-         * e* {String}
+         * @param e {String}
          */
         var errorHandler = function (e) {
             if (!e) throw new Error('e_not_found');
@@ -1737,8 +1734,7 @@ var SysOS = angular.module('SysOS', [
          * @Description
          * If and application is not registered it will not be accessible from Desktop or other applications
          *
-         * @params
-         * data* {Object}
+         * @param data {Object}
          */
         var registerApplication = function (data) {
             if (!data) throw new Error('data_not_found');
@@ -1753,8 +1749,8 @@ var SysOS = angular.module('SysOS', [
          * Set an application to be shown in Desktop Task Bar
          *
          * @params
-         * data* {Object}
-         * save {Bool}
+         * data {Object}
+         * save* {Bool}
          */
         var registerTaskBarApplication = function (data, save) {
             if (!data) throw new Error('id_not_found');
@@ -1801,8 +1797,7 @@ var SysOS = angular.module('SysOS', [
          * @Description
          * Return all application info
          *
-         * @params
-         * id* {String} Application ID
+         * @param id {String} Application ID
          */
         var getApplicationById = function (id) {
             if (!id) throw new Error('id_not_found');
@@ -1816,8 +1811,7 @@ var SysOS = angular.module('SysOS', [
          * @Description
          * Closes an application
          *
-         * @params
-         * id* {String} Application ID
+         * @param id {String} Application ID
          */
         var closeApplication = function (id) {
             if (!id) throw new Error('id_not_found');
@@ -1841,8 +1835,7 @@ var SysOS = angular.module('SysOS', [
          * @Description
          * Opens a new application
          *
-         * @params
-         * app* {String} Application name
+         * @param id {String} Application name
          */
         var openApplication = function (id) {
             if (!id) throw new Error('id_not_found');
@@ -1875,8 +1868,7 @@ var SysOS = angular.module('SysOS', [
          * @Description
          * Check if application is active (not in background) on Desktop
          *
-         * @params
-         * id* {String} Application ID
+         * @param id* {String} Application ID
          */
         var isActiveApplication = function (id) {
             if (!id) throw new Error('id_not_found');
@@ -1888,8 +1880,7 @@ var SysOS = angular.module('SysOS', [
          * @Description
          * Puts an application active or at background
          *
-         * @params
-         * id* {String} Application ID
+         * @param id* {String} Application ID
          */
         var toggleApplication = function (id) {
             if (!id) throw new Error('id_not_found');
@@ -1902,8 +1893,7 @@ var SysOS = angular.module('SysOS', [
          * @Description
          * Check if application is pinned in Task Bar
          *
-         * @params
-         * id* {String} Application ID
+         * @param id* {String} Application ID
          */
         var isApplicationPinned = function (id) {
             if (!id) throw new Error('id_not_found');
@@ -1957,8 +1947,7 @@ var SysOS = angular.module('SysOS', [
          * @description
          * Function called after Sort taskbar applications
          *
-         * @params
-         * applications {Object}
+         * @param applications {Object}
          */
         var saveTaskBarApplicationsOrder = function (applications) {
             if (!applications) throw new Error('applications_not_found');
@@ -2021,8 +2010,7 @@ var SysOS = angular.module('SysOS', [
             /**
              * Deletes a connection
              *
-             * @params
-             * uuid* {String}
+             * @param uuid {String}
              */
             var getConnectionCategoryByUuid = function (uuid) {
                 if (!uuid) throw new Error('uuid_not_found');
@@ -2041,8 +2029,7 @@ var SysOS = angular.module('SysOS', [
             /**
              * Set connections info fetched from config file
              *
-             * @params
-             * connections* {Array}
+             * @param connections {Array}
              */
             var setSavedConnections = function (connections) {
                 if (!connections) throw new Error('connections_not_found');
@@ -2062,8 +2049,7 @@ var SysOS = angular.module('SysOS', [
             /**
              * Save connection to config file
              *
-             * @params
-             * connection* {Object}
+             * @param connection {Object}
              */
             var saveConnection = function (connection) {
                 if (!connection) throw new Error('connection_not_found');
@@ -2089,8 +2075,8 @@ var SysOS = angular.module('SysOS', [
              * Add new connection to connections array
              *
              * @params
-             * connection* {Object}
-             * initialized {Bool}
+             * connection {Object}
+             * initialized* {Bool}
              */
             var setNewConnection = function (connection, initialized) {
                 if (!connection) throw new Error('connection_not_found');
@@ -2119,6 +2105,7 @@ var SysOS = angular.module('SysOS', [
                                 category: connection.category,
                                 description: connection.description,
                                 credential: connection.credential,
+                                state: 'new',
                                 so: connection.so,
                                 autologin: connection.autologin,
                                 save: true,
@@ -2142,6 +2129,7 @@ var SysOS = angular.module('SysOS', [
                                 category: connection.category,
                                 description: connection.description,
                                 credential: connection.credential,
+                                state: 'new',
                                 so: connection.so,
                                 autologin: connection.autologin,
                                 save: true,
@@ -2266,7 +2254,7 @@ var SysOS = angular.module('SysOS', [
                             category: connection.category,
                             description: connection.description,
                             credential: connection.credential,
-                            type: 'new',
+                            state: 'new',
                             autologin: connection.autologin,
                             save: connection.save
                         }) - 1;
@@ -2301,7 +2289,7 @@ var SysOS = angular.module('SysOS', [
                             category: connection.category,
                             description: connection.description,
                             credential: connection.credential,
-                            type: 'new',
+                            state: 'new',
                             currentPath: '/',
                             currentData: '',
                             autologin: connection.autologin,
@@ -2326,8 +2314,7 @@ var SysOS = angular.module('SysOS', [
             /**
              * Creates a connection to target server and/or fetch server data
              *
-             * @params
-             * connection* {Object}
+             * @param connection {Object}
              */
             var connect = function (connection) {
                 if (!connection) throw new Error('connection_not_found');
@@ -2355,14 +2342,14 @@ var SysOS = angular.module('SysOS', [
                  * VMWARE
                  */
                 if (connection.category === 'virtual') {
-                    if (connection.so === 'vmware') return smanagerFactory.getVMwareData(connection);
+                    if (connection.so === 'vmware') smanagerFactory.getVMwareData(connection);
                 }
 
                 /*
                  * NETAPP
                  */
                 if (connection.category === 'storage') {
-                    if (connection.so === 'netapp') return smanagerFactory.getNetAppData(connection);
+                    if (connection.so === 'netapp') smanagerFactory.getNetAppData(connection);
                 }
 
                 /*
@@ -2407,8 +2394,7 @@ var SysOS = angular.module('SysOS', [
             /**
              * Disconnect connection at server side
              *
-             * @params
-             * uuid* {String}
+             * @param uuid {String}
              */
             var disconnectConnection = function (uuid) {
                 if (!uuid) throw new Error('uuid_not_found');
@@ -2427,8 +2413,7 @@ var SysOS = angular.module('SysOS', [
             /**
              * Deletes a connection
              *
-             * @params
-             * uuid* {String}
+             * @param uuid {String}
              */
             var deleteConnection = function (uuid) {
                 if (!uuid) throw new Error('uuid_not_found');
@@ -2460,8 +2445,7 @@ var SysOS = angular.module('SysOS', [
             /**
              * Get connection info from connections array
              *
-             * @params
-             * uuid* {String}
+             * @param uuid {String}
              */
             var getConnectionByUuid = function (uuid) {
                 if (!uuid) throw new Error('uuid_not_found');
@@ -2485,8 +2469,7 @@ var SysOS = angular.module('SysOS', [
             /**
              * Save uuid Mapping to config file
              *
-             * @params
-             * map* {Array}
+             * @param map {Array}
              */
             var saveUuidMap = function (map) {
                 if (!map) throw new Error('map_not_found');
@@ -2507,8 +2490,7 @@ var SysOS = angular.module('SysOS', [
             /**
              * Save node links to config file
              *
-             * @params
-             * links* {Array}
+             * @param links {Array}
              */
             var saveLinksMap = function (links) {
                 if (!links) throw new Error('links_not_found');
@@ -2530,8 +2512,8 @@ var SysOS = angular.module('SysOS', [
              * Creates an Eval string to fast fetch recursive data from an uuid
              *
              * @params
-             * uuid* {String}
-             * parent {Int} Get 1st, 2nd, 3rd... parent object instead of all object
+             * uuid {String}
+             * parent* {Number} Get 1st, 2nd, 3rd... parent object instead of all object
              */
             var getObjectByUuidMapping = function (uuid, parent) {
                 if (!uuid) throw new Error('uuid_not_found');
@@ -2552,7 +2534,7 @@ var SysOS = angular.module('SysOS', [
                     if (object.parent) {
                         object = $filter('filter')(uuidMap, {uuid: object.parent})[0];
                         if (!object) if (!object) {
-                            $log.error('Connections Factory [%s] -> getObjectByUuidMapping not found', uuid);
+                            $log.error('Connections Factory [%s] -> getObjectByUuidMapping parent not found', uuid);
                             return false;
                         }
 

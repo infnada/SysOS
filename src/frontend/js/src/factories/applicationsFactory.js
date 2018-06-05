@@ -19,8 +19,7 @@
          * @Description
          * Check if application is in Desktop Task Bar
          *
-         * @params
-         * id* {String} Application ID
+         * @param id {String} Application ID
          */
         var isApplicationInTaskBar = function (id) {
             if (!id) throw new Error('id_not_found');
@@ -34,8 +33,7 @@
          * @Description
          * Check if application is opened
          *
-         * @params
-         * id* {String} Application ID
+         * @param id {String} Application ID
          */
         var isApplicationOpened = function (id) {
             if (!id) throw new Error('id_not_found');
@@ -55,8 +53,7 @@
          * @description
          * Main error handler
          *
-         * @params
-         * e* {String}
+         * @param e {String}
          */
         var errorHandler = function (e) {
             if (!e) throw new Error('e_not_found');
@@ -70,8 +67,7 @@
          * @Description
          * If and application is not registered it will not be accessible from Desktop or other applications
          *
-         * @params
-         * data* {Object}
+         * @param data {Object}
          */
         var registerApplication = function (data) {
             if (!data) throw new Error('data_not_found');
@@ -86,8 +82,8 @@
          * Set an application to be shown in Desktop Task Bar
          *
          * @params
-         * data* {Object}
-         * save {Bool}
+         * data {Object}
+         * save* {Bool}
          */
         var registerTaskBarApplication = function (data, save) {
             if (!data) throw new Error('id_not_found');
@@ -134,8 +130,7 @@
          * @Description
          * Return all application info
          *
-         * @params
-         * id* {String} Application ID
+         * @param id {String} Application ID
          */
         var getApplicationById = function (id) {
             if (!id) throw new Error('id_not_found');
@@ -149,8 +144,7 @@
          * @Description
          * Closes an application
          *
-         * @params
-         * id* {String} Application ID
+         * @param id {String} Application ID
          */
         var closeApplication = function (id) {
             if (!id) throw new Error('id_not_found');
@@ -174,8 +168,7 @@
          * @Description
          * Opens a new application
          *
-         * @params
-         * app* {String} Application name
+         * @param id {String} Application name
          */
         var openApplication = function (id) {
             if (!id) throw new Error('id_not_found');
@@ -208,8 +201,7 @@
          * @Description
          * Check if application is active (not in background) on Desktop
          *
-         * @params
-         * id* {String} Application ID
+         * @param id* {String} Application ID
          */
         var isActiveApplication = function (id) {
             if (!id) throw new Error('id_not_found');
@@ -221,8 +213,7 @@
          * @Description
          * Puts an application active or at background
          *
-         * @params
-         * id* {String} Application ID
+         * @param id* {String} Application ID
          */
         var toggleApplication = function (id) {
             if (!id) throw new Error('id_not_found');
@@ -235,8 +226,7 @@
          * @Description
          * Check if application is pinned in Task Bar
          *
-         * @params
-         * id* {String} Application ID
+         * @param id* {String} Application ID
          */
         var isApplicationPinned = function (id) {
             if (!id) throw new Error('id_not_found');
@@ -290,8 +280,7 @@
          * @description
          * Function called after Sort taskbar applications
          *
-         * @params
-         * applications {Object}
+         * @param applications {Object}
          */
         var saveTaskBarApplicationsOrder = function (applications) {
             if (!applications) throw new Error('applications_not_found');

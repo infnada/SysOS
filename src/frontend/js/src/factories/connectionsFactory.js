@@ -21,8 +21,7 @@
             /**
              * Deletes a connection
              *
-             * @params
-             * uuid* {String}
+             * @param uuid {String}
              */
             var getConnectionCategoryByUuid = function (uuid) {
                 if (!uuid) throw new Error('uuid_not_found');
@@ -41,8 +40,7 @@
             /**
              * Set connections info fetched from config file
              *
-             * @params
-             * connections* {Array}
+             * @param connections {Array}
              */
             var setSavedConnections = function (connections) {
                 if (!connections) throw new Error('connections_not_found');
@@ -62,8 +60,7 @@
             /**
              * Save connection to config file
              *
-             * @params
-             * connection* {Object}
+             * @param connection {Object}
              */
             var saveConnection = function (connection) {
                 if (!connection) throw new Error('connection_not_found');
@@ -89,8 +86,8 @@
              * Add new connection to connections array
              *
              * @params
-             * connection* {Object}
-             * initialized {Bool}
+             * connection {Object}
+             * initialized* {Bool}
              */
             var setNewConnection = function (connection, initialized) {
                 if (!connection) throw new Error('connection_not_found');
@@ -119,6 +116,7 @@
                                 category: connection.category,
                                 description: connection.description,
                                 credential: connection.credential,
+                                state: 'new',
                                 so: connection.so,
                                 autologin: connection.autologin,
                                 save: true,
@@ -142,6 +140,7 @@
                                 category: connection.category,
                                 description: connection.description,
                                 credential: connection.credential,
+                                state: 'new',
                                 so: connection.so,
                                 autologin: connection.autologin,
                                 save: true,
@@ -266,7 +265,7 @@
                             category: connection.category,
                             description: connection.description,
                             credential: connection.credential,
-                            type: 'new',
+                            state: 'new',
                             autologin: connection.autologin,
                             save: connection.save
                         }) - 1;
@@ -301,7 +300,7 @@
                             category: connection.category,
                             description: connection.description,
                             credential: connection.credential,
-                            type: 'new',
+                            state: 'new',
                             currentPath: '/',
                             currentData: '',
                             autologin: connection.autologin,
@@ -326,8 +325,7 @@
             /**
              * Creates a connection to target server and/or fetch server data
              *
-             * @params
-             * connection* {Object}
+             * @param connection {Object}
              */
             var connect = function (connection) {
                 if (!connection) throw new Error('connection_not_found');
@@ -355,14 +353,14 @@
                  * VMWARE
                  */
                 if (connection.category === 'virtual') {
-                    if (connection.so === 'vmware') return smanagerFactory.getVMwareData(connection);
+                    if (connection.so === 'vmware') smanagerFactory.getVMwareData(connection);
                 }
 
                 /*
                  * NETAPP
                  */
                 if (connection.category === 'storage') {
-                    if (connection.so === 'netapp') return smanagerFactory.getNetAppData(connection);
+                    if (connection.so === 'netapp') smanagerFactory.getNetAppData(connection);
                 }
 
                 /*
@@ -407,8 +405,7 @@
             /**
              * Disconnect connection at server side
              *
-             * @params
-             * uuid* {String}
+             * @param uuid {String}
              */
             var disconnectConnection = function (uuid) {
                 if (!uuid) throw new Error('uuid_not_found');
@@ -427,8 +424,7 @@
             /**
              * Deletes a connection
              *
-             * @params
-             * uuid* {String}
+             * @param uuid {String}
              */
             var deleteConnection = function (uuid) {
                 if (!uuid) throw new Error('uuid_not_found');
@@ -460,8 +456,7 @@
             /**
              * Get connection info from connections array
              *
-             * @params
-             * uuid* {String}
+             * @param uuid {String}
              */
             var getConnectionByUuid = function (uuid) {
                 if (!uuid) throw new Error('uuid_not_found');
@@ -485,8 +480,7 @@
             /**
              * Save uuid Mapping to config file
              *
-             * @params
-             * map* {Array}
+             * @param map {Array}
              */
             var saveUuidMap = function (map) {
                 if (!map) throw new Error('map_not_found');
@@ -507,8 +501,7 @@
             /**
              * Save node links to config file
              *
-             * @params
-             * links* {Array}
+             * @param links {Array}
              */
             var saveLinksMap = function (links) {
                 if (!links) throw new Error('links_not_found');
@@ -530,8 +523,8 @@
              * Creates an Eval string to fast fetch recursive data from an uuid
              *
              * @params
-             * uuid* {String}
-             * parent {Int} Get 1st, 2nd, 3rd... parent object instead of all object
+             * uuid {String}
+             * parent* {Number} Get 1st, 2nd, 3rd... parent object instead of all object
              */
             var getObjectByUuidMapping = function (uuid, parent) {
                 if (!uuid) throw new Error('uuid_not_found');
@@ -552,7 +545,7 @@
                     if (object.parent) {
                         object = $filter('filter')(uuidMap, {uuid: object.parent})[0];
                         if (!object) if (!object) {
-                            $log.error('Connections Factory [%s] -> getObjectByUuidMapping not found', uuid);
+                            $log.error('Connections Factory [%s] -> getObjectByUuidMapping parent not found', uuid);
                             return false;
                         }
 
