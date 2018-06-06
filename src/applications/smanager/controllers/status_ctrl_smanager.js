@@ -20,7 +20,7 @@
             _this.activeConnection = newValue;
         });
 
-        this.getActiveConnection = function () {
+        this.getActiveConnection = function (parent) {
             if (!_this.activeConnection) return null;
 
             var foundByUuid = connectionsFactory.getConnectionByUuid(_this.activeConnection);

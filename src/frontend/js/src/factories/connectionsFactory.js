@@ -473,8 +473,12 @@
                 if (filter_ssh) return filter_ssh;
                 if (filter_sftp) return filter_sftp;
 
-                $log.error('Connections Factory [%s] -> getConnectionByUuid not found', uuid);
-                return false;
+                // Check for getObjectByUuidMapping or return false
+                var object = $filter('filter')(uuidMap, {uuid: uuid})[0];
+                if (!object) {
+                    $log.error('Connections Factory [%s] -> getConnectionByUuid not found', uuid);
+                    return false;
+                }
             };
 
             /**

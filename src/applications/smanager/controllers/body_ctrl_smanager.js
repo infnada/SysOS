@@ -156,7 +156,7 @@
              */
             var initConnection = function (init) {
                 if (_this.activeConnection == null) return;
-                if (_this.getActiveConnection().type !== 'connected') return;
+                if (_this.getActiveConnection().state !== 'connected') return;
 
                 $log.debug('Infrastructure Manager [%s] -> Initializing connection', _this.activeConnection);
 
@@ -203,7 +203,6 @@
             }, function (newValue) {
                 if (newValue && angular.isFunction(newValue.then)) return;
                 _this.activeConnection = newValue;
-                initConnection();
             });
 
             $scope.$watch(function () {
@@ -415,6 +414,8 @@
              * @param uuid {String}
              */
             this.deleteConnection = function (uuid) {
+                $log.debug('Infrastructure Manager [%s] -> Ask for delete connection', uuid);
+
                 smanagerFactory.setActiveConnection(uuid);
 
                 // Wait for next digest circle before continue
@@ -431,9 +432,12 @@
                     );
                     modalInstanceRemoveConnection.result.then(function (res) {
 
-                        if (res === true) connectionsFactory.deleteConnection(uuid);
+                        if (res === true) {
+                            $log.debug('Infrastructure Manager [%s] -> Deleting connection', uuid);
 
-                        _this.newConnectionType();
+                            connectionsFactory.deleteConnection(uuid);
+                            _this.newConnectionType();
+                        }
 
                     });
                 },0,false);
@@ -664,13 +668,13 @@
             this.storageContextMenu = [
                 {
                     text: '<i class="fa fa-pencil"></i> Edit Connection',
-                    click: function ($itemScope, $event, modelValue, text, $li) {
+                    click: function ($itemScope) {
                         _this.editConnection($itemScope.$parent.$parent.storage.uuid);
                     }
                 },
                 {
                     text: '<i class="fa fa-refresh"></i> Rescan Storage',
-                    click: function ($itemScope, $event, modelValue, text, $li) {
+                    click: function ($itemScope) {
                         //TODO: delete current links
                         //TODO: delete current maps
                         _this.refreshConnection($itemScope.$parent.$parent.storage);
@@ -678,7 +682,7 @@
                 },
                 {
                     text: '<i class="fa fa-trash text-danger"></i> Delete Connection',
-                    click: function ($itemScope, $event, modelValue, text, $li) {
+                    click: function ($itemScope) {
                         _this.deleteConnection($itemScope.$parent.$parent.storage.uuid);
                     }
                 }
@@ -687,29 +691,53 @@
             this.volumeContextMenu = [
                 {
                     text: '<i class="fa fa-database"></i> Create Snapshot',
-                    click: function ($itemScope, $event, modelValue, text, $li) {
+                    click: function ($itemScope) {
+                        $log.debug('Infrastructure Manager [%s] -> Ask for create storage snapshot -> volume [%s]', $itemScope.$parent.$parent.volume['volume-id-attributes'].uuid, $itemScope.$parent.$parent.volume['volume-id-attributes'].name);
 
-                        // Set _this.activeConnection manually to make sure _this.getActiveConnection() gets correct
-                        // results
-                        _this.activeConnection = $itemScope.$parent.$parent.volume['volume-id-attributes'].uuid;
-                        _this.setActiveConnection($itemScope.$parent.$parent.volume['volume-id-attributes'].uuid);
+                        smanagerFactory.setActiveConnection($itemScope.$parent.$parent.volume['volume-id-attributes'].uuid);
 
-                        return netappFactory.createSnapshot(
-                            _this.getActiveConnection(2).credential,
-                            _this.getActiveConnection(2).host,
-                            _this.getActiveConnection(2).port,
-                            $itemScope.$parent.$parent.volume['volume-id-attributes']['owning-vserver-name'],
-                            $itemScope.$parent.$parent.volume['volume-id-attributes'].name
-                        ).then(function (res) {
-                            if (res.status === 'error') {
-                                toastr.error('Create Volume Snapshot', res.error);
-                                throw new Error('Failed to create Volume Snapshot');
-                            }
+                        // Wait for next digest circle before continue
+                        $timeout(function() {
+                            var modalInstanceRemoveConnection = modalFactory.openRegistredModal('question', '.window--smanager .window__main',
+                                {
+                                    title: function () {
+                                        return 'Create storage snapshot';
+                                    },
+                                    text: function () {
+                                        return 'Do you want to create a Storage snapshot for ' + $itemScope.$parent.$parent.volume['volume-id-attributes'].name + ' volume?';
+                                    }
+                                }
+                            );
+                            modalInstanceRemoveConnection.result.then(function (res) {
 
-                            toastr.success('Create Volume Snapshot');
+                                if (res === true) {
+                                    $log.debug('Infrastructure Manager [%s] -> Creating storage snapshot -> volume [%s]', $itemScope.$parent.$parent.volume['volume-id-attributes'].uuid, $itemScope.$parent.$parent.volume['volume-id-attributes'].name);
 
-                            console.log(res);
-                        });
+                                    modalFactory.openLittleModal('PLEASE WAIT', 'Creating volume snapshot', '.window--smanager .window__main', 'plain');
+
+                                    return netappFactory.createSnapshot(
+                                        _this.getActiveConnection(2).credential,
+                                        _this.getActiveConnection(2).host,
+                                        _this.getActiveConnection(2).port,
+                                        $itemScope.$parent.$parent.volume['volume-id-attributes']['owning-vserver-name'],
+                                        $itemScope.$parent.$parent.volume['volume-id-attributes'].name
+                                    ).then(function (res) {
+                                        if (res.status === 'error') {
+                                            $log.error('Infrastructure Manager [%s] -> Error creating storage snapshot -> volume [%s] -> ', $itemScope.$parent.$parent.volume['volume-id-attributes'].uuid, $itemScope.$parent.$parent.volume['volume-id-attributes'].name, res.error);
+
+                                            toastr.error('Create Volume Snapshot', res.error);
+                                            throw new Error('Failed to create Volume Snapshot');
+                                        }
+
+                                        $log.debug('Infrastructure Manager [%s] -> Storage snapshot created successfully -> volume [%s]', $itemScope.$parent.$parent.volume['volume-id-attributes'].uuid, $itemScope.$parent.$parent.volume['volume-id-attributes'].naame);
+
+                                        modalFactory.closeModal('.window--smanager .window__main');
+                                        toastr.success('Create Volume Snapshot', ' Snapshot created succesfully for volume ' + $itemScope.$parent.$parent.volume['volume-id-attributes'].name);
+                                    });
+                                }
+
+                            });
+                        }, 100);
                     }
 
                 },
@@ -1093,7 +1121,9 @@
                         _this.activeConnection = $itemScope.vm.config.uuid;
                         _this.setActiveConnection($itemScope.vm.config.uuid);
 
-	                    if (!smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name)) return modalFactory.openLittleModal('Error while creating Backup', 'Not found any compatible NetApp storage. Make sure VMs that you want to backup are inside a NetApp volume and this is managed by SysOS.', '.window--smanager .window__main', 'plain');
+	                    if (!smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name)) {
+	                        return modalFactory.openLittleModal('Error while creating Backup', 'Not found any compatible NetApp storage. Make sure VMs that you want to backup are inside a NetApp volume and this is managed by SysOS.', '.window--smanager .window__main', 'plain');
+                        }
 
 	                    ApplicationsFactory.openApplication('backupsm');
 	                    ApplicationsFactory.toggleApplication('backupsm');
