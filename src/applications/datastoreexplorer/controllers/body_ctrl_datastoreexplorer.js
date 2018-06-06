@@ -149,7 +149,7 @@
 
                             fileSystemFactory.downloadFileFromInet('https://' + _this.datastoreData.host + '/folder' + _this.localFileSystem.currentPath + $itemScope.file.path + '?dcPath=' + datacenter + '&dsName=' + _this.datastoreData.name, '/home/downloads/', _this.datastoreData.credential, function () {
                                 modalFactory.closeModal('.window--datastoreexplorer .window__main');
-                                toastr.success('Download file to SysOS', 'File downloaded to /home/downloads/' + $itemScope.file.path);
+                                toastr.success('File downloaded to /home/downloads/' + $itemScope.file.path, 'Download file to SysOS');
                             });
                         });
 

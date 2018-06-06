@@ -571,7 +571,12 @@
 
                         connectionsFactory.saveConnection(connectionsFactory.getConnectionByUuid(data.uuid));
                         connectionsFactory.saveUuidMap(uuidMap);
+
                         modalFactory.closeModal('.window--smanager .window__main');
+
+                        return 'success';
+                    }).catch(function (e) {
+                        return e;
                     });
                 });
             };

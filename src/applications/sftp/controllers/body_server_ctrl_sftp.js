@@ -53,7 +53,7 @@
 
                             return sftpFactory.downloadFileFromInet(res, sftpB.getActiveConnection().currentPath, sftpB.activeConnection, function (data) {
                                 _this.reloadPath();
-                                toastr.success('Download file from URL', 'File downloaded to ' + sftpB.getActiveConnection().currentPath);
+                                toastr.success('File downloaded to ' + sftpB.getActiveConnection().currentPath, 'Download file from URL');
                             });
 
                         });

@@ -91,7 +91,7 @@
 
                             return fileSystemFactory.downloadFileFromInet(res, _this.localFileSystem.currentPath, '', function () {
                                 _this.reloadPath();
-                                toastr.success('Download file from URL', 'File downloaded to ' + _this.localFileSystem.currentPath);
+                                toastr.success('File downloaded to ' + _this.localFileSystem.currentPath, 'Download file from URL');
                             });
                         });
                     }

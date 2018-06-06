@@ -354,6 +354,8 @@
              * @param uuid {String} connection uuid
              */
             this.editConnection = function (uuid) {
+                $log.debug('Infrastructure Manager [%s] -> Received editConnection', uuid);
+
                 $interval.cancel(network_bandwidth_timer);
 
                 if (uuid) smanagerFactory.setActiveConnection(uuid);
@@ -367,7 +369,7 @@
                     _this.showVCenter = false;
                     _this.showNewConnection = true;
                     _this.showNewConnectionType = false;
-                },0,false);
+                }, 0, false);
             };
 
             /**
@@ -404,6 +406,8 @@
              * @param connection {Object}
              */
             this.refreshConnection = function (connection) {
+                $log.debug('Infrastructure Manager [%s] -> Received refreshConnection', connection.uuid);
+
                 connectionsFactory.connect(connection);
             };
 
@@ -414,7 +418,7 @@
              * @param uuid {String}
              */
             this.deleteConnection = function (uuid) {
-                $log.debug('Infrastructure Manager [%s] -> Ask for delete connection', uuid);
+                $log.debug('Infrastructure Manager [%s] -> Received deleteConnection', uuid);
 
                 smanagerFactory.setActiveConnection(uuid);
 
@@ -440,7 +444,7 @@
                         }
 
                     });
-                },0,false);
+                }, 0, false);
             };
 
             /**
@@ -725,44 +729,56 @@
                                         if (res.status === 'error') {
                                             $log.error('Infrastructure Manager [%s] -> Error creating storage snapshot -> volume [%s] -> ', $itemScope.$parent.$parent.volume['volume-id-attributes'].uuid, $itemScope.$parent.$parent.volume['volume-id-attributes'].name, res.error);
 
-                                            toastr.error('Create Volume Snapshot', res.error);
+                                            toastr.error(res.error, 'Create Volume Snapshot');
                                             throw new Error('Failed to create Volume Snapshot');
                                         }
 
                                         $log.debug('Infrastructure Manager [%s] -> Storage snapshot created successfully -> volume [%s]', $itemScope.$parent.$parent.volume['volume-id-attributes'].uuid, $itemScope.$parent.$parent.volume['volume-id-attributes'].naame);
 
                                         modalFactory.closeModal('.window--smanager .window__main');
-                                        toastr.success('Create Volume Snapshot', ' Snapshot created succesfully for volume ' + $itemScope.$parent.$parent.volume['volume-id-attributes'].name);
+                                        toastr.success('Snapshot created succesfully for volume ' + $itemScope.$parent.$parent.volume['volume-id-attributes'].name, 'Create Volume Snapshot');
                                     });
                                 }
 
                             });
-                        }, 100);
+                        }, 0, false);
                     }
 
                 },
                 null,
                 {
                     text: '<i class="fa fa-file"></i> Rescan Volume',
-                    click: function ($itemScope, $event, modelValue, text, $li) {
+                    click: function ($itemScope) {
+                        $log.debug('Infrastructure Manager [%s] -> Received Rescan Volume -> volume [%s]', $itemScope.$parent.$parent.volume['volume-id-attributes'].uuid, $itemScope.$parent.$parent.volume['volume-id-attributes'].name);
 
                         //TODO: delete current links
                         //TODO: delete current maps
 
-                        // Set _this.activeConnection manually to make sure _this.getActiveConnection() gets correct
-                        // results
-                        _this.activeConnection = $itemScope.$parent.$parent.volume['volume-id-attributes'].uuid;
-                        _this.setActiveConnection($itemScope.$parent.$parent.volume['volume-id-attributes'].uuid);
+                        smanagerFactory.setActiveConnection($itemScope.$parent.$parent.volume['volume-id-attributes'].uuid);
 
-                        return smanagerFactory.getVolumeData({
-                            uuid: _this.getActiveConnection(2).uuid,
-                            credential: _this.getActiveConnection(2).credential,
-                            host: _this.getActiveConnection(2).host,
-                            port: _this.getActiveConnection(2).port,
-                            vserver_name: $itemScope.$parent.$parent.volume['volume-id-attributes']['owning-vserver-name'],
-                            volume_name: $itemScope.$parent.$parent.volume['volume-id-attributes'].name,
-                            volume_uuid: $itemScope.$parent.$parent.volume['volume-id-attributes'].uuid
-                        });
+                        // Wait for next digest circle before continue
+                        $timeout(function () {
+                            return smanagerFactory.getVolumeData({
+                                uuid: _this.getActiveConnection(2).uuid,
+                                credential: _this.getActiveConnection(2).credential,
+                                host: _this.getActiveConnection(2).host,
+                                port: _this.getActiveConnection(2).port,
+                                vserver_name: $itemScope.$parent.$parent.volume['volume-id-attributes']['owning-vserver-name'],
+                                volume_name: $itemScope.$parent.$parent.volume['volume-id-attributes'].name,
+                                volume_uuid: $itemScope.$parent.$parent.volume['volume-id-attributes'].uuid
+                            }).then(function (res) {
+                                if (res.status === 'error') {
+                                    $log.error('Infrastructure Manager [%s] -> Error rescanning a volume -> volume [%s] -> ', $itemScope.$parent.$parent.volume['volume-id-attributes'].uuid, $itemScope.$parent.$parent.volume['volume-id-attributes'].name, res.error);
+
+                                    toastr.error(res.error, 'Rescan volume');
+                                    throw new Error('Failed to rescan Volume');
+                                }
+
+                                $log.debug('Infrastructure Manager [%s] -> Storage volume rescanned successfully -> volume [%s]', $itemScope.$parent.$parent.volume['volume-id-attributes'].uuid, $itemScope.$parent.$parent.volume['volume-id-attributes'].name);
+
+                                toastr.success('Rescan of volume ' + $itemScope.$parent.$parent.volume['volume-id-attributes'].name + ' was succesfully', 'Rescan volume');
+                            });
+                        }, 0, false);
 
                     }
                 }
@@ -772,54 +788,88 @@
             this.snapshotContextMenu = [
                 {
                     text: '<i class="fa fa-database"></i> Mount as Datastore',
-                    click: function ($itemScope, $event, modelValue, text, $li) {
-                        ApplicationsFactory.openApplication('backupsm');
-                        ApplicationsFactory.toggleApplication('backupsm');
+                    click: function ($itemScope) {
+                        $log.debug('Infrastructure Manager [%s] -> Ask for mount storage snapshot into a datastore -> snapshot [%s]', $itemScope.snapshot['snapshot-instance-uuid'], $itemScope.snapshot.name);
 
-                        // Set _this.activeConnection manually to make sure _this.getActiveConnection() gets correct
-                        // results
-                        _this.activeConnection = $itemScope.snapshot['snapshot-instance-uuid'];
-                        _this.setActiveConnection($itemScope.snapshot['snapshot-instance-uuid']);
+                        smanagerFactory.setActiveConnection($itemScope.snapshot['snapshot-instance-uuid']);
 
+                        // Wait for next digest circle before continue
                         $timeout(function () {
-                            var snapshots = _this.getActiveConnection(1).snapshots;
-                            if (!Array.isArray(snapshots)) snapshots = [snapshots];
+                            var modalInstanceRemoveConnection = modalFactory.openRegistredModal('question', '.window--smanager .window__main',
+                                {
+                                    title: function () {
+                                        return 'Mount Snapshot as Datastore';
+                                    },
+                                    text: function () {
+                                        return 'Do you want to mount the Storage Snapshot to an ESXi host?';
+                                    }
+                                }
+                            );
+                            modalInstanceRemoveConnection.result.then(function (res) {
 
-                            $rootScope.$broadcast('backupsm__mount_restore_datastore', {
-                                storage: _this.getActiveConnection(3),
-                                vserver: _this.getActiveConnection(2),
-                                volume: _this.getActiveConnection(1),
-                                snapshots: snapshots,
-                                snapshot: $itemScope.snapshot['snapshot-instance-uuid'],
-                                ESXihosts: smanagerFactory.getESXihosts()
+                                if (res === true) {
+                                    ApplicationsFactory.openApplication('backupsm');
+                                    ApplicationsFactory.toggleApplication('backupsm');
+
+                                    $log.debug('Infrastructure Manager [%s] -> Launching Backups Manager for mounting storage snapshot into a datastore -> snapshot [%s]', $itemScope.snapshot['snapshot-instance-uuid'], $itemScope.snapshot.name);
+
+                                    var snapshots = _this.getActiveConnection(1).snapshots;
+                                    if (!Array.isArray(snapshots)) snapshots = [snapshots];
+
+                                    $rootScope.$broadcast('backupsm__mount_restore_datastore', {
+                                        storage: _this.getActiveConnection(3),
+                                        vserver: _this.getActiveConnection(2),
+                                        volume: _this.getActiveConnection(1),
+                                        snapshots: snapshots,
+                                        snapshot: $itemScope.snapshot['snapshot-instance-uuid'],
+                                        ESXihosts: smanagerFactory.getESXihosts()
+                                    });
+                                }
                             });
-                        }, 100);
+                        }, 0, false);
                     }
                 },
                 {
                     text: '<i class="fa fa-file"></i> Restore Datastore files',
-                    click: function ($itemScope, $event, modelValue, text, $li) {
-                        ApplicationsFactory.openApplication('backupsm');
-                        ApplicationsFactory.toggleApplication('backupsm');
+                    click: function ($itemScope) {
+                        $log.debug('Infrastructure Manager [%s] -> Ask for mount storage snapshot into a datastore to restore files -> snapshot [%s]', $itemScope.snapshot['snapshot-instance-uuid'], $itemScope.snapshot.name);
 
-                        // Set _this.activeConnection manually to make sure _this.getActiveConnection() gets correct
-                        // results
-                        _this.activeConnection = $itemScope.snapshot['snapshot-instance-uuid'];
-                        _this.setActiveConnection($itemScope.snapshot['snapshot-instance-uuid']);
+                        smanagerFactory.setActiveConnection($itemScope.snapshot['snapshot-instance-uuid']);
 
+                        // Wait for next digest circle before continue
                         $timeout(function () {
-	                        var snapshots = _this.getActiveConnection(1).snapshots;
-	                        if (!Array.isArray(snapshots)) snapshots = [snapshots];
+                            var modalInstanceRemoveConnection = modalFactory.openRegistredModal('question', '.window--smanager .window__main',
+                                {
+                                    title: function () {
+                                        return 'Restore Datastore Files';
+                                    },
+                                    text: function () {
+                                        return 'Do you want to mount the Storage Snapshot to an ESXi host and restore datastore files?';
+                                    }
+                                }
+                            );
+                            modalInstanceRemoveConnection.result.then(function (res) {
 
-                            $rootScope.$broadcast('backupsm__restore_datastore_files', {
-                                storage: _this.getActiveConnection(3),
-                                vserver: _this.getActiveConnection(2),
-                                volume: _this.getActiveConnection(1),
-                                snapshots: snapshots,
-                                snapshot: $itemScope.snapshot['snapshot-instance-uuid'],
-                                ESXihosts: smanagerFactory.getESXihosts()
+                                if (res === true) {
+                                    ApplicationsFactory.openApplication('backupsm');
+                                    ApplicationsFactory.toggleApplication('backupsm');
+
+                                    $log.debug('Infrastructure Manager [%s] -> Launching Backups Manager for restoring a volume files -> snapshot [%s]', $itemScope.snapshot['snapshot-instance-uuid'], $itemScope.snapshot.name);
+
+                                    var snapshots = _this.getActiveConnection(1).snapshots;
+                                    if (!Array.isArray(snapshots)) snapshots = [snapshots];
+
+                                    $rootScope.$broadcast('backupsm__restore_datastore_files', {
+                                        storage: _this.getActiveConnection(3),
+                                        vserver: _this.getActiveConnection(2),
+                                        volume: _this.getActiveConnection(1),
+                                        snapshots: snapshots,
+                                        snapshot: $itemScope.snapshot['snapshot-instance-uuid'],
+                                        ESXihosts: smanagerFactory.getESXihosts()
+                                    });
+                                }
                             });
-                        }, 100);
+                        }, 0, false);
 
                     }
                 },

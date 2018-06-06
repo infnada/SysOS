@@ -77,7 +77,7 @@
                     $log.debug('Connections Factory [%s] -> Saved connection successfully -> category [%s], host [%s]', connection.uuid, connection.category, connection.host);
                 }, function (data) {
                     $log.error('Connections Factory [%s] -> Error while saving connection -> category [%s], host [%s] -> ', connection.uuid, connection.category, connection.host, data.error);
-                    toastr.error('Infrastructure Manager', 'Error while saving connection!');
+                    toastr.error('Error while saving connection.', 'Infrastructure Manager');
                 });
 
             };
@@ -346,6 +346,9 @@
                  * Standalone
                  */
                 if (connection.so === 'linux' || connection.so === 'snmp') {
+
+                    if (connection.save) saveConnection(connection);
+
                     socket.emit('session__new', 'smanager', connection.host, connection.credential, null, connection.uuid, connection.so);
                 }
 
@@ -446,10 +449,10 @@
 
                 return ServerFactory.deleteConfigFromFile(uuid, file, function () {
                     $log.debug('Connections Factory [%s] -> Connection deleted successfully', uuid);
-                    toastr.success('Infrastructure Manager', 'Connection deleted!');
+                    toastr.success('Connection deleted.', 'Infrastructure Manager');
                 }, function (data) {
                     $log.error('Connections Factory [%s] -> Error while deleting connection -> ', uuid, data.error);
-                    toastr.error('Infrastructure Manager', 'Error while deleting connection!');
+                    toastr.error('Error while deleting connection.', 'Infrastructure Manager');
                 });
             };
 
@@ -497,7 +500,7 @@
                     $log.debug('Connections Factory -> uuidMap saved successfully');
                 }, function (data) {
                     $log.error('Connections Factory -> Error while saving uuidMap -> ', data.error);
-                    toastr.error('Infrastructure Manager', 'Error while saving Uuid Map!');
+                    toastr.error('Error while saving Uuid Map.', 'Infrastructure Manager');
                 });
 
             };
@@ -518,7 +521,7 @@
                     $log.debug('Connections Factory -> linksMap saved successfully');
                 }, function (data) {
                     $log.error('Connections Factory -> Error while saving linksMap -> ', data.error);
-                    toastr.error('Infrastructure Manager', 'Error while saving Links Map!');
+                    toastr.error('Error while saving Links Map.', 'Infrastructure Manager');
                 });
 
             };

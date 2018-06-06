@@ -140,15 +140,17 @@
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
                 if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
 
-                if (!data.data.data.response.netapp.results[0]['attributes-list']) return validResponse();
+                // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
+                if (data.data.data.response.netapp.results[0]['attributes-list']) {
 
-                angular.forEach(data.data.data.response.netapp.results[0]['attributes-list'][0]['qtree-info'], function (qtree) {
-                    results.push(parseNetAppObject(qtree));
-                });
+                    angular.forEach(data.data.data.response.netapp.results[0]['attributes-list'][0]['qtree-info'], function (qtree) {
+                        results.push(parseNetAppObject(qtree));
+                    });
 
-                if (data.data.data.response.netapp.results[0]['next-tag']) {
-                    var next_tag = data.data.data.response.netapp.results[0]['next-tag'][0].replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                    return getQtrees(credential, host, port, vfiler, results, next_tag);
+                    if (data.data.data.response.netapp.results[0]['next-tag']) {
+                        var next_tag = data.data.data.response.netapp.results[0]['next-tag'][0].replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                        return getQtrees(credential, host, port, vfiler, results, next_tag);
+                    }
                 }
 
                 return validResponse(results);
@@ -162,15 +164,17 @@
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
                 if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
 
-                if (!data.data.data.response.netapp.results[0]['attributes-list']) return validResponse();
+                // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
+                if (data.data.data.response.netapp.results[0]['attributes-list']) {
 
-                angular.forEach(data.data.data.response.netapp.results[0]['attributes-list'][0]['net-interface-info'], function (netiface) {
-                    results.push(parseNetAppObject(netiface));
-                });
+                    angular.forEach(data.data.data.response.netapp.results[0]['attributes-list'][0]['net-interface-info'], function (netiface) {
+                        results.push(parseNetAppObject(netiface));
+                    });
 
-                if (data.data.data.response.netapp.results[0]['next-tag']) {
-                    var next_tag = data.data.data.response.netapp.results[0]['next-tag'][0].replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                    return getNetInterfaces(credential, host, port, vfiler, results, next_tag);
+                    if (data.data.data.response.netapp.results[0]['next-tag']) {
+                        var next_tag = data.data.data.response.netapp.results[0]['next-tag'][0].replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                        return getNetInterfaces(credential, host, port, vfiler, results, next_tag);
+                    }
                 }
 
                 return validResponse(results);
@@ -184,15 +188,17 @@
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
                 if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
 
-                if (!data.data.data.response.netapp.results[0]['attributes-list']) return validResponse();
+                // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
+                if (data.data.data.response.netapp.results[0]['attributes-list']) {
 
-                angular.forEach(data.data.data.response.netapp.results[0]['attributes-list'][0]['fcp-interface-info'], function (fcpiface) {
-                    results.push(parseNetAppObject(fcpiface));
-                });
+                    angular.forEach(data.data.data.response.netapp.results[0]['attributes-list'][0]['fcp-interface-info'], function (fcpiface) {
+                        results.push(parseNetAppObject(fcpiface));
+                    });
 
-                if (data.data.data.response.netapp.results[0]['next-tag']) {
-                    var next_tag = data.data.data.response.netapp.results[0]['next-tag'][0].replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                    return getFcpInterfaces(credential, host, port, vfiler, results, next_tag);
+                    if (data.data.data.response.netapp.results[0]['next-tag']) {
+                        var next_tag = data.data.data.response.netapp.results[0]['next-tag'][0].replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                        return getFcpInterfaces(credential, host, port, vfiler, results, next_tag);
+                    }
                 }
 
                 return validResponse(results);
@@ -218,15 +224,17 @@
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
                 if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
 
-                if (!data.data.data.response.netapp.results[0]['attributes-list']) return validResponse();
+                // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
+                if (data.data.data.response.netapp.results[0]['attributes-list']) {
 
-                angular.forEach(data.data.data.response.netapp.results[0]['attributes-list'][0]['vserver-info'], function (vserver) {
-                    results.push(parseNetAppObject(vserver));
-                });
+                    angular.forEach(data.data.data.response.netapp.results[0]['attributes-list'][0]['vserver-info'], function (vserver) {
+                        results.push(parseNetAppObject(vserver));
+                    });
 
-                if (data.data.data.response.netapp.results[0]['next-tag']) {
-                    var next_tag = data.data.data.response.netapp.results[0]['next-tag'][0].replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                    return getVservers(credential, host, port, results, next_tag);
+                    if (data.data.data.response.netapp.results[0]['next-tag']) {
+                        var next_tag = data.data.data.response.netapp.results[0]['next-tag'][0].replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                        return getVservers(credential, host, port, results, next_tag);
+                    }
                 }
 
                 return validResponse(results);
@@ -240,15 +248,17 @@
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
                 if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
 
-                if (!data.data.data.response.netapp.results[0]['attributes-list']) return validResponse();
+                // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
+                if (data.data.data.response.netapp.results[0]['attributes-list']) {
 
-                angular.forEach(data.data.data.response.netapp.results[0]['attributes-list'][0]['volume-attributes'], function (volume) {
-                    results.push(parseNetAppObject(volume));
-                });
+                    angular.forEach(data.data.data.response.netapp.results[0]['attributes-list'][0]['volume-attributes'], function (volume) {
+                        results.push(parseNetAppObject(volume));
+                    });
 
-                if (data.data.data.response.netapp.results[0]['next-tag']) {
-                    var next_tag = data.data.data.response.netapp.results[0]['next-tag'][0].replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                    return getVolumes(credential, host, port, vfiler, results, next_tag);
+                    if (data.data.data.response.netapp.results[0]['next-tag']) {
+                        var next_tag = data.data.data.response.netapp.results[0]['next-tag'][0].replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                        return getVolumes(credential, host, port, vfiler, results, next_tag);
+                    }
                 }
 
                 return validResponse(results);
@@ -262,15 +272,17 @@
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
                 if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
 
-                if (!data.data.data.response.netapp.results[0]['attributes-list']) return validResponse();
+                // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
+                if (data.data.data.response.netapp.results[0]['attributes-list']) {
 
-                angular.forEach(data.data.data.response.netapp.results[0]['attributes-list'][0]['snapshot-info'], function (snapshot) {
-                    results.push(parseNetAppObject(snapshot));
-                });
+                    angular.forEach(data.data.data.response.netapp.results[0]['attributes-list'][0]['snapshot-info'], function (snapshot) {
+                        results.push(parseNetAppObject(snapshot));
+                    });
 
-                if (data.data.data.response.netapp.results[0]['next-tag']) {
-                    var next_tag = data.data.data.response.netapp.results[0]['next-tag'][0].replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                    return getSnapshots(credential, host, port, vfiler, volume, results, next_tag);
+                    if (data.data.data.response.netapp.results[0]['next-tag']) {
+                        var next_tag = data.data.data.response.netapp.results[0]['next-tag'][0].replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                        return getSnapshots(credential, host, port, vfiler, volume, results, next_tag);
+                    }
                 }
 
                 return validResponse(results);
@@ -286,44 +298,46 @@
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno, host);
                 if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason, host);
 
-                if (!data.data.data.response.netapp.results[0]['attributes-list']) return validResponse();
+                // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
+                if (data.data.data.response.netapp.results[0]['attributes-list']) {
 
-                // For each file found
-                angular.forEach(data.data.data.response.netapp.results[0]['attributes-list'][0]['file-info'], function (file) {
-                    file = parseNetAppObject(file);
-                    if (file.name === '.' || file.name === '..') return;
+                    // For each file found
+                    angular.forEach(data.data.data.response.netapp.results[0]['attributes-list'][0]['file-info'], function (file) {
+                        file = parseNetAppObject(file);
+                        if (file.name === '.' || file.name === '..') return;
 
-                    file.path = path;
-                    results.push(file);
+                        file.path = path;
+                        results.push(file);
 
-                    // Get directories
-                    if (file['file-type'] === 'directory') {
-                        di_promises.push(getSnapshotFiles(credential, host, port, vfiler, volume, snapshot, path + '/' + file.name, results));
-                    }
-
-                });
-
-                // if directory found
-                if (di_promises.length > 0) {
-
-                    // Get all files in each found directory directory
-                    return $q.all(di_promises).then(function (results) {
-
-                        results = results[0].data;
-
-                        if (data.data.data.response.netapp.results[0]['next-tag']) {
-                            var next_tag = data.data.data.response.netapp.results[0]['next-tag'][0].replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                            return getSnapshotFiles(credential, host, port, vfiler, volume, snapshot, path, results, next_tag);
+                        // Get directories
+                        if (file['file-type'] === 'directory') {
+                            di_promises.push(getSnapshotFiles(credential, host, port, vfiler, volume, snapshot, path + '/' + file.name, results));
                         }
 
-                        return validResponse(results);
-
                     });
-                }
 
-                if (data.data.data.response.netapp.results[0]['next-tag']) {
-                    var next_tag = data.data.data.response.netapp.results[0]['next-tag'][0].replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                    return getSnapshotFiles(credential, host, port, vfiler, volume, snapshot, path, results, next_tag);
+                    // if directory found
+                    if (di_promises.length > 0) {
+
+                        // Get all files in each found directory directory
+                        return $q.all(di_promises).then(function (results) {
+
+                            results = results[0].data;
+
+                            if (data.data.data.response.netapp.results[0]['next-tag']) {
+                                var next_tag = data.data.data.response.netapp.results[0]['next-tag'][0].replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                                return getSnapshotFiles(credential, host, port, vfiler, volume, snapshot, path, results, next_tag);
+                            }
+
+                            return validResponse(results);
+
+                        });
+                    }
+
+                    if (data.data.data.response.netapp.results[0]['next-tag']) {
+                        var next_tag = data.data.data.response.netapp.results[0]['next-tag'][0].replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                        return getSnapshotFiles(credential, host, port, vfiler, volume, snapshot, path, results, next_tag);
+                    }
                 }
 
                 return validResponse(results);
@@ -348,15 +362,17 @@
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
                 if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
 
-                if (!data.data.data.response.netapp.results[0]['attributes-list']) return validResponse();
+                // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
+                if (data.data.data.response.netapp.results[0]['attributes-list']) {
 
-                angular.forEach(data.data.data.response.netapp.results[0]['attributes-list'][0]['lun-info'], function (lun) {
-                    results.push(parseNetAppObject(lun));
-                });
+                    angular.forEach(data.data.data.response.netapp.results[0]['attributes-list'][0]['lun-info'], function (lun) {
+                        results.push(parseNetAppObject(lun));
+                    });
 
-                if (data.data.data.response.netapp.results[0]['next-tag']) {
-                    var next_tag = data.data.data.response.netapp.results[0]['next-tag'][0].replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                    return getLuns(credential, host, port, vfiler, volume, results, next_tag);
+                    if (data.data.data.response.netapp.results[0]['next-tag']) {
+                        var next_tag = data.data.data.response.netapp.results[0]['next-tag'][0].replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                        return getLuns(credential, host, port, vfiler, volume, results, next_tag);
+                    }
                 }
 
                 return validResponse(results);
@@ -433,8 +449,6 @@
 
         var createSnapshot = function (credential, host, port, vfiler, volume, name) {
             var snapshot_name = volume + '_SysOS_' + (name ? name : '') + '_' + new Date().toISOString().split('.')[0].replace(/:/g, '');
-
-
             var xml = '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'' + (vfiler ? ' vfiler=\'' + vfiler + '\'' : '') + '><snapshot-create><async>False</async><snapshot>' + snapshot_name + '</snapshot><volume>' + volume + '</volume></snapshot-create></netapp>';
 
             return ServerFactory.callNetApp(credential, host, port, null, xml).then(function (data) {

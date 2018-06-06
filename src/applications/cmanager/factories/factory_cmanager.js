@@ -11,14 +11,14 @@
                 return el.uuid !== uuid;
             });
 
-            return ServerFactory.deleteCredential(uuid, function (data) {
+            return ServerFactory.deleteCredential(uuid, function () {
 
-                toastr.success('Credential Manager', 'Credential deleted!');
                 activeCredential = null;
+                return toastr.success('Credential deleted.', 'Credential Manager');
 
             }, function () {
 
-                return toastr.error('Credential Manager', 'Error deleting credential!');
+                return toastr.error('Error deleting credential.', 'Credential Manager');
 
             });
 
@@ -39,12 +39,12 @@
                     });
                 }
 
-                toastr.success('Credential Manager', 'Credential saved!');
                 activeCredential = null;
+                return toastr.success('Credential saved.', 'Credential Manager');
 
             }, function () {
 
-                return toastr.error('Credential Manager', 'Error saving credential!');
+                return toastr.error('Error saving credential.', 'Credential Manager');
 
             });
 
