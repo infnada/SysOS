@@ -687,6 +687,8 @@
                 {
                     text: '<i class="fa fa-trash text-danger"></i> Delete Connection',
                     click: function ($itemScope) {
+                        //TODO: delete current links
+                        //TODO: delete current maps
                         _this.deleteConnection($itemScope.$parent.$parent.storage.uuid);
                     }
                 }
@@ -694,7 +696,7 @@
 
             this.volumeContextMenu = [
                 {
-                    text: '<i class="fa fa-database"></i> Create Snapshot',
+                    text: '<i class="fa fa-database"></i> Create Storage Snapshot',
                     click: function ($itemScope) {
                         $log.debug('Infrastructure Manager [%s] -> Ask for create storage snapshot -> volume [%s]', $itemScope.$parent.$parent.volume['volume-id-attributes'].uuid, $itemScope.$parent.$parent.volume['volume-id-attributes'].name);
 
@@ -733,10 +735,10 @@
                                             throw new Error('Failed to create Volume Snapshot');
                                         }
 
-                                        $log.debug('Infrastructure Manager [%s] -> Storage snapshot created successfully -> volume [%s]', $itemScope.$parent.$parent.volume['volume-id-attributes'].uuid, $itemScope.$parent.$parent.volume['volume-id-attributes'].naame);
+                                        $log.debug('Infrastructure Manager [%s] -> Storage snapshot created successfully -> volume [%s]', $itemScope.$parent.$parent.volume['volume-id-attributes'].uuid, $itemScope.$parent.$parent.volume['volume-id-attributes'].name);
 
                                         modalFactory.closeModal('.window--smanager .window__main');
-                                        toastr.success('Snapshot created succesfully for volume ' + $itemScope.$parent.$parent.volume['volume-id-attributes'].name, 'Create Volume Snapshot');
+                                        toastr.success('Snapshot created successfully for volume ' + $itemScope.$parent.$parent.volume['volume-id-attributes'].name, 'Create Volume Snapshot');
                                     });
                                 }
 
@@ -874,9 +876,56 @@
                     }
                 },
                 {
-                    text: '<i class="fa fa-trash"></i> Delete SnapShot',
-                    click: function ($itemScope, $event, modelValue, text, $li) {
-                        //TODO
+                    text: '<i class="fa fa-trash"></i> Delete Storage SnapShot',
+                    click: function ($itemScope) {
+                        $log.debug('Infrastructure Manager [%s] -> Ask for delete storage snapshot -> snapshot [%s]', $itemScope.snapshot['snapshot-instance-uuid'], $itemScope.snapshot.name);
+
+                        smanagerFactory.setActiveConnection($itemScope.snapshot['snapshot-instance-uuid']);
+
+                        // Wait for next digest circle before continue
+                        $timeout(function() {
+                            var modalInstanceRemoveConnection = modalFactory.openRegistredModal('question', '.window--smanager .window__main',
+                                {
+                                    title: function () {
+                                        return 'Delete storage snapshot';
+                                    },
+                                    text: function () {
+                                        return 'Do you want to delete the storage snapshot ' + $itemScope.snapshot.name + '?';
+                                    }
+                                }
+                            );
+                            modalInstanceRemoveConnection.result.then(function (res) {
+
+                                if (res === true) {
+                                    $log.debug('Infrastructure Manager [%s] -> Deleting storage snapshot -> snapshot [%s]', $itemScope.snapshot['snapshot-instance-uuid'], $itemScope.snapshot.name);
+
+                                    modalFactory.openLittleModal('PLEASE WAIT', 'Deleting volume snapshot', '.window--smanager .window__main', 'plain');
+
+                                    return netappFactory.deleteSnapshot(
+                                        _this.getActiveConnection(3).credential,
+                                        _this.getActiveConnection(3).host,
+                                        _this.getActiveConnection(3).port,
+                                        _this.getActiveConnection(2)['vserver-name'],
+                                        _this.getActiveConnection(1)['volume-id-attributes'].name,
+                                        $itemScope.snapshot.name,
+                                        $itemScope.snapshot['snapshot-instance-uuid']
+                                    ).then(function (res) {
+                                        if (res.status === 'error') {
+                                            $log.error('Infrastructure Manager [%s] -> Error deleting storage snapshot -> snapshot [%s], volume [%s] -> ', $itemScope.snapshot['snapshot-instance-uuid'], $itemScope.snapshot.name, _this.getActiveConnection(1)['volume-id-attributes'].name, res.error);
+
+                                            toastr.error(res.error, 'Delete Storage Snapshot');
+                                            throw new Error('Failed to delete Storage Snapshot');
+                                        }
+
+                                        $log.debug('Infrastructure Manager [%s] -> Storage snapshot deleted successfully -> snapshot [%s], volume [%s]', $itemScope.snapshot['snapshot-instance-uuid'], $itemScope.snapshot.name, _this.getActiveConnection(1)['volume-id-attributes'].name);
+
+                                        modalFactory.closeModal('.window--smanager .window__main');
+                                        toastr.success('Snapshot ' + $itemScope.snapshot.name + ' deleted successfully for volume ' + _this.getActiveConnection(1)['volume-id-attributes'].name, 'Delete Volume Snapshot');
+                                    });
+                                }
+
+                            });
+                        }, 0, false);
                     }
                 }
 

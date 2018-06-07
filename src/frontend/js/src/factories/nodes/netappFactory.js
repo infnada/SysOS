@@ -355,6 +355,29 @@
             });
         };
 
+        var createSnapshot = function (credential, host, port, vfiler, volume, name) {
+            var snapshot_name = volume + '_SysOS_' + (name ? name : '') + '_' + new Date().toISOString().split('.')[0].replace(/:/g, '');
+            var xml = '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'' + (vfiler ? ' vfiler=\'' + vfiler + '\'' : '') + '><snapshot-create><async>False</async><snapshot>' + snapshot_name + '</snapshot><volume>' + volume + '</volume></snapshot-create></netapp>';
+
+            return ServerFactory.callNetApp(credential, host, port, null, xml).then(function (data) {
+                if (data.data.status === 'error') return errorHandler(data.data.data.errno);
+                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
+
+                return validResponse(data.data.data.response.netapp.results[0].$.status);
+            });
+        };
+
+        var deleteSnapshot = function (credential, host, port, vfiler, volume, snapshot_name, snapshot_uuid) {
+            var xml = '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'' + (vfiler ? ' vfiler=\'' + vfiler + '\'' : '') + '><snapshot-delete><snapshot>' + snapshot_name + '</snapshot>' + (snapshot_uuid ? '<snapshot-instance-uuid>' + snapshot_uuid + '</snapshot-instance-uuid>' : '') + '<volume>' + volume + '</volume></snapshot-delete></netapp>';
+
+            return ServerFactory.callNetApp(credential, host, port, null, xml).then(function (data) {
+                if (data.data.status === 'error') return errorHandler(data.data.data.errno);
+                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
+
+                return validResponse(data.data.data.response.netapp.results[0].$.status);
+            });
+        };
+
         var getLuns = function (credential, host, port, vfiler, volume, results, next_tag) {
             var xml = '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'' + (vfiler ? ' vfiler=\'' + vfiler + '\'' : '') + '><lun-get-iter><max-records>10</max-records>' + (volume ? '<query><lun-info><volume>' + volume + '</volume></lun-info></query>' : '') + '' + (next_tag ? '<tag>' + next_tag + '</tag>' : '') + '</lun-get-iter></netapp>';
 
@@ -447,18 +470,6 @@
             });
         };
 
-        var createSnapshot = function (credential, host, port, vfiler, volume, name) {
-            var snapshot_name = volume + '_SysOS_' + (name ? name : '') + '_' + new Date().toISOString().split('.')[0].replace(/:/g, '');
-            var xml = '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'' + (vfiler ? ' vfiler=\'' + vfiler + '\'' : '') + '><snapshot-create><async>False</async><snapshot>' + snapshot_name + '</snapshot><volume>' + volume + '</volume></snapshot-create></netapp>';
-
-            return ServerFactory.callNetApp(credential, host, port, null, xml).then(function (data) {
-                if (data.data.status === 'error') return errorHandler(data.data.data.errno);
-                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
-
-                return validResponse(data.data.data.response.netapp.results[0].$.status);
-            });
-        };
-
         var getNFSExportRulesList = function (credential, host, port, vfiler, volume) {
             var results = [];
             var xml = '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'' + (vfiler ? ' vfiler=\'' + vfiler + '\'' : '') + '><nfs-exportfs-list-rules-2><pathname>/' + volume + '</pathname><persistent>True</persistent></nfs-exportfs-list-rules-2></netapp>';
@@ -524,6 +535,8 @@
                 return getSnapshotFiles(credential, host, port, vfiler, volume, snapshot, path, []);
             },
             snapshotRestoreFile: snapshotRestoreFile,
+            createSnapshot: createSnapshot,
+            deleteSnapshot: deleteSnapshot,
             getLuns: function (credential, host, port, vfiler, volume) {
                 return getLuns(credential, host, port, vfiler, volume, []);
             },
@@ -533,7 +546,6 @@
             unmountVolume: unmountVolume,
             setVolumeOffline: setVolumeOffline,
             destroyVolume: destroyVolume,
-            createSnapshot: createSnapshot,
             getNFSExportRulesList: getNFSExportRulesList,
             getExportRules: getExportRules
         };
