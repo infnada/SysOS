@@ -14,6 +14,7 @@
     "bin": "pkg ./package.json --targets node8-linux-x64"
   },
   "dependencies": {
+    "Sparkline": "github:GerHobbelt/jquery.sparkline",
     "angular": "^1.7.0",
     "angular-bootstrap-contextmenu": "^1.1.0",
     "angular-socket-io": "^0.7.0",
@@ -47,7 +48,6 @@
     "read-config": "1.6.0",
     "serve-favicon": "^2.5.0",
     "socket.io": "^2.1.1",
-    "sparkline": "^0.2.0",
     "ssh2": "^0.6.1",
     "uuid4": "^1.0.0",
     "validator": "^10.2.0",
