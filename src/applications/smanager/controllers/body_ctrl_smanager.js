@@ -408,7 +408,11 @@
             this.refreshConnection = function (connection) {
                 $log.debug('Infrastructure Manager [%s] -> Received refreshConnection', connection.uuid);
 
+                connection.refreshing = true;
+
                 connectionsFactory.connect(connection);
+
+                connection.refreshing = false;
             };
 
             /**
@@ -521,7 +525,13 @@
              * NETAPP MONITOR
              */
             this.getSnapshotFiles = function (uuid, host, vserver, volume, snapshot, path, xml) {
-                return smanagerFactory.getSnapshotFiles(uuid, host, vserver, volume, snapshot, path, xml);
+                return smanagerFactory.getSnapshotFiles(uuid, host, vserver, volume, snapshot, path, xml).then(function () {
+                    $log.debug('Infrastructure Manager [%s] -> Doing getSnapshotFiles successfully -> snapshot [%s]', uuid, snapshot);
+                }).catch(function (e) {
+                    $log.error('Infrastructure Manager [%s] -> Error while getSnapshotFiles -> snapshot [%s] vm [%s] -> ', uuid, snapshot, e);
+
+                    toastr.error(e, 'Get Storage Snapshot Files');
+                });
             };
 
             this.getLinkByVMwareDatastore = function (virtual_uuid, datastore_name) {
@@ -611,7 +621,7 @@
                 return [4, 'text-danger'];
             };
 
-            this.getUpdatesStatus = function (percent) {
+            this.getUpdatesStatus = function () {
                 if (angular.isUndefined(_this.connections)) return 'bg-primary-i';
                 if (angular.isUndefined(_this.getActiveConnection().updates)) return 'bg-primary-i';
 
@@ -666,7 +676,7 @@
                 else return initConnection(false);
             };
 
-            /*
+            /**
              * CONTEXT MENUS
              */
             this.storageContextMenu = [
@@ -704,7 +714,7 @@
 
                         // Wait for next digest circle before continue
                         $timeout(function() {
-                            var modalInstanceRemoveConnection = modalFactory.openRegistredModal('question', '.window--smanager .window__main',
+                            var modalInstance = modalFactory.openRegistredModal('question', '.window--smanager .window__main',
                                 {
                                     title: function () {
                                         return 'Create storage snapshot';
@@ -714,7 +724,7 @@
                                     }
                                 }
                             );
-                            modalInstanceRemoveConnection.result.then(function (res) {
+                            modalInstance.result.then(function (res) {
 
                                 if (res === true) {
                                     $log.debug('Infrastructure Manager [%s] -> Creating storage snapshot -> volume [%s]', $itemScope.$parent.$parent.volume['volume-id-attributes'].uuid, $itemScope.$parent.$parent.volume['volume-id-attributes'].name);
@@ -760,6 +770,8 @@
 
                         // Wait for next digest circle before continue
                         $timeout(function () {
+                            $itemScope.$parent.$parent.volume.refreshing = true;
+
                             return smanagerFactory.getVolumeData({
                                 uuid: _this.getActiveConnection(2).uuid,
                                 credential: _this.getActiveConnection(2).credential,
@@ -768,17 +780,16 @@
                                 vserver_name: $itemScope.$parent.$parent.volume['volume-id-attributes']['owning-vserver-name'],
                                 volume_name: $itemScope.$parent.$parent.volume['volume-id-attributes'].name,
                                 volume_uuid: $itemScope.$parent.$parent.volume['volume-id-attributes'].uuid
-                            }).then(function (res) {
-                                if (res.status === 'error') {
-                                    $log.error('Infrastructure Manager [%s] -> Error rescanning a volume -> volume [%s] -> ', $itemScope.$parent.$parent.volume['volume-id-attributes'].uuid, $itemScope.$parent.$parent.volume['volume-id-attributes'].name, res.error);
-
-                                    toastr.error(res.error, 'Rescan volume');
-                                    throw new Error('Failed to rescan Volume');
-                                }
-
+                            }).then(function () {
                                 $log.debug('Infrastructure Manager [%s] -> Storage volume rescanned successfully -> volume [%s]', $itemScope.$parent.$parent.volume['volume-id-attributes'].uuid, $itemScope.$parent.$parent.volume['volume-id-attributes'].name);
 
                                 toastr.success('Rescan of volume ' + $itemScope.$parent.$parent.volume['volume-id-attributes'].name + ' was succesfully', 'Rescan volume');
+                                $itemScope.$parent.$parent.volume.refreshing = false;
+                            }).catch(function (e) {
+                                $log.error('Infrastructure Manager [%s] -> Error while rescanning a volume -> volume [%s] -> ', $itemScope.$parent.$parent.volume['volume-id-attributes'].uuid, $itemScope.$parent.$parent.volume['volume-id-attributes'].name, e);
+
+                                toastr.error(e, 'Rescan volume');
+                                $itemScope.$parent.$parent.volume.refreshing = false;
                             });
                         }, 0, false);
 
@@ -797,7 +808,7 @@
 
                         // Wait for next digest circle before continue
                         $timeout(function () {
-                            var modalInstanceRemoveConnection = modalFactory.openRegistredModal('question', '.window--smanager .window__main',
+                            var modalInstance = modalFactory.openRegistredModal('question', '.window--smanager .window__main',
                                 {
                                     title: function () {
                                         return 'Mount Snapshot as Datastore';
@@ -807,7 +818,7 @@
                                     }
                                 }
                             );
-                            modalInstanceRemoveConnection.result.then(function (res) {
+                            modalInstance.result.then(function (res) {
 
                                 if (res === true) {
                                     ApplicationsFactory.openApplication('backupsm');
@@ -840,7 +851,7 @@
 
                         // Wait for next digest circle before continue
                         $timeout(function () {
-                            var modalInstanceRemoveConnection = modalFactory.openRegistredModal('question', '.window--smanager .window__main',
+                            var modalInstance = modalFactory.openRegistredModal('question', '.window--smanager .window__main',
                                 {
                                     title: function () {
                                         return 'Restore Datastore Files';
@@ -850,7 +861,7 @@
                                     }
                                 }
                             );
-                            modalInstanceRemoveConnection.result.then(function (res) {
+                            modalInstance.result.then(function (res) {
 
                                 if (res === true) {
                                     ApplicationsFactory.openApplication('backupsm');
@@ -884,7 +895,7 @@
 
                         // Wait for next digest circle before continue
                         $timeout(function() {
-                            var modalInstanceRemoveConnection = modalFactory.openRegistredModal('question', '.window--smanager .window__main',
+                            var modalInstance = modalFactory.openRegistredModal('question', '.window--smanager .window__main',
                                 {
                                     title: function () {
                                         return 'Delete storage snapshot';
@@ -894,7 +905,7 @@
                                     }
                                 }
                             );
-                            modalInstanceRemoveConnection.result.then(function (res) {
+                            modalInstance.result.then(function (res) {
 
                                 if (res === true) {
                                     $log.debug('Infrastructure Manager [%s] -> Deleting storage snapshot -> snapshot [%s]', $itemScope.snapshot['snapshot-instance-uuid'], $itemScope.snapshot.name);
@@ -935,39 +946,83 @@
                 {
                     text: '<i class="fa fa-server"></i> Instant VM',
                     click: function ($itemScope) {
-                        ApplicationsFactory.openApplication('backupsm');
-                        ApplicationsFactory.toggleApplication('backupsm');
+                        $log.debug('Infrastructure Manager [%s] -> Ask for Instant VM recovery -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
 
+                        smanagerFactory.setActiveConnection($itemScope.vm.config.uuid);
+
+                        // Wait for next digest circle before continue
                         $timeout(function () {
-                            $rootScope.$broadcast('backupsm__vm_instant_recovery', {
-                                storage: _this.getActiveConnection(3),
-                                vserver: _this.getActiveConnection(2),
-                                volume: _this.getActiveConnection(1),
-                                snapshots: [_this.getActiveConnection()],
-                                snapshot: _this.getActiveConnection()['snapshot-instance-uuid'],
-                                ESXihosts: smanagerFactory.getESXihosts(),
-                                vm: $itemScope.vm
+                            var modalInstance = modalFactory.openRegistredModal('question', '.window--smanager .window__main',
+                                {
+                                    title: function () {
+                                        return 'Instant VM recovery';
+                                    },
+                                    text: function () {
+                                        return 'Do you want to perform an Instant VM recovery of ' + $itemScope.vm.name + '?';
+                                    }
+                                }
+                            );
+                            modalInstance.result.then(function (res) {
+
+                                if (res === true) {
+                                    ApplicationsFactory.openApplication('backupsm');
+                                    ApplicationsFactory.toggleApplication('backupsm');
+
+                                    $log.debug('Infrastructure Manager [%s] -> Launching Backups Manager for Instant VM recovery -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
+
+                                    $rootScope.$broadcast('backupsm__vm_instant_recovery', {
+                                        storage: _this.getActiveConnection(3),
+                                        vserver: _this.getActiveConnection(2),
+                                        volume: _this.getActiveConnection(1),
+                                        snapshots: [_this.getActiveConnection()],
+                                        snapshot: _this.getActiveConnection()['snapshot-instance-uuid'],
+                                        ESXihosts: smanagerFactory.getESXihosts(),
+                                        vm: $itemScope.vm
+                                    });
+                                }
                             });
-                        }, 100);
+                        }, 0, false);
                     }
                 },
                 {
-                    text: '<i class="fa fa-server"></i> Restore Guest files',
+                    text: '<i class="fa fa-files"></i> Restore Guest files',
                     click: function ($itemScope) {
-                        ApplicationsFactory.openApplication('backupsm');
-                        ApplicationsFactory.toggleApplication('backupsm');
+                        $log.debug('Infrastructure Manager [%s] -> Ask for recovery VM Guest Files -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
 
+                        smanagerFactory.setActiveConnection($itemScope.vm.config.uuid);
+
+                        // Wait for next digest circle before continue
                         $timeout(function () {
-                            $rootScope.$broadcast('backupsm__restore_vm_guest_files', {
-                                storage: _this.getActiveConnection(3),
-                                vserver: _this.getActiveConnection(2),
-                                volume: _this.getActiveConnection(1),
-                                snapshots: [_this.getActiveConnection()],
-                                snapshot: _this.getActiveConnection()['snapshot-instance-uuid'],
-                                ESXihosts: smanagerFactory.getESXihosts(),
-                                vm: $itemScope.vm
+                            var modalInstance = modalFactory.openRegistredModal('question', '.window--smanager .window__main',
+                                {
+                                    title: function () {
+                                        return 'Instant VM recovery';
+                                    },
+                                    text: function () {
+                                        return 'Do you want to perform a VM Guest Files recovery of ' + $itemScope.vm.name + '?';
+                                    }
+                                }
+                            );
+                            modalInstance.result.then(function (res) {
+
+                                if (res === true) {
+                                    ApplicationsFactory.openApplication('backupsm');
+                                    ApplicationsFactory.toggleApplication('backupsm');
+
+                                    $log.debug('Infrastructure Manager [%s] -> Launching Backups Manager for recovery VM Guest Files -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
+
+                                    $rootScope.$broadcast('backupsm__restore_vm_guest_files', {
+                                        storage: _this.getActiveConnection(3),
+                                        vserver: _this.getActiveConnection(2),
+                                        volume: _this.getActiveConnection(1),
+                                        snapshots: [_this.getActiveConnection()],
+                                        snapshot: _this.getActiveConnection()['snapshot-instance-uuid'],
+                                        ESXihosts: smanagerFactory.getESXihosts(),
+                                        vm: $itemScope.vm
+                                    });
+                                }
                             });
-                        }, 100);
+                        }, 0, false);
                     }
                 }
             ];
@@ -975,13 +1030,13 @@
             this.virtualContextMenu = [
                 {
                     text: '<i class="fa fa-pencil"></i> Edit Connection',
-                    click: function ($itemScope, $event, modelValue, text, $li) {
+                    click: function ($itemScope) {
                         _this.editConnection($itemScope.$parent.$parent.virtual.uuid);
                     }
                 },
                 {
                     text: '<i class="fa fa-refresh"></i> Rescan vCenter',
-                    click: function ($itemScope, $event, modelValue, text, $li) {
+                    click: function ($itemScope) {
                         //TODO: delete current links
                         //TODO: delete current maps
                         _this.refreshConnection($itemScope.$parent.$parent.virtual);
@@ -989,7 +1044,7 @@
                 },
                 {
                     text: '<i class="fa fa-trash text-danger"></i> Delete Connection',
-                    click: function ($itemScope, $event, modelValue, text, $li) {
+                    click: function ($itemScope) {
                         _this.deleteConnection($itemScope.$parent.$parent.virtual.uuid);
                     }
                 }
@@ -997,256 +1052,442 @@
 
             this.VMContextMenu = [
                 ['<i class="fa fa-power-off"></i> Power', function ($itemScope) {
-                    // Code
                 },
                     [
                         ['<i class="fa fa-play text-success"></i> Power On', function ($itemScope) {
-                            // Set _this.activeConnection manually to make sure _this.getActiveConnection() gets
-                            // correct results
-                            _this.activeConnection = $itemScope.vm.config.uuid;
-                            _this.setActiveConnection($itemScope.vm.config.uuid);
+                            $log.debug('Infrastructure Manager [%s] -> Ask for Power ON VM -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
 
-                            var credential = _this.getActiveConnection(1).credential;
-                            var host = _this.getActiveConnection(1).host;
-                            var port = _this.getActiveConnection(1).port;
+                            smanagerFactory.setActiveConnection($itemScope.vm.config.uuid);
 
+                            // Wait for next digest circle before continue
                             $timeout(function () {
-                                return smanagerFactory.powerOnVM(credential, host, port, $itemScope.vm.vm);
-                            }, 100);
+                                var modalInstance = modalFactory.openRegistredModal('question', '.window--smanager .window__main',
+                                    {
+                                        title: function () {
+                                            return 'Power ON VM';
+                                        },
+                                        text: function () {
+                                            return 'Do you want to Power ON ' + $itemScope.vm.name + '?';
+                                        }
+                                    }
+                                );
+                                modalInstance.result.then(function (res) {
+
+                                    if (res === true) {
+                                        $log.debug('Infrastructure Manager [%s] -> Powering ON VM -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
+
+                                        var credential = _this.getActiveConnection(1).credential;
+                                        var host = _this.getActiveConnection(1).host;
+                                        var port = _this.getActiveConnection(1).port;
+                                        return smanagerFactory.powerOnVM(credential, host, port, $itemScope.vm.vm).then(function () {
+                                            $log.debug('Infrastructure Manager [%s] -> Doing powerOnVM successfully -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
+
+                                            return smanagerFactory.refreshVM(eval(connectionsFactory.getObjectByUuidMapping($itemScope.vm.config.uuid)), _this.getActiveConnection(1));// jshint ignore:line
+                                        }).catch(function (e) {
+                                            $log.error('Infrastructure Manager [%s] -> Error while powerOnVM -> vm [%s] -> ', $itemScope.vm.vm, $itemScope.vm.name, e);
+
+                                            toastr.error(e, 'Power ON VM');
+                                        });
+                                    }
+                                });
+                            }, 0, false);
                         }],
                         ['<i class="fa fa-stop text-danger"></i> Power Off', function ($itemScope) {
-                            // Set _this.activeConnection manually to make sure _this.getActiveConnection() gets
-                            // correct results
-                            _this.activeConnection = $itemScope.vm.config.uuid;
-                            _this.setActiveConnection($itemScope.vm.config.uuid);
+                            $log.debug('Infrastructure Manager [%s] -> Ask for Power OFF VM -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
 
-                            var credential = _this.getActiveConnection(1).credential;
-                            var host = _this.getActiveConnection(1).host;
-                            var port = _this.getActiveConnection(1).port;
+                            smanagerFactory.setActiveConnection($itemScope.vm.config.uuid);
 
+                            // Wait for next digest circle before continue
                             $timeout(function () {
-                                return smanagerFactory.powerOffVM(credential, host, port, $itemScope.vm.vm);
-                            }, 100);
+                                var modalInstance = modalFactory.openRegistredModal('question', '.window--smanager .window__main',
+                                    {
+                                        title: function () {
+                                            return 'Power OFF VM';
+                                        },
+                                        text: function () {
+                                            return 'Do you want to Power OFF ' + $itemScope.vm.name + '?';
+                                        }
+                                    }
+                                );
+                                modalInstance.result.then(function (res) {
+
+                                    if (res === true) {
+                                        $log.debug('Infrastructure Manager [%s] -> Powering OFF VM -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
+
+                                        var credential = _this.getActiveConnection(1).credential;
+                                        var host = _this.getActiveConnection(1).host;
+                                        var port = _this.getActiveConnection(1).port;
+                                        return smanagerFactory.powerOffVM(credential, host, port, $itemScope.vm.vm).then(function () {
+                                            $log.debug('Infrastructure Manager [%s] -> Doing powerOffVM successfully -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
+
+                                            return smanagerFactory.refreshVM(eval(connectionsFactory.getObjectByUuidMapping($itemScope.vm.config.uuid)), _this.getActiveConnection(1));// jshint ignore:line
+                                        }).catch(function (e) {
+                                            $log.error('Infrastructure Manager [%s] -> Error while powerOffVM -> vm [%s] -> ', $itemScope.vm.vm, $itemScope.vm.name, e);
+
+                                            toastr.error(e, 'Power OFF VM');
+                                        });
+                                    }
+                                });
+                            }, 0, false);
                         }],
                         ['<i class="fa fa-pause text-warning"></i> Suspend', function ($itemScope) {
-                            // Set _this.activeConnection manually to make sure _this.getActiveConnection() gets
-                            // correct results
-                            _this.activeConnection = $itemScope.vm.config.uuid;
-                            _this.setActiveConnection($itemScope.vm.config.uuid);
+                            $log.debug('Infrastructure Manager [%s] -> Ask for Suspend VM -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
 
-                            var credential = _this.getActiveConnection(1).credential;
-                            var host = _this.getActiveConnection(1).host;
-                            var port = _this.getActiveConnection(1).port;
+                            smanagerFactory.setActiveConnection($itemScope.vm.config.uuid);
 
+                            // Wait for next digest circle before continue
                             $timeout(function () {
-                                return smanagerFactory.suspendVM(credential, host, port, $itemScope.vm.vm);
-                            }, 100);
+                                var modalInstance = modalFactory.openRegistredModal('question', '.window--smanager .window__main',
+                                    {
+                                        title: function () {
+                                            return 'Suspend VM';
+                                        },
+                                        text: function () {
+                                            return 'Do you want to Suspend ' + $itemScope.vm.name + '?';
+                                        }
+                                    }
+                                );
+                                modalInstance.result.then(function (res) {
+
+                                    if (res === true) {
+                                        $log.debug('Infrastructure Manager [%s] -> Suspending VM -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
+
+                                        var credential = _this.getActiveConnection(1).credential;
+                                        var host = _this.getActiveConnection(1).host;
+                                        var port = _this.getActiveConnection(1).port;
+                                        return smanagerFactory.suspendVM(credential, host, port, $itemScope.vm.vm).then(function () {
+                                            $log.debug('Infrastructure Manager [%s] -> Doing suspendVM successfully -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
+
+                                            return smanagerFactory.refreshVM(eval(connectionsFactory.getObjectByUuidMapping($itemScope.vm.config.uuid)), _this.getActiveConnection(1));// jshint ignore:line
+                                        }).catch(function (e) {
+                                            $log.error('Infrastructure Manager [%s] -> Error while suspendVM -> vm [%s] -> ', $itemScope.vm.vm, $itemScope.vm.name, e);
+
+                                            toastr.error(e, 'Suspend VM');
+                                        });
+                                    }
+                                });
+                            }, 0, false);
                         }],
                         ['<i class="fa fa-refresh"></i> Reset', function ($itemScope) {
-                            // Set _this.activeConnection manually to make sure _this.getActiveConnection() gets
-                            // correct results
-                            _this.activeConnection = $itemScope.vm.config.uuid;
-                            _this.setActiveConnection($itemScope.vm.config.uuid);
+                            $log.debug('Infrastructure Manager [%s] -> Ask for Reset VM -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
 
-                            var credential = _this.getActiveConnection(1).credential;
-                            var host = _this.getActiveConnection(1).host;
-                            var port = _this.getActiveConnection(1).port;
+                            smanagerFactory.setActiveConnection($itemScope.vm.config.uuid);
 
+                            // Wait for next digest circle before continue
                             $timeout(function () {
-                                return smanagerFactory.resetVM(credential, host, port, $itemScope.vm.vm);
-                            }, 100);
+                                var modalInstance = modalFactory.openRegistredModal('question', '.window--smanager .window__main',
+                                    {
+                                        title: function () {
+                                            return 'Reset VM';
+                                        },
+                                        text: function () {
+                                            return 'Do you want to Reset ' + $itemScope.vm.name + '?';
+                                        }
+                                    }
+                                );
+                                modalInstance.result.then(function (res) {
+
+                                    if (res === true) {
+                                        $log.debug('Infrastructure Manager [%s] -> Resetting VM -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
+
+                                        var credential = _this.getActiveConnection(1).credential;
+                                        var host = _this.getActiveConnection(1).host;
+                                        var port = _this.getActiveConnection(1).port;
+                                        return smanagerFactory.resetVM(credential, host, port, $itemScope.vm.vm).then(function () {
+                                            $log.debug('Infrastructure Manager [%s] -> Doing resetVM successfully -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
+
+                                            return smanagerFactory.refreshVM(eval(connectionsFactory.getObjectByUuidMapping($itemScope.vm.config.uuid)), _this.getActiveConnection(1));// jshint ignore:line
+                                        }).catch(function (e) {
+                                            $log.error('Infrastructure Manager [%s] -> Error while resetVM -> vm [%s] -> ', $itemScope.vm.vm, $itemScope.vm.name, e);
+
+                                            toastr.error(e, 'Reset VM');
+                                        });
+                                    }
+                                });
+                            }, 0, false);
                         }],
                         null,
                         ['<i class="fa fa-stop text-danger"></i> Shut Down Guest OS', function ($itemScope) {
-                            // Set _this.activeConnection manually to make sure _this.getActiveConnection() gets
-                            // correct results
-                            _this.activeConnection = $itemScope.vm.config.uuid;
-                            _this.setActiveConnection($itemScope.vm.config.uuid);
+                            $log.debug('Infrastructure Manager [%s] -> Ask for Shut Down Guest OS -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
 
-                            var credential = _this.getActiveConnection(1).credential;
-                            var host = _this.getActiveConnection(1).host;
-                            var port = _this.getActiveConnection(1).port;
+                            smanagerFactory.setActiveConnection($itemScope.vm.config.uuid);
 
+                            // Wait for next digest circle before continue
                             $timeout(function () {
-                                return smanagerFactory.shutdownGuest(credential, host, port, $itemScope.vm.vm);
-                            }, 100);
+                                var modalInstance = modalFactory.openRegistredModal('question', '.window--smanager .window__main',
+                                    {
+                                        title: function () {
+                                            return 'Shut Down Guest OS';
+                                        },
+                                        text: function () {
+                                            return 'Do you want to Shut Down Guest OS ' + $itemScope.vm.name + '?';
+                                        }
+                                    }
+                                );
+                                modalInstance.result.then(function (res) {
+
+                                    if (res === true) {
+                                        $log.debug('Infrastructure Manager [%s] -> Shutting Down Guest OS -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
+
+                                        var credential = _this.getActiveConnection(1).credential;
+                                        var host = _this.getActiveConnection(1).host;
+                                        var port = _this.getActiveConnection(1).port;
+                                        return smanagerFactory.shutdownGuest(credential, host, port, $itemScope.vm.vm).then(function () {
+                                            $log.debug('Infrastructure Manager [%s] -> Doing shutdownGuest successfully -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
+
+                                            return smanagerFactory.refreshVM(eval(connectionsFactory.getObjectByUuidMapping($itemScope.vm.config.uuid)), _this.getActiveConnection(1));// jshint ignore:line
+                                        }).catch(function (e) {
+                                            $log.error('Infrastructure Manager [%s] -> Error while shutdownGuest -> vm [%s] -> ', $itemScope.vm.vm, $itemScope.vm.name, e);
+
+                                            toastr.error(e, 'Shut Down Guest OS');
+                                        });
+                                    }
+                                });
+                            }, 0, false);
                         }],
                         ['<i class="fa fa-refresh"></i> Restart Guest OS', function ($itemScope) {
-                            // Set _this.activeConnection manually to make sure _this.getActiveConnection() gets
-                            // correct results
-                            _this.activeConnection = $itemScope.vm.config.uuid;
-                            _this.setActiveConnection($itemScope.vm.config.uuid);
+                            $log.debug('Infrastructure Manager [%s] -> Ask for Restart Guest OS -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
 
-                            var credential = _this.getActiveConnection(1).credential;
-                            var host = _this.getActiveConnection(1).host;
-                            var port = _this.getActiveConnection(1).port;
+                            smanagerFactory.setActiveConnection($itemScope.vm.config.uuid);
 
+                            // Wait for next digest circle before continue
                             $timeout(function () {
-                                return smanagerFactory.rebootGuest(credential, host, port, $itemScope.vm.vm);
-                            }, 100);
+                                var modalInstance = modalFactory.openRegistredModal('question', '.window--smanager .window__main',
+                                    {
+                                        title: function () {
+                                            return 'Restart Guest OS';
+                                        },
+                                        text: function () {
+                                            return 'Do you want to Restart Guest OS ' + $itemScope.vm.name + '?';
+                                        }
+                                    }
+                                );
+                                modalInstance.result.then(function (res) {
+
+                                    if (res === true) {
+                                        $log.debug('Infrastructure Manager [%s] -> Restarting Guest OS -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
+
+                                        var credential = _this.getActiveConnection(1).credential;
+                                        var host = _this.getActiveConnection(1).host;
+                                        var port = _this.getActiveConnection(1).port;
+                                        return smanagerFactory.rebootGuest(credential, host, port, $itemScope.vm.vm).then(function () {
+                                            $log.debug('Infrastructure Manager [%s] -> Doing rebootGuest successfully -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
+
+                                            return smanagerFactory.refreshVM(eval(connectionsFactory.getObjectByUuidMapping($itemScope.vm.config.uuid)), _this.getActiveConnection(1));// jshint ignore:line
+                                        }).catch(function (e) {
+                                            $log.error('Infrastructure Manager [%s] -> Error while rebootGuest -> vm [%s] -> ', $itemScope.vm.vm, $itemScope.vm.name, e);
+
+                                            toastr.error(e, 'Restart Guest OS');
+                                        });
+                                    }
+                                });
+                            }, 0, false);
                         }]
                     ]
                 ],
                 {
                     text: '<i class="fa fa-television"></i> Open Remote Console',
-                    click: function ($itemScope, $event, modelValue, text, $li) {
+                    click: function ($itemScope) {
+                        $log.debug('Infrastructure Manager [%s] -> Opening Remote Console APP -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
+
+                        smanagerFactory.setActiveConnection($itemScope.vm.config.uuid);
 
                         ApplicationsFactory.openApplication('wmks');
                         ApplicationsFactory.toggleApplication('wmks');
 
-                        _this.activeConnection = $itemScope.vm.config.uuid;
-                        _this.setActiveConnection($itemScope.vm.config.uuid);
-
-                        console.log($itemScope);
-                        console.log(_this.getActiveConnection(1));
-                        console.log(_this.getActiveConnection(2));
-                        console.log(_this.getActiveConnection(3));
-                        console.log(_this.getActiveConnection());
-
-                        //TODO: remove $parents...
                         $timeout(function () {
                             $rootScope.$broadcast('wmks__new_data', {
                                 vm: $itemScope.vm.vm,
-                                host: $itemScope.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.virtual.host,
-                                port: $itemScope.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.virtual.port,
-                                credential: $itemScope.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.virtual.credential
+                                host: _this.getActiveConnection(1).host,
+                                port: _this.getActiveConnection(1).port,
+                                credential: _this.getActiveConnection(1).credential
                             });
-                        }, 100);
-
+                        }, 0, false);
                     }
                 },
+                null,
                 ['<i class="fa fa-server"></i> Restore', function ($itemScope) {
                     // Code
                 },
                     [
                         ['<i class="fa fa-server"></i> Instant VM', function ($itemScope) {
-                            ApplicationsFactory.openApplication('backupsm');
-                            ApplicationsFactory.toggleApplication('backupsm');
+                            $log.debug('Infrastructure Manager [%s] -> Ask for Instant VM recovery -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
 
-                            // Set _this.activeConnection manually to make sure _this.getActiveConnection() gets
-                            // correct results
-                            _this.activeConnection = $itemScope.vm.config.uuid;
-                            _this.setActiveConnection($itemScope.vm.config.uuid);
+                            smanagerFactory.setActiveConnection($itemScope.vm.config.uuid);
 
-                            //TODO: $itemScope.vm.extended.datastore.ManagedObjectReference could be an array of 2
-                            // datastores or more TODO: if vm is inside a cluster or outside,
-                            // _this.getActiveConnection(1).uuid could not match vCenter/ESXi connection
+                            // Wait for next digest circle before continue
                             $timeout(function () {
-                                $rootScope.$broadcast('backupsm__vm_instant_recovery', {
-                                    storage: connectionsFactory.getConnectionByUuid(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).storage),
-                                    /* jshint ignore:start */
-                                    vserver: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).vserver)),
-                                    volume: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).volume)),
-                                    snapshots: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).volume)).snapshots, //TODO: if only 1 snapshot this will be an object --> conver to array. TODO: some snapshots could not contain this VM
-                                    /* jshint ignore:end */
-                                    snapshot: '',
-                                    ESXihosts: smanagerFactory.getESXihosts(),
-                                    vm: $itemScope.vm
-                                });
-                            }, 100);
-                        }],
-                        ['<i class="fa fa-server"></i> Restore entire VM', function ($itemScope) {
-                            ApplicationsFactory.openApplication('backupsm');
-                            ApplicationsFactory.toggleApplication('backupsm');
+                                var modalInstance = modalFactory.openRegistredModal('question', '.window--smanager .window__main',
+                                    {
+                                        title: function () {
+                                            return 'Instant VM recovery';
+                                        },
+                                        text: function () {
+                                            return 'Do you want to perform an Instant VM recovery of ' + $itemScope.vm.name + '?';
+                                        }
+                                    }
+                                );
+                                modalInstance.result.then(function (res) {
 
-                            // Set _this.activeConnection manually to make sure _this.getActiveConnection() gets
-                            // correct results
-                            _this.activeConnection = $itemScope.vm.config.uuid;
-                            _this.setActiveConnection($itemScope.vm.config.uuid);
+                                    if (res === true) {
+                                        ApplicationsFactory.openApplication('backupsm');
+                                        ApplicationsFactory.toggleApplication('backupsm');
 
-                            //TODO: $itemScope.vm.extended.datastore.ManagedObjectReference could be an array of 2
-                            // datastores or more TODO: if vm is inside a cluster or outside,
-                            // _this.getActiveConnection(1).uuid could not match vCenter/ESXi connection
-                            $timeout(function () {
-                                $rootScope.$broadcast('backupsm__restore_vm', {
-                                    storage: connectionsFactory.getConnectionByUuid(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).storage),
-                                    /* jshint ignore:start */
-                                    vserver: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).vserver)),
-                                    volume: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).volume)),
-                                    snapshots: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).volume)).snapshots, //TODO: if only 1 snapshot this will be an object --> conver to array. TODO: some snapshots could not contain this VM
-                                    /* jshint ignore:end */
-                                    snapshot: '',
-                                    ESXihosts: smanagerFactory.getESXihosts(),
-                                    vm: $itemScope.vm,
-                                    current_location: {
-                                        uuid: _this.getActiveConnection(1).uuid,
-                                        credential: _this.getActiveConnection(1).credential,
-                                        host: _this.getActiveConnection(1).host,
-                                        port: _this.getActiveConnection(1).port
+                                        $log.debug('Infrastructure Manager [%s] -> Launching Backups Manager for Instant VM recovery -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
+
+                                        $rootScope.$broadcast('backupsm__vm_instant_recovery', {
+                                            storage: connectionsFactory.getConnectionByUuid(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).storage),
+                                            /* jshint ignore:start */
+                                            vserver: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).vserver)),
+                                            volume: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).volume)),
+                                            snapshots: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).volume)).snapshots, //TODO: if only 1 snapshot this will be an object --> conver to array. TODO: some snapshots could not contain this VM
+                                            /* jshint ignore:end */
+                                            snapshot: '',
+                                            ESXihosts: smanagerFactory.getESXihosts(),
+                                            vm: $itemScope.vm
+                                        });
                                     }
                                 });
-                            }, 100);
+                            }, 0, false);
+                        }],
+                        ['<i class="fa fa-server"></i> Restore entire VM', function ($itemScope) {
+                            $log.debug('Infrastructure Manager [%s] -> Ask for restore entire VM -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
+
+                            smanagerFactory.setActiveConnection($itemScope.vm.config.uuid);
+
+                            // Wait for next digest circle before continue
+                            $timeout(function () {
+                                var modalInstance = modalFactory.openRegistredModal('question', '.window--smanager .window__main',
+                                    {
+                                        title: function () {
+                                            return 'Restore entire VM';
+                                        },
+                                        text: function () {
+                                            return 'Do you want to perform a entire VM restore of ' + $itemScope.vm.name + '?';
+                                        }
+                                    }
+                                );
+                                modalInstance.result.then(function (res) {
+
+                                    if (res === true) {
+                                        ApplicationsFactory.openApplication('backupsm');
+                                        ApplicationsFactory.toggleApplication('backupsm');
+
+                                        $log.debug('Infrastructure Manager [%s] -> Launching Backups Manager for restore entire VM -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
+
+                                        $rootScope.$broadcast('backupsm__restore_vm_guest_files', {
+                                            storage: connectionsFactory.getConnectionByUuid(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).storage),
+                                            /* jshint ignore:start */
+                                            vserver: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).vserver)),
+                                            volume: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).volume)),
+                                            snapshots: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).volume)).snapshots, //TODO: if only 1 snapshot this will be an object --> conver to array. TODO: some snapshots could not contain this VM
+                                            /* jshint ignore:end */
+                                            snapshot: '',
+                                            ESXihosts: smanagerFactory.getESXihosts(),
+                                            vm: $itemScope.vm,
+                                            current_location: {
+                                                uuid: _this.getActiveConnection(1).uuid,
+                                                credential: _this.getActiveConnection(1).credential,
+                                                host: _this.getActiveConnection(1).host,
+                                                port: _this.getActiveConnection(1).port
+                                            }
+                                        });
+                                    }
+                                });
+                            }, 0, false);
                         }],
 	                    ['<i class="fa fa-server"></i> Restore Guest Files', function ($itemScope) {
-		                    ApplicationsFactory.openApplication('backupsm');
-		                    ApplicationsFactory.toggleApplication('backupsm');
+                            $log.debug('Infrastructure Manager [%s] -> Ask for recovery VM Guest Files -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
 
-		                    // Set _this.activeConnection manually to make sure _this.getActiveConnection() gets
-		                    // correct results
-		                    _this.activeConnection = $itemScope.vm.config.uuid;
-		                    _this.setActiveConnection($itemScope.vm.config.uuid);
+                            smanagerFactory.setActiveConnection($itemScope.vm.config.uuid);
 
-		                    //TODO: $itemScope.vm.extended.datastore.ManagedObjectReference could be an array of 2
-		                    // datastores or more TODO: if vm is inside a cluster or outside,
-		                    // _this.getActiveConnection(1).uuid could not match vCenter/ESXi connection
-		                    $timeout(function () {
-			                    $rootScope.$broadcast('backupsm__restore_vm_guest_files', {
-				                    storage: connectionsFactory.getConnectionByUuid(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).storage),
-				                    /* jshint ignore:start */
-				                    vserver: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).vserver)),
-				                    volume: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).volume)),
-				                    snapshots: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).volume)).snapshots, //TODO: if only 1 snapshot this will be an object --> conver to array. TODO: some snapshots could not contain this VM
-				                    /* jshint ignore:end */
-				                    snapshot: '',
-				                    ESXihosts: smanagerFactory.getESXihosts(),
-				                    vm: $itemScope.vm,
-				                    current_location: {
-					                    uuid: _this.getActiveConnection(1).uuid,
-					                    credential: _this.getActiveConnection(1).credential,
-					                    host: _this.getActiveConnection(1).host,
-					                    port: _this.getActiveConnection(1).port
-				                    }
-			                    });
-		                    }, 100);
-	                    }],
+                            // Wait for next digest circle before continue
+                            $timeout(function () {
+                                var modalInstance = modalFactory.openRegistredModal('question', '.window--smanager .window__main',
+                                    {
+                                        title: function () {
+                                            return 'Instant VM recovery';
+                                        },
+                                        text: function () {
+                                            return 'Do you want to perform a VM Guest Files recovery of ' + $itemScope.vm.name + '?';
+                                        }
+                                    }
+                                );
+                                modalInstance.result.then(function (res) {
+
+                                    if (res === true) {
+                                        ApplicationsFactory.openApplication('backupsm');
+                                        ApplicationsFactory.toggleApplication('backupsm');
+
+                                        $log.debug('Infrastructure Manager [%s] -> Launching Backups Manager for recovery VM Guest Files -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
+
+                                        $rootScope.$broadcast('backupsm__restore_vm_guest_files', {
+                                            storage: connectionsFactory.getConnectionByUuid(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).storage),
+                                            /* jshint ignore:start */
+                                            vserver: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).vserver)),
+                                            volume: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).volume)),
+                                            snapshots: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).volume)).snapshots, //TODO: if only 1 snapshot this will be an object --> conver to array. TODO: some snapshots could not contain this VM
+                                            /* jshint ignore:end */
+                                            snapshot: '',
+                                            ESXihosts: smanagerFactory.getESXihosts(),
+                                            vm: $itemScope.vm,
+                                            current_location: {
+                                                uuid: _this.getActiveConnection(1).uuid,
+                                                credential: _this.getActiveConnection(1).credential,
+                                                host: _this.getActiveConnection(1).host,
+                                                port: _this.getActiveConnection(1).port
+                                            }
+                                        });
+                                    }
+                                });
+                            }, 0, false);
+	                    }]
                     ]
                 ],
                 {
                     text: '<i class="fa fa-server"></i> Backup',
                     click: function ($itemScope) {
+                        $log.debug('Infrastructure Manager [%s] -> Launching VM Backup -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
 
-                        // Set _this.activeConnection manually to make sure _this.getActiveConnection() gets correct
-                        // results
-                        _this.activeConnection = $itemScope.vm.config.uuid;
-                        _this.setActiveConnection($itemScope.vm.config.uuid);
+                        smanagerFactory.setActiveConnection($itemScope.vm.config.uuid);
 
-	                    if (!smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name)) {
-	                        return modalFactory.openLittleModal('Error while creating Backup', 'Not found any compatible NetApp storage. Make sure VMs that you want to backup are inside a NetApp volume and this is managed by SysOS.', '.window--smanager .window__main', 'plain');
-                        }
-
-	                    ApplicationsFactory.openApplication('backupsm');
-	                    ApplicationsFactory.toggleApplication('backupsm');
-
+                        // Wait for next digest circle before continue
                         $timeout(function () {
+                            if (!smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name)) {
+                                return modalFactory.openLittleModal('Error while creating Backup', 'Not found any compatible NetApp storage. Make sure VMs that you want to backup are inside a NetApp volume and this is managed by SysOS.', '.window--smanager .window__main', 'plain');
+                            }
+
+                            ApplicationsFactory.openApplication('backupsm');
+                            ApplicationsFactory.toggleApplication('backupsm');
+
                             $rootScope.$broadcast('backupsm__backup_vm', {
                                 vm: $itemScope.vm,
                                 connection: _this.getActiveConnection(1)
                             });
-                        }, 100);
+                        }, 0, false);
                     }
                 },
                 null,
                 {
                     text: '<i class="fa fa-refresh"></i> Refresh',
-                    click: function ($itemScope, $event, modelValue, text, $li) {
-                        // Set _this.activeConnection manually to make sure _this.getActiveConnection() gets correct
-                        // results
-                        _this.activeConnection = $itemScope.vm.config.uuid;
-                        _this.setActiveConnection($itemScope.vm.config.uuid);
+                    click: function ($itemScope) {
+                        $log.debug('Infrastructure Manager [%s] -> Refreshing VM -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
 
+                        smanagerFactory.setActiveConnection($itemScope.vm.config.uuid);
+
+                        // Wait for next digest circle before continue
                         $timeout(function () {
-                            return smanagerFactory.refreshVM(eval(connectionsFactory.getObjectByUuidMapping($itemScope.vm.config.uuid)), _this.getActiveConnection(1)); // jshint ignore:line
-                        }, 100);
+                            $itemScope.vm.refreshing = true;
+
+                            return smanagerFactory.refreshVM(eval(connectionsFactory.getObjectByUuidMapping($itemScope.vm.config.uuid)), _this.getActiveConnection(1)).then(function () {// jshint ignore:line
+                                $log.debug('Infrastructure Manager [%s] -> Doing refreshVM successfully -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
+                            }).catch(function (e) {
+                                $log.error('Infrastructure Manager [%s] -> Error while refreshVM -> vm [%s] -> ', $itemScope.vm.vm, $itemScope.vm.name, e);
+
+                                toastr.error(e, 'Refresh VM');
+                                $itemScope.vm.refreshing = false;
+                            });
+                        }, 0, false);
                     }
                 }
             ];

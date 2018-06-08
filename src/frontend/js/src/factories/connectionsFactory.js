@@ -65,6 +65,8 @@
             var saveConnection = function (connection) {
                 if (!connection) throw new Error('connection_not_found');
 
+                if (connection.refreshing) delete connection.refreshing;
+
                 var configFile;
 
                 $log.debug('Connections Factory [%s] -> Saving connection -> category [%s], host [%s]', connection.uuid, connection.category, connection.host);

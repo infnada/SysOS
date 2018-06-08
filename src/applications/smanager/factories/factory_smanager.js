@@ -11,7 +11,7 @@
              */
             var activeConnection = null;
 
-            /*
+            /**
              * @params
              * type {String} [vmware, netapp] New node type to check against
              * uuid {uuid} Main node uuid
@@ -149,8 +149,13 @@
              *
              */
 
-            /*
+            /**
+             * @description
              * Return a link if found
+             *
+             * @params
+             * virtual_uuid {String}
+             * esxi_datastore {String}
              */
             var getLinkByVMwareDatastore = function (virtual_uuid, esxi_datastore) {
                 return $filter('filter')(links, {
@@ -159,11 +164,11 @@
                 })[0];
             };
 
-            /*
+            /**
+             * @description
              * Get all data from VMware vCenter node
              *
-             * @params
-             * connection {Object}
+             * @param connection {Object}
              */
             var getVMwareData = function (connection) {
                 var dt_promises = [];
@@ -348,16 +353,18 @@
                     }
 
                     toastr.error(e.message, 'Error getting data from ' + connectionsFactory.getConnectionByUuid(connection.uuid).type);
+
                     console.log(e);
+                    throw new Error(e);
                 });
 
             };
 
-            /*
+            /**
+             * @description
              * Get all data from NetApp node
              *
-             * @params
-             * connection {Object}
+             * @param connection {Object}
              */
             var getNetAppData = function (connection) {
                 var main_promises = [];
@@ -528,16 +535,17 @@
 
                     modalFactory.closeModal('.window--smanager .window__main');
                     toastr.error(e.message, 'Error getting data from NetApp');
-                    console.log(e);
 
+                    console.log(e);
+                    throw new Error(e);
                 });
             };
 
-            /*
+            /**
+             * @description
              * Refresh NetApp volume data
              *
-             * @params
-             * connection {Object}
+             * @param data {Object}
              */
             var getVolumeData = function (data) {
                 var uuidMap = connectionsFactory.getUuidMap();
@@ -573,15 +581,16 @@
                         connectionsFactory.saveUuidMap(uuidMap);
 
                         modalFactory.closeModal('.window--smanager .window__main');
-
-                        return 'success';
                     }).catch(function (e) {
-                        return e;
+                        modalFactory.closeModal('.window--smanager .window__main');
+
+                        throw e;
                     });
                 });
             };
 
-            /*
+            /**
+             * @description
              * Fetch NetApp SnapShots
              */
             var getSnapshotFiles = function (uuid, host, vserver, volume, snapshot) {
@@ -633,24 +642,14 @@
                     modalFactory.closeModal('.window--smanager .window__main');
 
                 }).catch(function (e) {
-                    if (e.message === 'ENOTFOUND') {
-                        modalFactory.closeModal('.window--smanager .window__main');
-                        return toastr.error('Host not found (' + connectionsFactory.getConnectionByUuid(uuid).host + ')', 'Error trying to connect to NetApp');
-                    }
-
-                    if (e.message === 'ETIMEDOUT') {
-                        modalFactory.closeModal('.window--smanager .window__main');
-                        return toastr.error('Timeout while connecting to ' + connectionsFactory.getConnectionByUuid(uuid).host, 'Error trying to connect to NetApp');
-                    }
-
                     modalFactory.closeModal('.window--smanager .window__main');
-                    toastr.error(e.message, 'Error getting snapshots data from NetApp');
-                    console.log(e);
 
+                    throw e;
                 });
             };
 
-            /*
+            /**
+             * @description
              * Gets all ESXi hosts from all existing vCenter connections
              */
             var getESXihosts = function () {
@@ -700,7 +699,7 @@
                 return ESXihosts;
             };
 
-            /*
+            /**
              * VM operations
              */
             var powerOnVM = function (credential, host, port, vm) {
@@ -718,7 +717,7 @@
                     if (res.status === 'error') throw new Error('Failed to power on VM');
 
                 }).catch(function (e) {
-                    console.log(e);
+                    throw e;
                 });
             };
 
@@ -737,7 +736,7 @@
                     if (res.status === 'error') throw new Error('Failed to power off VM');
 
                 }).catch(function (e) {
-                    console.log(e);
+                    throw e;
                 });
             };
 
@@ -756,7 +755,7 @@
                     if (res.status === 'error') throw new Error('Failed to suspend VM');
 
                 }).catch(function (e) {
-                    console.log(e);
+                    throw e;
                 });
             };
 
@@ -775,7 +774,7 @@
                     if (res.status === 'error') throw new Error('Failed to reset VM');
 
                 }).catch(function (e) {
-                    console.log(e);
+                    throw e;
                 });
             };
 
@@ -794,7 +793,7 @@
                     if (res.status === 'error') throw new Error('Failed to shutdown VM Guest OS');
 
                 }).catch(function (e) {
-                    console.log(e);
+                    throw e;
                 });
             };
 
@@ -813,7 +812,7 @@
                     if (res.status === 'error') throw new Error('Failed to restart VM Guest OS');
 
                 }).catch(function (e) {
-                    console.log(e);
+                    throw e;
                 });
             };
 
@@ -824,15 +823,26 @@
                     return vmwareFactory.getVMState(connection.credential, connection.host, connection.port, vm.vm, true);
                 }).then(function (res) {
                     if (res.status === 'error') throw new Error('Failed to refresh VM');
-                    vm.extended = res.data;
 
+                    res.data.vm = res.data.obj.name;
+
+                    var vm_index = connectionsFactory.getConnectionByUuid(connection.uuid).vms.findIndex(function (item) {
+                        return item.config.uuid === res.data.config.uuid;
+                    });
+
+                    connectionsFactory.getConnectionByUuid(connection.uuid).vms[vm_index] = res.data;
                     connectionsFactory.saveConnection(connectionsFactory.getConnectionByUuid(connection.uuid));
-
                 }).catch(function (e) {
-                    console.log(e);
+                    throw e;
                 });
             };
 
+            /**
+             * @description
+             * Socket data
+             *
+             * @param data {Object}
+             */
             var newData = function (data) {
                 if (data.type === 'interface_bandwidth') {
 
@@ -848,6 +858,12 @@
                 }
             };
 
+            /**
+             * @description
+             * Socket data
+             *
+             * @param data {Object}
+             */
             var newProp = function (data) {
                 connectionsFactory.getConnectionByUuid(data.uuid)[data.prop] = data.text;
 

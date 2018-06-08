@@ -15,7 +15,7 @@
                       <!-- Host --> \
                       <div uib-accordion-group class="menu__item panel-default" ng-class="{\'active\': storage.uuid == smB.activeConnection}"ng-repeat="storage in smB.connections.storage" is-open="true"> \
                         <uib-accordion-heading> \
-                          <span context-menu="smB.storageContextMenu"><i class="fa level-one" ng-class="{\'fa-chevron-down\': $parent.isOpen, \'fa-chevron-right p-r-xxs\': !$parent.isOpen}"></i> <img ng-src="/img/{{::storage.type}}-logo.png" width="16px" /> {{::storage.name}}<span> \
+                          <span context-menu="smB.storageContextMenu"><i class="fa fa-fw fa-refresh fa-spin" ng-if="storage.refreshing"></i> <i class="fa level-one" ng-class="{\'fa-chevron-down\': $parent.isOpen, \'fa-chevron-right p-r-xxs\': !$parent.isOpen}"></i> <img ng-src="/img/{{::storage.type}}-logo.png" width="16px" /> {{::storage.name}}<span> \
                         </uib-accordion-heading> \
                         <uib-accordion close-others="false"> \
                           <!-- vServers --> \
@@ -27,7 +27,7 @@
                               <!-- Volumes --> \
                               <div uib-accordion-group class="menu__item panel-default" ng-repeat="volume in vserver.volumes" is-open="false"> \
                                 <uib-accordion-heading> \
-                                  <span context-menu="smB.volumeContextMenu"><i class="fa level-three" ng-class="{\'fa-chevron-down\': $parent.isOpen, \'fa-chevron-right p-r-xxs\': !$parent.isOpen}"></i> <i class="vs-icon vsphere-icon-datastore"></i> {{::volume[\'volume-id-attributes\'].name}}<span> \
+                                  <span context-menu="smB.volumeContextMenu"><i class="fa fa-fw fa-refresh fa-spin" ng-if="volume.refreshing"></i> <i class="fa level-three" ng-class="{\'fa-chevron-down\': $parent.isOpen, \'fa-chevron-right p-r-xxs\': !$parent.isOpen}"></i> <i class="vs-icon vsphere-icon-datastore"></i> {{::volume[\'volume-id-attributes\'].name}}<span> \
                                 </uib-accordion-heading> \
                                 <!-- SnapShots --> \
                                 <div class="menu__item panel-heading" ng-class="{\'active\': snapshot[\'snapshot-version-uuid\'] == smB.activeConnection}" ng-repeat="snapshot in volume.snapshots" ng-click="smB.getSnapshotFiles(storage.uuid, storage.hostname, vserver[\'vserver-name\'], volume[\'volume-id-attributes\'].name, snapshot.name); smB.setActiveConnection(snapshot, \'snapshot\')" context-menu="smB.snapshotContextMenu"> \
@@ -53,7 +53,7 @@
                       <!-- virtual --> \
                       <div uib-accordion-group class="menu__item panel-default" ng-repeat="virtual in smB.connections.virtual" is-open="true"> \
                         <uib-accordion-heading> \
-                          <span context-menu="smB.virtualContextMenu"><i class="fa level-one" ng-class="{\'fa-chevron-down\': $parent.isOpen, \'fa-chevron-right p-r-xxs\': !$parent.isOpen}"></i> <i class="vs-icon vsphere-icon-vcenter"></i> {{::virtual.hostname}}</span> \
+                          <span context-menu="smB.virtualContextMenu"><i class="fa fa-fw fa-refresh fa-spin" ng-if="virtual.refreshing"></i> <i class="fa level-one" ng-class="{\'fa-chevron-down\': $parent.isOpen, \'fa-chevron-right p-r-xxs\': !$parent.isOpen}"></i> <i class="vs-icon vsphere-icon-vcenter"></i> {{::virtual.hostname}}</span> \
                         </uib-accordion-heading> \
                         <uib-accordion close-others="false"> \
                           <!-- Datacenter --> \
@@ -88,7 +88,7 @@
                                       <!-- VMs --> \
                                       <div class="menu__item panel-heading" ng-repeat="vm in virtual.vms | filter: { runtime: { host: {name: cluster.hosts.name}}} | orderBy:\'name\'" ng-class="{\'active\': vm.config.uuid == smB.activeConnection}" ng-click="smB.setActiveConnection(vm, \'vm\')" context-menu="smB.VMContextMenu"> \
                                         <h4 class="panel-title pull-left absolute"> \
-                                          <i class="vs-icon level-six p-l-sm" ng-class="{\'vsphere-icon-vm\': vm.runtime.powerState === \'poweredOff\', \'vsphere-icon-vm-on\': vm.runtime.powerState === \'poweredOn\', \'vsphere-icon-vm-suspended\': vm.runtime.powerState === \'suspended\'}"></i> {{::vm.name}} \
+                                          <i class="fa fa-fw fa-refresh fa-spin" ng-if="vm.refreshing"></i> <i class="vs-icon level-six p-l-sm" ng-class="{\'vsphere-icon-vm\': vm.runtime.powerState === \'poweredOff\', \'vsphere-icon-vm-on\': vm.runtime.powerState === \'poweredOn\', \'vsphere-icon-vm-suspended\': vm.runtime.powerState === \'suspended\'}"></i> {{::vm.name}} \
                                         </h4> \
                                         <i class="fa fa-circle pull-right" ng-class="{\'text-danger\': vm.type == \'disconnected\', \'text-success\': vm.type == \'connected\'}"></i> \
                                         <i class="fa pull-right" ng-class="{\'fa-windows text-primary\': vm.guest.guestFamily == \'windowsGuest\', \'fa-linux text-danger\': vm.guest.guestFamily == \'linuxGuest\'}"></i> \

@@ -2054,6 +2054,8 @@ var SysOS = angular.module('SysOS', [
             var saveConnection = function (connection) {
                 if (!connection) throw new Error('connection_not_found');
 
+                if (connection.refreshing) delete connection.refreshing;
+
                 var configFile;
 
                 $log.debug('Connections Factory [%s] -> Saving connection -> category [%s], host [%s]', connection.uuid, connection.category, connection.host);
@@ -4315,11 +4317,7 @@ var SysOS = angular.module('SysOS', [
 		            return errorHandler(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault'][0]['detail'][0]);
 	            }
 
-                var task_id = data.data.data.response['soapenv:Envelope']['soapenv:Body'][0].ShutdownGuestResponse[0];
-
-                return getTaskStatus(credential, host, port, task_id).then(function (data) {
-                    return validResponse(data);
-                });
+                return validResponse(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0].RebootGuestResponse[0]);
 
             });
         };
@@ -4334,11 +4332,7 @@ var SysOS = angular.module('SysOS', [
 		            return errorHandler(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault'][0]['detail'][0]);
 	            }
 
-                var task_id = data.data.data.response['soapenv:Envelope']['soapenv:Body'][0].RebootGuestResponse[0];
-
-                return getTaskStatus(credential, host, port, task_id).then(function (data) {
-                    return validResponse(data);
-                });
+                return validResponse(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0].RebootGuestResponse[0]);
 
             });
         };

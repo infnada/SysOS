@@ -880,11 +880,7 @@
 		            return errorHandler(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault'][0]['detail'][0]);
 	            }
 
-                var task_id = data.data.data.response['soapenv:Envelope']['soapenv:Body'][0].ShutdownGuestResponse[0];
-
-                return getTaskStatus(credential, host, port, task_id).then(function (data) {
-                    return validResponse(data);
-                });
+                return validResponse(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0].RebootGuestResponse[0]);
 
             });
         };
@@ -899,11 +895,7 @@
 		            return errorHandler(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault'][0]['detail'][0]);
 	            }
 
-                var task_id = data.data.data.response['soapenv:Envelope']['soapenv:Body'][0].RebootGuestResponse[0];
-
-                return getTaskStatus(credential, host, port, task_id).then(function (data) {
-                    return validResponse(data);
-                });
+                return validResponse(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0].RebootGuestResponse[0]);
 
             });
         };
