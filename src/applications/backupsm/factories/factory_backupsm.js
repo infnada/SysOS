@@ -170,8 +170,7 @@
                 data.vm.path = data.vm.summary.config.vmPathName.split(']').pop();
                 data.vm.path = data.vm.path.substring(0, data.vm.path.lastIndexOf('/') + 1).substr(1);
 
-                // Get VM in Datastore
-                //TODO: this is required?
+                // Get VM in Datastore (check if exist)
                 return vmwareFactory.getVMFileDataFromDatastore(
                     data.esxi_credential,
                     data.esxi_address,
@@ -182,6 +181,7 @@
                     data.vm.summary.config.vmPathName.split('/').pop()
                 ).then(function (res) {
                     if (res.status === 'error') throw new Error('Failed to get files from datastore');
+                    if (res.data[0].propSet.info.error) throw new Error(res.data[0].propSet.info.error);
 
                     // Register VM
                     //TODO: check if VM with same name exists

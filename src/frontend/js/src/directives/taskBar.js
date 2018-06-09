@@ -152,8 +152,11 @@
 
                     // Open application
                     if (isApplicationOpened(id) === -1) {
-                        _this.opened_applications = ApplicationsFactory.openApplication(id);
-                        ApplicationsFactory.toggleApplication(id);
+                        ApplicationsFactory.openApplication(id).then(function (applications) {
+                            _this.opened_applications = applications;
+                            ApplicationsFactory.toggleApplication(id);
+                        });
+
                     }
 
                     // Emitting to application directives (minimize or maximize)

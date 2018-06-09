@@ -362,6 +362,159 @@
             });
         };
 
+        var getHosts = function (credential, host, port, datacenter_folder) {
+
+            var xml = '<?xml version="1.0" encoding="utf-8"?>\n' +
+                '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">\n' +
+                '    <soap:Body>\n' +
+                '        <RetrieveProperties xmlns="urn:vim25">\n' +
+                '            <_this type="PropertyCollector">propertyCollector</_this>\n' +
+                '            <specSet>\n' +
+                '                <propSet>\n' +
+                '                    <type>HostSystem</type>\n' +
+                '                    <all>true</all>\n' +
+                '                </propSet>\n' +
+                '                <objectSet>\n' +
+                '                    <obj type="Folder">' + datacenter_folder + '</obj>\n' +
+                '                    <skip>false</skip>\n' +
+                '                    <selectSet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="TraversalSpec">\n' +
+                '                        <name>folderTraversalSpec</name>\n' +
+                '                        <type>Folder</type>\n' +
+                '                        <path>childEntity</path>\n' +
+                '                        <skip>false</skip>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>folderTraversalSpec</name>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>datacenterHostTraversalSpec</name>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>datacenterVmTraversalSpec</name>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>datacenterDatastoreTraversalSpec</name>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>datacenterNetworkTraversalSpec</name>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>computeResourceRpTraversalSpec</name>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>computeResourceHostTraversalSpec</name>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>hostVmTraversalSpec</name>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>resourcePoolVmTraversalSpec</name>\n' +
+                '                        </selectSet>\n' +
+                '                    </selectSet>\n' +
+                '                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                        <name>datacenterDatastoreTraversalSpec</name>\n' +
+                '                        <type>Datacenter</type>\n' +
+                '                        <path>datastoreFolder</path>\n' +
+                '                        <skip>false</skip>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>folderTraversalSpec</name>\n' +
+                '                        </selectSet>\n' +
+                '                    </selectSet>\n' +
+                '                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                        <name>datacenterNetworkTraversalSpec</name>\n' +
+                '                        <type>Datacenter</type>\n' +
+                '                        <path>networkFolder</path>\n' +
+                '                        <skip>false</skip>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>folderTraversalSpec</name>\n' +
+                '                        </selectSet>\n' +
+                '                    </selectSet>\n' +
+                '                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                        <name>datacenterVmTraversalSpec</name>\n' +
+                '                        <type>Datacenter</type>\n' +
+                '                        <path>vmFolder</path>\n' +
+                '                        <skip>false</skip>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>folderTraversalSpec</name>\n' +
+                '                        </selectSet>\n' +
+                '                    </selectSet>\n' +
+                '                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                        <name>datacenterHostTraversalSpec</name>\n' +
+                '                        <type>Datacenter</type>\n' +
+                '                        <path>hostFolder</path>\n' +
+                '                        <skip>false</skip>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>folderTraversalSpec</name>\n' +
+                '                        </selectSet>\n' +
+                '                    </selectSet>\n' +
+                '                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                        <name>computeResourceHostTraversalSpec</name>\n' +
+                '                        <type>ComputeResource</type>\n' +
+                '                        <path>host</path>\n' +
+                '                        <skip>false</skip>\n' +
+                '                    </selectSet>\n' +
+                '                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                        <name>computeResourceRpTraversalSpec</name>\n' +
+                '                        <type>ComputeResource</type>\n' +
+                '                        <path>resourcePool</path>\n' +
+                '                        <skip>false</skip>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>resourcePoolTraversalSpec</name>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>resourcePoolVmTraversalSpec</name>\n' +
+                '                        </selectSet>\n' +
+                '                    </selectSet>\n' +
+                '                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                        <name>resourcePoolTraversalSpec</name>\n' +
+                '                        <type>ResourcePool</type>\n' +
+                '                        <path>resourcePool</path>\n' +
+                '                        <skip>false</skip>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>resourcePoolTraversalSpec</name>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>resourcePoolVmTraversalSpec</name>\n' +
+                '                        </selectSet>\n' +
+                '                    </selectSet>\n' +
+                '                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                        <name>hostVmTraversalSpec</name>\n' +
+                '                        <type>HostSystem</type>\n' +
+                '                        <path>vm</path>\n' +
+                '                        <skip>false</skip>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>folderTraversalSpec</name>\n' +
+                '                        </selectSet>\n' +
+                '                    </selectSet>\n' +
+                '                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                        <name>resourcePoolVmTraversalSpec</name>\n' +
+                '                        <type>ResourcePool</type>\n' +
+                '                        <path>vm</path>\n' +
+                '                        <skip>false</skip>\n' +
+                '                    </selectSet>\n' +
+                '                </objectSet>\n' +
+                '            </specSet>\n' +
+                '        </RetrieveProperties>\n' +
+                '    </soap:Body>\n' +
+                '</soap:Envelope>';
+
+            return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
+                if (data.data.status === 'error') return errorHandler(data.data.data);
+
+                // Something is wrong
+                if (data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault']) {
+                    return errorHandler(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault'][0]['detail'][0]);
+                }
+
+                var res = [];
+
+                angular.forEach(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0].RetrievePropertiesResponse[0].returnval, function (value) {
+                    res.push(parseVMwareObject(value));
+                });
+
+                return validResponse(res);
+            });
+        };
+
         var getHostConnectionState = function (credential, host, port, esx_host) {
             var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><RetrieveProperties xmlns="urn:vim25"><_this type="PropertyCollector">propertyCollector</_this><specSet><propSet><type>HostSystem</type><all>false</all><pathSet>runtime.connectionState</pathSet></propSet><objectSet><obj type="HostSystem">' + esx_host + '</obj></objectSet></specSet></RetrieveProperties></soap:Body></soap:Envelope>';
             return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
@@ -457,7 +610,34 @@
         };
 
         var getDatastores = function (credential, host, port, datacenter_folder) {
-            var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><RetrieveProperties xmlns="urn:vim25"><_this type="PropertyCollector">propertyCollector</_this><specSet xsi:type="PropertyFilterSpec"><propSet xsi:type="PropertySpec"><type xsi:type="xsd:string">Datastore</type><all xsi:type="xsd:boolean">true</all></propSet><objectSet xsi:type="ObjectSpec"><obj type="Folder" xsi:type="ManagedObjectReference">' + datacenter_folder + '</obj><skip xsi:type="xsd:boolean">true</skip><selectSet xsi:type="TraversalSpec"><type xsi:type="xsd:string">Folder</type><path xsi:type="xsd:string">childEntity</path><skip xsi:type="xsd:boolean">true</skip><selectSet xsi:type="TraversalSpec"><type xsi:type="xsd:string">Datacenter</type><path xsi:type="xsd:string">datastore</path><skip xsi:type="xsd:boolean">false</skip></selectSet></selectSet></objectSet></specSet></RetrieveProperties></soap:Body></soap:Envelope>';
+            var xml = '<?xml version="1.0" encoding="utf-8"?>\n' +
+                '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">\n' +
+                '    <soap:Body>\n' +
+                '        <RetrieveProperties xmlns="urn:vim25">\n' +
+                '            <_this type="PropertyCollector">propertyCollector</_this>\n' +
+                '            <specSet xsi:type="PropertyFilterSpec">\n' +
+                '                <propSet xsi:type="PropertySpec">\n' +
+                '                    <type xsi:type="xsd:string">Datastore</type>\n' +
+                '                    <all xsi:type="xsd:boolean">true</all>\n' +
+                '                </propSet>\n' +
+                '                <objectSet xsi:type="ObjectSpec">\n' +
+                '                    <obj type="Folder" xsi:type="ManagedObjectReference">' + datacenter_folder + '</obj>\n' +
+                '                    <skip xsi:type="xsd:boolean">true</skip>\n' +
+                '                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                        <type xsi:type="xsd:string">Folder</type>\n' +
+                '                        <path xsi:type="xsd:string">childEntity</path>\n' +
+                '                        <skip xsi:type="xsd:boolean">true</skip>\n' +
+                '                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                            <type xsi:type="xsd:string">Datacenter</type>\n' +
+                '                            <path xsi:type="xsd:string">datastore</path>\n' +
+                '                            <skip xsi:type="xsd:boolean">false</skip>\n' +
+                '                        </selectSet>\n' +
+                '                    </selectSet>\n' +
+                '                </objectSet>\n' +
+                '            </specSet>\n' +
+                '        </RetrieveProperties>\n' +
+                '    </soap:Body>\n' +
+                '</soap:Envelope>';
             return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
                 if (data.data.status === 'error') return errorHandler(data.data.data);
 
@@ -477,7 +657,58 @@
         };
 
         var getDatastoresWithVMsData = function (credential, host, port, datacenter_folder) {
-            var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><RetrieveProperties xmlns="urn:vim25"><_this type="PropertyCollector">propertyCollector</_this><specSet><propSet><type>Datastore</type><all>false</all><pathSet>info</pathSet><pathSet>host</pathSet><pathSet>vm</pathSet></propSet><propSet><type>VirtualMachine</type><all>false</all><pathSet>config</pathSet><pathSet>layout</pathSet><pathSet>runtime</pathSet></propSet><objectSet><obj type="Folder">' + datacenter_folder + '</obj><skip>true</skip><selectSet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="TraversalSpec"><name>visitFolders</name><type>Folder</type><path>childEntity</path><skip>true</skip><selectSet><name>visitFolders</name></selectSet><selectSet xsi:type="TraversalSpec"><type>Datacenter</type><path>datastore</path><skip>false</skip><selectSet xsi:type="TraversalSpec"><type>Datastore</type><path>vm</path><skip>false</skip></selectSet></selectSet><selectSet xsi:type="TraversalSpec"><type>Datastore</type><path>vm</path><skip>false</skip></selectSet></selectSet></objectSet></specSet></RetrieveProperties></soap:Body></soap:Envelope>';
+            var xml = '<?xml version="1.0" encoding="utf-8"?>\n' +
+                '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">\n' +
+                '    <soap:Body>\n' +
+                '        <RetrieveProperties xmlns="urn:vim25">\n' +
+                '            <_this type="PropertyCollector">propertyCollector</_this>\n' +
+                '            <specSet>\n' +
+                '                <propSet>\n' +
+                '                    <type>Datastore</type>\n' +
+                '                    <all>false</all>\n' +
+                '                    <pathSet>info</pathSet>\n' +
+                '                    <pathSet>host</pathSet>\n' +
+                '                    <pathSet>vm</pathSet>\n' +
+                '                </propSet>\n' +
+                '                <propSet>\n' +
+                '                    <type>VirtualMachine</type>\n' +
+                '                    <all>false</all>\n' +
+                '                    <pathSet>config</pathSet>\n' +
+                '                    <pathSet>layout</pathSet>\n' +
+                '                    <pathSet>runtime</pathSet>\n' +
+                '                </propSet>\n' +
+                '                <objectSet>\n' +
+                '                    <obj type="Folder">' + datacenter_folder + '</obj>\n' +
+                '                    <skip>true</skip>\n' +
+                '                    <selectSet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="TraversalSpec">\n' +
+                '                        <name>visitFolders</name>\n' +
+                '                        <type>Folder</type>\n' +
+                '                        <path>childEntity</path>\n' +
+                '                        <skip>true</skip>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>visitFolders</name>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                            <type>Datacenter</type>\n' +
+                '                            <path>datastore</path>\n' +
+                '                            <skip>false</skip>\n' +
+                '                            <selectSet xsi:type="TraversalSpec">\n' +
+                '                                <type>Datastore</type>\n' +
+                '                                <path>vm</path>\n' +
+                '                                <skip>false</skip>\n' +
+                '                            </selectSet>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                            <type>Datastore</type>\n' +
+                '                            <path>vm</path>\n' +
+                '                            <skip>false</skip>\n' +
+                '                        </selectSet>\n' +
+                '                    </selectSet>\n' +
+                '                </objectSet>\n' +
+                '            </specSet>\n' +
+                '        </RetrieveProperties>\n' +
+                '    </soap:Body>\n' +
+                '</soap:Envelope>';
             return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
                 if (data.data.status === 'error') return errorHandler(data.data.data);
 
@@ -649,7 +880,48 @@
         };
 
         var getVMs = function (credential, host, port, datacenter_folder) {
-            var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><RetrieveProperties xmlns="urn:vim25"><_this type="PropertyCollector">propertyCollector</_this><specSet><propSet><type>VirtualMachine</type><all>true</all></propSet><objectSet><obj type="Folder">' + datacenter_folder + '</obj><skip>true</skip><selectSet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="TraversalSpec"><name>visitFolders</name><type>Folder</type><path>childEntity</path><skip>true</skip><selectSet><name>visitFolders</name></selectSet><selectSet xsi:type="TraversalSpec"><type>Datacenter</type><path>datastore</path><skip>false</skip><selectSet xsi:type="TraversalSpec"><type>Datastore</type><path>vm</path><skip>false</skip></selectSet></selectSet><selectSet xsi:type="TraversalSpec"><type>Datastore</type><path>vm</path><skip>false</skip></selectSet></selectSet></objectSet></specSet></RetrieveProperties></soap:Body></soap:Envelope>';
+            var xml = '<?xml version="1.0" encoding="utf-8"?>\n' +
+                '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">\n' +
+                '    <soap:Body>\n' +
+                '        <RetrieveProperties xmlns="urn:vim25">\n' +
+                '            <_this type="PropertyCollector">propertyCollector</_this>\n' +
+                '            <specSet>\n' +
+                '                <propSet>\n' +
+                '                    <type>VirtualMachine</type>\n' +
+                '                    <all>true</all>\n' +
+                '                </propSet>\n' +
+                '                <objectSet>\n' +
+                '                    <obj type="Folder">' + datacenter_folder + '</obj>\n' +
+                '                    <skip>true</skip>\n' +
+                '                    <selectSet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="TraversalSpec">\n' +
+                '                        <name>visitFolders</name>\n' +
+                '                        <type>Folder</type>\n' +
+                '                        <path>childEntity</path>\n' +
+                '                        <skip>true</skip>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>visitFolders</name>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                            <type>Datacenter</type>\n' +
+                '                            <path>datastore</path>\n' +
+                '                            <skip>false</skip>\n' +
+                '                            <selectSet xsi:type="TraversalSpec">\n' +
+                '                                <type>Datastore</type>\n' +
+                '                                <path>vm</path>\n' +
+                '                                <skip>false</skip>\n' +
+                '                            </selectSet>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                            <type>Datastore</type>\n' +
+                '                            <path>vm</path>\n' +
+                '                            <skip>false</skip>\n' +
+                '                        </selectSet>\n' +
+                '                    </selectSet>\n' +
+                '                </objectSet>\n' +
+                '            </specSet>\n' +
+                '        </RetrieveProperties>\n' +
+                '    </soap:Body>\n' +
+                '</soap:Envelope>';
             return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
                 if (data.data.status === 'error') return errorHandler(data.data.data);
 
@@ -1001,6 +1273,7 @@
             updateTaskProgress: updateTaskProgress,
             acquireVMTicket: acquireVMTicket,
             acquireNFCTicket: acquireNFCTicket,
+            getHosts: getHosts,
             getHostConnectionState: getHostConnectionState,
             getHostConfigManagerNetworkSystem: getHostConfigManagerNetworkSystem,
             getHostConfigManagerDatastoreSystem: getHostConfigManagerDatastoreSystem,

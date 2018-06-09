@@ -106,8 +106,12 @@
             };
 
             this.manageCredentials = function () {
-                ApplicationsFactory.openApplication('cmanager');
-                ApplicationsFactory.toggleApplication('cmanager');
+                ApplicationsFactory.openApplication('cmanager').then(function () {
+                    // Wait for next digest circle before continue in order, preventing $element.click event to "re" toggle to current application
+                    $timeout(function () {
+                        ApplicationsFactory.toggleApplication('cmanager');
+                    }, 0, false);
+                });
             };
 
             this.getActiveConnection = function () {

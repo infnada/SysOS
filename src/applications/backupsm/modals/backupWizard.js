@@ -141,7 +141,7 @@
 							</select> \
 							</div> \
 							<div class="col-sm-12"> \
-								<small class="pull-left text-primary cursor-pointer" ng-click="bwmC.manageCredentials(); $event.stopPropagation();">Manage Credentials</small> \
+								<small class="pull-left text-primary cursor-pointer" ng-click="bwmC.manageCredentials();">Manage Credentials</small> \
 							</div> \
 						</div> \
 					</div> \

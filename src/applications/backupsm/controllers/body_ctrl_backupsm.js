@@ -181,8 +181,12 @@
                         $log.debug('Backups Manager [%s] -> Restore finished successfully', data.uuid);
 
                         // Open Datastore Brower application
-                        ApplicationsFactory.openApplication('datastoreexplorer');
-                        ApplicationsFactory.toggleApplication('datastoreexplorer');
+                        ApplicationsFactory.openApplication('datastoreexplorer').then(function () {
+                            // Wait for next digest circle before continue in order, preventing $element.click event to "re" toggle to current application
+                            $timeout(function () {
+                                ApplicationsFactory.toggleApplication('datastoreexplorer');
+                            }, 0, false);
+                        });
 
                         $timeout(function () {
                             $rootScope.$broadcast('datastoreexplorer__restore_datastore_files', {
@@ -497,8 +501,12 @@
 
             this.openDatastoreBrowser = function () {
                 // Open Datastore Brower application
-                ApplicationsFactory.openApplication('datastoreexplorer');
-                ApplicationsFactory.toggleApplication('datastoreexplorer');
+                ApplicationsFactory.openApplication('datastoreexplorer').then(function () {
+                    // Wait for next digest circle before continue in order, preventing $element.click event to "re" toggle to current application
+                    $timeout(function () {
+                        ApplicationsFactory.toggleApplication('datastoreexplorer');
+                    }, 0, false);
+                });
 
                 var data = _this.getActive();
 

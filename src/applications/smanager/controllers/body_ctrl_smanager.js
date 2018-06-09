@@ -285,8 +285,12 @@
              * Opens Credential Manager Application
              */
             this.manageCredentials = function () {
-                ApplicationsFactory.openApplication('cmanager');
-                ApplicationsFactory.toggleApplication('cmanager');
+                ApplicationsFactory.openApplication('cmanager').then(function () {
+                    // Wait for next digest circle before continue in order, preventing $element.click event to "re" toggle to current application
+                    $timeout(function () {
+                        ApplicationsFactory.toggleApplication('cmanager');
+                    }, 0, false);
+                });
             };
 
             /**
@@ -361,7 +365,7 @@
                 if (uuid) smanagerFactory.setActiveConnection(uuid);
 
                 // Wait for next digest circle before continue
-                $timeout(function(){
+                $timeout(function () {
                     _this.Form = _this.getActiveConnection();
                     _this.showStandalone = false;
                     _this.showSnapshot = false;
@@ -427,7 +431,7 @@
                 smanagerFactory.setActiveConnection(uuid);
 
                 // Wait for next digest circle before continue
-                $timeout(function(){
+                $timeout(function () {
                     var modalInstanceRemoveConnection = modalFactory.openRegistredModal('question', '.window--smanager .window__main',
                         {
                             title: function () {
@@ -538,7 +542,7 @@
                 var link = smanagerFactory.getLinkByVMwareDatastore(virtual_uuid, datastore_name);
 
                 if (link) return connectionsFactory.getConnectionByUuid(link.storage);
-		        return false;
+                return false;
             };
 
             /**
@@ -713,7 +717,7 @@
                         smanagerFactory.setActiveConnection($itemScope.$parent.$parent.volume['volume-id-attributes'].uuid);
 
                         // Wait for next digest circle before continue
-                        $timeout(function() {
+                        $timeout(function () {
                             var modalInstance = modalFactory.openRegistredModal('question', '.window--smanager .window__main',
                                 {
                                     title: function () {
@@ -821,8 +825,12 @@
                             modalInstance.result.then(function (res) {
 
                                 if (res === true) {
-                                    ApplicationsFactory.openApplication('backupsm');
-                                    ApplicationsFactory.toggleApplication('backupsm');
+                                    ApplicationsFactory.openApplication('backupsm').then(function () {
+                                        // Wait for next digest circle before continue in order, preventing $element.click event to "re" toggle to current application
+                                        $timeout(function () {
+                                            ApplicationsFactory.toggleApplication('backupsm');
+                                        }, 0, false);
+                                    });
 
                                     $log.debug('Infrastructure Manager [%s] -> Launching Backups Manager for mounting storage snapshot into a datastore -> snapshot [%s]', $itemScope.snapshot['snapshot-instance-uuid'], $itemScope.snapshot.name);
 
@@ -864,8 +872,12 @@
                             modalInstance.result.then(function (res) {
 
                                 if (res === true) {
-                                    ApplicationsFactory.openApplication('backupsm');
-                                    ApplicationsFactory.toggleApplication('backupsm');
+                                    ApplicationsFactory.openApplication('backupsm').then(function () {
+                                        // Wait for next digest circle before continue in order, preventing $element.click event to "re" toggle to current application
+                                        $timeout(function () {
+                                            ApplicationsFactory.toggleApplication('backupsm');
+                                        }, 0, false);
+                                    });
 
                                     $log.debug('Infrastructure Manager [%s] -> Launching Backups Manager for restoring a volume files -> snapshot [%s]', $itemScope.snapshot['snapshot-instance-uuid'], $itemScope.snapshot.name);
 
@@ -894,7 +906,7 @@
                         smanagerFactory.setActiveConnection($itemScope.snapshot['snapshot-instance-uuid']);
 
                         // Wait for next digest circle before continue
-                        $timeout(function() {
+                        $timeout(function () {
                             var modalInstance = modalFactory.openRegistredModal('question', '.window--smanager .window__main',
                                 {
                                     title: function () {
@@ -946,83 +958,128 @@
                 {
                     text: '<i class="fa fa-server"></i> Instant VM',
                     click: function ($itemScope) {
-                        $log.debug('Infrastructure Manager [%s] -> Ask for Instant VM recovery -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
+                        $log.debug('Infrastructure Manager [%s] -> Ask for Instant VM recovery -> vm [%s]', $itemScope.vm.vm.vm, $itemScope.vm.name);
 
-                        smanagerFactory.setActiveConnection($itemScope.vm.config.uuid);
-
-                        // Wait for next digest circle before continue
-                        $timeout(function () {
-                            var modalInstance = modalFactory.openRegistredModal('question', '.window--smanager .window__main',
-                                {
-                                    title: function () {
-                                        return 'Instant VM recovery';
-                                    },
-                                    text: function () {
-                                        return 'Do you want to perform an Instant VM recovery of ' + $itemScope.vm.name + '?';
-                                    }
+                        var modalInstance = modalFactory.openRegistredModal('question', '.window--smanager .window__main',
+                            {
+                                title: function () {
+                                    return 'Instant VM recovery';
+                                },
+                                text: function () {
+                                    return 'Do you want to perform an Instant VM recovery of ' + $itemScope.vm.name + '?';
                                 }
-                            );
-                            modalInstance.result.then(function (res) {
+                            }
+                        );
+                        modalInstance.result.then(function (res) {
 
-                                if (res === true) {
-                                    ApplicationsFactory.openApplication('backupsm');
-                                    ApplicationsFactory.toggleApplication('backupsm');
+                            if (res === true) {
+                                ApplicationsFactory.openApplication('backupsm').then(function () {
+                                    // Wait for next digest circle before continue in order, preventing $element.click event to "re" toggle to current application
+                                    $timeout(function () {
+                                        ApplicationsFactory.toggleApplication('backupsm');
+                                    }, 0, false);
+                                });
 
-                                    $log.debug('Infrastructure Manager [%s] -> Launching Backups Manager for Instant VM recovery -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
+                                $log.debug('Infrastructure Manager [%s] -> Launching Backups Manager for Instant VM recovery -> vm [%s]', $itemScope.vm.vm.vm, $itemScope.vm.name);
 
-                                    $rootScope.$broadcast('backupsm__vm_instant_recovery', {
-                                        storage: _this.getActiveConnection(3),
-                                        vserver: _this.getActiveConnection(2),
-                                        volume: _this.getActiveConnection(1),
-                                        snapshots: [_this.getActiveConnection()],
-                                        snapshot: _this.getActiveConnection()['snapshot-instance-uuid'],
-                                        ESXihosts: smanagerFactory.getESXihosts(),
-                                        vm: $itemScope.vm
-                                    });
-                                }
-                            });
-                        }, 0, false);
+                                $rootScope.$broadcast('backupsm__vm_instant_recovery', {
+                                    storage: _this.getActiveConnection(3),
+                                    vserver: _this.getActiveConnection(2),
+                                    volume: _this.getActiveConnection(1),
+                                    snapshots: [_this.getActiveConnection()],
+                                    snapshot: _this.getActiveConnection()['snapshot-instance-uuid'],
+                                    ESXihosts: smanagerFactory.getESXihosts(),
+                                    vm: $itemScope.vm.vm
+                                });
+                            }
+                        });
                     }
                 },
+                ['<i class="fa fa-server"></i> Restore entire VM', function ($itemScope) {
+                    $log.debug('Infrastructure Manager [%s] -> Ask for restore entire VM -> vm [%s]', $itemScope.vm.vm.vm, $itemScope.vm.name);
+
+                    if ($itemScope.vm.vm === null) {
+                        return modalFactory.openLittleModal('Error while restoring Backup', 'Not found any linked VirtualMachine for ' + $itemScope.vm.name + ', maybe original VM was deleted from vCenter. Try doing an Instant VM restore', '.window--smanager .window__main', 'plain');
+                    }
+
+                    var modalInstance = modalFactory.openRegistredModal('question', '.window--smanager .window__main',
+                        {
+                            title: function () {
+                                return 'Restore entire VM';
+                            },
+                            text: function () {
+                                return 'Do you want to perform a entire VM restore of ' + $itemScope.vm.name + '?';
+                            }
+                        }
+                    );
+                    modalInstance.result.then(function (res) {
+
+                        if (res === true) {
+                            ApplicationsFactory.openApplication('backupsm').then(function () {
+                                ApplicationsFactory.toggleApplication('backupsm');
+                            });
+
+                            $log.debug('Infrastructure Manager [%s] -> Launching Backups Manager for restore entire VM -> vm [%s]', $itemScope.vm.vm.vm, $itemScope.vm.name);
+
+                            // TODO: wait till application is ready
+                            $timeout(function () {
+                                $rootScope.$broadcast('backupsm__restore_vm', {
+                                    storage: _this.getActiveConnection(3),
+                                    vserver: _this.getActiveConnection(2),
+                                    volume: _this.getActiveConnection(1),
+                                    snapshots: [_this.getActiveConnection()],
+                                    snapshot: _this.getActiveConnection()['snapshot-instance-uuid'],
+                                    ESXihosts: smanagerFactory.getESXihosts(),
+                                    vm: $itemScope.vm.vm,
+                                    current_location: {
+                                        uuid: $itemScope.vm.virtual,
+                                        credential: connectionsFactory.getConnectionByUuid($itemScope.vm.virtual).credential,
+                                        host: connectionsFactory.getConnectionByUuid($itemScope.vm.virtual).host,
+                                        port: connectionsFactory.getConnectionByUuid($itemScope.vm.virtual).port
+                                    }
+                                });
+                            }, 100);
+                        }
+                    });
+                }],
                 {
                     text: '<i class="fa fa-files"></i> Restore Guest files',
                     click: function ($itemScope) {
-                        $log.debug('Infrastructure Manager [%s] -> Ask for recovery VM Guest Files -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
+                        $log.debug('Infrastructure Manager [%s] -> Ask for recovery VM Guest Files -> vm [%s]', $itemScope.vm.vm.vm, $itemScope.vm.name);
 
-                        smanagerFactory.setActiveConnection($itemScope.vm.config.uuid);
-
-                        // Wait for next digest circle before continue
-                        $timeout(function () {
-                            var modalInstance = modalFactory.openRegistredModal('question', '.window--smanager .window__main',
-                                {
-                                    title: function () {
-                                        return 'Instant VM recovery';
-                                    },
-                                    text: function () {
-                                        return 'Do you want to perform a VM Guest Files recovery of ' + $itemScope.vm.name + '?';
-                                    }
+                        var modalInstance = modalFactory.openRegistredModal('question', '.window--smanager .window__main',
+                            {
+                                title: function () {
+                                    return 'Instant VM recovery';
+                                },
+                                text: function () {
+                                    return 'Do you want to perform a VM Guest Files recovery of ' + $itemScope.vm.name + '?';
                                 }
-                            );
-                            modalInstance.result.then(function (res) {
+                            }
+                        );
+                        modalInstance.result.then(function (res) {
 
-                                if (res === true) {
-                                    ApplicationsFactory.openApplication('backupsm');
-                                    ApplicationsFactory.toggleApplication('backupsm');
+                            if (res === true) {
+                                ApplicationsFactory.openApplication('backupsm').then(function () {
+                                    // Wait for next digest circle before continue in order, preventing $element.click event to "re" toggle to current application
+                                    $timeout(function () {
+                                        ApplicationsFactory.toggleApplication('backupsm');
+                                    }, 0, false);
+                                });
 
-                                    $log.debug('Infrastructure Manager [%s] -> Launching Backups Manager for recovery VM Guest Files -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
+                                $log.debug('Infrastructure Manager [%s] -> Launching Backups Manager for recovery VM Guest Files -> vm [%s]', $itemScope.vm.vm.vm, $itemScope.vm.name);
 
-                                    $rootScope.$broadcast('backupsm__restore_vm_guest_files', {
-                                        storage: _this.getActiveConnection(3),
-                                        vserver: _this.getActiveConnection(2),
-                                        volume: _this.getActiveConnection(1),
-                                        snapshots: [_this.getActiveConnection()],
-                                        snapshot: _this.getActiveConnection()['snapshot-instance-uuid'],
-                                        ESXihosts: smanagerFactory.getESXihosts(),
-                                        vm: $itemScope.vm
-                                    });
-                                }
-                            });
-                        }, 0, false);
+                                $rootScope.$broadcast('backupsm__restore_vm_guest_files', {
+                                    storage: _this.getActiveConnection(3),
+                                    vserver: _this.getActiveConnection(2),
+                                    volume: _this.getActiveConnection(1),
+                                    snapshots: [_this.getActiveConnection()],
+                                    snapshot: _this.getActiveConnection()['snapshot-instance-uuid'],
+                                    ESXihosts: smanagerFactory.getESXihosts(),
+                                    vm: $itemScope.vm.vm
+                                });
+                            }
+                        });
                     }
                 }
             ];
@@ -1292,8 +1349,12 @@
 
                         smanagerFactory.setActiveConnection($itemScope.vm.config.uuid);
 
-                        ApplicationsFactory.openApplication('wmks');
-                        ApplicationsFactory.toggleApplication('wmks');
+                        ApplicationsFactory.openApplication('wmks').then(function () {
+                            // Wait for next digest circle before continue in order, preventing $element.click event to "re" toggle to current application
+                            $timeout(function () {
+                                ApplicationsFactory.toggleApplication('wmks');
+                            }, 0, false);
+                        });
 
                         $timeout(function () {
                             $rootScope.$broadcast('wmks__new_data', {
@@ -1330,8 +1391,12 @@
                                 modalInstance.result.then(function (res) {
 
                                     if (res === true) {
-                                        ApplicationsFactory.openApplication('backupsm');
-                                        ApplicationsFactory.toggleApplication('backupsm');
+                                        ApplicationsFactory.openApplication('backupsm').then(function () {
+                                            // Wait for next digest circle before continue in order, preventing $element.click event to "re" toggle to current application
+                                            $timeout(function () {
+                                                ApplicationsFactory.toggleApplication('backupsm');
+                                            }, 0, false);
+                                        });
 
                                         $log.debug('Infrastructure Manager [%s] -> Launching Backups Manager for Instant VM recovery -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
 
@@ -1370,33 +1435,40 @@
                                 modalInstance.result.then(function (res) {
 
                                     if (res === true) {
-                                        ApplicationsFactory.openApplication('backupsm');
-                                        ApplicationsFactory.toggleApplication('backupsm');
+                                        ApplicationsFactory.openApplication('backupsm').then(function () {
+                                            // Wait for next digest circle before continue in order, preventing $element.click event to "re" toggle to current application
+                                            $timeout(function () {
+                                                ApplicationsFactory.toggleApplication('backupsm');
+                                            }, 0, false);
+                                        });
 
                                         $log.debug('Infrastructure Manager [%s] -> Launching Backups Manager for restore entire VM -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
 
-                                        $rootScope.$broadcast('backupsm__restore_vm_guest_files', {
-                                            storage: connectionsFactory.getConnectionByUuid(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).storage),
-                                            /* jshint ignore:start */
-                                            vserver: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).vserver)),
-                                            volume: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).volume)),
-                                            snapshots: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).volume)).snapshots, //TODO: if only 1 snapshot this will be an object --> conver to array. TODO: some snapshots could not contain this VM
-                                            /* jshint ignore:end */
-                                            snapshot: '',
-                                            ESXihosts: smanagerFactory.getESXihosts(),
-                                            vm: $itemScope.vm,
-                                            current_location: {
-                                                uuid: _this.getActiveConnection(1).uuid,
-                                                credential: _this.getActiveConnection(1).credential,
-                                                host: _this.getActiveConnection(1).host,
-                                                port: _this.getActiveConnection(1).port
-                                            }
-                                        });
+                                        // TODO: wait till application is ready
+                                        $timeout(function () {
+                                            $rootScope.$broadcast('backupsm__restore_vm', {
+                                                storage: connectionsFactory.getConnectionByUuid(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).storage),
+                                                /* jshint ignore:start */
+                                                vserver: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).vserver)),
+                                                volume: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).volume)),
+                                                snapshots: eval(connectionsFactory.getObjectByUuidMapping(smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name).volume)).snapshots, //TODO: if only 1 snapshot this will be an object --> conver to array. TODO: some snapshots could not contain this VM
+                                                /* jshint ignore:end */
+                                                snapshot: '',
+                                                ESXihosts: smanagerFactory.getESXihosts(),
+                                                vm: $itemScope.vm,
+                                                current_location: {
+                                                    uuid: _this.getActiveConnection(1).uuid,
+                                                    credential: _this.getActiveConnection(1).credential,
+                                                    host: _this.getActiveConnection(1).host,
+                                                    port: _this.getActiveConnection(1).port
+                                                }
+                                            });
+                                        }, 100);
                                     }
                                 });
                             }, 0, false);
                         }],
-	                    ['<i class="fa fa-server"></i> Restore Guest Files', function ($itemScope) {
+                        ['<i class="fa fa-server"></i> Restore Guest Files', function ($itemScope) {
                             $log.debug('Infrastructure Manager [%s] -> Ask for recovery VM Guest Files -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
 
                             smanagerFactory.setActiveConnection($itemScope.vm.config.uuid);
@@ -1416,8 +1488,12 @@
                                 modalInstance.result.then(function (res) {
 
                                     if (res === true) {
-                                        ApplicationsFactory.openApplication('backupsm');
-                                        ApplicationsFactory.toggleApplication('backupsm');
+                                        ApplicationsFactory.openApplication('backupsm').then(function () {
+                                            // Wait for next digest circle before continue in order, preventing $element.click event to "re" toggle to current application
+                                            $timeout(function () {
+                                                ApplicationsFactory.toggleApplication('backupsm');
+                                            }, 0, false);
+                                        });
 
                                         $log.debug('Infrastructure Manager [%s] -> Launching Backups Manager for recovery VM Guest Files -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
 
@@ -1441,7 +1517,7 @@
                                     }
                                 });
                             }, 0, false);
-	                    }]
+                        }]
                     ]
                 ],
                 {
@@ -1457,8 +1533,12 @@
                                 return modalFactory.openLittleModal('Error while creating Backup', 'Not found any compatible NetApp storage. Make sure VMs that you want to backup are inside a NetApp volume and this is managed by SysOS.', '.window--smanager .window__main', 'plain');
                             }
 
-                            ApplicationsFactory.openApplication('backupsm');
-                            ApplicationsFactory.toggleApplication('backupsm');
+                            ApplicationsFactory.openApplication('backupsm').then(function () {
+                                // Wait for next digest circle before continue in order, preventing $element.click event to "re" toggle to current application
+                                $timeout(function () {
+                                    ApplicationsFactory.toggleApplication('backupsm');
+                                }, 0, false);
+                            });
 
                             $rootScope.$broadcast('backupsm__backup_vm', {
                                 vm: $itemScope.vm,

@@ -333,13 +333,13 @@
                 var filePath = _this.localFileSystem.currentPath + file.filename;
 
                 fileSystemFactory.getFileContents(filePath, function (data) {
-                    ApplicationsFactory.openApplication('notepad');
-                    ApplicationsFactory.toggleApplication('notepad');
-
-                    $timeout(function () {
-                        $rootScope.$broadcast('notepad__new_data', data);
-                    }, 100);
-
+                    ApplicationsFactory.openApplication('notepad').then(function () {
+                        // Wait for next digest circle before continue in order, preventing $element.click event to "re" toggle to current application
+                        $timeout(function () {
+                            ApplicationsFactory.toggleApplication('notepad');
+                            $rootScope.$broadcast('notepad__new_data', data);
+                        }, 0, false);
+                    });
                 });
             }
         };

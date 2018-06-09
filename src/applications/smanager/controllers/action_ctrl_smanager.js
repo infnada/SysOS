@@ -1,6 +1,6 @@
 (function () {
     'use strict';
-    smanagerApp.controller('smActionController', ['$scope', 'smanagerFactory', 'connectionsFactory', 'ApplicationsFactory', function ($scope, smanagerFactory, connectionsFactory, ApplicationsFactory) {
+    smanagerApp.controller('smActionController', ['$scope', '$timeout', 'smanagerFactory', 'connectionsFactory', 'ApplicationsFactory', function ($scope, $timeout, smanagerFactory, connectionsFactory, ApplicationsFactory) {
 
         var _this = this;
         var APPscope = $scope.$parent.$parent.$parent.$parent;
@@ -59,8 +59,13 @@
 
         this.openWithApp = function (app) {
             if (_this.activeConnection == null) return;
-            ApplicationsFactory.openApplication(app);
-            ApplicationsFactory.toggleApplication(app);
+
+            ApplicationsFactory.openApplication(app).then(function () {
+                // Wait for next digest circle before continue in order, preventing $element.click event to "re" toggle to current application
+                $timeout(function () {
+                    ApplicationsFactory.toggleApplication(app);
+                }, 0, false);
+            });
         };
 
     }]);

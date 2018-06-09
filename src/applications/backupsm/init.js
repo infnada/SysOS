@@ -37,8 +37,8 @@ var backupsmApp = angular.module('backupsmApp', []);
             templateUrl: 'applications/backupsm/modals/backupWizard.html',
             size: 'lg',
             controllerAs: 'bwmC',
-            controller: ['$scope', 'title', 'backupObject', '$uibModalInstance', '$filter', 'connectionsFactory', 'smanagerFactory', 'ApplicationsFactory', 'cmanagerFactory',
-                function ($scope, title, backupObject, $uibModalInstance, $filter, connectionsFactory, smanagerFactory, ApplicationsFactory, cmanagerFactory) {
+            controller: ['$scope', 'title', 'backupObject', '$uibModalInstance', '$filter', '$timeout', 'connectionsFactory', 'smanagerFactory', 'ApplicationsFactory', 'cmanagerFactory',
+                function ($scope, title, backupObject, $uibModalInstance, $filter, $timeout, connectionsFactory, smanagerFactory, ApplicationsFactory, cmanagerFactory) {
                     var _this = this;
                     this.step = 1;
                     this.title = title;
@@ -315,8 +315,12 @@ var backupsmApp = angular.module('backupsmApp', []);
                      * Open CredentialsManager if required
                      */
                     this.manageCredentials = function () {
-                        ApplicationsFactory.openApplication('cmanager');
-                        ApplicationsFactory.toggleApplication('cmanager');
+                        ApplicationsFactory.openApplication('cmanager').then(function () {
+                            // Wait for next digest circle before continue in order, preventing $element.click event to "re" toggle to current application
+                            $timeout(function () {
+                                ApplicationsFactory.toggleApplication('cmanager');
+                            }, 0, false);
+                        });
                     };
 
                 }]

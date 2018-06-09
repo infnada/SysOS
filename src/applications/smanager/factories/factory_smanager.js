@@ -4,6 +4,14 @@
         function ($rootScope, $q, $document, socket, toastr, uuid, ServerFactory, $filter, modalFactory, netappFactory, connectionsFactory, vmwareFactory) {
             var links = [];
 
+            /** @namespace datastore.info.nas */
+            /** @namespace datastore.info.nas.remotePath */
+            /** @namespace res.data.propSet */
+            /** @namespace data.data.returnval */
+            /** @namespace datastore_vm.storage.perDatastoreUsage */
+            /** @namespace datastore_vm.storage.perDatastoreUsage.unshared */
+            /** @namespace datastore_vm.runtime.powerState */
+
             /*
              *
              * PRIVATE FUNCTIONS
@@ -74,7 +82,8 @@
                                     esxi_datastore: datastore.obj.name,
                                     storage: storage.uuid,
                                     vserver: foundVserver.uuid,
-                                    volume: foundVolume['volume-id-attributes'].uuid
+                                    volume: foundVolume['volume-id-attributes'].uuid,
+                                    junction_path: datastore.info.nas.remotePath
                                 });
 
                             }// end NetApp
@@ -131,7 +140,8 @@
                                     esxi_datastore: datastore.obj.name,
                                     storage: uuid,
                                     vserver: foundVserver.uuid,
-                                    volume: foundVolume['volume-id-attributes'].uuid
+                                    volume: foundVolume['volume-id-attributes'].uuid,
+                                    junction_path: datastore.info.nas.remotePath
                                 });
 
                             });// end datastore
@@ -161,6 +171,24 @@
                 return $filter('filter')(links, {
                     virtual: virtual_uuid,
                     esxi_datastore: esxi_datastore
+                })[0];
+            };
+
+            /**
+             * @description
+             * Return a link if found
+             *
+             * @params
+             * virtual_uuid {String}
+             * junction_path {String}
+             */
+            var getLinkByStorageJunctionPath = function (virtual_uuid, volume, junction_path) {
+
+                // Get Datastore name by Junction Path
+                return $filter('filter')(links, {
+                    storage: virtual_uuid,
+                    volume: volume,
+                    junction_path: junction_path
                 })[0];
             };
 
@@ -594,6 +622,11 @@
              * Fetch NetApp SnapShots
              */
             var getSnapshotFiles = function (uuid, host, vserver, volume, snapshot) {
+                var link;
+                var datastore_index;
+                var datastore_vm;
+                var esxi_host;
+
                 var vserver_index = connectionsFactory.getConnectionByUuid(uuid).vservers.findIndex(function (item) {
                     return item['vserver-name'] === vserver;
                 });
@@ -605,7 +638,7 @@
                 });
 
                 // Already fetched files from storage, don't ask for it again
-                if (angular.isDefined(connectionsFactory.getConnectionByUuid(uuid).vservers[vserver_index].volumes[volume_index].snapshots[snapshot_index].files)) return;
+                if (angular.isDefined(connectionsFactory.getConnectionByUuid(uuid).vservers[vserver_index].volumes[volume_index].snapshots[snapshot_index].files)) return $q.resolve();
                 connectionsFactory.getConnectionByUuid(uuid).vservers[vserver_index].volumes[volume_index].snapshots[snapshot_index].vms = [];
 
                 var modalInstance = modalFactory.openLittleModal('PLEASE WAIT', 'Getting Snapshot data...', '.window--smanager .window__main', 'plain');
@@ -627,10 +660,54 @@
                             return;
                         }
                         if (file.name.substr(file.name.length - 4) === '.vmx') {
+
+                            // Get vCenter Link by Storage Junction Path
+                            link = getLinkByStorageJunctionPath(
+                                uuid,
+                                connectionsFactory.getConnectionByUuid(uuid).vservers[vserver_index].volumes[volume_index]['volume-id-attributes'].uuid,
+                                connectionsFactory.getConnectionByUuid(uuid).vservers[vserver_index].volumes[volume_index]['volume-id-attributes']['junction-path']
+                            );
+
+                            if (link) {
+
+                                // Get datastore_index using returned link
+                                datastore_index = connectionsFactory.getConnectionByUuid(link.virtual).datastores.findIndex(function (item) {
+                                    return item.obj.name === link.esxi_datastore;
+                                });
+
+                                // Search for VM using returned Storage file .vmx path
+                                datastore_vm  = $filter('filter')(connectionsFactory.getConnectionByUuid(link.virtual).vms, {
+                                    'vm': connectionsFactory.getConnectionByUuid(link.virtual).datastores[datastore_index].vm.ManagedObjectReference.name,
+                                    'datastore': {
+                                        'ManagedObjectReference': {
+                                            'name': link.esxi_datastore
+                                        }
+                                    },
+                                    'config': {
+                                        'files': {
+                                            'vmPathName': '[' + connectionsFactory.getConnectionByUuid(link.virtual).datastores[datastore_index].name + '] ' + file.path.substring(1) + '/' + file.name
+                                        }
+                                    }
+                                })[0];
+
+                                // Get Host name by host Id
+                                esxi_host = $filter('filter')(getESXihosts(), {
+                                    'connection_address': connectionsFactory.getConnectionByUuid(link.virtual).host,
+                                    'host': datastore_vm.runtime.host.name
+                                })[0];
+
+                            }
+
                             connectionsFactory.getConnectionByUuid(uuid).vservers[vserver_index].volumes[volume_index].snapshots[snapshot_index].vms.push({
-                                name: file.name.slice(0, -4),
-                                path: file.path + '/' + file.name
+                                name: (datastore_vm ? datastore_vm.name : file.name.slice(0, -4)),
+                                host: (esxi_host ? esxi_host.name : 'Unknown'),
+                                state: (datastore_vm ? datastore_vm.runtime.powerState : 'Unknown'),
+                                size: (datastore_vm ? datastore_vm.storage.perDatastoreUsage.unshared : 'Unknown'),
+                                path: file.path + '/' + file.name,
+                                virtual: link.virtual,
+                                vm: (datastore_vm ? datastore_vm : null)
                             });
+
                         }
 
                     });

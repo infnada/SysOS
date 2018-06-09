@@ -16,10 +16,10 @@
                   </thead> \
                   <tbody> \
                     <tr class="cursor-pointer" ng-repeat="vm in smB.getActiveConnection().vms | orderBy:\'name\'" context-menu="smB.snapshotVMContextMenu"> \
-                      <th class="col-sm-4">{{::vm.name}}</th> \
-                      <td class="col-sm-4">< Unknown ></td> \
-                      <td class="col-sm-2">< Unknown ></td> \
-                      <td class="col-sm-2">< Unknown ></td> \
+                      <th class="col-sm-4">{{::vm.vm.name}}</th> \
+                      <td class="col-sm-4">{{::vm.host}}</td> \
+                      <td class="col-sm-2">{{::vm.state}}</td> \
+                      <td class="col-sm-2">{{::vm.size}}</td> \
                     </tr> \
                   </tbody> \
                 </table> \

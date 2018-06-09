@@ -43,7 +43,7 @@
                         </select> \
                       </div> \
                       <div class="col-sm-12"> \
-                        <small class="pull-left text-primary cursor-pointer" ng-click="sshB.manageCredentials(); $event.stopPropagation();">Manage Credentials</small> \
+                        <small class="pull-left text-primary cursor-pointer" ng-click="sshB.manageCredentials();">Manage Credentials</small> \
                       </div> \
                     </div> \
                     <div class="form-group"> \

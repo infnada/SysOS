@@ -1,6 +1,6 @@
 (function () {
     'use strict';
-    SysOS.factory('ApplicationsFactory', ['$rootScope', '$log', 'ServerFactory', 'toastr', 'fileSystemFactory', function ($rootScope, $log, ServerFactory, toastr, fileSystemFactory) {
+    SysOS.factory('ApplicationsFactory', ['$rootScope', '$q', '$log', 'ServerFactory', 'toastr', 'fileSystemFactory', function ($rootScope, $q, $log, ServerFactory, toastr, fileSystemFactory) {
 
         var applications = [
             {id: 'start', ico: 'windows', name: 'Start Menu', menu: true}
@@ -194,7 +194,7 @@
 
             // Create a new instance of the application
             opened_applications.push(app);
-            return opened_applications;
+            return $q.resolve(opened_applications);
         };
 
         /**
@@ -216,6 +216,8 @@
          * @param id* {String} Application ID
          */
         var toggleApplication = function (id) {
+            if (id === null) return $rootScope.taskbar__item_open = null;
+
             if (!id) throw new Error('id_not_found');
 
             if (isActiveApplication(id)) return $rootScope.taskbar__item_open = null;
