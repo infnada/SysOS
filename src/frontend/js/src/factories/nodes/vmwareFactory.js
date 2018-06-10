@@ -1263,22 +1263,109 @@
             });
         };
 
+        var queryAvailablePerfMetric = function (credential, host, port, objectType, objectId, intervalId) {
+            var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><QueryAvailablePerfMetric xmlns="urn:vim25"><_this type="PerformanceManager">PerfMgr</_this><entity type="' + objectType + '">' + objectId + '</entity>' + (intervalId ? '<intervalId>' + intervalId + '</intervalId>' : '') + '</QueryAvailablePerfMetric></soap:Body></soap:Envelope>';
+            return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
+                if (data.data.status === 'error') return errorHandler(data.data.data);
+
+                // Something is wrong
+                if (data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault']) {
+                    return errorHandler(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault'][0]['detail'][0]);
+                }
+
+                var res = [];
+
+                angular.forEach(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0].QueryAvailablePerfMetricResponse[0].returnval, function (value) {
+                    res.push(parseVMwareObject(value));
+                });
+
+                return validResponse(res);
+            });
+        };
+
+        var queryPerfProviderSummary = function (credential, host, port, objectType, objectId) {
+            var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><QueryPerfProviderSummary xmlns="urn:vim25"><_this type="PerformanceManager">PerfMgr</_this><entity type="' + objectType + '">' + objectId + '</entity></QueryPerfProviderSummary></soap:Body></soap:Envelope>';
+            return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
+                if (data.data.status === 'error') return errorHandler(data.data.data);
+
+                // Something is wrong
+                if (data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault']) {
+                    return errorHandler(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault'][0]['detail'][0]);
+                }
+
+                return validResponse(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0].QueryPerfProviderSummaryResponse[0].returnval[0]);
+            });
+        };
+
+        var queryPerfCounterByLevel = function (credential, host, port, level) {
+            var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><QueryPerfCounterByLevel xmlns="urn:vim25"><_this type="PerformanceManager">PerfMgr</_this><level>' + level + '</level></QueryPerfCounterByLevel></soap:Body></soap:Envelope>';
+            return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
+                if (data.data.status === 'error') return errorHandler(data.data.data);
+
+                // Something is wrong
+                if (data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault']) {
+                    return errorHandler(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault'][0]['detail'][0]);
+                }
+
+                var res = [];
+
+                angular.forEach(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0].QueryPerfCounterByLevelResponse[0].returnval, function (value) {
+                    res.push(parseVMwareObject(value));
+                });
+
+                return validResponse(res);
+            });
+        };
+
+        var queryPerfCounter = function (credential, host, port, counterId) {
+            var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><QueryPerfCounter xmlns="urn:vim25"><_this type="PerformanceManager">PerfMgr</_this><counterId>' + counterId + '</counterId></QueryPerfCounter></soap:Body></soap:Envelope>';
+            return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
+                if (data.data.status === 'error') return errorHandler(data.data.data);
+
+                // Something is wrong
+                if (data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault']) {
+                    return errorHandler(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault'][0]['detail'][0]);
+                }
+
+                return validResponse(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0].QueryPerfCounterResponse[0].returnval[0]);
+            });
+        };
+
+        var queryPerf = function (credential, host, port, objectType, objectId, startTime, endTime, maxSample) {
+            var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><QueryPerf xmlns="urn:vim25"><_this type="PerformanceManager">PerfMgr</_this><querySpec><entity type="' + objectType + '">' + objectId + '</entity>' + (startTime ? '<startTime>' + startTime + '</startTime>' : '') + '' + (endTime ? '<endTime>' + endTime + '</endTime>' : '') + '' + (maxSample ? '<maxSample>' + maxSample + '</maxSample>' : '') + '</querySpec></QueryPerf></soap:Body></soap:Envelope>';
+            return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
+                if (data.data.status === 'error') return errorHandler(data.data.data);
+
+                // Something is wrong
+                if (data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault']) {
+                    return errorHandler(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault'][0]['detail'][0]);
+                }
+
+                return validResponse(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0].QueryPerfResponse[0].returnval[0]);
+            });
+        };
+
         return {
+            // Basics
             getClientVersion: getClientVersion,
             connectvCenterSoap: connectvCenterSoap,
             registerExtension: registerExtension,
             findSysOSExtension: findSysOSExtension,
+            // TaskManager
             createTask: createTask,
             setTaskState: setTaskState,
             updateTaskProgress: updateTaskProgress,
+            // Ticket
             acquireVMTicket: acquireVMTicket,
             acquireNFCTicket: acquireNFCTicket,
+            // Host
             getHosts: getHosts,
             getHostConnectionState: getHostConnectionState,
             getHostConfigManagerNetworkSystem: getHostConfigManagerNetworkSystem,
             getHostConfigManagerDatastoreSystem: getHostConfigManagerDatastoreSystem,
             getHostNetworkInfoVnic: getHostNetworkInfoVnic,
             getHostNetworkInfoConsoleVnic: getHostNetworkInfoConsoleVnic,
+            // Datastore
             getDatastores: getDatastores,
             getDatastoresWithVMsData: getDatastoresWithVMsData,
             getDatastoreProps: getDatastoreProps,
@@ -1290,6 +1377,7 @@
             createFolderToDatastore: createFolderToDatastore,
             mountDatastore: mountDatastore,
             unmountDatastore: unmountDatastore,
+            // VM
             getVMs: getVMs,
             getVMState: getVMState,
             getVMPath: getVMPath,
@@ -1305,10 +1393,17 @@
             shutdownGuest: shutdownGuest,
             rebootGuest: rebootGuest,
             reloadVM: reloadVM,
+            // Snapshot
             createSnapShot: createSnapShot,
             getVMSnapshots: getVMSnapshots,
             removeSnapshot: removeSnapshot,
-            revertToSnapshot: revertToSnapshot
+            revertToSnapshot: revertToSnapshot,
+            // Perf
+            queryAvailablePerfMetric: queryAvailablePerfMetric,
+            queryPerfProviderSummary: queryPerfProviderSummary,
+            queryPerfCounterByLevel: queryPerfCounterByLevel,
+            queryPerfCounter: queryPerfCounter,
+            queryPerf: queryPerf
         };
     }]);
 }());

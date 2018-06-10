@@ -1,7 +1,7 @@
 (function () {
     'use strict';
-    smanagerApp.factory('smanagerFactory', ['$rootScope', '$q', '$document', 'socket', 'toastr', 'uuid', 'ServerFactory', '$filter', 'modalFactory', 'netappFactory', 'connectionsFactory', 'vmwareFactory',
-        function ($rootScope, $q, $document, socket, toastr, uuid, ServerFactory, $filter, modalFactory, netappFactory, connectionsFactory, vmwareFactory) {
+    smanagerApp.factory('smanagerFactory', ['$rootScope', '$q', '$log', '$document', 'socket', 'toastr', 'uuid', 'ServerFactory', '$filter', 'modalFactory', 'netappFactory', 'connectionsFactory', 'vmwareFactory',
+        function ($rootScope, $q, $log, $document, socket, toastr, uuid, ServerFactory, $filter, modalFactory, netappFactory, connectionsFactory, vmwareFactory) {
             var links = [];
 
             /** @namespace datastore.info.nas */
@@ -313,41 +313,24 @@
 
                 }).then(function () {
 
+                    // Get Folders
                     return ServerFactory.callVcenter(connection.host, connection.port, '/rest/vcenter/folder');
-
                 }).then(function (res) {
 
                     connectionsFactory.getConnectionByUuid(connection.uuid).folders = res.data.data.response.value;
 
                     //TODO: more than 1 datacenter?¿??¿?¿
-
                     foundDatacenterFolder = $filter('filter')(res.data.data.response.value, {
                         type: 'DATACENTER'
                     })[0];
 
-                    // Get all VMs
-                    return vmwareFactory.getVMs(connection.credential, connection.host, connection.port, foundDatacenterFolder.folder);
+                    // Get VMs
+                    return getVMs(connection.uuid, false, uuidMap, foundDatacenterFolder);
+                }).then(function (new_uuidMap) {
+                    uuidMap = new_uuidMap;
 
-                }).then(function (res) {
-                    if (res.status === 'error') throw new Error('Failed to get VMs from ' + connectionsFactory.getConnectionByUuid(connection.uuid).type);
-
-                    connectionsFactory.getConnectionByUuid(connection.uuid).vms = res.data;
-
-                    // For each VM
-                    angular.forEach(connectionsFactory.getConnectionByUuid(connection.uuid).vms, function (vm, x) {
-
-                        vm.vm = vm.obj.name;
-
-                        uuidMap.push({
-                            uuid: vm.config.uuid,
-                            parent: connection.uuid,
-                            object: 'vms[' + x + ']'
-                        });
-
-                    });
-
+                    // Get datastores
                     return vmwareFactory.getDatastores(connection.credential, connection.host, connection.port, foundDatacenterFolder.folder);
-
                 }).then(function (res) {
                     if (res.status === 'error') throw new Error('Failed to get Datastores from ' + connectionsFactory.getConnectionByUuid(connection.uuid).type);
 
@@ -386,6 +369,77 @@
                     throw new Error(e);
                 });
 
+            };
+
+            /**
+             * @description
+             * Get all
+             *
+             * @param uuid {String}
+             * @param save {Boolean}
+             * @param uuidMap* {Array}
+             * @param foundDatacenterFolder* {Object}
+             */
+            var getVMs = function (uuid, save, uuidMap, foundDatacenterFolder) {
+                if (!uuid) throw new Error('uuid_not_found');
+
+                var foundVMinUuidMap;
+                var connection = connectionsFactory.getConnectionByUuid(uuid);
+
+                $log.debug('Infrastructure Manager [%s] -> Getting vCenter VMs -> hosts [%s]', uuid, connection.host);
+
+                if (!uuidMap) uuidMap = connectionsFactory.getUuidMap();
+
+                if (!foundDatacenterFolder) {
+                    foundDatacenterFolder = $filter('filter')(connection.folders, {
+                        type: 'DATACENTER'
+                    })[0];
+                }
+
+                return vmwareFactory.connectvCenterSoap(connection.credential, connection.host, connection.port).then(function (res) {
+                    if (res.status === 'error') throw new Error('Failed to connect to ' + connectionsFactory.getConnectionByUuid(uuid).type);
+
+                    return vmwareFactory.getVMs(connection.credential, connection.host, connection.port, foundDatacenterFolder.folder);
+
+                }).then(function (res) {
+                    if (res.status === 'error') throw new Error('Failed to get VMs from ' + connectionsFactory.getConnectionByUuid(uuid).type);
+
+                    connectionsFactory.getConnectionByUuid(uuid).vms = res.data;
+
+                    // For each VM
+                    angular.forEach(connectionsFactory.getConnectionByUuid(uuid).vms, function (vm, x) {
+
+                        vm.vm = vm.obj.name;
+
+                        // Check if uuid is in uuidMap array
+                        foundVMinUuidMap = $filter('filter')(connection.vms, {
+                            uuid: vm.config.uuid,
+                            parent: uuid
+                        })[0];
+
+                        // Push new VM
+                        if (!foundVMinUuidMap) {
+                            uuidMap.push({
+                                uuid: vm.config.uuid,
+                                parent: uuid,
+                                object: 'vms[' + x + ']'
+                            });
+                        }
+
+                    });
+
+                    // Save
+                    if (save) {
+                        connectionsFactory.saveUuidMap(uuidMap);
+                        connectionsFactory.saveConnection(connectionsFactory.getConnectionByUuid(uuid));
+                    }
+
+                    return uuidMap;
+                }).catch(function (e) {
+                    $log.error('Infrastructure Manager [%s] -> Error while getting vCenter VMs ->', uuid, e);
+
+                    throw e;
+                });
             };
 
             /**
@@ -980,6 +1034,7 @@
                     return activeConnection;
                 },
                 getVMwareData: getVMwareData,
+                getVMs: getVMs,
                 getNetAppData: getNetAppData,
                 getVolumeData: getVolumeData,
                 getESXihosts: getESXihosts,
