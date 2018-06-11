@@ -25,16 +25,6 @@
                 storage: []
             };
 
-            // Auto refresh vCenter VMs each 5 mins
-            angular.forEach(connectionsFactory.getConnectionByCategory('virtual'), function (connection) {
-
-                $log.debug('Infrastructure Manager [%s] -> Started interval for getVMs every 5 minutes -> vCenter [%s]', connection.uuid, connection.host);
-
-                vcenter_vm_timer[connection.uuid] = $interval(function () {
-                    return smanagerFactory.getVMs(connection.uuid, true);
-                }, 1000 * 60 * 5);
-            });
-
             /**
              * Server monitoring
              */
@@ -209,6 +199,18 @@
                 return connectionsFactory.connections();
             }, function (newValue) {
                 _this.connections = newValue;
+
+                // Auto refresh vCenter VMs each 5 mins
+                angular.forEach(_this.connections.virtual, function (connection) {
+
+                    if (vcenter_vm_timer[connection.uuid]) return;
+
+                    $log.debug('Infrastructure Manager [%s] -> Started interval for getVMs every 5 minutes -> vCenter [%s]', connection.uuid, connection.host);
+
+                    vcenter_vm_timer[connection.uuid] = $interval(function () {
+                        return smanagerFactory.getVMs(connection.uuid, true);
+                    }, 1000 * 60 * 5);
+                });
             });
 
             $scope.$watch(function () {

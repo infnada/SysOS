@@ -203,7 +203,6 @@
                 var dc_promises = [];
                 var ct_promises = [];
                 var ht_promises = [];
-                var uuidMap = connectionsFactory.getUuidMap();
                 var foundDatacenterFolder;
 
                 var modalInstance = modalFactory.openLittleModal('PLEASE WAIT', 'Connecting to vCenter/ESXi...', '.window--smanager .window__main', 'plain');
@@ -325,9 +324,8 @@
                     })[0];
 
                     // Get VMs
-                    return getVMs(connection.uuid, false, uuidMap, foundDatacenterFolder);
-                }).then(function (new_uuidMap) {
-                    uuidMap = new_uuidMap;
+                    return getVMs(connection.uuid, false, foundDatacenterFolder);
+                }).then(function () {
 
                     // Get datastores
                     return vmwareFactory.getDatastores(connection.credential, connection.host, connection.port, foundDatacenterFolder.folder);
@@ -343,7 +341,7 @@
                     modalFactory.changeModalText('Saving connection to file', '.window--smanager .window__main');
 
                     connectionsFactory.saveLinksMap(data);
-                    connectionsFactory.saveUuidMap(uuidMap);
+                    connectionsFactory.saveUuidMap();
                     connectionsFactory.saveConnection(connectionsFactory.getConnectionByUuid(connection.uuid));
                     modalFactory.closeModal('.window--smanager .window__main');
 
@@ -377,18 +375,18 @@
              *
              * @param uuid {String}
              * @param save {Boolean}
-             * @param uuidMap* {Array}
              * @param foundDatacenterFolder* {Object}
              */
-            var getVMs = function (uuid, save, uuidMap, foundDatacenterFolder) {
+            var getVMs = function (uuid, save, foundDatacenterFolder) {
                 if (!uuid) throw new Error('uuid_not_found');
 
+                var newVMs = 0;
+                var totalOldVMs = connectionsFactory.getConnectionByUuid(uuid).vms.length;
+                var totalVMs;
                 var foundVMinUuidMap;
                 var connection = connectionsFactory.getConnectionByUuid(uuid);
 
                 $log.debug('Infrastructure Manager [%s] -> Getting vCenter VMs -> hosts [%s]', uuid, connection.host);
-
-                if (!uuidMap) uuidMap = connectionsFactory.getUuidMap();
 
                 if (!foundDatacenterFolder) {
                     foundDatacenterFolder = $filter('filter')(connection.folders, {
@@ -404,6 +402,8 @@
                 }).then(function (res) {
                     if (res.status === 'error') throw new Error('Failed to get VMs from ' + connectionsFactory.getConnectionByUuid(uuid).type);
 
+                    totalVMs = res.data.length;
+
                     connectionsFactory.getConnectionByUuid(uuid).vms = res.data;
 
                     // For each VM
@@ -412,14 +412,18 @@
                         vm.vm = vm.obj.name;
 
                         // Check if uuid is in uuidMap array
-                        foundVMinUuidMap = $filter('filter')(connection.vms, {
+                        foundVMinUuidMap = $filter('filter')(connectionsFactory.getUuidMap(), {
                             uuid: vm.config.uuid,
                             parent: uuid
                         })[0];
 
                         // Push new VM
                         if (!foundVMinUuidMap) {
-                            uuidMap.push({
+                            ++newVMs;
+
+                            $log.debug('Infrastructure Manager [%s] -> Getting vCenter VMs. Found new VM -> hosts [%s], vm [%s]', uuid, connection.host, vm.name);
+
+                            connectionsFactory.getUuidMap().push({
                                 uuid: vm.config.uuid,
                                 parent: uuid,
                                 object: 'vms[' + x + ']'
@@ -428,13 +432,14 @@
 
                     });
 
+                    $log.debug('Infrastructure Manager [%s] -> Getting vCenter VMs. Finish -> hosts [%s], totalOldVMs [%s], totalVMs [%s], newVMs [%s]', uuid, connection.host, totalOldVMs, totalVMs, newVMs);
+
                     // Save
-                    if (save) {
-                        connectionsFactory.saveUuidMap(uuidMap);
+                    if (save && newVMs !== 0 || save && totalOldVMs !== totalVMs) {
+                        connectionsFactory.saveUuidMap();
                         connectionsFactory.saveConnection(connectionsFactory.getConnectionByUuid(uuid));
                     }
 
-                    return uuidMap;
                 }).catch(function (e) {
                     $log.error('Infrastructure Manager [%s] -> Error while getting vCenter VMs ->', uuid, e);
 
@@ -452,7 +457,6 @@
                 var main_promises = [];
                 var vs_promises = [];
                 var sh_promises = [];
-                var uuidMap = connectionsFactory.getUuidMap();
 
                 /* TODO: GET netappinfo from SNMP OID:
                  1.3.6.1.4.1.789.1.1.2.0
@@ -511,7 +515,7 @@
                     connectionsFactory.getConnectionByUuid(connection.uuid).vservers = res[6].data;
 
                     // Set new uuid to match internal node uuid
-                    uuidMap[uuidMap.findIndex(function (el) {
+                    connectionsFactory.getUuidMap()[connectionsFactory.getUuidMap().findIndex(function (el) {
                         return el.uuid === connection.uuid;
                     })].uuid = res[3].data.cluster_uuid;
                     connectionsFactory.getConnectionByUuid(connection.uuid).uuid = res[3].data.cluster_uuid;
@@ -523,7 +527,7 @@
 
                     angular.forEach(res[6].data, function (vserver, key) {
 
-                        uuidMap.push({
+                        connectionsFactory.getUuidMap().push({
                             uuid: vserver.uuid,
                             parent: connection.uuid,
                             object: 'vservers[' + key + ']'
@@ -551,7 +555,7 @@
                                 // For each Volume
                                 angular.forEach(volumes.data, function (volume, v) {
 
-                                    uuidMap.push({
+                                    connectionsFactory.getUuidMap().push({
                                         uuid: volume['volume-id-attributes'].uuid,
                                         parent: vserver['uuid'],
                                         object: 'volumes[' + v + ']'
@@ -573,7 +577,7 @@
                                         // For each snapshot
                                         angular.forEach(snapshots.data, function (snapshot, s) {
 
-                                            uuidMap.push({
+                                            connectionsFactory.getUuidMap().push({
                                                 uuid: snapshot['snapshot-instance-uuid'],
                                                 parent: volume['volume-id-attributes'].uuid,
                                                 object: 'snapshots[' + s + ']'
@@ -601,7 +605,7 @@
 
                     connectionsFactory.saveLinksMap(data);
                     connectionsFactory.saveConnection(connectionsFactory.getConnectionByUuid(connection.uuid));
-                    connectionsFactory.saveUuidMap(uuidMap);
+                    connectionsFactory.saveUuidMap();
                     modalFactory.closeModal('.window--smanager .window__main');
 
                 }).catch(function (e) {
@@ -630,7 +634,6 @@
              * @param data {Object}
              */
             var getVolumeData = function (data) {
-                var uuidMap = connectionsFactory.getUuidMap();
                 var vserver_index = connectionsFactory.getConnectionByUuid(data.uuid).vservers.findIndex(function (item) {
                     return item['vserver-name'] === data.vserver_name;
                 });
@@ -649,7 +652,7 @@
                         // For each snapshot
                         angular.forEach(snapshots.data, function (snapshot, s) {
 
-                            uuidMap.push({
+                            connectionsFactory.getUuidMap().push({
                                 uuid: snapshot['snapshot-instance-uuid'],
                                 parent: data.volume_uuid,
                                 object: 'snapshots[' + s + ']'
@@ -660,7 +663,7 @@
                         modalFactory.changeModalText('Saving connection to file', '.window--smanager .window__main');
 
                         connectionsFactory.saveConnection(connectionsFactory.getConnectionByUuid(data.uuid));
-                        connectionsFactory.saveUuidMap(uuidMap);
+                        connectionsFactory.saveUuidMap();
 
                         modalFactory.closeModal('.window--smanager .window__main');
                     }).catch(function (e) {
@@ -758,7 +761,7 @@
                                 state: (datastore_vm ? datastore_vm.runtime.powerState : 'Unknown'),
                                 size: (datastore_vm ? datastore_vm.storage.perDatastoreUsage.unshared : 'Unknown'),
                                 path: file.path + '/' + file.name,
-                                virtual: link.virtual,
+                                virtual: (link ? link.virtual : ''),
                                 vm: (datastore_vm ? datastore_vm : null)
                             });
 

@@ -2482,15 +2482,9 @@ var SysOS = angular.module('SysOS', [
 
             /**
              * Save uuid Mapping to config file
-             *
-             * @param map {Array}
              */
-            var saveUuidMap = function (map) {
-                if (!map) throw new Error('map_not_found');
-
+            var saveUuidMap = function () {
                 $log.debug('Connections Factory -> Saving uuidMap');
-
-                angular.extend(uuidMap, uuidMap[0], map);
 
                 return ServerFactory.saveConfigToFile(uuidMap, 'applications/smanager/map.json', true, function () {
                     $log.debug('Connections Factory -> uuidMap saved successfully');
