@@ -1,7 +1,7 @@
 (function () {
     'use strict';
-    backupsmApp.factory('backupsmFactory', ['$injector', '$filter', '$q', '$log', 'netappFactory', 'vmwareFactory', 'ServerFactory', 'ApplicationsFactory', 'connectionsFactory', 'modalFactory',
-        function ($injector, $filter, $q, $log, netappFactory, vmwareFactory, ServerFactory, ApplicationsFactory, connectionsFactory, modalFactory) {
+    backupsmApp.factory('backupsmFactory', ['$injector', '$filter', '$q', '$log', 'uuid', 'netappFactory', 'vmwareFactory', 'ServerFactory', 'ApplicationsFactory', 'connectionsFactory', 'modalFactory',
+        function ($injector, $filter, $q, $log, uuid, netappFactory, vmwareFactory, ServerFactory, ApplicationsFactory, connectionsFactory, modalFactory) {
 
             var backups = [];
             var restores = [];
@@ -201,6 +201,15 @@
                     if (res.status === 'error') throw new Error('Failed to register VM to vCenter');
 
                     data.vm.vm = res.data.result.name;
+
+                    // Set new uuid to this VM
+                    var newVMUuid = uuid.v4();
+                    data.vm.config.uuid = newVMUuid;
+                    $log.debug('Backups Manager [%s] -> Reconfigure VM uuid -> vm_name [%s], newVMUuid [%s]', data.vm.name, newVMUuid);
+                    return vmwareFactory.reconfigureVM(data.esxi_credential, data.esxi_address, data.esxi_port, data.vm.vm, '<uuid>' + newVMUuid + '</uuid>');
+                }).then(function (res) {
+                    if (res.status === 'error') throw new Error('Failed to change VM uuid');
+
                     return setRestoreStatus(data, 'vm_registred');
                 }).then(function () {
 

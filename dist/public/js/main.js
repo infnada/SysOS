@@ -4502,6 +4502,27 @@ var SysOS = angular.module('SysOS', [
             });
         };
 
+        var reconfigureVM = function (credential, host, port, vm, spec) {
+            var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><ReconfigVM_Task xmlns="urn:vim25"><_this type="VirtualMachine">' + vm + '</_this><spec>' + spec + '</spec></ReconfigVM_Task></soap:Body></soap:Envelope>';
+            return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
+                if (data.data.status === 'error') return errorHandler(data.data.data);
+
+                // Something is wrong
+                if (data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault']) {
+                    return errorHandler(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault'][0]['detail'][0]);
+                }
+
+                var task_id = data.data.data.response['soapenv:Envelope']['soapenv:Body'][0].ReconfigVM_TaskResponse[0].returnval[0]._;
+
+                return getTaskStatus(credential, host, port, task_id).then(function (data) {
+                    if (data[0].propSet.info.state !== 'success') return errorHandler(data[0].propSet.info, host);
+
+                    return validResponse(data[0].propSet.info);
+                });
+
+            });
+        };
+
         var powerOnVM = function (credential, host, port, esx_host, vm) {
             var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><PowerOnVM_Task xmlns="urn:vim25"><_this type="VirtualMachine">' + vm + '</_this><host type="HostSystem">' + esx_host + '</host></PowerOnVM_Task></soap:Body></soap:Envelope>';
             return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
@@ -4822,6 +4843,7 @@ var SysOS = angular.module('SysOS', [
             searchIndexVM: searchIndexVM,
             registerVM: registerVM,
             unregisterVM: unregisterVM,
+            reconfigureVM: reconfigureVM,
             powerOnVM: powerOnVM,
             powerOffVM: powerOffVM,
             suspendVM: suspendVM,

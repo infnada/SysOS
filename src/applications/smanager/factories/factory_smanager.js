@@ -951,6 +951,9 @@
             };
 
             var refreshVM = function (vm, connection) {
+                if (!vm) throw new Error('vm_not_found');
+                if (!connection) throw new Error('connection_not_found');
+
                 return vmwareFactory.connectvCenterSoap(connection.credential, connection.host, connection.port).then(function (res) {
                     if (res.status === 'error') throw new Error('Failed to connect to vCenter');
 
