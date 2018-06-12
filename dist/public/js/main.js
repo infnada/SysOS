@@ -3087,6 +3087,30 @@ var SysOS = angular.module('SysOS', [
             });
         };
 
+        var getFcpAdapters = function (credential, host, port, results, next_tag) {
+            var xml = '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'><fcp-adapter-get-iter><max-records>10</max-records>' + (next_tag ? '<tag>' + next_tag + '</tag>' : '') + '</fcp-adapter-get-iter></netapp>';
+
+            return ServerFactory.callNetApp(credential, host, port, null, xml).then(function (data) {
+                if (data.data.status === 'error') return errorHandler(data.data.data.errno);
+                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
+
+                // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
+                if (data.data.data.response.netapp.results[0]['attributes-list']) {
+
+                    angular.forEach(data.data.data.response.netapp.results[0]['attributes-list'][0]['fcp-config-adapter-info'], function (fcpadapter) {
+                        results.push(parseNetAppObject(fcpadapter));
+                    });
+
+                    if (data.data.data.response.netapp.results[0]['next-tag']) {
+                        var next_tag = data.data.data.response.netapp.results[0]['next-tag'][0].replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                        return getFcpAdapters(credential, host, port, results, next_tag);
+                    }
+                }
+
+                return validResponse(results);
+            });
+        };
+
         var getNFSStatus = function (credential, host, port, vfiler) {
             return ServerFactory.callNetApp(credential, host, port, null, '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'' + (vfiler ? ' vfiler=\'' + vfiler + '\'' : '') + '><nfs-status/></netapp>').then(function (data) {
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
@@ -3401,6 +3425,9 @@ var SysOS = angular.module('SysOS', [
             },
             getFcpInterfaces: function (credential, host, port, vfiler) {
                 return getFcpInterfaces(credential, host, port, vfiler, []);
+            },
+            getFcpAdapters: function (credential, host, port) {
+                return getFcpAdapters(credential, host, port, []);
             },
             getNFSStatus: getNFSStatus,
             getVservers: function (credential, host, port) {
