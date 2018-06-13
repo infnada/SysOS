@@ -16,7 +16,7 @@
                   </thead> \
                   <tbody> \
                     <tr class="cursor-pointer" ng-repeat="vm in smB.getActiveConnection().vms | orderBy:\'name\'" context-menu="smB.snapshotVMContextMenu"> \
-                      <th class="col-sm-4">{{::vm.name}}</th> \
+                      <th class="col-sm-4"><i class="vs-icon p-l-sm vsphere-icon-vm"></i> {{::vm.name}}</th> \
                       <td class="col-sm-4">{{::vm.host}}</td> \
                       <td class="col-sm-2">{{::vm.state}}</td> \
                       <td class="col-sm-2">{{::vm.size}}</td> \

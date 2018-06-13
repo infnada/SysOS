@@ -3327,7 +3327,7 @@ var SysOS = angular.module('SysOS', [
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
                 if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
 
-                return validResponse(data);
+                return validResponse(parseNetAppObject(data.data.data.response.netapp.results[0]["file-info"][0]));
             });
         };
 
@@ -3351,7 +3351,7 @@ var SysOS = angular.module('SysOS', [
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
                 if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
 
-                return validResponse(data.data.data.response.netapp.results['0'].$.status);
+                return validResponse(data.data.data.response.netapp.results[0].$.status);
             });
         };
 

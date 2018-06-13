@@ -458,6 +458,7 @@
                 var main_promises = [];
                 var vs_promises = [];
                 var sh_promises = [];
+                var shdate_promises = [];
 
                 /* TODO: GET netappinfo from SNMP OID:
                  1.3.6.1.4.1.789.1.1.2.0
@@ -580,12 +581,26 @@
                                         // For each snapshot
                                         angular.forEach(snapshots.data, function (snapshot, s) {
 
+                                            // Get snapshot creation date
+                                            shdate_promises.push(netappFactory.getFileInfo(
+                                                connection.credential, connection.host, connection.port,
+                                                vserver['vserver-name'],
+                                                volume['volume-id-attributes'].name,
+                                                snapshot.name
+                                            ).then(function (res) {
+                                                if (res.status === 'error') throw new Error('Failed to get Snapshot creation date');
+
+                                                connectionsFactory.getConnectionByUuid(connection.uuid).vservers[key].volumes[v].snapshots[s].data = res.data;
+                                            }));
+
                                             connectionsFactory.getUuidMap().push({
                                                 uuid: snapshot['snapshot-instance-uuid'],
                                                 parent: volume['volume-id-attributes'].uuid,
                                                 main_parent: connection.uuid,
                                                 object: 'snapshots[' + s + ']'
                                             });
+
+                                            return $q.all(shdate_promises);
 
                                         });
                                     }));
@@ -737,27 +752,30 @@
                                     return item.obj.name === link.esxi_datastore;
                                 });
 
-                                // Search for VM using returned Storage file .vmx path
-                                datastore_vm  = $filter('filter')(connectionsFactory.getConnectionByUuid(link.virtual).vms, {
-                                    'vm': connectionsFactory.getConnectionByUuid(link.virtual).datastores[datastore_index].vm.ManagedObjectReference.name,
-                                    'datastore': {
-                                        'ManagedObjectReference': {
-                                            'name': link.esxi_datastore
-                                        }
-                                    },
-                                    'config': {
-                                        'files': {
-                                            'vmPathName': '[' + connectionsFactory.getConnectionByUuid(link.virtual).datastores[datastore_index].name + '] ' + file.path.substring(1) + '/' + file.name
-                                        }
-                                    }
-                                })[0];
+                                // Make the $filter only if VMs found in this datastore
+                                if (connectionsFactory.getConnectionByUuid(link.virtual).datastores[datastore_index].vm.hasOwnProperty('ManagedObjectReference')) {
 
-                                // Get Host name by host Id
-                                esxi_host = $filter('filter')(getESXihosts(), {
-                                    'connection_address': connectionsFactory.getConnectionByUuid(link.virtual).host,
-                                    'host': datastore_vm.runtime.host.name
-                                })[0];
+                                    // Search for VM using returned Storage file .vmx path
+                                    datastore_vm  = $filter('filter')(connectionsFactory.getConnectionByUuid(link.virtual).vms, {
+                                        'vm': connectionsFactory.getConnectionByUuid(link.virtual).datastores[datastore_index].vm.ManagedObjectReference.name,
+                                        'datastore': {
+                                            'ManagedObjectReference': {
+                                                'name': link.esxi_datastore
+                                            }
+                                        },
+                                        'config': {
+                                            'files': {
+                                                'vmPathName': '[' + connectionsFactory.getConnectionByUuid(link.virtual).datastores[datastore_index].name + '] ' + file.path.substring(1) + '/' + file.name
+                                            }
+                                        }
+                                    })[0];
 
+                                    // Get Host name by host Id
+                                    esxi_host = $filter('filter')(getESXihosts(), {
+                                        'connection_address': connectionsFactory.getConnectionByUuid(link.virtual).host,
+                                        'host': datastore_vm.runtime.host.name
+                                    })[0];
+                                }
                             }
 
                             connectionsFactory.getConnectionByUuid(uuid).vservers[vserver_index].volumes[volume_index].snapshots[snapshot_index].vms.push({
