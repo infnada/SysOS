@@ -17,6 +17,9 @@ All infrastructure management test are done over:
 - vCenter 6.5
 - NetApp FAS2552 with ONTAP 9.1P10
 - NetApp FAS2220 with ONTAP 9.1P10
+- NetApp SIMBOX with ONTAP 9.3P3
+        
+        FlexClone license is required for NetApp VM restores
 
 As a client:
 - Right now Chrome is the only tested browser but should work with latest versions of any browser.
