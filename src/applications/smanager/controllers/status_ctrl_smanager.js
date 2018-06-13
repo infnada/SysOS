@@ -20,6 +20,18 @@
             _this.activeConnection = newValue;
         });
 
+        $scope.$watch(function () {
+            return smanagerFactory.parentConnection();
+        }, function (newValue) {
+            _this.parentConnection = newValue;
+        });
+
+        /**
+         * @description
+         * Returns a connection object
+         *
+         * @param parent* {Number} If specified returns a parent object (hierarchy)
+         */
         this.getActiveConnection = function (parent) {
             if (!_this.activeConnection) return null;
 
@@ -27,7 +39,7 @@
             if (foundByUuid) return foundByUuid;
 
             if (!foundByUuid) {
-                var foundByUuidMapping = connectionsFactory.getObjectByUuidMapping(_this.activeConnection, parent);
+                var foundByUuidMapping = connectionsFactory.getObjectByUuidMapping(_this.activeConnection, parent, (_this.parentConnection ? _this.parentConnection : null));
                 if (foundByUuidMapping) return eval(foundByUuidMapping); // jshint ignore:line
             }
 

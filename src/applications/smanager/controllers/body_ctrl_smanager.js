@@ -8,6 +8,7 @@
             var vcenter_vm_timer = [];
 
             this.activeConnection = null;
+            this.parentConnection = null;
             this.showNewConnection = false;
             this.showNewConnectionType = true;
             this.showConfigureConnection = false;
@@ -221,6 +222,13 @@
             });
 
             $scope.$watch(function () {
+                return smanagerFactory.parentConnection();
+            }, function (newValue) {
+                if (newValue && angular.isFunction(newValue.then)) return;
+                _this.parentConnection = newValue;
+            });
+
+            $scope.$watch(function () {
                 return cmanagerFactory.credentials();
             }, function (newValue) {
                 _this.credentials = newValue;
@@ -334,7 +342,7 @@
              * @description
              * Returns a connection object
              *
-             * @param parent* {Number} If specified returns a parent object
+             * @param parent* {Number} If specified returns a parent object (hierarchy)
              */
             this.getActiveConnection = function (parent) {
                 if (!_this.activeConnection) return null;
@@ -343,7 +351,7 @@
                 if (foundByUuid) return foundByUuid;
 
                 if (!foundByUuid) {
-                    var foundByUuidMapping = connectionsFactory.getObjectByUuidMapping(_this.activeConnection, parent);
+                    var foundByUuidMapping = connectionsFactory.getObjectByUuidMapping(_this.activeConnection, parent, (_this.parentConnection ? _this.parentConnection : null));
                     if (foundByUuidMapping) return eval(foundByUuidMapping); // jshint ignore:line
                 }
 
@@ -502,8 +510,9 @@
              *
              * @param connection {Object,null}
              * @param type {String} [standalone, snapshot, vcenter, vm]
+             * @param main_parent* {String}
              */
-            this.setActiveConnection = function (connection, type) {
+            this.setActiveConnection = function (connection, type, main_parent) {
 
                 // Delete linux network interval
                 $interval.cancel(network_bandwidth_timer);
@@ -535,7 +544,8 @@
                 if (type === 'snapshot') {
                     _this.showSnapshot = true;
 
-                    return smanagerFactory.setActiveConnection(connection['snapshot-version-uuid']);
+                    // main_parent is used when exists more than 1 snapshot with the same uuid (for example snapmirror snapshots)
+                    return smanagerFactory.setActiveConnection(connection['snapshot-version-uuid'], main_parent);
                 }
 
                 if (type === 'vm') {
@@ -1007,9 +1017,8 @@
                                         vmPathName: '[' + _this.getActiveConnection(1)['volume-id-attributes'].name + '] ' + $itemScope.vm.path
                                     }
                                 }
-                            }
+                            };
                         }
-                        console.log($itemScope.vm.vm);
 
                         $log.debug('Infrastructure Manager [%s] -> Ask for Instant VM recovery -> vm [%s]', $itemScope.vm.vm.vm, $itemScope.vm.name);
 

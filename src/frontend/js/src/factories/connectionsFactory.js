@@ -528,18 +528,29 @@
              * @params
              * uuid {String}
              * parent* {Number} Get 1st, 2nd, 3rd... parent object instead of all object
+             * main_parent {String} used when multiple objects have the same uuid (for example snapmirrored snapshots)
              */
-            var getObjectByUuidMapping = function (uuid, parent) {
+            var getObjectByUuidMapping = function (uuid, parent, main_parent) {
                 if (!uuid) throw new Error('uuid_not_found');
 
                 var object;
                 var object_to_eval = '';
 
                 // LEVEL 1
-                object = $filter('filter')(uuidMap, {uuid: uuid})[0];
+                if (main_parent) {
+                    object = $filter('filter')(uuidMap, {uuid: uuid, main_parent: main_parent})[0];
+                } else {
+                    object = $filter('filter')(uuidMap, {uuid: uuid})[0];
+                }
+
                 if (!object) {
-                    $log.error('Connections Factory [%s] -> getObjectByUuidMapping not found', uuid);
+                    $log.error('Connections Factory [%s [%s]] -> getObjectByUuidMapping not found', uuid, main_parent);
                     return false;
+                }
+
+                if (object.length > 1) {
+                    $log.error('Connections Factory [%s] [%s] -> getObjectByUuidMapping multiple maps with this uuid', uuid, main_parent);
+                    return new Error('Multiple maps with this uuid');
                 }
 
                 if (!parent) object_to_eval = object.object;
@@ -548,7 +559,7 @@
                     if (object.parent) {
                         object = $filter('filter')(uuidMap, {uuid: object.parent})[0];
                         if (!object) if (!object) {
-                            $log.error('Connections Factory [%s] -> getObjectByUuidMapping parent not found', uuid);
+                            $log.error('Connections Factory [%s] [%s] -> getObjectByUuidMapping parent not found', uuid, main_parent);
                             return false;
                         }
 
@@ -556,6 +567,7 @@
                         if (i === 1 && parent >= 3) continue;
 
                         object_to_eval = object.object + '.' + object_to_eval;
+
                         continue;
                     }
                     break;

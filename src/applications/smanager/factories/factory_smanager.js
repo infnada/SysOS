@@ -18,6 +18,7 @@
              *
              */
             var activeConnection = null;
+            var parentConnection = null;
 
             /**
              * @params
@@ -381,7 +382,7 @@
                 if (!uuid) throw new Error('uuid_not_found');
 
                 var newVMs = 0;
-                var totalOldVMs = connectionsFactory.getConnectionByUuid(uuid).vms.length;
+                var totalOldVMs = (connectionsFactory.getConnectionByUuid(uuid).vms ? connectionsFactory.getConnectionByUuid(uuid).vms.length : 0);
                 var totalVMs;
                 var foundVMinUuidMap;
                 var connection = connectionsFactory.getConnectionByUuid(uuid);
@@ -582,6 +583,7 @@
                                             connectionsFactory.getUuidMap().push({
                                                 uuid: snapshot['snapshot-instance-uuid'],
                                                 parent: volume['volume-id-attributes'].uuid,
+                                                main_parent: connection.uuid,
                                                 object: 'snapshots[' + s + ']'
                                             });
 
@@ -657,6 +659,7 @@
                             connectionsFactory.getUuidMap().push({
                                 uuid: snapshot['snapshot-instance-uuid'],
                                 parent: data.volume_uuid,
+                                main_parent: data.uuid,
                                 object: 'snapshots[' + s + ']'
                             });
 
@@ -1035,11 +1038,16 @@
                     links = data;
                 },
                 getSnapshotFiles: getSnapshotFiles,
-                setActiveConnection: function (uuid) {
+                setActiveConnection: function (uuid, parent_uuid) {
                     activeConnection = uuid;
+                    if (parent_uuid) parentConnection = parent_uuid;
+                    if (!parent_uuid) parentConnection = null;
                 },
                 activeConnection: function () {
                     return activeConnection;
+                },
+                parentConnection: function () {
+                    return parentConnection;
                 },
                 getVMwareData: getVMwareData,
                 getVMs: getVMs,

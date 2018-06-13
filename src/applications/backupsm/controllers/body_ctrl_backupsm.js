@@ -110,7 +110,7 @@
                         $log.debug('Backups Manager [%s] -> Restore finished successfully', data.uuid);
 
                         modalInstanceRecovery.close();
-                        return backupsmFactory.setRestoreStatus(data, "end");
+                        return backupsmFactory.setRestoreStatus(data, 'end');
                     }).catch(function (e) {
                         modalInstanceRecovery.close();
 

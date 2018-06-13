@@ -30,7 +30,7 @@
                                   <span context-menu="smB.volumeContextMenu"><i class="fa fa-fw fa-refresh fa-spin" ng-if="volume.refreshing"></i> <i class="fa level-three" ng-class="{\'fa-chevron-down\': $parent.isOpen, \'fa-chevron-right p-r-xxs\': !$parent.isOpen}"></i> <i class="vs-icon vsphere-icon-datastore"></i> {{::volume[\'volume-id-attributes\'].name}}<span> \
                                 </uib-accordion-heading> \
                                 <!-- SnapShots --> \
-                                <div class="menu__item panel-heading" ng-class="{\'active\': snapshot[\'snapshot-version-uuid\'] == smB.activeConnection}" ng-repeat="snapshot in volume.snapshots" ng-click="smB.getSnapshotFiles(storage.uuid, storage.hostname, vserver[\'vserver-name\'], volume[\'volume-id-attributes\'].name, snapshot.name); smB.setActiveConnection(snapshot, \'snapshot\')" context-menu="smB.snapshotContextMenu"> \
+                                <div class="menu__item panel-heading" ng-class="{\'active\': snapshot[\'snapshot-version-uuid\'] == smB.activeConnection && snapshot[\'volume-provenance-uuid\'] == smB.parentConnection}" ng-repeat="snapshot in volume.snapshots" ng-click="smB.getSnapshotFiles(storage.uuid, storage.hostname, vserver[\'vserver-name\'], volume[\'volume-id-attributes\'].name, snapshot.name); smB.setActiveConnection(snapshot, \'snapshot\', storage.uuid)" context-menu="smB.snapshotContextMenu"> \
                                   <h4 class="panel-title"> \
                                     <i class="level-four fa fa-camera p-l-sm"></i><span> {{::snapshot.name}}</span> \
                                   </h4> \
