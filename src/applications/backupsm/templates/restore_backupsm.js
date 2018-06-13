@@ -4,6 +4,8 @@
 
         $templateCache.put('templates/applications/restore-backupsm.html',
             '{{bmB.getActive().type}} \
+            Restore status: \
+            <p ng-repeat="state in status">{{state}}</p> \
             <div ng-if="bmB.getActive().type == \'mount_restore_datastore\'"> \
                 <div ng-if ="bmB.getActive().status == 2"> \
                     <button class="btn btn-primary" type="button" ng-click="bmB.unpublishRestoredDatastore()">Stop Publishing Datastore</button> \

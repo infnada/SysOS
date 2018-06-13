@@ -47,13 +47,13 @@
                 return $filter('filter')(_this.restores, {uuid: _this.active})[0];
             };
 
-            /*
+            /**
              * ---------------------
              * Outside calls
              * ---------------------
              */
 
-            /*
+            /**
              * Mount Restore Datastore from Storage Snapshot
              */
             $scope.$on('backupsm__mount_restore_datastore', function (event, data) {
@@ -72,10 +72,10 @@
                     'current-node': data.volume['volume-id-attributes'].node
                 });
                 data.esxi_datastore_name = 'SysOS_' + data.volume_junction.substr(1);
-
                 $log.debug('Backups Manager [%s] -> Received event [%s] -> Initializing mount of datastore [%s] from -> storage [%s], vserver [%s], snapshot [%s]', data.uuid, event.name, data.volume['volume-id-attributes'].name, data.netapp_host, data.vserver['vserver-name'], data.snapshot);
 
                 backupsmFactory.setRestore(data);
+                backupsmFactory.setRestoreStatus(data, 'init');
                 backupsmFactory.setActive(data.uuid);
 
                 var modalInstance = modalFactory.openRegistredModal('ESXiSelectable', '.window--backupsm .window__main',
@@ -110,7 +110,7 @@
                         $log.debug('Backups Manager [%s] -> Restore finished successfully', data.uuid);
 
                         modalInstanceRecovery.close();
-                        return backupsmFactory.setRestoreStatus(data, 2);
+                        return backupsmFactory.setRestoreStatus(data, "end");
                     }).catch(function (e) {
                         modalInstanceRecovery.close();
 
@@ -143,10 +143,10 @@
                     'current-node': data.volume['volume-id-attributes'].node
                 });
                 data.esxi_datastore_name = 'SysOS_' + data.volume_junction.substr(1);
-
                 $log.debug('Backups Manager [%s] -> Received event [%s] -> Initializing restore of datastore files [%s] from -> storage [%s], vserver [%s], snapshot [%s]', data.uuid, event.name, data.volume['volume-id-attributes'].name, data.netapp_host, data.vserver['vserver-name'], data.snapshot);
 
                 backupsmFactory.setRestore(data);
+                backupsmFactory.setRestoreStatus(data, 'init');
                 backupsmFactory.setActive(data.uuid);
 
                 var modalInstance = modalFactory.openRegistredModal('ESXiSelectable', '.window--backupsm .window__main',
@@ -200,7 +200,7 @@
                         }, 100);
 
                         modalInstanceRecovery.close();
-                        return backupsmFactory.setRestoreStatus(data, 2);
+                        return backupsmFactory.setRestoreStatus(data, 'end');
                     }).catch(function (e) {
                         modalInstanceRecovery.close();
 
@@ -235,10 +235,10 @@
                     'current-node': data.volume['volume-id-attributes'].node
                 });
                 data.esxi_datastore_name = 'SysOS_' + data.volume_junction.substr(1);
-
                 $log.debug('Backups Manager [%s] -> Received event [%s] -> Initializing restore of VM guest files [%s] from -> storage [%s], vserver [%s], datastore [%s], snapshot [%s]', data.uuid, event.name, data.vm.name, data.storage.host, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name, data.snapshot);
 
                 backupsmFactory.setRestore(data);
+                backupsmFactory.setRestoreStatus(data, 'init');
                 backupsmFactory.setActive(data.uuid);
 
                 var modalInstance = modalFactory.openRegistredModal('ESXiSelectable', '.window--backupsm .window__main',
@@ -274,7 +274,7 @@
                         //TODO: mount disk to local and explore it
 
                         modalInstanceRecovery.close();
-                        return backupsmFactory.setRestoreStatus(data, 2);
+                        return backupsmFactory.setRestoreStatus(data, 'end');
                     }).catch(function (e) {
                         modalInstanceRecovery.close();
 
@@ -313,6 +313,7 @@
                 $log.debug('Backups Manager [%s] -> Received event [%s] -> Initializing restore of VM [%s] from -> storage [%s], vserver [%s], datastore [%s], snapshot [%s]', data.uuid, event.name, data.vm.name, data.storage.host, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name, data.snapshot);
 
                 backupsmFactory.setRestore(data);
+                backupsmFactory.setRestoreStatus(data, 'init');
                 backupsmFactory.setActive(data.uuid);
 
                 // User must select ESXi host and its data
@@ -351,7 +352,7 @@
                         $log.debug('Backups Manager [%s] -> Restore finished successfully -> instant_vm [%s]', data.uuid, data.vm.vm);
 
                         modalInstanceRecovery.close();
-                        return backupsmFactory.setRestoreStatus(data, 2);
+                        return backupsmFactory.setRestoreStatus(data, 'end');
                     }).catch(function (e) {
                         modalInstanceRecovery.close();
 
@@ -384,10 +385,10 @@
                     'current-node': data.volume['volume-id-attributes'].node
                 });
                 data.esxi_datastore_name = 'SysOS_' + data.volume_junction.substr(1);
-
                 $log.debug('Backups Manager [%s] -> Received event [%s] -> Initializing restore of VM [%s] from -> storage [%s], vserver [%s], datastore [%s], snapshot [%s]', data.uuid, event.name, data.vm.name, data.storage.host, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name, data.snapshot);
 
                 backupsmFactory.setRestore(data);
+                backupsmFactory.setRestoreStatus(data, 'init');
                 backupsmFactory.setActive(data.uuid);
 
                 // User must select ESXi host and its data
@@ -422,7 +423,7 @@
                         $log.debug('Backups Manager [%s] -> Restore finished successfully -> vm [%s]', data.uuid, data.vm.vm);
 
                         modalInstanceRecovery.close();
-                        return backupsmFactory.setRestoreStatus(data, 2);
+                        return backupsmFactory.setRestoreStatus(data, 'end');
                     }).catch(function (e) {
                         modalInstanceRecovery.close();
 
@@ -449,6 +450,7 @@
                 $log.debug('Backups Manager [%s] -> Received event [%s] -> Initializing backup', data.uuid, event.name);
 
                 backupsmFactory.setBackup(data);
+                backupsmFactory.setRestoreStatus(data, 'init');
                 backupsmFactory.setActive(data.uuid);
 
                 var modalInstanceBackup = modalFactory.openRegistredModal('backupWizard', '.window--backupsm .window__main', {
@@ -479,7 +481,7 @@
                         $log.debug('Backups Manager [%s] -> Backup finished successfully', data.uuid);
 
                         modalInstanceBackup.close();
-                        return backupsmFactory.setBackupStatus(data, 2);
+                        return backupsmFactory.setBackupStatus(data, 'end');
                     }).catch(function (e) {
                         modalInstanceBackup.close();
 

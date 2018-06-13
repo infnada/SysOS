@@ -995,6 +995,22 @@
                 {
                     text: '<i class="fa fa-server"></i> Instant VM',
                     click: function ($itemScope) {
+
+                        // Not linked VM
+                        if ($itemScope.vm.vm === null) {
+
+                            $itemScope.vm.vm = {
+                                vm: 'unknown',
+                                name: $itemScope.vm.name,
+                                summary: {
+                                    config: {
+                                        vmPathName: '[' + _this.getActiveConnection(1)['volume-id-attributes'].name + '] ' + $itemScope.vm.path
+                                    }
+                                }
+                            }
+                        }
+                        console.log($itemScope.vm.vm);
+
                         $log.debug('Infrastructure Manager [%s] -> Ask for Instant VM recovery -> vm [%s]', $itemScope.vm.vm.vm, $itemScope.vm.name);
 
                         var modalInstance = modalFactory.openRegistredModal('question', '.window--smanager .window__main',

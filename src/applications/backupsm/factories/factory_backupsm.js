@@ -7,26 +7,68 @@
             var restores = [];
             var active;
 
-            /*
+            /**
              * -------------------
              * PRIVATE FUNCTIONS
              * -------------------
              */
 
+            /**
+             * @description
+             * Checks if NetApp storage have required licenses
+             */
+            var checkLicenses = function (data) {
+                $log.debug('Backups Manager [%s] -> Cloning storage licenses -> storage [%s]', data.uuid, data.netapp_host);
+                return netappFactory.getLicenses(
+                    data.netapp_credential,
+                    data.netapp_host,
+                    data.netapp_port
+                ).then(function (res) {
+                    if (res.status === 'error') throw new Error('Failed to get licenses');
+
+                    var flexClone = $filter('filter')(res.data, {
+                        'package': 'flexclone'
+                    })[0].method;
+
+                    if (flexClone !== 'license') throw new Error('FlexClone license not found');
+
+                }).catch(function (e) {
+                    console.log(e);
+                    return e;
+                });
+            };
+
+            /**
+             * @description
+             * Returns snapshot object given snapshot uuid
+             *
+             * @param data {Object}
+             */
             var getSnapshotName = function (data) {
                 return $filter('filter')(data.snapshots, {
                     'snapshot-instance-uuid': data.snapshot
                 })[0].name;
             };
 
+            /**
+             * @description
+             * Return the latest VM snapshot
+             *
+             * @param rootSnapshotList {Object}
+             */
             var getLastSnapshot = function (rootSnapshotList) {
                 if (rootSnapshotList.hasOwnProperty('childSnapshotList')) return getLastSnapshot(rootSnapshotList.childSnapshotList);
 
                 return rootSnapshotList;
             };
 
-            /*
+            /**
              * goToSnapshot
+             *
+             * @description
+             * Checks if VM have a snapshot called 'SysOS_backup_*' and if exists reverts the VM to this snapshot
+             *
+             * @param data {Object}
              */
             var goToSnapshot = function (data) {
                 var last_snapshot;
@@ -75,17 +117,27 @@
                 });
             };
 
-            /*
+            /**
+             * @description
              * Clones Storage Volume from Snapshot
+             *
+             * @param data {Object}
              */
             var cloneVolumeFromSnapshot = function (data) {
 
                 // Create Volume Clone
                 $log.debug('Backups Manager [%s] -> Cloning volume from snapshot -> vserver [%s], volume [%s], snapshot [%s]', data.uuid, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name, getSnapshotName(data));
-                return netappFactory.cloneVolumeFromSnapshot(data.netapp_credential, data.netapp_host, data.netapp_port, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name, getSnapshotName(data)).then(function (res) {
+                return netappFactory.cloneVolumeFromSnapshot(
+                    data.netapp_credential,
+                    data.netapp_host,
+                    data.netapp_port,
+                    data.vserver['vserver-name'],
+                    data.volume['volume-id-attributes'].name,
+                    getSnapshotName(data)
+                ).then(function (res) {
                     if (res.status === 'error') throw new Error('Failed to clone Volume');
 
-                    return setRestoreStatus(data, 'cloned');
+                    return setRestoreStatus(data, 'volume_cloned');
                 }).then(function () {
 
                     // Mount Volume Point
@@ -97,7 +149,7 @@
 
                     // TODO: check Storage EXPORTS
                     // TODO: Create export
-                    return setRestoreStatus(data, 'mounted');
+                    return setRestoreStatus(data, 'namespace_mounted');
 
                 }).catch(function (e) {
                     console.log(e);
@@ -105,8 +157,11 @@
                 });
             };
 
-            /*
+            /**
+             * @description
              * Mount storage Datastore to ESXi host
+             *
+             * @param data {Object}
              */
             var mountVolumeToESXi = function (data) {
 
@@ -144,7 +199,15 @@
                     if (res.status === 'error') throw new Error('Failed to get NetworkInfoConsoleVnic from vCenter');
 
                     $log.debug('Backups Manager [%s] -> Mount volume to ESXi -> datastoreSystem [%s], nfs_ip [%s], volume [%s], path [%s]', data.uuid, data.datastoreSystem, data.netapp_nfs_ip[0].address, '/SysOS_' + data.volume['volume-id-attributes'].name + '_Restore/', 'SysOS_' + data.volume_junction.substr(1));
-                    return vmwareFactory.mountDatastore(data.esxi_credential, data.esxi_address, data.esxi_port, data.datastoreSystem, data.netapp_nfs_ip[0].address, '/SysOS_' + data.volume['volume-id-attributes'].name + '_Restore/', 'SysOS_' + data.volume_junction.substr(1));
+                    return vmwareFactory.mountDatastore(
+                        data.esxi_credential,
+                        data.esxi_address,
+                        data.esxi_port,
+                        data.datastoreSystem,
+                        data.netapp_nfs_ip[0].address,
+                        '/SysOS_' + data.volume['volume-id-attributes'].name + '_Restore/',
+                        'SysOS_' + data.volume_junction.substr(1)
+                    );
 
                 }).then(function (res) {
                     if (res.status === 'error') throw new Error('Failed to mount Datastore to host');
@@ -162,8 +225,11 @@
                 });
             };
 
-            /*
+            /**
+             * @description
              * Register and power on VM
+             *
+             * @param data {Object}
              */
             var registerVM = function (data) {
 
@@ -200,9 +266,11 @@
                 }).then(function (res) {
                     if (res.status === 'error') throw new Error('Failed to register VM to vCenter');
 
+                    setRestoreStatus(data, 'vm_registred');
+
                     data.vm.vm = res.data.result.name;
 
-                    // Set new uuid to this VM
+                    // Set new uuid to this VM to prevent duplicates
                     var newVMUuid = uuid.v4();
                     data.vm.config.uuid = newVMUuid;
                     $log.debug('Backups Manager [%s] -> Reconfigure VM uuid -> vm_name [%s], newVMUuid [%s]', data.vm.name, newVMUuid);
@@ -210,24 +278,10 @@
                 }).then(function (res) {
                     if (res.status === 'error') throw new Error('Failed to change VM uuid');
 
-                    return setRestoreStatus(data, 'vm_registred');
-                }).then(function () {
-
                     return goToSnapshot(data);
 
                 }).then(function (res) {
                     if (res instanceof Error) throw new Error('Failed to revert VM to Snapshot');
-
-                    if (data.vm_power_on) {
-                        // Power On VM
-                        $log.debug('Backups Manager [%s] -> Powering on vm -> host [%s], VM [%s], ', data.uuid, data.esxi_host, data.vm.vm);
-                        return vmwareFactory.powerOnVM(data.esxi_credential, data.esxi_address, data.esxi_port, data.esxi_host, data.vm.vm);
-
-                        //TODO: answerVMquestion "copied"
-                    }
-
-                }).then(function (res) {
-                    if (res && res.status === 'error') throw new Error('Failed to power on VM on vCenter');
 
                 }).catch(function (e) {
                     console.log(e);
@@ -236,8 +290,11 @@
 
             };
 
-            /*
+            /**
+             * @description
              * Restore a VM from Snapshot to same location (override)
+             *
+             * @param data {Object}
              */
             var restoreVMfromSnapshotToCurrentLocation = function (data) {
                 var sfr_promises = [];
@@ -275,7 +332,15 @@
                     if (res.status === 'error') throw new Error('Failed to power off VM at vCenter');
 
                     $log.debug('Backups Manager [%s] -> Get snapshot files from storage -> storage [%s], vserver [%s], volume [%s], snapshot [%s], path [%s]', data.uuid, data.netapp_host, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name, getSnapshotName(data), '/' + vm_path);
-                    return netappFactory.getSnapshotFiles(data.netapp_credential, data.netapp_host, data.netapp_port, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name, getSnapshotName(data), '/' + vm_path);
+                    return netappFactory.getSnapshotFiles(
+                        data.netapp_credential,
+                        data.netapp_host,
+                        data.netapp_port,
+                        data.vserver['vserver-name'],
+                        data.volume['volume-id-attributes'].name,
+                        getSnapshotName(data),
+                        '/' + vm_path
+                    );
                 }).then(function (res) {
                     if (res.status === 'error') throw new Error('Failed to get Snapshot files');
 
@@ -303,19 +368,7 @@
                 }).then(function (res) {
                     if (res instanceof Error) throw new Error('Failed to revert VM to Snapshot');
 
-                    if (data.vm_power_on) {
-                        // Power On VM
-                        $log.debug('Backups Manager [%s] -> Powering on vm -> host [%s], VM [%s]', data.uuid, data.vm.runtime.host.name, data.vm.vm);
-                        return vmwareFactory.powerOnVM(data.current_location.credential, data.current_location.host, data.current_location.port, data.vm.runtime.host.name, data.vm.vm);
-
-                        //TODO: answerVMquestion "copied"
-                    }
-
                     return res;
-
-                }).then(function (res) {
-                    if (res.status === 'error') throw new Error('Failed to power on VM');
-                    console.log(res);
 
                 }).catch(function (e) {
                     console.log(e);
@@ -323,7 +376,7 @@
                 });
             };
 
-            /*
+            /**
              * -------------------
              * PUBLIC FUNCTIONS
              * -------------------
@@ -342,7 +395,7 @@
              *   Keeps a track of restore point and updates it to backend.
              */
             var setRestoreStatus = function (data, status) {
-                $filter('filter')(restores, {uuid: data.uuid})[0].status = status;
+                $filter('filter')(restores, {uuid: data.uuid})[0].status.push(status);
 
                 return ServerFactory.saveConfigToFile(data, 'applications/backupsm/restores.json', false);
             };
@@ -352,8 +405,13 @@
              */
             var mountRestoreSnapshotDatastore = function (data) {
 
-                // Create Volume Clone
-                return cloneVolumeFromSnapshot(data).then(function (res) {
+                // Check for available licenses
+                return checkLicenses(data).then(function (res) {
+                    if (res instanceof Error) throw new Error('Failed to check licenses');
+
+                    // Create Volume Clone
+                    return cloneVolumeFromSnapshot(data);
+                }).then(function (res) {
                     if (res instanceof Error) throw new Error('Failed to clone volume from snapshot');
 
                     // Mount Volume
@@ -374,8 +432,13 @@
              */
             var restoreSnapshotDatastoreFiles = function (data) {
 
-                // Create Volume Clone
-                return cloneVolumeFromSnapshot(data).then(function (res) {
+                // Check for available licenses
+                return checkLicenses(data).then(function (res) {
+                    if (res instanceof Error) throw new Error('Failed to check licenses');
+
+                    // Create Volume Clone
+                    return cloneVolumeFromSnapshot(data);
+                }).then(function (res) {
                     if (res instanceof Error) throw new Error('Failed to clone volume from snapshot');
 
                     // Mount Volume
@@ -396,8 +459,13 @@
              */
             var restoreSnapshotVMGuestFiles = function (data) {
 
-                // Create Volume Clone
-                return cloneVolumeFromSnapshot(data).then(function (res) {
+                // Check for available licenses
+                return checkLicenses(data).then(function (res) {
+                    if (res instanceof Error) throw new Error('Failed to check licenses');
+
+                    // Create Volume Clone
+                    return cloneVolumeFromSnapshot(data);
+                }).then(function (res) {
                     if (res instanceof Error) throw new Error('Failed to clone volume from snapshot');
 
                     // Mount Volume
@@ -406,35 +474,7 @@
                 }).then(function (res) {
                     if (res instanceof Error) throw new Error('Failed to mount cloned volume from snapshot to ESXi host');
 
-                    data.vm.path = data.vm.summary.config.vmPathName.split(']').pop();
-                    data.vm.path = data.vm.path.substring(0, data.vm.path.lastIndexOf('/') + 1).substr(1);
-
-                    // Get VM in Datastore
-                    return vmwareFactory.getVMFileDataFromDatastore(
-                        data.esxi_credential,
-                        data.esxi_address,
-                        data.esxi_port,
-                        data.esxi_datastore,
-                        'SysOS_' + data.volume_junction.substr(1),
-                        data.vm.path,
-                        data.vm.summary.config.vmPathName.split('/').pop()
-                    );
-
-                }).then(function (res) {
-                    if (res.status === 'error') throw new Error('Failed to get files from datastore');
-
-                    // Register VM
-                    //TODO: check if VM with same name exists
-                    return vmwareFactory.registerVM(
-                        data.esxi_credential,
-                        data.esxi_address,
-                        data.esxi_port,
-                        data.esxi_host,
-                        '[SysOS_' + data.volume_junction.substr(1) + '] ' + data.vm.summary.config.vmPathName.split(']').pop().substring(1),
-                        data.vm.name,
-                        data.folder,
-                        data.resource_pool
-                    );
+                    return registerVM(data);
 
                 }).then(function (res) {
                     if (res.status === 'error') throw new Error('Failed to register VM to vCenter');
@@ -452,8 +492,13 @@
              */
             var restoreSnapshotIntoInstantVM = function (data) {
 
-                // Create Volume Clone
-                return cloneVolumeFromSnapshot(data).then(function (res) {
+                // Check for available licenses
+                return checkLicenses(data).then(function (res) {
+                    if (res instanceof Error) throw new Error('Failed to check licenses');
+
+                    // Create Volume Clone
+                    return cloneVolumeFromSnapshot(data);
+                }).then(function (res) {
                     if (res instanceof Error) throw new Error('Failed to clone volume from snapshot');
 
                     // Mount Volume
@@ -463,8 +508,20 @@
                     if (res instanceof Error) throw new Error('Failed to mount cloned volume from snapshot to ESXi host');
 
                     return registerVM(data);
+
                 }).then(function (res) {
                     if (res instanceof Error) throw new Error('Failed to register VM from snapshot to ESXi host');
+
+                    if (data.vm_power_on) {
+                        // Power On VM
+                        $log.debug('Backups Manager [%s] -> Powering on vm -> host [%s], VM [%s], ', data.uuid, data.esxi_host, data.vm.vm);
+                        return vmwareFactory.powerOnVM(data.esxi_credential, data.esxi_address, data.esxi_port, data.esxi_host, data.vm.vm);
+                    }
+
+                    return res;
+
+                }).then(function (res) {
+                    if (res && res.status === 'error') throw new Error('Failed to power on VM on vCenter');
 
                     return res;
 
@@ -480,13 +537,22 @@
              */
             var restoreSnapshotIntoVM = function (data) {
 
-                //TODO: if new locatipn
+                //TODO: if new location
                 /*return cloneVMFromSnapshot(data).then(function (data) {
 
                  });*/
 
                 // Restore to current location (override VM)
                 return restoreVMfromSnapshotToCurrentLocation(data).then(function (data) {
+
+                    if (data.vm_power_on) {
+                        // Power On VM
+                        $log.debug('Backups Manager [%s] -> Powering on vm -> host [%s], VM [%s], ', data.uuid, data.esxi_host, data.vm.vm);
+                        return vmwareFactory.powerOnVM(data.esxi_credential, data.esxi_address, data.esxi_port, data.esxi_host, data.vm.vm);
+                    }
+
+                }).then(function (res) {
+                    if (res instanceof Error) throw new Error('Failed to restore VM snapshot to current location');
 
                 }).catch(function (e) {
                     console.log(e);
@@ -534,7 +600,7 @@
                 }).then(function (res) {
                     if (res.status === 'error') throw new Error('Failed to unregister VM from vCenter');
 
-                    return setRestoreStatus(data, 'unregistred_vm');
+                    return setRestoreStatus(data, 'mounted_to_esx');
                 }).catch(function (e) {
                     console.log(e);
                     return e;
@@ -552,7 +618,7 @@
                 return vmwareFactory.unmountDatastore(data.esxi_credential, data.esxi_address, data.esxi_port, data.datastoreSystem, data.esxi_datastore).then(function (res) {
                     if (res.status === 'error') throw new Error('Failed to unmount datastore from vCenter');
 
-                    return setRestoreStatus(data, 'unmounted_datastore');
+                    return setRestoreStatus(data, 'namespace_mounted');
                 }).catch(function (e) {
                     console.log(e);
                     return e;
@@ -560,7 +626,7 @@
 
             };
 
-            /*
+            /**
              * Destroy Storage Volume
              */
             var destroyVolume = function (data) {
@@ -570,7 +636,7 @@
                 return netappFactory.unmountVolume(data.netapp_credential, data.netapp_host, data.netapp_port, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name).then(function (res) {
                     if (res.status === 'error' || res.data !== 'passed') throw new Error('Failed to unmount volume');
 
-                    return setRestoreStatus(data, 'netapp_datastore_unmounted');
+                    return setRestoreStatus(data, 'volume_cloned');
                 }).then(function () {
 
                     // Set NetApp Volume Offline
@@ -580,7 +646,7 @@
                 }).then(function (res) {
                     if (res.status === 'error' || res.data !== 'passed') throw new Error('Failed to set volume offline');
 
-                    return setRestoreStatus(data, 'netapp_datastore_offline');
+                    return setRestoreStatus(data, 'volume_offline');
                 }).then(function () {
 
                     // Destroy NetApp Volume
@@ -590,7 +656,6 @@
                 }).then(function (res) {
                     if (res.status === 'error' || res.data !== 'passed') throw new Error('Failed to destroy volume');
 
-                    return setRestoreStatus(data, 3);
                 }).catch(function (e) {
                     console.log(e);
                     return e;
@@ -986,11 +1051,11 @@
                     return active;
                 },
                 setBackup: function (data) {
-                    data.status = 'init';
+                    data.status = [];
                     return backups.push(data);
                 },
                 setRestore: function (data) {
-                    data.status = 'init';
+                    data.status = [];
                     return restores.push(data);
                 },
                 setActive: function (uuid) {
