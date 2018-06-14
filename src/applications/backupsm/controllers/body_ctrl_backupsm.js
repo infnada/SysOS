@@ -334,7 +334,7 @@
                     data.esxi_port = res.host.connection_port;
                     data.esxi_host = res.host.host;
                     data.folder = res.folder.folder;
-                    data.resource_pool = res.resource_pool.resource_pool;
+                    data.resource_pool = res.resource_pool.obj.name;
                     data.vm.name = res.vm_name;
                     data.vm_power_on = res.vm_power_on;
 

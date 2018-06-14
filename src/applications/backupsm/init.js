@@ -352,7 +352,7 @@ var backupsmApp = angular.module('backupsmApp', []);
             templateUrl: 'applications/backupsm/modals/recoveryWizard.html',
             size: 'lg',
             controllerAs: 'wmC',
-            controller: ['title', 'data', '$uibModalInstance', 'ServerFactory', '$filter', function (title, data, $uibModalInstance, ServerFactory, $filter) {
+            controller: ['title', 'data', '$uibModalInstance', 'ServerFactory', '$filter', 'vmwareFactory', function (title, data, $uibModalInstance, ServerFactory, $filter, vmwareFactory) {
                 var _this = this;
 
                 this.data = data;
@@ -412,19 +412,40 @@ var backupsmApp = angular.module('backupsmApp', []);
 
                         modalFactory.changeModalText('Getting data...', '.modal-recovery-wizard');
 
+                        return vmwareFactory.connectvCenterSoap(_this.selectedHost.connection_credential, _this.selectedHost.connection_address, _this.selectedHost.connection_port);
+
+                    }).then(function (res) {
+                        if (res.status === 'error') throw new Error('Failed to connect to vCenter');
+
+                        // Get Host data
+                        return vmwareFactory.getHost(_this.selectedHost.connection_credential, _this.selectedHost.connection_address, _this.selectedHost.connection_port, _this.selectedHost.host);
+                    }).then(function (res) {
+                        if (res.status === 'error') throw new Error('Failed to get Host from vCenter');
+
+                        // Get Resource Pools
+                        if (res.data.parent.type === 'ClusterComputeResource') {
+                            return vmwareFactory.getClusterComputeResource(_this.selectedHost.connection_credential, _this.selectedHost.connection_address, _this.selectedHost.connection_port, res.data.parent.name);
+                        }
+
+                        if (res.data.parent.type === 'ComputeResource') {
+                            return vmwareFactory.getComputeResource(_this.selectedHost.connection_credential, _this.selectedHost.connection_address, _this.selectedHost.connection_port, res.data.parent.name);
+                        }
+
+                    }).then(function (res) {
+                        if (res.status === 'error') throw new Error('Failed to get Host computeResource from vCenter');
+
+                        return vmwareFactory.getResourcePool(_this.selectedHost.connection_credential, _this.selectedHost.connection_address, _this.selectedHost.connection_port, res.data[0].resourcePool.name);
+                    }).then(function (res) {
+                        if (res.status === 'error') throw new Error('Failed to get Host resourcePool from vCenter');
+
+                        _this.data.resource_pools = [res.data];
+
                         // Get VM folders in selected vCenter
                         return ServerFactory.callVcenter(_this.selectedHost.connection_address, _this.selectedHost.connection_port, '/rest/vcenter/folder?filter.type=VIRTUAL_MACHINE').then(function (data_folder) {
                             if (data_folder.data.status === 'error') throw new Error(data_folder.data.data);
                             _this.data.folders = data_folder.data.data.response.value;
 
-                            // Get Resource Pools from selected host
-                            return ServerFactory.callVcenter(_this.selectedHost.connection_address, _this.selectedHost.connection_port, '/rest/vcenter/resource-pool').then(function (resource_pool) {
-                                if (resource_pool.data.status === 'error') throw new Error(resource_pool.data.data);
-
-                                _this.data.resource_pools = resource_pool.data.data.response.value;
-
-                                modalInstanceText.close();
-                            });
+                            modalInstanceText.close();
                         });
                     });
                 };

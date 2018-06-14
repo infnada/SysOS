@@ -433,7 +433,7 @@
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
                 if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
 
-                return validResponse(parseNetAppObject(data.data.data.response.netapp.results[0]["file-info"][0]));
+                return validResponse(parseNetAppObject(data.data.data.response.netapp.results[0]['file-info'][0]));
             });
         };
 

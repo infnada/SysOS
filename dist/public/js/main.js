@@ -3327,7 +3327,7 @@ var SysOS = angular.module('SysOS', [
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
                 if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
 
-                return validResponse(parseNetAppObject(data.data.data.response.netapp.results[0]["file-info"][0]));
+                return validResponse(parseNetAppObject(data.data.data.response.netapp.results[0]['file-info'][0]));
             });
         };
 
@@ -3691,6 +3691,1341 @@ var SysOS = angular.module('SysOS', [
             });
         };
 
+        var createAllBasicDataFilter = function (credential, host, port) {
+            var xml = '<?xml version="1.0" encoding="utf-8"?>\n' +
+                '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">\n' +
+                '    <soap:Body>\n' +
+                '        <CreateFilter xmlns="urn:vim25">\n' +
+                '            <_this type="PropertyCollector">propertyCollector</_this>\n' +
+                '            <spec>\n' +
+                '                <propSet>\n' +
+                '                    <type>ManagedEntity</type>\n' +
+                '                    <all>false</all>\n' +
+                '                    <pathSet>name</pathSet>\n' +
+                '                    <pathSet>parent</pathSet>\n' +
+                '                </propSet>\n' +
+                '                <propSet>\n' +
+                '                    <type>VirtualMachine</type>\n' +
+                '                    <all>false</all>\n' +
+                '                    <pathSet>name</pathSet>\n' +
+                '                    <pathSet>parent</pathSet>\n' +
+                '                    <pathSet>guest</pathSet>\n' +
+                '                    <pathSet>runtime.powerState</pathSet>\n' +
+                '                    <pathSet>runtime.connectionState</pathSet>\n' +
+                '                    <pathSet>runtime.faultToleranceState</pathSet>\n' +
+                '                    <pathSet>config.uuid</pathSet>\n' +
+                '                    <pathSet>summary.config.vmPathName</pathSet>\n' +
+                '                    <pathSet>summary.config.template</pathSet>\n' +
+                '                    <pathSet>datastore</pathSet>\n' +
+                '                    <pathSet>layout</pathSet>\n' +
+                '                    <pathSet>config.files.logDirectory</pathSet>\n' +
+                '                    <pathSet>config.hardware.device</pathSet>\n' +
+                '                    <pathSet>resourcePool</pathSet>\n' +
+                '                    <pathSet>runtime.host</pathSet>\n' +
+                '                    <pathSet>config.version</pathSet>\n' +
+                '                    <pathSet>config.changeTrackingEnabled</pathSet>\n' +
+                '                    <pathSet>config.ftInfo</pathSet>\n' +
+                '                    <pathSet>config.hardware.numCPU</pathSet>\n' +
+                '                    <pathSet>config.hardware.memoryMB</pathSet>\n' +
+                '                    <pathSet>config.files.snapshotDirectory</pathSet>\n' +
+                '                    <pathSet>config.extraConfig</pathSet>\n' +
+                '                    <pathSet>storage.perDatastoreUsage</pathSet>\n' +
+                '                    <pathSet>snapshot</pathSet>\n' +
+                '                    <pathSet>layoutEx</pathSet>\n' +
+                '                    <pathSet>config.guestId</pathSet>\n' +
+                '                    <pathSet>config.annotation</pathSet>\n' +
+                '                    <pathSet>customValue</pathSet>\n' +
+                '                    <pathSet>parentVApp</pathSet>\n' +
+                '                    <pathSet>runtime.consolidationNeeded</pathSet>\n' +
+                '                    <pathSet>config.flags.faultToleranceType</pathSet>\n' +
+                '                    <pathSet>config.forkConfigInfo</pathSet>\n' +
+                '                    <pathSet>config.files.vmPathName</pathSet>\n' +
+                '                </propSet>\n' +
+                '                <propSet>\n' +
+                '                    <type>Datacenter</type>\n' +
+                '                    <all>false</all>\n' +
+                '                    <pathSet>datastore</pathSet>\n' +
+                '                    <pathSet>vmFolder</pathSet>\n' +
+                '                </propSet>\n' +
+                '                <propSet>\n' +
+                '                    <type>HostSystem</type>\n' +
+                '                    <all>false</all>\n' +
+                '                    <pathSet>vm</pathSet>\n' +
+                '                    <pathSet>datastore</pathSet>\n' +
+                '                    <pathSet>hardware.cpuInfo.numCpuPackages</pathSet>\n' +
+                '                    <pathSet>hardware.cpuFeature</pathSet>\n' +
+                '                    <pathSet>hardware.cpuInfo.hz</pathSet>\n' +
+                '                    <pathSet>hardware.systemInfo.uuid</pathSet>\n' +
+                '                    <pathSet>config.product.productLineId</pathSet>\n' +
+                '                    <pathSet>summary.config.product.fullName</pathSet>\n' +
+                '                    <pathSet>summary.config.product.version</pathSet>\n' +
+                '                    <pathSet>summary.config.product.apiVersion</pathSet>\n' +
+                '                    <pathSet>configManager.storageSystem</pathSet>\n' +
+                '                    <pathSet>hardware.cpuInfo.numCpuCores</pathSet>\n' +
+                '                    <pathSet>hardware.cpuInfo.numCpuThreads</pathSet>\n' +
+                '                    <pathSet>runtime</pathSet>\n' +
+                '                    <pathSet>config.vsanHostConfig.clusterInfo</pathSet>\n' +
+                '                </propSet>\n' +
+                '                <propSet>\n' +
+                '                    <type>HostStorageSystem</type>\n' +
+                '                    <all>false</all>\n' +
+                '                    <pathSet>storageDeviceInfo</pathSet>\n' +
+                '                    <pathSet>fileSystemVolumeInfo</pathSet>\n' +
+                '                </propSet>\n' +
+                '                <propSet>\n' +
+                '                    <type>Datastore</type>\n' +
+                '                    <all>false</all>\n' +
+                '                    <pathSet>info</pathSet>\n' +
+                '                    <pathSet>host</pathSet>\n' +
+                '                    <pathSet>summary.capacity</pathSet>\n' +
+                '                    <pathSet>summary.multipleHostAccess</pathSet>\n' +
+                '                    <pathSet>vm</pathSet>\n' +
+                '                    <pathSet>capability</pathSet>\n' +
+                '                    <pathSet>summary.type</pathSet>\n' +
+                '                </propSet>\n' +
+                '                <propSet>\n' +
+                '                    <type>ResourcePool</type>\n' +
+                '                    <all>false</all>\n' +
+                '                    <pathSet>vm</pathSet>\n' +
+                '                    <pathSet>name</pathSet>\n' +
+                '                    <pathSet>parent</pathSet>\n' +
+                '                    <pathSet>resourcePool</pathSet>\n' +
+                '                </propSet>\n' +
+                '                <propSet>\n' +
+                '                    <type>ClusterComputeResource</type>\n' +
+                '                    <all>false</all>\n' +
+                '                    <pathSet>configuration.drsConfig</pathSet>\n' +
+                '                    <pathSet>summary</pathSet>\n' +
+                '                    <pathSet>configurationEx.spbmEnabled</pathSet>\n' +
+                '                </propSet>\n' +
+                '                <propSet>\n' +
+                '                    <type>ComputeResource</type>\n' +
+                '                    <all>false</all>\n' +
+                '                    <pathSet>summary</pathSet>\n' +
+                '                    <pathSet>configurationEx.spbmEnabled</pathSet>\n' +
+                '                </propSet>\n' +
+                '                <propSet>\n' +
+                '                    <type>VirtualApp</type>\n' +
+                '                    <all>false</all>\n' +
+                '                    <pathSet>vm</pathSet>\n' +
+                '                    <pathSet>name</pathSet>\n' +
+                '                    <pathSet>parent</pathSet>\n' +
+                '                    <pathSet>parentFolder</pathSet>\n' +
+                '                    <pathSet>resourcePool</pathSet>\n' +
+                '                </propSet>\n' +
+                '                <propSet>\n' +
+                '                    <type>StoragePod</type>\n' +
+                '                    <all>false</all>\n' +
+                '                    <pathSet>name</pathSet>\n' +
+                '                    <pathSet>parent</pathSet>\n' +
+                '                    <pathSet>summary.capacity</pathSet>\n' +
+                '                    <pathSet>summary.freeSpace</pathSet>\n' +
+                '                    <pathSet>podStorageDrsEntry.storageDrsConfig.podConfig.enabled</pathSet>\n' +
+                '                    <pathSet>podStorageDrsEntry.storageDrsConfig.podConfig.defaultVmBehavior</pathSet>\n' +
+                '                </propSet>\n' +
+                '                <objectSet>\n' +
+                '                    <obj type="Folder">group-d1</obj>\n' +
+                '                    <skip>false</skip>\n' +
+                '                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                        <name>resourcepool</name>\n' +
+                '                        <type>ResourcePool</type>\n' +
+                '                        <path>resourcePool</path>\n' +
+                '                        <skip>false</skip>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>resourcepool</name>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                            <type>ResourcePool</type>\n' +
+                '                            <path>vm</path>\n' +
+                '                            <skip>false</skip>\n' +
+                '                            <selectSet xsi:type="TraversalSpec">\n' +
+                '                                <type>VirtualMachine</type>\n' +
+                '                                <path>runtime.host</path>\n' +
+                '                                <skip>false</skip>\n' +
+                '                                <selectSet xsi:type="TraversalSpec">\n' +
+                '                                    <type>HostSystem</type>\n' +
+                '                                    <path>parent</path>\n' +
+                '                                    <skip>false</skip>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>ClusterComputeResource</type>\n' +
+                '                                        <path>parent</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                        <selectSet>\n' +
+                '                                            <name>folder_to_parent</name>\n' +
+                '                                        </selectSet>\n' +
+                '                                    </selectSet>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>ComputeResource</type>\n' +
+                '                                        <path>parent</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                        <selectSet>\n' +
+                '                                            <name>folder_to_parent</name>\n' +
+                '                                        </selectSet>\n' +
+                '                                    </selectSet>\n' +
+                '                                </selectSet>\n' +
+                '                                <selectSet xsi:type="TraversalSpec">\n' +
+                '                                    <type>HostSystem</type>\n' +
+                '                                    <path>datastore</path>\n' +
+                '                                    <skip>false</skip>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>Datastore</type>\n' +
+                '                                        <path>parent</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                        <selectSet>\n' +
+                '                                            <name>folder_to_parent</name>\n' +
+                '                                        </selectSet>\n' +
+                '                                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                                            <type>StoragePod</type>\n' +
+                '                                            <path>childEntity</path>\n' +
+                '                                            <skip>false</skip>\n' +
+                '                                        </selectSet>\n' +
+                '                                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                                            <type>StoragePod</type>\n' +
+                '                                            <path>childEntity</path>\n' +
+                '                                            <skip>false</skip>\n' +
+                '                                            <selectSet>\n' +
+                '                                                <name>folder_to_parent</name>\n' +
+                '                                            </selectSet>\n' +
+                '                                        </selectSet>\n' +
+                '                                    </selectSet>\n' +
+                '                                </selectSet>\n' +
+                '                            </selectSet>\n' +
+                '                            <selectSet xsi:type="TraversalSpec">\n' +
+                '                                <type>VirtualMachine</type>\n' +
+                '                                <path>datastore</path>\n' +
+                '                                <skip>false</skip>\n' +
+                '                                <selectSet xsi:type="TraversalSpec">\n' +
+                '                                    <type>Datastore</type>\n' +
+                '                                    <path>parent</path>\n' +
+                '                                    <skip>false</skip>\n' +
+                '                                    <selectSet>\n' +
+                '                                        <name>folder_to_parent</name>\n' +
+                '                                    </selectSet>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>StoragePod</type>\n' +
+                '                                        <path>childEntity</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                    </selectSet>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>StoragePod</type>\n' +
+                '                                        <path>childEntity</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                        <selectSet>\n' +
+                '                                            <name>folder_to_parent</name>\n' +
+                '                                        </selectSet>\n' +
+                '                                    </selectSet>\n' +
+                '                                </selectSet>\n' +
+                '                            </selectSet>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                            <type>VirtualApp</type>\n' +
+                '                            <path>vm</path>\n' +
+                '                            <skip>false</skip>\n' +
+                '                            <selectSet xsi:type="TraversalSpec">\n' +
+                '                                <type>VirtualMachine</type>\n' +
+                '                                <path>runtime.host</path>\n' +
+                '                                <skip>false</skip>\n' +
+                '                                <selectSet xsi:type="TraversalSpec">\n' +
+                '                                    <type>HostSystem</type>\n' +
+                '                                    <path>parent</path>\n' +
+                '                                    <skip>false</skip>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>ClusterComputeResource</type>\n' +
+                '                                        <path>parent</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                        <selectSet>\n' +
+                '                                            <name>folder_to_parent</name>\n' +
+                '                                        </selectSet>\n' +
+                '                                    </selectSet>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>ComputeResource</type>\n' +
+                '                                        <path>parent</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                        <selectSet>\n' +
+                '                                            <name>folder_to_parent</name>\n' +
+                '                                        </selectSet>\n' +
+                '                                    </selectSet>\n' +
+                '                                </selectSet>\n' +
+                '                                <selectSet xsi:type="TraversalSpec">\n' +
+                '                                    <type>HostSystem</type>\n' +
+                '                                    <path>datastore</path>\n' +
+                '                                    <skip>false</skip>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>Datastore</type>\n' +
+                '                                        <path>parent</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                        <selectSet>\n' +
+                '                                            <name>folder_to_parent</name>\n' +
+                '                                        </selectSet>\n' +
+                '                                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                                            <type>StoragePod</type>\n' +
+                '                                            <path>childEntity</path>\n' +
+                '                                            <skip>false</skip>\n' +
+                '                                        </selectSet>\n' +
+                '                                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                                            <type>StoragePod</type>\n' +
+                '                                            <path>childEntity</path>\n' +
+                '                                            <skip>false</skip>\n' +
+                '                                            <selectSet>\n' +
+                '                                                <name>folder_to_parent</name>\n' +
+                '                                            </selectSet>\n' +
+                '                                        </selectSet>\n' +
+                '                                    </selectSet>\n' +
+                '                                </selectSet>\n' +
+                '                            </selectSet>\n' +
+                '                            <selectSet xsi:type="TraversalSpec">\n' +
+                '                                <type>VirtualMachine</type>\n' +
+                '                                <path>datastore</path>\n' +
+                '                                <skip>false</skip>\n' +
+                '                                <selectSet xsi:type="TraversalSpec">\n' +
+                '                                    <type>Datastore</type>\n' +
+                '                                    <path>parent</path>\n' +
+                '                                    <skip>false</skip>\n' +
+                '                                    <selectSet>\n' +
+                '                                        <name>folder_to_parent</name>\n' +
+                '                                    </selectSet>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>StoragePod</type>\n' +
+                '                                        <path>childEntity</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                    </selectSet>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>StoragePod</type>\n' +
+                '                                        <path>childEntity</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                        <selectSet>\n' +
+                '                                            <name>folder_to_parent</name>\n' +
+                '                                        </selectSet>\n' +
+                '                                    </selectSet>\n' +
+                '                                </selectSet>\n' +
+                '                            </selectSet>\n' +
+                '                            <selectSet>\n' +
+                '                                <name>vm_to_respool</name>\n' +
+                '                            </selectSet>\n' +
+                '                        </selectSet>\n' +
+                '                    </selectSet>\n' +
+                '                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                        <type>ComputeResource</type>\n' +
+                '                        <path>resourcePool</path>\n' +
+                '                        <skip>false</skip>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>resourcepool</name>\n' +
+                '                        </selectSet>\n' +
+                '                    </selectSet>\n' +
+                '                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                        <name>folder_to_parent</name>\n' +
+                '                        <type>Folder</type>\n' +
+                '                        <path>parent</path>\n' +
+                '                        <skip>false</skip>\n' +
+                '                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                            <type>Datacenter</type>\n' +
+                '                            <path>parent</path>\n' +
+                '                            <skip>false</skip>\n' +
+                '                            <selectSet>\n' +
+                '                                <name>folder_to_parent</name>\n' +
+                '                            </selectSet>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>folder_to_parent</name>\n' +
+                '                        </selectSet>\n' +
+                '                    </selectSet>\n' +
+                '                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                        <type>Datacenter</type>\n' +
+                '                        <path>parent</path>\n' +
+                '                        <skip>false</skip>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>folder_to_parent</name>\n' +
+                '                        </selectSet>\n' +
+                '                    </selectSet>\n' +
+                '                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                        <type>Datastore</type>\n' +
+                '                        <path>parent</path>\n' +
+                '                        <skip>false</skip>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>folder_to_parent</name>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                            <type>StoragePod</type>\n' +
+                '                            <path>childEntity</path>\n' +
+                '                            <skip>false</skip>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                            <type>StoragePod</type>\n' +
+                '                            <path>childEntity</path>\n' +
+                '                            <skip>false</skip>\n' +
+                '                            <selectSet>\n' +
+                '                                <name>folder_to_parent</name>\n' +
+                '                            </selectSet>\n' +
+                '                        </selectSet>\n' +
+                '                    </selectSet>\n' +
+                '                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                        <name>folder_to_content</name>\n' +
+                '                        <type>Folder</type>\n' +
+                '                        <path>childEntity</path>\n' +
+                '                        <skip>false</skip>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>folder_to_content</name>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                            <type>ClusterComputeResource</type>\n' +
+                '                            <path>host</path>\n' +
+                '                            <skip>false</skip>\n' +
+                '                            <selectSet xsi:type="TraversalSpec">\n' +
+                '                                <type>HostSystem</type>\n' +
+                '                                <path>vm</path>\n' +
+                '                                <skip>false</skip>\n' +
+                '                            </selectSet>\n' +
+                '                            <selectSet xsi:type="TraversalSpec">\n' +
+                '                                <type>HostSystem</type>\n' +
+                '                                <path>datastore</path>\n' +
+                '                                <skip>false</skip>\n' +
+                '                                <selectSet xsi:type="TraversalSpec">\n' +
+                '                                    <type>Datastore</type>\n' +
+                '                                    <path>parent</path>\n' +
+                '                                    <skip>false</skip>\n' +
+                '                                    <selectSet>\n' +
+                '                                        <name>folder_to_parent</name>\n' +
+                '                                    </selectSet>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>StoragePod</type>\n' +
+                '                                        <path>childEntity</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                    </selectSet>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>StoragePod</type>\n' +
+                '                                        <path>childEntity</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                        <selectSet>\n' +
+                '                                            <name>folder_to_parent</name>\n' +
+                '                                        </selectSet>\n' +
+                '                                    </selectSet>\n' +
+                '                                </selectSet>\n' +
+                '                            </selectSet>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                            <type>ComputeResource</type>\n' +
+                '                            <path>host</path>\n' +
+                '                            <skip>false</skip>\n' +
+                '                            <selectSet xsi:type="TraversalSpec">\n' +
+                '                                <type>HostSystem</type>\n' +
+                '                                <path>vm</path>\n' +
+                '                                <skip>false</skip>\n' +
+                '                            </selectSet>\n' +
+                '                            <selectSet xsi:type="TraversalSpec">\n' +
+                '                                <type>HostSystem</type>\n' +
+                '                                <path>datastore</path>\n' +
+                '                                <skip>false</skip>\n' +
+                '                                <selectSet xsi:type="TraversalSpec">\n' +
+                '                                    <type>Datastore</type>\n' +
+                '                                    <path>parent</path>\n' +
+                '                                    <skip>false</skip>\n' +
+                '                                    <selectSet>\n' +
+                '                                        <name>folder_to_parent</name>\n' +
+                '                                    </selectSet>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>StoragePod</type>\n' +
+                '                                        <path>childEntity</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                    </selectSet>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>StoragePod</type>\n' +
+                '                                        <path>childEntity</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                        <selectSet>\n' +
+                '                                            <name>folder_to_parent</name>\n' +
+                '                                        </selectSet>\n' +
+                '                                    </selectSet>\n' +
+                '                                </selectSet>\n' +
+                '                            </selectSet>\n' +
+                '                            <selectSet xsi:type="TraversalSpec">\n' +
+                '                                <type>HostSystem</type>\n' +
+                '                                <path>configManager.storageSystem</path>\n' +
+                '                                <skip>false</skip>\n' +
+                '                            </selectSet>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>folder_to_parent</name>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                            <type>ComputeResource</type>\n' +
+                '                            <path>resourcePool</path>\n' +
+                '                            <skip>false</skip>\n' +
+                '                            <selectSet>\n' +
+                '                                <name>resourcepool</name>\n' +
+                '                            </selectSet>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                            <type>Datacenter</type>\n' +
+                '                            <path>hostFolder</path>\n' +
+                '                            <skip>false</skip>\n' +
+                '                            <selectSet>\n' +
+                '                                <name>folder_to_content</name>\n' +
+                '                            </selectSet>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                            <type>Datacenter</type>\n' +
+                '                            <path>vmFolder</path>\n' +
+                '                            <skip>false</skip>\n' +
+                '                            <selectSet>\n' +
+                '                                <name>folder_to_content</name>\n' +
+                '                            </selectSet>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                            <type>VirtualApp</type>\n' +
+                '                            <path>resourcePool</path>\n' +
+                '                            <skip>false</skip>\n' +
+                '                            <selectSet>\n' +
+                '                                <name>resourcepool</name>\n' +
+                '                            </selectSet>\n' +
+                '                            <selectSet xsi:type="TraversalSpec">\n' +
+                '                                <type>ResourcePool</type>\n' +
+                '                                <path>vm</path>\n' +
+                '                                <skip>false</skip>\n' +
+                '                                <selectSet xsi:type="TraversalSpec">\n' +
+                '                                    <type>VirtualMachine</type>\n' +
+                '                                    <path>runtime.host</path>\n' +
+                '                                    <skip>false</skip>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>HostSystem</type>\n' +
+                '                                        <path>parent</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                                            <type>ClusterComputeResource</type>\n' +
+                '                                            <path>parent</path>\n' +
+                '                                            <skip>false</skip>\n' +
+                '                                            <selectSet>\n' +
+                '                                                <name>folder_to_parent</name>\n' +
+                '                                            </selectSet>\n' +
+                '                                        </selectSet>\n' +
+                '                                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                                            <type>ComputeResource</type>\n' +
+                '                                            <path>parent</path>\n' +
+                '                                            <skip>false</skip>\n' +
+                '                                            <selectSet>\n' +
+                '                                                <name>folder_to_parent</name>\n' +
+                '                                            </selectSet>\n' +
+                '                                        </selectSet>\n' +
+                '                                    </selectSet>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>HostSystem</type>\n' +
+                '                                        <path>datastore</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                                            <type>Datastore</type>\n' +
+                '                                            <path>parent</path>\n' +
+                '                                            <skip>false</skip>\n' +
+                '                                            <selectSet>\n' +
+                '                                                <name>folder_to_parent</name>\n' +
+                '                                            </selectSet>\n' +
+                '                                            <selectSet xsi:type="TraversalSpec">\n' +
+                '                                                <type>StoragePod</type>\n' +
+                '                                                <path>childEntity</path>\n' +
+                '                                                <skip>false</skip>\n' +
+                '                                            </selectSet>\n' +
+                '                                            <selectSet xsi:type="TraversalSpec">\n' +
+                '                                                <type>StoragePod</type>\n' +
+                '                                                <path>childEntity</path>\n' +
+                '                                                <skip>false</skip>\n' +
+                '                                                <selectSet>\n' +
+                '                                                    <name>folder_to_parent</name>\n' +
+                '                                                </selectSet>\n' +
+                '                                            </selectSet>\n' +
+                '                                        </selectSet>\n' +
+                '                                    </selectSet>\n' +
+                '                                </selectSet>\n' +
+                '                                <selectSet xsi:type="TraversalSpec">\n' +
+                '                                    <type>VirtualMachine</type>\n' +
+                '                                    <path>datastore</path>\n' +
+                '                                    <skip>false</skip>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>Datastore</type>\n' +
+                '                                        <path>parent</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                        <selectSet>\n' +
+                '                                            <name>folder_to_parent</name>\n' +
+                '                                        </selectSet>\n' +
+                '                                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                                            <type>StoragePod</type>\n' +
+                '                                            <path>childEntity</path>\n' +
+                '                                            <skip>false</skip>\n' +
+                '                                        </selectSet>\n' +
+                '                                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                                            <type>StoragePod</type>\n' +
+                '                                            <path>childEntity</path>\n' +
+                '                                            <skip>false</skip>\n' +
+                '                                            <selectSet>\n' +
+                '                                                <name>folder_to_parent</name>\n' +
+                '                                            </selectSet>\n' +
+                '                                        </selectSet>\n' +
+                '                                    </selectSet>\n' +
+                '                                </selectSet>\n' +
+                '                            </selectSet>\n' +
+                '                            <selectSet xsi:type="TraversalSpec">\n' +
+                '                                <type>VirtualApp</type>\n' +
+                '                                <path>vm</path>\n' +
+                '                                <skip>false</skip>\n' +
+                '                                <selectSet xsi:type="TraversalSpec">\n' +
+                '                                    <type>VirtualMachine</type>\n' +
+                '                                    <path>runtime.host</path>\n' +
+                '                                    <skip>false</skip>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>HostSystem</type>\n' +
+                '                                        <path>parent</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                                            <type>ClusterComputeResource</type>\n' +
+                '                                            <path>parent</path>\n' +
+                '                                            <skip>false</skip>\n' +
+                '                                            <selectSet>\n' +
+                '                                                <name>folder_to_parent</name>\n' +
+                '                                            </selectSet>\n' +
+                '                                        </selectSet>\n' +
+                '                                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                                            <type>ComputeResource</type>\n' +
+                '                                            <path>parent</path>\n' +
+                '                                            <skip>false</skip>\n' +
+                '                                            <selectSet>\n' +
+                '                                                <name>folder_to_parent</name>\n' +
+                '                                            </selectSet>\n' +
+                '                                        </selectSet>\n' +
+                '                                    </selectSet>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>HostSystem</type>\n' +
+                '                                        <path>datastore</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                                            <type>Datastore</type>\n' +
+                '                                            <path>parent</path>\n' +
+                '                                            <skip>false</skip>\n' +
+                '                                            <selectSet>\n' +
+                '                                                <name>folder_to_parent</name>\n' +
+                '                                            </selectSet>\n' +
+                '                                            <selectSet xsi:type="TraversalSpec">\n' +
+                '                                                <type>StoragePod</type>\n' +
+                '                                                <path>childEntity</path>\n' +
+                '                                                <skip>false</skip>\n' +
+                '                                            </selectSet>\n' +
+                '                                            <selectSet xsi:type="TraversalSpec">\n' +
+                '                                                <type>StoragePod</type>\n' +
+                '                                                <path>childEntity</path>\n' +
+                '                                                <skip>false</skip>\n' +
+                '                                                <selectSet>\n' +
+                '                                                    <name>folder_to_parent</name>\n' +
+                '                                                </selectSet>\n' +
+                '                                            </selectSet>\n' +
+                '                                        </selectSet>\n' +
+                '                                    </selectSet>\n' +
+                '                                </selectSet>\n' +
+                '                                <selectSet xsi:type="TraversalSpec">\n' +
+                '                                    <type>VirtualMachine</type>\n' +
+                '                                    <path>datastore</path>\n' +
+                '                                    <skip>false</skip>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>Datastore</type>\n' +
+                '                                        <path>parent</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                        <selectSet>\n' +
+                '                                            <name>folder_to_parent</name>\n' +
+                '                                        </selectSet>\n' +
+                '                                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                                            <type>StoragePod</type>\n' +
+                '                                            <path>childEntity</path>\n' +
+                '                                            <skip>false</skip>\n' +
+                '                                        </selectSet>\n' +
+                '                                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                                            <type>StoragePod</type>\n' +
+                '                                            <path>childEntity</path>\n' +
+                '                                            <skip>false</skip>\n' +
+                '                                            <selectSet>\n' +
+                '                                                <name>folder_to_parent</name>\n' +
+                '                                            </selectSet>\n' +
+                '                                        </selectSet>\n' +
+                '                                    </selectSet>\n' +
+                '                                </selectSet>\n' +
+                '                                <selectSet>\n' +
+                '                                    <name>vm_to_respool</name>\n' +
+                '                                </selectSet>\n' +
+                '                            </selectSet>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                            <type>VirtualApp</type>\n' +
+                '                            <path>vm</path>\n' +
+                '                            <skip>false</skip>\n' +
+                '                            <selectSet xsi:type="TraversalSpec">\n' +
+                '                                <type>VirtualMachine</type>\n' +
+                '                                <path>runtime.host</path>\n' +
+                '                                <skip>false</skip>\n' +
+                '                                <selectSet xsi:type="TraversalSpec">\n' +
+                '                                    <type>HostSystem</type>\n' +
+                '                                    <path>parent</path>\n' +
+                '                                    <skip>false</skip>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>ClusterComputeResource</type>\n' +
+                '                                        <path>parent</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                        <selectSet>\n' +
+                '                                            <name>folder_to_parent</name>\n' +
+                '                                        </selectSet>\n' +
+                '                                    </selectSet>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>ComputeResource</type>\n' +
+                '                                        <path>parent</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                        <selectSet>\n' +
+                '                                            <name>folder_to_parent</name>\n' +
+                '                                        </selectSet>\n' +
+                '                                    </selectSet>\n' +
+                '                                </selectSet>\n' +
+                '                                <selectSet xsi:type="TraversalSpec">\n' +
+                '                                    <type>HostSystem</type>\n' +
+                '                                    <path>datastore</path>\n' +
+                '                                    <skip>false</skip>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>Datastore</type>\n' +
+                '                                        <path>parent</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                        <selectSet>\n' +
+                '                                            <name>folder_to_parent</name>\n' +
+                '                                        </selectSet>\n' +
+                '                                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                                            <type>StoragePod</type>\n' +
+                '                                            <path>childEntity</path>\n' +
+                '                                            <skip>false</skip>\n' +
+                '                                        </selectSet>\n' +
+                '                                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                                            <type>StoragePod</type>\n' +
+                '                                            <path>childEntity</path>\n' +
+                '                                            <skip>false</skip>\n' +
+                '                                            <selectSet>\n' +
+                '                                                <name>folder_to_parent</name>\n' +
+                '                                            </selectSet>\n' +
+                '                                        </selectSet>\n' +
+                '                                    </selectSet>\n' +
+                '                                </selectSet>\n' +
+                '                            </selectSet>\n' +
+                '                            <selectSet xsi:type="TraversalSpec">\n' +
+                '                                <type>VirtualMachine</type>\n' +
+                '                                <path>datastore</path>\n' +
+                '                                <skip>false</skip>\n' +
+                '                                <selectSet xsi:type="TraversalSpec">\n' +
+                '                                    <type>Datastore</type>\n' +
+                '                                    <path>parent</path>\n' +
+                '                                    <skip>false</skip>\n' +
+                '                                    <selectSet>\n' +
+                '                                        <name>folder_to_parent</name>\n' +
+                '                                    </selectSet>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>StoragePod</type>\n' +
+                '                                        <path>childEntity</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                    </selectSet>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>StoragePod</type>\n' +
+                '                                        <path>childEntity</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                        <selectSet>\n' +
+                '                                            <name>folder_to_parent</name>\n' +
+                '                                        </selectSet>\n' +
+                '                                    </selectSet>\n' +
+                '                                </selectSet>\n' +
+                '                            </selectSet>\n' +
+                '                            <selectSet>\n' +
+                '                                <name>vm_to_respool</name>\n' +
+                '                            </selectSet>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                            <type>Datacenter</type>\n' +
+                '                            <path>datastoreFolder</path>\n' +
+                '                            <skip>false</skip>\n' +
+                '                            <selectSet>\n' +
+                '                                <name>folder_to_content</name>\n' +
+                '                            </selectSet>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                            <type>VirtualMachine</type>\n' +
+                '                            <path>runtime.host</path>\n' +
+                '                            <skip>false</skip>\n' +
+                '                            <selectSet xsi:type="TraversalSpec">\n' +
+                '                                <type>HostSystem</type>\n' +
+                '                                <path>parent</path>\n' +
+                '                                <skip>false</skip>\n' +
+                '                                <selectSet xsi:type="TraversalSpec">\n' +
+                '                                    <type>ClusterComputeResource</type>\n' +
+                '                                    <path>parent</path>\n' +
+                '                                    <skip>false</skip>\n' +
+                '                                    <selectSet>\n' +
+                '                                        <name>folder_to_parent</name>\n' +
+                '                                    </selectSet>\n' +
+                '                                </selectSet>\n' +
+                '                                <selectSet xsi:type="TraversalSpec">\n' +
+                '                                    <type>ComputeResource</type>\n' +
+                '                                    <path>parent</path>\n' +
+                '                                    <skip>false</skip>\n' +
+                '                                    <selectSet>\n' +
+                '                                        <name>folder_to_parent</name>\n' +
+                '                                    </selectSet>\n' +
+                '                                </selectSet>\n' +
+                '                            </selectSet>\n' +
+                '                            <selectSet xsi:type="TraversalSpec">\n' +
+                '                                <type>HostSystem</type>\n' +
+                '                                <path>datastore</path>\n' +
+                '                                <skip>false</skip>\n' +
+                '                                <selectSet xsi:type="TraversalSpec">\n' +
+                '                                    <type>Datastore</type>\n' +
+                '                                    <path>parent</path>\n' +
+                '                                    <skip>false</skip>\n' +
+                '                                    <selectSet>\n' +
+                '                                        <name>folder_to_parent</name>\n' +
+                '                                    </selectSet>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>StoragePod</type>\n' +
+                '                                        <path>childEntity</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                    </selectSet>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>StoragePod</type>\n' +
+                '                                        <path>childEntity</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                        <selectSet>\n' +
+                '                                            <name>folder_to_parent</name>\n' +
+                '                                        </selectSet>\n' +
+                '                                    </selectSet>\n' +
+                '                                </selectSet>\n' +
+                '                            </selectSet>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>vm_to_respool</name>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                            <type>Datastore</type>\n' +
+                '                            <path>vm</path>\n' +
+                '                            <skip>false</skip>\n' +
+                '                            <selectSet xsi:type="TraversalSpec">\n' +
+                '                                <type>VirtualMachine</type>\n' +
+                '                                <path>runtime.host</path>\n' +
+                '                                <skip>false</skip>\n' +
+                '                                <selectSet xsi:type="TraversalSpec">\n' +
+                '                                    <type>HostSystem</type>\n' +
+                '                                    <path>parent</path>\n' +
+                '                                    <skip>false</skip>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>ClusterComputeResource</type>\n' +
+                '                                        <path>parent</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                        <selectSet>\n' +
+                '                                            <name>folder_to_parent</name>\n' +
+                '                                        </selectSet>\n' +
+                '                                    </selectSet>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>ComputeResource</type>\n' +
+                '                                        <path>parent</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                        <selectSet>\n' +
+                '                                            <name>folder_to_parent</name>\n' +
+                '                                        </selectSet>\n' +
+                '                                    </selectSet>\n' +
+                '                                </selectSet>\n' +
+                '                                <selectSet xsi:type="TraversalSpec">\n' +
+                '                                    <type>HostSystem</type>\n' +
+                '                                    <path>datastore</path>\n' +
+                '                                    <skip>false</skip>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>Datastore</type>\n' +
+                '                                        <path>parent</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                        <selectSet>\n' +
+                '                                            <name>folder_to_parent</name>\n' +
+                '                                        </selectSet>\n' +
+                '                                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                                            <type>StoragePod</type>\n' +
+                '                                            <path>childEntity</path>\n' +
+                '                                            <skip>false</skip>\n' +
+                '                                        </selectSet>\n' +
+                '                                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                                            <type>StoragePod</type>\n' +
+                '                                            <path>childEntity</path>\n' +
+                '                                            <skip>false</skip>\n' +
+                '                                            <selectSet>\n' +
+                '                                                <name>folder_to_parent</name>\n' +
+                '                                            </selectSet>\n' +
+                '                                        </selectSet>\n' +
+                '                                    </selectSet>\n' +
+                '                                </selectSet>\n' +
+                '                            </selectSet>\n' +
+                '                            <selectSet>\n' +
+                '                                <name>vm_to_respool</name>\n' +
+                '                            </selectSet>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                            <type>StoragePod</type>\n' +
+                '                            <path>childEntity</path>\n' +
+                '                            <skip>false</skip>\n' +
+                '                            <selectSet xsi:type="TraversalSpec">\n' +
+                '                                <type>Datastore</type>\n' +
+                '                                <path>vm</path>\n' +
+                '                                <skip>false</skip>\n' +
+                '                                <selectSet xsi:type="TraversalSpec">\n' +
+                '                                    <type>VirtualMachine</type>\n' +
+                '                                    <path>runtime.host</path>\n' +
+                '                                    <skip>false</skip>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>HostSystem</type>\n' +
+                '                                        <path>parent</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                                            <type>ClusterComputeResource</type>\n' +
+                '                                            <path>parent</path>\n' +
+                '                                            <skip>false</skip>\n' +
+                '                                            <selectSet>\n' +
+                '                                                <name>folder_to_parent</name>\n' +
+                '                                            </selectSet>\n' +
+                '                                        </selectSet>\n' +
+                '                                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                                            <type>ComputeResource</type>\n' +
+                '                                            <path>parent</path>\n' +
+                '                                            <skip>false</skip>\n' +
+                '                                            <selectSet>\n' +
+                '                                                <name>folder_to_parent</name>\n' +
+                '                                            </selectSet>\n' +
+                '                                        </selectSet>\n' +
+                '                                    </selectSet>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>HostSystem</type>\n' +
+                '                                        <path>datastore</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                                            <type>Datastore</type>\n' +
+                '                                            <path>parent</path>\n' +
+                '                                            <skip>false</skip>\n' +
+                '                                            <selectSet>\n' +
+                '                                                <name>folder_to_parent</name>\n' +
+                '                                            </selectSet>\n' +
+                '                                            <selectSet xsi:type="TraversalSpec">\n' +
+                '                                                <type>StoragePod</type>\n' +
+                '                                                <path>childEntity</path>\n' +
+                '                                                <skip>false</skip>\n' +
+                '                                            </selectSet>\n' +
+                '                                            <selectSet xsi:type="TraversalSpec">\n' +
+                '                                                <type>StoragePod</type>\n' +
+                '                                                <path>childEntity</path>\n' +
+                '                                                <skip>false</skip>\n' +
+                '                                                <selectSet>\n' +
+                '                                                    <name>folder_to_parent</name>\n' +
+                '                                                </selectSet>\n' +
+                '                                            </selectSet>\n' +
+                '                                        </selectSet>\n' +
+                '                                    </selectSet>\n' +
+                '                                </selectSet>\n' +
+                '                                <selectSet>\n' +
+                '                                    <name>vm_to_respool</name>\n' +
+                '                                </selectSet>\n' +
+                '                            </selectSet>\n' +
+                '                        </selectSet>\n' +
+                '                    </selectSet>\n' +
+                '                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                        <type>Datacenter</type>\n' +
+                '                        <path>hostFolder</path>\n' +
+                '                        <skip>false</skip>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>folder_to_content</name>\n' +
+                '                        </selectSet>\n' +
+                '                    </selectSet>\n' +
+                '                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                        <type>ClusterComputeResource</type>\n' +
+                '                        <path>host</path>\n' +
+                '                        <skip>false</skip>\n' +
+                '                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                            <type>HostSystem</type>\n' +
+                '                            <path>vm</path>\n' +
+                '                            <skip>false</skip>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                            <type>HostSystem</type>\n' +
+                '                            <path>datastore</path>\n' +
+                '                            <skip>false</skip>\n' +
+                '                            <selectSet xsi:type="TraversalSpec">\n' +
+                '                                <type>Datastore</type>\n' +
+                '                                <path>parent</path>\n' +
+                '                                <skip>false</skip>\n' +
+                '                                <selectSet>\n' +
+                '                                    <name>folder_to_parent</name>\n' +
+                '                                </selectSet>\n' +
+                '                                <selectSet xsi:type="TraversalSpec">\n' +
+                '                                    <type>StoragePod</type>\n' +
+                '                                    <path>childEntity</path>\n' +
+                '                                    <skip>false</skip>\n' +
+                '                                </selectSet>\n' +
+                '                                <selectSet xsi:type="TraversalSpec">\n' +
+                '                                    <type>StoragePod</type>\n' +
+                '                                    <path>childEntity</path>\n' +
+                '                                    <skip>false</skip>\n' +
+                '                                    <selectSet>\n' +
+                '                                        <name>folder_to_parent</name>\n' +
+                '                                    </selectSet>\n' +
+                '                                </selectSet>\n' +
+                '                            </selectSet>\n' +
+                '                        </selectSet>\n' +
+                '                    </selectSet>\n' +
+                '                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                        <type>ComputeResource</type>\n' +
+                '                        <path>host</path>\n' +
+                '                        <skip>false</skip>\n' +
+                '                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                            <type>HostSystem</type>\n' +
+                '                            <path>vm</path>\n' +
+                '                            <skip>false</skip>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                            <type>HostSystem</type>\n' +
+                '                            <path>datastore</path>\n' +
+                '                            <skip>false</skip>\n' +
+                '                            <selectSet xsi:type="TraversalSpec">\n' +
+                '                                <type>Datastore</type>\n' +
+                '                                <path>parent</path>\n' +
+                '                                <skip>false</skip>\n' +
+                '                                <selectSet>\n' +
+                '                                    <name>folder_to_parent</name>\n' +
+                '                                </selectSet>\n' +
+                '                                <selectSet xsi:type="TraversalSpec">\n' +
+                '                                    <type>StoragePod</type>\n' +
+                '                                    <path>childEntity</path>\n' +
+                '                                    <skip>false</skip>\n' +
+                '                                </selectSet>\n' +
+                '                                <selectSet xsi:type="TraversalSpec">\n' +
+                '                                    <type>StoragePod</type>\n' +
+                '                                    <path>childEntity</path>\n' +
+                '                                    <skip>false</skip>\n' +
+                '                                    <selectSet>\n' +
+                '                                        <name>folder_to_parent</name>\n' +
+                '                                    </selectSet>\n' +
+                '                                </selectSet>\n' +
+                '                            </selectSet>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                            <type>HostSystem</type>\n' +
+                '                            <path>configManager.storageSystem</path>\n' +
+                '                            <skip>false</skip>\n' +
+                '                        </selectSet>\n' +
+                '                    </selectSet>\n' +
+                '                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                        <type>VirtualMachine</type>\n' +
+                '                        <path>runtime.host</path>\n' +
+                '                        <skip>false</skip>\n' +
+                '                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                            <type>HostSystem</type>\n' +
+                '                            <path>parent</path>\n' +
+                '                            <skip>false</skip>\n' +
+                '                            <selectSet xsi:type="TraversalSpec">\n' +
+                '                                <type>ClusterComputeResource</type>\n' +
+                '                                <path>parent</path>\n' +
+                '                                <skip>false</skip>\n' +
+                '                                <selectSet>\n' +
+                '                                    <name>folder_to_parent</name>\n' +
+                '                                </selectSet>\n' +
+                '                            </selectSet>\n' +
+                '                            <selectSet xsi:type="TraversalSpec">\n' +
+                '                                <type>ComputeResource</type>\n' +
+                '                                <path>parent</path>\n' +
+                '                                <skip>false</skip>\n' +
+                '                                <selectSet>\n' +
+                '                                    <name>folder_to_parent</name>\n' +
+                '                                </selectSet>\n' +
+                '                            </selectSet>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                            <type>HostSystem</type>\n' +
+                '                            <path>datastore</path>\n' +
+                '                            <skip>false</skip>\n' +
+                '                            <selectSet xsi:type="TraversalSpec">\n' +
+                '                                <type>Datastore</type>\n' +
+                '                                <path>parent</path>\n' +
+                '                                <skip>false</skip>\n' +
+                '                                <selectSet>\n' +
+                '                                    <name>folder_to_parent</name>\n' +
+                '                                </selectSet>\n' +
+                '                                <selectSet xsi:type="TraversalSpec">\n' +
+                '                                    <type>StoragePod</type>\n' +
+                '                                    <path>childEntity</path>\n' +
+                '                                    <skip>false</skip>\n' +
+                '                                </selectSet>\n' +
+                '                                <selectSet xsi:type="TraversalSpec">\n' +
+                '                                    <type>StoragePod</type>\n' +
+                '                                    <path>childEntity</path>\n' +
+                '                                    <skip>false</skip>\n' +
+                '                                    <selectSet>\n' +
+                '                                        <name>folder_to_parent</name>\n' +
+                '                                    </selectSet>\n' +
+                '                                </selectSet>\n' +
+                '                            </selectSet>\n' +
+                '                        </selectSet>\n' +
+                '                    </selectSet>\n' +
+                '                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                        <type>VirtualMachine</type>\n' +
+                '                        <path>datastore</path>\n' +
+                '                        <skip>false</skip>\n' +
+                '                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                            <type>Datastore</type>\n' +
+                '                            <path>parent</path>\n' +
+                '                            <skip>false</skip>\n' +
+                '                            <selectSet>\n' +
+                '                                <name>folder_to_parent</name>\n' +
+                '                            </selectSet>\n' +
+                '                            <selectSet xsi:type="TraversalSpec">\n' +
+                '                                <type>StoragePod</type>\n' +
+                '                                <path>childEntity</path>\n' +
+                '                                <skip>false</skip>\n' +
+                '                            </selectSet>\n' +
+                '                            <selectSet xsi:type="TraversalSpec">\n' +
+                '                                <type>StoragePod</type>\n' +
+                '                                <path>childEntity</path>\n' +
+                '                                <skip>false</skip>\n' +
+                '                                <selectSet>\n' +
+                '                                    <name>folder_to_parent</name>\n' +
+                '                                </selectSet>\n' +
+                '                            </selectSet>\n' +
+                '                        </selectSet>\n' +
+                '                    </selectSet>\n' +
+                '                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                        <name>vm_to_respool</name>\n' +
+                '                        <type>VirtualMachine</type>\n' +
+                '                        <path>resourcePool</path>\n' +
+                '                        <skip>false</skip>\n' +
+                '                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                            <name>respool_parent</name>\n' +
+                '                            <type>ResourcePool</type>\n' +
+                '                            <path>parent</path>\n' +
+                '                            <skip>false</skip>\n' +
+                '                            <selectSet>\n' +
+                '                                <name>respool_parent</name>\n' +
+                '                            </selectSet>\n' +
+                '                            <selectSet xsi:type="TraversalSpec">\n' +
+                '                                <type>ComputeResource</type>\n' +
+                '                                <path>parent</path>\n' +
+                '                                <skip>false</skip>\n' +
+                '                                <selectSet>\n' +
+                '                                    <name>folder_to_parent</name>\n' +
+                '                                </selectSet>\n' +
+                '                            </selectSet>\n' +
+                '                        </selectSet>\n' +
+                '                    </selectSet>\n' +
+                '                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                        <type>VirtualMachine</type>\n' +
+                '                        <path>parent</path>\n' +
+                '                        <skip>false</skip>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>folder_to_parent</name>\n' +
+                '                        </selectSet>\n' +
+                '                    </selectSet>\n' +
+                '                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                        <type>VirtualApp</type>\n' +
+                '                        <path>resourcePool</path>\n' +
+                '                        <skip>false</skip>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>resourcepool</name>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                            <type>ResourcePool</type>\n' +
+                '                            <path>vm</path>\n' +
+                '                            <skip>false</skip>\n' +
+                '                            <selectSet xsi:type="TraversalSpec">\n' +
+                '                                <type>VirtualMachine</type>\n' +
+                '                                <path>runtime.host</path>\n' +
+                '                                <skip>false</skip>\n' +
+                '                                <selectSet xsi:type="TraversalSpec">\n' +
+                '                                    <type>HostSystem</type>\n' +
+                '                                    <path>parent</path>\n' +
+                '                                    <skip>false</skip>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>ClusterComputeResource</type>\n' +
+                '                                        <path>parent</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                        <selectSet>\n' +
+                '                                            <name>folder_to_parent</name>\n' +
+                '                                        </selectSet>\n' +
+                '                                    </selectSet>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>ComputeResource</type>\n' +
+                '                                        <path>parent</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                        <selectSet>\n' +
+                '                                            <name>folder_to_parent</name>\n' +
+                '                                        </selectSet>\n' +
+                '                                    </selectSet>\n' +
+                '                                </selectSet>\n' +
+                '                                <selectSet xsi:type="TraversalSpec">\n' +
+                '                                    <type>HostSystem</type>\n' +
+                '                                    <path>datastore</path>\n' +
+                '                                    <skip>false</skip>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>Datastore</type>\n' +
+                '                                        <path>parent</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                        <selectSet>\n' +
+                '                                            <name>folder_to_parent</name>\n' +
+                '                                        </selectSet>\n' +
+                '                                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                                            <type>StoragePod</type>\n' +
+                '                                            <path>childEntity</path>\n' +
+                '                                            <skip>false</skip>\n' +
+                '                                        </selectSet>\n' +
+                '                                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                                            <type>StoragePod</type>\n' +
+                '                                            <path>childEntity</path>\n' +
+                '                                            <skip>false</skip>\n' +
+                '                                            <selectSet>\n' +
+                '                                                <name>folder_to_parent</name>\n' +
+                '                                            </selectSet>\n' +
+                '                                        </selectSet>\n' +
+                '                                    </selectSet>\n' +
+                '                                </selectSet>\n' +
+                '                            </selectSet>\n' +
+                '                            <selectSet xsi:type="TraversalSpec">\n' +
+                '                                <type>VirtualMachine</type>\n' +
+                '                                <path>datastore</path>\n' +
+                '                                <skip>false</skip>\n' +
+                '                                <selectSet xsi:type="TraversalSpec">\n' +
+                '                                    <type>Datastore</type>\n' +
+                '                                    <path>parent</path>\n' +
+                '                                    <skip>false</skip>\n' +
+                '                                    <selectSet>\n' +
+                '                                        <name>folder_to_parent</name>\n' +
+                '                                    </selectSet>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>StoragePod</type>\n' +
+                '                                        <path>childEntity</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                    </selectSet>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>StoragePod</type>\n' +
+                '                                        <path>childEntity</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                        <selectSet>\n' +
+                '                                            <name>folder_to_parent</name>\n' +
+                '                                        </selectSet>\n' +
+                '                                    </selectSet>\n' +
+                '                                </selectSet>\n' +
+                '                            </selectSet>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                            <type>VirtualApp</type>\n' +
+                '                            <path>vm</path>\n' +
+                '                            <skip>false</skip>\n' +
+                '                            <selectSet xsi:type="TraversalSpec">\n' +
+                '                                <type>VirtualMachine</type>\n' +
+                '                                <path>runtime.host</path>\n' +
+                '                                <skip>false</skip>\n' +
+                '                                <selectSet xsi:type="TraversalSpec">\n' +
+                '                                    <type>HostSystem</type>\n' +
+                '                                    <path>parent</path>\n' +
+                '                                    <skip>false</skip>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>ClusterComputeResource</type>\n' +
+                '                                        <path>parent</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                        <selectSet>\n' +
+                '                                            <name>folder_to_parent</name>\n' +
+                '                                        </selectSet>\n' +
+                '                                    </selectSet>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>ComputeResource</type>\n' +
+                '                                        <path>parent</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                        <selectSet>\n' +
+                '                                            <name>folder_to_parent</name>\n' +
+                '                                        </selectSet>\n' +
+                '                                    </selectSet>\n' +
+                '                                </selectSet>\n' +
+                '                                <selectSet xsi:type="TraversalSpec">\n' +
+                '                                    <type>HostSystem</type>\n' +
+                '                                    <path>datastore</path>\n' +
+                '                                    <skip>false</skip>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>Datastore</type>\n' +
+                '                                        <path>parent</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                        <selectSet>\n' +
+                '                                            <name>folder_to_parent</name>\n' +
+                '                                        </selectSet>\n' +
+                '                                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                                            <type>StoragePod</type>\n' +
+                '                                            <path>childEntity</path>\n' +
+                '                                            <skip>false</skip>\n' +
+                '                                        </selectSet>\n' +
+                '                                        <selectSet xsi:type="TraversalSpec">\n' +
+                '                                            <type>StoragePod</type>\n' +
+                '                                            <path>childEntity</path>\n' +
+                '                                            <skip>false</skip>\n' +
+                '                                            <selectSet>\n' +
+                '                                                <name>folder_to_parent</name>\n' +
+                '                                            </selectSet>\n' +
+                '                                        </selectSet>\n' +
+                '                                    </selectSet>\n' +
+                '                                </selectSet>\n' +
+                '                            </selectSet>\n' +
+                '                            <selectSet xsi:type="TraversalSpec">\n' +
+                '                                <type>VirtualMachine</type>\n' +
+                '                                <path>datastore</path>\n' +
+                '                                <skip>false</skip>\n' +
+                '                                <selectSet xsi:type="TraversalSpec">\n' +
+                '                                    <type>Datastore</type>\n' +
+                '                                    <path>parent</path>\n' +
+                '                                    <skip>false</skip>\n' +
+                '                                    <selectSet>\n' +
+                '                                        <name>folder_to_parent</name>\n' +
+                '                                    </selectSet>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>StoragePod</type>\n' +
+                '                                        <path>childEntity</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                    </selectSet>\n' +
+                '                                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                                        <type>StoragePod</type>\n' +
+                '                                        <path>childEntity</path>\n' +
+                '                                        <skip>false</skip>\n' +
+                '                                        <selectSet>\n' +
+                '                                            <name>folder_to_parent</name>\n' +
+                '                                        </selectSet>\n' +
+                '                                    </selectSet>\n' +
+                '                                </selectSet>\n' +
+                '                            </selectSet>\n' +
+                '                            <selectSet>\n' +
+                '                                <name>vm_to_respool</name>\n' +
+                '                            </selectSet>\n' +
+                '                        </selectSet>\n' +
+                '                    </selectSet>\n' +
+                '                </objectSet>\n' +
+                '            </spec>\n' +
+                '            <partialUpdates>false</partialUpdates>\n' +
+                '        </CreateFilter>\n' +
+                '    </soap:Body>\n' +
+                '</soap:Envelope>';
+
+            return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
+                if (data.data.status === 'error') return errorHandler(data.data.data);
+
+                // Something is wrong
+                if (data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault']) {
+                    return errorHandler(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault'][0]['detail'][0]);
+                }
+
+                return validResponse(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0].CreateFilterResponse[0].returnval[0]._);
+            });
+        };
+
+        var getWaitForUpdatesEx = function (credential, host, port) {
+            var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><WaitForUpdatesEx xmlns="urn:vim25"><_this type="PropertyCollector">propertyCollector</_this><version /><options><maxWaitSeconds>0</maxWaitSeconds></options></WaitForUpdatesEx></soap:Body></soap:Envelope>';
+            return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
+                if (data.data.status === 'error') return errorHandler(data.data.data);
+
+                // Something is wrong
+                if (data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault']) {
+                    return errorHandler(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault'][0]['detail'][0]);
+                }
+
+                return validResponse(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0].WaitForUpdatesExResponse[0]);
+            });
+        };
+
         var registerExtension = function (credential, host, port) {
             var xml = '<?xml version="1.0" encoding="UTF-8"?>\n' +
                 '<soapenv:Envelope xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">\n' +
@@ -3837,6 +5172,117 @@ var SysOS = angular.module('SysOS', [
             });
         };
 
+        var getComputeResource = function (credential, host, port, compute_resource) {
+
+            var xml = '<?xml version="1.0" encoding="utf-8"?>\n' +
+                '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">\n' +
+                '    <soap:Body>\n' +
+                '        <RetrieveProperties xmlns="urn:vim25">\n' +
+                '            <_this type="PropertyCollector">propertyCollector</_this>\n' +
+                '            <specSet>\n' +
+                '                <propSet>\n' +
+                '                    <type>ComputeResource</type>\n' +
+                '                    <all>true</all>\n' +
+                '                </propSet>\n' +
+                '                <objectSet>\n' +
+                '                    <obj type="ComputeResource">' + compute_resource + '</obj>\n' +
+                '                    <skip>false</skip>\n' +
+                '                </objectSet>\n' +
+                '            </specSet>\n' +
+                '        </RetrieveProperties>\n' +
+                '    </soap:Body>\n' +
+                '</soap:Envelope>';
+
+            return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
+                if (data.data.status === 'error') return errorHandler(data.data.data);
+
+                // Something is wrong
+                if (data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault']) {
+                    return errorHandler(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault'][0]['detail'][0]);
+                }
+
+                var res = [];
+
+                angular.forEach(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0].RetrievePropertiesResponse[0].returnval, function (value) {
+                    res.push(parseVMwareObject(value));
+                });
+
+                return validResponse(res);
+            });
+        };
+
+        var getClusterComputeResource = function (credential, host, port, cluster_compute_resource) {
+
+            var xml = '<?xml version="1.0" encoding="utf-8"?>\n' +
+                '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">\n' +
+                '    <soap:Body>\n' +
+                '        <RetrieveProperties xmlns="urn:vim25">\n' +
+                '            <_this type="PropertyCollector">propertyCollector</_this>\n' +
+                '            <specSet>\n' +
+                '                <propSet>\n' +
+                '                    <type>ClusterComputeResource</type>\n' +
+                '                    <all>true</all>\n' +
+                '                </propSet>\n' +
+                '                <objectSet>\n' +
+                '                    <obj type="ClusterComputeResource">' + cluster_compute_resource + '</obj>\n' +
+                '                    <skip>false</skip>\n' +
+                '                </objectSet>\n' +
+                '            </specSet>\n' +
+                '        </RetrieveProperties>\n' +
+                '    </soap:Body>\n' +
+                '</soap:Envelope>';
+
+            return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
+                if (data.data.status === 'error') return errorHandler(data.data.data);
+
+                // Something is wrong
+                if (data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault']) {
+                    return errorHandler(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault'][0]['detail'][0]);
+                }
+
+                var res = [];
+
+                angular.forEach(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0].RetrievePropertiesResponse[0].returnval, function (value) {
+                    res.push(parseVMwareObject(value));
+                });
+
+                return validResponse(res);
+            });
+        };
+
+        var getResourcePool = function (credential, host, port, resource_pool) {
+
+            var xml = '<?xml version="1.0" encoding="utf-8"?>\n' +
+                '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">\n' +
+                '    <soap:Body>\n' +
+                '        <RetrieveProperties xmlns="urn:vim25">\n' +
+                '            <_this type="PropertyCollector">propertyCollector</_this>\n' +
+                '            <specSet>\n' +
+                '                <propSet>\n' +
+                '                    <type>ResourcePool</type>\n' +
+                '                    <all>true</all>\n' +
+                '                </propSet>\n' +
+                '                <objectSet>\n' +
+                '                    <obj type="ResourcePool">' + resource_pool + '</obj>\n' +
+                '                    <skip>false</skip>\n' +
+                '                </objectSet>\n' +
+                '            </specSet>\n' +
+                '        </RetrieveProperties>\n' +
+                '    </soap:Body>\n' +
+                '</soap:Envelope>';
+
+            return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
+                if (data.data.status === 'error') return errorHandler(data.data.data);
+
+                // Something is wrong
+                if (data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault']) {
+                    return errorHandler(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault'][0]['detail'][0]);
+                }
+
+                return validResponse(parseVMwareObject(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0].RetrievePropertiesResponse[0].returnval[0]));
+            });
+        };
+
         var getHosts = function (credential, host, port, datacenter_folder) {
 
             var xml = '<?xml version="1.0" encoding="utf-8"?>\n' +
@@ -3972,6 +5418,187 @@ var SysOS = angular.module('SysOS', [
                 '    </soap:Body>\n' +
                 '</soap:Envelope>';
 
+            return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
+                if (data.data.status === 'error') return errorHandler(data.data.data);
+
+                // Something is wrong
+                if (data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault']) {
+                    return errorHandler(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault'][0]['detail'][0]);
+                }
+
+                var res = [];
+
+                angular.forEach(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0].RetrievePropertiesResponse[0].returnval, function (value) {
+                    res.push(parseVMwareObject(value));
+                });
+
+                return validResponse(res);
+            });
+        };
+
+        var getHost = function (credential, host, port, esxi_host) {
+
+            var xml = '<?xml version="1.0" encoding="utf-8"?>\n' +
+                '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">\n' +
+                '    <soap:Body>\n' +
+                '        <RetrieveProperties xmlns="urn:vim25">\n' +
+                '            <_this type="PropertyCollector">propertyCollector</_this>\n' +
+                '            <specSet>\n' +
+                '                <propSet>\n' +
+                '                    <type>HostSystem</type>\n' +
+                '                    <all>true</all>\n' +
+                '                </propSet>\n' +
+                '                <objectSet>\n' +
+                '                    <obj type="HostSystem">' + esxi_host + '</obj>\n' +
+                '                    <skip>false</skip>\n' +
+                '                    <selectSet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="TraversalSpec">\n' +
+                '                        <name>folderTraversalSpec</name>\n' +
+                '                        <type>Folder</type>\n' +
+                '                        <path>childEntity</path>\n' +
+                '                        <skip>false</skip>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>folderTraversalSpec</name>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>datacenterHostTraversalSpec</name>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>datacenterVmTraversalSpec</name>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>datacenterDatastoreTraversalSpec</name>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>datacenterNetworkTraversalSpec</name>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>computeResourceRpTraversalSpec</name>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>computeResourceHostTraversalSpec</name>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>hostVmTraversalSpec</name>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>resourcePoolVmTraversalSpec</name>\n' +
+                '                        </selectSet>\n' +
+                '                    </selectSet>\n' +
+                '                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                        <name>datacenterDatastoreTraversalSpec</name>\n' +
+                '                        <type>Datacenter</type>\n' +
+                '                        <path>datastoreFolder</path>\n' +
+                '                        <skip>false</skip>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>folderTraversalSpec</name>\n' +
+                '                        </selectSet>\n' +
+                '                    </selectSet>\n' +
+                '                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                        <name>datacenterNetworkTraversalSpec</name>\n' +
+                '                        <type>Datacenter</type>\n' +
+                '                        <path>networkFolder</path>\n' +
+                '                        <skip>false</skip>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>folderTraversalSpec</name>\n' +
+                '                        </selectSet>\n' +
+                '                    </selectSet>\n' +
+                '                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                        <name>datacenterVmTraversalSpec</name>\n' +
+                '                        <type>Datacenter</type>\n' +
+                '                        <path>vmFolder</path>\n' +
+                '                        <skip>false</skip>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>folderTraversalSpec</name>\n' +
+                '                        </selectSet>\n' +
+                '                    </selectSet>\n' +
+                '                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                        <name>datacenterHostTraversalSpec</name>\n' +
+                '                        <type>Datacenter</type>\n' +
+                '                        <path>hostFolder</path>\n' +
+                '                        <skip>false</skip>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>folderTraversalSpec</name>\n' +
+                '                        </selectSet>\n' +
+                '                    </selectSet>\n' +
+                '                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                        <name>computeResourceHostTraversalSpec</name>\n' +
+                '                        <type>ComputeResource</type>\n' +
+                '                        <path>host</path>\n' +
+                '                        <skip>false</skip>\n' +
+                '                    </selectSet>\n' +
+                '                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                        <name>computeResourceRpTraversalSpec</name>\n' +
+                '                        <type>ComputeResource</type>\n' +
+                '                        <path>resourcePool</path>\n' +
+                '                        <skip>false</skip>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>resourcePoolTraversalSpec</name>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>resourcePoolVmTraversalSpec</name>\n' +
+                '                        </selectSet>\n' +
+                '                    </selectSet>\n' +
+                '                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                        <name>resourcePoolTraversalSpec</name>\n' +
+                '                        <type>ResourcePool</type>\n' +
+                '                        <path>resourcePool</path>\n' +
+                '                        <skip>false</skip>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>resourcePoolTraversalSpec</name>\n' +
+                '                        </selectSet>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>resourcePoolVmTraversalSpec</name>\n' +
+                '                        </selectSet>\n' +
+                '                    </selectSet>\n' +
+                '                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                        <name>hostVmTraversalSpec</name>\n' +
+                '                        <type>HostSystem</type>\n' +
+                '                        <path>vm</path>\n' +
+                '                        <skip>false</skip>\n' +
+                '                        <selectSet>\n' +
+                '                            <name>folderTraversalSpec</name>\n' +
+                '                        </selectSet>\n' +
+                '                    </selectSet>\n' +
+                '                    <selectSet xsi:type="TraversalSpec">\n' +
+                '                        <name>resourcePoolVmTraversalSpec</name>\n' +
+                '                        <type>ResourcePool</type>\n' +
+                '                        <path>vm</path>\n' +
+                '                        <skip>false</skip>\n' +
+                '                    </selectSet>\n' +
+                '                </objectSet>\n' +
+                '            </specSet>\n' +
+                '        </RetrieveProperties>\n' +
+                '    </soap:Body>\n' +
+                '</soap:Envelope>';
+
+            return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
+                if (data.data.status === 'error') return errorHandler(data.data.data);
+
+                // Something is wrong
+                if (data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault']) {
+                    return errorHandler(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault'][0]['detail'][0]);
+                }
+
+                return validResponse(parseVMwareObject(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0].RetrievePropertiesResponse[0].returnval[0]));
+            });
+        };
+
+        var getHostStorageSystem = function (credential, host, port, esx_host) {
+            var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><RetrieveProperties xmlns="urn:vim25"><_this type="PropertyCollector">propertyCollector</_this><specSet><propSet><type>HostSystem</type><all>false</all><pathSet>configManager.storageSystem</pathSet></propSet><objectSet><obj type="HostSystem">' + esx_host + '</obj></objectSet></specSet></RetrieveProperties></soap:Body></soap:Envelope>';
+            return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
+                if (data.data.status === 'error') return errorHandler(data.data.data);
+
+                // Something is wrong
+                if (data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault']) {
+                    return errorHandler(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault'][0]['detail'][0]);
+                }
+
+                return validResponse(data.data.data.response['soapenv:Envelope']['soapenv:Body']['0'].RetrievePropertiesResponse[0].returnval[0].propSet[0].val[0]._);
+            });
+        };
+
+        var getHostStorageSystemData = function (credential, host, port, storageSystem) {
+            var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><RetrieveProperties xmlns="urn:vim25"><_this type="PropertyCollector">propertyCollector</_this><specSet><propSet><type>HostStorageSystem</type><all>false</all><pathSet>storageDeviceInfo</pathSet><pathSet>fileSystemVolumeInfo</pathSet></propSet><objectSet><obj type="HostStorageSystem">' + storageSystem + '</obj><skip>false</skip></objectSet></specSet></RetrieveProperties></soap:Body></soap:Envelope>';
             return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {
                 if (data.data.status === 'error') return errorHandler(data.data.data);
 
@@ -4845,6 +6472,8 @@ var SysOS = angular.module('SysOS', [
             // Basics
             getClientVersion: getClientVersion,
             connectvCenterSoap: connectvCenterSoap,
+            createAllBasicDataFilter: createAllBasicDataFilter,
+            getWaitForUpdatesEx: getWaitForUpdatesEx,
             registerExtension: registerExtension,
             findSysOSExtension: findSysOSExtension,
             // TaskManager
@@ -4855,7 +6484,13 @@ var SysOS = angular.module('SysOS', [
             acquireVMTicket: acquireVMTicket,
             acquireNFCTicket: acquireNFCTicket,
             // Host
+            getComputeResource: getComputeResource,
+            getClusterComputeResource: getClusterComputeResource,
+            getResourcePool: getResourcePool,
             getHosts: getHosts,
+            getHost: getHost,
+            getHostStorageSystem: getHostStorageSystem,
+            getHostStorageSystemData: getHostStorageSystemData,
             getHostConnectionState: getHostConnectionState,
             getHostConfigManagerNetworkSystem: getHostConfigManagerNetworkSystem,
             getHostConfigManagerDatastoreSystem: getHostConfigManagerDatastoreSystem,
