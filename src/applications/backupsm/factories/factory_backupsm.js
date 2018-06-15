@@ -386,7 +386,7 @@
              *   Keeps a track of backup point and updates it to backend.
              */
             var setBackupStatus = function (data, status) {
-                $filter('filter')(backups, {uuid: data.uuid})[0].status = status;
+                $filter('filter')(backups, {uuid: data.uuid})[0].status.push(status);
 
                 return ServerFactory.saveConfigToFile(data, 'applications/backupsm/backups.json', false);
             };
@@ -742,7 +742,6 @@
                         var esxi_port = connection.port;
                         var task_id;
 
-
                         $log.debug('Backups Manager [%s] -> Connecting to vCenter -> vCenter [%s]', data.uuid, esxi_address);
                         main_promises.push(vmwareFactory.connectvCenterSoap(esxi_credential, esxi_address, esxi_port).then(function (res) {
                             if (res.status === 'error') throw new Error('Failed to connect to vCenter');
@@ -789,9 +788,16 @@
                                     var smanagerFactory = $injector.get('smanagerFactory');
 
                                     var storage_link = smanagerFactory.getLinkByVMwareDatastore(vCenter, datastore);
+
+                                    if (!storage_link) throw new Error('Unable to get Storage Link');
+
                                     var storage = connectionsFactory.getConnectionByUuid(storage_link.storage);
                                     var vserver = eval(connectionsFactory.getObjectByUuidMapping(storage_link.vserver)); // jshint ignore:line
                                     var volume = eval(connectionsFactory.getObjectByUuidMapping(storage_link.volume)); // jshint ignore:line
+
+                                    if (!storage) throw new Error('Unable to get Storage object');
+                                    if (!vserver) throw new Error('Unable to get Vserver object');
+                                    if (!volume) throw new Error('Unable to get Volume object');
 
                                     var netapp_credential = storage.credential;
                                     var netapp_host = storage.host;

@@ -544,7 +544,7 @@
                 }
 
                 if (!object) {
-                    $log.error('Connections Factory [%s [%s]] -> getObjectByUuidMapping not found', uuid, main_parent);
+                    $log.error('Connections Factory [%s] [%s] -> getObjectByUuidMapping not found', uuid, main_parent);
                     return false;
                 }
 

@@ -450,7 +450,7 @@
                 $log.debug('Backups Manager [%s] -> Received event [%s] -> Initializing backup', data.uuid, event.name);
 
                 backupsmFactory.setBackup(data);
-                backupsmFactory.setRestoreStatus(data, 'init');
+                backupsmFactory.setBackupStatus(data, 'init');
                 backupsmFactory.setActive(data.uuid);
 
                 var modalInstanceBackup = modalFactory.openRegistredModal('backupWizard', '.window--backupsm .window__main', {
