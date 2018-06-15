@@ -18,19 +18,21 @@ router.post("/", function (req, res) {
 
 	var apiGlobals = require('../globals.js')(req, res);
 	var credential = req.body.credential;
-	var credentials = require('read-config')(path.join(__dirname, '../../../filesystem/etc/applications/cmanager/config.json'));
+	var credentials = require('read-config')(path.join(__dirname, '../../../filesystem/root/credentials.json'));
 
 	// New credential
 	if (!credential.hasOwnProperty('uuid')) {
 
-		return uuid(function (err, id) {
-			if (err) return console.log(err);
+		return uuid(function (e, id) {
+            if (e && e.code) return apiGlobals.serverError(e.code);
+            if (e) return apiGlobals.serverError(e);
 
 			credential.uuid = id;
 			credentials.saved_credentials.push(credential);
 
-			return jsonfile.writeFile(path.join(__dirname, '../../../filesystem/etc/applications/cmanager/config.json'), credentials, function (err) {
-				if (err) return console.log(err);
+			return jsonfile.writeFile(path.join(__dirname, '../../../filesystem/root/credentials.json'), credentials, function (e) {
+                if (e && e.code) return apiGlobals.serverError(e.code);
+                if (e) return apiGlobals.serverError(e);
 
 				return apiGlobals.responseJsonData(id);
 			});
@@ -48,8 +50,9 @@ router.post("/", function (req, res) {
 	credentials.saved_credentials[objIndex].username = credential.username;
 	credentials.saved_credentials[objIndex].password = credential.password;
 
-	return jsonfile.writeFile(path.join(__dirname, '../../../filesystem/etc/applications/cmanager/config.json'), credentials, function (err) {
-		if (err) return console.log(err);
+	return jsonfile.writeFile(path.join(__dirname, '../../../filesystem/root/credentials.json'), credentials, function (e) {
+        if (e && e.code) return apiGlobals.serverError(e.code);
+        if (e) return apiGlobals.serverError(e);
 
 		return apiGlobals.responseJsonData(credential.uuid);
 	});

@@ -1,7 +1,7 @@
 (function () {
     'use strict';
-    sshApp.controller('sshBodyController', ['$scope', '$element', '$timeout', 'sshFactory', 'cmanagerFactory', 'ApplicationsFactory', '$filter', 'modalFactory', 'connectionsFactory', 'ServerFactory',
-        function ($scope, $element, $timeout, sshFactory, cmanagerFactory, ApplicationsFactory, $filter, modalFactory, connectionsFactory, ServerFactory) {
+    sshApp.controller('sshBodyController', ['$scope', '$element', '$timeout', 'toastr', 'sshFactory', 'cmanagerFactory', 'ApplicationsFactory', '$filter', 'modalFactory', 'connectionsFactory', 'ServerFactory',
+        function ($scope, $element, $timeout, toastr, sshFactory, cmanagerFactory, ApplicationsFactory, $filter, modalFactory, connectionsFactory, ServerFactory) {
 
             var _this = this;
 
@@ -160,7 +160,13 @@
                 );
                 modalInstanceRemoveConnection.result.then(function (res) {
 
-                    if (res === true) connectionsFactory.deleteConnection(connection.uuid);
+                    if (res === true) {
+                        connectionsFactory.deleteConnection(connection.uuid).then(function () {
+                            toastr.success('Connection deleted.', 'SSH');
+                        }).catch(function () {
+                            toastr.error('Error while deleting connection.', 'SSH');
+                        });
+                    }
 
                     _this.newConnection();
 

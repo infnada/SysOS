@@ -210,9 +210,20 @@
 
                 return modalInstance.opened.then(function () {
 
+                    // Login to vmware
+                    return ServerFactory.connectVcenter(connection.host, connection.credential, connection.port);
+                }).then(function (data) {
+                    if (data.data.status === 'error') throw new Error(data.data.data);
+
+                    // Login to SOAP vmware
+                    return vmwareFactory.connectvCenterSoap(connection.credential, connection.host, connection.port);
+                }).then(function (res) {
+                    if (res.status === 'error') throw new Error('Failed to connect to ' + connectionsFactory.getConnectionByUuid(connection.uuid).type);
+
                     // Get client version
                     return vmwareFactory.getClientVersion(connection.host, connection.port);
                 }).then(function (data) {
+                    if (data.status === 'error') throw new Error(data.data);
                     //TODO: check if version is compatible
 
                     angular.extend(connectionsFactory.getConnectionByUuid(connection.uuid), {
@@ -226,15 +237,6 @@
                         authdPort: (data.data.authdPort ? data.data.authdPort[0] : null),
                         type: (data.data.authdPort ? 'ESXi' : 'vCenter')
                     });
-
-                    // Login to vmware
-                    return ServerFactory.connectVcenter(connection.host, connection.credential, connection.port);
-                }).then(function (data) {
-                    if (data.data.status === 'error') throw new Error(data.data.data);
-
-                    return vmwareFactory.connectvCenterSoap(connection.credential, connection.host, connection.port);
-                }).then(function (res) {
-                    if (res.status === 'error') throw new Error('Failed to connect to ' + connectionsFactory.getConnectionByUuid(connection.uuid).type);
 
                     modalFactory.changeModalText('Checking SysOS extension...', '.window--smanager .window__main');
 
@@ -347,24 +349,23 @@
                     modalFactory.closeModal('.window--smanager .window__main');
 
                 }).catch(function (e) {
-
                     modalFactory.closeModal('.window--smanager .window__main');
+                    connectionsFactory.deleteConnection(connection.uuid);
+                    $rootScope.$broadcast('smanager__new_connection');
 
                     if (e.message === 'ENOTFOUND') {
-                        return toastr.error('Host not found (' + connection.host + ')', 'Error trying to connect to ' + connectionsFactory.getConnectionByUuid(connection.uuid).type);
+                        return toastr.error('Host not found (' + connection.host + ')', 'Error trying to connect to vCenter');
                     }
 
                     if (e.message === 'ETIMEDOUT') {
-                        return toastr.error('Timeout while connecting to ' + connection.host, 'Error trying to connect to ' + connectionsFactory.getConnectionByUuid(connection.uuid).type);
+                        return toastr.error('Timeout while connecting to ' + connection.host, 'Error trying to connect to vCenter');
                     }
 
                     if (e.message === 'Unauthorized') {
-                        return toastr.error('Invalid credentials (' + connection.host + ')', 'Error trying to connect to ' + connectionsFactory.getConnectionByUuid(connection.uuid).type);
+                        return toastr.error('Invalid credentials (' + connection.host + ')', 'Error trying to connect to vCenter');
                     }
 
-                    toastr.error(e.message, 'Error getting data from ' + connectionsFactory.getConnectionByUuid(connection.uuid).type);
-
-                    console.log(e);
+                    toastr.error(e.message, 'Error getting data from vCenter');
                     throw new Error(e);
                 });
 
@@ -628,6 +629,10 @@
                     modalFactory.closeModal('.window--smanager .window__main');
 
                 }).catch(function (e) {
+                    modalFactory.closeModal('.window--smanager .window__main');
+                    $rootScope.$broadcast('smanager__new_connection');
+                    connectionsFactory.deleteConnection(connection.uuid);
+
                     if (e.message === 'ENOTFOUND') {
                         modalFactory.closeModal('.window--smanager .window__main');
                         return toastr.error('Host not found (' + connection.host + ')', 'Error trying to connect to NetApp');
@@ -638,10 +643,7 @@
                         return toastr.error('Timeout while connecting to ' + connection.host, 'Error trying to connect to NetApp');
                     }
 
-                    modalFactory.closeModal('.window--smanager .window__main');
                     toastr.error(e.message, 'Error getting data from NetApp');
-
-                    console.log(e);
                     throw new Error(e);
                 });
             };

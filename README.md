@@ -36,6 +36,9 @@ As a client:
 
 `http://localhost/index.html`
 
+## Default User & Password
+root:root
+
 ## Configuration
 
 - How to change the default server port (80):

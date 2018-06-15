@@ -25,8 +25,9 @@ router.post("/", function (req, res) {
 	 * Rewrite all config file with received data
 	 */
 	if (full_save) {
-		return jsonfile.writeFile(path.join(__dirname, '../../../filesystem/etc/' + file), data, {flag: 'w'}, function (err) {
-			if (err) return console.log(err);
+		return jsonfile.writeFile(path.join(__dirname, '../../../filesystem/etc/' + file), data, {flag: 'w'}, function (e) {
+            if (e && e.code) return apiGlobals.serverError(e.code);
+            if (e) return apiGlobals.serverError(e);
 
 			return apiGlobals.validResponse();
 
@@ -41,14 +42,16 @@ router.post("/", function (req, res) {
 	// Create new uuid (is new entry)
 	if (!data.hasOwnProperty('uuid')) {
 
-		return uuid(function (err, id) {
-			if (err) return console.log(err);
+		return uuid(function (e, id) {
+            if (e && e.code) return apiGlobals.serverError(e.code);
+            if (e) return apiGlobals.serverError(e);
 
 			data.uuid = id;
 			config.push(data);
 
-			return jsonfile.writeFile(path.join(__dirname, '../../../filesystem/etc/' + file), config, {flag: 'w'}, function (err) {
-				if (err) return console.log(err);
+			return jsonfile.writeFile(path.join(__dirname, '../../../filesystem/etc/' + file), config, {flag: 'w'}, function (e) {
+                if (e && e.code) return apiGlobals.serverError(e.code);
+                if (e) return apiGlobals.serverError(e);
 
 				return apiGlobals.responseJsonData(id);
 			});
@@ -72,8 +75,9 @@ router.post("/", function (req, res) {
 		config.push(data);
 	}
 
-	return jsonfile.writeFile(path.join(__dirname, '../../../filesystem/etc/' + file), config, {flag: 'w'}, function (err) {
-		if (err) return console.log(err);
+	return jsonfile.writeFile(path.join(__dirname, '../../../filesystem/etc/' + file), config, {flag: 'w'}, function (e) {
+        if (e && e.code) return apiGlobals.serverError(e.code);
+        if (e) return apiGlobals.serverError(e);
 
 		return apiGlobals.responseJsonData(data.uuid);
 	});

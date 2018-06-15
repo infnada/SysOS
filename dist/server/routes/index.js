@@ -5,8 +5,58 @@ module.exports = function (app, io) {
 
 	var path = require('path');
 	var fs = require('fs');
+    var config = require('read-config')(path.join(__dirname, '../filesystem/etc/expressjs/config.json'));
+    var log4js = require('log4js');
+    var logger = log4js.getLogger('mainlog');
 	var multiparty = require('connect-multiparty');
 	var multipartyMiddleware = multiparty();
+
+    app.use(function (req, res, next) {
+        var apiGlobals = require('./api/globals.js')(req, res);
+
+        // List of urls that login is not needed.
+        var regexList = [
+            /^\/$/,
+            /^\/api\/credential\/login$/i,
+        ];
+
+        var isMatch = regexList.some(function (rx) {
+            return rx.test(req.url);
+        });
+
+        // User is able to get this page with or without logged_in
+        if (isMatch) {
+            //if (req.url !== "/" && req.session.logged_in == true) return pokerGlobals.responseNoValid("already_logged_in");
+            req.io = io;
+
+            /**
+             * Do not make any other check
+             */
+            return next();
+        }
+
+        // No legged_in or deleted uniqueId cookie
+        if (!req.signedCookies[config.uniqueCookie]) {
+            logger.warn("no_uniqueId_cookie " + req.url);
+            return apiGlobals.responseNoValid("no_uniqueId_cookie");
+        }
+
+        // Session deleted from redis
+        if (!req.session.uuid) {
+            logger.warn("no_user_id " + req.url);
+            return apiGlobals.responseNoValid("no_user_id");
+        }
+
+        // Session user_id and uniqueId not match. Modified uniqueId cookie.
+        if (req.session.uuid !== req.signedCookies[config.uniqueCookie]) {
+            logger.warn("invalid_uniqueId_cookie " + req.url);
+            return apiGlobals.responseNoValid("invalid_uniqueId_cookie");
+        }
+
+        // Include socket.io properties to request object
+        req.io = io;
+        return next();
+    });
 
 	app.use('/api/file/upload', multipartyMiddleware, require('./api/file/upload.js'));
 	app.use('/api/file/rename', require('./api/file/rename.js'));
@@ -52,6 +102,8 @@ module.exports = function (app, io) {
 
 	app.use('/api/netapp/call', require('./api/netapp/call.js'));
 
+    app.use('/api/credential/login', require('./api/credential/login.js'));
+    app.use('/api/credential/init', require('./api/credential/init.js'));
 	app.use('/api/credential/save', require('./api/credential/save.js'));
 	app.use('/api/credential/delete', require('./api/credential/delete.js'));
 
@@ -59,102 +111,12 @@ module.exports = function (app, io) {
 	app.use('/api/configFiles/save', require('./api/configFiles/save.js'));
 	app.use('/api/configFiles/delete', require('./api/configFiles/delete.js'));
 
+    app.use('/api/applications/get_application_file', require('./api/applications/get_application_file.js'));
+
+    app.use('/api/video/get_video', require('./api/video/get_video.js'));
 
 	app.get('/getSession', function (req, res) {
 		res.send('ok');
-	});
-
-	app.get('/getApplicationFile/:file', function (req, res) {
-		var file = path.join(__dirname, '../filesystem/bin/applications/' + req.params.file);
-
-		res.sendFile(file);
-	});
-
-	app.get('/application/cmanager/init', function (req, res) {
-		var config = require('read-config')(path.join(__dirname, '../filesystem/etc/applications/cmanager/config.json'));
-
-		config = config.saved_credentials.filter(function (props) {
-			delete props.password;
-			return true;
-		});
-
-		res.json(config);
-	});
-
-	app.get('/video', function (req, res, next) {
-		var file = path.join(__dirname, '../filesystem/juego.mp4');
-		fs.stat(file, function (err, stats) {
-			if (err) {
-				if (err.code === 'ENOENT') {
-					// 404 Error if file not found
-					return res.sendStatus(404);
-				}
-				res.end(err);
-			}
-
-			var range = req.headers.range;
-			if (!range) {
-				// 416 Wrong range
-				return res.sendStatus(416);
-			}
-			var parts = range.replace(/bytes=/, "").split("-");
-			var partialstart = parts[0];
-			var partialend = parts[1];
-			var total = stats.size;
-			var start = parseInt(partialstart, 10);
-			var end = partialend ? parseInt(partialend, 10) : total - 1;
-			var chunksize = (end - start) + 1;
-			res.writeHead(206, {
-				'Content-Range': 'bytes ' + start + '-' + end + '/' + total,
-				'Accept-Ranges': 'bytes',
-				'Content-Length': chunksize,
-				'Content-Type': 'video/mp4'
-			});
-			var fileStream = fs.createReadStream(file, {
-				start: start,
-				end: end
-			});
-			fileStream.pipe(res);
-			res.on('close', function () {
-				console.log('response closed');
-				if (res.fileStream) {
-					res.fileStream.unpipe(this);
-					if (this.fileStream.fd) {
-						fs.close(this.fileStream.fd);
-					}
-				}
-			});
-
-			/*
-			var range = req.headers.range;
-			if (!range) {
-			 // 416 Wrong range
-			 return res.sendStatus(416);
-			}
-			var positions = range.replace(/bytes=/, "").split("-");
-			console.log(positions);
-			var start = parseInt(positions[0], 10);
-			console.log(start);
-			var total = stats.size;
-			console.log(total);
-			var end = positions[1] ? parseInt(positions[1], 10) : total - 1;
-			var chunksize = (end - start) + 1;
-
-			res.writeHead(206, {
-			  "Content-Range": "bytes " + start + "-" + end + "/" + total,
-			  "Accept-Ranges": "bytes",
-			  "Content-Length": chunksize,
-			  "Content-Type": "video/mp4"
-			});
-
-			var stream = fs.createReadStream(file, { start: start, end: end })
-			  .on("open", function() {
-				stream.pipe(res);
-			  }).on("error", function(err) {
-				res.end(err);
-			  });
-			  */
-		});
 	});
 
 	// express error handling

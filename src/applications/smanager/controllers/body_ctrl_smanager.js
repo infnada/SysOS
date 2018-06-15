@@ -497,7 +497,11 @@
                         if (res !== true) return;
                         $log.debug('Infrastructure Manager [%s] -> Deleting connection', uuid);
 
-                        connectionsFactory.deleteConnection(uuid);
+                        connectionsFactory.deleteConnection(uuid).then(function () {
+                            toastr.success('Connection deleted.', 'Infrastructure Manager');
+                        }).catch(function () {
+                            toastr.error('Error while deleting connection.', 'Infrastructure Manager');
+                        });
                         _this.newConnectionType();
 
                     });

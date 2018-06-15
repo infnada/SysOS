@@ -27,8 +27,8 @@ router.post("/", function (req, res) {
 		});
 
 	}).catch(function (e) {
-		console.log(e);
-		return apiGlobals.serverError(e);
+        if (e && e.code) return apiGlobals.serverError(e.code);
+        if (e) return apiGlobals.serverError(e);
 	});
 
 });

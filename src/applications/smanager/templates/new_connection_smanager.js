@@ -3,7 +3,8 @@
     smanagerApp.run(['$templateCache', function ($templateCache) {
 
         $templateCache.put('templates/applications/new-connection-smanager.html',
-            '<form class="main_form form-horizontal" name="smanagerConnect_form" ng-submit="smB.sendConnect(smanagerConnect_form)"> \
+            '<hr class="hr-text" data-content="{{::smB.Form.so}}"> \
+            <form class="main_form form-horizontal" name="smanagerConnect_form" ng-submit="smB.sendConnect(smanagerConnect_form)"> \
               <div class="form-group"> \
                 <div class="col-sm-12"> \
                   <input type="text" class="form-control" name="inputDescription" placeholder="Description" ng-model="smB.Form.description"> \

@@ -17,6 +17,7 @@ router.post("/", function (req, res) {
 	var vcenter = require('../../modules/vcenter.js');
 	var apiGlobals = require('../globals.js')(req, res);
 	var apiCookie = 'api-session-soap';
+    var credentials = require('../../modules/credentials.js');
 
 	var description = req.body.description;
 	var host = req.body.host;
@@ -24,13 +25,9 @@ router.post("/", function (req, res) {
 	var port = req.body.port;
 
 	//get username and password from credential
-	var credentials = require('read-config')(path.join(__dirname, '../../../filesystem/etc/applications/cmanager/config.json'));
-
-	credential = credentials.saved_credentials.filter(function (obj) {
-		return obj.uuid === credential;
-	})[0];
-
-	return vcenter.connectSoap(host, port, credential.username, credential.password).then(function (data) {
+    return credentials.getCredential(credential).then(function (cred) {
+        return vcenter.connectSoap(host, port, cred.username, cred.password);
+    }).then(function (data) {
 
 		if (data[0].statusCode < 400) {
 
@@ -43,12 +40,13 @@ router.post("/", function (req, res) {
 
 		}
 
-		var msg = 'Error: ${data[0].statusCode}: ${data[0].statusMessage}';
+		var msg = 'Error: ' + data[0].statusCode + ':' + data[0].statusMessage;
 		console.log(msg);
 		return apiGlobals.serverError(msg);
 
-	}).catch(function (err) {
-		if (err) return apiGlobals.serverError(err);
+	}).catch(function (e) {
+        if (e && e.code) return apiGlobals.serverError(e.code);
+        if (e) return apiGlobals.serverError(e);
 	});
 
 });

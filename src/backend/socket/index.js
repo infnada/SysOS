@@ -8,6 +8,7 @@ var config = require('read-config')(path.join(__dirname, '../filesystem/etc/expr
 module.exports = function socket (socket) {
 	var ssh = require('./modules/ssh.js')(socket);
 	var snmp = require('./modules/snmp.js')(socket);
+    var credentials = require('../routes/modules/credentials.js');
 
 	// if websocket connection arrives without an express session, kill it
 	if (!socket.request.session) {
@@ -30,25 +31,22 @@ module.exports = function socket (socket) {
 		host = (validator.isIP(host + '') && host) || (validator.isFQDN(host) && host) || (/^(([a-z]|[A-Z]|[0-9]|[!^(){}\-_~])+)?\w$/.test(host) && host);
 
 		//snmp connection
-		if (so === "snmp") {
-			return snmp.newConnection(type, uuid, host);
-		}
+		if (so === "snmp") return snmp.newConnection(type, uuid, host);
 
 		//get username and password from credential
-		var credentials = require('read-config')(path.join(__dirname, '../filesystem/etc/applications/cmanager/config.json'));
+        return credentials.getCredential(credential).then(function (cred) {
 
-		credential = credentials.saved_credentials.filter(function (obj) {
-			return obj.uuid === credential;
-		})[0];
+            // linux connection
+            console.log(type);
+            if (so === "linux" || type === "ssh" || type === "sftp") {
+                port = (validator.isInt(port + '', {min: 1, max: 65535}) && port) || config.ssh.port;
+                ssh.newConnection(type, uuid, host, port, cred.username, cred.password);
+            }
 
-		// linux connection
-		console.log(type);
-		if (so === "linux" || type === "ssh" || type === "sftp") {
-			port = (validator.isInt(port + '', {min: 1, max: 65535}) && port) || config.ssh.port;
-			if (credential) {
-				ssh.newConnection(type, uuid, host, port, credential.username, credential.password);
-			}
-		}
+        }).catch(function (e) {
+            if (e && e.code) return apiGlobals.serverError(e.code);
+            if (e) return apiGlobals.serverError(e);
+        });
 
 	};
 

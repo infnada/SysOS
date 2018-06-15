@@ -25,8 +25,9 @@ router.post("/", function (req, res) {
 		return obj.uuid !== uuid;
 	});
 
-	return jsonfile.writeFile(path.join(__dirname, '../../../filesystem/etc/' + file), config, {flag: 'w'}, function (err) {
-		if (err) return console.log(err);
+	return jsonfile.writeFile(path.join(__dirname, '../../../filesystem/etc/' + file), config, {flag: 'w'}, function (e) {
+        if (e && e.code) return apiGlobals.serverError(e.code);
+        if (e) return apiGlobals.serverError(e);
 
 		return apiGlobals.validResponse();
 	});

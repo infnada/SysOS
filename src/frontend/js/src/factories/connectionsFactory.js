@@ -451,10 +451,8 @@
 
                 return ServerFactory.deleteConfigFromFile(uuid, file, function () {
                     $log.debug('Connections Factory [%s] -> Connection deleted successfully', uuid);
-                    toastr.success('Connection deleted.', 'Infrastructure Manager');
                 }, function (data) {
                     $log.error('Connections Factory [%s] -> Error while deleting connection -> ', uuid, data.error);
-                    toastr.error('Error while deleting connection.', 'Infrastructure Manager');
                 });
             };
 

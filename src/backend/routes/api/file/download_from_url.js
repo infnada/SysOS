@@ -26,7 +26,7 @@ router.post("/", function (req, res) {
 
     if (req.body.credential && req.body.credential.length !== 0) {
         var credential = req.body.credential;
-        var credentials = require('read-config')(path.join(__dirname, '../../../filesystem/etc/applications/cmanager/config.json'));
+        var credentials = require('read-config')(path.join(__dirname, '../../../filesystem/root/credentials.json'));
 
         credential = credentials.saved_credentials.filter(function (obj) {
             return obj.uuid === credential;

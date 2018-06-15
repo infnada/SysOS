@@ -27,8 +27,9 @@ router.post("/", function (req, res) {
 
 		return apiGlobals.responseJsonData(JSON.parse(body));
 
-	}).catch(function (err) {
-		if (err) return apiGlobals.serverError(err);
+	}).catch(function (e) {
+        if (e && e.code) return apiGlobals.serverError(e.code);
+        if (e) return apiGlobals.serverError(e);
 	});
 
 });

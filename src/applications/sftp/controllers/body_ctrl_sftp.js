@@ -1,7 +1,7 @@
 (function () {
     'use strict';
-    sftpApp.controller('sftpBodyController', ['$scope', '$element', 'sftpFactory', 'ServerFactory', 'Upload', 'fileSystemFactory', '$timeout', 'cmanagerFactory', 'ApplicationsFactory', 'connectionsFactory', 'modalFactory',
-        function ($scope, $element, sftpFactory, ServerFactory, Upload, fileSystemFactory, $timeout, cmanagerFactory, ApplicationsFactory, connectionsFactory, modalFactory) {
+    sftpApp.controller('sftpBodyController', ['$scope', '$element', 'toastr', 'sftpFactory', 'ServerFactory', 'Upload', 'fileSystemFactory', '$timeout', 'cmanagerFactory', 'ApplicationsFactory', 'connectionsFactory', 'modalFactory',
+        function ($scope, $element, toastr, sftpFactory, ServerFactory, Upload, fileSystemFactory, $timeout, cmanagerFactory, ApplicationsFactory, connectionsFactory, modalFactory) {
 
             var _this = this;
 
@@ -152,7 +152,13 @@
                     }
                 );
                 modalInstanceRemoveConnection.result.then(function (res) {
-                    if (res === true) connectionsFactory.deleteConnection(connection.uuid);
+                    if (res === true) {
+                        connectionsFactory.deleteConnection(connection.uuid).then(function () {
+                            toastr.success('Connection deleted.', 'SFTP');
+                        }).catch(function () {
+                            toastr.error('Error while deleting connection.', 'SFTP');
+                        });
+                    }
 
                     _this.newConnection();
 

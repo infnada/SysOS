@@ -7,9 +7,10 @@
     "port": 22,
     "term": "xterm-color"
   },
+  "uniqueCookie": "uniqueId", // DO NOT CHANGE
   "session": {
     "name": "SysOS",
-    "secret": "SysOssecret"
+    "secret": "SysOsSecret" // MUST CHANGE
   },
   "algorithms": {
     "kex": [

@@ -10,13 +10,14 @@
   },
   "license": "MIT",
   "scripts": {
-    "start": "node --stack-trace-limit=1000 --stack-size=1024 --throw-deprecation dist/server/index.js",
+    "start": "node --throw-deprecation dist/server/index.js",
     "bin": "pkg ./package.json --targets node8-linux-x64"
   },
   "dependencies": {
     "Sparkline": "github:GerHobbelt/jquery.sparkline",
     "angular": "^1.7.0",
     "angular-bootstrap-contextmenu": "^1.1.0",
+    "angular-cookies": "^1.7.2",
     "angular-socket-io": "^0.7.0",
     "angular-toastr": "^2.1.1",
     "angular-ui-bootstrap": "^2.5.6",

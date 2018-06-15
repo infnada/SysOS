@@ -86,7 +86,7 @@
             },
             // Applications init
             applicationInitCredentials: function (onSuccess, onError) {
-                return doGet('/application/cmanager/init', onSuccess, onError);
+                return doGet('/api/credential/init', onSuccess, onError);
             },
             // Server Manager API
             remoteGetRelease: function (uuid, onSuccess, onError) {
@@ -170,6 +170,9 @@
             },
             deleteCredential: function (uuid, onSuccess, onError) {
                 return doPost('/api/credential/delete', {uuid: uuid}, onSuccess, onError);
+            },
+            login: function (user, password, onSuccess, onError) {
+                return doPost('/api/credential/login', {user: user, password: password}, onSuccess, onError);
             }
         };
 

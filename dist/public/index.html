@@ -8,10 +8,38 @@
 
   <link rel="stylesheet" href="css/vendor.css">
   <link rel="stylesheet" href="css/main.css">
-</head>
-<body>
 
-  <div class="desktop" ng-controller="mainController as main" ng-click="main.handleDesktopClick($event)">
+</head>
+<body ng-controller="mainController as main">
+
+  <div id="login" ng-if="$root.showLogin">
+    <div class="container">
+      <div class="profile" ng-class="{'profile--open': main.showUser}">
+        <button class="profile__avatar" id="toggleProfile" ng-click="main.showUser = !main.showUser">
+          <i class="fa fa-user fa-5x"></i>
+        </button>
+        <div class="profile__form">
+          <div class="profile__fields">
+            <form autocomplete="off">
+              <div class="field">
+                <input type="text" id="fieldUser" class="input" autocomplete="off" ng-model="main.user" required pattern=.*\S.* />
+                <label for="fieldUser" class="label">Username</label>
+              </div>
+              <div class="field">
+                <input type="password" id="fieldPassword" class="input" autocomplete="off" ng-model="main.password" readonly onfocus="this.removeAttribute('readonly');" required pattern=.*\S.* />
+                <label for="fieldPassword" class="label">Password</label>
+              </div>
+              <div class="profile__footer">
+                <button class="btn" ng-click="main.login()">Login</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="desktop" ng-click="main.handleDesktopClick($event)" ng-if="$root.showApp">
 
     <task-bar></task-bar>
 

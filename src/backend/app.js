@@ -21,7 +21,6 @@ log4js.configure({
 var logger = log4js.getLogger('mainlog');
 
 var config = require('read-config')(path.join(__dirname, '/filesystem/etc/expressjs/config.json'));
-
 var express = require('express');
 var favicon = require("serve-favicon");
 var cookieParser = require("cookie-parser");
@@ -30,6 +29,7 @@ var compress = require("compression");
 var cors = require("cors");
 var helmet = require("helmet");
 var csrf = require("csurf");
+
 var expressOptions = {
 	dotfiles: 'ignore',
 	etag: false,
@@ -37,18 +37,23 @@ var expressOptions = {
 	index: false,
 	maxAge: '1s',
 	redirect: false,
-	setHeaders: function (res, path, stat) {
+	setHeaders: function (res) {
 		res.set('x-timestamp', Date.now())
 	}
 };
 
+var expiryDate = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
 var session = require('express-session')({
 	secret: config.session.secret,
 	name: config.session.name,
-	resave: true,
-	saveUninitialized: false,
-	unset: 'destroy'
+    resave: false,
+    saveUninitialized: true,
+    expires: expiryDate
 });
+
+/**
+ * Init Expressjs
+ */
 
 var app = express();
 app.use(session);
@@ -66,12 +71,11 @@ app.use(log4js.connectLogger(logger, {
 	nolog: '\\.gif|\\.jpg$|\\.js$|\\.png$|\\.css$||\\.woff$'
 }));
 
-
 app.use(bodyParser.urlencoded({
 	extended: true
 }));
 app.use(bodyParser.json({limit: '50mb'}));
-app.use(cookieParser());
+app.use(cookieParser(config.session.secret));
 app.use(helmet.frameguard());
 app.use(helmet.xssFilter());
 app.use(helmet.noSniff());

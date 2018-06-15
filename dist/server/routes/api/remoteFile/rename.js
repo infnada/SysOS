@@ -24,13 +24,15 @@ router.post("/", function (req, res) {
 	return sshSessions.getSession('sftp', uuid, function (conn) {
 
 
-		conn.sftpSession.rename(sourceFile, destFile, function (err) {
-			if (err) return apiGlobals.serverError(err);
+		conn.sftpSession.rename(sourceFile, destFile, function (e) {
+            if (e && e.code) return apiGlobals.serverError(e.code);
+            if (e) return apiGlobals.serverError(e);
 
 			// Send path data
 			var currentPath = path.dirname(destFile);
-			conn.sftpSession.readdir(currentPath, function (err, data) {
-				if (err) return apiGlobals.serverError(err);
+			conn.sftpSession.readdir(currentPath, function (e, data) {
+                if (e && e.code) return apiGlobals.serverError(e.code);
+                if (e) return apiGlobals.serverError(e);
 
 				return apiGlobals.responseData(uuid, currentPath + '/', data);
 			});

@@ -27,10 +27,9 @@ router.post("/", function (req, res) {
 
 	var fileName = req.body.name;
 
-	res.sendFile(fileName, options, function (err) {
-		if (err) {
-			apiGlobals.serverError();
-		}
+	res.sendFile(fileName, options, function (e) {
+        if (e && e.code) return apiGlobals.serverError(e.code);
+        if (e) return apiGlobals.serverError(e);
 	});
 
 });

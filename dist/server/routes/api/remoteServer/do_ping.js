@@ -16,14 +16,6 @@ router.post("/", function (req, res) {
 	var uuid = req.body.uuid;
 	var host = req.body.host;
 	var apiGlobals = require('../globals.js')(req, res);
-
-	/*var ping = require('ping');
-  ping.promise.probe(host)
-  .then(function (res) {
-  	console.log(res);
-  	return apiGlobals.responseData(uuid, 'ping', data);
-  });*/
-
 	var ping = require("net-ping");
 	var session = ping.createSession();
 

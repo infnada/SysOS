@@ -27,13 +27,11 @@ router.post("/", function (req, res) {
 	};
 
 
-	fs.readFile(req.files.file.path, function (err, data) {
+	fs.readFile(req.files.file.path, function (e, data) {
 		var file = {};
 
-		if (err) {
-			apiGlobals.serverError();
-			return console.warn(err);
-		}
+        if (e && e.code) return apiGlobals.serverError(e.code);
+        if (e) return apiGlobals.serverError(e);
 
 		file.name = (req.body.path == undefined ? req.files.file.name : req.body.path);
 		file.path = path.join(__dirname, '../../../filesystem/') + file.name;
@@ -42,11 +40,9 @@ router.post("/", function (req, res) {
 		createDirIfNotExists(file.path);
 
 		// copy the data from the req.files.file.path and paste it to file.path
-		fs.writeFile(file.path, data, function (err) {
-			if (err) {
-				apiGlobals.serverError();
-				return console.warn(err);
-			}
+		fs.writeFile(file.path, data, function (e) {
+            if (e && e.code) return apiGlobals.serverError(e.code);
+            if (e) return apiGlobals.serverError(e);
 
 			apiGlobals.validResponse();
 			console.log("The file: " + req.files.file.name + " was saved to " + file.path);

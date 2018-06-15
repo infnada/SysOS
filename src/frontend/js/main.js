@@ -19,5 +19,6 @@ var SysOS = angular.module('SysOS', [
     'angular-uuid',
     'oc.lazyLoad',
     'ui.sortable',
-    'ui.tree'
+    'ui.tree',
+    'ngCookies'
 ]);

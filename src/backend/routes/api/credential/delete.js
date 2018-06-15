@@ -17,14 +17,15 @@ router.post("/", function (req, res) {
 
 	var apiGlobals = require('../globals.js')(req, res);
 	var uuid = req.body.uuid;
-	var credentials = require('read-config')(path.join(__dirname, '../../../filesystem/etc/applications/cmanager/config.json'));
+	var credentials = require('read-config')(path.join(__dirname, '../../../filesystem/root/credentials.json'));
 
 	credentials.saved_credentials = credentials.saved_credentials.filter(function (obj) {
 		return obj.uuid !== uuid;
 	});
 
-	return jsonfile.writeFile(path.join(__dirname, '../../../filesystem/etc/applications/cmanager/config.json'), credentials, function (err) {
-		if (err) return console.log(err);
+	return jsonfile.writeFile(path.join(__dirname, '../../../filesystem/root/credentials.json'), credentials, function (e) {
+        if (e && e.code) return apiGlobals.serverError(e.code);
+        if (e) return apiGlobals.serverError(e);
 
 		return apiGlobals.responseJsonData(uuid);
 	});

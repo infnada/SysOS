@@ -39,7 +39,7 @@
         $templateCache.put('templates/applications/body-video.html',
             '<div class="window__body"> \
               <div class="window__main no_padding"> \
-                <video class="full_video" src="http://localhost:9001/video" controls></video> \
+                <video class="full_video" src="http://localhost/api/video/get_video" controls></video> \
               </div> \
             </div>'
         );

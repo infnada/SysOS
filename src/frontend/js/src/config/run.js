@@ -1,114 +1,33 @@
 (function () {
     'use strict';
-    SysOS.run(['$rootScope', '$log', 'ServerFactory', 'ApplicationsFactory', 'socket', 'connectionsFactory', '$injector', '$ocLazyLoad',
-        function ($rootScope, $log, ServerFactory, ApplicationsFactory, socket, connectionsFactory, $injector, $ocLazyLoad) {
+    SysOS.run(['$rootScope', '$log', '$cookies', 'mainFactory', 'ServerFactory',
+        function ($rootScope, $log, $cookies, mainFactory, ServerFactory) {
 
             $log.debug('SysOS -> Init');
 
-            angular.element(window).bind('dragover', function (e) {
-                e.preventDefault();
-            });
-            angular.element(window).bind('drop', function (e) {
-                e.preventDefault();
-            });
-            angular.element(window).bind('contextmenu', function (e) {
-                e.preventDefault();
-            });
+            $rootScope.showLogin = true;
+            $rootScope.showApp = false;
 
-            /**
-             *
-             * Init
-             *
-             */
+            console.log($cookies.get('uniqueId'));
 
-            // Ensure no application is open
-            $rootScope.taskbar__item_open = null;
+            if (angular.isDefined($cookies.get('uniqueId'))) {
 
-            /**
-             * Get Installed Applications
-             */
-            ApplicationsFactory.getInstalledApplications().then(function (data) {
+                // Check express session
+                ServerFactory
+                .getSession(function (data) {
+                    if (data.data.status === 'error') {
+                        $log.debug('SysOS -> Removing uniqueId cookie');
+                        return $cookies.remove('uniqueId');
+                    }
 
-                angular.forEach(data, function (application) {
+                    return mainFactory.init();
 
-                    var module = application.filename.replace('application__', '').replace('.min.js', '');
-
-                    $ocLazyLoad.load({
-                        name: module + 'App',
-                        files: ['/getApplicationFile/' + application.filename]
-                    }).then(function () {
-                        //console.log($injector.get(module + 'App'));
-                        //var module = application.filename.replace("application__","").replace(".min.js","");
-                        //$injector.get(module + 'App').run();
-                    });
-
-                });
-            });
-
-            /**
-             * Get TaskBar Applications
-             */
-            ApplicationsFactory.getTaskBarApplications();
-
-            // Get express session
-            ServerFactory
-            .getSession(function () {
-
-                socket.on('connect', function () {
-
-
-                });
-                socket.on('disconnect', function (err) {
-                    console.log(err);
-                    socket.io.reconnection(false);
-                });
-                socket.on('error', function (err) {
-                    console.log(err);
+                }, function () {
+                    //Error
+                    console.log('error');
                 });
 
-                //SMANAGER
-                socket.on('smanager__prop', function (data) {
-                    var smanagerFactory = $injector.get('smanagerFactory');
-
-                    if (angular.isObject(data)) console.log(data);
-                    smanagerFactory.newProp(data);
-                });
-
-                //SSH
-                socket.on('ssh__prop', function (data) {
-                    var sshFactory = $injector.get('sshFactory');
-
-                    if (angular.isObject(data)) console.log(data);
-                    sshFactory.newProp(data);
-                });
-                socket.on('ssh__data', function (data) {
-                    var sshFactory = $injector.get('sshFactory');
-
-                    sshFactory.newData(data);
-                });
-
-                //SFTP
-                socket.on('sftp__prop', function (data) {
-                    var sftpFactory = $injector.get('sftpFactory');
-
-                    if (angular.isObject(data)) console.log(data);
-                    sftpFactory.newProp(data);
-                });
-                socket.on('sftp__data', function (data) {
-                    var sftpFactory = $injector.get('sftpFactory');
-
-                    sftpFactory.newData(data);
-                });
-                socket.on('sftp__progress', function (data) {
-                    var sftpFactory = $injector.get('sftpFactory');
-
-                    sftpFactory.newProgress(data);
-                });
-
-            }, function () {
-                //Error
-                console.log('error');
-            });
+            }
 
         }]);
 }());
