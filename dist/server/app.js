@@ -29,6 +29,11 @@ var compress = require("compression");
 var cors = require("cors");
 var helmet = require("helmet");
 var csrf = require("csurf");
+var fs = require("fs");
+var options = {
+    key: fs.readFileSync(__dirname + "/ssl/key.pem"),
+    cert: fs.readFileSync(__dirname + "/ssl/cert.pem"),
+};
 
 var expressOptions = {
 	dotfiles: 'ignore',
@@ -80,7 +85,6 @@ app.use(helmet.frameguard());
 app.use(helmet.xssFilter());
 app.use(helmet.noSniff());
 app.use(helmet.ieNoOpen());
-app.use(helmet.frameguard());
 app.use(helmet.hsts({
 	maxAge: 10886400000,     // Must be at least 18 weeks to be approved by Google
 	includeSubdomains: true, // Must be enabled to be approved by Google
@@ -107,19 +111,15 @@ app.use(function (err, req, res, next) {
   res.send("session has expired or form tampered with");
 });*/
 
-var server = require('http').Server(app);
-var io = require('socket.io')(server);
-require("./routes")(app, io);
-
-// socket.io
-// expose express session with socket.request.session
-io.use(function (socket, next) {
-	(socket.request.res) ? session(socket.request, socket.request.res, next)
-		: next()
+// Create HTTP server and redirect everything to HTTPS
+var server = require('http').createServer(function (req, res) {
+    res.writeHead(301, {"Location": "https://" + req.headers['host'] + ':' + config.listen.ports + req.url});
+    res.end();
 });
 
-// bring up socket
-var socket = require('./socket');
-io.on('connection', socket);
+// Create main HTTPS server
+var servers = require('https')
+.createServer(options, app);
 
-module.exports = {server: server, config: config};
+
+module.exports = {server: server, servers: servers, app: app,config: config};

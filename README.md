@@ -34,16 +34,16 @@ As a client:
 
 - Go with your browser at:
 
-`http://localhost/index.html`
+`https://localhost:8080/index.html`
 
 ## Default User & Password
 root:root
 
 ## Configuration
 
-- How to change the default server port (80):
+- How to change the default server port (80/8080):
 
-Edit the main expressjs file located at `/dist/server/filesystem/etc/expressjs/config.json` and change `listen.port` option "80"
+Edit the main expressjs file located at `/dist/server/filesystem/etc/expressjs/config.json` and change `listen.port` option or `listen.ports` for `https`
 
 ## Currently installed applications
 

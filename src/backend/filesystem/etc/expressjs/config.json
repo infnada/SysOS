@@ -1,7 +1,8 @@
 {
   "listen": {
     "ip": "localhost",
-    "port": 80
+    "port": 80,
+    "ports": 8080
   },
   "ssh": {
     "port": 22,

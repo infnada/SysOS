@@ -17,7 +17,7 @@ module.exports = function (app, io) {
         // List of urls that login is not needed.
         var regexList = [
             /^\/$/,
-            /^\/api\/credential\/login$/i,
+            /^\/api\/credential\/login$/i
         ];
 
         var isMatch = regexList.some(function (rx) {

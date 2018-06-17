@@ -838,8 +838,6 @@ var SysOS = angular.module('SysOS', [
             $rootScope.showLogin = true;
             $rootScope.showApp = false;
 
-            console.log($cookies.get('uniqueId'));
-
             if (angular.isDefined($cookies.get('uniqueId'))) {
 
                 // Check express session
@@ -6843,7 +6841,7 @@ var SysOS = angular.module('SysOS', [
     'use strict';
     SysOS.factory('socket', ['socketFactory', function (socketFactory) {
 
-        var myIoSocket = io.connect('localhost');
+        var myIoSocket = io.connect(window.location.host, {transports: ['websocket'], 'forceNew': true});
 
         return socketFactory({
             ioSocket: myIoSocket
