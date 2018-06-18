@@ -1,11 +1,7 @@
-/*
- * Connect to socket.io and return socket object
- */
-
 (function () {
     'use strict';
-    SysOS.factory('mainFactory', ['$rootScope', 'ApplicationsFactory', 'socket', 'connectionsFactory', '$injector', '$ocLazyLoad',
-        function ($rootScope, ApplicationsFactory, socket, connectionsFactory, $injector, $ocLazyLoad) {
+    SysOS.factory('mainFactory', ['$rootScope', 'ApplicationsFactory', 'socketIo', 'connectionsFactory', '$injector', '$ocLazyLoad',
+        function ($rootScope, ApplicationsFactory, socketIo, connectionsFactory, $injector, $ocLazyLoad) {
 
         var init = function () {
             $rootScope.showApp = true;
@@ -56,18 +52,10 @@
              */
             ApplicationsFactory.getTaskBarApplications();
 
+            var socket = socketIo.connect();
 
-            socket.on('connect', function () {
 
 
-            });
-            socket.on('disconnect', function (err) {
-                console.log(err);
-                socket.io.reconnection(false);
-            });
-            socket.on('error', function (err) {
-                console.log(err);
-            });
 
             //SMANAGER
             socket.on('smanager__prop', function (data) {

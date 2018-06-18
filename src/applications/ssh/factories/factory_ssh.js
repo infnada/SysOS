@@ -1,7 +1,7 @@
 (function () {
     'use strict';
-    sshApp.factory('sshFactory', ['socket', 'connectionsFactory', 'toastr', '$timeout',
-        function (socket, connectionsFactory, toastr, $timeout) {
+    sshApp.factory('sshFactory', ['socketIo', 'connectionsFactory', 'toastr', '$timeout',
+        function (socketIo, connectionsFactory, toastr, $timeout) {
 
             // Private
             var activeConnection = null;
@@ -82,7 +82,7 @@
 
                         console.log(cols, rows);
 
-                        socket.emit('ssh_session__geometry', cols, rows);
+                        socketIo.socket().emit('ssh_session__geometry', cols, rows);
                     }
                 }
 

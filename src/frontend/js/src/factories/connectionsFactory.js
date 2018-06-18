@@ -1,11 +1,7 @@
-/*
- * Connect to socket.io and return socket object
- */
-
 (function () {
     'use strict';
-    SysOS.factory('connectionsFactory', ['$rootScope', '$injector', '$filter', '$timeout', '$log', 'socket', 'ServerFactory', 'toastr', 'uuid',
-        function ($rootScope, $injector, $filter, $timeout, $log, socket, ServerFactory, toastr, uuid) {
+    SysOS.factory('connectionsFactory', ['$rootScope', '$injector', '$filter', '$timeout', '$log', 'socketIo', 'ServerFactory', 'toastr', 'uuid',
+        function ($rootScope, $injector, $filter, $timeout, $log, socketIo, ServerFactory, toastr, uuid) {
 
             var connections = {
                 standalone: [],
@@ -351,7 +347,7 @@
 
                     if (connection.save) saveConnection(connection);
 
-                    socket.emit('session__new', 'smanager', connection.host, connection.credential, null, connection.uuid, connection.so);
+                    socketIo.socket().emit('session__new', 'smanager', connection.host, connection.credential, null, connection.uuid, connection.so);
                 }
 
                 /*
@@ -380,7 +376,7 @@
                     });
 
                     SSHterminals[connection.uuid].on('data', function (data) {
-                        socket.emit('ssh_session__data', data, connection.uuid);
+                        socketIo.socket().emit('ssh_session__data', data, connection.uuid);
                     });
 
                     $timeout(function () {
@@ -390,8 +386,8 @@
                             focus: true
                         });
 
-                        socket.emit('ssh_session__geometry', SSHterminals[connection.uuid].cols, SSHterminals[connection.uuid].rows, connection.uuid);
-                        socket.emit('session__new', 'ssh', connection.host, connection.credential, null, connection.uuid);
+                        socketIo.socket().emit('ssh_session__geometry', SSHterminals[connection.uuid].cols, SSHterminals[connection.uuid].rows, connection.uuid);
+                        socketIo.socket().emit('session__new', 'ssh', connection.host, connection.credential, null, connection.uuid);
                     }, 100);
                 }
 
@@ -401,7 +397,7 @@
                 if (connection.category === 'sftp') {
                     if (connection.save) saveConnection(connection);
 
-                    socket.emit('session__new', 'sftp', connection.host, connection.credential, null, connection.uuid);
+                    socketIo.socket().emit('session__new', 'sftp', connection.host, connection.credential, null, connection.uuid);
                 }
 
                 return connection;
@@ -419,7 +415,7 @@
 
                 var connection_category = getConnectionCategoryByUuid(uuid);
                 if (connection_category === 'stfp' || connection_category === 'ssh' || connection_category === 'linux') {
-                    socket.emit('session__disconnect', uuid);
+                    socketIo.socket().emit('session__disconnect', uuid);
                 }
 
                 getConnectionByUuid(uuid).state = 'disconnected';

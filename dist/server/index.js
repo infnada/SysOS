@@ -1,6 +1,7 @@
 var config = require('./app').config;
 var server = require('./app').server;
 var servers = require('./app').servers;
+var session = require('./app').session;
 var app = require('./app').app;
 
 // HTTP
@@ -17,10 +18,15 @@ servers.on('error', function (err) {
 
 // SOCKET.IO
 var io = require("socket.io").listen(servers);
-// expose express session with socket.request.session
-io.use(function (socket, next) {
-    (socket.request.res) ? session(socket.request, socket.request.res, next)
-        : next()
+
+io.set('authorization', function(handshake, accept) {
+    session(handshake, {}, function (err) {
+        if (err) return accept(err);
+        var session = handshake.session;
+
+        // check the session is valid
+        accept(null, session.uuid != null);
+    });
 });
 
 // bring up socket

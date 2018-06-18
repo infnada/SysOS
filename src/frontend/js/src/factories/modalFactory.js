@@ -1,7 +1,3 @@
-/*
- * Connect to socket.io and return socket object
- */
-
 (function () {
     'use strict';
     SysOS.factory('modalFactory', ['$uibModal', '$document', function ($uibModal, $document) {

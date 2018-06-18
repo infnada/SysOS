@@ -1,7 +1,7 @@
 (function () {
     'use strict';
-    smanagerApp.factory('smanagerFactory', ['$rootScope', '$q', '$log', '$document', 'socket', 'toastr', 'uuid', 'ServerFactory', '$filter', 'modalFactory', 'netappFactory', 'connectionsFactory', 'vmwareFactory',
-        function ($rootScope, $q, $log, $document, socket, toastr, uuid, ServerFactory, $filter, modalFactory, netappFactory, connectionsFactory, vmwareFactory) {
+    smanagerApp.factory('smanagerFactory', ['$rootScope', '$q', '$log', '$document', 'toastr', 'uuid', 'ServerFactory', '$filter', 'modalFactory', 'netappFactory', 'connectionsFactory', 'vmwareFactory',
+        function ($rootScope, $q, $log, $document, toastr, uuid, ServerFactory, $filter, modalFactory, netappFactory, connectionsFactory, vmwareFactory) {
             var links = [];
 
             /** @namespace datastore.info.nas */

@@ -240,12 +240,12 @@
 
 (function () {
     'use strict';
-    SysOS.controller('alertsBodyController', ['$scope', 'smanagerFactory', function ($scope, smanagerFactory) {
+    SysOS.controller('alertsBodyController', ['$scope', 'connectionsFactory', function ($scope, connectionsFactory) {
 
         var _this = this;
 
         $scope.$watch(function () {
-            return smanagerFactory.connections();
+            return connectionsFactory.connections();
         }, function (newValue) {
             _this.connections = newValue;
         });

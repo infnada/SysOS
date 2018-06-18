@@ -15,7 +15,6 @@ $(window).on('load', function () {
 });
 
 var SysOS = angular.module('SysOS', [
-    'btford.socket-io',
     'ngFileUpload',
     'ui.codemirror',
     'ui.bootstrap.contextMenu',
@@ -271,12 +270,12 @@ var SysOS = angular.module('SysOS', [
 
 (function () {
     'use strict';
-    SysOS.controller('alertsBodyController', ['$scope', 'smanagerFactory', function ($scope, smanagerFactory) {
+    SysOS.controller('alertsBodyController', ['$scope', 'connectionsFactory', function ($scope, connectionsFactory) {
 
         var _this = this;
 
         $scope.$watch(function () {
-            return smanagerFactory.connections();
+            return connectionsFactory.connections();
         }, function (newValue) {
             _this.connections = newValue;
         });
@@ -1932,8 +1931,8 @@ var SysOS = angular.module('SysOS', [
 
 (function () {
     'use strict';
-    SysOS.factory('connectionsFactory', ['$rootScope', '$injector', '$filter', '$timeout', '$log', 'socket', 'ServerFactory', 'toastr', 'uuid',
-        function ($rootScope, $injector, $filter, $timeout, $log, socket, ServerFactory, toastr, uuid) {
+    SysOS.factory('connectionsFactory', ['$rootScope', '$injector', '$filter', '$timeout', '$log', 'socketIo', 'ServerFactory', 'toastr', 'uuid',
+        function ($rootScope, $injector, $filter, $timeout, $log, socketIo, ServerFactory, toastr, uuid) {
 
             var connections = {
                 standalone: [],
@@ -2279,7 +2278,7 @@ var SysOS = angular.module('SysOS', [
 
                     if (connection.save) saveConnection(connection);
 
-                    socket.emit('session__new', 'smanager', connection.host, connection.credential, null, connection.uuid, connection.so);
+                    socketIo.socket().emit('session__new', 'smanager', connection.host, connection.credential, null, connection.uuid, connection.so);
                 }
 
                 /*
@@ -2308,7 +2307,7 @@ var SysOS = angular.module('SysOS', [
                     });
 
                     SSHterminals[connection.uuid].on('data', function (data) {
-                        socket.emit('ssh_session__data', data, connection.uuid);
+                        socketIo.socket().emit('ssh_session__data', data, connection.uuid);
                     });
 
                     $timeout(function () {
@@ -2318,8 +2317,8 @@ var SysOS = angular.module('SysOS', [
                             focus: true
                         });
 
-                        socket.emit('ssh_session__geometry', SSHterminals[connection.uuid].cols, SSHterminals[connection.uuid].rows, connection.uuid);
-                        socket.emit('session__new', 'ssh', connection.host, connection.credential, null, connection.uuid);
+                        socketIo.socket().emit('ssh_session__geometry', SSHterminals[connection.uuid].cols, SSHterminals[connection.uuid].rows, connection.uuid);
+                        socketIo.socket().emit('session__new', 'ssh', connection.host, connection.credential, null, connection.uuid);
                     }, 100);
                 }
 
@@ -2329,7 +2328,7 @@ var SysOS = angular.module('SysOS', [
                 if (connection.category === 'sftp') {
                     if (connection.save) saveConnection(connection);
 
-                    socket.emit('session__new', 'sftp', connection.host, connection.credential, null, connection.uuid);
+                    socketIo.socket().emit('session__new', 'sftp', connection.host, connection.credential, null, connection.uuid);
                 }
 
                 return connection;
@@ -2347,7 +2346,7 @@ var SysOS = angular.module('SysOS', [
 
                 var connection_category = getConnectionCategoryByUuid(uuid);
                 if (connection_category === 'stfp' || connection_category === 'ssh' || connection_category === 'linux') {
-                    socket.emit('session__disconnect', uuid);
+                    socketIo.socket().emit('session__disconnect', uuid);
                 }
 
                 getConnectionByUuid(uuid).state = 'disconnected';
@@ -2664,8 +2663,8 @@ var SysOS = angular.module('SysOS', [
 
 (function () {
     'use strict';
-    SysOS.factory('mainFactory', ['$rootScope', 'ApplicationsFactory', 'socket', 'connectionsFactory', '$injector', '$ocLazyLoad',
-        function ($rootScope, ApplicationsFactory, socket, connectionsFactory, $injector, $ocLazyLoad) {
+    SysOS.factory('mainFactory', ['$rootScope', 'ApplicationsFactory', 'socketIo', 'connectionsFactory', '$injector', '$ocLazyLoad',
+        function ($rootScope, ApplicationsFactory, socketIo, connectionsFactory, $injector, $ocLazyLoad) {
 
         var init = function () {
             $rootScope.showApp = true;
@@ -2716,18 +2715,10 @@ var SysOS = angular.module('SysOS', [
              */
             ApplicationsFactory.getTaskBarApplications();
 
+            var socket = socketIo.connect();
 
-            socket.on('connect', function () {
 
 
-            });
-            socket.on('disconnect', function (err) {
-                console.log(err);
-                socket.io.reconnection(false);
-            });
-            socket.on('error', function (err) {
-                console.log(err);
-            });
 
             //SMANAGER
             socket.on('smanager__prop', function (data) {
@@ -6839,13 +6830,31 @@ var SysOS = angular.module('SysOS', [
 
 (function () {
     'use strict';
-    SysOS.factory('socket', ['socketFactory', function (socketFactory) {
+    SysOS.factory('socketIo', ['socketFactory', function () {
 
-        var myIoSocket = io.connect(window.location.host, {transports: ['websocket'], 'forceNew': true});
+        var myIoSocket;
 
-        return socketFactory({
-            ioSocket: myIoSocket
-        });
+        return {
+            connect: function () {
+
+                myIoSocket = io.connect(window.location.host, {transports: ['websocket'], 'forceNew': true});
+
+                myIoSocket.on('connect', function () {
+
+                });
+                myIoSocket.on('disconnect', function (err) {
+                    console.log(err);
+                });
+                myIoSocket.on('error', function (err) {
+                    console.log(err);
+                });
+
+                return myIoSocket;
+            },
+            socket: function () {
+                return myIoSocket;
+            }
+        };
 
     }]);
 

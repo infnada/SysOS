@@ -1,7 +1,7 @@
 (function () {
     'use strict';
-    sftpApp.factory('sftpFactory', ['socket', 'fileSystemFactory', 'remoteFileSystemFactory', '$rootScope', 'toastr', 'connectionsFactory',
-        function (socket, fileSystemFactory, remoteFileSystemFactory, $rootScope, toastr, connectionsFactory) {
+    sftpApp.factory('sftpFactory', ['socketIo', 'fileSystemFactory', 'remoteFileSystemFactory', '$rootScope', 'toastr', 'connectionsFactory',
+        function (socketIo, fileSystemFactory, remoteFileSystemFactory, $rootScope, toastr, connectionsFactory) {
 
             // Private
             var activeConnection = null;
@@ -89,11 +89,11 @@
             };
 
             var uploadFile = function (filename, localPath, serverPath, currentConnection) {
-                socket.emit('sftp_session__file_upload', localPath + filename, serverPath + filename, currentConnection);
+                socketIo.socket().emit('sftp_session__file_upload', localPath + filename, serverPath + filename, currentConnection);
             };
 
             var downloadFile = function (filename, localPath, serverPath, currentConnection) {
-                socket.emit('sftp_session__file_download', localPath + filename, serverPath + filename, currentConnection);
+                socketIo.socket().emit('sftp_session__file_download', localPath + filename, serverPath + filename, currentConnection);
             };
 
             return {

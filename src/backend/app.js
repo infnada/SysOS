@@ -122,4 +122,4 @@ var servers = require('https')
 .createServer(options, app);
 
 
-module.exports = {server: server, servers: servers, app: app,config: config};
+module.exports = {server: server, servers: servers, app: app, session: session, config: config};

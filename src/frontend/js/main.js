@@ -9,7 +9,6 @@ $(window).on('load', function () {
 });
 
 var SysOS = angular.module('SysOS', [
-    'btford.socket-io',
     'ngFileUpload',
     'ui.codemirror',
     'ui.bootstrap.contextMenu',
