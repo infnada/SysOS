@@ -344,7 +344,8 @@ h1, h2, h3, h4, h5, h6 {
   width: 25%;
   min-width: 200px;
   z-index: 1;
-  background-color: #ccc;
+  background-color: #ececec;
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: 2px 1px 1px rgba(0,0,0,.05);
 }
 
@@ -2825,4 +2826,10 @@ ul.nav-wizard .active ~ li a:focus {
   -webkit-text-fill-color: transparent;
   background-size: 1000% 1000%;
   animation: BG 32s ease infinite;
+}
+
+.desktop__body, .desktop__body #desktop_body{
+  height: 100%;
+  width: 100%;
+  position: absolute;
 }

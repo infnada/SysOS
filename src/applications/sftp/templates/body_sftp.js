@@ -23,7 +23,7 @@
               <div class="window__main no_padding"> \
                 <div class="col-xs-6 ftp__body" ng-controller="sftpBodyLocalController as sftpBL"  ng-class="{\'with__stats\': sftpB.viewExchange == true}"> \
                   <div ng-include="\'templates/applications/actions-sftp-explorer-local.html\'" include-replace></div> \
-                  <div id="local_body" selectable="sftpBL.selection" selectable-list="sftpBL.localFileSystem.currentData | filter:sftpBL.search" selectable-out="selected" selectable-options="{delay:150, filter: \'a\'}" minus-index="2" class="folders" tabindex="0" ng-keydown="sftpBL.handleItemKeyPress($event)" context-menu="sftpBL.localContextMenu"> \
+                  <div id="local_body" selectable="sftpBL.selection" selectable-list="sftpBL.localFileSystem.currentData | filter:sftpBL.search" selectable-out="selected" selectable-options="{delay:150, filter: \'a\'}" minus-index="2" class="folders" tabindex="0" ng-click="sftpBL.handleMainFolderClick($event)" ng-keydown="sftpBL.handleItemKeyPress($event)" context-menu="sftpBL.localContextMenu"> \
                     <div ng-include="\'templates/applications/folders-modal-sftp-local.html\'"></div> \
                     <div ng-include="\'templates/applications/folders-dropzone-sftp-local.html\'"></div> \
                     <a ng-if="sftpBL.viewAsList == false"  ng-repeat="file in sftpBL.localFileSystem.currentData | filter:sftpBL.search" ng-class="{\'active\': sftpBL.currentActive == $index}" ng-click="sftpBL.setCurrentActive($index)" ng-dblclick="sftpBL.doWithFile(file)" title="{{::file.filename}}" context-menu="sftpBL.fileContextMenu"> \
@@ -51,7 +51,7 @@
                 <div class="col-xs-6 ftp__body last" ng-class="{\'with__stats\': sftpB.viewExchange == true}"> \
                   <div ng-if="sftpB.showNewConnection != true && sftpB.getActiveConnection().state != \'disconnected\'" ng-controller="sftpBodyServerController as sftpBS"> \
                     <div ng-include="\'templates/applications/actions-sftp-explorer-server.html\'" include-replace></div> \
-                    <div id="server_body" selectable="sftpBS.selection" selectable-list="sftpB.getActiveConnection().currentData | filter:sftpBS.search" selectable-out="selected" selectable-options="{delay:150, filter: \'a\'}" minus-index="1" class="folders" tabindex="1" ng-keydown="sftpBS.handleItemKeyPress($event)" context-menu="sftpBS.serverContextMenu"> \
+                    <div id="server_body" selectable="sftpBS.selection" selectable-list="sftpB.getActiveConnection().currentData | filter:sftpBS.search" selectable-out="selected" selectable-options="{delay:150, filter: \'a\'}" minus-index="1" class="folders" tabindex="1" ng-click="sftpBS.handleMainFolderClick($event)" ng-keydown="sftpBS.handleItemKeyPress($event)" context-menu="sftpBS.serverContextMenu"> \
                       <div ng-include="\'templates/applications/folders-modal-sftp-server.html\'"></div> \
                       <a ng-if="sftpBS.viewAsList == false"  ng-repeat="file in sftpB.getActiveConnection().currentData | filter:sftpBS.search" ng-class="{\'active\': sftpBS.currentActive == $index}" ng-click="sftpBS.setCurrentActive($index)" ng-dblclick="sftpBS.doWithFile(file)" title="{{::file.filename}}" context-menu="sftpBS.fileContextMenu"> \
                         <i class="fa fa-{{::sftpBS.getFileType(file.longname)}}"></i> \

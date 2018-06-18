@@ -7,7 +7,7 @@
                 <div class="window__main no_padding"> \
                     <div class="col-xs-12 ftp__body" > \
                         <div ng-include="\'templates/applications/actions-de-local.html\'" include-replace></div> \
-                        <div id="local_body" selectable="deB.selection" selectable-list="deB.localFileSystem.currentData | filter:deB.search" selectable-out="selected" selectable-options="{delay:150, filter: \'a\'}" minus-index="2" class="folders" tabindex="0" ng-keydown="deB.handleItemKeyPress($event)" context-menu="deB.localContextMenu"> \
+                        <div id="local_body" selectable="deB.selection" selectable-list="deB.localFileSystem.currentData | filter:deB.search" selectable-out="selected" selectable-options="{delay:150, filter: \'a\'}" minus-index="2" class="folders" tabindex="0" ng-click="deB.handleMainFolderClick($event)" ng-keydown="deB.handleItemKeyPress($event)" context-menu="deB.localContextMenu"> \
                             <div ng-if="!deB.showExplorer" class="main_form"> \
                                 <p>Explore your managed vCenter ot ESXi Datastores or NetApp Volumes</p> \
                                 <table class="table table-hover m-t-xl"> \

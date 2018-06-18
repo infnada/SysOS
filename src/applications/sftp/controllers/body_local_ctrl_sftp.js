@@ -389,6 +389,10 @@
          * Get current path data
          */
         this.reloadPath = function () {
+            if (_this.localFileSystem.currentPath === '/root/desktop/') {
+                $rootScope.$broadcast('desktop__reload');
+            }
+
             fileSystemFactory.getFileSystemPath(_this.localFileSystem.currentPath, function (data) {
                 _this.search = undefined;
                 _this.localFileSystem.currentData = data;
@@ -485,11 +489,23 @@
             }, 100);
         };
 
+        this.handleMainFolderClick = function ($event) {
+
+            if ($event.target.attributes.id !== undefined && $event.target.attributes.id.value === 'local_body') {
+                _this.currentActive = null;
+            }
+
+        };
+
         /*
          * Keypress on item focus
          */
         this.handleItemKeyPress = function (keyEvent) {
-            console.log(keyEvent);
+            // Do nothing if some application is active
+            if ($rootScope.taskbar__item_open !== 'sftp') return;
+
+            // Do nothing if there is no active item unless its side arrows
+            if (_this.currentActive === null && keyEvent.which !== 39 && keyEvent.which === 37) return;
 
             if (keyEvent.which === 46) {
                 _this.modalInputName = _this.localFileSystem.currentData[_this.currentActive].filename;
@@ -537,8 +553,10 @@
 
                 });
             } else if (keyEvent.which === 39) {
+                if (_this.currentActive === null) return _this.currentActive = 0;
                 _this.setCurrentActive(_this.currentActive + 1);
             } else if (keyEvent.which === 37) {
+                if (_this.currentActive === null) return _this.currentActive = 0;
                 _this.setCurrentActive(_this.currentActive - 1);
             } else if (keyEvent.which === 8) {
                 _this.goPathBack();

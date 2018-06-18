@@ -4,7 +4,7 @@
 
 (function () {
     'use strict';
-    SysOS.factory('socketIo', ['socketFactory', function () {
+    SysOS.factory('socketIo', [function () {
 
         var myIoSocket;
 
