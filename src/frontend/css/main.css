@@ -2747,6 +2747,7 @@ ul.nav-wizard .active ~ li a:focus {
   margin-bottom: 2em;
 }
 #login .label {
+  display: block;
   position: absolute;
   padding: 0;
   font-size: 100%;
@@ -2792,7 +2793,7 @@ ul.nav-wizard .active ~ li a:focus {
   line-height: 2.5rem;
   padding: 0 1.5rem;
   color: white;
-  background: #8E49E8;
+  background: #337ab7;
   text-transform: uppercase;
   border-radius: .25rem;
   letter-spacing: .2em;
@@ -2803,7 +2804,7 @@ ul.nav-wizard .active ~ li a:focus {
 }
 #login .btn:hover,
 #login .btn:focus {
-  background: #A678E2;
+  background: #286090;
 }
 
 /* Intro animation */
@@ -2816,4 +2817,12 @@ ul.nav-wizard .active ~ li a:focus {
     opacity: 1;
     top: 50%;
   }
+}
+
+.fa-user-login {
+  background: linear-gradient(233deg, #58fd57, #f6ff76, #e657fd, #fd4545, #6b88ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 1000% 1000%;
+  animation: BG 32s ease infinite;
 }

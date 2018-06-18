@@ -16,7 +16,7 @@
     <div class="container">
       <div class="profile" ng-class="{'profile--open': main.showUser}">
         <button class="profile__avatar" id="toggleProfile" ng-click="main.showUser = !main.showUser">
-          <i class="fa fa-user fa-5x"></i>
+          <i class="fa fa-user fa-5x fa-user-login"></i>
         </button>
         <div class="profile__form">
           <div class="profile__fields">
@@ -30,7 +30,7 @@
                 <label for="fieldPassword" class="label">Password</label>
               </div>
               <div class="profile__footer">
-                <button class="btn" ng-click="main.login()">Login</button>
+                <button class="btn btn-primary" ng-click="main.login()">Login</button>
               </div>
             </form>
           </div>
