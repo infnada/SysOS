@@ -439,7 +439,7 @@
 
         var cloneVolumeFromSnapshot = function (credential, host, port, vfiler, volume, snapshot) {
             // TODO: check if this snapshot volume is already created by another restore. Issue #4 #5
-            var xml = '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'' + (vfiler ? ' vfiler=\'' + vfiler + '\'' : '') + '><volume-clone-create><parent-volume>' + volume + '</parent-volume><volume>SysOS_' + volume + '_Restore</volume><space-reserve>none</space-reserve><parent-snapshot>' + snapshot + '</parent-snapshot></volume-clone-create></netapp>';
+            var xml = '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'' + (vfiler ? ' vfiler=\'' + vfiler + '\'' : '') + '><volume-clone-create><parent-volume>' + volume + '</parent-volume><volume>' + volume + '</volume><space-reserve>none</space-reserve><parent-snapshot>' + snapshot + '</parent-snapshot></volume-clone-create></netapp>';
 
             return ServerFactory.callNetApp(credential, host, port, null, xml).then(function (data) {
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
@@ -449,9 +449,9 @@
             });
         };
 
-        var mountVolume = function (credential, host, port, vfiler, volume) {
+        var mountVolume = function (credential, host, port, vfiler, volume, junction) {
             // TODO: check if this junction path is in use by another restore. Issue #4 #5
-            var xml = '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'' + (vfiler ? ' vfiler=\'' + vfiler + '\'' : '') + '><volume-mount><activate-junction>true</activate-junction><junction-path>/SysOS_' + volume + '_Restore</junction-path><volume-name>SysOS_' + volume + '_Restore</volume-name><export-policy-override>false</export-policy-override></volume-mount></netapp>';
+            var xml = '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'' + (vfiler ? ' vfiler=\'' + vfiler + '\'' : '') + '><volume-mount><activate-junction>true</activate-junction><junction-path>' + junction + '</junction-path><volume-name>' + volume + '</volume-name><export-policy-override>false</export-policy-override></volume-mount></netapp>';
 
             return ServerFactory.callNetApp(credential, host, port, null, xml).then(function (data) {
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
@@ -462,7 +462,7 @@
         };
 
         var unmountVolume = function (credential, host, port, vfiler, volume) {
-            var xml = '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'' + (vfiler ? ' vfiler=\'' + vfiler + '\'' : '') + '><volume-unmount><volume-name>SysOS_' + volume + '_Restore</volume-name><force>True</force></volume-unmount></netapp>';
+            var xml = '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'' + (vfiler ? ' vfiler=\'' + vfiler + '\'' : '') + '><volume-unmount><volume-name>' + volume + '</volume-name><force>True</force></volume-unmount></netapp>';
 
             return ServerFactory.callNetApp(credential, host, port, null, xml).then(function (data) {
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
@@ -473,7 +473,7 @@
         };
 
         var setVolumeOffline = function (credential, host, port, vfiler, volume) {
-            var xml = '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'' + (vfiler ? ' vfiler=\'' + vfiler + '\'' : '') + '><volume-offline><name>SysOS_' + volume + '_Restore</name></volume-offline></netapp>';
+            var xml = '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'' + (vfiler ? ' vfiler=\'' + vfiler + '\'' : '') + '><volume-offline><name>' + volume + '</name></volume-offline></netapp>';
 
             return ServerFactory.callNetApp(credential, host, port, null, xml).then(function (data) {
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
@@ -484,7 +484,7 @@
         };
 
         var destroyVolume = function (credential, host, port, vfiler, volume) {
-            var xml = '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'' + (vfiler ? ' vfiler=\'' + vfiler + '\'' : '') + '><volume-destroy><name>SysOS_' + volume + '_Restore</name></volume-destroy></netapp>';
+            var xml = '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'' + (vfiler ? ' vfiler=\'' + vfiler + '\'' : '') + '><volume-destroy><name>' + volume + '</name></volume-destroy></netapp>';
 
             return ServerFactory.callNetApp(credential, host, port, null, xml).then(function (data) {
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);

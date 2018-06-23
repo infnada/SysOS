@@ -7,26 +7,25 @@
               <div class="window__side"> \
                 <ul class="side__list"> \
                   <li><a><i class="fa fa-home"></i> Home</a></li> \
-                  <li> \
-                    <a > \
+                  <li class="side__list--open"> \
+                    <a> \
                       <i class="fa fa-star"></i> Favorites \
                       <span class="list__toggle" ng-click="BODY.toggleList($event)"></span> \
                     </a> \
-                    <ul style="display:none"> \
-                      <li><a><i class="fa fa-desktop"></i> Desktop</a></li> \
-                      <li><a><i class="fa fa-cloud-download"></i> Downloads</a></li> \
+                    <ul style="display:block"> \
+                      <li ng-click="feB.localFileSystem.currentPath = \'/root/Desktop/\'; feB.reloadPath()"><a><i class="fa fa-desktop"></i> Desktop</a></li> \
+                      <li ng-click="feB.localFileSystem.currentPath = \'/root/Downloads/\'; feB.reloadPath()"><a><i class="fa fa-cloud-download"></i> Downloads</a></li> \
                     </ul> \
                   </li> \
-                  <li> \
-                    <a > \
+                  <li class="side__list--open"> \
+                    <a> \
                       <i class="fa fa-server"></i> This Device \
                       <span class="list__toggle" ng-click="BODY.toggleList($event)"></span> \
                     </a> \
-                    <ul style="display:none"> \
-                      <li><a><i class="fa fa-desktop"></i> Desktop</a></li> \
-                      <li><a><i class="fa fa-files-o"></i> Documents</a></li> \
-                      <li><a><i class="fa fa-cloud-download"></i> Downloads</a></li> \
-                      <li><a>Local Disk  (C:)</a></li> \
+                    <ul style="display:block"> \
+                      <li ng-click="feB.localFileSystem.currentPath = \'/root/Desktop/\'; feB.reloadPath()"><a><i class="fa fa-desktop"></i> Desktop</a></li> \
+                      <li ng-click="feB.localFileSystem.currentPath = \'/root/Documents/\'; feB.reloadPath()"><a><i class="fa fa-files-o"></i> Documents</a></li> \
+                      <li ng-click="feB.localFileSystem.currentPath = \'/root/Downloads/\'; feB.reloadPath()"><a><i class="fa fa-cloud-download"></i> Downloads</a></li> \
                     </ul> \
                   </li> \
                 </ul> \

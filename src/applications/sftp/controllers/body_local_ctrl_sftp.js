@@ -389,7 +389,7 @@
          * Get current path data
          */
         this.reloadPath = function () {
-            if (_this.localFileSystem.currentPath === '/root/desktop/') {
+            if (_this.localFileSystem.currentPath === '/root/Desktop/') {
                 $rootScope.$broadcast('desktop__reload');
             }
 

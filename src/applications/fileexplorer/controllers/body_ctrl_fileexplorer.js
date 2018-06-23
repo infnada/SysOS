@@ -363,7 +363,7 @@
              * Get current path data
              */
             this.reloadPath = function () {
-                if (_this.localFileSystem.currentPath === '/root/desktop/') {
+                if (_this.localFileSystem.currentPath === '/root/Desktop/') {
                     $rootScope.$broadcast('desktop__reload');
                 }
 
@@ -372,14 +372,6 @@
                     _this.localFileSystem.currentData = data;
                     _this.resetActive();
                 });
-            };
-
-            /*
-             * Sets view mode (icons, detailed...)
-             */
-            this.toggleView = function () {
-                _this.viewAsList = !_this.viewAsList;
-                _this.resetActive();
             };
 
             /*

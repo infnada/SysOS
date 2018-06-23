@@ -28,6 +28,7 @@
     "io": true,
     "Terminal": true,
     "SysOS": true,
+    "alertsApp": true,
     "backupsmApp": true,
     "cmanagerApp": true,
     "datastoreexplorerApp": true,

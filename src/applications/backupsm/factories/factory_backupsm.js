@@ -132,7 +132,7 @@
                     data.netapp_host,
                     data.netapp_port,
                     data.vserver['vserver-name'],
-                    data.volume['volume-id-attributes'].name,
+                    'SysOS_' + data.volume['volume-id-attributes'].name + '_Restore',
                     getSnapshotName(data)
                 ).then(function (res) {
                     if (res.status === 'error') throw new Error('Failed to clone Volume');
@@ -142,7 +142,14 @@
 
                     // Mount Volume Point
                     $log.debug('Backups Manager [%s] -> Mounting cloned volume -> vserver [%s], volume [%s]', data.uuid, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name);
-                    return netappFactory.mountVolume(data.netapp_credential, data.netapp_host, data.netapp_port, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name);
+                    return netappFactory.mountVolume(
+                        data.netapp_credential,
+                        data.netapp_host,
+                        data.netapp_port,
+                        data.vserver['vserver-name'],
+                        'SysOS_' + data.volume['volume-id-attributes'].name + '_Restore',
+                        'SysOS_' + data.volume['volume-id-attributes'].name + '_Restore',
+                    );
 
                 }).then(function (res) {
                     if (res.status === 'error') throw new Error('Failed to mount Volume');
@@ -633,7 +640,7 @@
 
                 // Unmount NetApp Volume
                 modalFactory.changeModalText('Unmounting storage volume...', '.window--backupsm .window__main');
-                return netappFactory.unmountVolume(data.netapp_credential, data.netapp_host, data.netapp_port, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name).then(function (res) {
+                return netappFactory.unmountVolume(data.netapp_credential, data.netapp_host, data.netapp_port, data.vserver['vserver-name'], 'SysOS_' + data.volume['volume-id-attributes'].name + '_Restore',).then(function (res) {
                     if (res.status === 'error' || res.data !== 'passed') throw new Error('Failed to unmount volume');
 
                     return setRestoreStatus(data, 'volume_cloned');
@@ -641,7 +648,7 @@
 
                     // Set NetApp Volume Offline
                     modalFactory.changeModalText('Setting volume offline...', '.window--backupsm .window__main');
-                    return netappFactory.setVolumeOffline(data.netapp_credential, data.netapp_host, data.netapp_port, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name);
+                    return netappFactory.setVolumeOffline(data.netapp_credential, data.netapp_host, data.netapp_port, data.vserver['vserver-name'], 'SysOS_' + data.volume['volume-id-attributes'].name + '_Restore',);
 
                 }).then(function (res) {
                     if (res.status === 'error' || res.data !== 'passed') throw new Error('Failed to set volume offline');
@@ -651,7 +658,7 @@
 
                     // Destroy NetApp Volume
                     modalFactory.changeModalText('Destroying volume...', '.window--backupsm .window__main');
-                    return netappFactory.destroyVolume(data.netapp_credential, data.netapp_host, data.netapp_port, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name);
+                    return netappFactory.destroyVolume(data.netapp_credential, data.netapp_host, data.netapp_port, data.vserver['vserver-name'], 'SysOS_' + data.volume['volume-id-attributes'].name + '_Restore',);
 
                 }).then(function (res) {
                     if (res.status === 'error' || res.data !== 'passed') throw new Error('Failed to destroy volume');

@@ -27,7 +27,7 @@
                   SysOS / \
                 </a> \
                 <a ng-repeat="path in feB.localFileSystem.currentPath.split(\'/\') track by $index" ng-if="path.length != 0" ng-click="feB.goToPath($index, path)"> \
-                  {{::path}} \
+                  {{path}} \
                 </a> \
               </div> \
               <form class="search"> \

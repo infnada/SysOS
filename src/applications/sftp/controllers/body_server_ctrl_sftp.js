@@ -1,7 +1,7 @@
 (function () {
     'use strict';
-    sftpApp.controller('sftpBodyServerController', ['$scope', '$timeout', 'fileSystemFactory', 'sftpFactory', 'remoteFileSystemFactory', 'toastr', 'modalFactory',
-        function ($scope, $timeout, fileSystemFactory, sftpFactory, remoteFileSystemFactory, toastr, modalFactory) {
+    sftpApp.controller('sftpBodyServerController', ['$rootScope', '$scope', '$timeout', 'fileSystemFactory', 'sftpFactory', 'remoteFileSystemFactory', 'toastr', 'modalFactory',
+        function ($rootScope, $scope, $timeout, fileSystemFactory, sftpFactory, remoteFileSystemFactory, toastr, modalFactory) {
 
             var _this = this;
             this.viewAsList = false;

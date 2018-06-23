@@ -17,7 +17,8 @@
 
                     angular.element($event.currentTarget.parentElement.nextElementSibling).animate({
                         'height': 'toggle',
-                        'opacity': 'toggle'
+                        'opacity': 'toggle',
+                        'display': 'toggle'
                     }, 250);
                 };
 
