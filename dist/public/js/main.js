@@ -669,8 +669,28 @@ var SysOS = angular.module('SysOS', [
          * Deletes selected files or folders
          */
         this.deleteSelected = function () {
-            return fileSystemFactory.deleteFile(_this.desktopFiles.currentPath, _this.modalInputName, function (data) {
-                _this.reloadPath();
+            var modalInstanceDeleteFile = modalFactory.openRegistredModal('question', '.desktop .desktop__body',
+                {
+                    title: function () {
+                        return 'Delete file ' + _this.modalInputName;
+                    },
+                    text: function () {
+                        return 'Delete ' + _this.modalInputName + ' from SysOS?';
+                    }
+                }
+            );
+            modalInstanceDeleteFile.result.then(function (res) {
+
+                if (res === true) {
+                    return fileSystemFactory.deleteFile(_this.desktopFiles.currentPath, _this.modalInputName, function () {
+
+                        _this.reloadPath();
+
+                    }).catch(function (e) {
+                        console.log(e);
+                    });
+                }
+
             });
         };
 
@@ -678,8 +698,36 @@ var SysOS = angular.module('SysOS', [
          * Rename file
          */
         this.renameFile = function () {
-            return fileSystemFactory.renameFile(_this.desktopFiles.currentPath, _this.fileToRename, _this.modalInputName, function () {
-                _this.reloadPath();
+            var modalInstanceRenameFile = modalFactory.openRegistredModal('input', '.desktop .desktop__body',
+                {
+                    title: function () {
+                        return 'Rename file';
+                    },
+                    text: function () {
+                        return 'File name';
+                    },
+                    button_text: function () {
+                        return 'Rename';
+                    },
+                    inputValue: function () {
+                        return _this.fileToRename;
+                    }
+                }
+            );
+            modalInstanceRenameFile.result.then(function (res) {
+
+                if (!res) return;
+
+                _this.modalInputName = res;
+
+                return fileSystemFactory.renameFile(_this.desktopFiles.currentPath, _this.fileToRename, _this.modalInputName, function () {
+
+                    _this.reloadPath();
+
+                }).catch(function (e) {
+                    console.log(e);
+                });
+
             });
         };
 
@@ -827,31 +875,7 @@ var SysOS = angular.module('SysOS', [
                     if (angular.isUndefined($itemScope.file)) $itemScope.file = $itemScope.$parent.file;
 
                     _this.fileToRename = $itemScope.file.filename;
-
-                    var modalInstanceRenameFile = modalFactory.openRegistredModal('input', '.desktop .desktop__body',
-                        {
-                            title: function () {
-                                return 'Rename file';
-                            },
-                            text: function () {
-                                return 'File name';
-                            },
-                            button_text: function () {
-                                return 'Rename';
-                            },
-                            inputValue: function () {
-                                return $itemScope.file.filename;
-                            }
-                        }
-                    );
-                    modalInstanceRenameFile.result.then(function (res) {
-
-                        if (!res) return;
-
-                        _this.modalInputName = res;
-                        _this.renameFile();
-
-                    });
+                    return _this.renameFile();
                 }
             },
             {
@@ -860,21 +884,7 @@ var SysOS = angular.module('SysOS', [
                     if (angular.isUndefined($itemScope.file)) $itemScope.file = $itemScope.$parent.file;
 
                     _this.modalInputName = $itemScope.file.filename;
-                    var modalInstanceDeleteFile = modalFactory.openRegistredModal('question', '.desktop .desktop__body',
-                        {
-                            title: function () {
-                                return 'Delete file ' + _this.modalInputName;
-                            },
-                            text: function () {
-                                return 'Delete ' + _this.modalInputName + ' from SysOS?';
-                            }
-                        }
-                    );
-                    modalInstanceDeleteFile.result.then(function (res) {
-
-                        if (res === true) return _this.deleteSelected();
-
-                    });
+                    return _this.deleteSelected();
                 }
             },
             null,
@@ -943,48 +953,11 @@ var SysOS = angular.module('SysOS', [
             if (keyEvent.which === 46) {
                 _this.modalInputName = _this.desktopFiles.currentData[_this.currentActive].filename;
 
-                var modalInstanceDeleteFile = modalFactory.openRegistredModal('question', '.desktop .desktop__body',
-                    {
-                        title: function () {
-                            return 'Delete file ' + _this.modalInputName;
-                        },
-                        text: function () {
-                            return 'Delete ' + _this.modalInputName + ' from SysOS?';
-                        }
-                    }
-                );
-                modalInstanceDeleteFile.result.then(function (res) {
-
-                    if (res === true) return _this.deleteSelected();
-
-                });
+                _this.deleteSelected();
             } else if (keyEvent.which === 113) {
                 _this.fileToRename = _this.desktopFiles.currentData[_this.currentActive].filename;
 
-                var modalInstanceRenameFile = modalFactory.openRegistredModal('input', '.desktop .desktop__body',
-                    {
-                        title: function () {
-                            return 'Rename file';
-                        },
-                        text: function () {
-                            return 'File name';
-                        },
-                        button_text: function () {
-                            return 'Rename';
-                        },
-                        inputValue: function () {
-                            return _this.fileToRename;
-                        }
-                    }
-                );
-                modalInstanceRenameFile.result.then(function (res) {
-
-                    if (!res) return;
-
-                    _this.modalInputName = res;
-                    _this.renameFile();
-
-                });
+                _this.renameFile();
             } else if (keyEvent.which === 39) {
                 if (_this.currentActive === null) return _this.currentActive = 0;
                 _this.setCurrentActive(_this.currentActive + 1);

@@ -183,31 +183,7 @@
                         if (angular.isUndefined($itemScope.file)) $itemScope.file = $itemScope.$parent.file;
 
                         _this.fileToRename = $itemScope.file.filename;
-
-                        var modalInstanceRenameFile = modalFactory.openRegistredModal('input', '.window--sftp .window__main #server_body',
-                            {
-                                title: function () {
-                                    return 'Rename file';
-                                },
-                                text: function () {
-                                    return 'File name';
-                                },
-                                button_text: function () {
-                                    return 'Rename';
-                                },
-                                inputValue: function () {
-                                    return $itemScope.file.filename;
-                                }
-                            }
-                        );
-                        modalInstanceRenameFile.result.then(function (res) {
-
-                            if (!res) return;
-
-                            _this.modalInputName = res;
-                            _this.renameFile();
-
-                        });
+                        return _this.renameFile();
                     }
                 },
                 {
@@ -216,21 +192,7 @@
                         if (angular.isUndefined($itemScope.file)) $itemScope.file = $itemScope.$parent.file;
 
                         _this.modalInputName = $itemScope.file.filename;
-                        var modalInstanceDeleteFile = modalFactory.openRegistredModal('question', '.window--sftp .window__main #server_body',
-                            {
-                                title: function () {
-                                    return 'Delete file ' + _this.modalInputName;
-                                },
-                                text: function () {
-                                    return 'Delete ' + _this.modalInputName + ' from SysOS?';
-                                }
-                            }
-                        );
-                        modalInstanceDeleteFile.result.then(function (res) {
-
-                            if (res === true) return _this.deleteSelected();
-
-                        });
+                        return _this.deleteSelected();
                     }
                 },
                 null,
@@ -363,18 +325,55 @@
             };
 
             this.deleteSelected = function () {
-                var serverPath = sftpB.getActiveConnection().currentPath;
+                var modalInstanceDeleteFile = modalFactory.openRegistredModal('question', '.window--sftp .window__main #server_body',
+                    {
+                        title: function () {
+                            return 'Delete file ' + _this.modalInputName;
+                        },
+                        text: function () {
+                            return 'Delete ' + _this.modalInputName + ' from SysOS?';
+                        }
+                    }
+                );
+                modalInstanceDeleteFile.result.then(function (res) {
 
-                sftpFactory.deleteFile(_this.modalInputName, serverPath, sftpB.activeConnection);
+                    if (res === true) {
+                        var serverPath = sftpB.getActiveConnection().currentPath;
+                        sftpFactory.deleteFile(_this.modalInputName, serverPath, sftpB.activeConnection);
+                    }
+
+                });
             };
 
             /*
              * Rename file
              */
             this.renameFile = function () {
-                var serverPath = sftpB.getActiveConnection().currentPath;
+                var modalInstanceRenameFile = modalFactory.openRegistredModal('input', '.window--sftp .window__main #server_body',
+                    {
+                        title: function () {
+                            return 'Rename file';
+                        },
+                        text: function () {
+                            return 'File name';
+                        },
+                        button_text: function () {
+                            return 'Rename';
+                        },
+                        inputValue: function () {
+                            return _this.fileToRename;
+                        }
+                    }
+                );
+                modalInstanceRenameFile.result.then(function (res) {
 
-                sftpFactory.renameFile(_this.fileToRename, _this.modalInputName, serverPath, sftpB.activeConnection);
+                    if (!res) return;
+
+                    _this.modalInputName = res;
+
+                    var serverPath = sftpB.getActiveConnection().currentPath;
+                    sftpFactory.renameFile(_this.fileToRename, _this.modalInputName, serverPath, sftpB.activeConnection);
+                });
             };
 
             this.resetActive = function () {
@@ -422,48 +421,11 @@
                 if (keyEvent.which === 46) {
                     _this.modalInputName = sftpB.getActiveConnection().currentData[_this.currentActive].filename;
 
-                    var modalInstanceDeleteFile = modalFactory.openRegistredModal('question', '.window--sftp .window__main #server_body',
-                        {
-                            title: function () {
-                                return 'Delete file ' + _this.modalInputName;
-                            },
-                            text: function () {
-                                return 'Delete ' + _this.modalInputName + ' from SysOS?';
-                            }
-                        }
-                    );
-                    modalInstanceDeleteFile.result.then(function (res) {
-
-                        if (res === true) return _this.deleteSelected();
-
-                    });
+                    _this.deleteSelected();
                 } else if (keyEvent.which === 113) {
                     _this.fileToRename = sftpB.getActiveConnection().currentData[_this.currentActive].filename;
 
-                    var modalInstanceRenameFile = modalFactory.openRegistredModal('input', '.window--sftp .window__main #server_body',
-                        {
-                            title: function () {
-                                return 'Rename file';
-                            },
-                            text: function () {
-                                return 'File name';
-                            },
-                            button_text: function () {
-                                return 'Rename';
-                            },
-                            inputValue: function () {
-                                return _this.fileToRename;
-                            }
-                        }
-                    );
-                    modalInstanceRenameFile.result.then(function (res) {
-
-                        if (!res) return;
-
-                        _this.modalInputName = res;
-                        _this.renameFile();
-
-                    });
+                    _this.renameFile();
                 } else if (keyEvent.which === 39) {
                     if (_this.currentActive === null) _this.currentActive = 0;
                     _this.setCurrentActive(_this.currentActive + 1);

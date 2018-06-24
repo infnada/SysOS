@@ -89,7 +89,6 @@ module.exports = function (grunt) {
                     'node_modules/angular/angular.js',
                     'node_modules/angular-cookies/angular-cookies.min.js',
                     'node_modules/angular-bootstrap-contextmenu/contextMenu.js',
-                    'node_modules/angular-socket-io/socket.js',
                     'node_modules/angular-toastr/dist/angular-toastr.tpls.js',
                     'node_modules/angular-ui-bootstrap/dist/ui-bootstrap-tpls.js',
                     'node_modules/angular-ui-codemirror/src/ui-codemirror.js',
