@@ -125,17 +125,33 @@
              */
             var cloneVolumeFromSnapshot = function (data) {
 
+                if (data.volumeNum) {
+                    data.volumeName = 'SysOS_' + data.volume['volume-id-attributes'].name + '_Restore_' + data.volumeNum;
+                    data.datastorePath = 'SysOS_' + data.volume['volume-id-attributes'].name + '_' + data.volumeNum;
+                } else {
+                    data.volumeNum = 0;
+                    data.volumeName = 'SysOS_' + data.volume['volume-id-attributes'].name + '_Restore';
+                    data.datastorePath = 'SysOS_' + data.volume['volume-id-attributes'].name;
+                }
+
                 // Create Volume Clone
-                $log.debug('Backups Manager [%s] -> Cloning volume from snapshot -> vserver [%s], volume [%s], snapshot [%s]', data.uuid, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name, getSnapshotName(data));
+                $log.debug('Backups Manager [%s] -> Cloning volume from snapshot -> vserver [%s], volume [%s], snapshot [%s], volumeName [%s]', data.uuid, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name, getSnapshotName(data), data.volumeName);
                 return netappFactory.cloneVolumeFromSnapshot(
                     data.netapp_credential,
                     data.netapp_host,
                     data.netapp_port,
                     data.vserver['vserver-name'],
-                    'SysOS_' + data.volume['volume-id-attributes'].name + '_Restore',
+                    data.volume['volume-id-attributes'].name,
+                    data.volumeName,
                     getSnapshotName(data)
                 ).then(function (res) {
-                    if (res.status === 'error') throw new Error('Failed to clone Volume');
+                    if (res.status === 'error') {
+
+                        // Error duplicated volume, try next.
+                        if (res.error.errno === '17') throw new Error(17);
+
+                        throw new Error('Failed to clone Volume');
+                    }
 
                     return setRestoreStatus(data, 'volume_cloned');
                 }).then(function () {
@@ -147,8 +163,8 @@
                         data.netapp_host,
                         data.netapp_port,
                         data.vserver['vserver-name'],
-                        'SysOS_' + data.volume['volume-id-attributes'].name + '_Restore',
-                        'SysOS_' + data.volume['volume-id-attributes'].name + '_Restore',
+                        data.volumeName,
+                        '/' + data.volumeName,
                     );
 
                 }).then(function (res) {
@@ -159,6 +175,15 @@
                     return setRestoreStatus(data, 'namespace_mounted');
 
                 }).catch(function (e) {
+
+                    // Error duplicated volume, try next.
+                    if (e.message === '17') {
+                        $log.debug('Backups Manager [%s] -> Cloning volume from snapshot -> vserver [%s], volume [%s], snapshot [%s], volumeName [%s] -> Volume with same name found', data.uuid, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name, getSnapshotName(data), data.volumeName);
+
+                        ++data.volumeNum;
+                        return cloneVolumeFromSnapshot(data);
+                    }
+
                     console.log(e);
                     return e;
                 });
@@ -205,15 +230,15 @@
                 }).then(function (res) {
                     if (res.status === 'error') throw new Error('Failed to get NetworkInfoConsoleVnic from vCenter');
 
-                    $log.debug('Backups Manager [%s] -> Mount volume to ESXi -> datastoreSystem [%s], nfs_ip [%s], volume [%s], path [%s]', data.uuid, data.datastoreSystem, data.netapp_nfs_ip[0].address, '/SysOS_' + data.volume['volume-id-attributes'].name + '_Restore/', 'SysOS_' + data.volume_junction.substr(1));
+                    $log.debug('Backups Manager [%s] -> Mount volume to ESXi -> datastoreSystem [%s], nfs_ip [%s], volume [%s], path [%s]', data.uuid, data.datastoreSystem, data.netapp_nfs_ip[0].address, '/' + data.volumeName + '/', data.datastorePath);
                     return vmwareFactory.mountDatastore(
                         data.esxi_credential,
                         data.esxi_address,
                         data.esxi_port,
                         data.datastoreSystem,
                         data.netapp_nfs_ip[0].address,
-                        '/SysOS_' + data.volume['volume-id-attributes'].name + '_Restore/',
-                        'SysOS_' + data.volume_junction.substr(1)
+                        '/' + data.volumeName + '/',
+                        data.datastorePath
                     );
 
                 }).then(function (res) {
@@ -249,7 +274,7 @@
                     data.esxi_address,
                     data.esxi_port,
                     data.esxi_datastore,
-                    'SysOS_' + data.volume_junction.substr(1),
+                    data.datastorePath,
                     data.vm.path,
                     data.vm.summary.config.vmPathName.split('/').pop()
                 ).then(function (res) {
@@ -258,13 +283,13 @@
 
                     // Register VM
                     //TODO: check if VM with same name exists
-                    $log.debug('Backups Manager [%s] -> Register VM to ESXi -> host [%s], vmx_file [%s], vm_name [%s], folder [%s], resource_pool [%s]', data.uuid, data.esxi_host, '[SysOS_' + data.volume_junction.substr(1) + '] ' + data.vm.summary.config.vmPathName.split(']').pop(), data.vm.name, data.folder, data.resource_pool);
+                    $log.debug('Backups Manager [%s] -> Register VM to ESXi -> host [%s], vmx_file [%s], vm_name [%s], folder [%s], resource_pool [%s]', data.uuid, data.esxi_host, '[' + data.datastorePath + '] ' + data.vm.summary.config.vmPathName.split(']').pop(), data.vm.name, data.folder, data.resource_pool);
                     return vmwareFactory.registerVM(
                         data.esxi_credential,
                         data.esxi_address,
                         data.esxi_port,
                         data.esxi_host,
-                        '[SysOS_' + data.volume_junction.substr(1) + '] ' + data.vm.summary.config.vmPathName.split(']').pop().substr(1),
+                        '[' + data.datastorePath + '] ' + data.vm.summary.config.vmPathName.split(']').pop().substr(1),
                         data.vm.name,
                         data.folder,
                         data.resource_pool
@@ -640,7 +665,7 @@
 
                 // Unmount NetApp Volume
                 modalFactory.changeModalText('Unmounting storage volume...', '.window--backupsm .window__main');
-                return netappFactory.unmountVolume(data.netapp_credential, data.netapp_host, data.netapp_port, data.vserver['vserver-name'], 'SysOS_' + data.volume['volume-id-attributes'].name + '_Restore',).then(function (res) {
+                return netappFactory.unmountVolume(data.netapp_credential, data.netapp_host, data.netapp_port, data.vserver['vserver-name'], data.volumeName).then(function (res) {
                     if (res.status === 'error' || res.data !== 'passed') throw new Error('Failed to unmount volume');
 
                     return setRestoreStatus(data, 'volume_cloned');
@@ -648,7 +673,7 @@
 
                     // Set NetApp Volume Offline
                     modalFactory.changeModalText('Setting volume offline...', '.window--backupsm .window__main');
-                    return netappFactory.setVolumeOffline(data.netapp_credential, data.netapp_host, data.netapp_port, data.vserver['vserver-name'], 'SysOS_' + data.volume['volume-id-attributes'].name + '_Restore',);
+                    return netappFactory.setVolumeOffline(data.netapp_credential, data.netapp_host, data.netapp_port, data.vserver['vserver-name'], data.volumeName);
 
                 }).then(function (res) {
                     if (res.status === 'error' || res.data !== 'passed') throw new Error('Failed to set volume offline');
@@ -658,7 +683,7 @@
 
                     // Destroy NetApp Volume
                     modalFactory.changeModalText('Destroying volume...', '.window--backupsm .window__main');
-                    return netappFactory.destroyVolume(data.netapp_credential, data.netapp_host, data.netapp_port, data.vserver['vserver-name'], 'SysOS_' + data.volume['volume-id-attributes'].name + '_Restore',);
+                    return netappFactory.destroyVolume(data.netapp_credential, data.netapp_host, data.netapp_port, data.vserver['vserver-name'], data.volumeName);
 
                 }).then(function (res) {
                     if (res.status === 'error' || res.data !== 'passed') throw new Error('Failed to destroy volume');

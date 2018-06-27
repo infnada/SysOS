@@ -38,7 +38,7 @@
         var errorHandler = function (e) {
             return {
                 status: 'error',
-                error: e
+                error: (e.html && e.html.head[0].title ? e.html.head[0].title : e)
             };
         };
 
@@ -60,7 +60,8 @@
         var getSystemVersion = function (credential, host, port) {
             return ServerFactory.callNetApp(credential, host, port, null, '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'><system-get-version/></netapp>').then(function (data) {
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
-                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
+                if (!data.data.data.response.netapp) return errorHandler(data.data.data.response);
+                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$']);
 
                 return validResponse({
                     build_timestamp: data.data.data.response.netapp.results[0]['build-timestamp'][0],
@@ -79,7 +80,8 @@
         var getOntapiVersion = function (credential, host, port) {
             return ServerFactory.callNetApp(credential, host, port, null, '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'><system-get-ontapi-version/></netapp>').then(function (data) {
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
-                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
+                if (!data.data.data.response.netapp) return errorHandler(data.data.data.response);
+                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$']);
 
                 return validResponse({
                     major_version: data.data.data.response.netapp.results[0]['major-version'][0],
@@ -92,7 +94,8 @@
         var getLicenses = function (credential, host, port) {
             return ServerFactory.callNetApp(credential, host, port, null, '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'><license-v2-status-list-info/></netapp>').then(function (data) {
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
-                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
+                if (!data.data.data.response.netapp) return errorHandler(data.data.data.response);
+                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$']);
 
                 var results = [];
 
@@ -107,7 +110,8 @@
         var getMetrocluster = function (credential, host, port) {
             return ServerFactory.callNetApp(credential, host, port, null, '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'><metrocluster-get/></netapp>').then(function (data) {
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
-                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
+                if (!data.data.data.response.netapp) return errorHandler(data.data.data.response);
+                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$']);
 
                 return validResponse({
                     local_cluster_name: data.data.data.response.netapp.results[0].attributes[0]['metrocluster-info'][0]['local-cluster-name'][0],
@@ -120,7 +124,8 @@
         var getClusterIdentity = function (credential, host, port) {
             return ServerFactory.callNetApp(credential, host, port, null, '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'><cluster-identity-get/></netapp>').then(function (data) {
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
-                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
+                if (!data.data.data.response.netapp) return errorHandler(data.data.data.response);
+                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$']);
 
                 return validResponse({
                     cluster_contact: data.data.data.response.netapp.results[0].attributes[0]['cluster-identity-info'][0]['cluster-contact'][0],
@@ -138,7 +143,8 @@
 
             return ServerFactory.callNetApp(credential, host, port, null, xml).then(function (data) {
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
-                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
+                if (!data.data.data.response.netapp) return errorHandler(data.data.data.response);
+                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$']);
 
                 // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
                 if (data.data.data.response.netapp.results[0]['attributes-list']) {
@@ -162,7 +168,8 @@
 
             return ServerFactory.callNetApp(credential, host, port, null, xml).then(function (data) {
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
-                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
+                if (!data.data.data.response.netapp) return errorHandler(data.data.data.response);
+                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$']);
 
                 // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
                 if (data.data.data.response.netapp.results[0]['attributes-list']) {
@@ -186,7 +193,8 @@
 
             return ServerFactory.callNetApp(credential, host, port, null, xml).then(function (data) {
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
-                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
+                if (!data.data.data.response.netapp) return errorHandler(data.data.data.response);
+                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$']);
 
                 // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
                 if (data.data.data.response.netapp.results[0]['attributes-list']) {
@@ -210,7 +218,8 @@
 
             return ServerFactory.callNetApp(credential, host, port, null, xml).then(function (data) {
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
-                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
+                if (!data.data.data.response.netapp) return errorHandler(data.data.data.response);
+                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$']);
 
                 // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
                 if (data.data.data.response.netapp.results[0]['attributes-list']) {
@@ -232,7 +241,8 @@
         var getNFSStatus = function (credential, host, port, vfiler) {
             return ServerFactory.callNetApp(credential, host, port, null, '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'' + (vfiler ? ' vfiler=\'' + vfiler + '\'' : '') + '><nfs-status/></netapp>').then(function (data) {
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
-                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
+                if (!data.data.data.response.netapp) return errorHandler(data.data.data.response);
+                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$']);
 
                 return validResponse({
                     is_drained: data.data.data.response.netapp.results[0]['is-drained'][0],
@@ -246,7 +256,8 @@
 
             return ServerFactory.callNetApp(credential, host, port, null, xml).then(function (data) {
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
-                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
+                if (!data.data.data.response.netapp) return errorHandler(data.data.data.response);
+                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$']);
 
                 // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
                 if (data.data.data.response.netapp.results[0]['attributes-list']) {
@@ -270,7 +281,8 @@
 
             return ServerFactory.callNetApp(credential, host, port, null, xml).then(function (data) {
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
-                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
+                if (!data.data.data.response.netapp) return errorHandler(data.data.data.response);
+                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$']);
 
                 // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
                 if (data.data.data.response.netapp.results[0]['attributes-list']) {
@@ -294,7 +306,8 @@
 
             return ServerFactory.callNetApp(credential, host, port, null, xml).then(function (data) {
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
-                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
+                if (!data.data.data.response.netapp) return errorHandler(data.data.data.response);
+                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$']);
 
                 // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
                 if (data.data.data.response.netapp.results[0]['attributes-list']) {
@@ -320,6 +333,7 @@
 
             return ServerFactory.callNetApp(credential, host, port, null, xml).then(function (data) {
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno, host);
+                if (!data.data.data.response.netapp) return errorHandler(data.data.data.response);
                 if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason, host);
 
                 // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
@@ -373,7 +387,8 @@
 
             return ServerFactory.callNetApp(credential, host, port, null, xml).then(function (data) {
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
-                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
+                if (!data.data.data.response.netapp) return errorHandler(data.data.data.response);
+                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$']);
 
                 return validResponse(data.data.data.response.netapp);
             });
@@ -385,7 +400,8 @@
 
             return ServerFactory.callNetApp(credential, host, port, null, xml).then(function (data) {
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
-                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
+                if (!data.data.data.response.netapp) return errorHandler(data.data.data.response);
+                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$']);
 
                 return validResponse(data.data.data.response.netapp.results[0].$.status);
             });
@@ -396,7 +412,8 @@
 
             return ServerFactory.callNetApp(credential, host, port, null, xml).then(function (data) {
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
-                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
+                if (!data.data.data.response.netapp) return errorHandler(data.data.data.response);
+                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$']);
 
                 return validResponse(data.data.data.response.netapp.results[0].$.status);
             });
@@ -407,7 +424,8 @@
 
             return ServerFactory.callNetApp(credential, host, port, null, xml).then(function (data) {
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
-                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
+                if (!data.data.data.response.netapp) return errorHandler(data.data.data.response);
+                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$']);
 
                 // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
                 if (data.data.data.response.netapp.results[0]['attributes-list']) {
@@ -431,31 +449,32 @@
 
             return ServerFactory.callNetApp(credential, host, port, null, xml).then(function (data) {
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
-                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
+                if (!data.data.data.response.netapp) return errorHandler(data.data.data.response);
+                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$']);
 
                 return validResponse(parseNetAppObject(data.data.data.response.netapp.results[0]['file-info'][0]));
             });
         };
 
-        var cloneVolumeFromSnapshot = function (credential, host, port, vfiler, volume, snapshot) {
-            // TODO: check if this snapshot volume is already created by another restore. Issue #4 #5
-            var xml = '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'' + (vfiler ? ' vfiler=\'' + vfiler + '\'' : '') + '><volume-clone-create><parent-volume>' + volume + '</parent-volume><volume>' + volume + '</volume><space-reserve>none</space-reserve><parent-snapshot>' + snapshot + '</parent-snapshot></volume-clone-create></netapp>';
+        var cloneVolumeFromSnapshot = function (credential, host, port, vfiler, parent_volume, volume, snapshot) {
+            var xml = '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'' + (vfiler ? ' vfiler=\'' + vfiler + '\'' : '') + '><volume-clone-create><parent-volume>' + parent_volume + '</parent-volume><volume>' + volume + '</volume><space-reserve>none</space-reserve><parent-snapshot>' + snapshot + '</parent-snapshot></volume-clone-create></netapp>';
 
             return ServerFactory.callNetApp(credential, host, port, null, xml).then(function (data) {
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
-                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
+                if (!data.data.data.response.netapp) return errorHandler(data.data.data.response);
+                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$']);
 
                 return validResponse(data.data.data.response.netapp.results[0].$.status);
             });
         };
 
         var mountVolume = function (credential, host, port, vfiler, volume, junction) {
-            // TODO: check if this junction path is in use by another restore. Issue #4 #5
             var xml = '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'' + (vfiler ? ' vfiler=\'' + vfiler + '\'' : '') + '><volume-mount><activate-junction>true</activate-junction><junction-path>' + junction + '</junction-path><volume-name>' + volume + '</volume-name><export-policy-override>false</export-policy-override></volume-mount></netapp>';
 
             return ServerFactory.callNetApp(credential, host, port, null, xml).then(function (data) {
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
-                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
+                if (!data.data.data.response.netapp) return errorHandler(data.data.data.response);
+                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$']);
 
                 return validResponse(data.data.data.response.netapp.results[0].$.status);
             });
@@ -466,7 +485,8 @@
 
             return ServerFactory.callNetApp(credential, host, port, null, xml).then(function (data) {
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
-                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
+                if (!data.data.data.response.netapp) return errorHandler(data.data.data.response);
+                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$']);
 
                 return validResponse(data.data.data.response.netapp.results[0].$.status);
             });
@@ -477,7 +497,8 @@
 
             return ServerFactory.callNetApp(credential, host, port, null, xml).then(function (data) {
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
-                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
+                if (!data.data.data.response.netapp) return errorHandler(data.data.data.response);
+                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$']);
 
                 return validResponse(data.data.data.response.netapp.results[0].$.status);
             });
@@ -488,7 +509,8 @@
 
             return ServerFactory.callNetApp(credential, host, port, null, xml).then(function (data) {
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
-                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
+                if (!data.data.data.response.netapp) return errorHandler(data.data.data.response);
+                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$']);
 
                 return validResponse(data.data.data.response.netapp.results[0].$.status);
             });
@@ -500,7 +522,8 @@
 
             return ServerFactory.callNetApp(credential, host, port, null, xml).then(function (data) {
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
-                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
+                if (!data.data.data.response.netapp) return errorHandler(data.data.data.response);
+                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$']);
 
                 angular.forEach(data.data.data.response.netapp.results[0].rules[0]['exports-rule-info-2'][0]['security-rules'][0]['security-rule-info'], function (rule) {
                     results.push(parseNetAppObject(rule));
@@ -518,7 +541,8 @@
 
             return ServerFactory.callNetApp(credential, host, port, null, xml).then(function (data) {
                 if (data.data.status === 'error') return errorHandler(data.data.data.errno);
-                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$'].reason);
+                if (!data.data.data.response.netapp) return errorHandler(data.data.data.response);
+                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$']);
 
                 angular.forEach(data.data.data.response.netapp.results[0]['attributes-list'][0]['export-rule-info'], function (rule) {
                     results.push(parseNetAppObject(rule));

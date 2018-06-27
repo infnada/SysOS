@@ -799,9 +799,9 @@
                                     $itemScope.$parent.$parent.volume['volume-id-attributes'].name
                                 ).then(function (res) {
                                     if (res.status === 'error') {
-                                        $log.error('Infrastructure Manager [%s] -> Error creating storage snapshot -> volume [%s] -> ', $itemScope.$parent.$parent.volume['volume-id-attributes'].uuid, $itemScope.$parent.$parent.volume['volume-id-attributes'].name, res.error);
+                                        $log.error('Infrastructure Manager [%s] -> Error creating storage snapshot -> volume [%s] -> ', $itemScope.$parent.$parent.volume['volume-id-attributes'].uuid, $itemScope.$parent.$parent.volume['volume-id-attributes'].name, res.error.reason);
 
-                                        toastr.error(res.error, 'Create Volume Snapshot');
+                                        toastr.error(res.error.reason, 'Create Volume Snapshot');
                                         throw new Error('Failed to create Volume Snapshot');
                                     }
 
@@ -987,9 +987,9 @@
                                     $itemScope.snapshot['snapshot-instance-uuid']
                                 ).then(function (res) {
                                     if (res.status === 'error') {
-                                        $log.error('Infrastructure Manager [%s] -> Error deleting storage snapshot -> snapshot [%s], volume [%s] -> ', $itemScope.snapshot['snapshot-instance-uuid'], $itemScope.snapshot.name, _this.getActiveConnection(1)['volume-id-attributes'].name, res.error);
+                                        $log.error('Infrastructure Manager [%s] -> Error deleting storage snapshot -> snapshot [%s], volume [%s] -> ', $itemScope.snapshot['snapshot-instance-uuid'], $itemScope.snapshot.name, _this.getActiveConnection(1)['volume-id-attributes'].name, res.error.reason);
 
-                                        toastr.error(res.error, 'Delete Storage Snapshot');
+                                        toastr.error(res.error.reason, 'Delete Storage Snapshot');
                                         throw new Error('Failed to delete Storage Snapshot');
                                     }
 

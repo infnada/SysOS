@@ -88,7 +88,7 @@
                                       <!-- VMs --> \
                                       <div class="menu__item panel-heading" ng-repeat="vm in virtual.vms | filter: { runtime: { host: {name: cluster.hosts.name}}} | orderBy:\'name\'" ng-class="{\'active\': vm.config.uuid == smB.activeConnection}" ng-click="smB.setActiveConnection(vm, \'vm\')" context-menu="smB.VMContextMenu"> \
                                         <h4 class="panel-title pull-left absolute"> \
-                                          <i class="fa fa-fw fa-refresh fa-spin" ng-if="vm.refreshing"></i> <i class="vs-icon level-six p-l-sm" ng-class="{\'vsphere-icon-vm\': vm.runtime.powerState === \'poweredOff\', \'vsphere-icon-vm-on\': vm.runtime.powerState === \'poweredOn\', \'vsphere-icon-vm-suspended\': vm.runtime.powerState === \'suspended\'}"></i> {{::vm.name}} \
+                                          <i class="fa fa-fw fa-refresh fa-spin" ng-if="vm.refreshing"></i> <i class="vs-icon level-six p-l-sm" ng-class="{\'vsphere-icon-vm\': vm.runtime.powerState === \'poweredOff\', \'vsphere-icon-vm-on\': vm.runtime.powerState === \'poweredOn\', \'vsphere-icon-vm-suspended\': vm.runtime.powerState === \'suspended\'}"></i> {{::vm.name}} <small ng-if="vm.runtime.connectionState != \'connected\'">({{::vm.runtime.connectionState}})</small> \
                                         </h4> \
                                         <i class="fa fa-circle pull-right" ng-class="{\'text-danger\': vm.type == \'disconnected\', \'text-success\': vm.type == \'connected\'}"></i> \
                                         <i class="fa pull-right" ng-class="{\'fa-windows text-primary\': vm.guest.guestFamily == \'windowsGuest\', \'fa-linux text-danger\': vm.guest.guestFamily == \'linuxGuest\'}"></i> \
@@ -112,7 +112,7 @@
                                     <!-- VMs --> \
                                     <div class="menu__item panel-heading" ng-repeat="vm in virtual.vms | filter: { runtime: { host: {name: host.host}}} | orderBy:\'name\'" ng-class="{\'active\': vm.config.uuid == smB.activeConnection}" ng-click="smB.setActiveConnection(vm, \'vm\')" context-menu="smB.VMContextMenu"> \
                                       <h4 class="panel-title pull-left absolute"> \
-                                        <i class="vs-icon level-six p-l-sm" ng-class="{\'vsphere-icon-vm\': vm.runtime.powerState === \'poweredOff\', \'vsphere-icon-vm-on\': vm.runtime.powerState === \'poweredOn\', \'vsphere-icon-vm-suspended\': vm.runtime.powerState === \'suspended\'}"></i> {{::vm.name}} \
+                                        <i class="vs-icon level-six p-l-sm" ng-class="{\'vsphere-icon-vm\': vm.runtime.powerState === \'poweredOff\', \'vsphere-icon-vm-on\': vm.runtime.powerState === \'poweredOn\', \'vsphere-icon-vm-suspended\': vm.runtime.powerState === \'suspended\'}"></i> {{::vm.name}} <small ng-if="vm.runtime.connectionState != \'connected\'">({{::vm.runtime.connectionState}})</small> \
                                       </h4> \
                                       <i class="fa fa-circle pull-right" ng-class="{\'text-danger\': vm.type == \'disconnected\', \'text-success\': vm.type == \'connected\'}"></i> \
                                       <i class="fa pull-right" ng-class="{\'fa-windows text-primary\': vm.guest.guestFamily == \'windowsGuest\', \'fa-linux text-danger\': vm.guest.guestFamily == \'linuxGuest\'}"></i> \
@@ -131,7 +131,7 @@
                             <!-- Datastores --> \
                             <div class="menu__item panel-heading" ng-repeat="datastore in virtual.datastores | orderBy:\'info.name\'" ng-class="{\'active\': datastore.obj.name == smB.activeConnection}" ng-click="smB.setActiveConnection(datastore, \'datastore\')"> \
                               <h4 class="panel-title"> \
-                                <i class="vs-icon vsphere-icon-datastore level-four p-l-sm"></i> \
+                                <i class="vs-icon level-four p-l-sm" ng-class="{\'vsphere-icon-datastore\': datastore.summary.accessible === \'true\', \'vsphere-icon-datastore-inaccessible\': datastore.summary.accessible === \'false\'}"></i> \
                                 <img class="m-s-xss" src="/img/NetApp-logo.png" width="16px" src="/img/NetApp-logo.png" ng-if="::smB.getLinkByVMwareDatastore(virtual.uuid, datastore.obj.name).type === \'NetApp\'" uib-tooltip="{{::smB.getLinkByVMwareDatastore(virtual.uuid, datastore.obj.name).name}}"> \
                                 {{::datastore.info.name}} \
                               </h4> \

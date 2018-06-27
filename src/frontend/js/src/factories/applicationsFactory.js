@@ -59,7 +59,7 @@
             if (!e) throw new Error('e_not_found');
 
             toastr.error(e, 'General Error');
-            $log.error('Applications Factory ->General Error -> [%s]', e);
+            $log.error('Applications Factory -> General Error -> [%s]', e);
             return new Error(e);
         };
 
