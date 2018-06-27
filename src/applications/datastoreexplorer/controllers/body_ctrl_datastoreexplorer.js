@@ -190,31 +190,7 @@
                         if (angular.isUndefined($itemScope.file)) $itemScope.file = $itemScope.$parent.file;
 
                         _this.fileToRename = $itemScope.file.path;
-
-                        var modalInstanceRenameFile = modalFactory.openRegistredModal('input', '.window--datastoreexplorer .window__main',
-                            {
-                                title: function () {
-                                    return 'Rename file';
-                                },
-                                text: function () {
-                                    return 'File name';
-                                },
-                                button_text: function () {
-                                    return 'Rename';
-                                },
-                                inputValue: function () {
-                                    return $itemScope.file.path;
-                                }
-                            }
-                        );
-                        modalInstanceRenameFile.result.then(function (res) {
-
-                            if (!res) return;
-
-                            _this.modalInputName = res;
-                            _this.renameFile();
-
-                        });
+                        return _this.renameFile();
                     }
                 },
                 {
@@ -223,21 +199,7 @@
                         if (angular.isUndefined($itemScope.file)) $itemScope.file = $itemScope.$parent.file;
 
                         _this.modalInputName = $itemScope.file.path;
-                        var modalInstanceDeleteFile = modalFactory.openRegistredModal('question', '.window--datastoreexplorer .window__main',
-                            {
-                                title: function () {
-                                    return 'Delete file ' + _this.modalInputName;
-                                },
-                                text: function () {
-                                    return 'Delete ' + _this.modalInputName + ' from datastore?';
-                                }
-                            }
-                        );
-                        modalInstanceDeleteFile.result.then(function (res) {
-
-                            if (res === true) return _this.deleteSelected();
-
-                        });
+                        return _this.deleteSelected();
                     }
                 }
             ];
@@ -471,27 +433,51 @@
              * Renames a file
              */
             this.renameFile = function () {
-                modalFactory.openLittleModal('PLEASE WAIT', 'Renaming file...', '.window--datastoreexplorer .window__main', 'plain');
+                var modalInstanceRenameFile = modalFactory.openRegistredModal('input', '.window--datastoreexplorer .window__main',
+                    {
+                        title: function () {
+                            return 'Rename file';
+                        },
+                        text: function () {
+                            return 'File name';
+                        },
+                        button_text: function () {
+                            return 'Rename';
+                        },
+                        inputValue: function () {
+                            return _this.fileToRename;
+                        }
+                    }
+                );
+                modalInstanceRenameFile.result.then(function (res) {
 
-                vmwareFactory.moveFileFromDatastore(
-                    _this.datastoreData.credential,
-                    _this.datastoreData.host,
-                    _this.datastoreData.port,
-                    _this.datastoreData.name,
-                    _this.localFileSystem.currentPath + _this.fileToRename, // original file name
-                    _this.datastoreData.datacenter,
-                    _this.datastoreData.name,
-                    _this.localFileSystem.currentPath + _this.modalInputName, // new file name
-                    _this.datastoreData.datacenter
-                ).then(function (data) {
-                    if (data.status === 'error') throw new Error('Failed to rename the fie');
+                    if (!res) return;
 
-                    modalFactory.closeModal('.window--datastoreexplorer .window__main');
+                    _this.modalInputName = res;
 
-                    _this.reloadPath();
-                }).catch(function (e) {
-                    console.log(e);
-                    modalFactory.closeModal('.window--datastoreexplorer .window__main');
+                    modalFactory.openLittleModal('PLEASE WAIT', 'Renaming file...', '.window--datastoreexplorer .window__main', 'plain');
+
+                    vmwareFactory.moveFileFromDatastore(
+                        _this.datastoreData.credential,
+                        _this.datastoreData.host,
+                        _this.datastoreData.port,
+                        _this.datastoreData.name,
+                        _this.localFileSystem.currentPath + _this.fileToRename, // original file name
+                        _this.datastoreData.datacenter,
+                        _this.datastoreData.name,
+                        _this.localFileSystem.currentPath + _this.modalInputName, // new file name
+                        _this.datastoreData.datacenter
+                    ).then(function (data) {
+                        if (data.status === 'error') throw new Error('Failed to rename the fie');
+
+                        modalFactory.closeModal('.window--datastoreexplorer .window__main');
+
+                        _this.reloadPath();
+                    }).catch(function (e) {
+                        console.log(e);
+                        modalFactory.closeModal('.window--datastoreexplorer .window__main');
+                    });
+
                 });
             };
 
@@ -563,24 +549,40 @@
              * Deletes selected files or folders
              */
             this.deleteSelected = function () {
-                modalFactory.openLittleModal('PLEASE WAIT', 'Deleting file...', '.window--datastoreexplorer .window__main', 'plain');
+                var modalInstanceDeleteFile = modalFactory.openRegistredModal('question', '.window--datastoreexplorer .window__main',
+                    {
+                        title: function () {
+                            return 'Delete file ' + _this.modalInputName;
+                        },
+                        text: function () {
+                            return 'Delete ' + _this.modalInputName + ' from datastore?';
+                        }
+                    }
+                );
+                modalInstanceDeleteFile.result.then(function (res) {
 
-                vmwareFactory.deleteFileFromDatastore(
-                    _this.datastoreData.credential,
-                    _this.datastoreData.host,
-                    _this.datastoreData.port,
-                    _this.datastoreData.name,
-                    _this.localFileSystem.currentPath + _this.modalInputName,
-                    _this.datastoreData.datacenter
-                ).then(function (data) {
-                    if (data.status === 'error') throw new Error('Failed to delete the fie');
+                    if (res === true) {
+                        modalFactory.openLittleModal('PLEASE WAIT', 'Deleting file...', '.window--datastoreexplorer .window__main', 'plain');
 
-                    modalFactory.closeModal('.window--datastoreexplorer .window__main');
+                        vmwareFactory.deleteFileFromDatastore(
+                            _this.datastoreData.credential,
+                            _this.datastoreData.host,
+                            _this.datastoreData.port,
+                            _this.datastoreData.name,
+                            _this.localFileSystem.currentPath + _this.modalInputName,
+                            _this.datastoreData.datacenter
+                        ).then(function (data) {
+                            if (data.status === 'error') throw new Error('Failed to delete the fie');
 
-                    _this.reloadPath();
-                }).catch(function (e) {
-                    console.log(e);
-                    modalFactory.closeModal('.window--datastoreexplorer .window__main');
+                            modalFactory.closeModal('.window--datastoreexplorer .window__main');
+
+                            _this.reloadPath();
+                        }).catch(function (e) {
+                            console.log(e);
+                            modalFactory.closeModal('.window--datastoreexplorer .window__main');
+                        });
+                    }
+
                 });
             };
 
@@ -634,50 +636,11 @@
                 if (keyEvent.which === 46) { // DEL
                     _this.modalInputName = _this.localFileSystem.currentData[_this.currentActive].path;
 
-                    var modalInstanceDeleteFile = modalFactory.openRegistredModal('question', '.window--datastoreexplorer .window__main',
-                        {
-                            title: function () {
-                                return 'Delete file ' + _this.modalInputName;
-                            },
-                            text: function () {
-                                return 'Delete ' + _this.modalInputName + ' from datastore?';
-                            }
-                        }
-                    );
-                    modalInstanceDeleteFile.result.then(function (res) {
-
-                        if (res === true) return _this.deleteSelected();
-
-                    });
-
+                    _this.deleteSelected();
                 } else if (keyEvent.which === 113) { // F2
                     _this.fileToRename = _this.localFileSystem.currentData[_this.currentActive].path;
 
-                    var modalInstanceRenameFile = modalFactory.openRegistredModal('input', '.window--datastoreexplorer .window__main',
-                        {
-                            title: function () {
-                                return 'Rename file';
-                            },
-                            text: function () {
-                                return 'File name';
-                            },
-                            button_text: function () {
-                                return 'Rename';
-                            },
-                            inputValue: function () {
-                                return _this.fileToRename;
-                            }
-                        }
-                    );
-                    modalInstanceRenameFile.result.then(function (res) {
-
-                        if (!res) return;
-
-                        _this.modalInputName = res;
-                        _this.renameFile();
-
-                    });
-
+                    _this.renameFile();
                 } else if (keyEvent.which === 39) { //ARROW
                     if (_this.currentActive === null) return _this.currentActive = 0;
                     _this.setCurrentActive(_this.currentActive + 1);
