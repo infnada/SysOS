@@ -4,6 +4,10 @@
 
         $templateCache.put('templates/applications/actions-de-local.html',
             '<div class="window__actions"> \
+              <a class="window__item" ng-click="deB.showDatastores(\'vmware\')"> \
+                <i class="fa fa-plus text-success"></i> \
+              </a> \
+              <a class="window__item separator"></a> \
               <span class="fa-stack" ng-click="deB.createFolder();"> \
                 <i class="fa fa-folder fa-stack-1x"></i> \
                 <i class="fa fa-plus fa-pull-right fa-stack-1x text-success"></i> \
@@ -24,7 +28,7 @@
               <div class="window__path"> \
                 <a ng-click="deB.goToPath(null)"> \
                   <i class="fa fa-desktop"></i> \
-                  SysOS / \
+                  {{deB.datastoreData.name}} / \
                 </a> \
                 <a ng-repeat="path in deB.localFileSystem.currentPath.split(\'/\') track by $index" ng-if="path.length != 0" ng-click="deB.goToPath($index, path)"> \
                   {{::path}} \

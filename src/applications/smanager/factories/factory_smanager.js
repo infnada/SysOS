@@ -48,7 +48,7 @@
                                 var foundInterface = $filter('filter')(storage.netifaces, {
                                     'address': datastore.info.nas.remoteHost,
                                     'data-protocols': {
-                                        'data-protocol': datastore.info.nas.type
+                                        'data-protocol': (datastore.info.nas.type === 'NFS41' ? 'nfs' : datastore.info.nas.type)
                                     }
                                 })[0];
 
@@ -60,7 +60,7 @@
                                     'vserver-type': 'data',
                                     'vserver-name': foundInterface.vserver,
                                     'allowed-protocols': {
-                                        'protocol': datastore.info.nas.type
+                                        'protocol': (datastore.info.nas.type === 'NFS41' ? 'nfs' : datastore.info.nas.type)
                                     }
                                 })[0];
 
@@ -87,6 +87,8 @@
                                     junction_path: datastore.info.nas.remotePath
                                 });
 
+                                $log.debug('Infrastructure Manager [%s] -> New link found when scanning a vCenter node. -> datastore [%s], junction [%s]', connection.uuid, datastore.name, datastore.info.nas.remotePath);
+
                             }// end NetApp
                         });// end storage
                     });// end datastore
@@ -109,7 +111,7 @@
                                 var foundInterface = $filter('filter')(connection.netifaces, {
                                     'address': datastore.info.nas.remoteHost,
                                     'data-protocols': {
-                                        'data-protocol': datastore.info.nas.type
+                                        'data-protocol': (datastore.info.nas.type === 'NFS41' ? 'nfs' : datastore.info.nas.type)
                                     }
                                 })[0];
 
@@ -120,7 +122,7 @@
                                     'vserver-type': 'data',
                                     'vserver-name': foundInterface.vserver,
                                     'allowed-protocols': {
-                                        'protocol': datastore.info.nas.type
+                                        'protocol': (datastore.info.nas.type === 'NFS41' ? 'nfs' : datastore.info.nas.type)
                                     }
                                 })[0];
 
@@ -144,6 +146,8 @@
                                     volume: foundVolume['volume-id-attributes'].uuid,
                                     junction_path: datastore.info.nas.remotePath
                                 });
+
+                                $log.debug('Infrastructure Manager [%s] -> New link found when scanning a NetApp node. -> datastore [%s], junction [%s]', connection.uuid, datastore.name, datastore.info.nas.remotePath);
 
                             });// end datastore
                         }// end vmware
@@ -195,6 +199,23 @@
 
             /**
              * @description
+             * Return string to bytes
+             *
+             * @param bytes
+             * @param decimals
+             * @returns {string}
+             */
+            var formatBytes = function (bytes,decimals) {
+                if(bytes === 0) return '0 Bytes';
+                var k = 1024,
+                    dm = decimals || 2,
+                    sizes = ['B', 'K', 'M', 'G', 'T'],
+                    i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+            };
+
+            /**
+             * @description
              * Get all data from VMware vCenter node
              *
              * @param connection {Object}
@@ -205,6 +226,7 @@
                 var ct_promises = [];
                 var ht_promises = [];
                 var foundDatacenterFolder;
+                var foundDatastoreinUuidMap;
 
                 var modalInstance = modalFactory.openLittleModal('PLEASE WAIT', 'Connecting to vCenter/ESXi...', '.window--smanager .window__main', 'plain');
 
@@ -337,6 +359,28 @@
 
                     connectionsFactory.getConnectionByUuid(connection.uuid).datastores = res.data;
 
+                    // For each Datastore
+                    angular.forEach(connectionsFactory.getConnectionByUuid(connection.uuid).datastores, function (datastore, d) {
+
+                        // Check if uuid is in uuidMap array
+                        foundDatastoreinUuidMap = $filter('filter')(connectionsFactory.getUuidMap(), {
+                            uuid: datastore.info.url,
+                            parent: connection.uuid
+                        })[0];
+
+                        // Push new Datastore
+                        if (!foundDatastoreinUuidMap) {
+                            $log.debug('Infrastructure Manager [%s] -> Getting vCenter Datastoress. Found new Datastore -> hosts [%s], datastore [%s]', connection.uuid, connection.host, datastore.name);
+
+                            connectionsFactory.getUuidMap().push({
+                                uuid: datastore.info.url,
+                                parent: connection.uuid,
+                                object: 'datastores[' + d + ']'
+                            });
+                        }
+
+                    });
+
                     // Check if any datastore is from a managed storage system and link it.
                     return checkLinkBetweenManagedNodes('vmware', connection.uuid);
                 }).then(function (data) {
@@ -410,6 +454,34 @@
 
                     // For each VM
                     angular.forEach(connectionsFactory.getConnectionByUuid(uuid).vms, function (vm, x) {
+
+                        // Set disk data readable
+                        vm.guest.disks = [];
+
+                        if (Array.isArray(vm.guest.disk)) {
+                            angular.forEach(vm.guest.disk, function (disk, i) {
+                                connectionsFactory.getConnectionByUuid(uuid).vms[x].guest.disks[i] = {
+                                    'mount_point': disk.diskPath,
+                                    'free_percent': (disk.freeSpace / disk.capacity * 100).toFixed(1) + '%',
+                                    'free_space': formatBytes(disk.freeSpace),
+                                    'size': formatBytes(disk.capacity),
+                                    'used_percent': (100 - disk.freeSpace / disk.capacity * 100).toFixed(1) + '%',
+                                    'used_space': formatBytes(disk.capacity - disk.freeSpace)
+                                };
+                            });
+                        } else if (vm.guest.disk) {
+                            var disk = vm.guest.disk;
+                            connectionsFactory.getConnectionByUuid(uuid).vms[x].guest.disks = [{
+                                'mount_point': disk.diskPath,
+                                'free_percent': (disk.freeSpace / disk.capacity * 100).toFixed(1) + '%',
+                                'free_space': formatBytes(disk.freeSpace),
+                                'size': formatBytes(disk.capacity),
+                                'used_percent': (100 - disk.freeSpace / disk.capacity * 100).toFixed(1) + '%',
+                                'used_space': formatBytes(disk.capacity - disk.freeSpace)
+                            }];
+                        }
+
+
 
                         vm.vm = vm.obj.name;
 
@@ -988,6 +1060,32 @@
 
                     res.data.vm = res.data.obj.name;
 
+                    // Set disk data readable
+                    res.data.guest.disks = [];
+
+                    if (Array.isArray(vm.guest.disk)) {
+                        angular.forEach(res.data.guest.disk, function (disk, i) {
+                            res.data.guest.disks[i] = {
+                                'mount_point': disk.diskPath,
+                                'free_percent': (disk.freeSpace / disk.capacity * 100).toFixed(1) + '%',
+                                'free_space': formatBytes(disk.freeSpace),
+                                'size': formatBytes(disk.capacity),
+                                'used_percent': (100 - disk.freeSpace / disk.capacity * 100).toFixed(1) + '%',
+                                'used_space': formatBytes(disk.capacity - disk.freeSpace)
+                            };
+                        });
+                    } else if (vm.guest.disk) {
+                        var disk = res.data.guest.disk;
+                        res.data.guest.disks = [{
+                            'mount_point': disk.diskPath,
+                            'free_percent': (disk.freeSpace / disk.capacity * 100).toFixed(1) + '%',
+                            'free_space': formatBytes(disk.freeSpace),
+                            'size': formatBytes(disk.capacity),
+                            'used_percent': (100 - disk.freeSpace / disk.capacity * 100).toFixed(1) + '%',
+                            'used_space': formatBytes(disk.capacity - disk.freeSpace)
+                        }];
+                    }
+
                     var vm_index = connectionsFactory.getConnectionByUuid(connection.uuid).vms.findIndex(function (item) {
                         return item.config.uuid === res.data.config.uuid;
                     });
@@ -1069,6 +1167,7 @@
                 parentConnection: function () {
                     return parentConnection;
                 },
+                formatBytes: formatBytes,
                 getVMwareData: getVMwareData,
                 getVMs: getVMs,
                 getNetAppData: getNetAppData,

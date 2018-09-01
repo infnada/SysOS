@@ -35,6 +35,11 @@
                                     <i class="level-four fa fa-camera p-l-sm"></i><span> {{::snapshot.name}}</span> \
                                   </h4> \
                                 </div> \
+                                <div class="menu__item panel-heading" ng-if="!volume.snapshots.length"> \
+                                    <h4 class="panel-title"> \
+                                        <small class="level-five">No SnapShots found</small> \
+                                    </h4> \
+                                </div> \
                               </div> \
                             </uib-accordion> \
                           </div> \
@@ -129,7 +134,7 @@
                           </uib-accordion-heading> \
                           <uib-accordion close-others="false"> \
                             <!-- Datastores --> \
-                            <div class="menu__item panel-heading" ng-repeat="datastore in virtual.datastores | orderBy:\'info.name\'" ng-class="{\'active\': datastore.obj.name == smB.activeConnection}" ng-click="smB.setActiveConnection(datastore, \'datastore\')"> \
+                            <div class="menu__item panel-heading" ng-repeat="datastore in virtual.datastores | orderBy:\'info.name\'" ng-class="{\'active\': datastore.info.url == smB.activeConnection}" ng-click="smB.setActiveConnection(datastore, \'datastore\')" context-menu="smB.datastoreContextMenu"> \
                               <h4 class="panel-title"> \
                                 <i class="vs-icon level-four p-l-sm" ng-class="{\'vsphere-icon-datastore\': datastore.summary.accessible === \'true\', \'vsphere-icon-datastore-inaccessible\': datastore.summary.accessible === \'false\'}"></i> \
                                 <img class="m-s-xss" src="/img/NetApp-logo.png" width="16px" src="/img/NetApp-logo.png" ng-if="::smB.getLinkByVMwareDatastore(virtual.uuid, datastore.obj.name).type === \'NetApp\'" uib-tooltip="{{::smB.getLinkByVMwareDatastore(virtual.uuid, datastore.obj.name).name}}"> \
@@ -175,13 +180,13 @@
                 <div ng-if="smB.showvCenter == true"> \
                   <div ng-include="\'templates/applications/vcenter-type-smanager.html\'" include-replace></div> \
                 </div> \
-                <div ng-if="smB.showVm == true"> \
+                <!--<div ng-if="smB.showVm == true"> \
                   <div ng-include="\'templates/applications/vm-type-smanager.html\'" include-replace></div> \
-                </div> \
+                </div>--> \
                 <div ng-if="smB.showSnapshot == true"> \
                   <div ng-include="\'templates/applications/snapshot-type-smanager.html\'" include-replace></div> \
                 </div> \
-                <div ng-if="smB.showStandalone == true && smB.getActiveConnection().state != \'disconnected\'"> \
+                <div ng-if="smB.showVm == true || smB.showStandalone == true && smB.getActiveConnection().state != \'disconnected\'"> \
                   <div ng-include="\'templates/applications/standalone-type-smanager.html\'" include-replace></div> \
                 </div> \
                 <div ng-if="smB.showNewConnectionType == true"> \

@@ -64,7 +64,7 @@ module.exports = function (grunt) {
                 dest: '<%= dir.dist_frontend %>/css/vendor.css',
                 src: [
                     'node_modules/normalize.css/normalize.css',
-                    'bower_components/jquery-ui/themes/base/jquery-ui.css',
+                    'node_modules/jquery-ui-dist/jquery-ui.min.css',
                     'node_modules/font-awesome/css/font-awesome.min.css',
                     'node_modules/bootstrap/dist/css/bootstrap.css',
                     'node_modules/xterm/dist/xterm.css',
@@ -79,7 +79,7 @@ module.exports = function (grunt) {
                 dest: '<%= dir.dist_frontend %>/js/vendor.js',
                 src: [
                     'node_modules/jquery/dist/jquery.js',
-                    'bower_components/jquery-ui/jquery-ui.min.js',
+                    'node_modules/jquery-ui-dist/jquery-ui.min.js',
                     'node_modules/masonry-layout/dist/masonry.pkgd.min.js',
                     'node_modules/peity/jquery.peity.min.js',
                     'node_modules/Sparkline/dist/jquery.sparkline.min.js',
@@ -98,7 +98,7 @@ module.exports = function (grunt) {
                     'node_modules/ng-file-upload/dist/ng-file-upload-shim.js',
                     'node_modules/ng-file-upload/dist/ng-file-upload.js',
                     'node_modules/oclazyload/dist/ocLazyLoad.min.js',
-                    'bower_components/ngSelectable/src/ngSelectable.js'
+                    'node_modules/ngSelectable/src/ngSelectable.js'
                 ]
             }
         },

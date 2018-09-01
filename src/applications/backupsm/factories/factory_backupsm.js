@@ -164,7 +164,7 @@
                         data.netapp_port,
                         data.vserver['vserver-name'],
                         data.volumeName,
-                        '/' + data.volumeName,
+                        '/' + data.volumeName
                     );
 
                 }).then(function (res) {

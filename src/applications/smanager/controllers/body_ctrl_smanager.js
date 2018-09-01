@@ -66,6 +66,10 @@
                 });
             };
             var getCpu = function () {
+
+                // Get data from vCenter if is a VM
+                if (_this.getActiveConnection().vm) return;
+
                 _this.loadingCpu = true;
 
                 return ServerFactory.remoteGetCpu(_this.activeConnection, function (data) {
@@ -78,6 +82,10 @@
                 });
             };
             var getMem = function () {
+
+                // Get data from vCenter if is a VM
+                if (_this.getActiveConnection().vm) return;
+
                 _this.loadingMem = true;
 
                 return ServerFactory.remoteGetMem(_this.activeConnection, function (data) {
@@ -91,6 +99,9 @@
             };
             var getDisk = function () {
                 _this.loadingDisk = true;
+
+                // Get data from vCenter if is a VM
+                if (_this.getActiveConnection().vm) return;
 
                 return ServerFactory.remoteGetDisk(_this.activeConnection, function (data) {
                     $log.debug('Infrastructure Manager [%s] -> Doing getDisk successfully', _this.activeConnection);
@@ -219,6 +230,8 @@
             }, function (newValue) {
                 if (newValue && angular.isFunction(newValue.then)) return;
                 _this.activeConnection = newValue;
+
+                initConnection();
             });
 
             $scope.$watch(function () {
@@ -463,9 +476,7 @@
                 $log.debug('Infrastructure Manager [%s] -> Received refreshConnection', connection.uuid);
 
                 connection.refreshing = true;
-
                 connectionsFactory.connect(connection);
-
                 connection.refreshing = false;
             };
 
@@ -558,6 +569,12 @@
                     return smanagerFactory.setActiveConnection(connection.config.uuid);
                 }
 
+                if (type === 'datastore') {
+                    _this.showDatastore = true;
+
+                    return smanagerFactory.setActiveConnection(connection.info.url);
+                }
+
                 if (type === 'vcenter') {
                     _this.showVCenter = true;
 
@@ -614,6 +631,13 @@
             };
 
             this.getCurrentCpu = function () {
+
+                // Is a VM
+                if (_this.getActiveConnection().vm) {
+                    return 'N/A';
+                }
+
+                // Standalone node
                 if (angular.isUndefined(_this.getActiveConnection().cpu)) return 0;
 
                 return _this.getActiveConnection().cpu.filter(function (obj) {
@@ -622,6 +646,15 @@
             };
 
             this.getCpuCores = function () {
+
+                // Is a VM
+                if (_this.getActiveConnection().vm) {
+
+                    // Calculate total cores
+                    return _this.getActiveConnection().config.hardware.numCPU * _this.getActiveConnection().config.hardware.numCoresPerSocket;
+                }
+
+                // Standalone node
                 if (angular.isUndefined(_this.getActiveConnection().cpu)) return 0;
 
                 return _this.getActiveConnection().cpu.filter(function (obj) {
@@ -630,6 +663,15 @@
             };
 
             this.getCpuLoad = function () {
+
+                // Is a VM
+                if (_this.getActiveConnection().vm) {
+
+                    // Calculate used vs max
+                    return (_this.getActiveConnection().summary.quickStats.overallCpuUsage / _this.getActiveConnection().runtime.maxCpuUsage * 100).toFixed(1);
+                }
+
+                // Standalone node
                 if (angular.isUndefined(_this.connections)) return 0.0;
                 if (angular.isUndefined(_this.getActiveConnection())) return 0.0;
                 if (angular.isUndefined(_this.getActiveConnection().cpu)) return 0.0;
@@ -637,6 +679,138 @@
                 return _this.getActiveConnection().cpu.filter(function (obj) {
                     return obj.option === 'Load average';
                 })[0].data.split(' ')[0];
+            };
+
+            this.getMemoryType = function () {
+
+                // Is a VM
+                if (_this.getActiveConnection().vm) {
+                    return 'N/A';
+                }
+
+                // Standalone node
+                if (angular.isUndefined(_this.getActiveConnection().mem)) return 'N/A';
+
+                return _this.getActiveConnection().mem[0].type;
+            };
+
+            this.getMemorySpeed = function () {
+
+                // Is a VM
+                if (_this.getActiveConnection().vm) {
+                    return 'N/A';
+                }
+
+                // Standalone node
+                if (angular.isUndefined(_this.getActiveConnection().mem)) return 'N/A';
+
+                return _this.getActiveConnection().mem[0].speed;
+            };
+
+            this.getMemoryUsed = function () {
+
+                // Is a VM
+                if (_this.getActiveConnection().vm) {
+                    return _this.getActiveConnection().summary.quickStats.guestMemoryUsage;
+                }
+
+                // Standalone node
+                if (angular.isUndefined(_this.getActiveConnection().mem)) return 'N/A';
+
+                return _this.getActiveConnection().mem[0].used;
+            };
+
+            this.getMemoryTotal = function () {
+
+                // Is a VM
+                if (_this.getActiveConnection().vm) {
+                    return _this.getActiveConnection().config.hardware.memoryMB;
+                }
+
+                // Standalone node
+                if (angular.isUndefined(_this.getActiveConnection().mem)) return 'N/A';
+
+                return _this.getActiveConnection().mem[0].total;
+            };
+
+            this.getMemoryCache = function () {
+
+                // Is a VM
+                if (_this.getActiveConnection().vm) {
+
+                    // VMWare don't care about OS Cached memory
+                    return 0;
+                }
+
+                // Standalone node
+                if (angular.isUndefined(_this.getActiveConnection().mem)) return 'N/A';
+
+                return _this.getActiveConnection().mem[0].cache;
+            };
+
+            this.getMemoryFree = function () {
+
+                // Is a VM
+                if (_this.getActiveConnection().vm) {
+
+                    // Calculate it
+                    return _this.getActiveConnection().config.hardware.memoryMB - _this.getActiveConnection().summary.quickStats.guestMemoryUsage;
+                }
+
+                // Standalone node
+                if (angular.isUndefined(_this.getActiveConnection().mem)) return 'N/A';
+
+                return _this.getActiveConnection().mem[0].free;
+            };
+
+            this.getRelease = function () {
+
+                // Is a VM
+                if (_this.getActiveConnection().vm) {
+                    return _this.getActiveConnection().summary.guest.guestFullName;
+                }
+
+                // Standalone node
+                if (angular.isUndefined(_this.getActiveConnection().release)) return 'N/A';
+
+                return _this.getActiveConnection().release;
+            };
+
+            this.getKernel = function () {
+
+                // Is a VM
+                if (_this.getActiveConnection().vm) {
+                    return 'N/A';
+                }
+
+                // Standalone node
+                if (angular.isUndefined(_this.getActiveConnection().kernel)) return 'N/A';
+
+                return _this.getActiveConnection().kernel;
+            };
+
+            this.getUpdates = function () {
+
+                // Is a VM
+                if (_this.getActiveConnection().vm) {
+                    return [];
+                }
+
+                // Standalone node
+                if (angular.isUndefined(_this.getActiveConnection().updates)) return 'N/A';
+
+                return _this.getActiveConnection().updates;
+            };
+
+            this.getAllDisks = function () {
+
+                // Is a VM
+                if (_this.getActiveConnection().vm) {
+                    return _this.getActiveConnection().guest.disks;
+                }
+
+                // Standalone node
+                return _this.getActiveConnection().disk;
             };
 
             // 1 extract first part
@@ -651,7 +825,7 @@
 
             this.getCpuStatus = function () {
                 if (angular.isUndefined(_this.connections)) return 'bg-primary-i';
-                if (angular.isUndefined(_this.getActiveConnection().cpu)) return 'bg-primary-i';
+                if (!_this.getActiveConnection().vm && !_this.getCpuLoad()) return 'bg-primary-i';
 
                 var cpuLoad = _this.getCpuLoad().slice(0, -1);
                 if (cpuLoad < 20) return 'bg-primary-i';
@@ -662,9 +836,9 @@
 
             this.getMemStatus = function () {
                 if (angular.isUndefined(_this.connections)) return 'bg-primary-i';
-                if (angular.isUndefined(_this.getActiveConnection().mem)) return 'bg-primary-i';
+                if (!_this.getActiveConnection().vm && !_this.getMemoryFree()) return 'bg-primary-i';
 
-                var memUsed = 100 - (_this.getActiveConnection().mem[0].free / _this.getActiveConnection().mem[0].total * 100).toFixed(1);
+                var memUsed = 100 - (_this.getMemoryFree() / _this.getMemoryTotal() * 100).toFixed(1);
                 if (memUsed < 20) return 'bg-primary-i';
                 if (memUsed < 80) return 'bg-success-i';
                 if (memUsed < 90) return 'bg-warning-i';
@@ -672,7 +846,8 @@
             };
 
             this.getDiskStatus = function (percent) {
-                if (angular.isUndefined(_this.getActiveConnection().disk)) return [1, 'text-primary'];
+                if (angular.isUndefined(_this.getAllDisks())) return [1, 'text-primary'];
+                if (!_this.getActiveConnection().vm && !_this.getAllDisks()) return [1, 'text-primary'];
 
                 var diskPercent = _this.extractSpace(percent, 1);
                 if (diskPercent < 20) return [1, 'text-primary'];
@@ -683,9 +858,9 @@
 
             this.getUpdatesStatus = function () {
                 if (angular.isUndefined(_this.connections)) return 'bg-primary-i';
-                if (angular.isUndefined(_this.getActiveConnection().updates)) return 'bg-primary-i';
+                if (angular.isUndefined(_this.getUpdates())) return 'bg-primary-i';
 
-                var totalUpdates = _this.getActiveConnection().updates.length;
+                var totalUpdates = _this.getUpdates().length;
                 if (totalUpdates < 1) return 'bg-primary-i';
                 if (totalUpdates < 2) return 'bg-success-i';
                 if (totalUpdates < 5) return 'bg-warning-i;';
@@ -694,12 +869,12 @@
 
             this.getMaxDiskStatus = function () {
                 if (angular.isUndefined(_this.connections)) return ['bg-primary-i', 0];
-                if (angular.isUndefined(_this.getActiveConnection().disk)) return ['bg-primary-i', 0];
+                if (angular.isUndefined(_this.getAllDisks())) return ['bg-primary-i', 0];
 
                 var status = 1;
                 var percent = 0;
 
-                angular.forEach(_this.getActiveConnection().disk, function (disk) {
+                angular.forEach(_this.getAllDisks(), function (disk) {
                     var current_percent = parseInt(_this.extractSpace(disk.used_percent, 1));
                     var current_disk_status = parseInt(_this.getDiskStatus(disk.used_percent)[0]);
 
@@ -1625,6 +1800,43 @@
                                 $itemScope.vm.refreshing = false;
                             });
                         }, 0, false);
+                    }
+                }
+            ];
+
+            this.datastoreContextMenu = [
+                {
+                    text: '<i class="fa fa-file"></i> Show datastore files',
+                    click: function ($itemScope) {
+
+                        smanagerFactory.setActiveConnection($itemScope.datastore.info.url);
+
+                        // Wait for next digest circle before continue
+                        $timeout(function () {
+
+                            console.log($itemScope);
+                            console.log(_this.getActiveConnection(1));
+
+                            // Open Datastore Brower application
+                            ApplicationsFactory.openApplication('datastoreexplorer').then(function () {
+                                // Wait for next digest circle before continue in order, preventing $element.click event to "re" toggle to current application
+                                $timeout(function () {
+                                    ApplicationsFactory.toggleApplication('datastoreexplorer');
+                                }, 0, false);
+                            });
+
+                            $timeout(function () {
+                                $rootScope.$broadcast('datastoreexplorer__restore_datastore_files', {
+                                    credential: _this.getActiveConnection(1).credential,
+                                    host: _this.getActiveConnection(1).host,
+                                    port: _this.getActiveConnection(1).port,
+                                    id: $itemScope.datastore.obj.name,
+                                    name: $itemScope.datastore.name
+                                });
+                            }, 100);
+
+                        }, 0, false);
+
                     }
                 }
             ];

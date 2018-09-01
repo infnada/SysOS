@@ -91,7 +91,7 @@
 
             $scope.$on('sftp__progress_data', function (event, data) {
                 _this.uploadFiles.filter(function (e) {
-                    return e.exchange === data.exchange && e.path === data.destination && e.uuid == data.uuid;
+                    return e.exchange === data.exchange && e.path === data.destination && e.uuid === data.uuid;
                 })[0].progress = data.progress;
             });
 

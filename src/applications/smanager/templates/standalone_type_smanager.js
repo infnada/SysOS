@@ -4,6 +4,19 @@
 
         $templateCache.put('templates/applications/standalone-type-smanager.html',
             '<div class="row"> \
+                <div class="col-lg-12 col-sm-6"> \
+                    <div class="col-lg-12 col-sm-6 panel panel-default bg-gray-dark b-a-0 p-m"> \
+                        <i class="vs-icon vsphere-icon-vm-on"></i> {{smB.getActiveConnection().description}} <span class="title-separator"></span> <span class="text-primary">ACTIONS <i class="fa fa-chevron-down"></i></span> \
+                    </div> \
+                </div> \
+            </div> \
+            <div class="row" ng-show="smB.getActiveConnection().runtime.powerState != \'poweredOn\' && smB.showVm == true"> \
+                <div class="col-lg-12 by-center"> \
+                    <h3>VM is not powered on!</h3> \
+                    <button type="button" class="btn btn-primary ng-scope">Power On VM</button> \
+                </div>\
+            </div> \
+            <div class="row" ng-show="(smB.getActiveConnection().runtime.powerState == \'poweredOn\' && smB.showVm == true) || smB.showStandalone == true"> \
               <div class="col-lg-4"> \
                 <div class="row"> \
                   <!-- START System Monitoring --> \
@@ -27,39 +40,39 @@
                         </li> \
                         <li class="list-group-item no-bg"> \
                           <h5>Memory <small>(Ram)</small></h5> \
-                          <p>{{smB.getActiveConnection().mem[0].type}} @{{smB.getActiveConnection().mem[0].speed}} <i class="fa fa-fw fa-refresh cursor-pointer" ng-class="{\'fa-spin\':smB.loadingMem}" ng-click="smB.remoteRefresh(\'mem\');"></i></p> \
+                          <p>{{smB.getMemoryType()}} @{{smB.getMemorySpeed()}} <i class="fa fa-fw fa-refresh cursor-pointer" ng-class="{\'fa-spin\':smB.loadingMem}" ng-click="smB.remoteRefresh(\'mem\');"></i></p> \
                           <div class="media_box"> \
                             <div class="media-left"> \
                               <p class="data-attributes media-object"> \
-                                <span data-peity=\'{ "fill": ["#08A5E1", "#2A88C5", "#0058A1"], "innerRadius": 18, "radius": 28 }\' donut-chart>{{(smB.getActiveConnection().mem[0].used / smB.getActiveConnection().mem[0].total * 100).toFixed(1)}},{{(smB.getActiveConnection().mem[0].cache / smB.getActiveConnection().mem[0].total * 100).toFixed(1)}},{{(smB.getActiveConnection().mem[0].free / smB.getActiveConnection().mem[0].total * 100).toFixed(1)}}</span> \
+                                <span data-peity=\'{ "fill": ["#08A5E1", "#2A88C5", "#0058A1"], "innerRadius": 18, "radius": 28 }\' donut-chart>{{(smB.getMemoryUsed() / smB.getMemoryTotal() * 100).toFixed(1)}},{{(smB.getMemoryCache() / smB.getMemoryTotal() * 100).toFixed(1)}},{{(smB.getMemoryFree() / smB.getMemoryTotal() * 100).toFixed(1)}}</span> \
                               </p> \
                             </div> \
                             <div class="media-body media-top"> \
-                              <h2 class="media-heading f-w-300 m-b-0 m-t-0">{{(smB.getActiveConnection().mem[0].total / 1024).toFixed(2)}} <small class="text-white">GB</small></h2> Total Memory \
+                              <h2 class="media-heading f-w-300 m-b-0 m-t-0">{{(smB.getMemoryTotal() / 1024).toFixed(2)}} <small class="text-white">GB</small></h2> Total Memory \
                             </div> \
                             <div class="row"> \
                               <div class="col-sm-4"> \
                                 <small><i class="fa fa-fw fa-circle text-cerulean"></i> Allocated</small> \
-                                <h5 class="m-b-0">{{smB.getActiveConnection().mem[0].used}} MB</h5> \
-                                <p>{{(smB.getActiveConnection().mem[0].used / smB.getActiveConnection().mem[0].total * 100).toFixed(1)}}%</p> \
+                                <h5 class="m-b-0">{{smB.getMemoryUsed()}} MB</h5> \
+                                <p>{{(smB.getMemoryUsed() / smB.getMemoryTotal() * 100).toFixed(1)}}%</p> \
                               </div> \
                               <div class="col-sm-4"> \
                                 <small><i class="fa fa-fw fa-circle text-curious-blue"></i> In Cache</small> \
-                                <h5 class="m-b-0">{{smB.getActiveConnection().mem[0].cache}} MB</h5> \
-                                <p>{{(smB.getActiveConnection().mem[0].cache / smB.getActiveConnection().mem[0].total * 100).toFixed(1)}}%</p> \
+                                <h5 class="m-b-0">{{smB.getMemoryCache()}} MB</h5> \
+                                <p>{{(smB.getMemoryCache() / smB.getMemoryTotal() * 100).toFixed(1)}}%</p> \
                               </div> \
                               <div class="col-sm-4"> \
                                 <small><i class="fa fa-fw fa-circle text-endaveour"></i> Available</small> \
-                                <h5 class="m-b-0">{{smB.getActiveConnection().mem[0].free}} MB</h5> \
-                                <p>{{(smB.getActiveConnection().mem[0].free / smB.getActiveConnection().mem[0].total * 100).toFixed(1)}}%</p> \
+                                <h5 class="m-b-0">{{smB.getMemoryFree()}} MB</h5> \
+                                <p>{{(smB.getMemoryFree() / smB.getMemoryTotal() * 100).toFixed(1)}}%</p> \
                               </div> \
                             </div> \
                           </div> \
                         </li> \
                         <li class="list-group-item no-bg"> \
                           <h5 class="m-t-0">Build</h5> \
-                          <p>{{smB.getActiveConnection().release}} <i class="fa fa-fw fa-refresh cursor-pointer" ng-class="{\'fa-spin\':smB.loadingRelease}" ng-click="smB.remoteRefresh(\'release\');"></i></p> \
-                          <p>Kernel: {{smB.getActiveConnection().kernel}} <i class="fa fa-fw fa-refresh cursor-pointer" ng-class="{\'fa-spin\':smB.loadingKernel}" ng-click="smB.remoteRefresh(\'kernel\');"></i></p> \
+                          <p>{{smB.getRelease()}} <i class="fa fa-fw fa-refresh cursor-pointer" ng-class="{\'fa-spin\':smB.loadingRelease}" ng-click="smB.remoteRefresh(\'release\');"></i></p> \
+                          <p>Kernel: {{smB.getKernel()}} <i class="fa fa-fw fa-refresh cursor-pointer" ng-class="{\'fa-spin\':smB.loadingKernel}" ng-click="smB.remoteRefresh(\'kernel\');"></i></p> \
                         </li> \
                       </ul> \
                     </div> \
@@ -67,12 +80,12 @@
                     <div class="panel panel-default b-a-0 bg-gray-dark {{smB.getUpdatesStatus()}}"> \
                       <div class="panel-heading b-b-0">System Updates <span class="label label-white label-outline pull-right"><i class="fa fa-fw fa-refresh cursor-pointer" ng-class="{\'fa-spin\':smB.loadingUpdates}" ng-click="smB.remoteRefresh(\'updates\');"></i></span></div> \
                       <div class="panel-body text-center p-t-0"> \
-                        <h1 class="m-t-0 m-b-0 f-w-300">{{smB.getActiveConnection().updates.length}}</h1> \
+                        <h1 class="m-t-0 m-b-0 f-w-300">{{smB.getUpdates().length}}</h1> \
                         <p class="text-white">Updates</p> \
                       </div> \
-                      <div class="panel-footer text-center cursor-pointer" ng-click="smB.toggleUpdates()"> \
+                      <div class="panel-footer text-center cursor-pointer" ng-if="smB.getUpdates().length" ng-click="smB.toggleUpdates()"> \
                         <a  class="text-muted">See More<i class="m-l-1 fa fa-angle-right"></i></a> \
-                        <div ng-if="smB.seeMoreUpdates"><p ng-repeat="update in smB.getActiveConnection().updates" class="m-b-t">{{::update.name}} ({{::update.epoch}}{{::update.version}})</p></div> \
+                        <div ng-if="smB.seeMoreUpdates"><p ng-repeat="update in smB.getUpdates()" class="m-b-t">{{::update.name}} ({{::update.epoch}}{{::update.version}})</p></div> \
                       </div> \
                     </div> \
                     <!-- END System updates --> \
@@ -102,8 +115,7 @@
                                 <div class="media-body"> \
                                   <span class="text-uppercsase">Memory</span> \
                                   <br> \
-                                  <h1 class="display-4 m-t-0 m-b-0">{{(smB.getActiveConnection().mem[0].free / smB.getActiveConnection().mem[0].total * 100).toFixed(1)}} <small class="text-uppercase text-white">% </small> \
-                                    <span class="label label-white label-outline m-l-1 m-b-3 f-25 label-notice">OK</span> \
+                                  <h1 class="display-4 m-t-0 m-b-0">{{(100 - (smB.getMemoryFree() / smB.getMemoryTotal() * 100)).toFixed(1)}} <small class="text-uppercase text-white">% </small> \
                                   </h1> \
                                 </div> \
                               </div> \
@@ -118,7 +130,6 @@
                                   <span class="text-uppercsase">CPU</span> \
                                   <br> \
                                   <h1 class="display-4 m-t-0 m-b-0">{{smB.getCpuLoad()}} <small class="text-uppercase text-white">%</small> \
-                                    <span class="label label-white label-outline m-l-1 m-b-3 f-25 label-notice">OK</span> \
                                   </h1> \
                                 </div> \
                               </div> \
@@ -133,7 +144,6 @@
                                   <span class="text-uppercsase">Disk</span> \
                                   <br> \
                                   <h1 class="display-4 m-t-0 m-b-0">{{smB.getMaxDiskStatus()[1]}} <small class="text-uppercase text-white">%</small> \
-                                    <span class="label label-white label-outline m-l-1 m-b-3 f-25 label-notice">OK</span> \
                                   </h1> \
                                 </div> \
                               </div> \
@@ -158,9 +168,9 @@
                         <h6 class="text-white"><strong>Volume Status <i class="fa fa-fw fa-refresh cursor-pointer" ng-class="{\'fa-spin\':smB.loadingDisk}" ng-click="smB.remoteRefresh(\'disk\');"></i></strong></h6> \
                       </div> \
                       <div class="row"> \
-                        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6" ng-repeat="disk in smB.getActiveConnection().disk"> \
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-6" ng-repeat="disk in t = angular.equals(t, smB.getAllDisks()) ? t : smB.getAllDisks()"> \
                           <h5 class="m-b-1 m-t-0">Path </h5> \
-                          <span class="label-gray-lighter label label-outline label-disk" title="{{disk.disk}}">{{disk.disk}}</span> \
+                          <span class="label-gray-lighter label label-outline label-disk" title="{{disk.disk}}">{{disk.mount_point}}</span> \
                           <h2 class="media-heading f-w-300 m-b-0 m-t-1">{{smB.extractSpace(disk.size, 1)}} <small class="text-white">{{smB.extractSpace(disk.size, 2)}}</small></h2> Volume Size \
                           <p class="data-attributes text-center m-t-2" ng-switch="smB.getDiskStatus(disk.used_percent)[0]"> \
                             <span ng-switch-when="1" data-peity=\'{ "fill": ["#2D99DC", "#222D33"], "innerRadius": 50, "radius": 69 }\' donut-chart>{{smB.extractSpace(disk.used_percent, 1)}}/100</span> \
