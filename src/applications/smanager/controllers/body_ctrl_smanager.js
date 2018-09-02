@@ -1669,7 +1669,18 @@
                                 modalInstance.result.then(function (res) {
 
                                     if (res !== true) return;
-                                    ApplicationsFactory.openApplication('backupsm').then(function () {
+
+                                    // Refresh VM info before continue
+                                    $log.debug('Infrastructure Manager [%s] -> Refreshing VM -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
+                                    $itemScope.vm.refreshing = true;
+
+                                    return smanagerFactory.refreshVM(eval(connectionsFactory.getObjectByUuidMapping($itemScope.vm.config.uuid)), _this.getActiveConnection(1)).then(function () {// jshint ignore:line
+                                        $log.debug('Infrastructure Manager [%s] -> Doing refreshVM successfully -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
+                                        $itemScope.vm.refreshing = false;
+
+                                        return ApplicationsFactory.openApplication('backupsm');
+
+                                    }).then(function () {
 
                                         // Wait for next digest circle before continue in order, preventing $element.click event to "re" toggle to current application
                                         $timeout(function () {

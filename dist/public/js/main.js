@@ -3617,9 +3617,7 @@ var SysOS = angular.module('SysOS', [
                     results.push(parseNetAppObject(rule));
                 });
 
-                console.log('getNFSExportRulesList', results);
-
-                return validResponse(data);
+                return validResponse(parseNetAppObject(data.data.data.response.netapp.results[0]['rules'][0]));
             });
         };
 

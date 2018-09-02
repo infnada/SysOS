@@ -170,8 +170,6 @@
                 }).then(function (res) {
                     if (res.status === 'error') throw new Error('Failed to mount Volume');
 
-                    // TODO: check Storage EXPORTS
-                    // TODO: Create export
                     return setRestoreStatus(data, 'namespace_mounted');
 
                 }).catch(function (e) {
@@ -197,8 +195,54 @@
              */
             var mountVolumeToESXi = function (data) {
 
-                $log.debug('Backups Manager [%s] -> Connection to vCenter using SOAP -> vCenter [%s]', data.uuid, data.esxi_address);
-                return vmwareFactory.connectvCenterSoap(data.esxi_credential, data.esxi_address, data.esxi_port).then(function (res) {
+                $log.debug('Backups Manager [%s] -> Get Volume Exports -> vserver [%s], volume [%s], volumeName [%s]', data.uuid, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name, data.volumeName);
+                return netappFactory.getNFSExportRulesList(
+                    data.netapp_credential,
+                    data.netapp_host,
+                    data.netapp_port,
+                    data.vserver['vserver-name'],
+                    data.volume['volume-id-attributes'].name
+                ).then(function (res) {
+                    if (res.status === 'error') throw new Error('Failed to get Volume Exports');
+
+                    console.log(res);
+
+                    // Check export that allows "all-hosts"
+                    var allHostsExport = $filter('filter')(res.data["exports-rule-info-2"]["security-rules"]["security-rule-info"], {
+                        "read-write": {
+                            "exports-hostname-info": {
+                                "all-hosts": true
+                            }
+                        }
+                    });
+
+                    if (allHostsExport.length === 0) {
+
+                        var esxiHostExport = $filter('filter')(res.data["exports-rule-info-2"]["security-rules"]["security-rule-info"], {
+                            "read-write": {
+                                "exports-hostname-info": {
+                                    "name": data.esxi_host_address
+                                }
+                            }
+                        });
+
+                        if (esxiHostExport.length === 0) {
+                            $log.debug('Backups Manager [%s] -> No Volume Export matched -> vserver [%s], volume [%s], volumeName [%s]', data.uuid, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name, data.volumeName);
+                            //TODO: add export to esxi host
+
+                            /*
+               <?xml version='1.0' encoding='utf-8' ?>
+<!DOCTYPE netapp SYSTEM 'file:/etc/netapp_filer.dtd'>
+<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' vfiler='LABSVM'><export-rule-create><client-match>192.168.4.145</client-match><policy-name>default</policy-name><ro-rule><security-flavor>any</security-flavor></ro-rule><rw-rule><security-flavor>never</security-flavor></rw-rule><rule-index>1</rule-index><super-user-security><security-flavor>any</security-flavor></super-user-security></export-rule-create></netapp>
+                */
+
+                        }
+
+                    }
+
+                    $log.debug('Backups Manager [%s] -> Connection to vCenter using SOAP -> vCenter [%s]', data.uuid, data.esxi_address);
+                    return vmwareFactory.connectvCenterSoap(data.esxi_credential, data.esxi_address, data.esxi_port);
+                }).then(function (res) {
                     if (res.status === 'error') throw new Error('Failed to connect to vCenter');
 
                     // TODO: check connectivity from NFS node
@@ -839,20 +883,26 @@
                                     angular.forEach(objects, function (key) {
 
                                         /*
-                                         * Create VM Snapshot
+                                         * Create VM Snapshot if vm state is poweredOn
                                          */
-                                        ss_promises.push(vmwareFactory.createSnapShot(esxi_credential, esxi_address, esxi_port, key.vm, 'SysOS_backup_' + data.uuid, 'SysOS temporary snapshot. Do not delete this snapshot while a backup is running.', false, true).then(function (res) {
-                                            if (res.status === 'error') throw new Error('Failed to create snapshot');
-                                            if (res.data[0].propSet.info.error) throw new Error('Failed to create snapshot');
+                                        if (key.state === 'poweredOn') {
+                                            $log.debug('Backups Manager [%s] -> Creating VM snapshot -> VM [%s]', data.uuid, key.vm);
 
-                                            $log.debug('Backups Manager [%s] -> VM snapshot created -> vCenter [%s], vm [%s], snapshot [%s]', data.uuid, esxi_address, key.vm, res.data[0].propSet.info.result.name);
+                                            ss_promises.push(vmwareFactory.createSnapShot(esxi_credential, esxi_address, esxi_port, key.vm, 'SysOS_backup_' + data.uuid, 'SysOS temporary snapshot. Do not delete this snapshot while a backup is running.', false, true).then(function (res) {
+                                                if (res.status === 'error') throw new Error('Failed to create snapshot');
+                                                if (res.data[0].propSet.info.error) throw new Error('Failed to create snapshot');
 
-                                            snapshots.push(res.data[0].propSet.info.result.name);
+                                                $log.debug('Backups Manager [%s] -> VM snapshot created -> vCenter [%s], vm [%s], snapshot [%s]', data.uuid, esxi_address, key.vm, res.data[0].propSet.info.result.name);
 
-                                        }).catch(function (e) {
-                                            console.log(e);
-                                            return e;
-                                        }));
+                                                snapshots.push(res.data[0].propSet.info.result.name);
+
+                                            }).catch(function (e) {
+                                                console.log(e);
+                                                return e;
+                                            }));
+                                        } else {
+                                            $log.debug('Backups Manager [%s] -> VM poweredOff, do not create snapshot -> VM [%s]', data.uuid, key.vm);
+                                        }
 
                                     });
                                     //End VM each

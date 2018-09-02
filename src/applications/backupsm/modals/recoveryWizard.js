@@ -30,7 +30,7 @@
                       <table class="table table-hover m-t-xl"> \
                         <tbody> \
                           <tr class="cursor-pointer" ng-repeat="snapshot in wmC.data.snapshots"> \
-                            <th class="col-sm-1"><input type="radio" name="snapshot" ng-model="wmC.data.snapshot" ng-value="snapshot[\'snapshot-instance-uuid\']"></th> \
+                            <th class="col-sm-1"><input type="radio" name="snapshot" ng-model="wmC.data.snapshot" ng-value="snapshot[\'snapshot-instance-uuid\']" ng-disabled="snapshot.disabled"></th> \
                             <th class="col-sm-1">{{::snapshot.name}}</th> \
                           </tr> \
                         </tbody> \

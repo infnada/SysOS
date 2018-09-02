@@ -352,8 +352,9 @@ var backupsmApp = angular.module('backupsmApp', []);
             templateUrl: 'applications/backupsm/modals/recoveryWizard.html',
             size: 'lg',
             controllerAs: 'wmC',
-            controller: ['title', 'data', '$uibModalInstance', 'ServerFactory', '$filter', 'vmwareFactory', function (title, data, $uibModalInstance, ServerFactory, $filter, vmwareFactory) {
+            controller: ['title', 'data', '$uibModalInstance', '$timeout', '$log', '$q', '$filter', 'modalFactory', 'ServerFactory', 'vmwareFactory', 'netappFactory', function (title, data, $uibModalInstance, $timeout, $log, $q, $filter, modalFactory, ServerFactory, vmwareFactory, netappFactory) {
                 var _this = this;
+                var gsp_promises = [];
 
                 this.data = data;
                 this.title = title;
@@ -363,6 +364,47 @@ var backupsmApp = angular.module('backupsmApp', []);
                 this.restoreType = 'original';
                 this.vmName = this.data.vm.name;
                 this.powerVM = false;
+
+
+                // Wait for next digest circle before continue
+                $timeout(function () {
+
+                    //On init check if VM exists in storage snapshot "this.data.snapshots"
+                    var modalInstanceText = modalFactory.openLittleModal('PLEASE WAIT', 'Searching VM in SnapShots...', '.modal-recovery-wizard', 'plain');
+
+                    var regex = /\[*\]\s(.*)\/.*\.vmx/gi;
+                    var str = _this.data.vm.config.files.vmPathName;
+
+                    var vm_path = regex.exec(str)[1];
+                    if (!vm_path) throw new Error('SAFETY STOP: VM cannot be on root folder');
+
+                    angular.forEach(data.snapshots, function (snapshot, i) {
+
+                        $log.debug('Backups Manager [%s] -> Check VM from storage snapshot -> storage [%s], vserver [%s], volume [%s], snapshot [%s], path [%s]', _this.data.uuid, _this.data.netapp_host, _this.data.vserver['vserver-name'], _this.data.volume['volume-id-attributes'].name, snapshot.name, '/' + vm_path);
+                        gsp_promises.push(netappFactory.getSnapshotFiles(
+                            _this.data.netapp_credential,
+                            _this.data.netapp_host,
+                            _this.data.netapp_port,
+                            _this.data.vserver['vserver-name'],
+                            _this.data.volume['volume-id-attributes'].name,
+                            snapshot.name,
+                            '/' + vm_path
+                        ).then(function (res) {
+                            if (res.status === 'error') {
+                                $log.debug('Backups Manager [%s] -> No VM data at this storage snapshot -> storage [%s], vserver [%s], volume [%s], snapshot [%s], path [%s]', _this.data.uuid, _this.data.netapp_host, _this.data.vserver['vserver-name'], _this.data.volume['volume-id-attributes'].name, snapshot.name, '/' + vm_path);
+                                _this.data.snapshots[i].disabled = true;
+                            }
+                        }));
+                    });
+
+                    return $q.all(gsp_promises).then(function () {
+                        modalInstanceText.close();
+                    }).catch(function (e) {
+                        console.log(e);
+                        modalInstanceText.close();
+                    });
+
+                }, 0, false);
 
                 if (this.data.type === 'vm_instant_recovery') {
                     this.hideCurrentLocation = true;

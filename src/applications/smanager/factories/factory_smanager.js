@@ -813,7 +813,7 @@
                         if (file.name.substr(file.name.length - 4) === '.vmx') {
 
                             // Reset esxi_host
-                            esxi_host = "";
+                            esxi_host = '';
 
                             // Get vCenter Link by Storage Junction Path
                             link = getLinkByStorageJunctionPath(
@@ -858,8 +858,6 @@
 
                                 }
                             }
-
-                            console.log(esxi_host);
 
                             connectionsFactory.getConnectionByUuid(uuid).vservers[vserver_index].volumes[volume_index].snapshots[snapshot_index].vms.push({
                                 name: (datastore_vm ? datastore_vm.name : file.name.slice(0, -4)),
