@@ -47,7 +47,7 @@ var expressOptions = {
 	}
 };
 
-var expiryDate = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+var expiryDate = new Date(Date.now() + 8 * 60 * 60 * 1000); // 8 hour
 var session = require('express-session')({
 	secret: config.session.secret,
 	name: config.session.name,

@@ -1760,11 +1760,22 @@
 
                         // Wait for next digest circle before continue
                         $timeout(function () {
-                            if (!smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name)) {
-                                return modalFactory.openLittleModal('Error while creating Backup', 'Not found any compatible NetApp storage. Make sure VMs that you want to backup are inside a NetApp volume and this is managed by SysOS.', '.window--smanager .window__main', 'plain');
-                            }
 
-                            ApplicationsFactory.openApplication('backupsm').then(function () {
+                            // Refresh VM info before continue
+                            $log.debug('Infrastructure Manager [%s] -> Refreshing VM -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
+                            $itemScope.vm.refreshing = true;
+
+                            return smanagerFactory.refreshVM(eval(connectionsFactory.getObjectByUuidMapping($itemScope.vm.config.uuid)), _this.getActiveConnection(1)).then(function () {// jshint ignore:line
+                                $log.debug('Infrastructure Manager [%s] -> Doing refreshVM successfully -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
+                                $itemScope.vm.refreshing = false;
+
+                                if (!smanagerFactory.getLinkByVMwareDatastore(_this.getActiveConnection(1).uuid, $itemScope.vm.datastore.ManagedObjectReference.name)) {
+                                    return modalFactory.openLittleModal('Error while creating Backup', 'Not found any compatible NetApp storage. Make sure VMs that you want to backup are inside a NetApp volume and this is managed by SysOS.', '.window--smanager .window__main', 'plain');
+                                }
+
+                                return ApplicationsFactory.openApplication('backupsm');
+
+                            }).then(function () {
 
                                 // Wait for next digest circle before continue in order, preventing $element.click event to "re" toggle to current application
                                 $timeout(function () {
@@ -1775,7 +1786,14 @@
                                         connection: _this.getActiveConnection(1)
                                     });
                                 }, 0, false);
+
+                            }).catch(function (e) {
+                                $log.error('Infrastructure Manager [%s] -> Error while refreshVM -> vm [%s] -> ', $itemScope.vm.vm, $itemScope.vm.name, e);
+
+                                toastr.error(e, 'Refresh VM');
+                                $itemScope.vm.refreshing = false;
                             });
+
                         }, 0, false);
                     }
                 },
@@ -1793,6 +1811,7 @@
 
                             return smanagerFactory.refreshVM(eval(connectionsFactory.getObjectByUuidMapping($itemScope.vm.config.uuid)), _this.getActiveConnection(1)).then(function () {// jshint ignore:line
                                 $log.debug('Infrastructure Manager [%s] -> Doing refreshVM successfully -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
+                                $itemScope.vm.refreshing = false;
                             }).catch(function (e) {
                                 $log.error('Infrastructure Manager [%s] -> Error while refreshVM -> vm [%s] -> ', $itemScope.vm.vm, $itemScope.vm.name, e);
 

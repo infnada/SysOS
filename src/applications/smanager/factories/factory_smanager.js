@@ -812,6 +812,9 @@
                         }
                         if (file.name.substr(file.name.length - 4) === '.vmx') {
 
+                            // Reset esxi_host
+                            esxi_host = "";
+
                             // Get vCenter Link by Storage Junction Path
                             link = getLinkByStorageJunctionPath(
                                 uuid,
@@ -844,13 +847,19 @@
                                         }
                                     })[0];
 
-                                    // Get Host name by host Id
-                                    esxi_host = $filter('filter')(getESXihosts(), {
-                                        'connection_address': connectionsFactory.getConnectionByUuid(link.virtual).host,
-                                        'host': datastore_vm.runtime.host.name
-                                    })[0];
+                                    // if datastore_vm is undefinned means that VM no longer exists or is in other datastore
+                                    if (datastore_vm) {
+                                        // Get Host name by host Id
+                                        esxi_host = $filter('filter')(getESXihosts(), {
+                                            'connection_address': connectionsFactory.getConnectionByUuid(link.virtual).host,
+                                            'host': datastore_vm.runtime.host.name
+                                        })[0];
+                                    }
+
                                 }
                             }
+
+                            console.log(esxi_host);
 
                             connectionsFactory.getConnectionByUuid(uuid).vservers[vserver_index].volumes[volume_index].snapshots[snapshot_index].vms.push({
                                 name: (datastore_vm ? datastore_vm.name : file.name.slice(0, -4)),

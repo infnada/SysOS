@@ -169,7 +169,7 @@
                     if ($filter('filter')(connections.virtual, {host: connection.host}).length > 0) {
                         $log.error('Connections Factory -> Error while setting new connection ->  host [%s] -> Connection already exists', connection.category, connection.host);
                         toastr.error('Node (' + connection.host + ') already exists. Please modify the existing connection properties or ReScan the node.', 'Error getting data from vCenter');
-                        return 0;
+                        return null;
                     }
 
                     mapId = connections.virtual.push({
@@ -207,7 +207,7 @@
                     if ($filter('filter')(connections.storage, {host: connection.host}).length > 0) {
                         $log.error('Connections Factory -> Error while setting new connection ->  host [%s] -> Connection already exists', connection.category, connection.host);
                         toastr.error('Node (' + connection.host + ') already exists. Please modify the existing connection properties or ReScan the node.', 'Error getting data from NetApp');
-                        return 0;
+                        return null;
                     }
 
                     mapId = connections.storage.push({
@@ -337,7 +337,7 @@
                     if (connection.so === 'vmware') {
 
                         mapId = setNewConnectionVirtual(connection, initialized);
-                        if (mapId === 0) return;
+                        if (mapId === null) return;
 
                         // Create uuid mapping used by getObjectByUuidMapping();
                         uuidMap.push({
@@ -363,7 +363,7 @@
                     if (connection.so === 'netapp') {
 
                         mapId = setNewConnectionNetApp(connection, initialized);
-                        if (mapId === 0) return;
+                        if (mapId === null) return;
 
                         // Create uuid mapping used by getObjectByUuidMapping();
                         uuidMap.push({

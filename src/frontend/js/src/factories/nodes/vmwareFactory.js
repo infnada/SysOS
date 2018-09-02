@@ -2638,6 +2638,9 @@
             });
         };
 
+        /*
+         * Returns VM Index "vm-xxx"
+         */
         var searchIndexVM = function (credential, host, port, vm_uuid) {
             var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><FindByUuid xmlns="urn:vim25"><_this type="SearchIndex">SearchIndex</_this><uuid>' + vm_uuid + '</uuid><vmSearch>true</vmSearch><instanceUuid>false</instanceUuid></FindByUuid></soap:Body></soap:Envelope>';
             return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {

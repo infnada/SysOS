@@ -2068,6 +2068,218 @@ var SysOS = angular.module('SysOS', [
             };
 
             /**
+             * Add new Linux connection to connections array
+             *
+             * @params
+             * connection {Object}
+             * initialized* {Bool}
+             */
+            var setNewConnectionLinux = function (connection, initialized) {
+                var mapId;
+
+                // Connection fetched from config file
+                if (initialized) {
+                    mapId = connections.standalone.push(connection) - 1;
+
+                    // This is a new connection
+                } else {
+                    mapId = connections.standalone.push({
+                        uuid: connection.uuid,
+                        host: connection.host,
+                        port: connection.port,
+                        category: connection.category,
+                        description: connection.description,
+                        credential: connection.credential,
+                        state: 'new',
+                        so: connection.so,
+                        autologin: connection.autologin,
+                        save: true,
+                        folder: connection.folder
+                    }) - 1;
+                }
+
+                return mapId;
+            };
+
+            /**
+             * Add new SNMP connection to connections array
+             *
+             * @params
+             * connection {Object}
+             * initialized* {Bool}
+             */
+            var setNewConnectionSNMP = function (connection, initialized) {
+                var mapId;
+
+                // Connection fetched from config file
+                if (initialized) {
+                    mapId = connections.standalone.push(connection) - 1;
+
+                    // This is a new connection
+                } else {
+                    mapId = connections.standalone.push({
+                        uuid: connection.uuid,
+                        host: connection.host,
+                        port: connection.port,
+                        category: connection.category,
+                        description: connection.description,
+                        credential: connection.credential,
+                        state: 'new',
+                        so: connection.so,
+                        autologin: connection.autologin,
+                        save: true,
+                        folder: connection.folder,
+                        oids: connection.oids
+                    }) - 1;
+                }
+
+                return mapId;
+            };
+
+            /**
+             * Add new Virtual connection to connections array
+             *
+             * @params
+             * connection {Object}
+             * initialized* {Bool}
+             */
+            var setNewConnectionVirtual = function (connection, initialized) {
+                var mapId;
+
+                // Connection fetched from config file
+                if (initialized) {
+                    mapId = connections.virtual.push(connection) - 1;
+
+                    // This is a new connection
+                } else {
+                    // Check if connection already exists
+                    if ($filter('filter')(connections.virtual, {host: connection.host}).length > 0) {
+                        $log.error('Connections Factory -> Error while setting new connection ->  host [%s] -> Connection already exists', connection.category, connection.host);
+                        toastr.error('Node (' + connection.host + ') already exists. Please modify the existing connection properties or ReScan the node.', 'Error getting data from vCenter');
+                        return null;
+                    }
+
+                    mapId = connections.virtual.push({
+                        uuid: connection.uuid,
+                        host: connection.host,
+                        port: connection.port,
+                        so: connection.so,
+                        category: connection.category,
+                        description: connection.description,
+                        credential: connection.credential,
+                        save: true
+                    }) - 1;
+                }
+
+                return mapId;
+            };
+
+            /**
+             * Add new NetApp connection to connections array
+             *
+             * @params
+             * connection {Object}
+             * initialized* {Bool}
+             */
+            var setNewConnectionNetApp = function (connection, initialized) {
+                var mapId;
+
+                // Connection fetched from config file
+                if (initialized) {
+                    mapId = connections.storage.push(connection) - 1;
+
+                    // This is a new connection
+                } else {
+                    // Check if connection already exists
+                    if ($filter('filter')(connections.storage, {host: connection.host}).length > 0) {
+                        $log.error('Connections Factory -> Error while setting new connection ->  host [%s] -> Connection already exists', connection.category, connection.host);
+                        toastr.error('Node (' + connection.host + ') already exists. Please modify the existing connection properties or ReScan the node.', 'Error getting data from NetApp');
+                        return null;
+                    }
+
+                    mapId = connections.storage.push({
+                        uuid: connection.uuid,
+                        host: connection.host,
+                        port: connection.port,
+                        so: connection.so,
+                        category: connection.category,
+                        description: connection.description,
+                        credential: connection.credential,
+                        autologin: connection.autologin,
+                        save: true
+                    }) - 1;
+                }
+
+                return mapId;
+            };
+
+            /**
+             * Add new SSH connection to connections array
+             *
+             * @params
+             * connection {Object}
+             * initialized* {Bool}
+             */
+            var setNewConnectionSSH = function (connection, initialized) {
+                var mapId;
+
+                // Connection fetched from config file
+                if (initialized) {
+                    mapId = connections.ssh.push(connection) - 1;
+
+                    // This is a new connection
+                } else {
+                    mapId = connections.ssh.push({
+                        uuid: connection.uuid,
+                        host: connection.host,
+                        port: connection.port,
+                        category: connection.category,
+                        description: connection.description,
+                        credential: connection.credential,
+                        state: 'new',
+                        autologin: connection.autologin,
+                        save: connection.save
+                    }) - 1;
+                }
+
+                return mapId;
+            };
+
+            /**
+             * Add new SFTP connection to connections array
+             *
+             * @params
+             * connection {Object}
+             * initialized* {Bool}
+             */
+            var setNewConnectionSFTP = function (connection, initialized) {
+                var mapId;
+
+                // Connection fetched from config file
+                if (initialized) {
+                    mapId = connections.sftp.push(connection) - 1;
+
+                    // This is a new connection
+                } else {
+                    mapId = connections.sftp.push({
+                        uuid: connection.uuid,
+                        host: connection.host,
+                        port: connection.port,
+                        category: connection.category,
+                        description: connection.description,
+                        credential: connection.credential,
+                        state: 'new',
+                        currentPath: '/',
+                        currentData: '',
+                        autologin: connection.autologin,
+                        save: connection.save
+                    }) - 1;
+                }
+
+                return mapId;
+            };
+
+            /**
              * Add new connection to connections array
              *
              * @params
@@ -2087,52 +2299,11 @@ var SysOS = angular.module('SysOS', [
                 if (connection.category === 'standalone') {
 
                     if (connection.so === 'linux') {
-
-                        // Connection fetched from config file
-                        if (initialized) {
-                            mapId = connections.standalone.push(connection) - 1;
-
-                            // This is a new connection
-                        } else {
-                            mapId = connections.standalone.push({
-                                uuid: connection.uuid,
-                                host: connection.host,
-                                port: connection.port,
-                                category: connection.category,
-                                description: connection.description,
-                                credential: connection.credential,
-                                state: 'new',
-                                so: connection.so,
-                                autologin: connection.autologin,
-                                save: true,
-                                folder: connection.folder
-                            }) - 1;
-                        }
+                        mapId = setNewConnectionLinux(connection, initialized);
                     }
 
                     if (connection.so === 'snmp') {
-
-                        // Connection fetched from config file
-                        if (initialized) {
-                            mapId = connections.standalone.push(connection) - 1;
-
-                            // This is a new connection
-                        } else {
-                            mapId = connections.standalone.push({
-                                uuid: connection.uuid,
-                                host: connection.host,
-                                port: connection.port,
-                                category: connection.category,
-                                description: connection.description,
-                                credential: connection.credential,
-                                state: 'new',
-                                so: connection.so,
-                                autologin: connection.autologin,
-                                save: true,
-                                folder: connection.folder,
-                                oids: connection.oids
-                            }) - 1;
-                        }
+                        mapId = setNewConnectionSNMP(connection, initialized);
                     }
 
                     // Create uuid mapping used by getObjectByUuidMapping();
@@ -2150,41 +2321,25 @@ var SysOS = angular.module('SysOS', [
                  */
                 if (connection.category === 'virtual') {
 
-                    // Connection fetched from config file
-                    if (initialized) {
-                        mapId = connections.virtual.push(connection) - 1;
+                    if (connection.so === 'vmware') {
 
-                        // This is a new connection
-                    } else {
-                        // Check if connection already exists
-                        if ($filter('filter')(connections.virtual, {host: connection.host}).length > 0) {
-                            $log.error('Connections Factory -> Error while setting new connection ->  host [%s] -> Connection already exists', connection.category, connection.host);
-                            return toastr.error('Node (' + connection.host + ') already exists. Please modify the existing connection properties or ReScan the node.', 'Error getting data from vCenter');
+                        mapId = setNewConnectionVirtual(connection, initialized);
+                        if (mapId === null) return;
+
+                        // Create uuid mapping used by getObjectByUuidMapping();
+                        uuidMap.push({
+                            uuid: connection.uuid,
+                            object: '_this.connections.virtual[' + mapId + ']'
+                        });
+
+                        // Connect to target node only if connection is not initialized, preventing too many API requests
+                        // to target node
+                        if (connection.autologin === true && !initialized) {
+                            return connect(connection);
                         }
 
-                        mapId = connections.virtual.push({
-                            uuid: connection.uuid,
-                            host: connection.host,
-                            port: connection.port,
-                            so: connection.so,
-                            category: connection.category,
-                            description: connection.description,
-                            credential: connection.credential,
-                            save: true
-                        }) - 1;
                     }
 
-                    // Create uuid mapping used by getObjectByUuidMapping();
-                    uuidMap.push({
-                        uuid: connection.uuid,
-                        object: '_this.connections.virtual[' + mapId + ']'
-                    });
-
-                    // Connect to target node only if connection is not initialized, preventing too many API requests
-                    // to target node
-                    if (connection.autologin === true && !initialized) {
-                        return connect(connection);
-                    }
                 }
 
                 /*
@@ -2194,30 +2349,8 @@ var SysOS = angular.module('SysOS', [
 
                     if (connection.so === 'netapp') {
 
-                        // Connection fetched from config file
-                        if (initialized) {
-                            mapId = connections.storage.push(connection) - 1;
-
-                            // This is a new connection
-                        } else {
-                            // Check if connection already exists
-                            if ($filter('filter')(connections.storage, {host: connection.host}).length > 0) {
-                                $log.error('Connections Factory -> Error while setting new connection ->  host [%s] -> Connection already exists', connection.category, connection.host);
-                                return toastr.error('Node (' + connection.host + ') already exists. Please modify the existing connection properties or ReScan the node.', 'Error getting data from NetApp');
-                            }
-
-                            mapId = connections.storage.push({
-                                uuid: connection.uuid,
-                                host: connection.host,
-                                port: connection.port,
-                                so: connection.so,
-                                category: connection.category,
-                                description: connection.description,
-                                credential: connection.credential,
-                                autologin: connection.autologin,
-                                save: true
-                            }) - 1;
-                        }
+                        mapId = setNewConnectionNetApp(connection, initialized);
+                        if (mapId === null) return;
 
                         // Create uuid mapping used by getObjectByUuidMapping();
                         uuidMap.push({
@@ -2231,30 +2364,15 @@ var SysOS = angular.module('SysOS', [
                             return connect(connection);
                         }
                     }
+
                 }
 
                 /*
                  * SSH nodes
                  */
                 if (connection.category === 'ssh') {
-                    // Connection fetched from config file
-                    if (initialized) {
-                        mapId = connections.ssh.push(connection) - 1;
 
-                        // This is a new connection
-                    } else {
-                        mapId = connections.ssh.push({
-                            uuid: connection.uuid,
-                            host: connection.host,
-                            port: connection.port,
-                            category: connection.category,
-                            description: connection.description,
-                            credential: connection.credential,
-                            state: 'new',
-                            autologin: connection.autologin,
-                            save: connection.save
-                        }) - 1;
-                    }
+                    mapId = setNewConnectionSSH(connection, initialized);
 
                     // Create uuid mapping used by getObjectByUuidMapping();
                     uuidMap.push({
@@ -2272,26 +2390,8 @@ var SysOS = angular.module('SysOS', [
                  * SFTP nodes
                  */
                 if (connection.category === 'sftp') {
-                    // Connection fetched from config file
-                    if (initialized) {
-                        mapId = connections.sftp.push(connection) - 1;
 
-                        // This is a new connection
-                    } else {
-                        mapId = connections.sftp.push({
-                            uuid: connection.uuid,
-                            host: connection.host,
-                            port: connection.port,
-                            category: connection.category,
-                            description: connection.description,
-                            credential: connection.credential,
-                            state: 'new',
-                            currentPath: '/',
-                            currentData: '',
-                            autologin: connection.autologin,
-                            save: connection.save
-                        }) - 1;
-                    }
+                    mapId = setNewConnectionSFTP(connection, initialized);
 
                     // Create uuid mapping used by getObjectByUuidMapping();
                     uuidMap.push({
@@ -6231,6 +6331,9 @@ var SysOS = angular.module('SysOS', [
             });
         };
 
+        /*
+         * Returns VM Index "vm-xxx"
+         */
         var searchIndexVM = function (credential, host, port, vm_uuid) {
             var xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body><FindByUuid xmlns="urn:vim25"><_this type="SearchIndex">SearchIndex</_this><uuid>' + vm_uuid + '</uuid><vmSearch>true</vmSearch><instanceUuid>false</instanceUuid></FindByUuid></soap:Body></soap:Envelope>';
             return ServerFactory.callVcenterSoap(credential, host, port, 'urn:vim25/6.0', xml).then(function (data) {

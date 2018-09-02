@@ -137,7 +137,7 @@
                             <div class="menu__item panel-heading" ng-repeat="datastore in virtual.datastores | orderBy:\'info.name\'" ng-class="{\'active\': datastore.info.url == smB.activeConnection}" ng-click="smB.setActiveConnection(datastore, \'datastore\')" context-menu="smB.datastoreContextMenu"> \
                               <h4 class="panel-title"> \
                                 <i class="vs-icon level-four p-l-sm" ng-class="{\'vsphere-icon-datastore\': datastore.summary.accessible === \'true\', \'vsphere-icon-datastore-inaccessible\': datastore.summary.accessible === \'false\'}"></i> \
-                                <img class="m-s-xss" src="/img/NetApp-logo.png" width="16px" src="/img/NetApp-logo.png" ng-if="::smB.getLinkByVMwareDatastore(virtual.uuid, datastore.obj.name).type === \'NetApp\'" uib-tooltip="{{::smB.getLinkByVMwareDatastore(virtual.uuid, datastore.obj.name).name}}"> \
+                                <img class="m-s-xss" src="/img/NetApp-logo.png" width="16px" src="/img/NetApp-logo.png" ng-if="smB.getLinkByVMwareDatastore(virtual.uuid, datastore.obj.name).type === \'NetApp\'" uib-tooltip="{{::smB.getLinkByVMwareDatastore(virtual.uuid, datastore.obj.name).name}}"> \
                                 {{::datastore.info.name}} \
                               </h4> \
                             </div> \
