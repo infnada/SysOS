@@ -37,6 +37,11 @@
                   <small ng-if="smB.Form.so == \'linux\'"" class="pull-left">Default SSH service port is 22. If connection cannot be established, check for possible port customization in the SSH service settings</small> \
                 </div> \
               </div> \
+              <div class="form-group" ng-if="smB.Form.so == \'snmp\'"> \
+                <div class="col-sm-12"> \
+                    <input type="text" class="form-control" name="inputPort" placeholder="Community" ng-model="smB.Form.community" required> \
+                </div> \
+              </div> \
               <div class="form-group" ng-if="smB.Form.save && smB.Form.so != \'vmware\' && smB.Form.so != \'netapp\'"> \
                 <div class="col-sm-12"> \
                   Save Connection in config file \

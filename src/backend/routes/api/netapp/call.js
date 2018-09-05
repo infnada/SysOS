@@ -3,7 +3,6 @@
 
 var express = require("express");
 var router = express.Router();
-var path = require('path');
 
 /**
  * API netapp/connect - Call to NetApp
@@ -14,9 +13,9 @@ var path = require('path');
 
 router.post("/", function (req, res) {
 
-	var netapp = require('../../modules/netapp.js');
+	var netapp = require('../../modules/netapp.js')();
 	var apiGlobals = require('../globals.js')(req, res);
-    var credentials = require('../../modules/credentials.js');
+    var credentials = require('../../modules/credentials.js')();
 
 	var credential = req.body.credential;
 	var host = req.body.host;

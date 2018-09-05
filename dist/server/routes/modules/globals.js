@@ -3,7 +3,7 @@
 
 var Promise = require("bluebird");
 
-module.exports = function (conn) {
+module.exports = function globals (conn) {
 
 	return {
 		execAsync: function (command) {

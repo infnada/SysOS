@@ -195,63 +195,9 @@
              */
             var mountVolumeToESXi = function (data) {
 
-                $log.debug('Backups Manager [%s] -> Get Volume Exports -> vserver [%s], volume [%s], volumeName [%s]', data.uuid, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name, data.volumeName);
-                return netappFactory.getNFSExportRulesList(
-                    data.netapp_credential,
-                    data.netapp_host,
-                    data.netapp_port,
-                    data.vserver['vserver-name'],
-                    data.volume['volume-id-attributes'].name
-                ).then(function (res) {
-                    if (res.status === 'error') throw new Error('Failed to get Volume Exports');
-
-                    console.log(res);
-
-                    // Check export that allows "all-hosts"
-                    var allHostsExport = $filter('filter')(res.data["exports-rule-info-2"]["security-rules"]["security-rule-info"], {
-                        "read-write": {
-                            "exports-hostname-info": {
-                                "all-hosts": true
-                            }
-                        }
-                    });
-
-                    if (allHostsExport.length === 0) {
-
-                        var esxiHostExport = $filter('filter')(res.data["exports-rule-info-2"]["security-rules"]["security-rule-info"], {
-                            "read-write": {
-                                "exports-hostname-info": {
-                                    "name": data.esxi_host_address
-                                }
-                            }
-                        });
-
-                        if (esxiHostExport.length === 0) {
-                            $log.debug('Backups Manager [%s] -> No Volume Export matched -> vserver [%s], volume [%s], volumeName [%s]', data.uuid, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name, data.volumeName);
-                            //TODO: add export to esxi host
-
-                            /*
-               <?xml version='1.0' encoding='utf-8' ?>
-<!DOCTYPE netapp SYSTEM 'file:/etc/netapp_filer.dtd'>
-<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' vfiler='LABSVM'><export-rule-create><client-match>192.168.4.145</client-match><policy-name>default</policy-name><ro-rule><security-flavor>any</security-flavor></ro-rule><rw-rule><security-flavor>never</security-flavor></rw-rule><rule-index>1</rule-index><super-user-security><security-flavor>any</security-flavor></super-user-security></export-rule-create></netapp>
-                */
-
-                        }
-
-                    }
-
-                    $log.debug('Backups Manager [%s] -> Connection to vCenter using SOAP -> vCenter [%s]', data.uuid, data.esxi_address);
-                    return vmwareFactory.connectvCenterSoap(data.esxi_credential, data.esxi_address, data.esxi_port);
-                }).then(function (res) {
+                $log.debug('Backups Manager [%s] -> Connection to vCenter using SOAP -> vCenter [%s]', data.uuid, data.esxi_address);
+                return vmwareFactory.connectvCenterSoap(data.esxi_credential, data.esxi_address, data.esxi_port).then(function (res) {
                     if (res.status === 'error') throw new Error('Failed to connect to vCenter');
-
-                    // TODO: check connectivity from NFS node
-                    return vmwareFactory.getHostConfigManagerNetworkSystem(data.esxi_credential, data.esxi_address, data.esxi_port, data.esxi_host);
-
-                }).then(function (res) {
-                    if (res.status === 'error') throw new Error('Failed to get networkSystem from vCenter');
-
-                    data.networkSystem = res.data;
 
                     // Get Datastore System from ESXi host to mount
                     $log.debug('Backups Manager [%s] -> Getting datastore system -> host [%s]', data.uuid, data.esxi_host);
@@ -262,17 +208,73 @@
 
                     data.datastoreSystem = res.data;
 
-                    // TODO: check connectivity from NFS node
-                    return vmwareFactory.getHostNetworkInfoVnic(data.esxi_credential, data.esxi_address, data.esxi_port, data.networkSystem);
+                    $log.debug('Backups Manager [%s] -> Get Volume Exports -> vserver [%s], volume [%s], volumeName [%s]', data.uuid, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name, data.volumeName);
+                    return netappFactory.getNFSExportRulesList(
+                        data.netapp_credential,
+                        data.netapp_host,
+                        data.netapp_port,
+                        data.vserver['vserver-name'],
+                        data.volume['volume-id-attributes'].name
+                    );
 
                 }).then(function (res) {
-                    if (res.status === 'error') throw new Error('Failed to get NetworkInfoVnic from vCenter');
+                    if (res.status === 'error') throw new Error('Failed to get Volume Exports');
 
-                    // TODO: check connectivity from NFS node
-                    return vmwareFactory.getHostNetworkInfoConsoleVnic(data.esxi_credential, data.esxi_address, data.esxi_port, data.networkSystem);
+                    console.log(res);
 
-                }).then(function (res) {
-                    if (res.status === 'error') throw new Error('Failed to get NetworkInfoConsoleVnic from vCenter');
+                    // Check export that allows "all-hosts"
+                    var allHostsExport = $filter('filter')(res.data['exports-rule-info-2']['security-rules']['security-rule-info'], {
+                        'read-write': {
+                            'exports-hostname-info': {
+                                'all-hosts': true
+                            }
+                        }
+                    });
+
+                    if (allHostsExport.length === 0) {
+
+                        // TODO: check connectivity from NFS node
+                        $log.debug('Backups Manager [%s] -> Getting network system -> host [%s]', data.uuid, data.esxi_host);
+                        return vmwareFactory.getHostConfigManagerNetworkSystem(data.esxi_credential, data.esxi_address, data.esxi_port, data.esxi_host).then(function (res) {
+                            if (res.status === 'error') throw new Error('Failed to get networkSystem from vCenter');
+
+                            data.networkSystem = res.data;
+                            return vmwareFactory.getHostNetworkInfoConsoleVnic(data.esxi_credential, data.esxi_address, data.esxi_port, data.networkSystem);
+
+                        }).then(function (res) {
+                            if (res.status === 'error') throw new Error('Failed to get NetworkInfoConsoleVnic from vCenter');
+
+                            data.esxi_export_address = '0.0.0.0/0'; //TODO
+
+                            var esxiHostExport = $filter('filter')(res.data['exports-rule-info-2']['security-rules']['security-rule-info'], {
+                                'read-write': {
+                                    'exports-hostname-info': {
+                                        'name': data.esxi_export_address //TODO
+                                    }
+                                }
+                            });
+
+                            if (esxiHostExport.length === 0) {
+                                $log.debug('Backups Manager [%s] -> No Volume Export matched, create it -> vserver [%s], policy [%s], client [%s]', data.uuid, data.vserver['vserver-name'], data.esxi_export_address);
+                                return netappFactory.setExportRule(
+                                    data.netapp_credential,
+                                    data.netapp_host,
+                                    data.netapp_port,
+                                    data.vserver['vserver-name'],
+                                    data.volume['volume-export-attributes'].policy,
+                                    data.esxi_export_address // TODO
+                                );
+                            }
+
+                        }).then(function (res) {
+                            if (res.status === 'error') throw new Error('Failed to create Volume Exports');
+                        });
+
+                    }
+
+                    return;
+
+                }).then(function () {
 
                     $log.debug('Backups Manager [%s] -> Mount volume to ESXi -> datastoreSystem [%s], nfs_ip [%s], volume [%s], path [%s]', data.uuid, data.datastoreSystem, data.netapp_nfs_ip[0].address, '/' + data.volumeName + '/', data.datastorePath);
                     return vmwareFactory.mountDatastore(
@@ -280,7 +282,7 @@
                         data.esxi_address,
                         data.esxi_port,
                         data.datastoreSystem,
-                        data.netapp_nfs_ip[0].address,
+                        data.netapp_nfs_ip[0].address, //TODO: why use the 1st ip
                         '/' + data.volumeName + '/',
                         data.datastorePath
                     );

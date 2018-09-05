@@ -2430,7 +2430,7 @@ var SysOS = angular.module('SysOS', [
                 /*
                  * Standalone
                  */
-                if (connection.so === 'linux' || connection.so === 'snmp') {
+                if (connection.so === 'windows' || connection.so === 'linux' || connection.so === 'snmp') {
 
                     if (connection.save) saveConnection(connection);
 
@@ -3639,6 +3639,24 @@ var SysOS = angular.module('SysOS', [
             });
         };
 
+        var setExportRule = function (credential, host, port, vfiler, policy, client) {
+            var results = [];
+            var xml = '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'' + (vfiler ? ' vfiler=\'' + vfiler + '\'' : '') + '><export-rule-create><client-match>' + client + '</client-match><policy-name>' + policy + '</policy-name><ro-rule><security-flavor>any</security-flavor></ro-rule><rw-rule><security-flavor>never</security-flavor></rw-rule><rule-index>1</rule-index><super-user-security><security-flavor>any</security-flavor></super-user-security></export-rule-create></netapp>';
+
+            return ServerFactory.callNetApp(credential, host, port, null, xml).then(function (data) {
+                if (data.data.status === 'error') return errorHandler(data.data.data.errno);
+                if (!data.data.data.response.netapp) return errorHandler(data.data.data.response);
+                if (data.data.data.response.netapp.results[0]['$'].status === 'failed') return errorHandler(data.data.data.response.netapp.results[0]['$']);
+
+                angular.forEach(data.data.data.response.netapp.results[0]['attributes-list'][0]['export-rule-info'], function (rule) {
+                    results.push(parseNetAppObject(rule));
+                });
+                console.log('getExportRules', results);
+
+                return validResponse(data);
+            });
+        };
+
         return {
             getSystemVersion: getSystemVersion,
             getOntapiVersion: getOntapiVersion,
@@ -3684,7 +3702,8 @@ var SysOS = angular.module('SysOS', [
             setVolumeOffline: setVolumeOffline,
             destroyVolume: destroyVolume,
             getNFSExportRulesList: getNFSExportRulesList,
-            getExportRules: getExportRules
+            getExportRules: getExportRules,
+            setExportRule: setExportRule
         };
     }]);
 }());
@@ -6954,8 +6973,8 @@ var SysOS = angular.module('SysOS', [
             doPing: function (uuid, host, onSuccess, onError) {
                 return doPost('/api/remoteServer/do_ping', {uuid: uuid, host: host}, onSuccess, onError);
             },
-            remoteDoSnmp: function (uuid, oid, onSuccess, onError) {
-                return doPost('/api/remoteServer/do_snmp', {uuid: uuid, oid: oid}, onSuccess, onError);
+            remoteDoSnmp: function (uuid, oid, type, onSuccess, onError) {
+                return doPost('/api/remoteServer/do_snmp', {uuid: uuid, oid: oid, type: type}, onSuccess, onError);
             },
             // vCenter API
             getVMwareClientVersion: function (host, port, onSuccess, onError) {

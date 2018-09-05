@@ -3,7 +3,6 @@
 
 var express = require("express");
 var router = express.Router();
-var path = require('path');
 
 /**
  * API vcenter/connect - Connect to vCenter Server or ESX(i) host
@@ -14,10 +13,10 @@ var path = require('path');
 
 router.post("/", function (req, res) {
 
-	var vcenter = require('../../modules/vcenter.js');
+	var vcenter = require('../../modules/vcenter.js')();
 	var apiGlobals = require('../globals.js')(req, res);
 	var apiCookie = 'api-session';
-    var credentials = require('../../modules/credentials.js');
+    var credentials = require('../../modules/credentials.js')();
 
 	var description = req.body.description;
 	var host = req.body.host;

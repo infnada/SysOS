@@ -9,8 +9,8 @@ module.exports = function () {
 	var snmp = require("net-snmp");
 
 	return {
-		createSession: function (type, uuid, host, callback) {
-			snmpSessions[type][uuid] = snmp.createSession(host, "public", {
+		createSession: function (type, uuid, host, community, callback) {
+			snmpSessions[type][uuid] = snmp.createSession(host, community, {
 				port: 161,
 				retries: 1,
 				timeout: 5000,

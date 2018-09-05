@@ -4,9 +4,9 @@ module.exports = function (socket) {
 	var snmpSession = require('./snmpSessions.js')();
 
 	return {
-		newConnection: function (type, uuid, host) {
+		newConnection: function (type, uuid, host, community) {
 
-			snmpSession.createSession(type, uuid, host, function (session) {
+			snmpSession.createSession(type, uuid, host, community, function (session) {
 				session.on('close', function (err) {
 					socketFactory.emitProp(type, "CONN CLOSE", uuid, 'status');
 				});

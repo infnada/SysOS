@@ -1,50 +1,55 @@
 var Promise = require("bluebird");
 var parseString = require('xml2js').parseString;
 
-exports.callApi = function (host, port, username, password, path, xml) {
-	var proto;
+module.exports = function () {
 
-	if (port === "80") {
-		proto = require('http');
-	} else {
-		proto = require('https');
-	}
+    this.callApi = function (host, port, username, password, path, xml) {
+        var proto;
 
-	return new Promise(function (resolve, reject) {
+        if (port === "80") {
+            proto = require('http');
+        } else {
+            proto = require('https');
+        }
 
-		var req = proto.request({
-			host: host,
-			path: path,
-			port: port,
-			method: 'POST',
-			headers: {
-				'Content-Type': 'text/xml',
-				'Authorization': 'Basic ' + new Buffer(username + ':' + password).toString('base64'),
-				'Content-Length': Buffer.byteLength(xml),
-				'Expect': '100-continue'
-			}
-		}, function (res) {
+        return new Promise(function (resolve, reject) {
 
-			var buffer = "";
-			res.on("data", function (data) {
-				buffer = buffer + data;
-			});
-			res.on("end", function () {
+            var req = proto.request({
+                host: host,
+                path: path,
+                port: port,
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'text/xml',
+                    'Authorization': 'Basic ' + new Buffer(username + ':' + password).toString('base64'),
+                    'Content-Length': Buffer.byteLength(xml),
+                    'Expect': '100-continue'
+                }
+            }, function (res) {
 
-				// Parse xml result to json
-				parseString(buffer, function (err, result) {
-					return resolve(result);
-				});
+                var buffer = "";
+                res.on("data", function (data) {
+                    buffer = buffer + data;
+                });
+                res.on("end", function () {
 
-			});
+                    // Parse xml result to json
+                    parseString(buffer, function (err, result) {
+                        return resolve(result);
+                    });
 
-		}).on('error', function (e) {
-			return reject(e);
-		});
+                });
 
-		req.write(xml);
-		req.end();
+            }).on('error', function (e) {
+                return reject(e);
+            });
 
-	});
+            req.write(xml);
+            req.end();
 
+        });
+
+    };
+
+    return this;
 };

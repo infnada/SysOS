@@ -1,4 +1,4 @@
-module.exports = function net (conn) {
+module.exports = function software (conn) {
 
 	var globals = require("./globals.js")(conn);
 
@@ -26,8 +26,7 @@ module.exports = function net (conn) {
 
 				}
 
-			}
-			;
+			};
 
 			return packages;
 

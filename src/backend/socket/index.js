@@ -8,7 +8,7 @@ var config = require('read-config')(path.join(__dirname, '../filesystem/etc/expr
 module.exports = function socket (socket) {
 	var ssh = require('./modules/ssh.js')(socket);
 	var snmp = require('./modules/snmp.js')(socket);
-    var credentials = require('../routes/modules/credentials.js');
+    var credentials = require('../routes/modules/credentials.js')();
 
 	// if websocket connection arrives without an express session, kill it
 	if (!socket.request.session) {
@@ -27,11 +27,11 @@ module.exports = function socket (socket) {
 		ssh.closeConnection(null, null);
 	});
 
-	var newConnection = function (type, host, credential, port, uuid, so) {
+	var newConnection = function (type, host, credential, port, uuid, so, community) {
 		host = (validator.isIP(host + '') && host) || (validator.isFQDN(host) && host) || (/^(([a-z]|[A-Z]|[0-9]|[!^(){}\-_~])+)?\w$/.test(host) && host);
 
 		//snmp connection
-		if (so === "snmp") return snmp.newConnection(type, uuid, host);
+		if (so === "snmp") return snmp.newConnection(type, uuid, host, community);
 
 		//get username and password from credential
         return credentials.getCredential(credential).then(function (cred) {
@@ -44,8 +44,8 @@ module.exports = function socket (socket) {
             }
 
         }).catch(function (e) {
-            if (e && e.code) return apiGlobals.serverError(e.code);
-            if (e) return apiGlobals.serverError(e);
+            if (e && e.code) return console.log(e.code);
+            if (e) return console.log(e);
         });
 
 	};
@@ -60,8 +60,8 @@ module.exports = function socket (socket) {
 		ssh.closeConnection(session_type, uuid);
 	});
 
-	socket.on('session__new', function (session_type, host, credential, port, uuid, so) {
-		newConnection(session_type, host, credential, port, uuid, so);
+	socket.on('session__new', function (session_type, host, credential, port, uuid, so, community) {
+		newConnection(session_type, host, credential, port, uuid, so, community);
 	});
 
 };

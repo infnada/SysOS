@@ -1,4 +1,4 @@
-module.exports = function net (conn) {
+module.exports = function proc (conn) {
 
 	var _this = this;
 	var globals = require("./globals.js")(conn);

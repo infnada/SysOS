@@ -443,7 +443,7 @@
                 /*
                  * Standalone
                  */
-                if (connection.so === 'linux' || connection.so === 'snmp') {
+                if (connection.so === 'windows' || connection.so === 'linux' || connection.so === 'snmp') {
 
                     if (connection.save) saveConnection(connection);
 

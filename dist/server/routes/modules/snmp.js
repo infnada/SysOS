@@ -1,13 +1,18 @@
 var Promise = require("bluebird");
 
-module.exports = function net (conn) {
+/*
+ * TODO: DEPRECATED
+ */
 
+module.exports = function snmp (conn) {
+
+	var _this = this;
 	this.ifaces = [];
 
-	function changeInterfaceById (id, key, value) {
+	var changeInterfaceById = function (id, key, value) {
 		for (var i in ifaces) {
-			if (ifaces[i].interfaceId == id) {
-				ifaces[i][key] = value;
+			if (_this.ifaces[i].interfaceId == id) {
+                _this.ifaces[i][key] = value;
 				break; //Stop this loop, we found it!
 			}
 		}
@@ -99,7 +104,7 @@ module.exports = function net (conn) {
 					"interfaceName": varbinds[0].value.toString()
 				};
 
-				ifaces.push(substringResult);
+                _this.ifaces.push(substringResult);
 			}, function (e) {
 				if (e) console.log(e);
 				return resolve();
@@ -109,7 +114,6 @@ module.exports = function net (conn) {
 	};
 
 	this.getIfacesIp = function () {
-		var iface;
 		var interfaceId;
 		var interfaceIp;
 

@@ -1,6 +1,6 @@
 var Promise = require("bluebird");
 
-module.exports = function init (conn) {
+module.exports = function hids (conn) {
 
 	var globals = require("./globals.js")(conn);
 	var path = require('path');

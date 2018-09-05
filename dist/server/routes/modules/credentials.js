@@ -1,14 +1,19 @@
 var path = require('path');
 var Promise = require("bluebird");
 
-exports.getCredential = function (credential) {
-    var credentials = require('read-config')(path.join(__dirname, '../../filesystem/root/credentials.json'));
+module.exports = function credentials () {
 
-    credential = credentials.saved_credentials.filter(function (obj) {
-        return obj.uuid === credential;
-    })[0];
+    this.getCredential = function (credential) {
+        var credentials = require('read-config')(path.join(__dirname, '../../filesystem/root/credentials.json'));
 
-    if (!credential) return Promise.reject('Invalid credential');
+        credential = credentials.saved_credentials.filter(function (obj) {
+            return obj.uuid === credential;
+        })[0];
 
-    return Promise.resolve(credential);
+        if (!credential) return Promise.reject('Invalid credential');
+
+        return Promise.resolve(credential);
+    };
+
+    return this;
 };

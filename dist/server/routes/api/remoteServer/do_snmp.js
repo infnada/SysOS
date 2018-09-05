@@ -15,10 +15,15 @@ var Promise = require("bluebird");
 
 router.post("/", function (req, res) {
 
+	var type = req.body.type;
 	var oid = req.body.oid;
 	var uuid = req.body.uuid;
 	var apiGlobals = require('../globals.js')(req, res);
 	var snmpSessions = require('../../../socket/modules/snmpSessions.js')();
+
+    if (!Array.isArray(oid)) {
+    	oid = [oid];
+    }
 
 	return snmpSessions.getSession('smanager', uuid, function (conn) {
 
@@ -40,23 +45,72 @@ router.post("/", function (req, res) {
 			});
 
 			// NORMAL OID GET
-		} else {
-			conn.get([oid], function (e, varbinds) {
+		} else if (type === "get") {
+			conn.get(oid, function (e, varbinds) {
+                console.log("---------");
+                console.log(oid);
+                console.log(varbinds);
+
 				if (e) {
 					console.log("error");
 					return apiGlobals.serverError(e);
 				}
 
-				for (var i = 0; i < varbinds.length; i++) {
-					if (snmp.isVarbindError(varbinds[i])) {
-						console.log("error");
-						console.error(snmp.varbindError(varbinds[i]));
-					} else {
-						console.log(varbinds[i].oid + ":" + varbinds[i].value);
-						return apiGlobals.responseData(uuid, 'oid', '"' + varbinds[i].value.toString() + '"');
-					}
-				}
+                var response = [];
+
+                for (var i = 0; i < varbinds.length; i++) {
+                    if (snmp.isVarbindError(varbinds[i])) {
+                        console.log("error");
+                        console.error(snmp.varbindError(varbinds[i]));
+                    } else {
+                        if (Buffer.isBuffer(varbinds[i].value)) {
+                            console.log(varbinds[i].oid + ":" + varbinds[i].value.toString('utf8'));
+                        } else {
+                            console.log(varbinds[i].oid + ":" + varbinds[i].value);
+                        }
+
+                        response.push({
+                            oid: varbinds[i].oid,
+                            value: varbinds[i].value.toString()
+                        });
+                    }
+                }
+
+                apiGlobals.responseData(uuid, 'oid', response);
 			});
+        } else if (type === "get-next") {
+            conn.getNext(oid, function (e, varbinds) {
+            	console.log("---------");
+            	console.log(oid);
+            	console.log(JSON.stringify(varbinds));
+
+                if (e) {
+                    console.log("error");
+                    return apiGlobals.serverError(e);
+                }
+
+                var response = [];
+
+                for (var i = 0; i < varbinds.length; i++) {
+                    if (snmp.isVarbindError(varbinds[i])) {
+                        console.log("error");
+                        console.error(snmp.varbindError(varbinds[i]));
+                    } else {
+                        if (Buffer.isBuffer(varbinds[i].value)) {
+                            console.log(varbinds[i].oid + ":" + varbinds[i].value.toString('utf8'));
+                        } else {
+                            console.log(varbinds[i].oid + ":" + varbinds[i].value);
+                        }
+
+                        response.push({
+	                        oid: varbinds[i].oid,
+	                        value: varbinds[i].value.toString()
+                        });
+                    }
+                }
+
+                apiGlobals.responseData(uuid, 'oid', response);
+            });
 		}
 
 	});

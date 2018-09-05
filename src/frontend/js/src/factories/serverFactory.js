@@ -125,8 +125,8 @@
             doPing: function (uuid, host, onSuccess, onError) {
                 return doPost('/api/remoteServer/do_ping', {uuid: uuid, host: host}, onSuccess, onError);
             },
-            remoteDoSnmp: function (uuid, oid, onSuccess, onError) {
-                return doPost('/api/remoteServer/do_snmp', {uuid: uuid, oid: oid}, onSuccess, onError);
+            remoteDoSnmp: function (uuid, oid, type, onSuccess, onError) {
+                return doPost('/api/remoteServer/do_snmp', {uuid: uuid, oid: oid, type: type}, onSuccess, onError);
             },
             // vCenter API
             getVMwareClientVersion: function (host, port, onSuccess, onError) {

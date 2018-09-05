@@ -13,7 +13,7 @@ var router = express.Router();
 
 router.post("/", function (req, res) {
 
-	var vcenter = require('../../modules/vcenter.js');
+	var vcenter = require('../../modules/vcenter.js')();
 	var apiGlobals = require('../globals.js')(req, res);
 
 	var host = req.body.host;
