@@ -180,14 +180,14 @@
                 <div ng-if="smB.showvCenter == true"> \
                   <div ng-include="\'templates/applications/vcenter-type-smanager.html\'" include-replace></div> \
                 </div> \
-                <!--<div ng-if="smB.showVm == true"> \
-                  <div ng-include="\'templates/applications/vm-type-smanager.html\'" include-replace></div> \
-                </div>--> \
                 <div ng-if="smB.showSnapshot == true"> \
                   <div ng-include="\'templates/applications/snapshot-type-smanager.html\'" include-replace></div> \
                 </div> \
-                <div ng-if="smB.showVm == true || smB.showStandalone == true && smB.getActiveConnection().state != \'disconnected\'"> \
+                <div ng-if="smB.showVm == true || smB.showStandalone == true && smB.getActiveConnection().state != \'disconnected\' && smB.getActiveConnection().so != \'snmp\'"> \
                   <div ng-include="\'templates/applications/standalone-type-smanager.html\'" include-replace></div> \
+                </div> \
+                <div ng-if="smB.getActiveConnection().so == \'snmp\'"> \
+                    <div ng-include="\'templates/applications/snmp-type-smanager.html\'" include-replace></div> \
                 </div> \
                 <div ng-if="smB.showNewConnectionType == true"> \
                   <div ng-include="\'templates/applications/new-connection-type-smanager.html\'" include-replace></div> \

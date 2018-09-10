@@ -7211,22 +7211,13 @@ button.close {
     line-height: normal;
 }
 
-.xterm {
-    cursor: text;
-}
-
 .xterm.enable-mouse-events {
     /* When mouse events are enabled (eg. tmux), revert to the standard pointer cursor */
     cursor: default;
 }
 
-.xterm.xterm-cursor-pointer {
-    cursor: pointer;
-}
-
-.xterm.xterm-cursor-crosshair {
-    /* Column selection mode */
-    cursor: crosshair;
+.xterm:not(.enable-mouse-events) {
+    cursor: text;
 }
 
 .xterm .xterm-accessibility,
@@ -7246,6 +7237,10 @@ button.close {
     width: 1px;
     height: 1px;
     overflow: hidden;
+}
+
+.xterm-cursor-pointer {
+    cursor: pointer;
 }
 
 .CodeMirror {

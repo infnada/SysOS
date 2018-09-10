@@ -72,6 +72,7 @@ module.exports = function (grunt) {
                     'node_modules/angular-toastr/dist/angular-toastr.min.css',
                     'node_modules/angular-ui-switch/angular-ui-switch.css',
 	                'node_modules/angular-ui-tree/dist/angular-ui-tree.min.css',
+                    'node_modules/fusioncharts/dist/angular-ui-tree.min.css',
                     '<%= dir.dev_frontend %>/css/vendor/wmks.min.css'
                 ]
             },
@@ -85,6 +86,7 @@ module.exports = function (grunt) {
                     'node_modules/Sparkline/dist/jquery.sparkline.min.js',
                     'node_modules/xterm/dist/xterm.js',
                     'node_modules/codemirror/lib/codemirror.js',
+                    'node_modules/chart.js/dist/Chart.bundle.min.js',
                     '<%= dir.dev_frontend %>/js/vendor/wmks.min.js',
                     'node_modules/angular/angular.js',
                     'node_modules/angular-cookies/angular-cookies.min.js',
@@ -98,7 +100,8 @@ module.exports = function (grunt) {
                     'node_modules/ng-file-upload/dist/ng-file-upload-shim.js',
                     'node_modules/ng-file-upload/dist/ng-file-upload.js',
                     'node_modules/oclazyload/dist/ocLazyLoad.min.js',
-                    'node_modules/ngSelectable/src/ngSelectable.js'
+                    'node_modules/ngSelectable/src/ngSelectable.js',
+                    'node_modules/angular-chart.js/dist/angular-chart.min.js'
                 ]
             }
         },
