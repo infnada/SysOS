@@ -10,7 +10,7 @@ module.exports = function globals (conn) {
 			var streamed_data = "";
 			return new Promise(function (resolve, reject) {
 				if (conn === undefined) return reject("no conn");
-				conn.exec(command, {pty: true}, function (err, stream) {
+				conn.exec(command, function (err, stream) {
 					if (err) return reject(err);
 					stream.on('data', function (data, err) {
 						streamed_data += data.toString('utf8')

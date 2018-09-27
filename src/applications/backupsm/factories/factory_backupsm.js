@@ -658,7 +658,7 @@
 
                     // Power Off VM
                     if (res.data['runtime.powerState'] === 'poweredOn') {
-                        modalFactory.changeModalText('PLEASE WAIT', 'Powering off VM ...', '.window--backupsm .window__main');
+                        modalFactory.changeModalText('Powering off VM ...', '.window--backupsm .window__main');
                         return vmwareFactory.powerOffVM(data.esxi_credential, data.esxi_address, data.esxi_port, data.vm.vm);
                     }
 
