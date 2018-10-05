@@ -373,9 +373,10 @@ var backupsmApp = angular.module('backupsmApp', []);
                     var modalInstanceText = modalFactory.openLittleModal('PLEASE WAIT', 'Searching VM in SnapShots...', '.modal-recovery-wizard', 'plain');
 
                     var regex = /\[*\]\s(.*)\/.*\.vmx/gi;
-                    var str = _this.data.vm.config.files.vmPathName;
+                    var str = _this.data.vm.summary.config.vmPathName;
 
                     var vm_path = regex.exec(str)[1];
+
                     if (!vm_path) throw new Error('SAFETY STOP: VM cannot be on root folder');
 
                     angular.forEach(data.snapshots, function (snapshot, i) {
@@ -409,7 +410,7 @@ var backupsmApp = angular.module('backupsmApp', []);
                 if (this.data.type === 'vm_instant_recovery') {
                     this.hideCurrentLocation = true;
                     this.restoreType = 'new';
-                    this.vmName = this.data.vm.name + '-IVM';
+                    this.vmName =  'IVM-' + this.data.vm.name;
                 }
 
                 if (this.data.type === 'restore_vm') {

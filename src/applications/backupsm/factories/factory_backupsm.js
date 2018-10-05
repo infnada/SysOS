@@ -276,6 +276,12 @@
 
                 }).then(function () {
 
+                    //TODO: check esxi firewall rules to make sure NFS connectivity
+
+                    return;
+
+                }).then(function () {
+
                     $log.debug('Backups Manager [%s] -> Mount volume to ESXi -> datastoreSystem [%s], nfs_ip [%s], volume [%s], path [%s]', data.uuid, data.datastoreSystem, data.netapp_nfs_ip[0].address, '/' + data.volumeName + '/', data.datastorePath);
                     return vmwareFactory.mountDatastore(
                         data.esxi_credential,
