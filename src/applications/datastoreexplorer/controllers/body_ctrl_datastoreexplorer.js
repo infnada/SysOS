@@ -1,7 +1,7 @@
 (function () {
     'use strict';
-    datastoreexplorerApp.controller('deBodyController', ['$rootScope', '$scope', '$timeout', 'fileSystemFactory', 'Upload', 'ApplicationsFactory', 'vmwareFactory', 'modalFactory', 'ServerFactory', 'toastr',
-        function ($rootScope, $scope, $timeout, fileSystemFactory, Upload, ApplicationsFactory, vmwareFactory, modalFactory, ServerFactory, toastr) {
+    datastoreexplorerApp.controller('deBodyController', ['$rootScope', '$scope', '$timeout', '$filter', 'fileSystemFactory', 'Upload', 'ApplicationsFactory', 'vmwareFactory', 'modalFactory', 'ServerFactory', 'toastr',
+        function ($rootScope, $scope, $timeout, $filter, fileSystemFactory, Upload, ApplicationsFactory, vmwareFactory, modalFactory, ServerFactory, toastr) {
 
             var _this = this;
             this.showExplorer = false;
@@ -83,6 +83,55 @@
              * Bindings
              */
 
+            /**
+             * On file dropped to desktop
+             *
+             * @param evt
+             * @param ui
+             * @returns {*}
+             */
+            this.onDropItem = function (evt, ui) {
+                if ($rootScope.currentFileDrop !== 'datastoreexplorer') return;
+                if (!_this.showExplorer) return;
+
+                // Fix drop from /root/Desktop
+                if (angular.isUndefined(ui.draggable.scope().$parent.file)) ui.draggable.scope().$parent.file = ui.draggable.scope().file;
+
+                // Do not move files to same directory
+                if (ui.draggable.scope().$parent.file.dragFrom === _this.localFileSystem.currentPath) return;
+
+                var object = $filter('filter')(_this.localFileSystem.currentData, {
+                    filename: ui.draggable.scope().$parent.file.filename
+                });
+
+                if (object.length !== 0) {
+                    return modalFactory.openLittleModal('Move file', 'A file with the same name already exists. Can\'t move it.', '.window--datastoreexplorer .window__main', 'plain');
+                }
+
+                _this.copyFrom = ui.draggable.scope().$parent.file.dragFrom + ui.draggable.scope().$parent.file.filename;
+                _this.pasteTo = _this.localFileSystem.currentPath;
+
+                var datacenter;
+
+                modalFactory.openLittleModal('PLEASE WAIT', 'Connecting to vCenter/ESXi...', '.window--datastoreexplorer .window__main', 'plain');
+
+                return ServerFactory.connectVcenter(_this.datastoreData.host, _this.datastoreData.credential, _this.datastoreData.port).then(function (data) {
+                    if (data.data.status === 'error') throw new Error(data.data.data);
+
+                    return ServerFactory.callVcenter(_this.datastoreData.host, _this.datastoreData.port, '/rest/vcenter/datacenter');
+                }).then(function (data) {
+                    datacenter = data.data.data.response.value[0].name;
+
+                    return vmwareFactory.uploadFileToDatastore('https://' + _this.datastoreData.host + '/folder' + _this.pasteTo + ui.draggable.scope().$parent.file.filename + '?dcPath=' + datacenter + '&dsName=' + _this.datastoreData.name, _this.copyFrom, _this.datastoreData.credential, function () {
+                        _this.copyFrom = null;
+                        _this.pasteTo = null;
+
+                        modalFactory.closeModal('.window--datastoreexplorer .window__main');
+                        toastr.success('File uploaded to ' +  _this.pasteTo + ui.draggable.scope().$parent.file.filename, 'Upload file to Datastore');
+                    });
+                });
+            };
+
             /*
              * Current path contextmenu
              */
@@ -147,9 +196,9 @@
                         }).then(function (data) {
                             datacenter = data.data.data.response.value[0].name;
 
-                            fileSystemFactory.downloadFileFromInet('https://' + _this.datastoreData.host + '/folder' + _this.localFileSystem.currentPath + $itemScope.file.path + '?dcPath=' + datacenter + '&dsName=' + _this.datastoreData.name, '/home/downloads/', _this.datastoreData.credential, function () {
+                            fileSystemFactory.downloadFileFromInet('https://' + _this.datastoreData.host + '/folder' + _this.localFileSystem.currentPath + $itemScope.file.path + '?dcPath=' + datacenter + '&dsName=' + _this.datastoreData.name, '/root/Downloads/', _this.datastoreData.credential, function () {
                                 modalFactory.closeModal('.window--datastoreexplorer .window__main');
-                                toastr.success('File downloaded to /home/downloads/' + $itemScope.file.path, 'Download file to SysOS');
+                                toastr.success('File downloaded to /root/Downloads/' + $itemScope.file.path, 'Download file to SysOS');
                             });
                         });
 
@@ -263,6 +312,13 @@
             /*
              * ng-click functions
              */
+
+            /*
+             * Main function on body template
+             */
+            this.showInit = function () {
+                _this.showExplorer = false;
+            };
 
             /*
              * Main function on body template

@@ -19,6 +19,7 @@
     "angular-bootstrap-contextmenu": "^1.1.0",
     "angular-chart.js": "^1.1.1",
     "angular-cookies": "^1.7.2",
+    "angular-dragdrop": "github:codef0rmer/angular-dragdrop",
     "angular-toastr": "^2.1.1",
     "angular-ui-bootstrap": "^2.5.6",
     "angular-ui-codemirror": "^0.3.0",

@@ -52,7 +52,7 @@
              */
             ApplicationsFactory.getTaskBarApplications();
 
-            $rootScope.$broadcast('desktop__reload');
+            $rootScope.$broadcast('refreshPath', '/root/Desktop/');
 
             socketIo.connect();
 

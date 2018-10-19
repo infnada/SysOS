@@ -42,8 +42,8 @@
   <div class="desktop" ng-if="$root.showApp">
 
     <div class="col-xs-12 desktop__body">
-      <div id="desktop_body" selectable="main.selection" selectable-list="main.desktopFiles.currentData | filter:main.search" selectable-out="selected" selectable-options="{delay:150, filter: 'a'}" minus-index="2" class="folders" tabindex="0" ng-click="main.handleDesktopClick($event)" ng-keydown="main.handleItemKeyPress($event)" context-menu="main.desktopContextMenu">
-        <a ng-repeat="file in main.desktopFiles.currentData | filter:main.search" ng-class="{'active': main.currentActive == $index}" ng-click="main.setCurrentActive($index)" ng-dblclick="main.doWithFile(file)" title="{{::file.filename}}" context-menu="main.fileContextMenu">
+      <div id="desktop_body" ng-mouseover="$root.setCurrentFileDrop('desktop'); $event.stopPropagation()" data-drop="true" jqyoui-droppable="{onDrop: 'main.onDropItem'}" data-jqyoui-options="{greedy: true, accept:'a', tolerance: 'pointer'}" selectable="main.selection" selectable-list="main.desktopFiles.currentData | filter:main.search" selectable-out="selected" selectable-options="{delay:150, filter: 'a'}" minus-index="2" class="folders" tabindex="0" ng-click="main.handleDesktopClick($event)" ng-keydown="main.handleItemKeyPress($event)" context-menu="main.desktopContextMenu">
+        <a data-drag="true" jqyoui-draggable="{onStart: 'main.onStartItem'}" data-jqyoui-options="{appendTo: '.desktop', helper: 'clone'}" ng-repeat="file in main.desktopFiles.currentData | filter:main.search" ng-class="{'active': main.currentActive == $index}" ng-click="main.setCurrentActive($index)" ng-dblclick="main.doWithFile(file)" title="{{::file.filename}}" context-menu="main.fileContextMenu">
           <i class="fa fa-{{::main.getFileType(file.longname)}}"></i>
           <span>{{::file.filename}}</span>
         </a>

@@ -99,6 +99,7 @@ module.exports = function (app, io) {
 	app.use('/api/vcenter/connectSoap', require('./api/vcenter/connectSoap.js'));
 	app.use('/api/vcenter/call', require('./api/vcenter/call.js'));
 	app.use('/api/vcenter/callSoap', require('./api/vcenter/callSoap.js'));
+    app.use('/api/vcenter/upload_to_datastore', require('./api/vcenter/upload_to_datastore.js'));
 
 	app.use('/api/netapp/call', require('./api/netapp/call.js'));
 

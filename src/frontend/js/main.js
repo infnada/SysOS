@@ -20,5 +20,6 @@ var SysOS = angular.module('SysOS', [
     'ui.sortable',
     'ui.tree',
     'ngCookies',
+    'ngDragDrop',
     'chart.js'
 ]);

@@ -1,7 +1,7 @@
 (function () {
     'use strict';
-    fileexplorerApp.controller('feBodyController', ['$rootScope', '$scope', '$timeout', 'fileSystemFactory', 'ApplicationsFactory', 'modalFactory', 'toastr',
-        function ($rootScope, $scope, $timeout, fileSystemFactory, ApplicationsFactory, modalFactory, toastr) {
+    fileexplorerApp.controller('feBodyController', ['$rootScope', '$scope', '$timeout', '$filter', 'fileSystemFactory', 'ApplicationsFactory', 'modalFactory', 'toastr',
+        function ($rootScope, $scope, $timeout, $filter, fileSystemFactory, ApplicationsFactory, modalFactory, toastr) {
 
             var _this = this;
             this.viewAsList = false;
@@ -12,7 +12,6 @@
             this.pasteTo = null;
             this.lastPath = [];
             this.nextPath = [];
-
 
             /*
              * Init
@@ -52,13 +51,65 @@
                         (function (f) {
                             fileSystemFactory.uploadFile(f).then(function (data) {
                                 if (data.status === 'ok') {
-                                    _this.reloadPath();
+                                    $rootScope.$broadcast('refreshPath', _this.localFileSystem.currentPath);
                                 }
                             });
                         })(files[i]);
                     }
                 }
             });
+
+            $scope.$on('refreshPath', function (event, data) {
+                if (data === _this.localFileSystem.currentPath) {
+                    _this.reloadPath();
+                }
+            });
+
+            /**
+             * On file dragstart
+             *
+             * @param evt
+             * @param ui
+             */
+            this.onStartItem = function (evt, ui) {
+                ui.helper.prevObject.scope().$parent.file.dragFrom = _this.localFileSystem.currentPath;
+            };
+
+            /**
+             * On file dropped to desktop
+             *
+             * @param evt
+             * @param ui
+             * @returns {*}
+             */
+            this.onDropItem = function (evt, ui) {
+                if ($rootScope.currentFileDrop !== 'fileexplorer') return;
+
+                // Fix drop from /root/Desktop
+                if (angular.isUndefined(ui.draggable.scope().$parent.file)) ui.draggable.scope().$parent.file = ui.draggable.scope().file;
+
+                // Do not move files to same directory
+                if (ui.draggable.scope().$parent.file.dragFrom === _this.localFileSystem.currentPath) return;
+
+                var object = $filter('filter')(_this.localFileSystem.currentData, {
+                    filename: ui.draggable.scope().$parent.file.filename
+                });
+
+                if (object.length !== 0) {
+                    return modalFactory.openLittleModal('Move file', 'A file with the same name already exists. Can\'t move it.', '.window--fileexplorer .window__main', 'plain');
+                }
+
+                _this.cutFrom = ui.draggable.scope().$parent.file.dragFrom + ui.draggable.scope().$parent.file.filename;
+                _this.pasteTo = _this.localFileSystem.currentPath;
+
+                return fileSystemFactory.moveFile(_this.cutFrom, _this.pasteTo, function () {
+                    _this.cutFrom = null;
+                    _this.pasteTo = null;
+
+                    $rootScope.$broadcast('refreshPath', _this.localFileSystem.currentPath);
+                    $rootScope.$broadcast('refreshPath', ui.helper.prevObject.scope().$parent.file.dragFrom);
+                });
+            };
 
             /*
              * Current path contextmenu
@@ -90,7 +141,7 @@
                             if (!res) return;
 
                             return fileSystemFactory.downloadFileFromInet(res, _this.localFileSystem.currentPath, '', function () {
-                                _this.reloadPath();
+                                $rootScope.$broadcast('refreshPath', _this.localFileSystem.currentPath);
                                 toastr.success('File downloaded to ' + _this.localFileSystem.currentPath, 'Download file from URL');
                             });
                         });
@@ -106,7 +157,7 @@
                 {
                     text: '<i class="fa fa-refresh"></i> Refresh',
                     click: function () {
-                        _this.reloadPath();
+                        $rootScope.$broadcast('refreshPath', _this.localFileSystem.currentPath);
                     }
                 },
                 null,
@@ -119,7 +170,7 @@
 
                     if (_this.cutFrom) {
                         return fileSystemFactory.moveFile(_this.cutFrom, _this.pasteTo, function () {
-                            _this.reloadPath();
+                            $rootScope.$broadcast('refreshPath', _this.localFileSystem.currentPath);
                             _this.cutFrom = null;
                             _this.pasteTo = null;
                         });
@@ -127,7 +178,7 @@
 
                     if (_this.copyFrom) {
                         return fileSystemFactory.copyFile(_this.copyFrom, _this.pasteTo, function () {
-                            _this.reloadPath();
+                            $rootScope.$broadcast('refreshPath', _this.localFileSystem.currentPath);
                             _this.copyFrom = null;
                             _this.pasteTo = null;
                         });
@@ -325,15 +376,19 @@
              * Get current path data
              */
             this.reloadPath = function () {
-                if (_this.localFileSystem.currentPath === '/root/Desktop/') {
-                    $rootScope.$broadcast('desktop__reload');
-                }
-
                 fileSystemFactory.getFileSystemPath(_this.localFileSystem.currentPath, function (data) {
                     _this.search = undefined;
                     _this.localFileSystem.currentData = data;
                     _this.resetActive();
                 });
+            };
+
+            /*
+             * Sets view mode (icons, detailed...)
+             */
+            this.toggleView = function () {
+                _this.viewAsList = !_this.viewAsList;
+                _this.resetActive();
             };
 
             /*
@@ -362,7 +417,7 @@
 
                     return fileSystemFactory.createFolder(_this.localFileSystem.currentPath, res, function () {
 
-                        _this.reloadPath();
+                        $rootScope.$broadcast('refreshPath', _this.localFileSystem.currentPath);
 
                     }).catch(function (e) {
                         console.log(e);
@@ -389,7 +444,7 @@
                     if (res === true) {
                         return fileSystemFactory.deleteFile(_this.localFileSystem.currentPath, _this.modalInputName, function () {
 
-                            _this.reloadPath();
+                            $rootScope.$broadcast('refreshPath', _this.localFileSystem.currentPath);
 
                         }).catch(function (e) {
                             console.log(e);
@@ -425,7 +480,7 @@
                     _this.modalInputName = res;
                     return fileSystemFactory.renameFile(_this.localFileSystem.currentPath, _this.fileToRename, _this.modalInputName, function () {
 
-                        _this.reloadPath();
+                        $rootScope.$broadcast('refreshPath', _this.localFileSystem.currentPath);
 
                     }).catch(function (e) {
                         console.log(e);

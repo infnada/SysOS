@@ -80,7 +80,7 @@ module.exports = function (grunt) {
                 dest: '<%= dir.dist_frontend %>/js/vendor.js',
                 src: [
                     'node_modules/jquery/dist/jquery.js',
-                    'node_modules/jquery-ui-dist/jquery-ui.min.js',
+                    'node_modules/jquery-ui-dist/jquery-ui.js',
                     'node_modules/masonry-layout/dist/masonry.pkgd.min.js',
                     'node_modules/peity/jquery.peity.min.js',
                     'node_modules/Sparkline/dist/jquery.sparkline.min.js',
@@ -101,6 +101,7 @@ module.exports = function (grunt) {
                     'node_modules/ng-file-upload/dist/ng-file-upload.js',
                     'node_modules/oclazyload/dist/ocLazyLoad.min.js',
                     'node_modules/ngSelectable/src/ngSelectable.js',
+                    'node_modules/angular-dragdrop/src/angular-dragdrop.js',
                     'node_modules/angular-chart.js/dist/angular-chart.min.js'
                 ]
             }

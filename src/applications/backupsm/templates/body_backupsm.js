@@ -12,7 +12,7 @@
                             </uib-accordion-heading> \
                             <uib-accordion close-others="false"> \
                                 <div class="menu__item" ng-repeat="backup in bmB.backups track by $index" ng-class="{\'active\': backup.uuid == bmB.active}" ng-click="bmB.setActive(backup)" ng-if="backup != undefined"> \
-                                    <span class="p-l-xl"> \
+                                    <span> \
                                         <h5>{{::backup.backup_name}}<br /></h5> \
                                     </span> \
                                 </div> \
@@ -26,7 +26,7 @@
                             </uib-accordion-heading> \
                             <uib-accordion close-others="false"> \
                                 <div class="menu__item" ng-repeat="restore in bmB.restores track by $index" ng-class="{\'active\': restore.uuid == bmB.active}" ng-click="bmB.setActive(restore)" ng-if="restore != undefined"> \
-                                    <span class="p-l-xl"> \
+                                    <span> \
                                         <h5>{{::restore.restore_name}}<br /><small>{{::restore.snapshot}}</small></h5> \
                                     </span> \
                                 </div> \

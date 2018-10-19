@@ -3,7 +3,7 @@
     datastoreexplorerApp.run(['$templateCache', function ($templateCache) {
 
         $templateCache.put('templates/applications/body-datastoreexplorer.html',
-            '<div class="window__body" ng-controller="deBodyController as deB"> \
+            '<div class="window__body" ng-controller="deBodyController as deB" data-drop="true" jqyoui-droppable="{onDrop: \'deB.onDropItem\'}" data-jqyoui-options="{greedy: true, accept:\'a\', tolerance: \'pointer\'}"> \
                 <div class="window__main no_padding"> \
                     <div class="col-xs-12 ftp__body" > \
                         <div ng-include="\'templates/applications/actions-de-local.html\'" include-replace></div> \

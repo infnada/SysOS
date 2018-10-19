@@ -2593,6 +2593,9 @@ ul.nav-wizard .active ~ li a:focus {
 .angular-ui-tree-handle {
   font-weight: 400;
   cursor: default;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .hr-text {

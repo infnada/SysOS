@@ -2996,6 +2996,14 @@
             });
         };
 
+        var uploadFileToDatastore = function (url, path, credential, callback) {
+            return ServerFactory.uploadFileToDatastore(url, path, credential, function (data) {
+                return callback(data.data);
+            }, function (data) {
+                console.log('Error: ' + data);
+            });
+        };
+
         return {
             // Basics
             getClientVersion: getClientVersion,
@@ -3063,7 +3071,9 @@
             queryPerfProviderSummary: queryPerfProviderSummary,
             queryPerfCounterByLevel: queryPerfCounterByLevel,
             queryPerfCounter: queryPerfCounter,
-            queryPerf: queryPerf
+            queryPerf: queryPerf,
+            // Datastore Upload
+            uploadFileToDatastore: uploadFileToDatastore
         };
     }]);
 }());

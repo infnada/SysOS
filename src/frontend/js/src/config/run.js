@@ -8,6 +8,10 @@
             $rootScope.showLogin = true;
             $rootScope.showApp = false;
 
+            $rootScope.setCurrentFileDrop = function (app) {
+                $rootScope.currentFileDrop = app;
+            };
+
             if (angular.isDefined($cookies.get('uniqueId'))) {
 
                 // Check express session

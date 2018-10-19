@@ -8,7 +8,7 @@
 			        <i class="fa" ng-class="{\'fa-chevron-right p-r-xxs\': collapsed, \'fa-chevron-down\': !collapsed}"></i> \
 			    </a> \
 			    <span class="node-header" ng-class="::{\'p-l-27\': !item.items.length}"> \
-			        <input type="checkbox" ng-disabled="::!bwmC.getLinkByVMwareDatastore(item)" ng-checked="item.isSelected" indeterminate-checkbox node="::item" /> \
+			        <input type="checkbox" ng-disabled="::!bwmC.getLinkByVMwareDatastore(item) || (item.type !== \'Datastore\' && item.type !== \'VirtualMachine\')" ng-checked="item.isSelected" indeterminate-checkbox node="::item" /> \
 			    </span> \
 			    <i class="fa fa-exclamation text-warning" ng-if="::!bwmC.getLinkByVMwareDatastore(item) && item.type === \'VirtualMachine\'" uib-tooltip="This VM is not in a supported Storage"></i> \
 			    <i class="fa fa-exclamation text-warning" ng-if="::!bwmC.getLinkByVMwareDatastore(item) && item.type === \'Datastore\'" uib-tooltip="This Datastore is not a supported Storage"></i> \

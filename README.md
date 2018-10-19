@@ -34,7 +34,7 @@ As a client:
 
 - Go with your browser at:
 
-`https://localhost:8080/index.html`
+`https://[server_ip]:8080/index.html`
 
 ## Default User & Password
 root:root

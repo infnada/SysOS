@@ -2209,6 +2209,9 @@
                             return smanagerFactory.refreshVM(eval(connectionsFactory.getObjectByUuidMapping($itemScope.vm.config.uuid)), _this.getActiveConnection(1)).then(function () {// jshint ignore:line
                                 $log.debug('Infrastructure Manager [%s] -> Doing refreshVM successfully -> vm [%s]', $itemScope.vm.vm, $itemScope.vm.name);
                                 $itemScope.vm.refreshing = false;
+
+                                toastr.success('Refreshed VM data successfully', 'Refresh VM');
+
                             }).catch(function (e) {
                                 $log.error('Infrastructure Manager [%s] -> Error while refreshVM -> vm [%s] -> ', $itemScope.vm.vm, $itemScope.vm.name, e);
 

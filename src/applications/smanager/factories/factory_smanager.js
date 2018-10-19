@@ -392,6 +392,8 @@
                     connectionsFactory.saveConnection(connectionsFactory.getConnectionByUuid(connection.uuid));
                     modalFactory.closeModal('.window--smanager .window__main');
 
+                    toastr.success('VMWare connection added successfully');
+
                 }).catch(function (e) {
                     modalFactory.closeModal('.window--smanager .window__main');
                     connectionsFactory.deleteConnection(connection.uuid);
@@ -699,6 +701,8 @@
                     connectionsFactory.saveConnection(connectionsFactory.getConnectionByUuid(connection.uuid));
                     connectionsFactory.saveUuidMap();
                     modalFactory.closeModal('.window--smanager .window__main');
+
+                    toastr.success('NetApp connection added successfully');
 
                 }).catch(function (e) {
                     modalFactory.closeModal('.window--smanager .window__main');

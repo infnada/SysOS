@@ -1,7 +1,7 @@
 (function () {
     'use strict';
-    SysOS.controller('mainController', ['$rootScope', '$scope', '$timeout', 'ApplicationsFactory', 'ServerFactory', 'modalFactory', 'toastr', 'mainFactory', 'fileSystemFactory',
-        function ($rootScope, $scope, $timeout, ApplicationsFactory, ServerFactory, modalFactory, toastr, mainFactory, fileSystemFactory) {
+    SysOS.controller('mainController', ['$rootScope', '$scope', '$timeout', '$filter', 'ApplicationsFactory', 'ServerFactory', 'modalFactory', 'toastr', 'mainFactory', 'fileSystemFactory',
+        function ($rootScope, $scope, $timeout, $filter, ApplicationsFactory, ServerFactory, modalFactory, toastr, mainFactory, fileSystemFactory) {
 
         var _this = this;
 
@@ -28,9 +28,57 @@
             _this.opened_applications = newValue;
         });
 
-        $scope.$on('desktop__reload', function (event) {
-            _this.reloadPath();
+        $scope.$on('refreshPath', function (event, data) {
+            if (data === '/root/Desktop/') {
+                _this.reloadPath();
+            }
         });
+
+        /**
+         * On file dragstart
+         *
+         * @param evt
+         * @param ui
+         */
+        this.onStartItem = function (evt, ui) {
+            ui.helper.prevObject.scope().file.dragFrom = '/root/Desktop/';
+        };
+
+        /**
+         * On file dropped to desktop
+         *
+         * @param evt
+         * @param ui
+         * @returns {*}
+         */
+        this.onDropItem = function (evt, ui) {
+            if ($rootScope.currentFileDrop !== 'desktop') return;
+
+            // Fix drop from /root/Desktop
+            if (angular.isUndefined(ui.draggable.scope().$parent.file)) ui.draggable.scope().$parent.file = ui.draggable.scope().file;
+
+            // Do not move files to same directory
+            if (ui.draggable.scope().$parent.file.dragFrom === '/root/Desktop/') return;
+
+            var object = $filter('filter')(_this.desktopFiles.currentData, {
+                filename: ui.draggable.scope().$parent.file.filename
+            });
+
+            if (object.length !== 0) {
+                return modalFactory.openLittleModal('Move file', 'A file with the same name already exists. Can\'t move it.', '#desktop_body', 'plain');
+            }
+
+            _this.cutFrom = ui.draggable.scope().$parent.file.dragFrom + ui.draggable.scope().$parent.file.filename;
+            _this.pasteTo = '/root/Desktop/';
+
+            return fileSystemFactory.moveFile(_this.cutFrom, _this.pasteTo, function () {
+                _this.cutFrom = null;
+                _this.pasteTo = null;
+
+                $rootScope.$broadcast('refreshPath', '/root/Desktop/');
+                $rootScope.$broadcast('refreshPath', ui.draggable.scope().$parent.file.dragFrom);
+            });
+        };
 
         /*
          * Get file type (folder, file...)

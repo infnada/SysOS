@@ -26,6 +26,7 @@ var SysOS = angular.module('SysOS', [
     'ui.sortable',
     'ui.tree',
     'ngCookies',
+    'ngDragDrop',
     'chart.js'
 ]);
 
@@ -509,6 +510,10 @@ var SysOS = angular.module('SysOS', [
             $rootScope.showLogin = true;
             $rootScope.showApp = false;
 
+            $rootScope.setCurrentFileDrop = function (app) {
+                $rootScope.currentFileDrop = app;
+            };
+
             if (angular.isDefined($cookies.get('uniqueId'))) {
 
                 // Check express session
@@ -544,8 +549,8 @@ var SysOS = angular.module('SysOS', [
 
 (function () {
     'use strict';
-    SysOS.controller('mainController', ['$rootScope', '$scope', '$timeout', 'ApplicationsFactory', 'ServerFactory', 'modalFactory', 'toastr', 'mainFactory', 'fileSystemFactory',
-        function ($rootScope, $scope, $timeout, ApplicationsFactory, ServerFactory, modalFactory, toastr, mainFactory, fileSystemFactory) {
+    SysOS.controller('mainController', ['$rootScope', '$scope', '$timeout', '$filter', 'ApplicationsFactory', 'ServerFactory', 'modalFactory', 'toastr', 'mainFactory', 'fileSystemFactory',
+        function ($rootScope, $scope, $timeout, $filter, ApplicationsFactory, ServerFactory, modalFactory, toastr, mainFactory, fileSystemFactory) {
 
         var _this = this;
 
@@ -572,9 +577,57 @@ var SysOS = angular.module('SysOS', [
             _this.opened_applications = newValue;
         });
 
-        $scope.$on('desktop__reload', function (event) {
-            _this.reloadPath();
+        $scope.$on('refreshPath', function (event, data) {
+            if (data === '/root/Desktop/') {
+                _this.reloadPath();
+            }
         });
+
+        /**
+         * On file dragstart
+         *
+         * @param evt
+         * @param ui
+         */
+        this.onStartItem = function (evt, ui) {
+            ui.helper.prevObject.scope().file.dragFrom = '/root/Desktop/';
+        };
+
+        /**
+         * On file dropped to desktop
+         *
+         * @param evt
+         * @param ui
+         * @returns {*}
+         */
+        this.onDropItem = function (evt, ui) {
+            if ($rootScope.currentFileDrop !== 'desktop') return;
+
+            // Fix drop from /root/Desktop
+            if (angular.isUndefined(ui.draggable.scope().$parent.file)) ui.draggable.scope().$parent.file = ui.draggable.scope().file;
+
+            // Do not move files to same directory
+            if (ui.draggable.scope().$parent.file.dragFrom === '/root/Desktop/') return;
+
+            var object = $filter('filter')(_this.desktopFiles.currentData, {
+                filename: ui.draggable.scope().$parent.file.filename
+            });
+
+            if (object.length !== 0) {
+                return modalFactory.openLittleModal('Move file', 'A file with the same name already exists. Can\'t move it.', '#desktop_body', 'plain');
+            }
+
+            _this.cutFrom = ui.draggable.scope().$parent.file.dragFrom + ui.draggable.scope().$parent.file.filename;
+            _this.pasteTo = '/root/Desktop/';
+
+            return fileSystemFactory.moveFile(_this.cutFrom, _this.pasteTo, function () {
+                _this.cutFrom = null;
+                _this.pasteTo = null;
+
+                $rootScope.$broadcast('refreshPath', '/root/Desktop/');
+                $rootScope.$broadcast('refreshPath', ui.draggable.scope().$parent.file.dragFrom);
+            });
+        };
 
         /*
          * Get file type (folder, file...)
@@ -2872,7 +2925,7 @@ var SysOS = angular.module('SysOS', [
              */
             ApplicationsFactory.getTaskBarApplications();
 
-            $rootScope.$broadcast('desktop__reload');
+            $rootScope.$broadcast('refreshPath', '/root/Desktop/');
 
             socketIo.connect();
 
@@ -6707,6 +6760,14 @@ var SysOS = angular.module('SysOS', [
             });
         };
 
+        var uploadFileToDatastore = function (url, path, credential, callback) {
+            return ServerFactory.uploadFileToDatastore(url, path, credential, function (data) {
+                return callback(data.data);
+            }, function (data) {
+                console.log('Error: ' + data);
+            });
+        };
+
         return {
             // Basics
             getClientVersion: getClientVersion,
@@ -6774,7 +6835,9 @@ var SysOS = angular.module('SysOS', [
             queryPerfProviderSummary: queryPerfProviderSummary,
             queryPerfCounterByLevel: queryPerfCounterByLevel,
             queryPerfCounter: queryPerfCounter,
-            queryPerf: queryPerf
+            queryPerf: queryPerf,
+            // Datastore Upload
+            uploadFileToDatastore: uploadFileToDatastore
         };
     }]);
 }());
@@ -6899,6 +6962,9 @@ var SysOS = angular.module('SysOS', [
             },
             downloadFileFromInet: function (url, path, credential, onSuccess, onError) {
                 return doPost('/api/file/download_from_url', {url: url, path: path, credential: credential}, onSuccess, onError);
+            },
+            uploadFileToDatastore: function (url, path, credential, onSuccess, onError) {
+                return doPost('/api/vcenter/upload_to_datastore', {url: url, path: path, credential: credential}, onSuccess, onError);
             },
             remoteDownloadFileFromInet: function (url, path, uuid, onSuccess, onError) {
                 return doPost('/api/remoteFile/download_from_url', {
@@ -7087,7 +7153,7 @@ var SysOS = angular.module('SysOS', [
     SysOS.run(['$templateCache', function ($templateCache) {
 
         $templateCache.put('templates/applications/main.html',
-            '<div class="window window--{{::APP.appId}}" style="{{::APP.appData.style}}" ng-class="{\'window--active\': APP.isVisible(), \'window--closing\': APP.isClosing, \'window--opening\': APP.isOpening, \'window--minimized\': APP.isMinimized, \'window--maximized\': APP.isMaximized}"> \
+            '<div class="window window--{{::APP.appId}}"  ng-mouseover="$root.setCurrentFileDrop(APP.appId); $event.stopPropagation()" style="{{::APP.appData.style}}" ng-class="{\'window--active\': APP.isVisible(), \'window--closing\': APP.isClosing, \'window--opening\': APP.isOpening, \'window--minimized\': APP.isMinimized, \'window--maximized\': APP.isMaximized}"> \
                   <div class="window__titlebar" ng-dblclick="APP.maximize()"> \
                       <div class="window__controls window__controls--left" ng-click="APP.toggleMenu()"> \
                   <a class="window__icon"><i class="fa fa-{{::APP.appData.ico}}"></i></a> \

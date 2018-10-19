@@ -4,7 +4,7 @@
 
         $templateCache.put('templates/applications/body-de-local.html',
             '<div ng-include="\'templates/applications/folders-dropzone-de-local.html\'"></div> \
-            <a ng-if="deB.viewAsList == false"  ng-repeat="file in deB.localFileSystem.currentData | filter:deB.search" ng-class="{\'active\': deB.currentActive == $index}" ng-click="deB.setCurrentActive($index)" ng-dblclick="deB.doWithFile(file)" title="{{::file.path}}" context-menu="deB.fileContextMenu"> \
+            <a ng-if="deB.viewAsList == false" ng-repeat="file in deB.localFileSystem.currentData | filter:deB.search" ng-class="{\'active\': deB.currentActive == $index}" ng-click="deB.setCurrentActive($index)" ng-dblclick="deB.doWithFile(file)" title="{{::file.path}}" context-menu="deB.fileContextMenu"> \
                 <i class="fa fa-{{::file.fileType}}"></i> \
                 <span>{{::file.path}}</span> \
             </a> \

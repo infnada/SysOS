@@ -23,10 +23,10 @@
               <div class="window__main no_padding"> \
                 <div class="col-xs-6 ftp__body" ng-controller="sftpBodyLocalController as sftpBL"  ng-class="{\'with__stats\': sftpB.viewExchange == true}"> \
                   <div ng-include="\'templates/applications/actions-sftp-explorer-local.html\'" include-replace></div> \
-                  <div id="local_body" selectable="sftpBL.selection" selectable-list="sftpBL.localFileSystem.currentData | filter:sftpBL.search" selectable-out="selected" selectable-options="{delay:150, filter: \'a\'}" minus-index="2" class="folders" tabindex="0" ng-click="sftpBL.handleMainFolderClick($event)" ng-keydown="sftpBL.handleItemKeyPress($event)" context-menu="sftpBL.localContextMenu"> \
+                  <div id="local_body" data-drop="true" jqyoui-droppable="{onDrop: \'sftpBL.onDropItem\'}" data-jqyoui-options="{greedy: true, accept:\'a\', tolerance: \'pointer\'}" selectable="sftpBL.selection" selectable-list="sftpBL.localFileSystem.currentData | filter:sftpBL.search" selectable-out="selected" selectable-options="{delay:150, filter: \'a\'}" minus-index="2" class="folders" tabindex="0" ng-click="sftpBL.handleMainFolderClick($event)" ng-keydown="sftpBL.handleItemKeyPress($event)" context-menu="sftpBL.localContextMenu"> \
                     <div ng-include="\'templates/applications/folders-modal-sftp-local.html\'"></div> \
                     <div ng-include="\'templates/applications/folders-dropzone-sftp-local.html\'"></div> \
-                    <a ng-if="sftpBL.viewAsList == false"  ng-repeat="file in sftpBL.localFileSystem.currentData | filter:sftpBL.search" ng-class="{\'active\': sftpBL.currentActive == $index}" ng-click="sftpBL.setCurrentActive($index)" ng-dblclick="sftpBL.doWithFile(file)" title="{{::file.filename}}" context-menu="sftpBL.fileContextMenu"> \
+                    <a ng-if="sftpBL.viewAsList == false" data-drag="true" jqyoui-draggable="{onStart: \'sftpBL.onStartItem\'}" data-jqyoui-options="{appendTo: \'.desktop\', helper: \'clone\'}" ng-repeat="file in sftpBL.localFileSystem.currentData | filter:sftpBL.search" ng-class="{\'active\': sftpBL.currentActive == $index}" ng-click="sftpBL.setCurrentActive($index)" ng-dblclick="sftpBL.doWithFile(file)" title="{{::file.filename}}" context-menu="sftpBL.fileContextMenu"> \
                       <i class="fa fa-{{::sftpBL.getFileType(file.longname)}}"></i> \
                       <span>{{::file.filename}}</span> \
                     </a> \

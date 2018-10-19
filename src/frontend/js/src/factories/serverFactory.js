@@ -51,6 +51,9 @@
             downloadFileFromInet: function (url, path, credential, onSuccess, onError) {
                 return doPost('/api/file/download_from_url', {url: url, path: path, credential: credential}, onSuccess, onError);
             },
+            uploadFileToDatastore: function (url, path, credential, onSuccess, onError) {
+                return doPost('/api/vcenter/upload_to_datastore', {url: url, path: path, credential: credential}, onSuccess, onError);
+            },
             remoteDownloadFileFromInet: function (url, path, uuid, onSuccess, onError) {
                 return doPost('/api/remoteFile/download_from_url', {
                     url: url,

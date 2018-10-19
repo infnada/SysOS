@@ -3,7 +3,7 @@
     SysOS.run(['$templateCache', function ($templateCache) {
 
         $templateCache.put('templates/applications/main.html',
-            '<div class="window window--{{::APP.appId}}" style="{{::APP.appData.style}}" ng-class="{\'window--active\': APP.isVisible(), \'window--closing\': APP.isClosing, \'window--opening\': APP.isOpening, \'window--minimized\': APP.isMinimized, \'window--maximized\': APP.isMaximized}"> \
+            '<div class="window window--{{::APP.appId}}"  ng-mouseover="$root.setCurrentFileDrop(APP.appId); $event.stopPropagation()" style="{{::APP.appData.style}}" ng-class="{\'window--active\': APP.isVisible(), \'window--closing\': APP.isClosing, \'window--opening\': APP.isOpening, \'window--minimized\': APP.isMinimized, \'window--maximized\': APP.isMaximized}"> \
                   <div class="window__titlebar" ng-dblclick="APP.maximize()"> \
                       <div class="window__controls window__controls--left" ng-click="APP.toggleMenu()"> \
                   <a class="window__icon"><i class="fa fa-{{::APP.appData.ico}}"></i></a> \
