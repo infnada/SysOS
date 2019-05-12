@@ -24,6 +24,7 @@ module.exports = function (req, res) {
 		serverError: function (err) {
 			console.log(err);
 
+      res.status(400);
 			return res.json(
 				{
 					status: "error",

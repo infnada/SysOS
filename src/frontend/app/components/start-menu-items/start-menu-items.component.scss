@@ -1,0 +1,37 @@
+li {
+  list-style: none;
+}
+
+li a {
+  display: block;
+  padding: 10px;
+  color: white;
+  transition: all 100ms;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+  }
+}
+
+li a > i {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  margin-right: 6px;
+  font-size: 20px;
+  line-height: 32px;
+  text-align: center;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+}
+
+li.start-menu__explorer a > i {
+  background-color: #0097A7;
+}
+
+li.start-menu__mail a > i {
+  background-color: #5C6BC0;
+}
+
+li.start-menu__notepad a > i {
+  background-color: #EC407A;
+}

@@ -1,0 +1,32 @@
+.taskbar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 48px;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.15);
+  background-color: #1c2429;
+  z-index: 9998;
+
+  .taskbar__tray {
+    color: white;
+    padding: 0 10px;
+    float: right;
+    line-height: 48px;
+  }
+  .taskbar__tray .time {
+    cursor: default;
+    padding: 5px;
+  }
+  .taskbar__minimize {
+    cursor: default;
+    border-left: 1px solid #ccc;
+    padding-right: 9px;
+    padding-bottom: 48px;
+    float: right;
+  }
+  .taskbar__tray .time:hover, .taskbar__minimize:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+}
+

@@ -1,0 +1,18 @@
+.desktop {
+  position: absolute;
+  overflow: hidden;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transform: translate3d(0, 0, 0);
+  background: linear-gradient(233deg, #fd4545, #6b88ff, #58fd57, #f6ff76, #e657fd);
+  background-size: 1000% 1000%;
+  animation: BG 32s ease infinite;
+
+  #desktop_body{
+    height: 100%;
+    width: 100%;
+    position: absolute;
+  }
+}

@@ -1,0 +1,16 @@
+<a class="taskbar__item taskbar__item--{{application.id}}" (click)="toggleApplication(application.id)" [ngClass]="{'start--open' : isStartOpened(application.id), 'taskbar__item--open' : isItemOpened(application.id), 'taskbar__item--active' : isItemActive(application.id)}" (contextmenu)="onAppContextMenu($event, application)">
+  <i class="fa fa-{{getApplicationById(application.id).ico}}"></i>
+</a>
+<div style="position: fixed"
+     [style.left]="contextMenuPosition.x"
+     [style.top]="contextMenuPosition.y"
+     [matMenuTriggerFor]="contextMenuApp">
+</div>
+<mat-menu #contextMenuApp="matMenu">
+  <ng-template matMenuContent>
+    <ng-container *ngFor="let menuItem of appContextMenuItems">
+      <button mat-menu-item *ngIf="menuItem.text !== 'divider'" (click)="menuItem.action(application)" [disabled]="checkIfDisabled(menuItem, application)" [innerHTML]="contextToText(menuItem, application)"></button>
+      <mat-divider *ngIf="menuItem.text === 'divider'"></mat-divider>
+    </ng-container>
+  </ng-template>
+</mat-menu>

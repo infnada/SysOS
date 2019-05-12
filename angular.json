@@ -1,0 +1,154 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "SysOS": {
+      "root": "",
+      "sourceRoot": "src/frontend",
+      "projectType": "application",
+      "prefix": "app",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/backend/public",
+            "index": "src/frontend/index.html",
+            "main": "src/frontend/main.ts",
+            "polyfills": "src/frontend/polyfills.ts",
+            "tsConfig": "src/frontend/tsconfig.app.json",
+            "assets": [
+              "src/frontend/favicon.ico",
+              "src/frontend/assets"
+            ],
+            "styles": [
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "node_modules/ngx-toastr/toastr.css",
+              "src/frontend/styles.scss"
+            ],
+            "scripts": [],
+            "lazyModules": [
+              "src/frontend/app/applications/alerts/alerts.module",
+              "src/frontend/app/applications/backups-manager/backups-manager.module",
+              "src/frontend/app/applications/credentials-manager/credentials-manager.module",
+              "src/frontend/app/applications/datastore-explorer/datastore-explorer.module",
+              "src/frontend/app/applications/file-explorer/file-explorer.module",
+              "src/frontend/app/applications/infrastructure-manager/infrastructure-manager.module",
+              "src/frontend/app/applications/notepad/notepad.module",
+              "src/frontend/app/applications/sftp/sftp.module",
+              "src/frontend/app/applications/ssh/ssh.module",
+              "src/frontend/app/applications/wmks/wmks.module"
+            ],
+            "es5BrowserSupport": true
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "src/frontend/environments/environment.ts",
+                  "with": "src/frontend/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "SysOS:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "SysOS:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "SysOS:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "src/frontend/test.ts",
+            "polyfills": "src/frontend/polyfills.ts",
+            "tsConfig": "src/frontend/tsconfig.spec.json",
+            "karmaConfig": "src/frontend/karma.conf.js",
+            "styles": [
+              "src/frontend/styles.scss"
+            ],
+            "scripts": [],
+            "assets": [
+              "src/frontend/favicon.ico",
+              "src/frontend/assets"
+            ]
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "src/frontend/tsconfig.app.json",
+              "src/frontend/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "SysOS-e2e": {
+      "root": "e2e/",
+      "projectType": "application",
+      "prefix": "",
+      "architect": {
+        "e2e": {
+          "builder": "@angular-devkit/build-angular:protractor",
+          "options": {
+            "protractorConfig": "e2e/protractor.conf.js",
+            "devServerTarget": "SysOS:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "SysOS:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": "e2e/tsconfig.e2e.json",
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "defaultProject": "SysOS"
+}

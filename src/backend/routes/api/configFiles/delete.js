@@ -1,7 +1,7 @@
 /*jslint node: true */
-"use strict";
+'use strict';
 
-var express = require("express");
+var express = require('express');
 var router = express.Router();
 var path = require('path');
 var jsonfile = require('jsonfile');
@@ -13,24 +13,27 @@ var jsonfile = require('jsonfile');
  *
  */
 
-router.post("/", function (req, res) {
+router.post('/', function (req, res) {
 
-	var apiGlobals = require('../globals.js')(req, res);
-	var uuid = req.body.uuid;
-	var file = req.body.file;
+  var apiGlobals = require('../globals.js')(req, res);
+  var uuid = req.body.uuid;
+  var file = req.body.file;
 
-	var config = require('read-config')(path.join(__dirname, '../../../filesystem/etc/' + file), {skipUnresolved: true});
+  if (typeof uuid === 'undefined') return apiGlobals.serverError('uuid_undefined');
+  if (typeof file === 'undefined') return apiGlobals.serverError('file_undefined');
 
-	config = config.filter(function (obj) {
-		return obj.uuid !== uuid;
-	});
+  var config = require('read-config')(path.join(__dirname, '../../../filesystem/etc/' + file), {skipUnresolved: true});
 
-	return jsonfile.writeFile(path.join(__dirname, '../../../filesystem/etc/' + file), config, {flag: 'w'}, function (e) {
-        if (e && e.code) return apiGlobals.serverError(e.code);
-        if (e) return apiGlobals.serverError(e);
+  config = config.filter(function (obj) {
+    return obj.uuid !== uuid;
+  });
 
-		return apiGlobals.validResponse();
-	});
+  return jsonfile.writeFile(path.join(__dirname, '../../../filesystem/etc/' + file), config, {flag: 'w'}, function (e) {
+    if (e && e.code) return apiGlobals.serverError(e.code);
+    if (e) return apiGlobals.serverError(e);
+
+    return apiGlobals.validResponse();
+  });
 
 });
 

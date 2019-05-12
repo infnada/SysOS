@@ -1,7 +1,7 @@
 /*jslint node: true */
-"use strict";
+'use strict';
 
-var express = require("express");
+var express = require('express');
 var router = express.Router();
 var path = require('path');
 var jsonfile = require('jsonfile');
@@ -13,22 +13,25 @@ var jsonfile = require('jsonfile');
  *
  */
 
-router.post("/", function (req, res) {
+router.post('/', function (req, res) {
 
-	var apiGlobals = require('../globals.js')(req, res);
-	var uuid = req.body.uuid;
-	var credentials = require('read-config')(path.join(__dirname, '../../../filesystem/root/credentials.json'));
+  var apiGlobals = require('../globals.js')(req, res);
+  var uuid = req.body.uuid;
 
-	credentials.saved_credentials = credentials.saved_credentials.filter(function (obj) {
-		return obj.uuid !== uuid;
-	});
+  if (typeof uuid === 'undefined') return apiGlobals.serverError('uuid_undefined');
 
-	return jsonfile.writeFile(path.join(__dirname, '../../../filesystem/root/credentials.json'), credentials, function (e) {
-        if (e && e.code) return apiGlobals.serverError(e.code);
-        if (e) return apiGlobals.serverError(e);
+  var credentials = require('read-config')(path.join(__dirname, '../../../filesystem/root/credentials.json'));
 
-		return apiGlobals.responseJsonData(uuid);
-	});
+  credentials.saved_credentials = credentials.saved_credentials.filter(function (obj) {
+    return obj.uuid !== uuid;
+  });
+
+  return jsonfile.writeFile(path.join(__dirname, '../../../filesystem/root/credentials.json'), credentials, function (e) {
+    if (e && e.code) return apiGlobals.serverError(e.code);
+    if (e) return apiGlobals.serverError(e);
+
+    return apiGlobals.responseJsonData(uuid);
+  });
 
 });
 

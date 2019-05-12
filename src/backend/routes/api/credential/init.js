@@ -1,7 +1,7 @@
 /*jslint node: true */
-"use strict";
+'use strict';
 
-var express = require("express");
+var express = require('express');
 var router = express.Router();
 var path = require('path');
 
@@ -13,14 +13,14 @@ var path = require('path');
  */
 
 router.get('/', function (req, res) {
-    var config = require('read-config')(path.join(__dirname, '../../../filesystem/root/credentials.json'));
+  var config = require('read-config')(path.join(__dirname, '../../../filesystem/root/credentials.json'));
 
-    config = config.saved_credentials.filter(function (props) {
-        delete props.password;
-        return true;
-    });
+  config = config.saved_credentials.filter(function (props) {
+    delete props.password;
+    return true;
+  });
 
-    res.json(config);
+  res.json(config);
 });
 
 module.exports = router;

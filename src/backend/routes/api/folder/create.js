@@ -1,7 +1,7 @@
 /*jslint node: true */
-"use strict";
+'use strict';
 
-var express = require("express");
+var express = require('express');
 var router = express.Router();
 var path = require('path');
 var fs = require('fs-extra');
@@ -13,14 +13,19 @@ var fs = require('fs-extra');
  *
  */
 
-router.post("/", function (req, res) {
+router.post('/', function (req, res) {
 
-	var apiGlobals = require('../globals.js')(req, res);
+  var apiGlobals = require('../globals.js')(req, res);
+  var ipath = req.body.path;
+  var name = req.body.name;
 
-	var dirname = path.join(__dirname, '../../../filesystem') + req.body.path + req.body.name;
-	fs.mkdirSync(dirname);
+  if (typeof ipath === 'undefined') return apiGlobals.serverError('path_undefined');
+  if (typeof name === 'undefined') return apiGlobals.serverError('name_undefined');
 
-	apiGlobals.validResponse();
+  var dirname = path.join(__dirname, '../../../filesystem') + ipath + name;
+  fs.mkdirSync(dirname);
+
+  apiGlobals.validResponse();
 
 });
 

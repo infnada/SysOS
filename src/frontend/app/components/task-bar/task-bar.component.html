@@ -1,0 +1,12 @@
+<app-start-menu></app-start-menu>
+<div class="taskbar" cdkDropList cdkDropListOrientation="horizontal" (cdkDropListDropped)="drop($event)">
+
+  <ng-container *ngFor="let application of taskBarApplications">
+    <app-task-bar-items [application]="application" cdkDrag [cdkDragDisabled]="application.id === 'start'"></app-task-bar-items>
+  </ng-container>
+
+  <div class="taskbar__minimize" (click)="minimizeToDesktop()"></div>
+  <div class="taskbar__tray">
+    <span class="time">{{clock}}</span>
+  </div>
+</div>

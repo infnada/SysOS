@@ -1,0 +1,26 @@
+<div id="login" >
+  <div class="container">
+    <div class="profile" [ngClass]="{'profile--open': loginExpanded}">
+      <button class="profile__avatar" id="toggleProfile" (click)="loginExpanded = !loginExpanded">
+        <i class="fa fa-user fa-5x fa-user-login"></i>
+      </button>
+      <div class="profile__form">
+        <div class="profile__fields">
+          <form autocomplete="off" ngNativeValidate>
+            <div class="field">
+              <input type="text" id="fieldUser" class="input" autocomplete="off" name="username" [(ngModel)]="username" required pattern=.*\S.* />
+              <label for="fieldUser" class="label">Username</label>
+            </div>
+            <div class="field">
+              <input type="password" id="fieldPassword" class="input" autocomplete="off" name="password" [(ngModel)]="password" readonly onfocus="this.removeAttribute('readonly');" required pattern=.*\S.* />
+              <label for="fieldPassword" class="label">Password</label>
+            </div>
+            <div class="profile__footer">
+              <button class="btn btn-primary" (click)="login(username, password)">Login</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

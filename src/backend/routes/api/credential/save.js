@@ -1,7 +1,7 @@
 /*jslint node: true */
-"use strict";
+'use strict';
 
-var express = require("express");
+var express = require('express');
 var router = express.Router();
 var path = require('path');
 var uuid = require('uuid4');
@@ -14,48 +14,51 @@ var jsonfile = require('jsonfile');
  *
  */
 
-router.post("/", function (req, res) {
+router.post('/', function (req, res) {
 
-	var apiGlobals = require('../globals.js')(req, res);
-	var credential = req.body.credential;
-	var credentials = require('read-config')(path.join(__dirname, '../../../filesystem/root/credentials.json'));
+  var apiGlobals = require('../globals.js')(req, res);
+  var credential = req.body.credential;
 
-	// New credential
-	if (!credential.hasOwnProperty('uuid')) {
+  if (typeof credential === 'undefined') return apiGlobals.serverError('credential_undefined');
 
-		return uuid(function (e, id) {
-            if (e && e.code) return apiGlobals.serverError(e.code);
-            if (e) return apiGlobals.serverError(e);
+  var credentials = require('read-config')(path.join(__dirname, '../../../filesystem/root/credentials.json'));
 
-			credential.uuid = id;
-			credentials.saved_credentials.push(credential);
+  // New credential
+  if (!credential.hasOwnProperty('uuid')) {
 
-			return jsonfile.writeFile(path.join(__dirname, '../../../filesystem/root/credentials.json'), credentials, function (e) {
-                if (e && e.code) return apiGlobals.serverError(e.code);
-                if (e) return apiGlobals.serverError(e);
+    return uuid(function (e, id) {
+      if (e && e.code) return apiGlobals.serverError(e.code);
+      if (e) return apiGlobals.serverError(e);
 
-				return apiGlobals.responseJsonData(id);
-			});
+      credential.uuid = id;
+      credentials.saved_credentials.push(credential);
 
-		});
-
-	}
-
-	// Edit credential
-	var objIndex = credentials.saved_credentials.findIndex(function (obj) {
-		return obj.uuid === credential.uuid
-	});
-
-	credentials.saved_credentials[objIndex].description = credential.description;
-	credentials.saved_credentials[objIndex].username = credential.username;
-	credentials.saved_credentials[objIndex].password = credential.password;
-
-	return jsonfile.writeFile(path.join(__dirname, '../../../filesystem/root/credentials.json'), credentials, function (e) {
+      return jsonfile.writeFile(path.join(__dirname, '../../../filesystem/root/credentials.json'), credentials, function (e) {
         if (e && e.code) return apiGlobals.serverError(e.code);
         if (e) return apiGlobals.serverError(e);
 
-		return apiGlobals.responseJsonData(credential.uuid);
-	});
+        return apiGlobals.responseJsonData(id);
+      });
+
+    });
+
+  }
+
+  // Edit credential
+  var objIndex = credentials.saved_credentials.findIndex(function (obj) {
+    return obj.uuid === credential.uuid
+  });
+
+  credentials.saved_credentials[objIndex].description = credential.description;
+  credentials.saved_credentials[objIndex].username = credential.username;
+  credentials.saved_credentials[objIndex].password = credential.password;
+
+  return jsonfile.writeFile(path.join(__dirname, '../../../filesystem/root/credentials.json'), credentials, function (e) {
+    if (e && e.code) return apiGlobals.serverError(e.code);
+    if (e) return apiGlobals.serverError(e);
+
+    return apiGlobals.responseJsonData(credential.uuid);
+  });
 
 });
 

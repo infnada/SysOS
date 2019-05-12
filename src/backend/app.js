@@ -11,11 +11,11 @@ var log4js = require('log4js');
 log4js.configure({
 	appenders: {
 		file: {type: 'file', filename: 'logs/log4js.log'},
-		console: {type: 'console', level: "info"}
+		console: {type: 'console', level: "trace"}
 	},
 	categories: {
-		default: {appenders: ['console'], level: 'info'},
-		mainlog: {appenders: ['console'], level: 'info'}
+		default: {appenders: ['console'], level: 'trace'},
+		mainlog: {appenders: ['console'], level: 'trace'}
 	}
 });
 var logger = log4js.getLogger('mainlog');
@@ -32,7 +32,7 @@ var csrf = require("csurf");
 var fs = require("fs");
 var options = {
     key: fs.readFileSync(__dirname + "/ssl/key.pem"),
-    cert: fs.readFileSync(__dirname + "/ssl/cert.pem"),
+    cert: fs.readFileSync(__dirname + "/ssl/cert.pem")
 };
 
 var expressOptions = {
@@ -87,13 +87,13 @@ app.use(helmet.noSniff());
 app.use(helmet.ieNoOpen());
 app.use(helmet.hsts({
 	maxAge: 10886400000,     // Must be at least 18 weeks to be approved by Google
-	includeSubdomains: true, // Must be enabled to be approved by Google
+	includeSubDomains: true, // Must be enabled to be approved by Google
 	preload: true
 }));
 app.disable("x-powered-by");
 app.use(cors());
-app.use(favicon(__dirname + "/../public/favicon.ico"));
-app.use(express.static(path.join(__dirname, '../public'), expressOptions));
+app.use(favicon(__dirname + "/public/favicon.ico"));
+app.use(express.static(path.join(__dirname, '/public'), expressOptions));
 /*app.use(csrf());
 
 // Set cookie "XSRF-TOKEN" the new token for csrf

@@ -1,7 +1,7 @@
 /*jslint node: true */
-"use strict";
+'use strict';
 
-var express = require("express");
+var express = require('express');
 var router = express.Router();
 var path = require('path');
 var fs = require('fs-extra');
@@ -13,17 +13,22 @@ var fs = require('fs-extra');
  *
  */
 
-router.post("/", function (req, res) {
+router.post('/', function (req, res) {
 
-	var apiGlobals = require('../globals.js')(req, res);
+  var apiGlobals = require('../globals.js')(req, res);
+  var src = req.body.src;
+  var dst = req.body.dst;
 
-	var file_name = req.body.src.split('/').pop();
+  if (typeof src === 'undefined') return apiGlobals.serverError('src_undefined');
+  if (typeof dst === 'undefined') return apiGlobals.serverError('dst_undefined');
 
-	var oldDirname = path.join(__dirname, '../../../filesystem') + req.body.src;
-	var newDirname = path.join(__dirname, '../../../filesystem') + req.body.dst + file_name;
-	fs.copySync(oldDirname, newDirname);
+  var file_name = src.split('/').pop();
 
-	apiGlobals.validResponse();
+  var oldDirname = path.join(__dirname, '../../../filesystem') + src;
+  var newDirname = path.join(__dirname, '../../../filesystem') + dst + file_name;
+  fs.copySync(oldDirname, newDirname);
+
+  apiGlobals.validResponse();
 
 });
 

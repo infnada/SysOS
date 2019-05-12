@@ -1,0 +1,31 @@
+<a *ngIf="!viewAsList" data-drag="true" jqyoui-draggable="{onStart: 'onStartItem'}" data-jqyoui-options="{appendTo: '.desktop', helper: 'clone'}" title="{{file.filename}}" #selectableFileElement [ngClass]="{'active': isCurrentActive}" (dblclick)="UIdoWithFile(file)" (contextmenu)="onFileContextMenu($event)">
+  <i class="fa fa-{{getFileType(file.longname)}}"></i>
+  <span>{{file.filename}}</span>
+
+  <div style="position: fixed"
+       [style.left]="contextMenuPosition.x"
+       [style.top]="contextMenuPosition.y"
+       [matMenuTriggerFor]="contextMenuFile">
+  </div>
+</a>
+
+<tr *ngIf="viewAsList" title="{{file.filename}}" #selectableFileElement [ngClass]="{'active': isCurrentActive}" (dblclick)="UIdoWithFile(file)" (contextmenu)="onFileContextMenu($event)">
+  <td><i class="fa fa-{{getFileType(file.longname)}}"></i> {{file.filename}}</td>
+  <td>{{file.attrs.size}}</td>
+  <td>{{getFileType(file.longname)}}</td>
+
+  <div style="position: fixed"
+       [style.left]="contextMenuPosition.x"
+       [style.top]="contextMenuPosition.y"
+       [matMenuTriggerFor]="contextMenuFile">
+  </div>
+</tr>
+
+<mat-menu #contextMenuFile="matMenu">
+  <ng-template matMenuContent>
+    <ng-container *ngFor="let menuItem of fileContextMenuItems">
+      <button mat-menu-item *ngIf="menuItem.text !== 'divider'" (click)="menuItem.action(file)" [disabled]="checkIfDisabled(menuItem)" [innerHTML]="contextToText(menuItem, file)"></button>
+      <mat-divider *ngIf="menuItem.text === 'divider'"></mat-divider>
+    </ng-container>
+  </ng-template>
+</mat-menu>

@@ -1,7 +1,7 @@
 /*jslint node: true */
-"use strict";
+'use strict';
 
-var express = require("express");
+var express = require('express');
 var router = express.Router();
 var path = require('path');
 var fs = require('fs-extra');
@@ -13,15 +13,22 @@ var fs = require('fs-extra');
  *
  */
 
-router.post("/", function (req, res) {
+router.post('/', function (req, res) {
 
-	var apiGlobals = require('../globals.js')(req, res);
+  var apiGlobals = require('../globals.js')(req, res);
+  var ipath = req.body.path;
+  var oldName = req.body.oldName;
+  var newName = req.body.newName;
 
-	var oldDirname = path.join(__dirname, '../../../filesystem') + req.body.path + req.body.oldName;
-	var newDirname = path.join(__dirname, '../../../filesystem') + req.body.path + req.body.newName;
-	fs.renameSync(oldDirname, newDirname);
+  if (typeof ipath === 'undefined') return apiGlobals.serverError('path_undefined');
+  if (typeof oldName === 'undefined') return apiGlobals.serverError('oldName_undefined');
+  if (typeof newName === 'undefined') return apiGlobals.serverError('newName_undefined');
 
-	apiGlobals.validResponse();
+  var oldDirname = path.join(__dirname, '../../../filesystem') + ipath + oldName;
+  var newDirname = path.join(__dirname, '../../../filesystem') + ipath + newName;
+  fs.renameSync(oldDirname, newDirname);
+
+  apiGlobals.validResponse();
 
 });
 

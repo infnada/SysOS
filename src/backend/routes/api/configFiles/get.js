@@ -1,7 +1,7 @@
 /*jslint node: true */
-"use strict";
+'use strict';
 
-var express = require("express");
+var express = require('express');
 var router = express.Router();
 var path = require('path');
 
@@ -12,11 +12,15 @@ var path = require('path');
  *
  */
 
-router.post("/", function (req, res) {
+router.post('/', function (req, res) {
 
-	var file = req.body.file;
-	var config = require('read-config')(path.join(__dirname, '../../../filesystem/etc/' + file), {skipUnresolved: true});
-	res.json(config);
+  var apiGlobals = require('../globals.js')(req, res);
+  var file = req.body.file;
+
+  if (typeof file === 'undefined') return apiGlobals.serverError('file_undefined');
+
+  var config = require('read-config')(path.join(__dirname, '../../../filesystem/etc/' + file), {skipUnresolved: true});
+  res.json(config);
 
 });
 

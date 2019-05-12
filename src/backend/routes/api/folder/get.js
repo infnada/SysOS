@@ -1,10 +1,8 @@
 /*jslint node: true */
-"use strict";
+'use strict';
 
-var express = require("express");
+var express = require('express');
 var router = express.Router();
-var path = require('path');
-var fs = require('fs-extra');
 var exec = require('child_process').exec;
 
 /**
@@ -14,42 +12,47 @@ var exec = require('child_process').exec;
  *
  */
 
-router.post("/", function (req, res) {
+router.post('/', function (req, res) {
 
-	function execute (command, callback) {
-		exec(command, function (error, stdout, stderr) {
-			if (error) console.log(error);
-			if (stderr) console.log(stderr);
-			callback(stdout);
-		});
-	}
+  var apiGlobals = require('../globals.js')(req, res);
+  var path = req.body.path;
 
-	execute('ls -lah "' + __dirname + '/../../../filesystem' + req.body.path + '"', function (data) {
-		var files = [];
+  if (typeof path === 'undefined') return apiGlobals.serverError('path_undefined');
 
-		var longnames = data.split('\n');
-		longnames.splice(0, 3);
-		longnames.pop();
+  function execute (command, callback) {
+    exec(command, function (error, stdout, stderr) {
+      if (error) throw new Error(error);
+      if (stderr) throw new Error(stderr);
+      callback(stdout);
+    });
+  }
 
-		longnames.forEach(function (longname) {
+  execute('ls -lah "' + __dirname + '/../../../filesystem' + path + '"', function (data) {
+    var files = [];
 
-			// Split one or more spaces
-			var filename = longname.split(/ +/);
-			var filesize = filename[4];
+    var longnames = data.split('\n');
+    longnames.splice(0, 3);
+    longnames.pop();
 
-			filename.splice(0, 8);
+    longnames.forEach(function (longname) {
 
-			files.push({
-				filename: filename.join(' '),
-				longname: longname,
-				attrs: {
-					size: filesize
-				}
-			})
-		});
+      // Split one or more spaces
+      var filename = longname.split(/ +/);
+      var filesize = filename[4];
 
-		res.json(files);
-	});
+      filename.splice(0, 8);
+
+      files.push({
+        filename: filename.join(' '),
+        longname: longname,
+        attrs: {
+          size: filesize
+        }
+      })
+    });
+
+    res.json(files);
+  });
 
 });
 
