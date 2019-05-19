@@ -1,10 +1,10 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ViewContainerRef} from '@angular/core';
 
 import { CookieService } from 'ngx-cookie-service';
 
 import {UserStateService} from "./services/user-state.service";
 import {MainService} from "./services/main.service";
-import {ApplicationsService} from "./services/applications.service";
+import {ModalService} from "./services/modal.service";
 
 import {Application} from "./interfaces/application";
 
@@ -17,14 +17,17 @@ export class AppComponent implements OnInit {
   openedApplications: Application[];
   userLoggedIn: boolean;
 
-  constructor(private cookieService: CookieService,
+  constructor(private ViewContainerRef: ViewContainerRef,
+              private cookieService: CookieService,
               private MainService: MainService,
-              private UserStateService: UserStateService,
-              private ApplicationsService: ApplicationsService) {
+              private ModalService: ModalService,
+              private UserStateService: UserStateService) {
+
+    this.ModalService.setMainContainerRef(this.ViewContainerRef);
+
   }
 
   ngOnInit() {
-    this.ApplicationsService.openedApplications.subscribe(applications => this.openedApplications = applications);
     this.UserStateService.currentState.subscribe(state => this.userLoggedIn = state.userLoggedIn);
 
     if (this.cookieService.check('uniqueId')) {
@@ -37,7 +40,11 @@ export class AppComponent implements OnInit {
               username: "root"
             });
 
-            return this.MainService.init();
+            /**
+             * INIT
+             */
+            this.MainService.init();
+
           }
 
           if (res.status === 'error') {

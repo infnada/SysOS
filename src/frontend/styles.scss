@@ -1,9 +1,7 @@
+@import '~bootstrap/dist/css/bootstrap.min.css';
 $fa-font-path : '../../node_modules/font-awesome/fonts';
 @import '../../node_modules/font-awesome/scss/font-awesome';
-
 @import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
-@import '~bootstrap/dist/css/bootstrap.min.css';
-
 @import '~ngx-toastr/toastr.css';
 
 
@@ -43,10 +41,61 @@ h1, h2, h3, h4, h5, h6 {
   background-color: #00000099;
 }
 
+.no_padding {
+  padding: 0 !important;
+}
 
+//////////
+// SEARCH
+//////////
+.search {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 36px;
+  background-color: white;
 
+  .search__input {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    height: 32px;
+    border: 0;
+    font-size: 12px;
+    color: #607D8B;
+    background-color: transparent;
+    z-index: 0;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  }
 
+  .search__btn {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 36px;
+    height: 36px;
+    border: 0;
+    z-index: 1;
+    background: transparent;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
 
+    &:before {
+      display: block;
+      content: '\f002';
+      font-family: 'FontAwesome';
+      font-size: 12px;
+      color: #607D8B;
+    }
+  }
+}
+
+//////////
+// FOLDERS
+//////////
 .folders:focus {
   outline: none;
 }
@@ -93,4 +142,65 @@ h1, h2, h3, h4, h5, h6 {
   svg {
     background-color: darken(#2196F3, 10);
   }
+}
+
+//////////
+// MODALS
+//////////
+.modal-content {
+  border-radius: 0;
+  box-shadow: 0 3px 3px rgba(0,0,0,.5);
+  margin: 100px auto;
+}
+
+.modal-header {
+  background-color: #7bb6ef;
+  text-align: center;
+  padding: 6px;
+  height: 33px;
+  border-radius: 0;
+}
+
+.modal-title {
+  width: 100%;
+}
+
+.modal-body {
+  max-height: calc(100vh - 300px);
+  overflow: auto;
+}
+.window__controls {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 10;
+}
+.window__controls > a {
+  display: block;
+  float: left;
+  height: 32px;
+  width: 32px;
+  line-height: 32px;
+  font-size: 12px;
+  transition: all 100ms;
+  cursor: default;
+  color: rgba(0, 0, 0, 0.5);
+}
+.window__controls > a:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+}
+.window__controls > .window__close {
+  color: white;
+  background-color: #398ada;
+}
+.window__controls > .window__close:hover {
+  background-color: #e53935;
+}
+
+.window__controls--left {
+  left: 0;
+}
+
+.window__controls--right {
+  right: 0;
 }

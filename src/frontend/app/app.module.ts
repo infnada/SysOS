@@ -12,6 +12,7 @@ import {ToastrModule} from 'ngx-toastr';
 import {OrderModule} from 'ngx-order-pipe';
 import {FilterPipeModule} from 'ngx-filter-pipe';
 import {ResizableModule} from 'angular-resizable-element';
+import {NgbModalModule} from '@ng-bootstrap/ng-bootstrap';
 
 import {AppComponent} from './app.component';
 import {LoginComponent} from './components/login/login.component';
@@ -21,7 +22,6 @@ import {TaskBarItemsComponent} from './components/task-bar-items/task-bar-items.
 import {StartMenuComponent} from './components/start-menu/start-menu.component';
 import {StartMenuItemsComponent} from './components/start-menu-items/start-menu-items.component';
 import {ApplicationComponent} from './components/application/application.component';
-
 
 import {FileModule} from './shared-modules/file/file.module';
 
@@ -51,6 +51,7 @@ import {FileModule} from './shared-modules/file/file.module';
     OrderModule,
     FilterPipeModule,
     ResizableModule,
+    NgbModalModule,
     // Shared module import
     FileModule
   ],

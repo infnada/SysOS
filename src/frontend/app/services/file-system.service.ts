@@ -1,18 +1,41 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 
-import { Observable, Subject } from 'rxjs';
+import {BehaviorSubject, Observable, Subject} from 'rxjs';
+import {ToastrService} from 'ngx-toastr';
+
+import {ModalService} from "./modal.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class FileSystemService {
 
-  copyFrom: string = null;
-  cutFrom: string = null;
+  private _copyFrom: BehaviorSubject<string>;
+  private _cutFrom: BehaviorSubject<string>;
+  private _currentFileDrop: BehaviorSubject<string>;
+  private dataStore: {  // This is where we will store our data in memory
+    copyFrom: string,
+    cutFrom: string,
+    currentFileDrop: string
+  };
+  copyFrom: Observable<any>;
+  cutFrom: Observable<any>;
+  currentFileDrop: Observable<any>;
+
+
   pasteTo: string = null;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient,
+              private ModalService: ModalService,
+              private toastr: ToastrService) {
+    this.dataStore = {copyFrom: null, cutFrom: null, currentFileDrop: null};
+    this._copyFrom = <BehaviorSubject<string>>new BehaviorSubject(null);
+    this._cutFrom = <BehaviorSubject<string>>new BehaviorSubject(null);
+    this._currentFileDrop = <BehaviorSubject<string>>new BehaviorSubject(null);
+    this.copyFrom = this._copyFrom.asObservable();
+    this.cutFrom = this._cutFrom.asObservable();
+    this.currentFileDrop = this._currentFileDrop.asObservable();
   }
 
   getFileSystemPath(path: string): Observable<any> {
@@ -60,7 +83,7 @@ export class FileSystemService {
     });
   }
 
-  downloadFileFromInet(url: string, path: string, credential: string): Observable<any> {
+  downloadFileFromInet(path: string, url: string, credential: string): Observable<any> {
     return this.http.post('/api/file/download_from_url', {
       url: url,
       path: path,
@@ -99,179 +122,184 @@ export class FileSystemService {
   /**
    * Creates a new folder
    */
-  UIcreateFolder(currentPath: string) {
-    /*let modalInstanceCreateFolder = modalFactory.openRegistredModal('input', '.desktop .desktop__body',
+  UIcreateFolder(currentPath: string, selector: string) {
+    this.ModalService.openRegisteredModal( 'input', selector,
       {
-        title: () => {
-          return 'Create new folder';
-        },
-        text: () => {
-          return 'Folder name';
-        },
-        button_text: () => {
-          return 'Create';
-        },
-        inputValue: () => {
-          return 'NewFolder';
-        }
+        title: 'Create new folder',
+        text: 'Folder name',
+        button_text: 'Create',
+        inputValue: 'NewFolder'
       }
-    );
-    modalInstanceCreateFolder.result.then((name: string) => {
-      if (!name) return;
+    ).then((modalInstance) => {
+      modalInstance.result.then((name: string) => {
+        if (!name) return;
 
-      return this.FileSystemService.createFolder(this.desktopFiles.currentPath, name).subscribe(
-        (res: any) => {
-          this.reloadPath();
-        },
-        error => {
-          console.error('Desktop -> Error while creating folder -> ', error);
-          console.error(error);
-        });
+        return this.createFolder(currentPath, name).subscribe(
+          () => {
+            this.refreshPath(currentPath);
+          },
+          error => {
+            console.error('File System -> Error while creating folder -> ', error);
+            console.error(error);
+          });
+      });
 
-    });*/
+    });
+
   };
 
   /**
    * Rename file
    */
-  UIrenameFile(currentPath: string, file: { longname: string, filename: string }) {
-    /*let modalInstanceRenameFile = modalFactory.openRegistredModal('input', '.desktop .desktop__body',
+  UIrenameFile(currentPath: string, file: { longname: string, filename: string }, selector: string) {
+    this.ModalService.openRegisteredModal( 'input', selector,
       {
-        title: () => {
-          return 'Rename file';
-        },
-        text: () => {
-          return 'File name';
-        },
-        button_text: () => {
-          return 'Rename';
-        },
-        inputValue: () => {
-          return this.fileToRename;
-        }
+        title: 'Rename file',
+        text: 'File name',
+        button_text: 'Rename',
+        inputValue: file.filename
       }
-    );
-    modalInstanceRenameFile.result.then((res: string) => {
-      if (!res) return;
+    ).then((modalInstance) => {
+      modalInstance.result.then((name: string) => {
+        if (!name) return;
 
-      this.modalInputName = res;
+        return this.renameFile(currentPath, file.filename, name).subscribe(
+          () => {
+            this.refreshPath(currentPath);
+          },
+          error => {
+            console.error('File System -> Error while renaming file -> ', error);
+            console.error(error);
+          });
 
-      return this.FileSystemService.renameFile(this.desktopFiles.currentPath, this.fileToRename, this.modalInputName).subscribe(
-        (res: any) => {
-          this.reloadPath();
-        },
-        error => {
-          console.error('Desktop -> Error while renaming file -> ', error);
-          console.error(error);
-        });
-    });*/
+      });
+
+    });
+
   };
 
   /**
    * Deletes selected files or folders
    */
-  UIdeleteSelected(currentPath: string, file: { longname: string, filename: string }) {
-    /*let modalInstanceDeleteFile = modalFactory.openRegistredModal('question', '.desktop .desktop__body',
+  UIdeleteSelected(currentPath: string, file: { longname: string, filename: string }, selector: string) {
+    this.ModalService.openRegisteredModal( 'question', selector,
       {
-        title: () => {
-          return 'Delete file ' + this.modalInputName;
-        },
-        text: () => {
-          return 'Delete ' + this.modalInputName + ' from SysOS?';
+        title: 'Delete file ' + file.filename,
+        text: 'Delete ' + file.filename + ' from SysOS?'
+      }
+    ).then((modalInstance) => {
+      modalInstance.result.then((name: boolean) => {
+        if (name === true) {
+          return this.deleteFile(currentPath, file.filename).subscribe(
+            () => {
+              this.refreshPath(currentPath);
+            },
+            error => {
+              console.error('File System -> Error while deleting folder -> ', error);
+              console.error(error);
+            });
         }
-      }
-    );
-    modalInstanceDeleteFile.result.then((res: boolean) => {
-      if (res === true) {
-        return this.FileSystemService.deleteFile(this.desktopFiles.currentPath, this.modalInputName).subscribe(
-          (res: any) => {
-            this.reloadPath();
-          },
-          error => {
-            console.error('Desktop -> Error while deleting folder -> ', error);
-            console.error(error);
-          });
-      }
-    });*/
+
+      });
+
+    });
+
   };
 
   /**
    * Paste selected files or folders
    */
   UIpasteFile(currentPath: string) {
-    /*if (angular.isUndefined($itemScope.file)) $itemScope.file = $itemScope.$parent.file;
 
-        this.pasteTo = this.desktopFiles.currentPath;
+        let pasteTo = currentPath;
 
-        if (this.cutFrom) {
-          return fileSystemFactory.moveFile(this.cutFrom, this.pasteTo, function () {
-            this.reloadPath();
-            this.cutFrom = null;
-            this.pasteTo = null;
-          });
+        if (this.dataStore.cutFrom) {
+          return this.moveFile(this.dataStore.cutFrom, pasteTo).subscribe(
+            () => {
+              this.refreshPath(currentPath);
+              this.dataStore.cutFrom = null;
+
+              // broadcast data to subscribers
+              this._cutFrom.next(Object.assign({}, this.dataStore).cutFrom);
+            },
+            error => {
+              console.error('File System -> Error while moving file -> ', error);
+              console.error(error);
+            });
+
         }
 
-        if (this.copyFrom) {
-          return fileSystemFactory.copyFile(_this.copyFrom, _this.pasteTo, function () {
-            this.reloadPath();
-            this.copyFrom = null;
-            this.pasteTo = null;
-          });
-        }*/
+        if (this.dataStore.copyFrom) {
+          return this.copyFile(this.dataStore.copyFrom, pasteTo).subscribe(
+            () => {
+              this.refreshPath(currentPath);
+              this.dataStore.copyFrom = null;
+
+              // broadcast data to subscribers
+              this._copyFrom.next(Object.assign({}, this.dataStore).copyFrom);
+            },
+            error => {
+              console.error('File System -> Error while copying file -> ', error);
+              console.error(error);
+            });
+
+        }
   }
 
   /**
    * Downloads content from URL
    */
-  UIdownloadFromURL(currentPath: string) {
-    /*let modalInstanceDownloadFromURL = modalFactory.openRegistredModal('input', '.desktop .desktop__body',
-          {
-            title: () => {
-              return 'Download file from URL';
-            },
-            text: () => {
-              return 'File URL';
-            },
-            button_text: () => {
-              return 'Download';
-            },
-            inputValue: () => {
-              return '';
-            }
-          }
-        );
-        modalInstanceDownloadFromURL.result.then((res) => {
+  UIdownloadFromURL(currentPath: string, selector: string) {
+    this.ModalService.openRegisteredModal( 'input', selector,
+      {
+        title: 'Download file from URL',
+        text: 'File URL',
+        button_text: 'Download',
+        inputValue:''
+      }
+    ).then((modalInstance) => {
+      modalInstance.result.then((name: string) => {
+        if (!name) return;
 
-          if (!res) return;
+        return this.downloadFileFromInet(currentPath, name,  '').subscribe(
+          () => {
+            this.refreshPath(currentPath);
+            this.toastr.success('File downloaded to ' + currentPath, 'Download file from URL');
+          },
+          error => {
+            console.error('Desktop -> Error while downloading file -> ', error);
+            console.error(error);
+          });
 
-          return this.FileSystemService.downloadFileFromInet(res, this.desktopFiles.currentPath, '').subscribe(
-            (res: {}) => {
-              this.reloadPath();
-              this.toastr.success('File downloaded to ' + this.desktopFiles.currentPath, 'Download file from URL');
-            },
-            error => {
-              console.error('Desktop -> Error while downloading file -> ', error);
-              console.error(error);
-            });
+      });
 
-        });
-      }*/
+    });
+
   }
 
   /**
    * Copy File
    */
   UIcopyFile(currentPath: string, file: { longname: string, filename: string }) {
-    this.cutFrom = null;
-    this.copyFrom = currentPath + file.filename;
+    this.dataStore.cutFrom = null;
+    this.dataStore.copyFrom = currentPath + file.filename;
+
+    // broadcast data to subscribers
+    this._cutFrom.next(Object.assign({}, this.dataStore).cutFrom);
+    this._copyFrom.next(Object.assign({}, this.dataStore).copyFrom);
+
   }
 
   /**
    * Cut file
    */
   UIcutFile(currentPath: string, file: { longname: string, filename: string }) {
-    this.copyFrom = null;
-    this.cutFrom = currentPath + file.filename;
+    this.dataStore.copyFrom = null;
+    this.dataStore.cutFrom = currentPath + file.filename;
+
+    // broadcast data to subscribers
+    this._copyFrom.next(Object.assign({}, this.dataStore).copyFrom);
+    this._cutFrom.next(Object.assign({}, this.dataStore).cutFrom);
   }
 
   /**
@@ -311,6 +339,16 @@ export class FileSystemService {
 
   getRefreshPath(): Observable<any> {
     return this.subject.asObservable();
+  }
+
+  /**
+   * Cut file
+   */
+  setCurrentFileDrop(app: string): void {
+    this.dataStore.currentFileDrop = app;
+
+    // broadcast data to subscribers
+    this._currentFileDrop.next(Object.assign({}, this.dataStore).currentFileDrop);
   }
 
 }

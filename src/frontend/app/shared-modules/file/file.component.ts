@@ -21,6 +21,7 @@ export class FileComponent implements OnInit, AfterViewInit {
   @Input() currentPath: string;
   @Input() viewAsList: boolean;
   @Input() selectable: Selectable;
+  @Input() selector: string;
 
   contextMenuPosition = {x: '0px', y: '0px'};
 
@@ -98,6 +99,7 @@ export class FileComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
+    console.log(this.selectable);
     this.selectable.add(this.selectableFileElement.nativeElement)
   }
 
@@ -106,11 +108,11 @@ export class FileComponent implements OnInit, AfterViewInit {
   };
 
   UIrenameFile(file: File) {
-    this.FileSystemService.UIrenameFile(this.currentPath, file);
+    this.FileSystemService.UIrenameFile(this.currentPath, file, this.selector);
   };
 
   UIdeleteSelected(file: File) {
-    this.FileSystemService.UIdeleteSelected(this.currentPath, file);
+    this.FileSystemService.UIdeleteSelected(this.currentPath, file, this.selector);
   };
 
   UIcopyFile(file: File) {

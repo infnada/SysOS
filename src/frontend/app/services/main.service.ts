@@ -1,32 +1,68 @@
 import {Injectable} from '@angular/core';
 
-import {ApplicationsService} from "./applications.service";
+import {ModalService} from "./modal.service";
 import {FileSystemService} from "./file-system.service";
+import {ApplicationsService} from "./applications.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class MainService {
 
-  constructor(private ApplicationsService: ApplicationsService, private FileSystemService: FileSystemService) {
+  constructor(private ApplicationsService: ApplicationsService,
+              private FileSystemService: FileSystemService,
+              private ModalService: ModalService) {
   }
 
   init(): void {
-    // TODO
-    /*angular.element(window).bind('dragover', function (e) {
+    window.addEventListener( "dragover", function(e) {
       e.preventDefault();
     });
-    angular.element(window).bind('drop', function (e) {
+
+    window.addEventListener( "drop", function(e) {
       e.preventDefault();
     });
-    angular.element(window).bind('contextmenu', function (e) {
+
+    window.addEventListener( "contextmenu", function(e) {
       e.preventDefault();
-    });*/
+    });
 
-    this.ApplicationsService.getInstalledApplications();
-    this.ApplicationsService.getTaskBarApplications();
+    this.ApplicationsService.getInstalledApplications().then(() => {
+      this.ApplicationsService.getTaskBarApplications();
+    });
+    return this.getInstalledModals();
 
-    // TODO: not necessary
-    // this.FileSystemService.refreshPath('/root/Desktop/');
   }
+
+  /**
+   * @description
+   * Returns all scripts to load as SysOS applications
+   */
+  getInstalledModals() {
+    this.FileSystemService.getFileSystemPath('/bin/modals').subscribe(
+    (res: { filename: string }[]) => {
+      console.debug('Modal Factory -> Get Installed Modals successfully');
+
+      res = [
+        {
+          filename: "input-module.js"
+        },
+        {
+          filename: "plain-module.js"
+        },
+        {
+          filename: "question-module.js"
+        }
+      ];
+
+      res.forEach((value) => {
+        this.ModalService.loadModal(value)
+      });
+
+    },
+    error => {
+      console.error('Modal Factory -> Error while getting installed modals -> ', error);
+      console.error(error);
+    });
+  };
 }

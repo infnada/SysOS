@@ -1,10 +1,11 @@
 import {Injectable, Injector, SystemJsNgModuleLoader, NgModuleFactory} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {BehaviorSubject, Subject} from "rxjs/index";
-import {Observable} from 'rxjs';
+
+import {Observable, BehaviorSubject, Subject} from "rxjs";
 import {ToastrService} from 'ngx-toastr';
 
 import {FileSystemService} from "./file-system.service";
+
 import {Application} from "../interfaces/application";
 
 @Injectable({
@@ -231,8 +232,6 @@ export class ApplicationsService {
 
     // broadcast data to subscribers
     this._openedApplications.next(Object.assign({}, this.dataStore).openedApplications);
-
-    //TODO return this.openedApplications;
   };
 
   /**
@@ -289,76 +288,100 @@ export class ApplicationsService {
    * @description
    * Returns all scripts to load as SysOS applications
    */
-  getInstalledApplications(): void {
-    this.dataStore.applications.push({id: 'start', ico: 'windows', name: 'Start Menu', menu: true});
+  getInstalledApplications(): Promise<null> {
 
-    // broadcast data to subscribers
-    this._applications.next(Object.assign({}, this.dataStore).applications);
+    return new Promise((resolve, reject) => {
 
-    this.FileSystemService.getFileSystemPath('/bin/applications').subscribe(
-      (res: { filename: string }[]) => {
-        console.debug('Applications Factory -> Get Installed Applications successfully');
+      this.dataStore.applications.push({id: 'start', ico: 'windows', name: 'Start Menu', menu: true});
 
-        res = [
-          {
-            filename: "alerts-module.js"
-          },
-          {
-            filename: "backups-manager-module.js"
-          },
-          {
-            filename: "credentials-manager-module.js"
-          },
-          {
-            filename: "datastore-explorer-module.js"
-          },
-          {
-            filename: "file-explorer-module.js"
-          },
-          {
-            filename: "infrastructure-manager-module.js"
-          },
-          {
-            filename: "notepad-module.js"
-          },
-          {
-            filename: "sftp-module.js"
-          },
-          {
-            filename: "ssh-module.js"
-          },
-          {
-            filename: "wmks-module.js"
-          },
-        ];
+      // broadcast data to subscribers
+      this._applications.next(Object.assign({}, this.dataStore).applications);
 
-        // Register every application
-        res.forEach(application => {
-          let module = application.filename.replace('-module.js', '');
-          let moduleCamel = application.filename.toLowerCase().replace('.js', '').replace(/-(.)/g, function(match, group1) {
-            return group1.toUpperCase();
+      this.FileSystemService.getFileSystemPath('/bin/applications').subscribe(
+        (res: { filename: string }[]) => {
+          console.debug('Applications Factory -> Get Installed Applications successfully');
+
+          res = [
+            {
+              filename: "alerts-module.js"
+            },
+            {
+              filename: "backups-manager-module.js"
+            },
+            {
+              filename: "credentials-manager-module.js"
+            },
+            {
+              filename: "datastore-explorer-module.js"
+            },
+            {
+              filename: "file-explorer-module.js"
+            },
+            {
+              filename: "infrastructure-manager-module.js"
+            },
+            {
+              filename: "notepad-module.js"
+            },
+            {
+              filename: "sftp-module.js"
+            },
+            {
+              filename: "ssh-module.js"
+            },
+            {
+              filename: "wmks-module.js"
+            },
+          ];
+
+          // Register every application
+          return Promise.all(
+            res.map((application) => this.loadApplication(application))
+          ).then(() => {
+            return resolve();
           });
 
-          moduleCamel = moduleCamel.charAt(0).toUpperCase() + moduleCamel.slice(1);
-
-          let modulePath = "src/frontend/app/applications/" + module +"/" + module +".module#" + moduleCamel;
-
-          this.loader.load(modulePath)  // load the module and its components
-            .then((modFac: NgModuleFactory<any>) => {
-
-              modFac.create(this.injector);
-
-              // Set factory to use in future
-              this.dataStore.applications.filter((el: Application) => {
-                return el.id === module;
-              })[0].factory = modFac;
-            });
+        },
+        error => {
+          console.error('Applications Factory -> Error while getting installed applications -> ', error);
+          console.error(error);
+          return reject();
         });
-      },
-      error => {
-        console.error('Applications Factory -> Error while getting installed applications -> ', error);
-        console.error(error);
+
+    });
+
+  }
+
+  /**
+   * @description
+   * Loads an application module
+   */
+  loadApplication(application: { filename: string }) {
+
+    return new Promise((resolve) => {
+      let module = application.filename.replace('-module.js', '');
+      let moduleCamel = application.filename.toLowerCase().replace('.js', '').replace(/-(.)/g, function(match, group1) {
+        return group1.toUpperCase();
       });
+
+      moduleCamel = moduleCamel.charAt(0).toUpperCase() + moduleCamel.slice(1);
+
+      let modulePath = "src/frontend/app/applications/" + module +"/" + module +".module#" + moduleCamel;
+
+      this.loader.load(modulePath)  // load the module and its components
+        .then((modFac: NgModuleFactory<any>) => {
+
+          modFac.create(this.injector);
+
+          // Set factory to use in future
+          this.dataStore.applications.filter((el: Application) => {
+            return el.id === module;
+          })[0].factory = modFac;
+
+          return resolve();
+        });
+    });
+
   }
 
   /**
@@ -394,7 +417,7 @@ export class ApplicationsService {
     });
 
     this.FileSystemService.saveConfigFile(applications_to_save, 'desktop/task_bar.json', true).subscribe(
-      res => {
+      () => {
         console.debug('Applications Factory -> TaskBar applications saved');
       },
       error => {

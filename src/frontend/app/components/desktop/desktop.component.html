@@ -1,28 +1,30 @@
 <div class="desktop">
-  <div id="desktop_body" (mouseover)="setCurrentFileDrop('desktop'); $event.stopPropagation()" data-drop="true" jqyoui-droppable="{onDrop: 'onDropItem'}" data-jqyoui-options="{greedy: true, accept:'a', tolerance: 'pointer'}" class="folders ui-container" #selectableContainer (click)="handleDesktopClick($event)" (keydown)="handleItemKeyPress($event)" (contextmenu)="onDesktopContextMenu($event)">
-    <ng-container *ngFor="let file of desktopFiles.currentData; index as $index">
-      <app-file [selectable]=selectable [file]=file [isCurrentActive]="$index === currentActive" [currentPath]="desktopFiles.currentPath" (click)="setCurrentActive($index)"></app-file>
-    </ng-container>
-
-    <div style="position: fixed"
-         [style.left]="contextMenuPosition.x"
-         [style.top]="contextMenuPosition.y"
-         [matMenuTriggerFor]="contextMenuDesktop">
-    </div>
-  </div>
-
-  <mat-menu #contextMenuDesktop="matMenu">
-    <ng-template matMenuContent>
-      <ng-container *ngFor="let item of desktopContextMenuItems">
-        <button mat-menu-item *ngIf="item.text !== 'divider'" (click)="item.action()" [disabled]="checkIfDisabled(item)" [innerHTML]="contextToText(item)"></button>
-        <mat-divider *ngIf="item.text === 'divider'"></mat-divider>
+  <div class="col-xs-12 desktop__body">
+    <div id="desktop_body" (mouseover)="setCurrentFileDrop('desktop'); $event.stopPropagation()" data-drop="true" jqyoui-droppable="{onDrop: 'onDropItem'}" data-jqyoui-options="{greedy: true, accept:'a', tolerance: 'pointer'}" class="folders ui-container" #selectableContainer (click)="handleDesktopClick($event)" (keydown)="handleItemKeyPress($event)" (contextmenu)="onDesktopContextMenu($event)">
+      <ng-container *ngFor="let file of desktopFiles.currentData; index as $index">
+        <app-file [selectable]=selectable [file]=file [isCurrentActive]="$index === currentActive" [currentPath]="desktopFiles.currentPath" [selector]="'.desktop .desktop__body'" (click)="setCurrentActive($index)"></app-file>
       </ng-container>
-    </ng-template>
-  </mat-menu>
 
-  <app-task-bar></app-task-bar>
+      <div style="position: fixed"
+           [style.left]="contextMenuPosition.x"
+           [style.top]="contextMenuPosition.y"
+           [matMenuTriggerFor]="contextMenuDesktop">
+      </div>
+    </div>
 
-  <ng-container *ngFor="let application of openedApplications">
-    <app-application *ngIf="application.id !== 'start'" [application]="application"></app-application>
-  </ng-container>
+    <mat-menu #contextMenuDesktop="matMenu">
+      <ng-template matMenuContent>
+        <ng-container *ngFor="let item of desktopContextMenuItems">
+          <button mat-menu-item *ngIf="item.text !== 'divider'" (click)="item.action()" [disabled]="checkIfDisabled(item)" [innerHTML]="contextToText(item)"></button>
+          <mat-divider *ngIf="item.text === 'divider'"></mat-divider>
+        </ng-container>
+      </ng-template>
+    </mat-menu>
+
+    <app-task-bar></app-task-bar>
+
+    <ng-container *ngFor="let application of openedApplications">
+      <app-application *ngIf="application.id !== 'start'" [application]="application"></app-application>
+    </ng-container>
+  </div>
 </div>

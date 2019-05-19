@@ -1,5 +1,5 @@
 <div class="window__actions">
-  <span class="fa-stack" (click)="createFolder();">
+  <span class="fa-stack" (click)="UIcreateFolder();">
     <i class="fa fa-folder fa-stack-1x"></i>
     <i class="fa fa-plus fa-pull-right fa-stack-1x text-success"></i>
   </span>
@@ -21,13 +21,17 @@
       <i class="fa fa-desktop"></i>
       SysOS /
     </a>
-    <a ng-repeat="path in feB.localFileSystem.currentPath.split('/') track by $index" ng-if="path.length != 0"
-       ng-click="feB.goToPath($index, path)">
-      {{path}}
-    </a>
+
+    <ng-container *ngFor="let path of currentPath.split('/'); index as $index">
+      <a *ngIf="path.length != 0"
+         (click)="goToPath($index)">
+        {{path}}
+      </a>
+    </ng-container>
+
   </div>
   <form class="search">
-    <input type="text" class="search__input" placeholder="Search files" ng-model="feB.search.filename">
+    <input type="text" class="search__input" placeholder="Search files" [(ngModel)]="search">
     <button class="search__btn"></button>
   </form>
 </div>

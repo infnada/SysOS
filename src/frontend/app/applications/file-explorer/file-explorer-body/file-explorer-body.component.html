@@ -7,9 +7,9 @@
           <i class="fa fa-star"></i> Favorites
           <span class="list__toggle" (click)="toggleList($event)"></span>
         </a>
-        <ul style="display:block">
-          <li (click)="setNewPath('/root/Desktop/')"><a><i class="fa fa-desktop"></i> Desktop</a></li>
-          <li (click)="setNewPath('/root/Downloads/')"><a><i class="fa fa-cloud-download"></i> Downloads</a></li>
+        <ul class="side__list">
+          <li (click)="goToPath('/root/Desktop/')"><a><i class="fa fa-desktop"></i> Desktop</a></li>
+          <li (click)="goToPath('/root/Downloads/')"><a><i class="fa fa-cloud-download"></i> Downloads</a></li>
         </ul>
       </li>
       <li class="side__list--open">
@@ -17,16 +17,16 @@
           <i class="fa fa-server"></i> This Device
           <span class="list__toggle" (click)="toggleList($event)"></span>
         </a>
-        <ul style="display:block">
-          <li (click)="setNewPath('/root/Desktop/')"><a><i class="fa fa-desktop"></i> Desktop</a></li>
-          <li (click)="setNewPath('/root/Documents/')"><a><i class="fa fa-files-o"></i> Documents</a></li>
-          <li (click)="setNewPath('/root/Downloads/')"><a><i class="fa fa-cloud-download"></i> Downloads</a></li>
+        <ul class="side__list">
+          <li (click)="goToPath('/root/Desktop/')"><a><i class="fa fa-desktop"></i> Desktop</a></li>
+          <li (click)="goToPath('/root/Documents/')"><a><i class="fa fa-files-o"></i> Documents</a></li>
+          <li (click)="goToPath('/root/Downloads/')"><a><i class="fa fa-cloud-download"></i> Downloads</a></li>
         </ul>
       </li>
     </ul>
   </div>
   <div class="window__main no_padding">
-    <div class="col-xs-12 ftp__body" >
+    <div class="col-xs-12 folders__body" >
 
       <app-file-explorer-body-actions [application]="application"></app-file-explorer-body-actions>
 
@@ -34,8 +34,8 @@
         <div ng-include="'templates/applications/folders-dropzone-fe-local.html'"></div>
 
         <ng-container *ngIf="viewAsList === false">
-          <ng-container *ngFor="let file of pathFiles.currentData | filterBy: search; index as $index" >
-            <app-file [viewAsList]="viewAsList" [selectable]=selectable [file]=file [isCurrentActive]="$index === currentActive" [currentPath]="pathFiles.currentPath" (click)="setCurrentActive($index)"></app-file>
+          <ng-container *ngFor="let file of currentData | filterBy: search; index as $index" >
+            <app-file [viewAsList]="viewAsList" [selectable]=selectable [file]=file [isCurrentActive]="$index === currentActive" [currentPath]="currentPath" [selector]="'.window--file-explorer .window__main'" (click)="setCurrentActive($index)"></app-file>
           </ng-container>
         </ng-container>
 
@@ -49,8 +49,8 @@
             </tr>
             </thead>
             <tbody>
-              <ng-container *ngFor="let file of pathFiles.currentData | filterBy: search; index as $index" >
-                <app-file [viewAsList]="viewAsList" [selectable]=selectable [file]=file [isCurrentActive]="$index === currentActive" [currentPath]="pathFiles.currentPath" (click)="setCurrentActive($index)"></app-file>
+              <ng-container *ngFor="let file of currentData | filterBy: search; index as $index" >
+                <app-file [viewAsList]="viewAsList" [selectable]=selectable [file]=file [isCurrentActive]="$index === currentActive" [currentPath]="currentPath" [selector]="'.window--file-explorer .window__main'" (click)="setCurrentActive($index)"></app-file>
               </ng-container>
             </tbody>
           </table>

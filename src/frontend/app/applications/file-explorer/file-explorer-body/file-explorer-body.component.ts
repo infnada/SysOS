@@ -5,10 +5,13 @@ import {MatMenuTrigger} from '@angular/material';
 import Selectable from 'selectable.js';
 
 import {FileSystemService} from "../../../services/file-system.service";
+import {ApplicationsService} from "../../../services/applications.service";
+import {FileExplorerService} from "../file-explorer.service";
 
 import {Application} from "../../../interfaces/application";
 import {File} from "../../../interfaces/file";
 import {ContextMenuItem} from "../../../interfaces/context-menu-item";
+
 
 @Component({
   selector: 'app-file-explorer-body',
@@ -25,13 +28,16 @@ export class FileExplorerBodyComponent implements OnInit, AfterViewInit {
   reloadPathSubscription: Subscription;
   selectable: Selectable;
 
+  taskbar__item_open: string;
+  copyFrom: string;
+  cutFrom: string;
+  currentFileDrop: string;
+  currentPath: string;
+  currentData: Array<File>;
+
   search: string;
   viewAsList: boolean = false;
   currentActive: number = 0;
-  pathFiles: { currentPath: string, currentData: Array<File> } = {
-    currentPath: '/',
-    currentData: []
-  };
 
   onBodyContextMenu(event: MouseEvent): void {
     event.preventDefault();
@@ -83,13 +89,26 @@ export class FileExplorerBodyComponent implements OnInit, AfterViewInit {
     }
   ];
 
-  constructor(private FileSystemService: FileSystemService) {
+  constructor(private FileSystemService: FileSystemService,
+              private ApplicationsService: ApplicationsService,
+              private FileExplorerService: FileExplorerService) {
+
     this.reloadPathSubscription = this.FileSystemService.getRefreshPath().subscribe(path => {
-      if (path === this.pathFiles.currentPath) this.reloadPath();
+      if (path === this.currentPath) this.reloadPath();
     });
   }
 
   ngOnInit() {
+    this.ApplicationsService.taskbar__item_open.subscribe(applications => this.taskbar__item_open = applications);
+    this.FileSystemService.copyFrom.subscribe(path => this.copyFrom = path);
+    this.FileSystemService.cutFrom.subscribe(path => this.cutFrom = path);
+    this.FileSystemService.currentFileDrop.subscribe(path => this.currentFileDrop = path);
+    this.FileExplorerService.currentPath.subscribe(path => this.currentPath = path);
+    this.FileExplorerService.currentData.subscribe(data => {
+      this.currentData = data;
+      this.resetActive();
+    });
+
     this.reloadPath();
   }
 
@@ -112,15 +131,7 @@ export class FileExplorerBodyComponent implements OnInit, AfterViewInit {
    * Get current path data
    */
   private reloadPath(): void {
-    this.FileSystemService.getFileSystemPath(this.pathFiles.currentPath).subscribe(
-      (res: Array<any>) => {
-        this.pathFiles.currentData = res;
-        this.resetActive();
-      },
-      error => {
-        console.error('Desktop -> Error while getting fileSystemPath -> ', error);
-        console.error(error);
-      });
+    this.FileExplorerService.reloadPath();
   };
 
   /**
@@ -169,32 +180,38 @@ export class FileExplorerBodyComponent implements OnInit, AfterViewInit {
     });
   };*/
 
-  UIdownloadFromURL() {
-    this.FileSystemService.UIdownloadFromURL(this.desktopFiles.currentPath);
+  UIdownloadFromURL(): void {
+    this.FileSystemService.UIdownloadFromURL(this.currentPath, '.window--file-explorer .window__main');
   };
 
-  UIcreateFolder() {
-    this.FileSystemService.UIcreateFolder(this.desktopFiles.currentPath);
+  UIcreateFolder(): void {
+    this.FileSystemService.UIcreateFolder(this.currentPath, '.window--file-explorer .window__main');
   };
 
-  UIpasteFile() {
-    this.FileSystemService.UIpasteFile(this.desktopFiles.currentPath);
+  UIrenameFile(file: File): void {
+    this.FileSystemService.UIrenameFile(this.currentPath, file, '.window--file-explorer .window__main');
+  };
+
+  UIdeleteSelected(file: File): void {
+    this.FileSystemService.UIdeleteSelected(this.currentPath, file, '.window--file-explorer .window__main');
+  };
+
+  UIpasteFile(): void {
+    this.FileSystemService.UIpasteFile(this.currentPath);
   }
 
-  setNewPath(path: string): void {
-    this.pathFiles.currentPath = path;
-    this.reloadPath();
+  UIdoWithFile(file: File): void {
+    this.FileSystemService.UIdoWithFile(this.currentPath, file);
   }
 
-  toggleList($event: Event): void {
+  goToPath(path: string): void {
+    this.FileExplorerService.sendGoToPath(path);
+  }
 
-    angular.element($event.currentTarget.parentElement.parentElement).toggleClass('side__list--open');
+  toggleList($event): void {
 
-    angular.element($event.currentTarget.parentElement.nextElementSibling).animate({
-      'height': 'toggle',
-      'opacity': 'toggle',
-      'display': 'toggle'
-    }, 250);
+    $event.currentTarget.parentElement.parentElement.classList.toggle('side__list--open');
+
   };
 
   /**
@@ -204,10 +221,10 @@ export class FileExplorerBodyComponent implements OnInit, AfterViewInit {
     //TODO $('#desktop_body').focus();
     //$timeout.cancel(this.selectTimeout);
 
-    if ($index > this.pathFiles.currentData.length - 1) {
+    if ($index > this.currentData.length - 1) {
       this.currentActive = 0;
     } else if ($index < 0) {
-      this.currentActive = this.pathFiles.currentData.length - 1;
+      this.currentActive = this.currentData.length - 1;
     } else {
       this.currentActive = $index;
     }
@@ -219,16 +236,11 @@ export class FileExplorerBodyComponent implements OnInit, AfterViewInit {
   };
 
   setCurrentFileDrop(app: string) {
-    this.currentFileDrop = app;
+    this.FileSystemService.setCurrentFileDrop(app);
   }
 
   handleBodyClick($event): void {
-
-    // TODO
-    if ($event.target.attributes.id !== undefined && $event.target.attributes.id.value === 'local_body') {
-      _this.currentActive = null;
-    }
-
+    if ($event.target.attributes.id !== undefined && $event.target.attributes.id.value === 'local_body') this.currentActive = null;
   };
 
   /**
@@ -245,11 +257,11 @@ export class FileExplorerBodyComponent implements OnInit, AfterViewInit {
     if (this.currentActive === null && keyEvent.which !== 39 && keyEvent.which === 37) return;
 
     if (keyEvent.which === 46) {
-      let currentFile = this.desktopFiles.currentData[this.currentActive];
+      let currentFile = this.currentData[this.currentActive];
 
       this.UIdeleteSelected(currentFile);
     } else if (keyEvent.which === 113) {
-      let currentFile = this.desktopFiles.currentData[this.currentActive];
+      let currentFile = this.currentData[this.currentActive];
 
       this.UIrenameFile(currentFile);
     } else if (keyEvent.which === 39) {
@@ -269,11 +281,11 @@ export class FileExplorerBodyComponent implements OnInit, AfterViewInit {
       }
 
     } else if (keyEvent.which === 13) {
-      let currentFile = this.desktopFiles.currentData[this.currentActive];
+      let currentFile = this.currentData[this.currentActive];
 
       this.UIdoWithFile(currentFile);
     } else if (keyEvent.which === 8) {
-      this.goPathBack();
+      this.FileExplorerService.sendGoPathBack();
     }
   };
 

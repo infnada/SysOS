@@ -27,8 +27,6 @@
               "src/frontend/assets"
             ],
             "styles": [
-              "node_modules/bootstrap/dist/css/bootstrap.min.css",
-              "node_modules/ngx-toastr/toastr.css",
               "src/frontend/styles.scss"
             ],
             "scripts": [],
@@ -42,7 +40,11 @@
               "src/frontend/app/applications/notepad/notepad.module",
               "src/frontend/app/applications/sftp/sftp.module",
               "src/frontend/app/applications/ssh/ssh.module",
-              "src/frontend/app/applications/wmks/wmks.module"
+              "src/frontend/app/applications/wmks/wmks.module",
+
+              "src/frontend/app/modals/input/input.module",
+              "src/frontend/app/modals/plain/plain.module",
+              "src/frontend/app/modals/question/question.module"
             ],
             "es5BrowserSupport": true
           },

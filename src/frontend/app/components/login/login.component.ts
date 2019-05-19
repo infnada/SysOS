@@ -9,6 +9,8 @@ import {MainService} from "../../services/main.service";
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
+  username: string = 'root';
+  password: string;
 
   loginExpanded: boolean = false;
 

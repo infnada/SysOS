@@ -28,13 +28,14 @@ export class DesktopComponent implements OnInit, AfterViewInit {
   openedApplications: Application[];
   taskbar__item_open: string;
 
-  copyFrom: string = null;
-  cutFrom: string = null;
+  copyFrom: string;
+  cutFrom: string;
+  currentFileDrop: string;
+
   pasteTo: string = null;
 
   selectable: Selectable;
 
-  currentFileDrop: string;
   currentActive: number = 0;
   desktopFiles: { currentPath: string, currentData: Array<File> } = {
     currentPath: '/root/Desktop/',
@@ -103,6 +104,11 @@ export class DesktopComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.ApplicationsService.openedApplications.subscribe(applications => this.openedApplications = applications);
     this.ApplicationsService.taskbar__item_open.subscribe(application => this.taskbar__item_open = application);
+
+    this.FileSystemService.copyFrom.subscribe(path => this.copyFrom = path);
+    this.FileSystemService.cutFrom.subscribe(path => this.cutFrom = path);
+    this.FileSystemService.currentFileDrop.subscribe(path => this.currentFileDrop = path);
+
     this.reloadPath();
   }
 
@@ -197,27 +203,27 @@ export class DesktopComponent implements OnInit, AfterViewInit {
     return this.FileSystemService.getFileType(longname);
   };
 
-  UIdownloadFromURL() {
-    this.FileSystemService.UIdownloadFromURL(this.desktopFiles.currentPath);
+  UIdownloadFromURL(): void {
+    this.FileSystemService.UIdownloadFromURL(this.desktopFiles.currentPath, '.desktop .desktop__body');
   };
 
-  UIcreateFolder() {
-    this.FileSystemService.UIcreateFolder(this.desktopFiles.currentPath);
+  UIcreateFolder(): void {
+    this.FileSystemService.UIcreateFolder(this.desktopFiles.currentPath, '.desktop .desktop__body');
   };
 
-  UIrenameFile(file: File) {
-    this.FileSystemService.UIrenameFile(this.desktopFiles.currentPath, file);
+  UIrenameFile(file: File): void {
+    this.FileSystemService.UIrenameFile(this.desktopFiles.currentPath, file, '.desktop .desktop__body');
   };
 
-  UIdeleteSelected(file: File) {
-    this.FileSystemService.UIdeleteSelected(this.desktopFiles.currentPath, file);
+  UIdeleteSelected(file: File): void {
+    this.FileSystemService.UIdeleteSelected(this.desktopFiles.currentPath, file, '.desktop .desktop__body');
   };
 
-  UIpasteFile() {
+  UIpasteFile(): void {
     this.FileSystemService.UIpasteFile(this.desktopFiles.currentPath);
   }
 
-  UIdoWithFile(file: File) {
+  UIdoWithFile(file: File): void {
     this.FileSystemService.UIdoWithFile(this.desktopFiles.currentPath, file);
   }
 
@@ -255,7 +261,7 @@ export class DesktopComponent implements OnInit, AfterViewInit {
   };
 
   setCurrentFileDrop(app: string) {
-    this.currentFileDrop = app;
+    this.FileSystemService.setCurrentFileDrop(app);
   }
 
 
