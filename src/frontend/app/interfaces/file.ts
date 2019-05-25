@@ -1,4 +1,7 @@
 export interface File {
   filename: string,
-  longname: string
+  longname: string,
+  attrs: {
+    size: string
+  }
 }

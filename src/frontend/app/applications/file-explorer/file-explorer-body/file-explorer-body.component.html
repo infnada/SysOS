@@ -1,4 +1,4 @@
-<div class="window__body" #selectableContainer>
+<div class="window__body">
   <div class="window__side">
     <ul class="side__list">
       <li><a><i class="fa fa-home"></i> Home</a></li>
@@ -25,18 +25,36 @@
       </li>
     </ul>
   </div>
-  <div class="window__main no_padding">
-    <div class="col-xs-12 folders__body" >
+  <div class="window__main row no_padding">
+    <div class="col folders__body">
 
       <app-file-explorer-body-actions [application]="application"></app-file-explorer-body-actions>
 
-      <div id="local_body" (mouseover)="setCurrentFileDrop('desktop'); $event.stopPropagation()" data-drop="true" jqyoui-droppable="{onDrop: 'feB.onDropItem'}" data-jqyoui-options="{greedy: true, accept:'a', tolerance: 'pointer'}" class="folders" (click)="handleBodyClick($event)" (keydown)="handleItemKeyPress($event)" (contextmenu)="onBodyContextMenu($event)">
-        <div ng-include="'templates/applications/folders-dropzone-fe-local.html'"></div>
+      <div id="local_body" class="folders" #selectableContainer cdkDropList (cdkDropListDropped)="UIonDropItem($event)" (click)="handleBodyClick($event)" (keydown)="handleItemKeyPress($event)" (contextmenu)="onBodyContextMenu($event)">
+
+
+
+        <ngfFormData
+          [files]      = "files"
+          postName     = "file"
+          [(FormData)] = "sendableFormData"
+        ></ngfFormData>
+
+        <ngfUploadStatus
+          [(percent)] = "progress"
+          [httpEvent] = "httpEvent"
+        ></ngfUploadStatus>
+        <div class="dropzone" ngfDrop selectable="1" multiple="1"
+             [(files)]="files"
+             [(validDrag)]="validComboDrag"
+             [ngClass]="{'goodDragClass':validComboDrag}"
+             (filesChange)="eventHandler($event)"
+        >
+          Drop files here (from local system) or click to upload. {{progress}}
+        </div>
 
         <ng-container *ngIf="viewAsList === false">
-          <ng-container *ngFor="let file of currentData | filterBy: search; index as $index" >
-            <app-file [viewAsList]="viewAsList" [selectable]=selectable [file]=file [isCurrentActive]="$index === currentActive" [currentPath]="currentPath" [selector]="'.window--file-explorer .window__main'" (click)="setCurrentActive($index)"></app-file>
-          </ng-container>
+            <app-file *ngFor="let file of currentData | filterBy: search; index as $index" cdkDrag cdkDragBoundary=".desktop" [cdkDragData]="file" (cdkDragStarted)="onDragStart()" [application]="application" [viewAsList]="viewAsList" [selectable]=selectable [file]=file [isCurrentActive]="$index === currentActive" [currentPath]="currentPath" [selector]="'.window--file-explorer .window__main'" (click)="setCurrentActive($index)"></app-file>
         </ng-container>
 
         <ng-container *ngIf="viewAsList === true">
@@ -49,9 +67,9 @@
             </tr>
             </thead>
             <tbody>
-              <ng-container *ngFor="let file of currentData | filterBy: search; index as $index" >
-                <app-file [viewAsList]="viewAsList" [selectable]=selectable [file]=file [isCurrentActive]="$index === currentActive" [currentPath]="currentPath" [selector]="'.window--file-explorer .window__main'" (click)="setCurrentActive($index)"></app-file>
-              </ng-container>
+
+              <app-file *ngFor="let file of currentData | filterBy: search; index as $index" cdkDrag cdkDragBoundary=".desktop" [cdkDragData]="file" (cdkDragStarted)="onDragStart()" [application]="application" [viewAsList]="viewAsList" [selectable]=selectable [file]=file [isCurrentActive]="$index === currentActive" [currentPath]="currentPath" [selector]="'.window--file-explorer .window__main'" (click)="setCurrentActive($index)"></app-file>
+
             </tbody>
           </table>
         </ng-container>

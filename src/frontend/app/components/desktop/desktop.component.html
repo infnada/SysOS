@@ -1,9 +1,8 @@
-<div class="desktop">
-  <div class="col-xs-12 desktop__body">
-    <div id="desktop_body" (mouseover)="setCurrentFileDrop('desktop'); $event.stopPropagation()" data-drop="true" jqyoui-droppable="{onDrop: 'onDropItem'}" data-jqyoui-options="{greedy: true, accept:'a', tolerance: 'pointer'}" class="folders ui-container" #selectableContainer (click)="handleDesktopClick($event)" (keydown)="handleItemKeyPress($event)" (contextmenu)="onDesktopContextMenu($event)">
-      <ng-container *ngFor="let file of desktopFiles.currentData; index as $index">
-        <app-file [selectable]=selectable [file]=file [isCurrentActive]="$index === currentActive" [currentPath]="desktopFiles.currentPath" [selector]="'.desktop .desktop__body'" (click)="setCurrentActive($index)"></app-file>
-      </ng-container>
+<div class="desktop" cdkDropListGroup>
+  <div class="col-xl-12 desktop__body">
+    <div id="desktop_body" class="folders" #selectableContainer cdkDropList (cdkDropListDropped)="UIonDropItem($event)" [cdkDropListData]="'/root/Desktop'" (mouseover)="setCurrentHoverApplication();" (click)="handleDesktopClick($event)" (keydown)="handleItemKeyPress($event)" (contextmenu)="onDesktopContextMenu($event)">
+
+      <app-file *ngFor="let file of desktopFiles.currentData; index as $index" cdkDrag cdkDragBoundary=".desktop" [cdkDragData]="file" (cdkDragStarted)="onDragStart()" [application]="{id: 'file-explorer'}" [selectable]=selectable [file]=file [isCurrentActive]="$index === currentActive" [currentPath]="desktopFiles.currentPath" [selector]="'.desktop .desktop__body'" (click)="setCurrentActive($index)"></app-file>
 
       <div style="position: fixed"
            [style.left]="contextMenuPosition.x"

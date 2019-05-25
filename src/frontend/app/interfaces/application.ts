@@ -9,5 +9,6 @@ export interface Application {
   actions?: boolean,
   status?: boolean,
   style?: { height: string, width: string, top: string, left: string},
-  factory?: NgModuleFactory<any>
+  factory?: NgModuleFactory<any>,
+  init_data?: any
 }

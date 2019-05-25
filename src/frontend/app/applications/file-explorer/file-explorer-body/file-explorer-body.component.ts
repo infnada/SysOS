@@ -1,10 +1,13 @@
-import {Component, Input, OnInit, AfterViewInit, ViewChild, ElementRef} from '@angular/core';
+import {Component, Input, OnInit, ViewChild, ElementRef} from '@angular/core';
+import {HttpResponse, HttpEvent} from '@angular/common/http';
+
+import {MatMenuTrigger} from '@angular/material'
 import {Subscription} from "rxjs";
-import {MatMenuTrigger} from '@angular/material';
 
 import Selectable from 'selectable.js';
 
 import {FileSystemService} from "../../../services/file-system.service";
+import {FileSystemUiService} from "../../../services/file-system-ui.service";
 import {ApplicationsService} from "../../../services/applications.service";
 import {FileExplorerService} from "../file-explorer.service";
 
@@ -18,7 +21,7 @@ import {ContextMenuItem} from "../../../interfaces/context-menu-item";
   templateUrl: './file-explorer-body.component.html',
   styleUrls: ['./file-explorer-body.component.scss']
 })
-export class FileExplorerBodyComponent implements OnInit, AfterViewInit {
+export class FileExplorerBodyComponent implements OnInit {
   @Input() application: Application;
   @ViewChild('selectableContainer') selectableContainer: ElementRef;
   @ViewChild(MatMenuTrigger) contextMenuBody: MatMenuTrigger;
@@ -31,13 +34,19 @@ export class FileExplorerBodyComponent implements OnInit, AfterViewInit {
   taskbar__item_open: string;
   copyFrom: string;
   cutFrom: string;
-  currentFileDrop: string;
   currentPath: string;
   currentData: Array<File>;
+  viewAsList: boolean;
 
   search: string;
-  viewAsList: boolean = false;
   currentActive: number = 0;
+
+  files:File[] = [];
+  validComboDrag: any;
+  sendableFormData: FormData;
+  progress: number;
+  httpEmitter: Subscription;
+  httpEvent: HttpEvent<{}>;
 
   onBodyContextMenu(event: MouseEvent): void {
     event.preventDefault();
@@ -90,33 +99,36 @@ export class FileExplorerBodyComponent implements OnInit, AfterViewInit {
   ];
 
   constructor(private FileSystemService: FileSystemService,
+              private FileSystemUiService: FileSystemUiService,
               private ApplicationsService: ApplicationsService,
               private FileExplorerService: FileExplorerService) {
 
-    this.reloadPathSubscription = this.FileSystemService.getRefreshPath().subscribe(path => {
+    this.reloadPathSubscription = this.FileSystemUiService.getRefreshPath().subscribe(path => {
       if (path === this.currentPath) this.reloadPath();
     });
   }
 
   ngOnInit() {
     this.ApplicationsService.taskbar__item_open.subscribe(applications => this.taskbar__item_open = applications);
-    this.FileSystemService.copyFrom.subscribe(path => this.copyFrom = path);
-    this.FileSystemService.cutFrom.subscribe(path => this.cutFrom = path);
-    this.FileSystemService.currentFileDrop.subscribe(path => this.currentFileDrop = path);
+    this.FileSystemUiService.copyFrom.subscribe(path => this.copyFrom = path);
+    this.FileSystemUiService.cutFrom.subscribe(path => this.cutFrom = path);
     this.FileExplorerService.currentPath.subscribe(path => this.currentPath = path);
     this.FileExplorerService.currentData.subscribe(data => {
       this.currentData = data;
       this.resetActive();
     });
+    this.FileExplorerService.viewAsList.subscribe(data => this.viewAsList = data);
 
-    this.reloadPath();
-  }
-
-  ngAfterViewInit() {
     this.selectable = new Selectable({
       appendTo: this.selectableContainer.nativeElement,
       ignore: "a"
     });
+
+    if (this.application.init_data && this.application.init_data.path) {
+      return this.goToPath(this.application.init_data.path);
+    }
+
+    this.goToPath('/');
   }
 
   /**
@@ -136,82 +148,67 @@ export class FileExplorerBodyComponent implements OnInit, AfterViewInit {
 
   /**
    * On file dragstart
-   *
-   * @param evt
-   * @param ui
    */
-  /*this.onStartItem = function (evt, ui) {
-    ui.helper.prevObject.scope().$parent.file.dragFrom = _this.localFileSystem.currentPath;
-  };*/
+  onDragStart(): void {
+    this.FileSystemUiService.setCurrentFileDrag(this.currentPath);
+  }
 
-  /**
-   * On file dropped to desktop
-   *
-   * @param evt
-   * @param ui
-   * @returns {*}
-   */
-  /*this.onDropItem = function (evt, ui) {
-    if ($rootScope.currentFileDrop !== 'fileexplorer') return;
-
-    // Fix drop from /root/Desktop
-    if (angular.isUndefined(ui.draggable.scope().$parent.file)) ui.draggable.scope().$parent.file = ui.draggable.scope().file;
-
-    // Do not move files to same directory
-    if (ui.draggable.scope().$parent.file.dragFrom === _this.localFileSystem.currentPath) return;
-
-    var object = $filter('filter')(_this.localFileSystem.currentData, {
-      filename: ui.draggable.scope().$parent.file.filename
-    });
-
-    if (object.length !== 0) {
-      return modalFactory.openLittleModal('Move file', 'A file with the same name already exists. Can\'t move it.', '.window--fileexplorer .window__main', 'plain');
-    }
-
-    _this.cutFrom = ui.draggable.scope().$parent.file.dragFrom + ui.draggable.scope().$parent.file.filename;
-    _this.pasteTo = _this.localFileSystem.currentPath;
-
-    return fileSystemFactory.moveFile(_this.cutFrom, _this.pasteTo, function () {
-      _this.cutFrom = null;
-      _this.pasteTo = null;
-
-      $rootScope.$broadcast('refreshPath', _this.localFileSystem.currentPath);
-      $rootScope.$broadcast('refreshPath', ui.helper.prevObject.scope().$parent.file.dragFrom);
-    });
-  };*/
+  UIonDropItem($event): void {
+    this.FileSystemUiService.UIonDropItem($event, this.currentPath);
+  };
 
   UIdownloadFromURL(): void {
-    this.FileSystemService.UIdownloadFromURL(this.currentPath, '.window--file-explorer .window__main');
+    this.FileSystemUiService.UIdownloadFromURL(this.currentPath, '.window--file-explorer .window__main');
   };
 
   UIcreateFolder(): void {
-    this.FileSystemService.UIcreateFolder(this.currentPath, '.window--file-explorer .window__main');
+    this.FileSystemUiService.UIcreateFolder(this.currentPath, '.window--file-explorer .window__main');
   };
 
   UIrenameFile(file: File): void {
-    this.FileSystemService.UIrenameFile(this.currentPath, file, '.window--file-explorer .window__main');
+    this.FileSystemUiService.UIrenameFile(this.currentPath, file, '.window--file-explorer .window__main');
   };
 
   UIdeleteSelected(file: File): void {
-    this.FileSystemService.UIdeleteSelected(this.currentPath, file, '.window--file-explorer .window__main');
+    this.FileSystemUiService.UIdeleteSelected(this.currentPath, file, '.window--file-explorer .window__main');
   };
 
   UIpasteFile(): void {
-    this.FileSystemService.UIpasteFile(this.currentPath);
+    this.FileSystemUiService.UIpasteFile(this.currentPath);
   }
 
   UIdoWithFile(file: File): void {
-    this.FileSystemService.UIdoWithFile(this.currentPath, file);
+    this.FileSystemUiService.UIdoWithFile('file-explorer', this.currentPath, file);
+  }
+
+  eventHandler(e) {
+    console.log(e);
+  }
+
+  uploadFiles(): void {
+    this.httpEmitter = this.FileSystemService.uploadFile(this.sendableFormData).subscribe(
+      event=>{
+        this.httpEvent = event;
+
+        if (event instanceof HttpResponse) {
+          delete this.httpEmitter;
+          console.log('request done', event)
+        }
+      },
+      error=>console.log('Error Uploading',error)
+    )
+
   }
 
   goToPath(path: string): void {
-    this.FileExplorerService.sendGoToPath(path);
+    this.FileSystemUiService.sendGoToPath({
+      application: 'file-explorer',
+      path: path
+    });
   }
 
   toggleList($event): void {
-
     $event.currentTarget.parentElement.parentElement.classList.toggle('side__list--open');
-
   };
 
   /**
@@ -234,10 +231,6 @@ export class FileExplorerBodyComponent implements OnInit, AfterViewInit {
       this.selection = true;
     }, 100);*/
   };
-
-  setCurrentFileDrop(app: string) {
-    this.FileSystemService.setCurrentFileDrop(app);
-  }
 
   handleBodyClick($event): void {
     if ($event.target.attributes.id !== undefined && $event.target.attributes.id.value === 'local_body') this.currentActive = null;

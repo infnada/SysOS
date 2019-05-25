@@ -4,9 +4,11 @@ import {MatMenuTrigger} from "@angular/material";
 import Selectable from 'selectable.js';
 
 import {FileSystemService} from "../../services/file-system.service";
+import {FileSystemUiService} from "../../services/file-system-ui.service";
 
 import {File} from "../../interfaces/file";
 import {ContextMenuItem} from "../../interfaces/context-menu-item";
+import {Application} from "../../interfaces/application";
 
 @Component({
   selector: 'app-file',
@@ -16,6 +18,7 @@ import {ContextMenuItem} from "../../interfaces/context-menu-item";
 export class FileComponent implements OnInit, AfterViewInit {
   @ViewChild(MatMenuTrigger) contextMenuFile: MatMenuTrigger;
   @ViewChild('selectableFileElement') selectableFileElement: ElementRef;
+  @Input() application: Application;
   @Input() file: File;
   @Input() isCurrentActive: boolean;
   @Input() currentPath: string;
@@ -92,7 +95,8 @@ export class FileComponent implements OnInit, AfterViewInit {
     }
   ];
 
-  constructor(private FileSystemService: FileSystemService) {
+  constructor(private FileSystemService: FileSystemService,
+              private FileSystemUiService: FileSystemUiService) {
   }
 
   ngOnInit() {
@@ -108,23 +112,23 @@ export class FileComponent implements OnInit, AfterViewInit {
   };
 
   UIrenameFile(file: File) {
-    this.FileSystemService.UIrenameFile(this.currentPath, file, this.selector);
+    this.FileSystemUiService.UIrenameFile(this.currentPath, file, this.selector);
   };
 
   UIdeleteSelected(file: File) {
-    this.FileSystemService.UIdeleteSelected(this.currentPath, file, this.selector);
+    this.FileSystemUiService.UIdeleteSelected(this.currentPath, file, this.selector);
   };
 
   UIcopyFile(file: File) {
-    this.FileSystemService.UIcopyFile(this.currentPath, file);
+    this.FileSystemUiService.UIcopyFile(this.currentPath, file);
   }
 
   UIcutFile(file: File) {
-    this.FileSystemService.UIcutFile(this.currentPath, file);
+    this.FileSystemUiService.UIcutFile(this.currentPath, file);
   }
 
   UIdoWithFile(file: File) {
-    this.FileSystemService.UIdoWithFile(this.currentPath, file);
+    this.FileSystemUiService.UIdoWithFile(this.application.id, this.currentPath, file);
   }
 
 }

@@ -1,4 +1,4 @@
-<a *ngIf="!viewAsList" data-drag="true" jqyoui-draggable="{onStart: 'onStartItem'}" data-jqyoui-options="{appendTo: '.desktop', helper: 'clone'}" title="{{file.filename}}" #selectableFileElement [ngClass]="{'active': isCurrentActive}" (dblclick)="UIdoWithFile(file)" (contextmenu)="onFileContextMenu($event)">
+<a *ngIf="!viewAsList" #selectableFileElement title="{{file.filename}}" [ngClass]="{'active': isCurrentActive}" (dblclick)="UIdoWithFile(file)" (contextmenu)="onFileContextMenu($event)">
   <i class="fa fa-{{getFileType(file.longname)}}"></i>
   <span>{{file.filename}}</span>
 
@@ -9,7 +9,7 @@
   </div>
 </a>
 
-<tr *ngIf="viewAsList" title="{{file.filename}}" #selectableFileElement [ngClass]="{'active': isCurrentActive}" (dblclick)="UIdoWithFile(file)" (contextmenu)="onFileContextMenu($event)">
+<tr *ngIf="viewAsList" #selectableFileElement title="{{file.filename}}" [ngClass]="{'active': isCurrentActive}" (dblclick)="UIdoWithFile(file)" (contextmenu)="onFileContextMenu($event)">
   <td><i class="fa fa-{{getFileType(file.longname)}}"></i> {{file.filename}}</td>
   <td>{{file.attrs.size}}</td>
   <td>{{getFileType(file.longname)}}</td>

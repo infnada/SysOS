@@ -7,6 +7,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class NotepadBodyComponent implements OnInit {
 
+  editorOptions = {
+    automaticLayout: true,
+    theme: 'vs-dark',
+    language: 'typescript'
+  };
+  code: string = 'function x() {\nconsole.log("Hello world!");\n}';
+
   constructor() { }
 
   ngOnInit() {

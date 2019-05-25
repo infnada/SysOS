@@ -12,19 +12,24 @@ export class FileExplorerService {
 
   private _currentPath: BehaviorSubject<string>;
   private _currentData: BehaviorSubject<File[]>;
+  private _viewAsList: BehaviorSubject<boolean>;
   private dataStore: {  // This is where we will store our data in memory
     currentPath: string,
-    currentData: File[]
+    currentData: File[],
+    viewAsList: boolean
   };
   currentPath: Observable<any>;
   currentData: Observable<any>;
+  viewAsList: Observable<any>;
 
   constructor(private FileSystemService: FileSystemService) {
-    this.dataStore = {currentPath: '/', currentData: []};
+    this.dataStore = {currentPath: '/', currentData: [], viewAsList: false};
     this._currentPath = <BehaviorSubject<string>>new BehaviorSubject('/');
     this._currentData = <BehaviorSubject<File[]>>new BehaviorSubject([]);
+    this._viewAsList = <BehaviorSubject<boolean>>new BehaviorSubject(false);
     this.currentPath = this._currentPath.asObservable();
     this.currentData = this._currentData.asObservable();
+    this.viewAsList = this._viewAsList.asObservable();
   }
 
   reloadPath(path?: string): void {
@@ -48,6 +53,13 @@ export class FileExplorerService {
       });
   }
 
+  toggleView(): void {
+    this.dataStore.viewAsList = !this.dataStore.viewAsList;
+
+    // broadcast data to subscribers
+    this._viewAsList.next(Object.assign({}, this.dataStore).viewAsList);
+  }
+
   private subjectGoPathBack = new Subject<any>();
 
   sendGoPathBack(): void {
@@ -56,16 +68,6 @@ export class FileExplorerService {
 
   getObserverGoPathBack(): Observable<any> {
     return this.subjectGoPathBack.asObservable();
-  }
-
-  private subjectGoToPath = new Subject<any>();
-
-  sendGoToPath(path: string): void {
-    this.subjectGoToPath.next(path);
-  }
-
-  getObserverGoToPath(): Observable<any> {
-    return this.subjectGoToPath.asObservable();
   }
 
 }

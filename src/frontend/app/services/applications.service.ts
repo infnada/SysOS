@@ -27,6 +27,8 @@ export class ApplicationsService {
   openedApplications: Observable<any>;
   taskbar__item_open: Observable<any>;
 
+  currentHoverApplication: string = null;
+
   constructor(private loader: SystemJsNgModuleLoader,
               private injector: Injector,
               private http: HttpClient,
@@ -204,10 +206,8 @@ export class ApplicationsService {
   /**
    * @Description
    * Opens a new application
-   *
-   * @param id {String} Application name
    */
-  openApplication(id: string): void {
+  openApplication(id: string, init_data?: any): void {
     if (!id) throw new Error('id_not_found');
 
     let app;
@@ -218,6 +218,8 @@ export class ApplicationsService {
     if (typeof id === 'string') {
       app = this.getApplicationById(id);
     }
+
+    app.init_data = init_data;
 
     // Check if application is already opened
     if (this.isApplicationOpened(app.id)) return;
@@ -245,6 +247,16 @@ export class ApplicationsService {
 
     return this.dataStore.taskbar__item_open === id;
   };
+
+  /**
+   * @Description
+   * Set the current application where the mouse is in
+   *
+   * @param app {String} Application ID
+   */
+  setCurrentHoverApplication(app: string): void {
+    this.currentHoverApplication = app;
+  }
 
   /**
    * @Description

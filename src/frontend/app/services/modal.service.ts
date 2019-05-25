@@ -1,6 +1,16 @@
-import {Compiler, Injectable, Injector, NgModuleFactory, SystemJsNgModuleLoader, ModuleWithComponentFactories, ViewContainerRef} from '@angular/core';
+import {
+  Compiler,
+  Injectable,
+  Injector,
+  NgModuleFactory,
+  SystemJsNgModuleLoader,
+  ModuleWithComponentFactories,
+  ViewContainerRef
+} from '@angular/core';
 
-import { NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
+import {NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
+
+import {FileSystemService} from "./file-system.service";
 
 import {Modal} from "../interfaces/modal";
 
@@ -15,7 +25,8 @@ export class ModalService {
 
   constructor(private loader: SystemJsNgModuleLoader,
               private injector: Injector,
-              private compiler: Compiler) {
+              private compiler: Compiler,
+              private FileSystemService: FileSystemService) {
   }
 
 
@@ -23,15 +34,47 @@ export class ModalService {
     this.mainContainerRef = view;
   }
 
+  /**
+   * @description
+   * Returns all scripts to load as SysOS applications
+   */
+  getInstalledModals() {
+    this.FileSystemService.getFileSystemPath('/bin/modals').subscribe(
+      (res: { filename: string }[]) => {
+        console.debug('Modal Factory -> Get Installed Modals successfully');
+
+        res = [
+          {
+            filename: "input-module.js"
+          },
+          {
+            filename: "plain-module.js"
+          },
+          {
+            filename: "question-module.js"
+          }
+        ];
+
+        res.forEach((value) => {
+          this.loadModal(value)
+        });
+
+      },
+      error => {
+        console.error('Modal Factory -> Error while getting installed modals -> ', error);
+        console.error(error);
+      });
+  };
+
   loadModal(modal: { filename: string }) {
     let module = modal.filename.replace('-module.js', '');
-    let moduleCamel = modal.filename.toLowerCase().replace('.js', '').replace(/-(.)/g, function(match, group1) {
+    let moduleCamel = modal.filename.toLowerCase().replace('.js', '').replace(/-(.)/g, function (match, group1) {
       return group1.toUpperCase();
     });
 
     moduleCamel = moduleCamel.charAt(0).toUpperCase() + moduleCamel.slice(1);
 
-    let modulePath = "src/frontend/app/modals/" + module +"/" + module +".module#" + moduleCamel;
+    let modulePath = "src/frontend/app/modals/" + module + "/" + module + ".module#" + moduleCamel;
 
     this.loader.load(modulePath)  // load the module and its components
       .then((modFac: NgModuleFactory<any>) => {

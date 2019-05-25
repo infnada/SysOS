@@ -259,7 +259,8 @@ export class ApplicationComponent implements OnInit, AfterViewInit {
     }
   }
 
-  setCurrentFileDrop(): void {
+  setCurrentHoverApplication(app: string) {
+    this.ApplicationsService.setCurrentHoverApplication(app);
   }
 
   appCss(): { height: string, width: string, top: string, left: string } {

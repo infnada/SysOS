@@ -1,6 +1,6 @@
 import {Component, Input, Output} from '@angular/core';
 import {NgbModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
-import {QuestionComponent} from "../../question/question.component";
+import {QuestionComponent} from "../question.component";
 
 @Component({
   template: ''

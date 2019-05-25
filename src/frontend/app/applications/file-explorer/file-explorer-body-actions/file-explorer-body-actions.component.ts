@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 
-import {FileSystemService} from "../../../services/file-system.service";
+import {FileSystemUiService} from "../../../services/file-system-ui.service";
 import {FileExplorerService} from "../file-explorer.service";
 
 import {Application} from "../../../interfaces/application";
@@ -20,41 +20,42 @@ export class FileExplorerBodyActionsComponent implements OnInit {
 
   currentPath: string;
   currentData: Array<File>;
+  viewAsList: boolean;
 
   search: string = null;
-  viewAsList: boolean = false;
   lastPath: Array<string> = [];
   nextPath: Array<string> = [];
 
-  constructor(private FileSystemService: FileSystemService,
+  constructor(private FileSystemUiService: FileSystemUiService,
               private FileExplorerService: FileExplorerService) {
 
     this.goPathBackSubscription = this.FileExplorerService.getObserverGoPathBack().subscribe(() => {
       this.goPathBack();
     });
 
-    this.goToPathSubscription = this.FileExplorerService.getObserverGoToPath().subscribe((path) => {
-      this.goToPath(path);
+    this.goToPathSubscription = this.FileSystemUiService.getObserverGoToPath().subscribe((data) => {
+      if (data.application === 'file-explorer') this.goToPath(data.path);
     });
   }
 
   ngOnInit(): void {
     this.FileExplorerService.currentPath.subscribe(path => this.currentPath = path);
     this.FileExplorerService.currentData.subscribe(data => this.currentData = data);
+    this.FileExplorerService.viewAsList.subscribe(data => this.viewAsList = data);
   }
 
   /**
    * Creates a new folder
    */
   UIcreateFolder(): void {
-    this.FileSystemService.UIcreateFolder(this.currentPath, '.window--file-explorer .window__main');
+    this.FileSystemUiService.UIcreateFolder(this.currentPath, '.window--file-explorer .window__main');
   };
 
   /**
    * Sets view mode (icons, detailed...)
    */
   toggleView(): void {
-    this.viewAsList = !this.viewAsList;
+    this.FileExplorerService.toggleView();
   };
 
   /**

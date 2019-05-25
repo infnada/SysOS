@@ -13,6 +13,7 @@ import {OrderModule} from 'ngx-order-pipe';
 import {FilterPipeModule} from 'ngx-filter-pipe';
 import {ResizableModule} from 'angular-resizable-element';
 import {NgbModalModule} from '@ng-bootstrap/ng-bootstrap';
+import {MonacoEditorModule} from 'ngx-monaco-editor';
 
 import {AppComponent} from './app.component';
 import {LoginComponent} from './components/login/login.component';
@@ -52,6 +53,7 @@ import {FileModule} from './shared-modules/file/file.module';
     FilterPipeModule,
     ResizableModule,
     NgbModalModule,
+    MonacoEditorModule.forRoot(),
     // Shared module import
     FileModule
   ],

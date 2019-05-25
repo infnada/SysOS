@@ -2,8 +2,10 @@ import {NgModule, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {MatMenuModule, MatDividerModule} from '@angular/material';
+import {DragDropModule} from '@angular/cdk/drag-drop';
 
 import {FilterPipeModule} from 'ngx-filter-pipe';
+import {ngfModule} from "angular-file"
 
 import {ApplicationsService} from "../../services/applications.service";
 
@@ -25,6 +27,8 @@ import {FileExplorerBodyActionsComponent} from './file-explorer-body-actions/fil
     FilterPipeModule,
     MatMenuModule,
     MatDividerModule,
+    DragDropModule,
+    ngfModule,
     // Shared module import
     FileModule
   ]

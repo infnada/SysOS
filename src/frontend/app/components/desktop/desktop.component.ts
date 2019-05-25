@@ -6,6 +6,7 @@ import {Subscription} from 'rxjs';
 import Selectable from 'selectable.js';
 
 import {FileSystemService} from "../../services/file-system.service";
+import {FileSystemUiService} from "../../services/file-system-ui.service";
 import {ApplicationsService} from "../../services/applications.service"
 
 import {ContextMenuItem} from "../../interfaces/context-menu-item";
@@ -30,7 +31,6 @@ export class DesktopComponent implements OnInit, AfterViewInit {
 
   copyFrom: string;
   cutFrom: string;
-  currentFileDrop: string;
 
   pasteTo: string = null;
 
@@ -94,9 +94,10 @@ export class DesktopComponent implements OnInit, AfterViewInit {
 
   constructor(private toastr: ToastrService,
               private FileSystemService: FileSystemService,
+              private FileSystemUiService: FileSystemUiService,
               private ApplicationsService: ApplicationsService) {
 
-    this.reloadPathSubscription = this.FileSystemService.getRefreshPath().subscribe(path => {
+    this.reloadPathSubscription = this.FileSystemUiService.getRefreshPath().subscribe(path => {
       if (path === '/root/Desktop/') this.reloadPath();
     });
   }
@@ -105,9 +106,8 @@ export class DesktopComponent implements OnInit, AfterViewInit {
     this.ApplicationsService.openedApplications.subscribe(applications => this.openedApplications = applications);
     this.ApplicationsService.taskbar__item_open.subscribe(application => this.taskbar__item_open = application);
 
-    this.FileSystemService.copyFrom.subscribe(path => this.copyFrom = path);
-    this.FileSystemService.cutFrom.subscribe(path => this.cutFrom = path);
-    this.FileSystemService.currentFileDrop.subscribe(path => this.currentFileDrop = path);
+    this.FileSystemUiService.copyFrom.subscribe(path => this.copyFrom = path);
+    this.FileSystemUiService.cutFrom.subscribe(path => this.cutFrom = path);
 
     this.reloadPath();
   }
@@ -149,82 +149,41 @@ export class DesktopComponent implements OnInit, AfterViewInit {
 
   /**
    * On file dragstart
-   *
-   * @param evt
-   * @param ui
    */
-  onStartItem(evt, ui): void {
-    ui.helper.prevObject.scope().file.dragFrom = '/root/Desktop/';
+  onDragStart(): void {
+    this.FileSystemUiService.setCurrentFileDrag('/root/Desktop/');
+  }
+
+  UIonDropItem($event): void {
+    this.FileSystemUiService.UIonDropItem($event, this.desktopFiles.currentPath);
   };
-
-  /**
-   * On file dropped to desktop
-   *
-   * @param evt
-   * @param ui
-   * @returns {*}
-   */
-
-  /*onDropItem(evt, ui) {
-    if ($rootScope.currentFileDrop !== 'desktop') return;
-
-    // Fix drop from /root/Desktop
-    if (angular.isUndefined(ui.draggable.scope().$parent.file)) ui.draggable.scope().$parent.file = ui.draggable.scope().file;
-
-    // Do not move files to same directory
-    if (ui.draggable.scope().$parent.file.dragFrom === '/root/Desktop/') return;
-
-    var object = $filter('filter')(this.desktopFiles.currentData, {
-      filename: ui.draggable.scope().$parent.file.filename
-    });
-
-    if (object.length !== 0) {
-      return modalFactory.openLittleModal('Move file', 'A file with the same name already exists. Can\'t move it.', '#desktop_body', 'plain');
-    }
-
-    this.cutFrom = ui.draggable.scope().$parent.file.dragFrom + ui.draggable.scope().$parent.file.filename;
-    this.pasteTo = '/root/Desktop/';
-
-    return this.FileSystemService.moveFile(this.cutFrom, this.pasteTo).subscribe(
-      (res: {}) => {
-        this.cutFrom = null;
-        this.pasteTo = null;
-
-        $rootScope.$broadcast('refreshPath', '/root/Desktop/');
-        $rootScope.$broadcast('refreshPath', ui.draggable.scope().$parent.file.dragFrom);
-      },
-      error => {
-        console.error('Desktop -> Error while moving file -> ', error);
-        console.error(error);
-      });
-  };*/
 
   getFileType(longname: string): string {
     return this.FileSystemService.getFileType(longname);
   };
 
   UIdownloadFromURL(): void {
-    this.FileSystemService.UIdownloadFromURL(this.desktopFiles.currentPath, '.desktop .desktop__body');
+    this.FileSystemUiService.UIdownloadFromURL(this.desktopFiles.currentPath, '.desktop .desktop__body');
   };
 
   UIcreateFolder(): void {
-    this.FileSystemService.UIcreateFolder(this.desktopFiles.currentPath, '.desktop .desktop__body');
+    this.FileSystemUiService.UIcreateFolder(this.desktopFiles.currentPath, '.desktop .desktop__body');
   };
 
   UIrenameFile(file: File): void {
-    this.FileSystemService.UIrenameFile(this.desktopFiles.currentPath, file, '.desktop .desktop__body');
+    this.FileSystemUiService.UIrenameFile(this.desktopFiles.currentPath, file, '.desktop .desktop__body');
   };
 
   UIdeleteSelected(file: File): void {
-    this.FileSystemService.UIdeleteSelected(this.desktopFiles.currentPath, file, '.desktop .desktop__body');
+    this.FileSystemUiService.UIdeleteSelected(this.desktopFiles.currentPath, file, '.desktop .desktop__body');
   };
 
   UIpasteFile(): void {
-    this.FileSystemService.UIpasteFile(this.desktopFiles.currentPath);
+    this.FileSystemUiService.UIpasteFile(this.desktopFiles.currentPath);
   }
 
   UIdoWithFile(file: File): void {
-    this.FileSystemService.UIdoWithFile(this.desktopFiles.currentPath, file);
+    this.FileSystemUiService.UIdoWithFile('file-explorer', this.desktopFiles.currentPath, file);
   }
 
   /**
@@ -260,10 +219,9 @@ export class DesktopComponent implements OnInit, AfterViewInit {
     }, 100);*/
   };
 
-  setCurrentFileDrop(app: string) {
-    this.FileSystemService.setCurrentFileDrop(app);
+  setCurrentHoverApplication(): void {
+    this.ApplicationsService.setCurrentHoverApplication('desktop');
   }
-
 
   /**
    * Keypress on item focus

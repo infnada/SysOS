@@ -24,7 +24,8 @@
             "tsConfig": "src/frontend/tsconfig.app.json",
             "assets": [
               "src/frontend/favicon.ico",
-              "src/frontend/assets"
+              "src/frontend/assets",
+              { "glob": "**/*", "input": "node_modules/ngx-monaco-editor/assets/monaco", "output": "./assets/monaco/" }
             ],
             "styles": [
               "src/frontend/styles.scss"
