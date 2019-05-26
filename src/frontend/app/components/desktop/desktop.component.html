@@ -1,6 +1,15 @@
 <div class="desktop" cdkDropListGroup>
   <div class="col-xl-12 desktop__body">
-    <div id="desktop_body" class="folders" #selectableContainer cdkDropList (cdkDropListDropped)="UIonDropItem($event)" [cdkDropListData]="'/root/Desktop'" (mouseover)="setCurrentHoverApplication();" (click)="handleDesktopClick($event)" (keydown)="handleItemKeyPress($event)" (contextmenu)="onDesktopContextMenu($event)">
+    <div id="desktop_body" class="folders"
+         #selectableContainer
+         cdkDropList
+         (cdkDropListDropped)="UIonDropItem($event)"
+         [cdkDropListData]="'/root/Desktop'"
+         (mouseover)="setCurrentHoverApplication();"
+         (click)="handleDesktopClick($event)"
+         (window:keydown)="handleItemKeyPress($event)"
+         (contextmenu)="onDesktopContextMenu($event)"
+    >
 
       <app-file *ngFor="let file of desktopFiles.currentData; index as $index" cdkDrag cdkDragBoundary=".desktop" [cdkDragData]="file" (cdkDragStarted)="onDragStart()" [application]="{id: 'file-explorer'}" [selectable]=selectable [file]=file [isCurrentActive]="$index === currentActive" [currentPath]="desktopFiles.currentPath" [selector]="'.desktop .desktop__body'" (click)="setCurrentActive($index)"></app-file>
 

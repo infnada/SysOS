@@ -22,6 +22,7 @@ export class MainService {
     });
 
     window.addEventListener( "contextmenu", function(e) {
+      console.log(e);
       e.preventDefault();
     });
 

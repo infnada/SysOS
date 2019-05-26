@@ -6,7 +6,7 @@ import Selectable from 'selectable.js';
 import {FileSystemService} from "../../services/file-system.service";
 import {FileSystemUiService} from "../../services/file-system-ui.service";
 
-import {File} from "../../interfaces/file";
+import {SysOSFile} from "../../interfaces/file";
 import {ContextMenuItem} from "../../interfaces/context-menu-item";
 import {Application} from "../../interfaces/application";
 
@@ -19,7 +19,7 @@ export class FileComponent implements OnInit, AfterViewInit {
   @ViewChild(MatMenuTrigger) contextMenuFile: MatMenuTrigger;
   @ViewChild('selectableFileElement') selectableFileElement: ElementRef;
   @Input() application: Application;
-  @Input() file: File;
+  @Input() file: SysOSFile;
   @Input() isCurrentActive: boolean;
   @Input() currentPath: string;
   @Input() viewAsList: boolean;
@@ -41,19 +41,19 @@ export class FileComponent implements OnInit, AfterViewInit {
     return false;
   }
 
-  contextToText(item: ContextMenuItem, file?: File): string {
+  contextToText(item: ContextMenuItem, file?: SysOSFile): string {
     if (typeof item.text === 'string') return item.text;
     if (typeof item.text === 'function') return item.text(file);
   }
 
   fileContextMenuItems: ContextMenuItem[] = [
     {
-      id: 1, text: '<i class="fa fa-download"></i> Download to local', action: (file: File) => {
+      id: 1, text: '<i class="fa fa-download"></i> Download to local', action: (file: SysOSFile) => {
         // TODO
       }
     },
     {
-      id: 2, text: (file: File) => {
+      id: 2, text: (file: SysOSFile) => {
         let filetype = this.getFileType(file.longname);
 
         if (filetype === 'folder') {
@@ -61,35 +61,35 @@ export class FileComponent implements OnInit, AfterViewInit {
         } else {
           return '<i class="fa fa-edit"></i> Open with Notepad';
         }
-      }, action: (file: File) => {
+      }, action: (file: SysOSFile) => {
         this.UIdoWithFile(file);
       }
     },
     {id: 3, text: 'divider'},
     {
-      id: 4, text: '<i class="fa fa-files-o"></i> Copy', action: (file: File) => {
+      id: 4, text: '<i class="fa fa-files-o"></i> Copy', action: (file: SysOSFile) => {
         this.UIcopyFile(file);
       }
     },
     {
-      id: 6, text: '<i class="fa fa-scissors"></i> Cut', action: (file: File) => {
+      id: 6, text: '<i class="fa fa-scissors"></i> Cut', action: (file: SysOSFile) => {
         this.UIcutFile(file);
       }
     },
     {id: 7, text: 'divider'},
     {
-      id: 8, text: '<i class="fa fa-font"></i> Rename', action: (file: File) => {
+      id: 8, text: '<i class="fa fa-font"></i> Rename', action: (file: SysOSFile) => {
         return this.UIrenameFile(file);
       }
     },
     {
-      id: 9, text: '<i class="fa fa-remove"></i> Delete', action: (file: File) => {
+      id: 9, text: '<i class="fa fa-remove"></i> Delete', action: (file: SysOSFile) => {
         return this.UIdeleteSelected(file);
       }
     },
     {id: 10, text: 'divider'},
     {
-      id: 11, text: '<i class="fa fa-lock"></i> Permissions', action: (file: File) => {
+      id: 11, text: '<i class="fa fa-lock"></i> Permissions', action: (file: SysOSFile) => {
         //TODO
       }
     }
@@ -111,23 +111,23 @@ export class FileComponent implements OnInit, AfterViewInit {
     return this.FileSystemService.getFileType(longname);
   };
 
-  UIrenameFile(file: File) {
+  UIrenameFile(file: SysOSFile) {
     this.FileSystemUiService.UIrenameFile(this.currentPath, file, this.selector);
   };
 
-  UIdeleteSelected(file: File) {
+  UIdeleteSelected(file: SysOSFile) {
     this.FileSystemUiService.UIdeleteSelected(this.currentPath, file, this.selector);
   };
 
-  UIcopyFile(file: File) {
+  UIcopyFile(file: SysOSFile) {
     this.FileSystemUiService.UIcopyFile(this.currentPath, file);
   }
 
-  UIcutFile(file: File) {
+  UIcutFile(file: SysOSFile) {
     this.FileSystemUiService.UIcutFile(this.currentPath, file);
   }
 
-  UIdoWithFile(file: File) {
+  UIdoWithFile(file: SysOSFile) {
     this.FileSystemUiService.UIdoWithFile(this.application.id, this.currentPath, file);
   }
 

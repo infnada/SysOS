@@ -4,7 +4,7 @@ import {FileSystemUiService} from "../../../services/file-system-ui.service";
 import {FileExplorerService} from "../file-explorer.service";
 
 import {Application} from "../../../interfaces/application";
-import {File} from "../../../interfaces/file";
+import {SysOSFile} from "../../../interfaces/file";
 import {Subscription} from "rxjs";
 
 @Component({
@@ -19,12 +19,12 @@ export class FileExplorerBodyActionsComponent implements OnInit {
   goToPathSubscription: Subscription;
 
   currentPath: string;
-  currentData: Array<File>;
+  currentData: SysOSFile[];
   viewAsList: boolean;
+  search: {filename: string} = null;
 
-  search: string = null;
-  lastPath: Array<string> = [];
-  nextPath: Array<string> = [];
+  lastPath: string[] = [];
+  nextPath: string[] = [];
 
   constructor(private FileSystemUiService: FileSystemUiService,
               private FileExplorerService: FileExplorerService) {
@@ -42,6 +42,7 @@ export class FileExplorerBodyActionsComponent implements OnInit {
     this.FileExplorerService.currentPath.subscribe(path => this.currentPath = path);
     this.FileExplorerService.currentData.subscribe(data => this.currentData = data);
     this.FileExplorerService.viewAsList.subscribe(data => this.viewAsList = data);
+    this.FileExplorerService.search.subscribe(data => this.search = data);
   }
 
   /**
@@ -63,13 +64,14 @@ export class FileExplorerBodyActionsComponent implements OnInit {
    */
   reloadPath(newPath?: string): void {
     this.FileExplorerService.reloadPath(newPath);
-    this.search = undefined;
+    this.searchChange(null);
   };
 
   /**
    * Checks the last visited path and go to it
    */
   goPathBack(): void {
+    console.log();
     if (this.lastPath.length === 0) return;
     let newPath = this.lastPath.pop();
 
@@ -98,12 +100,17 @@ export class FileExplorerBodyActionsComponent implements OnInit {
   goToPath(path: string|number): void {
     let newPath = (typeof path === 'string' ? path : this.currentPath.split('/').splice(0, path + 1).join('/') + '/');
 
-    // Push the actual path to lastPath array (used by goPathBack())
-    this.lastPath.push(this.currentPath);
+    // Push the actual path to lastPath array (used by goPathBack()) when currentPath exists. This happens when the application is opened for 1st time.
+    if (typeof this.currentPath !== 'undefined') this.lastPath.push(this.currentPath);
+
     // Reset nextPath
     this.nextPath = [];
 
     this.reloadPath(newPath);
+  }
+
+  searchChange(event: string): void {
+    this.FileExplorerService.setSearch(event);
   }
 
 }

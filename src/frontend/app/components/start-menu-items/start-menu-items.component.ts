@@ -20,8 +20,6 @@ export class StartMenuItemsComponent implements OnInit {
   contextMenuPosition = {x: '0px', y: '0px'};
 
   onAppContextMenu(event: MouseEvent): void {
-    event.preventDefault();
-    event.stopPropagation();
     this.contextMenuPosition.x = event.clientX + 'px';
     this.contextMenuPosition.y = event.clientY + 'px';
     this.contextMenuApp.openMenu();

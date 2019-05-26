@@ -31,7 +31,7 @@
 
   </div>
   <form class="search">
-    <input type="text" class="search__input" placeholder="Search files" [(ngModel)]="search" [ngModelOptions]="{standalone: true}">
+    <input type="text" class="search__input" placeholder="Search files" [(ngModel)]="search.filename" [ngModelOptions]="{standalone: true}" (ngModelChange)="searchChange($event)">
     <button class="search__btn"></button>
   </form>
 </div>

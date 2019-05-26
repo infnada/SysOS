@@ -15,10 +15,15 @@ export class FileSystemService {
     return this.http.post('/api/folder/get', {
       path: path
     });
-  }
+}
 
-  uploadFile(data: FormData): Observable<any> {
-    const req = new HttpRequest<FormData>('POST', '/api/file/upload', data, {
+  uploadFile(path: string, file: File): Observable<any> {
+
+    let formData = new FormData();
+    formData.append('path', path + file.name);
+    formData.append('file', file);
+
+    const req = new HttpRequest<FormData>('POST', '/api/file/upload', formData, {
       reportProgress: true//, responseType: 'text'
     });
 

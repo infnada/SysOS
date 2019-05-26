@@ -156,19 +156,13 @@
 .window__menu {
   color: white !important;
 }
-.window--explorer .window__icon, .window--explorer
-.window__icon:hover, .window--explorer
-.window__menu {
+.window--explorer .window__icon, .window--explorer .window__icon:hover, .window--explorer .window__menu {
   background-color: #0097A7;
 }
-.window--mail .window__icon, .window--mail
-.window__icon:hover, .window--mail
-.window__menu {
+.window--mail .window__icon, .window--mail .window__icon:hover, .window--mail .window__menu {
   background-color: #5C6BC0;
 }
-.window--notepad .window__icon, .window--notepad
-.window__icon:hover, .window--notepad
-.window__menu {
+.window--notepad .window__icon, .window--notepad .window__icon:hover, .window--notepad .window__menu {
   background-color: #EC407A;
 }
 
@@ -177,16 +171,13 @@
   color: white !important;
   background-color: #5C6BC0;
 }
-.window--explorer .window__menutoggle--open, .window--explorer
-.window__menutoggle--open:hover {
+.window--explorer .window__menutoggle--open, .window--explorer .window__menutoggle--open:hover {
   background-color: #0097A7;
 }
-.window--mail .window__menutoggle--open, .window--mail
-.window__menutoggle--open:hover {
+.window--mail .window__menutoggle--open, .window--mail .window__menutoggle--open:hover {
   background-color: #5C6BC0;
 }
-.window--notepad .window__menutoggle--open, .window--notepad
-.window__menutoggle--open:hover {
+.window--notepad .window__menutoggle--open, .window--notepad .window__menutoggle--open:hover {
   background-color: #EC407A;
 }
 
@@ -217,8 +208,7 @@
   opacity: 0;
   position: relative;
   display: block;
-  padding: 10px;
-  padding-left: 45px;
+  padding: 10px 10px 10px 45px;
   color: white;
   font-weight: 200;
   text-decoration: none;
@@ -294,7 +284,7 @@
 .window__status {
   position: absolute;
   color: #7bb6ef;
-  bottom: 0px;
+  bottom: 0;
   align-items: center;
   width: 100%;
   height: 32px;
@@ -429,7 +419,6 @@
   top: 0;
   height: 32px;
   width: 32px;
-  display: block;
   line-height: 32px;
   text-align: center;
 }

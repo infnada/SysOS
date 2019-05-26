@@ -12,7 +12,7 @@ import {ApplicationsService} from "../../../services/applications.service";
 import {FileExplorerService} from "../file-explorer.service";
 
 import {Application} from "../../../interfaces/application";
-import {File} from "../../../interfaces/file";
+import {SysOSFile} from "../../../interfaces/file";
 import {ContextMenuItem} from "../../../interfaces/context-menu-item";
 
 
@@ -35,21 +35,18 @@ export class FileExplorerBodyComponent implements OnInit {
   copyFrom: string;
   cutFrom: string;
   currentPath: string;
-  currentData: Array<File>;
+  currentData: Array<SysOSFile>;
   viewAsList: boolean;
+  search: {filename: string} = null;
 
-  search: string;
   currentActive: number = 0;
 
-  files:File[] = [];
-  validComboDrag: any;
-  sendableFormData: FormData;
+  files: File[] = [];
   progress: number;
-  httpEmitter: Subscription;
+  httpEmitter: Subscription[] = [];
   httpEvent: HttpEvent<{}>;
 
   onBodyContextMenu(event: MouseEvent): void {
-    event.preventDefault();
     this.contextMenuPosition.x = event.clientX + 'px';
     this.contextMenuPosition.y = event.clientY + 'px';
     this.contextMenuBody.openMenu();
@@ -60,7 +57,7 @@ export class FileExplorerBodyComponent implements OnInit {
     return false;
   }
 
-  contextToText(item: ContextMenuItem, file?: File): string {
+  contextToText(item: ContextMenuItem, file?: SysOSFile): string {
     if (typeof item.text === 'string') return item.text;
     if (typeof item.text === 'function') return item.text(file);
   }
@@ -118,6 +115,7 @@ export class FileExplorerBodyComponent implements OnInit {
       this.resetActive();
     });
     this.FileExplorerService.viewAsList.subscribe(data => this.viewAsList = data);
+    this.FileExplorerService.search.subscribe(data => this.search = data);
 
     this.selectable = new Selectable({
       appendTo: this.selectableContainer.nativeElement,
@@ -165,11 +163,11 @@ export class FileExplorerBodyComponent implements OnInit {
     this.FileSystemUiService.UIcreateFolder(this.currentPath, '.window--file-explorer .window__main');
   };
 
-  UIrenameFile(file: File): void {
+  UIrenameFile(file: SysOSFile): void {
     this.FileSystemUiService.UIrenameFile(this.currentPath, file, '.window--file-explorer .window__main');
   };
 
-  UIdeleteSelected(file: File): void {
+  UIdeleteSelected(file: SysOSFile): void {
     this.FileSystemUiService.UIdeleteSelected(this.currentPath, file, '.window--file-explorer .window__main');
   };
 
@@ -177,26 +175,28 @@ export class FileExplorerBodyComponent implements OnInit {
     this.FileSystemUiService.UIpasteFile(this.currentPath);
   }
 
-  UIdoWithFile(file: File): void {
+  UIdoWithFile(file: SysOSFile): void {
     this.FileSystemUiService.UIdoWithFile('file-explorer', this.currentPath, file);
   }
 
-  eventHandler(e) {
-    console.log(e);
-  }
+  uploadFiles(files: File[]): void {
 
-  uploadFiles(): void {
-    this.httpEmitter = this.FileSystemService.uploadFile(this.sendableFormData).subscribe(
-      event=>{
-        this.httpEvent = event;
+    files.forEach((file: File, i: number) => {
+      this.httpEmitter[i] = this.FileSystemService.uploadFile(this.currentPath, file).subscribe(
+        event => {
+          this.httpEvent = event;
 
-        if (event instanceof HttpResponse) {
-          delete this.httpEmitter;
-          console.log('request done', event)
-        }
-      },
-      error=>console.log('Error Uploading',error)
-    )
+          if (event instanceof HttpResponse) {
+            delete this.httpEmitter[i];
+            console.log('request done', event)
+          }
+        },
+        error=>console.log('Error Uploading',error)
+      );
+
+      files.splice(i, 1);
+    });
+
 
   }
 
@@ -239,25 +239,23 @@ export class FileExplorerBodyComponent implements OnInit {
   /**
    * Keypress on item focus
    */
-  /**
-   * Keypress on item focus
-   */
-  handleItemKeyPress(keyEvent): void {
+  handleItemKeyPress(keyEvent: KeyboardEvent): void {
+    console.log(keyEvent);
     // Do nothing if some application is active
     if (this.taskbar__item_open !== 'file-explorer') return;
 
     // Do nothing if there is no active item unless its side arrows
-    if (this.currentActive === null && keyEvent.which !== 39 && keyEvent.which === 37) return;
+    if (this.currentActive === null && keyEvent.code !== "ArrowLeft" && keyEvent.code === "ArrowRight") return;
 
-    if (keyEvent.which === 46) {
+    if (keyEvent.code === "Delete") {
       let currentFile = this.currentData[this.currentActive];
 
       this.UIdeleteSelected(currentFile);
-    } else if (keyEvent.which === 113) {
+    } else if (keyEvent.code === "F2") {
       let currentFile = this.currentData[this.currentActive];
 
       this.UIrenameFile(currentFile);
-    } else if (keyEvent.which === 39) {
+    } else if (keyEvent.code === "ArrowRight") {
 
       if (this.currentActive === null) {
         this.currentActive = 0;
@@ -265,7 +263,7 @@ export class FileExplorerBodyComponent implements OnInit {
         this.setCurrentActive(this.currentActive + 1);
       }
 
-    } else if (keyEvent.which === 37) {
+    } else if (keyEvent.code === "ArrowLeft") {
 
       if (this.currentActive === null) {
         this.currentActive = 0;
@@ -273,11 +271,11 @@ export class FileExplorerBodyComponent implements OnInit {
         this.setCurrentActive(this.currentActive - 1);
       }
 
-    } else if (keyEvent.which === 13) {
+    } else if (keyEvent.code === "Enter") {
       let currentFile = this.currentData[this.currentActive];
 
       this.UIdoWithFile(currentFile);
-    } else if (keyEvent.which === 8) {
+    } else if (keyEvent.code === "Backspace") {
       this.FileExplorerService.sendGoPathBack();
     }
   };

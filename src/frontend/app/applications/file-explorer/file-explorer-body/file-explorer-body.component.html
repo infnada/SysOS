@@ -30,15 +30,7 @@
 
       <app-file-explorer-body-actions [application]="application"></app-file-explorer-body-actions>
 
-      <div id="local_body" class="folders" #selectableContainer cdkDropList (cdkDropListDropped)="UIonDropItem($event)" (click)="handleBodyClick($event)" (keydown)="handleItemKeyPress($event)" (contextmenu)="onBodyContextMenu($event)">
-
-
-
-        <ngfFormData
-          [files]      = "files"
-          postName     = "file"
-          [(FormData)] = "sendableFormData"
-        ></ngfFormData>
+      <div id="local_body" class="folders" #selectableContainer cdkDropList (cdkDropListDropped)="UIonDropItem($event)" (click)="handleBodyClick($event)" (window:keydown)="handleItemKeyPress($event)" (contextmenu)="onBodyContextMenu($event)">
 
         <ngfUploadStatus
           [(percent)] = "progress"
@@ -46,9 +38,7 @@
         ></ngfUploadStatus>
         <div class="dropzone" ngfDrop selectable="1" multiple="1"
              [(files)]="files"
-             [(validDrag)]="validComboDrag"
-             [ngClass]="{'goodDragClass':validComboDrag}"
-             (filesChange)="eventHandler($event)"
+             (filesChange)="uploadFiles($event)"
         >
           Drop files here (from local system) or click to upload. {{progress}}
         </div>

@@ -11,7 +11,7 @@ import {ApplicationsService} from "../../services/applications.service"
 
 import {ContextMenuItem} from "../../interfaces/context-menu-item";
 import {Application} from "../../interfaces/application";
-import {File} from "../../interfaces/file";
+import {SysOSFile} from "../../interfaces/file";
 
 @Component({
   selector: 'app-desktop',
@@ -37,13 +37,12 @@ export class DesktopComponent implements OnInit, AfterViewInit {
   selectable: Selectable;
 
   currentActive: number = 0;
-  desktopFiles: { currentPath: string, currentData: Array<File> } = {
+  desktopFiles: { currentPath: string, currentData: Array<SysOSFile> } = {
     currentPath: '/root/Desktop/',
     currentData: []
   };
 
   onDesktopContextMenu(event: MouseEvent): void {
-    event.preventDefault();
     this.contextMenuPosition.x = event.clientX + 'px';
     this.contextMenuPosition.y = event.clientY + 'px';
     this.contextMenuDesktop.openMenu();
@@ -54,7 +53,7 @@ export class DesktopComponent implements OnInit, AfterViewInit {
     return false;
   }
 
-  contextToText(item: ContextMenuItem, file?: File): string {
+  contextToText(item: ContextMenuItem, file?: SysOSFile): string {
     if (typeof item.text === 'string') return item.text;
     if (typeof item.text === 'function') return item.text(file);
   }
@@ -170,11 +169,11 @@ export class DesktopComponent implements OnInit, AfterViewInit {
     this.FileSystemUiService.UIcreateFolder(this.desktopFiles.currentPath, '.desktop .desktop__body');
   };
 
-  UIrenameFile(file: File): void {
+  UIrenameFile(file: SysOSFile): void {
     this.FileSystemUiService.UIrenameFile(this.desktopFiles.currentPath, file, '.desktop .desktop__body');
   };
 
-  UIdeleteSelected(file: File): void {
+  UIdeleteSelected(file: SysOSFile): void {
     this.FileSystemUiService.UIdeleteSelected(this.desktopFiles.currentPath, file, '.desktop .desktop__body');
   };
 
@@ -182,7 +181,7 @@ export class DesktopComponent implements OnInit, AfterViewInit {
     this.FileSystemUiService.UIpasteFile(this.desktopFiles.currentPath);
   }
 
-  UIdoWithFile(file: File): void {
+  UIdoWithFile(file: SysOSFile): void {
     this.FileSystemUiService.UIdoWithFile('file-explorer', this.desktopFiles.currentPath, file);
   }
 
@@ -226,22 +225,22 @@ export class DesktopComponent implements OnInit, AfterViewInit {
   /**
    * Keypress on item focus
    */
-  handleItemKeyPress(keyEvent): void {
+  handleItemKeyPress(keyEvent: KeyboardEvent): void {
     // Do nothing if some application is active
     if (this.taskbar__item_open !== null) return;
 
     // Do nothing if there is no active item unless its side arrows
-    if (this.currentActive === null && keyEvent.which !== 39 && keyEvent.which === 37) return;
+    if (this.currentActive === null && keyEvent.code !== "ArrowLeft" && keyEvent.code === "ArrowRight") return;
 
-    if (keyEvent.which === 46) {
+    if (keyEvent.code === "Delete") {
       let currentFile = this.desktopFiles.currentData[this.currentActive];
 
       this.UIdeleteSelected(currentFile);
-    } else if (keyEvent.which === 113) {
+    } else if (keyEvent.code === "F2") {
       let currentFile = this.desktopFiles.currentData[this.currentActive];
 
       this.UIrenameFile(currentFile);
-    } else if (keyEvent.which === 39) {
+    } else if (keyEvent.code === "ArrowRight") {
 
       if (this.currentActive === null) {
         this.currentActive = 0;
@@ -249,7 +248,7 @@ export class DesktopComponent implements OnInit, AfterViewInit {
         this.setCurrentActive(this.currentActive + 1);
       }
 
-    } else if (keyEvent.which === 37) {
+    } else if (keyEvent.code === "ArrowLeft") {
 
       if (this.currentActive === null) {
         this.currentActive = 0;
@@ -257,7 +256,7 @@ export class DesktopComponent implements OnInit, AfterViewInit {
         this.setCurrentActive(this.currentActive - 1);
       }
 
-    } else if (keyEvent.which === 13) {
+    } else if (keyEvent.code === "Enter") {
       let currentFile = this.desktopFiles.currentData[this.currentActive];
 
       this.UIdoWithFile(currentFile);

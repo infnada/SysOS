@@ -22,8 +22,6 @@ export class TaskBarItemsComponent implements OnInit {
   onAppContextMenu(event: MouseEvent, application: Application): void {
     if (application.id === 'start') return;
 
-    event.preventDefault();
-    event.stopPropagation();
     this.contextMenuPosition.x = event.clientX + 'px';
     this.contextMenuPosition.y = event.clientY + 'px';
     this.contextMenuApp.openMenu();
