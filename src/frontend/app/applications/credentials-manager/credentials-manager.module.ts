@@ -1,23 +1,33 @@
-import {NgModule, OnInit} from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
-import { CredentialsManagerComponent } from './credentials-manager.component';
-import { CredentialsManagerMenuComponent } from './credentials-manager-menu/credentials-manager-menu.component';
-import { CredentialsManagerStatusComponent } from './credentials-manager-status/credentials-manager-status.component';
-import { CredentialsManagerBodyComponent } from './credentials-manager-body/credentials-manager-body.component';
-import { CredentialsManagerActionsComponent } from './credentials-manager-actions/credentials-manager-actions.component';
+import {CredentialsManagerMenuComponent} from './credentials-manager-menu/credentials-manager-menu.component';
+import {CredentialsManagerStatusComponent} from './credentials-manager-status/credentials-manager-status.component';
+import {CredentialsManagerBodyComponent} from './credentials-manager-body/credentials-manager-body.component';
+import {CredentialsManagerActionsComponent} from './credentials-manager-actions/credentials-manager-actions.component';
 
 import {ApplicationsService} from "../../services/applications.service";
+import {CredentialsManagerService} from "./credentials-manager.service";
 
 @NgModule({
-  declarations: [CredentialsManagerComponent, CredentialsManagerBodyComponent, CredentialsManagerActionsComponent, CredentialsManagerMenuComponent, CredentialsManagerStatusComponent],
+  declarations: [
+    CredentialsManagerBodyComponent,
+    CredentialsManagerActionsComponent,
+    CredentialsManagerMenuComponent,
+    CredentialsManagerStatusComponent
+  ],
   imports: [
-    CommonModule
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule
   ]
 })
-export class CredentialsManagerModule implements OnInit {
+export class CredentialsManagerModule {
 
-  constructor(private ApplicationsService: ApplicationsService) {
+  constructor(private ApplicationsService: ApplicationsService,
+              private CredentialsManagerService: CredentialsManagerService) {
+
     ApplicationsService.registerApplication({
       id: 'credentials-manager',
       ico: 'key',
@@ -25,10 +35,10 @@ export class CredentialsManagerModule implements OnInit {
       menu: true,
       actions: true,
       status: true,
-      style: {width:"870px",height:"600px",top:"7%",left:"10%"}
+      style: {width: "870px", height: "600px", top: "7%", left: "10%"}
     });
+
+    CredentialsManagerService.initCredentials();
   }
 
-  ngOnInit() {
-  }
 }

@@ -444,3 +444,56 @@ li li .list__toggle {
 li li .list__toggle:before {
   margin-top: 2px;
 }
+
+
+.secondary-content__new__box__toggle {
+  position: absolute;
+  z-index: 9999999;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 28px;
+  background: transparent;
+  overflow: hidden;
+}
+.secondary-content__new__box__toggle__slide {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 20px;
+  right: -20px;
+  background: #4b4e4e;
+  cursor: pointer;
+  transition: right .18s ease-out;
+}
+.secondary-content__new__box__toggle:hover .secondary-content__new__box__toggle__slide {
+  right: 0;
+  box-shadow: 0 0 8px 3px rgba(0,0,0,.28);
+}
+.secondary-content__new__box__toggle__slide i {
+  color: #999b9d;
+}
+.secondary-content__new__box__toggle .sidebar-open-font {
+  position: absolute;
+  top: 50%;
+  margin-top: -7px;
+  margin-right: 0;
+  cursor: pointer;
+}
+.secondary-content__new__box__toggle .sidebar-open-font.sidebar-open-font {
+  font-size: 15px;
+  padding-left: 3px;
+}
+
+.secondary-content__new__box__toggle.toggle_left {
+  background: #4b4e4e;
+  left:0;
+  position: relative;
+}
+
+
+.main_form {
+  padding: 40px;
+  overflow-y: scroll;
+  height: 100%;
+}

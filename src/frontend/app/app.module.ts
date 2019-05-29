@@ -2,7 +2,7 @@ import {CommonModule} from '@angular/common';
 import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {NgModule, SystemJsNgModuleLoader} from '@angular/core';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpClientModule} from '@angular/common/http';
 import {MatMenuModule, MatButtonModule, MatDividerModule, MatCheckboxModule} from '@angular/material';
 import {DragDropModule} from '@angular/cdk/drag-drop';
@@ -42,6 +42,7 @@ import {FileModule} from './shared-modules/file/file.module';
     BrowserModule,
     BrowserAnimationsModule,
     FormsModule,
+    ReactiveFormsModule,
     HttpClientModule,
     MatMenuModule,
     MatButtonModule,

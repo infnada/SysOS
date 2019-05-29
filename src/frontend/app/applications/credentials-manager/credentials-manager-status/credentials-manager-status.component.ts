@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
+import {Application} from "../../../interfaces/application";
 
 @Component({
   selector: 'app-credentials-manager-status',
@@ -6,6 +7,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./credentials-manager-status.component.scss']
 })
 export class CredentialsManagerStatusComponent implements OnInit {
+  @Input() application: Application;
 
   constructor() { }
 
