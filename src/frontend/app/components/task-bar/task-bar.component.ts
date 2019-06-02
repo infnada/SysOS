@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 
-import {ApplicationsService} from "../../services/applications.service";
+import {ApplicationsService} from '../../services/applications.service';
 
-import {Application} from "../../interfaces/application";
+import {Application} from '../../interfaces/application';
 
 @Component({
   selector: 'app-task-bar',
@@ -33,6 +33,6 @@ export class TaskBarComponent implements OnInit {
 
   minimizeToDesktop(): void {
     this.ApplicationsService.sendToggleApplication(null);
-  };
+  }
 
 }

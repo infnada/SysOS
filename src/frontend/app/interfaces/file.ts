@@ -1,7 +1,7 @@
 export interface SysOSFile {
-  filename: string,
-  longname: string,
+  filename: string;
+  longname: string;
   attrs: {
     size: string
-  }
+  };
 }

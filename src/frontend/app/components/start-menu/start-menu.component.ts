@@ -1,9 +1,9 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {MatMenuTrigger} from "@angular/material";
+import {MatMenuTrigger} from '@angular/material';
 
-import {ApplicationsService} from "../../services/applications.service";
+import {ApplicationsService} from '../../services/applications.service';
 
-import {Application} from "../../interfaces/application";
+import {Application} from '../../interfaces/application';
 
 @Component({
   selector: 'app-start-menu',
@@ -30,6 +30,6 @@ export class StartMenuComponent implements OnInit {
   openMenu(menu: string) {
     if (this.openedMenu === menu) return this.openedMenu = null;
     this.openedMenu = menu;
-  };
+  }
 
 }

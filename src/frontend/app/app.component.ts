@@ -1,12 +1,12 @@
 import {Component, OnInit, ViewContainerRef} from '@angular/core';
 
-import { CookieService } from 'ngx-cookie-service';
+import {CookieService} from 'ngx-cookie-service';
 
-import {UserStateService} from "./services/user-state.service";
-import {MainService} from "./services/main.service";
-import {ModalService} from "./services/modal.service";
+import {UserStateService} from './services/user-state.service';
+import {MainService} from './services/main.service';
+import {ModalService} from './services/modal.service';
 
-import {Application} from "./interfaces/application";
+import {Application} from './interfaces/application';
 
 @Component({
   selector: 'app-root',
@@ -24,7 +24,6 @@ export class AppComponent implements OnInit {
               private UserStateService: UserStateService) {
 
     this.ModalService.setMainContainerRef(this.ViewContainerRef);
-
   }
 
   ngOnInit() {
@@ -37,22 +36,19 @@ export class AppComponent implements OnInit {
           if (res.status === 'ok') {
             this.UserStateService.setState({
               userLoggedIn: true,
-              username: "root"
+              username: 'root'
             });
 
             /**
              * INIT
              */
             this.MainService.init();
-
           }
 
           if (res.status === 'error') {
             console.debug('SysOS -> Removing uniqueId cookie');
-            return this.cookieService.delete('uniqueId')
+            return this.cookieService.delete('uniqueId');
           }
-
-          console.log(res);
         },
         error => {
           console.error(error);

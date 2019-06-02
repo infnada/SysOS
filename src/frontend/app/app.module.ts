@@ -14,6 +14,7 @@ import {FilterPipeModule} from 'ngx-filter-pipe';
 import {ResizableModule} from 'angular-resizable-element';
 import {NgbModalModule} from '@ng-bootstrap/ng-bootstrap';
 import {MonacoEditorModule} from 'ngx-monaco-editor';
+import {SocketIoModule, SocketIoConfig} from 'ngx-socket-io';
 
 import {AppComponent} from './app.component';
 import {LoginComponent} from './components/login/login.component';
@@ -25,6 +26,15 @@ import {StartMenuItemsComponent} from './components/start-menu-items/start-menu-
 import {ApplicationComponent} from './components/application/application.component';
 
 import {FileModule} from './shared-modules/file/file.module';
+import {CapsLockDirective} from './directives/caps-lock.directive';
+
+const config: SocketIoConfig = {
+  url: window.location.host,
+  options: {
+    transports: ['websocket'],
+    forceNew: true
+  }
+};
 
 @NgModule({
   declarations: [
@@ -35,7 +45,8 @@ import {FileModule} from './shared-modules/file/file.module';
     StartMenuComponent,
     TaskBarItemsComponent,
     StartMenuItemsComponent,
-    ApplicationComponent
+    ApplicationComponent,
+    CapsLockDirective
   ],
   imports: [
     CommonModule,
@@ -55,11 +66,11 @@ import {FileModule} from './shared-modules/file/file.module';
     ResizableModule,
     NgbModalModule,
     MonacoEditorModule.forRoot(),
+    SocketIoModule.forRoot(config),
     // Shared module import
     FileModule
   ],
-  entryComponents: [
-  ],
+  entryComponents: [],
   providers: [
     CookieService,
     SystemJsNgModuleLoader

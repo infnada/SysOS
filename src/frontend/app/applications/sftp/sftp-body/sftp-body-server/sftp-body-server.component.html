@@ -1,0 +1,60 @@
+<div class="col folders__body" [ngClass]="{'with__stats': viewExchange === true}" #selectableContainer>
+
+  <app-sftp-body-new-connection [application]="application" *ngIf="activeConnection === null || getActiveConnection().state === 'disconnected'"></app-sftp-body-new-connection>
+
+  <ng-container *ngIf="activeConnection !== null && getActiveConnection().state !== 'disconnected'">
+
+    <app-sftp-actions-server [application]="application"></app-sftp-actions-server>
+
+    <div id="local_body" class="folders" cdkDropList (cdkDropListDropped)="UIonDropItem($event)" (click)="handleBodyClick($event)" (window:keydown)="handleItemKeyPress($event)" (contextmenu)="onBodyContextMenu($event)">
+
+      <ngfUploadStatus
+        [(percent)] = "progress"
+        [httpEvent] = "httpEvent"
+      ></ngfUploadStatus>
+      <div class="dropzone" ngfDrop selectable="1" multiple="1"
+           [(files)]="files"
+           (filesChange)="uploadFiles($event)"
+      >
+        Drop files here (from local system) or click to upload. {{progress}}
+      </div>
+
+      <ng-container *ngIf="viewAsList === false">
+        <app-file *ngFor="let file of currentData | filterBy: search; index as $index" cdkDrag cdkDragBoundary=".desktop" [cdkDragData]="file" (cdkDragStarted)="onDragStart()" [application]="application" subApplication="server" [viewAsList]="viewAsList" [selectable]=selectable [file]=file [isCurrentActive]="$index === currentActive" [currentPath]="currentPath" [selector]="'.window--sftp .window__main'" (click)="setCurrentActive($index)"></app-file>
+      </ng-container>
+
+      <ng-container *ngIf="viewAsList === true">
+        <table class="table table-hover">
+          <thead>
+          <tr>
+            <th>Name</th>
+            <th>Size</th>
+            <th>Type</th>
+          </tr>
+          </thead>
+          <tbody>
+
+          <app-file *ngFor="let file of currentData | filterBy: search; index as $index" cdkDrag cdkDragBoundary=".desktop" [cdkDragData]="file" (cdkDragStarted)="onDragStart()" [application]="application" [viewAsList]="viewAsList" [selectable]=selectable [file]=file [isCurrentActive]="$index === currentActive" [currentPath]="currentPath" [selector]="'.window--sftp .window__main'" (click)="setCurrentActive($index)"></app-file>
+
+          </tbody>
+        </table>
+      </ng-container>
+
+      <div style="position: fixed"
+           [style.left]="contextMenuPosition.x"
+           [style.top]="contextMenuPosition.y"
+           [matMenuTriggerFor]="contextMenuBody">
+      </div>
+
+      <mat-menu #contextMenuBody="matMenu">
+        <ng-template matMenuContent>
+          <ng-container *ngFor="let item of bodyContextMenuItems">
+            <button mat-menu-item *ngIf="item.text !== 'divider'" (click)="item.action()" [disabled]="checkIfDisabled(item)" [innerHTML]="contextToText(item)"></button>
+            <mat-divider *ngIf="item.text === 'divider'"></mat-divider>
+          </ng-container>
+        </ng-template>
+      </mat-menu>
+
+    </div>
+  </ng-container>
+</div>

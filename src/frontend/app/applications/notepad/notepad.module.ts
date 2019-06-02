@@ -4,7 +4,7 @@ import {FormsModule} from '@angular/forms';
 
 import {MonacoEditorModule} from 'ngx-monaco-editor';
 
-import {ApplicationsService} from "../../services/applications.service";
+import {ApplicationsService} from '../../services/applications.service';
 import {NotepadBodyComponent} from './notepad-body/notepad-body.component';
 import {NotepadMenuComponent} from './notepad-menu/notepad-menu.component';
 
@@ -27,7 +27,7 @@ export class NotepadModule implements OnInit {
       ico: 'pencil',
       name: 'Notepad',
       menu: true,
-      style: {width: "600px", height: "300px", top: "10%", left: "30%"}
+      style: {width: '600px', height: '300px', top: '10%', left: '30%'}
     });
   }
 

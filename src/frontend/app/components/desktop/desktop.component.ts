@@ -5,13 +5,13 @@ import {Subscription} from 'rxjs';
 
 import Selectable from 'selectable.js';
 
-import {FileSystemService} from "../../services/file-system.service";
-import {FileSystemUiService} from "../../services/file-system-ui.service";
-import {ApplicationsService} from "../../services/applications.service"
+import {FileSystemService} from '../../services/file-system.service';
+import {FileSystemUiService} from '../../services/file-system-ui.service';
+import {ApplicationsService} from '../../services/applications.service';
 
-import {ContextMenuItem} from "../../interfaces/context-menu-item";
-import {Application} from "../../interfaces/application";
-import {SysOSFile} from "../../interfaces/file";
+import {ContextMenuItem} from '../../interfaces/context-menu-item';
+import {Application} from '../../interfaces/application';
+import {SysOSFile} from '../../interfaces/file';
 
 @Component({
   selector: 'app-desktop',
@@ -32,8 +32,6 @@ export class DesktopComponent implements OnInit, AfterViewInit {
   copyFrom: string;
   cutFrom: string;
 
-  pasteTo: string = null;
-
   selectable: Selectable;
 
   currentActive: number = 0;
@@ -41,22 +39,6 @@ export class DesktopComponent implements OnInit, AfterViewInit {
     currentPath: '/root/Desktop/',
     currentData: []
   };
-
-  onDesktopContextMenu(event: MouseEvent): void {
-    this.contextMenuPosition.x = event.clientX + 'px';
-    this.contextMenuPosition.y = event.clientY + 'px';
-    this.contextMenuDesktop.openMenu();
-  }
-
-  checkIfDisabled(item: ContextMenuItem): boolean {
-    if (item.disabled) return item.disabled();
-    return false;
-  }
-
-  contextToText(item: ContextMenuItem, file?: SysOSFile): string {
-    if (typeof item.text === 'string') return item.text;
-    if (typeof item.text === 'function') return item.text(file);
-  }
 
   desktopContextMenuItems: ContextMenuItem[] = [
     {
@@ -86,10 +68,26 @@ export class DesktopComponent implements OnInit, AfterViewInit {
     {id: 7, text: 'divider'},
     {
       id: 8, text: '<i class="fa fa-lock"></i> Permissions', action: () => {
-        //TODO
+        // TODO
       }
     }
   ];
+
+  onDesktopContextMenu(event: MouseEvent): void {
+    this.contextMenuPosition.x = event.clientX + 'px';
+    this.contextMenuPosition.y = event.clientY + 'px';
+    this.contextMenuDesktop.openMenu();
+  }
+
+  checkIfDisabled(item: ContextMenuItem): boolean {
+    if (item.disabled) return item.disabled();
+    return false;
+  }
+
+  contextToText(item: ContextMenuItem, file?: SysOSFile): string {
+    if (typeof item.text === 'string') return item.text;
+    if (typeof item.text === 'function') return item.text(file);
+  }
 
   constructor(private toastr: ToastrService,
               private FileSystemService: FileSystemService,
@@ -114,7 +112,7 @@ export class DesktopComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     this.selectable = new Selectable({
       appendTo: this.selectableContainer.nativeElement,
-      ignore: "a"
+      ignore: 'a'
     });
 
     /*this.selectable.on('start', (e, item) => {
@@ -129,13 +127,13 @@ export class DesktopComponent implements OnInit, AfterViewInit {
   private resetActive(): void {
     this.currentActive = 0;
     // TODO: $('#desktop_body').focus();
-  };
+  }
 
   /**
    * Get current path data
    */
   private reloadPath(): void {
-    this.FileSystemService.getFileSystemPath(this.desktopFiles.currentPath).subscribe(
+    this.FileSystemService.getFileSystemPath(null, this.desktopFiles.currentPath).subscribe(
       (res: Array<any>) => {
         this.desktopFiles.currentData = res;
         this.resetActive();
@@ -144,7 +142,7 @@ export class DesktopComponent implements OnInit, AfterViewInit {
         console.error('Desktop -> Error while getting fileSystemPath -> ', error);
         console.error(error);
       });
-  };
+  }
 
   /**
    * On file dragstart
@@ -154,31 +152,31 @@ export class DesktopComponent implements OnInit, AfterViewInit {
   }
 
   UIonDropItem($event): void {
-    this.FileSystemUiService.UIonDropItem($event, this.desktopFiles.currentPath);
-  };
+    this.FileSystemUiService.UIonDropItem(null, $event, this.desktopFiles.currentPath);
+  }
 
   getFileType(longname: string): string {
     return this.FileSystemService.getFileType(longname);
-  };
+  }
 
   UIdownloadFromURL(): void {
-    this.FileSystemUiService.UIdownloadFromURL(this.desktopFiles.currentPath, '.desktop .desktop__body');
-  };
+    this.FileSystemUiService.UIdownloadFromURL(null, this.desktopFiles.currentPath, '.desktop .desktop__body');
+  }
 
   UIcreateFolder(): void {
-    this.FileSystemUiService.UIcreateFolder(this.desktopFiles.currentPath, '.desktop .desktop__body');
-  };
+    this.FileSystemUiService.UIcreateFolder(null, this.desktopFiles.currentPath, '.desktop .desktop__body');
+  }
 
   UIrenameFile(file: SysOSFile): void {
-    this.FileSystemUiService.UIrenameFile(this.desktopFiles.currentPath, file, '.desktop .desktop__body');
-  };
+    this.FileSystemUiService.UIrenameFile(null, this.desktopFiles.currentPath, file, '.desktop .desktop__body');
+  }
 
   UIdeleteSelected(file: SysOSFile): void {
-    this.FileSystemUiService.UIdeleteSelected(this.desktopFiles.currentPath, file, '.desktop .desktop__body');
-  };
+    this.FileSystemUiService.UIdeleteSelected(null, this.desktopFiles.currentPath, file, '.desktop .desktop__body');
+  }
 
   UIpasteFile(): void {
-    this.FileSystemUiService.UIpasteFile(this.desktopFiles.currentPath);
+    this.FileSystemUiService.UIpasteFile(null, this.desktopFiles.currentPath);
   }
 
   UIdoWithFile(file: SysOSFile): void {
@@ -195,14 +193,14 @@ export class DesktopComponent implements OnInit, AfterViewInit {
       this.currentActive = null;
     }
 
-  };
+  }
 
   /**
    * Sets an item file/folder active
    */
   setCurrentActive($index: number): void {
-    //TODO $('#desktop_body').focus();
-    //$timeout.cancel(this.selectTimeout);
+    // TODO $('#desktop_body').focus();
+    // $timeout.cancel(this.selectTimeout);
 
     if ($index > this.desktopFiles.currentData.length - 1) {
       this.currentActive = 0;
@@ -216,7 +214,7 @@ export class DesktopComponent implements OnInit, AfterViewInit {
     /*this.selectTimeout = $timeout(() => {
       this.selection = true;
     }, 100);*/
-  };
+  }
 
   setCurrentHoverApplication(): void {
     this.ApplicationsService.setCurrentHoverApplication('desktop');
@@ -230,17 +228,17 @@ export class DesktopComponent implements OnInit, AfterViewInit {
     if (this.taskbar__item_open !== null) return;
 
     // Do nothing if there is no active item unless its side arrows
-    if (this.currentActive === null && keyEvent.code !== "ArrowLeft" && keyEvent.code === "ArrowRight") return;
+    if (this.currentActive === null && keyEvent.code !== 'ArrowLeft' && keyEvent.code === 'ArrowRight') return;
 
-    if (keyEvent.code === "Delete") {
-      let currentFile = this.desktopFiles.currentData[this.currentActive];
+    if (keyEvent.code === 'Delete') {
+      const currentFile = this.desktopFiles.currentData[this.currentActive];
 
       this.UIdeleteSelected(currentFile);
-    } else if (keyEvent.code === "F2") {
-      let currentFile = this.desktopFiles.currentData[this.currentActive];
+    } else if (keyEvent.code === 'F2') {
+      const currentFile = this.desktopFiles.currentData[this.currentActive];
 
       this.UIrenameFile(currentFile);
-    } else if (keyEvent.code === "ArrowRight") {
+    } else if (keyEvent.code === 'ArrowRight') {
 
       if (this.currentActive === null) {
         this.currentActive = 0;
@@ -248,7 +246,7 @@ export class DesktopComponent implements OnInit, AfterViewInit {
         this.setCurrentActive(this.currentActive + 1);
       }
 
-    } else if (keyEvent.code === "ArrowLeft") {
+    } else if (keyEvent.code === 'ArrowLeft') {
 
       if (this.currentActive === null) {
         this.currentActive = 0;
@@ -256,11 +254,11 @@ export class DesktopComponent implements OnInit, AfterViewInit {
         this.setCurrentActive(this.currentActive - 1);
       }
 
-    } else if (keyEvent.code === "Enter") {
-      let currentFile = this.desktopFiles.currentData[this.currentActive];
+    } else if (keyEvent.code === 'Enter') {
+      const currentFile = this.desktopFiles.currentData[this.currentActive];
 
       this.UIdoWithFile(currentFile);
     }
-  };
+  }
 
 }

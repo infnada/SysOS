@@ -1,19 +1,19 @@
 import {Component, Input, OnInit, ViewChild, ElementRef} from '@angular/core';
 import {HttpResponse, HttpEvent} from '@angular/common/http';
 
-import {MatMenuTrigger} from '@angular/material'
-import {Subscription} from "rxjs";
+import {MatMenuTrigger} from '@angular/material';
+import {Subscription} from 'rxjs';
 
 import Selectable from 'selectable.js';
 
-import {FileSystemService} from "../../../services/file-system.service";
-import {FileSystemUiService} from "../../../services/file-system-ui.service";
-import {ApplicationsService} from "../../../services/applications.service";
-import {FileExplorerService} from "../file-explorer.service";
+import {FileSystemService} from '../../../services/file-system.service';
+import {FileSystemUiService} from '../../../services/file-system-ui.service';
+import {ApplicationsService} from '../../../services/applications.service';
+import {FileExplorerService} from '../file-explorer.service';
 
-import {Application} from "../../../interfaces/application";
-import {SysOSFile} from "../../../interfaces/file";
-import {ContextMenuItem} from "../../../interfaces/context-menu-item";
+import {Application} from '../../../interfaces/application';
+import {SysOSFile} from '../../../interfaces/file';
+import {ContextMenuItem} from '../../../interfaces/context-menu-item';
 
 
 @Component({
@@ -37,7 +37,7 @@ export class FileExplorerBodyComponent implements OnInit {
   currentPath: string;
   currentData: Array<SysOSFile>;
   viewAsList: boolean;
-  search: {filename: string} = null;
+  search: { filename: string } = null;
 
   currentActive: number = 0;
 
@@ -45,22 +45,6 @@ export class FileExplorerBodyComponent implements OnInit {
   progress: number;
   httpEmitter: Subscription[] = [];
   httpEvent: HttpEvent<{}>;
-
-  onBodyContextMenu(event: MouseEvent): void {
-    this.contextMenuPosition.x = event.clientX + 'px';
-    this.contextMenuPosition.y = event.clientY + 'px';
-    this.contextMenuBody.openMenu();
-  }
-
-  checkIfDisabled(item: ContextMenuItem): boolean {
-    if (item.disabled) return item.disabled();
-    return false;
-  }
-
-  contextToText(item: ContextMenuItem, file?: SysOSFile): string {
-    if (typeof item.text === 'string') return item.text;
-    if (typeof item.text === 'function') return item.text(file);
-  }
 
   bodyContextMenuItems: ContextMenuItem[] = [
     {
@@ -90,10 +74,26 @@ export class FileExplorerBodyComponent implements OnInit {
     {id: 7, text: 'divider'},
     {
       id: 8, text: '<i class="fa fa-lock"></i> Permissions', action: () => {
-        //TODO
+        // TODO
       }
     }
   ];
+
+  onBodyContextMenu(event: MouseEvent): void {
+    this.contextMenuPosition.x = event.clientX + 'px';
+    this.contextMenuPosition.y = event.clientY + 'px';
+    this.contextMenuBody.openMenu();
+  }
+
+  checkIfDisabled(item: ContextMenuItem): boolean {
+    if (item.disabled) return item.disabled();
+    return false;
+  }
+
+  contextToText(item: ContextMenuItem, file?: SysOSFile): string {
+    if (typeof item.text === 'string') return item.text;
+    if (typeof item.text === 'function') return item.text(file);
+  }
 
   constructor(private FileSystemService: FileSystemService,
               private FileSystemUiService: FileSystemUiService,
@@ -119,7 +119,7 @@ export class FileExplorerBodyComponent implements OnInit {
 
     this.selectable = new Selectable({
       appendTo: this.selectableContainer.nativeElement,
-      ignore: "a"
+      ignore: 'a'
     });
 
     if (this.application.init_data && this.application.init_data.path) {
@@ -135,14 +135,14 @@ export class FileExplorerBodyComponent implements OnInit {
   private resetActive(): void {
     this.currentActive = 0;
     // TODO: $('#desktop_body').focus();
-  };
+  }
 
   /**
    * Get current path data
    */
   private reloadPath(): void {
     this.FileExplorerService.reloadPath();
-  };
+  }
 
   /**
    * On file dragstart
@@ -152,27 +152,27 @@ export class FileExplorerBodyComponent implements OnInit {
   }
 
   UIonDropItem($event): void {
-    this.FileSystemUiService.UIonDropItem($event, this.currentPath);
-  };
+    this.FileSystemUiService.UIonDropItem(null, $event, this.currentPath);
+  }
 
   UIdownloadFromURL(): void {
-    this.FileSystemUiService.UIdownloadFromURL(this.currentPath, '.window--file-explorer .window__main');
-  };
+    this.FileSystemUiService.UIdownloadFromURL(null, this.currentPath, '.window--file-explorer .window__main');
+  }
 
   UIcreateFolder(): void {
-    this.FileSystemUiService.UIcreateFolder(this.currentPath, '.window--file-explorer .window__main');
-  };
+    this.FileSystemUiService.UIcreateFolder(null, this.currentPath, '.window--file-explorer .window__main');
+  }
 
   UIrenameFile(file: SysOSFile): void {
-    this.FileSystemUiService.UIrenameFile(this.currentPath, file, '.window--file-explorer .window__main');
-  };
+    this.FileSystemUiService.UIrenameFile(null, this.currentPath, file, '.window--file-explorer .window__main');
+  }
 
   UIdeleteSelected(file: SysOSFile): void {
-    this.FileSystemUiService.UIdeleteSelected(this.currentPath, file, '.window--file-explorer .window__main');
-  };
+    this.FileSystemUiService.UIdeleteSelected(null, this.currentPath, file, '.window--file-explorer .window__main');
+  }
 
   UIpasteFile(): void {
-    this.FileSystemUiService.UIpasteFile(this.currentPath);
+    this.FileSystemUiService.UIpasteFile(null, this.currentPath);
   }
 
   UIdoWithFile(file: SysOSFile): void {
@@ -188,35 +188,34 @@ export class FileExplorerBodyComponent implements OnInit {
 
           if (event instanceof HttpResponse) {
             delete this.httpEmitter[i];
-            console.log('request done', event)
+            console.log('request done', event);
           }
         },
-        error=>console.log('Error Uploading',error)
+        error => console.log('Error Uploading', error)
       );
 
       files.splice(i, 1);
     });
-
 
   }
 
   goToPath(path: string): void {
     this.FileSystemUiService.sendGoToPath({
       application: 'file-explorer',
-      path: path
+      path
     });
   }
 
   toggleList($event): void {
     $event.currentTarget.parentElement.parentElement.classList.toggle('side__list--open');
-  };
+  }
 
   /**
    * Sets an item file/folder active
    */
   setCurrentActive($index: number): void {
-    //TODO $('#desktop_body').focus();
-    //$timeout.cancel(this.selectTimeout);
+    // TODO $('#desktop_body').focus();
+    // $timeout.cancel(this.selectTimeout);
 
     if ($index > this.currentData.length - 1) {
       this.currentActive = 0;
@@ -230,11 +229,11 @@ export class FileExplorerBodyComponent implements OnInit {
     /*this.selectTimeout = $timeout(() => {
       this.selection = true;
     }, 100);*/
-  };
+  }
 
   handleBodyClick($event): void {
     if ($event.target.attributes.id !== undefined && $event.target.attributes.id.value === 'local_body') this.currentActive = null;
-  };
+  }
 
   /**
    * Keypress on item focus
@@ -245,17 +244,17 @@ export class FileExplorerBodyComponent implements OnInit {
     if (this.taskbar__item_open !== 'file-explorer') return;
 
     // Do nothing if there is no active item unless its side arrows
-    if (this.currentActive === null && keyEvent.code !== "ArrowLeft" && keyEvent.code === "ArrowRight") return;
+    if (this.currentActive === null && keyEvent.code !== 'ArrowLeft' && keyEvent.code === 'ArrowRight') return;
 
-    if (keyEvent.code === "Delete") {
-      let currentFile = this.currentData[this.currentActive];
+    if (keyEvent.code === 'Delete') {
+      const currentFile = this.currentData[this.currentActive];
 
       this.UIdeleteSelected(currentFile);
-    } else if (keyEvent.code === "F2") {
-      let currentFile = this.currentData[this.currentActive];
+    } else if (keyEvent.code === 'F2') {
+      const currentFile = this.currentData[this.currentActive];
 
       this.UIrenameFile(currentFile);
-    } else if (keyEvent.code === "ArrowRight") {
+    } else if (keyEvent.code === 'ArrowRight') {
 
       if (this.currentActive === null) {
         this.currentActive = 0;
@@ -263,7 +262,7 @@ export class FileExplorerBodyComponent implements OnInit {
         this.setCurrentActive(this.currentActive + 1);
       }
 
-    } else if (keyEvent.code === "ArrowLeft") {
+    } else if (keyEvent.code === 'ArrowLeft') {
 
       if (this.currentActive === null) {
         this.currentActive = 0;
@@ -271,13 +270,13 @@ export class FileExplorerBodyComponent implements OnInit {
         this.setCurrentActive(this.currentActive - 1);
       }
 
-    } else if (keyEvent.code === "Enter") {
-      let currentFile = this.currentData[this.currentActive];
+    } else if (keyEvent.code === 'Enter') {
+      const currentFile = this.currentData[this.currentActive];
 
       this.UIdoWithFile(currentFile);
-    } else if (keyEvent.code === "Backspace") {
+    } else if (keyEvent.code === 'Backspace') {
       this.FileExplorerService.sendGoPathBack();
     }
-  };
+  }
 
 }

@@ -1,10 +1,10 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
-import {MatMenuTrigger} from "@angular/material";
+import {MatMenuTrigger} from '@angular/material';
 
-import {ApplicationsService} from "../../services/applications.service";
+import {ApplicationsService} from '../../services/applications.service';
 
-import {Application} from "../../interfaces/application";
-import {ContextMenuItem} from "../../interfaces/context-menu-item";
+import {Application} from '../../interfaces/application';
+import {ContextMenuItem} from '../../interfaces/context-menu-item';
 
 @Component({
   selector: 'app-task-bar-items',
@@ -16,27 +16,7 @@ export class TaskBarItemsComponent implements OnInit {
   @Input() application: Application;
 
   taskbar__item_open: string;
-
   contextMenuPosition = {x: '0px', y: '0px'};
-
-  onAppContextMenu(event: MouseEvent, application: Application): void {
-    if (application.id === 'start') return;
-
-    this.contextMenuPosition.x = event.clientX + 'px';
-    this.contextMenuPosition.y = event.clientY + 'px';
-    this.contextMenuApp.openMenu();
-  }
-
-  checkIfDisabled(item: ContextMenuItem, application: Application): boolean {
-    if (item.disabled) return item.disabled(application);
-    return false;
-  }
-
-  contextToText(item: ContextMenuItem, application?: Application): string {
-    if (typeof item.text === 'string') return item.text;
-    if (typeof item.text === 'function') return item.text(application);
-  }
-
   appContextMenuItems: ContextMenuItem[] = [
     {
       id: 1, text: (application: Application) => {
@@ -69,6 +49,25 @@ export class TaskBarItemsComponent implements OnInit {
     }
   ];
 
+
+  onAppContextMenu(event: MouseEvent, application: Application): void {
+    if (application.id === 'start') return;
+
+    this.contextMenuPosition.x = event.clientX + 'px';
+    this.contextMenuPosition.y = event.clientY + 'px';
+    this.contextMenuApp.openMenu();
+  }
+
+  checkIfDisabled(item: ContextMenuItem, application: Application): boolean {
+    if (item.disabled) return item.disabled(application);
+    return false;
+  }
+
+  contextToText(item: ContextMenuItem, application?: Application): string {
+    if (typeof item.text === 'string') return item.text;
+    if (typeof item.text === 'function') return item.text(application);
+  }
+
   constructor(private ApplicationsService: ApplicationsService) { }
 
   ngOnInit() {
@@ -77,27 +76,27 @@ export class TaskBarItemsComponent implements OnInit {
 
   closeApplication(id: string): void {
     this.ApplicationsService.closeApplication(id);
-  };
+  }
 
   getApplicationById(id: string): Application {
     return this.ApplicationsService.getApplicationById(id);
-  };
+  }
 
   isStartOpened(id: string): boolean {
     return this.taskbar__item_open === id && id === 'start';
-  };
+  }
 
   isItemOpened(id: string): boolean {
     return this.isApplicationOpened(id) && id !== 'start';
-  };
+  }
 
   isItemActive(id: string): boolean {
     return this.taskbar__item_open === id && id !== 'start';
-  };
+  }
 
   isApplicationOpened(id: string): boolean {
     return this.ApplicationsService.isApplicationOpened(id);
-  };
+  }
 
   toggleApplication(id: string): void {
     if (id === 'start') return this.ApplicationsService.toggleApplication(id);
@@ -110,6 +109,6 @@ export class TaskBarItemsComponent implements OnInit {
 
     // Emitting to application directives (minimize or maximize)
     this.ApplicationsService.sendToggleApplication(id);
-  };
+  }
 
 }

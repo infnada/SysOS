@@ -6,7 +6,7 @@ import {NgbModalModule, NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 
 import {InputEntryComponent} from './input-entry/input-entry.component';
 import {InputComponent} from './input.component';
-import {ModalService} from "../../services/modal.service";
+import {ModalService} from '../../services/modal.service';
 
 @NgModule({
   declarations: [InputEntryComponent, InputComponent],

@@ -1,12 +1,12 @@
 import {Component, Input, Output} from '@angular/core';
-import {NgbModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
-import {InputComponent} from "../input.component";
+import {NgbModal, NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
+import {InputComponent} from '../input.component';
 
 @Component({
   template: ''
 })
 export class InputEntryComponent {
-  @Input() size: "sm"|"lg";
+  @Input() size: 'sm'|'lg';
   @Input() selector: string;
   @Output() OutputNgbModalRef: NgbModalRef;
 

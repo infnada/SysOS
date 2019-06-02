@@ -1,7 +1,8 @@
 import {Injectable} from '@angular/core';
 
-import {ModalService} from "./modal.service";
-import {ApplicationsService} from "./applications.service";
+import {ModalService} from './modal.service';
+import {ApplicationsService} from './applications.service';
+import {Socket} from 'ngx-socket-io';
 
 @Injectable({
   providedIn: 'root'
@@ -9,21 +10,32 @@ import {ApplicationsService} from "./applications.service";
 export class MainService {
 
   constructor(private ApplicationsService: ApplicationsService,
-              private ModalService: ModalService) {
+              private ModalService: ModalService,
+              private socket: Socket) {
   }
 
   init(): void {
-    window.addEventListener( "dragover", function(e) {
+    window.addEventListener( 'dragover', (e) => {
       e.preventDefault();
     });
 
-    window.addEventListener( "drop", function(e) {
+    window.addEventListener( 'drop', (e) => {
       e.preventDefault();
     });
 
-    window.addEventListener( "contextmenu", function(e) {
+    window.addEventListener( 'contextmenu', (e) => {
       console.log(e);
       e.preventDefault();
+    });
+
+    this.socket.on('connect', () => {
+      console.log('SysOs -> Socket.io connected');
+    });
+    this.socket.on('disconnect', (err) => {
+      console.log(err);
+    });
+    this.socket.on('error', (err) => {
+      console.log(err);
     });
 
     this.ApplicationsService.getInstalledApplications().then(() => {

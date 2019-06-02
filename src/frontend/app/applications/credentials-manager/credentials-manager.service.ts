@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import {HttpClient} from '@angular/common/http';
 
-import {BehaviorSubject, Observable} from "rxjs";
+import {BehaviorSubject, Observable} from 'rxjs';
 import {ToastrService} from 'ngx-toastr';
 
-import {Credential} from "./credential";
+import {Credential} from './credential';
 
 @Injectable({
   providedIn: 'root'
@@ -24,8 +24,8 @@ export class CredentialsManagerService {
               private toastr: ToastrService) {
 
     this.dataStore = { credentials: [], activeCredential: null };
-    this._credentials = <BehaviorSubject<Credential[]>>new BehaviorSubject([]);
-    this._activeCredential = <BehaviorSubject<string>>new BehaviorSubject(null);
+    this._credentials = <BehaviorSubject<Credential[]>> new BehaviorSubject([]);
+    this._activeCredential = <BehaviorSubject<string>> new BehaviorSubject(null);
     this.credentials = this._credentials.asObservable();
     this.activeCredential = this._activeCredential.asObservable();
   }
@@ -55,12 +55,12 @@ export class CredentialsManagerService {
 
   deleteCredential(uuid: string): void {
     this.http.post('/api/credential/delete', {
-      uuid: uuid
+      uuid
     }).subscribe(
       () => {
         this.dataStore.activeCredential = null;
 
-        this.dataStore.credentials = this.dataStore.credentials.filter(function (el) {
+        this.dataStore.credentials = this.dataStore.credentials.filter((el) => {
           return el.uuid !== uuid;
         });
 
@@ -82,10 +82,10 @@ export class CredentialsManagerService {
     return new Promise((resolve, reject) => {
 
       this.http.post('/api/credential/save', {
-        credential: credential
+        credential
       }).subscribe(
         (res: { data: { response: string } }) => {
-          let credentialExists = this.dataStore.credentials.filter(el => {
+          const credentialExists = this.dataStore.credentials.filter(el => {
             return el.uuid === credential.uuid;
           })[0];
 

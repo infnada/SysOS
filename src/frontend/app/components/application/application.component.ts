@@ -1,12 +1,12 @@
 import {Component, ElementRef, Input, OnInit, AfterViewInit, ViewChild, ViewContainerRef, Compiler, ViewEncapsulation} from '@angular/core';
 import {CdkDragRelease, CdkDragStart} from '@angular/cdk/drag-drop';
 
-import {Subscription} from "rxjs";
+import {Subscription} from 'rxjs';
 import {ResizeEvent} from 'angular-resizable-element';
 
-import {ApplicationsService} from "../../services/applications.service";
+import {ApplicationsService} from '../../services/applications.service';
 
-import {Application} from "../../interfaces/application";
+import {Application} from '../../interfaces/application';
 
 @Component({
   selector: 'app-application',
@@ -16,10 +16,10 @@ import {Application} from "../../interfaces/application";
 })
 export class ApplicationComponent implements OnInit, AfterViewInit {
   @ViewChild('appElement') appElement: ElementRef;
-  @ViewChild("appActions", { read: ViewContainerRef }) appActions;
-  @ViewChild("appBody", { read: ViewContainerRef }) appBody;
-  @ViewChild("appMenu", { read: ViewContainerRef }) appMenu;
-  @ViewChild("appStatus", { read: ViewContainerRef }) appStatus;
+  @ViewChild('appActions', { read: ViewContainerRef }) appActions;
+  @ViewChild('appBody', { read: ViewContainerRef }) appBody;
+  @ViewChild('appMenu', { read: ViewContainerRef }) appMenu;
+  @ViewChild('appStatus', { read: ViewContainerRef }) appStatus;
   @Input() application: Application;
 
   closeAppSubscription: Subscription;
@@ -41,8 +41,8 @@ export class ApplicationComponent implements OnInit, AfterViewInit {
   currentTop: string;
   currentLeft: string;
 
-  fullHeight: string = window.innerHeight - 48 + "px";
-  fullWidth: string = window.innerWidth + "px";
+  fullHeight: string = window.innerHeight - 48 + 'px';
+  fullWidth: string = window.innerWidth + 'px';
 
   constructor(private compiler: Compiler,
               private ApplicationsService: ApplicationsService) {
@@ -90,7 +90,7 @@ export class ApplicationComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
 
-    let applicationComponent = this.application.id.charAt(0).toUpperCase() + this.application.id.replace(/-(.)/g, function(match, group1) {
+    const applicationComponent = this.application.id.charAt(0).toUpperCase() + this.application.id.replace(/-(.)/g, (match, group1) => {
       return group1.toUpperCase();
     }).slice(1);
 
@@ -103,37 +103,37 @@ export class ApplicationComponent implements OnInit, AfterViewInit {
         this.appMenu.clear();
         this.appStatus.clear();
 
-        let actionsFactory = factory.componentFactories.filter((component) => {
-          return component.componentType.name === applicationComponent + "ActionsComponent";
+        const actionsFactory = factory.componentFactories.filter((component) => {
+          return component.componentType.name === applicationComponent + 'ActionsComponent';
         })[0];
-        let bodyFactory = factory.componentFactories.filter((component) => {
-          return component.componentType.name === applicationComponent + "BodyComponent";
+        const bodyFactory = factory.componentFactories.filter((component) => {
+          return component.componentType.name === applicationComponent + 'BodyComponent';
         })[0];
-        let menuFactory = factory.componentFactories.filter((component) => {
-          return component.componentType.name === applicationComponent + "MenuComponent";
+        const menuFactory = factory.componentFactories.filter((component) => {
+          return component.componentType.name === applicationComponent + 'MenuComponent';
         })[0];
-        let statusFactory = factory.componentFactories.filter((component) => {
-          return component.componentType.name === applicationComponent + "StatusComponent";
+        const statusFactory = factory.componentFactories.filter((component) => {
+          return component.componentType.name === applicationComponent + 'StatusComponent';
         })[0];
 
         if (actionsFactory) {
-          let actionsComponentRef = this.appActions.createComponent(actionsFactory);
-          (<any>actionsComponentRef.instance).application = this.application;
+          const actionsComponentRef = this.appActions.createComponent(actionsFactory);
+          (<any> actionsComponentRef.instance).application = this.application;
         }
 
         if (bodyFactory) {
-          let bodyComponentRef = this.appActions.createComponent(bodyFactory);
-          (<any>bodyComponentRef.instance).application = this.application;
+          const bodyComponentRef = this.appActions.createComponent(bodyFactory);
+          (<any> bodyComponentRef.instance).application = this.application;
         }
 
         if (menuFactory) {
-          let menuComponentRef = this.appActions.createComponent(menuFactory);
-          (<any>menuComponentRef.instance).application = this.application;
+          const menuComponentRef = this.appActions.createComponent(menuFactory);
+          (<any> menuComponentRef.instance).application = this.application;
         }
 
         if (statusFactory) {
-          let statusComponentRef = this.appActions.createComponent(statusFactory);
-          (<any>statusComponentRef.instance).application = this.application;
+          const statusComponentRef = this.appActions.createComponent(statusFactory);
+          (<any> statusComponentRef.instance).application = this.application;
         }
 
       });
@@ -148,10 +148,10 @@ export class ApplicationComponent implements OnInit, AfterViewInit {
   }
 
   onDrop(event: CdkDragRelease<string[]>): void {
-    let bounding = this.appElement.nativeElement.getBoundingClientRect();
+    const bounding = this.appElement.nativeElement.getBoundingClientRect();
 
     // Maximise if application is outside of viewport
-    let isInViewport = () => {
+    const isInViewport = () => {
       return (
         bounding.top >= 0 &&
         bounding.left >= 0 &&
@@ -171,7 +171,7 @@ export class ApplicationComponent implements OnInit, AfterViewInit {
   onDragStart(event: CdkDragStart<string[]>): void {
     this.ApplicationsService.toggleApplication(this.application.id);
 
-    //$(this).css({'z-index' : zIndex++});
+    // $(this).css({'z-index' : zIndex++});
 
     if (this.isMaximized) {
       this.maximize();
@@ -183,10 +183,10 @@ export class ApplicationComponent implements OnInit, AfterViewInit {
    */
   isVisible(): boolean {
     return this.ApplicationsService.isActiveApplication(this.application.id);
-  };
+  }
 
   /*
-   * ng-click functions
+   * (click) functions
    */
   focusApplication(): void {
     if (this.ApplicationsService.isActiveApplication(this.application.id)) return;
@@ -202,17 +202,17 @@ export class ApplicationComponent implements OnInit, AfterViewInit {
     setTimeout(() => {
       this.isClosing = false;
       this.ApplicationsService.closeApplication(this.application.id);
-      //hide $(parentWindow).hide()
+      // hide $(parentWindow).hide()
     }, 500);
 
     // Close application in taskbar
     this.ApplicationsService.toggleApplication(null);
 
     // TODO: Set closest application active. Issue #3
-    //var closest = $('.window').not('.window--minimized, .window--closing,
+    // var closest = $('.window').not('.window--minimized, .window--closing,
     // .window--opening').filter(function() { return $(this).css('z-index') < zIndex }).first();
 
-    //$(closest).addClass('window--active');
+    // $(closest).addClass('window--active');
   }
 
   minimize(): void {
@@ -229,15 +229,15 @@ export class ApplicationComponent implements OnInit, AfterViewInit {
       this.currentTop = this.initialTop;
       this.currentLeft = this.initialLeft;
     } else {
-      this.initialHeight = this.appElement.nativeElement.offsetHeight + "px";
-      this.initialWidth = this.appElement.nativeElement.offsetWidth + "px";
-      this.initialTop = this.appElement.nativeElement.offsetTop + "px";
-      this.initialLeft = this.appElement.nativeElement.offsetLeft + "px";
+      this.initialHeight = this.appElement.nativeElement.offsetHeight + 'px';
+      this.initialWidth = this.appElement.nativeElement.offsetWidth + 'px';
+      this.initialTop = this.appElement.nativeElement.offsetTop + 'px';
+      this.initialLeft = this.appElement.nativeElement.offsetLeft + 'px';
 
       this.currentHeight = this.fullHeight;
       this.currentWidth = this.fullWidth;
-      this.currentTop = "0px";
-      this.currentLeft = "0px";
+      this.currentTop = '0px';
+      this.currentLeft = '0px';
       this.appElement.nativeElement.style.transform = 'none';
     }
 
@@ -248,14 +248,14 @@ export class ApplicationComponent implements OnInit, AfterViewInit {
   }
 
   onWindowsResize(event): void {
-    this.fullHeight = event.target.innerHeight - 48 + "px";
-    this.fullWidth = event.target.innerWidth + "px";
+    this.fullHeight = event.target.innerHeight - 48 + 'px';
+    this.fullWidth = event.target.innerWidth + 'px';
 
     if (this.isMaximized) {
       this.currentHeight = this.fullHeight;
       this.currentWidth = this.fullWidth;
-      this.currentTop = "0px";
-      this.currentLeft = "0px";
+      this.currentTop = '0px';
+      this.currentLeft = '0px';
     }
   }
 
@@ -269,7 +269,7 @@ export class ApplicationComponent implements OnInit, AfterViewInit {
       width: this.currentWidth,
       top: this.currentTop,
       left: this.currentLeft
-    }
+    };
   }
 
 }

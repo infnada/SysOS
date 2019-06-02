@@ -494,6 +494,69 @@ li li .list__toggle:before {
 
 .main_form {
   padding: 40px;
-  overflow-y: scroll;
   height: 100%;
+}
+
+.window__side .menu__item {
+  padding: 5px;
+  font-size: 16px;
+  color: #455A64;
+  transition: all 100ms;
+  background: #fff;
+  cursor: pointer;
+}
+.window__side .menu__item:hover {
+  background-color: #e0e0e0;
+}
+.window__side .menu__item.active, .window__side .panel-heading.active {
+  border-left: 8px solid #7bb6ef;
+}
+
+
+
+
+
+.folders__body {
+  margin:0;
+  padding:0;
+  height: 100%;
+}
+.folders__body.with__stats {
+  margin:0;
+  padding:0;
+  height: 70%;
+}
+
+.folders__body.last > div {
+  height: 100%;
+}
+
+.folders__body.last {
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.folders__body .window__actions {
+  top:0;
+}
+
+.folders__body .folders {
+  margin-top:32px;
+  overflow-y: scroll;
+  height: calc(100% - 32px);
+}
+
+
+.dropzone {
+  width: 100%;
+  height: 55px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  text-align: center;
+  padding: 15px;
+  color: #7bb6ef;
+  font-weight: bold;
+  background-color: rgba(47, 64, 80, 0.03);
+}
+
+.dragover {
+  border: 3px dashed blue !important;
 }

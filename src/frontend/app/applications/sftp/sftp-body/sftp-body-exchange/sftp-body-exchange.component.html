@@ -1,0 +1,39 @@
+<table class="table table-hover table-elipsis">
+  <thead>
+  <tr>
+    <th>#</th>
+    <th>Exchange</th>
+    <th>Source</th>
+    <th>Destination</th>
+    <th>Size</th>
+    <th>Status</th>
+    <th>Actions</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngIf="!uploadFiles"><td colspan="7" class="center">No recent transactions.</td></tr>
+  <tr *ngFor="let f of uploadFiles">
+    <td>{{$index + 1}}</td>
+    <td *ngIf="!f.exchange">Local to SysOS</td>
+    <td *ngIf="f.exchange == 'upload'">SysOS to Server</td>
+    <td *ngIf="f.exchange == 'download'">Server to SysOS</td>
+    <td *ngIf="!f.source" title="Local device">Local device</td>
+    <td *ngIf="f.source" title="{{f.source}}">{{f.source}}</td>
+    <td *ngIf="f.path" title="/{{f.path}}">/{{f.path}}</td>
+    <td *ngIf="!f.path" title="/{{f.name}}">/{{f.name}}</td>
+    <td>{{f.size}}</td>
+    <td>
+        <span class="progress" ng-show="f.progress >= 0">
+          <div style="width:{{f.progress}}%">{{f.progress}}%</div>
+        </span>
+    </td>
+    <td class="text-navy">
+      <button class="btn btn-xs" (click)="f.upload.abort();f.upload.aborted=true" ng-show="f.upload != null && f.progress < 100 && !f.upload.aborted">
+        Abort<span ng-show="isResumeSupported">/Pause</span>
+      </button>
+      <button class="btn btn-xs" (click)="sftpB.uploadFile(f);f.upload.aborted=false" ng-show="isResumeSupported && f.upload != null && f.upload.aborted">Resume</button>
+      <button class="btn btn-xs" (click)="sftpB.restart(f);f.upload.aborted=false" ng-show="isResumeSupported && f.upload != null && (f.progress == 100 || f.upload.aborted)">Restart</button>
+    </td>
+  </tr>
+  </tbody>
+</table>

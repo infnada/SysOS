@@ -1,7 +1,7 @@
 @import '~bootstrap/dist/css/bootstrap.min.css';
 $fa-font-path : '../../node_modules/font-awesome/fonts';
 @import '../../node_modules/font-awesome/scss/font-awesome';
-@import '~@angular/material/prebuilt-themes/deeppurple-amber.css';
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
 @import '~ngx-toastr/toastr.css';
 
 
@@ -39,6 +39,13 @@ h1, h2, h3, h4, h5, h6 {
 
 ::-webkit-scrollbar-thumb {
   background-color: #00000099;
+}
+
+//////////
+// HELPERS
+//////////
+.cursor-pointer{
+  cursor: pointer;
 }
 
 .no_padding {
@@ -189,6 +196,10 @@ h1, h2, h3, h4, h5, h6 {
   max-height: calc(100vh - 300px);
   overflow: auto;
 }
+
+//////////
+// WINDOW CONTROLS
+//////////
 .window__controls {
   position: absolute;
   top: 0;

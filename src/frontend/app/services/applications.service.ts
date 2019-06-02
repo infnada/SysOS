@@ -1,17 +1,20 @@
 import {Injectable, Injector, SystemJsNgModuleLoader, NgModuleFactory} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 
-import {Observable, BehaviorSubject, Subject} from "rxjs";
+import {Observable, BehaviorSubject, Subject} from 'rxjs';
 import {ToastrService} from 'ngx-toastr';
 
-import {FileSystemService} from "./file-system.service";
+import {FileSystemService} from './file-system.service';
 
-import {Application} from "../interfaces/application";
+import {Application} from '../interfaces/application';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApplicationsService {
+  private subjectCloseApplication = new Subject<any>();
+  private subjectToggleApplication = new Subject<any>();
+
   private _applications: BehaviorSubject<Application[]>;
   private _taskBarApplications: BehaviorSubject<Application[]>;
   private _openedApplications: BehaviorSubject<Application[]>;
@@ -35,10 +38,10 @@ export class ApplicationsService {
               private toastr: ToastrService,
               private FileSystemService: FileSystemService) {
     this.dataStore = {taskBarApplications: [], openedApplications: [], applications: [], taskbar__item_open: null};
-    this._applications = <BehaviorSubject<Application[]>>new BehaviorSubject([]);
-    this._taskBarApplications = <BehaviorSubject<Application[]>>new BehaviorSubject([]);
-    this._openedApplications = <BehaviorSubject<Application[]>>new BehaviorSubject([]);
-    this._taskbar__item_open = <BehaviorSubject<string>>new BehaviorSubject(null);
+    this._applications = <BehaviorSubject<Application[]>> new BehaviorSubject([]);
+    this._taskBarApplications = <BehaviorSubject<Application[]>> new BehaviorSubject([]);
+    this._openedApplications = <BehaviorSubject<Application[]>> new BehaviorSubject([]);
+    this._taskbar__item_open = <BehaviorSubject<string>> new BehaviorSubject(null);
     this.taskBarApplications = this._taskBarApplications.asObservable();
     this.openedApplications = this._openedApplications.asObservable();
     this.applications = this._applications.asObservable();
@@ -49,8 +52,6 @@ export class ApplicationsService {
   /**
    * @Description
    * Check if application is in Desktop Task Bar
-   *
-   * @param id {String} Application ID
    */
   isApplicationInTaskBar(id: string): boolean {
     if (!id) throw new Error('id_not_found');
@@ -63,8 +64,6 @@ export class ApplicationsService {
   /**
    * @Description
    * Get application index in Desktop Task Bar
-   *
-   * @param id {String} Application ID
    */
   getApplicationIndexInTaskBar(id: string): number {
     if (!id) throw new Error('id_not_found');
@@ -77,8 +76,6 @@ export class ApplicationsService {
   /**
    * @Description
    * Check if application is opened
-   *
-   * @param id {String} Application ID
    */
   isApplicationOpened(id: string): boolean {
     if (!id) throw new Error('id_not_found');
@@ -86,13 +83,11 @@ export class ApplicationsService {
     return this.dataStore.openedApplications.map(e => {
       return e.id;
     }).indexOf(id) !== -1;
-  };
+  }
 
   /**
    * @description
    * Main error handler
-   *
-   * @param e {String}
    */
   errorHandler(e: any): Error {
     if (!e) throw new Error('e_not_found');
@@ -100,13 +95,11 @@ export class ApplicationsService {
     this.toastr.error(e, 'General Error');
     console.error('Applications Factory -> General Error -> [%s]', e);
     return new Error(e);
-  };
+  }
 
   /**
    * @Description
    * If and application is not registered it will not be accessible from Desktop or other applications
-   *
-   * @param data {Object}
    */
   registerApplication(data: Application): void {
     if (!data) throw new Error('data_not_found');
@@ -117,22 +110,18 @@ export class ApplicationsService {
 
     // broadcast data to subscribers
     this._applications.next(Object.assign({}, this.dataStore).applications);
-  };
+  }
 
   /**
    * @Description
    * Set an application to be shown in Desktop Task Bar
-   *
-   * @params
-   * data {Object}
-   * save* {Bool}
    */
   registerTaskBarApplication(data: Application, save?: boolean): void {
     if (!data) throw new Error('id_not_found');
 
     console.debug('Applications Factory -> Registering application in TaskBar -> id [%s], pinned [%s], save [%s]', data.id, data.pinned, save);
 
-    let application_index = this.getApplicationIndexInTaskBar(data.id);
+    const application_index = this.getApplicationIndexInTaskBar(data.id);
 
     // Applications already in Task Bar
     if (this.isApplicationInTaskBar(data.id)) {
@@ -161,13 +150,11 @@ export class ApplicationsService {
     if (save === true) {
       this.saveTaskBarApplicationsOrder();
     }
-  };
+  }
 
   /**
    * @Description
    * Return all application info
-   *
-   * @param id {String} Application ID
    */
   getApplicationById(id: string): Application {
     if (!id) throw new Error('id_not_found');
@@ -175,13 +162,11 @@ export class ApplicationsService {
     return this.dataStore.applications.filter(obj => {
       return obj.id === id;
     })[0];
-  };
+  }
 
   /**
    * @Description
    * Closes an application
-   *
-   * @param id {String} Application ID
    */
   closeApplication(id: string): void {
     if (!id) throw new Error('id_not_found');
@@ -201,7 +186,7 @@ export class ApplicationsService {
     // broadcast data to subscribers
     this._openedApplications.next(Object.assign({}, this.dataStore).openedApplications);
     this._taskBarApplications.next(Object.assign({}, this.dataStore).taskBarApplications);
-  };
+  }
 
   /**
    * @Description
@@ -234,25 +219,21 @@ export class ApplicationsService {
 
     // broadcast data to subscribers
     this._openedApplications.next(Object.assign({}, this.dataStore).openedApplications);
-  };
+  }
 
   /**
    * @Description
    * Check if application is active (not in background) on Desktop
-   *
-   * @param id* {String} Application ID
    */
   isActiveApplication(id: string): boolean {
     if (!id) throw new Error('id_not_found');
 
     return this.dataStore.taskbar__item_open === id;
-  };
+  }
 
   /**
    * @Description
    * Set the current application where the mouse is in
-   *
-   * @param app {String} Application ID
    */
   setCurrentHoverApplication(app: string): void {
     this.currentHoverApplication = app;
@@ -261,8 +242,6 @@ export class ApplicationsService {
   /**
    * @Description
    * Puts an application active or at background
-   *
-   * @param id* {String} Application ID
    */
   toggleApplication(id: string | null): void {
     if (typeof id !== 'string' && id !== null) throw new Error('error_id');
@@ -277,24 +256,22 @@ export class ApplicationsService {
 
     // broadcast data to subscribers
     this._taskbar__item_open.next(Object.assign({}, this.dataStore).taskbar__item_open);
-  };
+  }
 
   /**
    * @Description
    * Check if application is pinned in Task Bar
-   *
-   * @param id* {String} Application ID
    */
   isApplicationPinned(id: string): boolean {
     if (!id) throw new Error('id_not_found');
 
-    let application = this.dataStore.taskBarApplications.filter(obj => {
+    const application = this.dataStore.taskBarApplications.filter(obj => {
       return obj.id === id;
     })[0];
 
     if (application) return application.pinned;
     return false;
-  };
+  }
 
   /**
    * @description
@@ -309,40 +286,40 @@ export class ApplicationsService {
       // broadcast data to subscribers
       this._applications.next(Object.assign({}, this.dataStore).applications);
 
-      this.FileSystemService.getFileSystemPath('/bin/applications').subscribe(
+      this.FileSystemService.getFileSystemPath(null, '/bin/applications').subscribe(
         (res: { filename: string }[]) => {
           console.debug('Applications Factory -> Get Installed Applications successfully');
 
           res = [
             {
-              filename: "alerts-module.js"
+              filename: 'alerts-module.js'
             },
             {
-              filename: "backups-manager-module.js"
+              filename: 'backups-manager-module.js'
             },
             {
-              filename: "credentials-manager-module.js"
+              filename: 'credentials-manager-module.js'
             },
             {
-              filename: "datastore-explorer-module.js"
+              filename: 'datastore-explorer-module.js'
             },
             {
-              filename: "file-explorer-module.js"
+              filename: 'file-explorer-module.js'
             },
             {
-              filename: "infrastructure-manager-module.js"
+              filename: 'infrastructure-manager-module.js'
             },
             {
-              filename: "notepad-module.js"
+              filename: 'notepad-module.js'
             },
             {
-              filename: "sftp-module.js"
+              filename: 'sftp-module.js'
             },
             {
-              filename: "ssh-module.js"
+              filename: 'ssh-module.js'
             },
             {
-              filename: "wmks-module.js"
+              filename: 'wmks-module.js'
             },
           ];
 
@@ -371,14 +348,17 @@ export class ApplicationsService {
   loadApplication(application: { filename: string }) {
 
     return new Promise((resolve) => {
-      let module = application.filename.replace('-module.js', '');
-      let moduleCamel = application.filename.toLowerCase().replace('.js', '').replace(/-(.)/g, function(match, group1) {
-        return group1.toUpperCase();
-      });
+      const module = application.filename.replace('-module.js', '');
+      let moduleCamel = application.filename
+        .toLowerCase()
+        .replace('.js', '')
+        .replace(/-(.)/g, (match, group1) => {
+          return group1.toUpperCase();
+        });
 
       moduleCamel = moduleCamel.charAt(0).toUpperCase() + moduleCamel.slice(1);
 
-      let modulePath = "src/frontend/app/applications/" + module +"/" + module +".module#" + moduleCamel;
+      const modulePath = 'src/frontend/app/applications/' + module + '/' + module + '.module#' + moduleCamel;
 
       this.loader.load(modulePath)  // load the module and its components
         .then((modFac: NgModuleFactory<any>) => {
@@ -406,7 +386,7 @@ export class ApplicationsService {
         console.debug('Applications Factory -> Get TaskBar Applications successfully');
 
         // Register Start button
-        this.registerTaskBarApplication({'id': 'start', 'pinned': true});
+        this.registerTaskBarApplication({id: 'start', pinned: true});
 
         // Register every pinned application
         res.forEach(application => {
@@ -424,7 +404,7 @@ export class ApplicationsService {
    * Function called after Sort taskbar applications
    */
   saveTaskBarApplicationsOrder(): void {
-    let applications_to_save = this.dataStore.taskBarApplications.filter(obj => {
+    const applications_to_save = this.dataStore.taskBarApplications.filter(obj => {
       return obj.pinned === true && obj.id !== 'start';
     });
 
@@ -436,10 +416,7 @@ export class ApplicationsService {
         console.error(error);
         console.debug('Applications Factory -> Error while saving TaskBar applications -> ', error);
       });
-  };
-
-
-  private subjectCloseApplication = new Subject<any>();
+  }
 
   sendCloseApplication(application: Application): void {
     this.subjectCloseApplication.next(application);
@@ -448,8 +425,6 @@ export class ApplicationsService {
   getObserverCloseApplication(): Observable<any> {
     return this.subjectCloseApplication.asObservable();
   }
-
-  private subjectToggleApplication = new Subject<any>();
 
   sendToggleApplication(id: string): void {
     this.subjectToggleApplication.next(id);

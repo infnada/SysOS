@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Application} from "../../../interfaces/application";
+import {Application} from '../../../interfaces/application';
 
 @Component({
   selector: 'app-credentials-manager-menu',

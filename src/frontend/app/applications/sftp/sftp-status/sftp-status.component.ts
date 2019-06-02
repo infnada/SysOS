@@ -1,4 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
+import {SftpService} from '../services/sftp.service';
+import {Application} from '../../../interfaces/application';
+import {SftpConnection} from '../SftpConnection';
 
 @Component({
   selector: 'app-sftp-status',
@@ -6,10 +9,16 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./sftp-status.component.scss']
 })
 export class SftpStatusComponent implements OnInit {
+  @Input() application: Application;
 
-  constructor() { }
+  constructor(private SftpService: SftpService) {
+  }
 
   ngOnInit() {
+  }
+
+  getActiveConnection(): SftpConnection {
+    return this.SftpService.getActiveConnection();
   }
 
 }

@@ -1,10 +1,10 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, FormControl, Validators} from '@angular/forms';
 
-import {CredentialsManagerService} from "../credentials-manager.service";
+import {CredentialsManagerService} from '../credentials-manager.service';
 
-import {Credential} from "../credential";
-import {Application} from "../../../interfaces/application";
+import {Credential} from '../credential';
+import {Application} from '../../../interfaces/application';
 
 @Component({
   selector: 'app-credentials-manager-body',
@@ -37,7 +37,7 @@ export class CredentialsManagerBodyComponent implements OnInit {
       } else {
         matchingControl.setErrors(null);
       }
-    }
+    };
   }
 
   constructor(private CredentialsManagerService: CredentialsManagerService,
@@ -47,7 +47,7 @@ export class CredentialsManagerBodyComponent implements OnInit {
     this.CredentialsManagerService.activeCredential.subscribe(credential => {
 
       if (this.credentialForm) this.credentialForm.reset();
-      this.activeCredential = credential
+      this.activeCredential = credential;
     });
   }
 

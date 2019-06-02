@@ -56,12 +56,13 @@ module.exports = function socket (socket) {
 	 *
 	 */
 
-	socket.on('session__disconnect', function (session_type, uuid) {
-		ssh.closeConnection(session_type, uuid);
+	socket.on('[disconnect-session]', function (data) {
+		ssh.closeConnection(data.type, data.uuid);
 	});
 
-	socket.on('session__new', function (session_type, host, credential, port, uuid, so, community) {
-		newConnection(session_type, host, credential, port, uuid, so, community);
+	socket.on('[new-session]', function (data) {
+	  console.log(data);
+		newConnection(data.type, data.host, data.credential, data.port, data.uuid, data.so, data.community);
 	});
 
 };

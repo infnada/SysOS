@@ -1,3 +1,5 @@
-<p>
-  sftp-status works!
-</p>
+<div class="window__status">
+  <span class="pull-left text-muted" *ngIf="getActiveConnection()">{{getActiveConnection().host}}</span>
+  <span class="pull-right text-danger" *ngIf="getActiveConnection() && getActiveConnection().state === 'disconnected'">Disconnected</span>
+  <span class="pull-right text-success" *ngIf="getActiveConnection() && getActiveConnection().state !== 'disconnected'">{{getActiveConnection().state}}</span>
+</div>

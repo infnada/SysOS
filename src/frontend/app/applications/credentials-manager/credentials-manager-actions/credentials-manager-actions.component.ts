@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 
-import {CredentialsManagerService} from "../credentials-manager.service";
-import {Application} from "../../../interfaces/application";
+import {CredentialsManagerService} from '../credentials-manager.service';
+import {Application} from '../../../interfaces/application';
 
 @Component({
   selector: 'app-credentials-manager-actions',

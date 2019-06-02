@@ -1,14 +1,14 @@
 import {Component, OnInit, Input, ViewChild, ElementRef, AfterViewInit} from '@angular/core';
-import {MatMenuTrigger} from "@angular/material";
+import {MatMenuTrigger} from '@angular/material';
 
 import Selectable from 'selectable.js';
 
-import {FileSystemService} from "../../services/file-system.service";
-import {FileSystemUiService} from "../../services/file-system-ui.service";
+import {FileSystemService} from '../../services/file-system.service';
+import {FileSystemUiService} from '../../services/file-system-ui.service';
 
-import {SysOSFile} from "../../interfaces/file";
-import {ContextMenuItem} from "../../interfaces/context-menu-item";
-import {Application} from "../../interfaces/application";
+import {SysOSFile} from '../../interfaces/file';
+import {ContextMenuItem} from '../../interfaces/context-menu-item';
+import {Application} from '../../interfaces/application';
 
 @Component({
   selector: 'app-file',
@@ -19,6 +19,7 @@ export class FileComponent implements OnInit, AfterViewInit {
   @ViewChild(MatMenuTrigger) contextMenuFile: MatMenuTrigger;
   @ViewChild('selectableFileElement') selectableFileElement: ElementRef;
   @Input() application: Application;
+  @Input() subApplication: string;
   @Input() file: SysOSFile;
   @Input() isCurrentActive: boolean;
   @Input() currentPath: string;
@@ -27,25 +28,6 @@ export class FileComponent implements OnInit, AfterViewInit {
   @Input() selector: string;
 
   contextMenuPosition = {x: '0px', y: '0px'};
-
-  onFileContextMenu(event: MouseEvent): void {
-    event.preventDefault();
-    event.stopPropagation();
-    this.contextMenuPosition.x = event.clientX + 'px';
-    this.contextMenuPosition.y = event.clientY + 'px';
-    this.contextMenuFile.openMenu();
-  }
-
-  checkIfDisabled(item: ContextMenuItem): boolean {
-    if (item.disabled) return item.disabled();
-    return false;
-  }
-
-  contextToText(item: ContextMenuItem, file?: SysOSFile): string {
-    if (typeof item.text === 'string') return item.text;
-    if (typeof item.text === 'function') return item.text(file);
-  }
-
   fileContextMenuItems: ContextMenuItem[] = [
     {
       id: 1, text: '<i class="fa fa-download"></i> Download to local', action: (file: SysOSFile) => {
@@ -54,7 +36,7 @@ export class FileComponent implements OnInit, AfterViewInit {
     },
     {
       id: 2, text: (file: SysOSFile) => {
-        let filetype = this.getFileType(file.longname);
+        const filetype = this.getFileType(file.longname);
 
         if (filetype === 'folder') {
           return '<i class="fa fa-folder-open"></i> Open';
@@ -90,10 +72,28 @@ export class FileComponent implements OnInit, AfterViewInit {
     {id: 10, text: 'divider'},
     {
       id: 11, text: '<i class="fa fa-lock"></i> Permissions', action: (file: SysOSFile) => {
-        //TODO
+        // TODO
       }
     }
   ];
+
+  onFileContextMenu(event: MouseEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.contextMenuPosition.x = event.clientX + 'px';
+    this.contextMenuPosition.y = event.clientY + 'px';
+    this.contextMenuFile.openMenu();
+  }
+
+  checkIfDisabled(item: ContextMenuItem): boolean {
+    if (item.disabled) return item.disabled();
+    return false;
+  }
+
+  contextToText(item: ContextMenuItem, file?: SysOSFile): string {
+    if (typeof item.text === 'string') return item.text;
+    if (typeof item.text === 'function') return item.text(file);
+  }
 
   constructor(private FileSystemService: FileSystemService,
               private FileSystemUiService: FileSystemUiService) {
@@ -103,21 +103,20 @@ export class FileComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    console.log(this.selectable);
-    this.selectable.add(this.selectableFileElement.nativeElement)
+    this.selectable.add(this.selectableFileElement.nativeElement);
   }
 
   getFileType(longname: string): string {
     return this.FileSystemService.getFileType(longname);
-  };
+  }
 
   UIrenameFile(file: SysOSFile) {
-    this.FileSystemUiService.UIrenameFile(this.currentPath, file, this.selector);
-  };
+    this.FileSystemUiService.UIrenameFile(null, this.currentPath, file, this.selector);
+  }
 
   UIdeleteSelected(file: SysOSFile) {
-    this.FileSystemUiService.UIdeleteSelected(this.currentPath, file, this.selector);
-  };
+    this.FileSystemUiService.UIdeleteSelected(null, this.currentPath, file, this.selector);
+  }
 
   UIcopyFile(file: SysOSFile) {
     this.FileSystemUiService.UIcopyFile(this.currentPath, file);
@@ -128,7 +127,10 @@ export class FileComponent implements OnInit, AfterViewInit {
   }
 
   UIdoWithFile(file: SysOSFile) {
-    this.FileSystemUiService.UIdoWithFile(this.application.id, this.currentPath, file);
+    let realApplication = this.application.id;
+    if (this.subApplication) realApplication = this.application.id + '#' + this.subApplication;
+
+    this.FileSystemUiService.UIdoWithFile(realApplication, this.currentPath, file);
   }
 
 }

@@ -5,7 +5,7 @@
         <i class="fa fa-user fa-5x fa-user-login"></i>
       </button>
       <div class="profile__form">
-        <div class="profile__fields">
+        <div class="profile__fields" (capsLock)="capsOn=$event">
           <form autocomplete="off" ngNativeValidate>
             <div class="field">
               <input type="text" id="fieldUser" class="input" autocomplete="off" name="username" [(ngModel)]="username" required pattern=.*\S.* />
@@ -14,9 +14,10 @@
             <div class="field">
               <input type="password" id="fieldPassword" class="input" autocomplete="off" name="password" [(ngModel)]="password" readonly onfocus="this.removeAttribute('readonly');" required pattern=.*\S.* />
               <label for="fieldPassword" class="label">Password</label>
+              <small class="text-primary text-center d-block" *ngIf="capsOn">Caps Locked</small>
             </div>
             <div class="profile__footer">
-              <button class="btn btn-primary" (click)="login(username, password)">Login</button>
+              <button class="btn" type="submit" (click)="login(username, password)" mat-flat-button color="primary">Login</button>
             </div>
           </form>
         </div>

@@ -1,14 +1,15 @@
 import { Injectable } from '@angular/core';
-import {BehaviorSubject, Observable, Subject} from "rxjs";
+import {BehaviorSubject, Observable, Subject} from 'rxjs';
 
-import {FileSystemService} from "../../services/file-system.service";
+import {FileSystemService} from '../../services/file-system.service';
 
-import {SysOSFile} from "../../interfaces/file";
+import {SysOSFile} from '../../interfaces/file';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FileExplorerService {
+  private subjectGoPathBack = new Subject<any>();
 
   private _currentPath: BehaviorSubject<string>;
   private _currentData: BehaviorSubject<SysOSFile[]>;
@@ -27,10 +28,10 @@ export class FileExplorerService {
 
   constructor(private FileSystemService: FileSystemService) {
     this.dataStore = {currentPath: '/', currentData: [], viewAsList: false, search: null};
-    this._currentPath = <BehaviorSubject<string>>new BehaviorSubject('/');
-    this._currentData = <BehaviorSubject<SysOSFile[]>>new BehaviorSubject([]);
-    this._viewAsList = <BehaviorSubject<boolean>>new BehaviorSubject(false);
-    this._search = <BehaviorSubject<object>>new BehaviorSubject({filename: null});
+    this._currentPath = <BehaviorSubject<string>> new BehaviorSubject('/');
+    this._currentData = <BehaviorSubject<SysOSFile[]>> new BehaviorSubject([]);
+    this._viewAsList = <BehaviorSubject<boolean>> new BehaviorSubject(false);
+    this._search = <BehaviorSubject<object>> new BehaviorSubject({filename: null});
     this.currentPath = this._currentPath.asObservable();
     this.currentData = this._currentData.asObservable();
     this.viewAsList = this._viewAsList.asObservable();
@@ -38,7 +39,7 @@ export class FileExplorerService {
   }
 
   reloadPath(path?: string): void {
-    this.FileSystemService.getFileSystemPath((path ? path : this.dataStore.currentPath)).subscribe(
+    this.FileSystemService.getFileSystemPath(null, (path ? path : this.dataStore.currentPath)).subscribe(
       (res: SysOSFile[]) => {
         this.dataStore.currentData = res;
 
@@ -71,8 +72,6 @@ export class FileExplorerService {
     // broadcast data to subscribers
     this._search.next(Object.assign({}, this.dataStore).search);
   }
-
-  private subjectGoPathBack = new Subject<any>();
 
   sendGoPathBack(): void {
     this.subjectGoPathBack.next();

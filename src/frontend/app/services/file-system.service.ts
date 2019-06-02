@@ -11,15 +11,23 @@ export class FileSystemService {
   constructor(private http: HttpClient) {
   }
 
-  getFileSystemPath(path: string): Observable<any> {
+  getFileSystemPath(connectionUuid: string, path: string): Observable<any> {
+
+    if (connectionUuid) {
+      return this.http.post('/api/remoteFolder/get', {
+        uuid: connectionUuid,
+        path
+      });
+    }
+
     return this.http.post('/api/folder/get', {
-      path: path
+      path
     });
-}
+  }
 
   uploadFile(path: string, file: File): Observable<any> {
 
-    let formData = new FormData();
+    const formData = new FormData();
     formData.append('path', path + file.name);
     formData.append('file', file);
 
@@ -32,65 +40,128 @@ export class FileSystemService {
 
   getFileContents(path: string): Observable<any> {
     return this.http.post('/api/file/get', {
-      path: path
-    });
+      path
+    }, {responseType: 'blob'});
   }
 
-  renameFile(path: string, oldName: string, newName: string): Observable<any> {
+  renameFile(connectionUuid: string, path: string, oldName: string, newName: string): Observable<any> {
+
+    if (connectionUuid) {
+      return this.http.post('/api/remoteFile/rename', {
+        uuid: connectionUuid,
+        path,
+        oldName,
+        newName
+      });
+    }
+
     return this.http.post('/api/file/rename', {
-      path: path,
-      oldName: oldName,
-      newName: newName
+      path,
+      oldName,
+      newName
     });
   }
 
-  deleteFile(path: string, name: string): Observable<any> {
+  deleteFile(connectionUuid: string, path: string, name: string): Observable<any> {
+
+    if (connectionUuid) {
+      return this.http.post('/api/remoteFile/delete', {
+        uuid: connectionUuid,
+        path,
+        name // TODO ?=???
+      });
+    }
+
     return this.http.post('/api/file/delete', {
-      path: path,
-      name: name
+      path,
+      name
     });
   }
 
-  copyFile(src: string, dst: string): Observable<any> {
+  copyFile(connectionUuid: string, src: string, dst: string): Observable<any> {
+
+    if (connectionUuid) {
+      return this.http.post('/api/remoteFile/copy', {
+        uuid: connectionUuid,
+        src,
+        dst
+      });
+    }
+
     return this.http.post('/api/file/copy', {
-      src: src,
-      dst: dst
+      src,
+      dst
     });
   }
 
-  moveFile(src: string, dst: string): Observable<any> {
+  moveFile(connectionUuid: string, src: string, dst: string): Observable<any> {
+
+    if (connectionUuid) {
+      return this.http.post('/api/remoteFile/move', {
+        uuid: connectionUuid,
+        src,
+        dst
+      });
+    }
+
     return this.http.post('/api/file/move', {
-      src: src,
-      dst: dst
+      src,
+      dst
     });
   }
 
-  downloadFileFromInet(path: string, url: string, credential: string): Observable<any> {
+  downloadFileFromInet(connectionUuid: string, path: string, url: string, credential?: { username: string, password: string }): Observable<any> {
+
+    if (connectionUuid) {
+      return this.http.post('/api/remoteFile/download_from_url', {
+        uuid: connectionUuid,
+        url,
+        path,
+        credential
+      });
+    }
+
     return this.http.post('/api/file/download_from_url', {
-      url: url,
-      path: path,
-      credential: credential
+      url,
+      path,
+      credential
     });
   }
 
-  createFolder(path: string, name: string): Observable<any> {
+  createFolder(connectionUuid: string, path: string, name: string): Observable<any> {
+
+    if (connectionUuid) {
+      return this.http.post('/api/folder/create', {
+        uuid: connectionUuid,
+        path,
+        name
+      });
+    }
+
     return this.http.post('/api/folder/create', {
-      path: path,
-      name: name
+      path,
+      name
     });
   }
 
   getConfigFile(file: string): Observable<any> {
     return this.http.post('/api/configFiles/get', {
-      file: file
+      file
     });
   }
 
   saveConfigFile(data: any, file: string, full_save: boolean): Observable<any> {
     return this.http.post('/api/configFiles/save', {
-      data: data,
-      file: file,
-      full_save: full_save
+      data,
+      file,
+      full_save
+    });
+  }
+
+  deleteConfigFromFile(uuid: string, file: string): Observable<any> {
+    return this.http.post('/api/configFiles/delete', {
+      uuid,
+      file
     });
   }
 

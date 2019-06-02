@@ -21,7 +21,7 @@
   min-height: 100%;
   color: #777;
 
-  button {
+  button.profile__avatar {
     cursor: pointer;
     border: 0;
     padding: 0;
@@ -145,8 +145,6 @@
       height: 2.5rem;
       line-height: 2.5rem;
       padding: 0 1.5rem;
-      color: white;
-      background: #337ab7;
       text-transform: uppercase;
       border-radius: .25rem;
       letter-spacing: .2em;

@@ -9,7 +9,7 @@ export class UserStateService {
 
   private stateSource = new BehaviorSubject({
     userLoggedIn: false,
-    username: "root"
+    username: 'root'
   });
   currentState = this.stateSource.asObservable();
 
@@ -17,13 +17,13 @@ export class UserStateService {
   }
 
   setState(data: any): void {
-    this.stateSource.next(data)
+    this.stateSource.next(data);
   }
 
   loginUser(username: string, password: string): Observable<any> {
     return this.http.post('/api/credential/login', {
-      username: username,
-      password: password
+      username,
+      password
     });
   }
 

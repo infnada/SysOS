@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 
-import {UserStateService} from "../../services/user-state.service";
-import {MainService} from "../../services/main.service";
+import {UserStateService} from '../../services/user-state.service';
+import {MainService} from '../../services/main.service';
 
 @Component({
   selector: 'app-login',
@@ -11,6 +11,7 @@ import {MainService} from "../../services/main.service";
 export class LoginComponent implements OnInit {
   username: string = 'root';
   password: string;
+  capsOn: boolean = false;
 
   loginExpanded: boolean = false;
 
@@ -27,7 +28,7 @@ export class LoginComponent implements OnInit {
         if (res.status === 'ok') {
           this.UserStateService.setState({
             userLoggedIn: true,
-            username: "root"
+            username: 'root'
           });
 
           return this.MainService.init();

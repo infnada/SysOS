@@ -5,15 +5,15 @@ import {MatMenuModule, MatDividerModule} from '@angular/material';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 
 import {FilterPipeModule} from 'ngx-filter-pipe';
-import {ngfModule} from "angular-file"
+import {ngfModule} from 'angular-file';
 
-import {ApplicationsService} from "../../services/applications.service";
+import {ApplicationsService} from '../../services/applications.service';
 
 import {FileExplorerBodyComponent} from './file-explorer-body/file-explorer-body.component';
 import {FileExplorerMenuComponent} from './file-explorer-menu/file-explorer-menu.component';
 
 import {FileModule} from '../../shared-modules/file/file.module';
-import {FileExplorerBodyActionsComponent} from './file-explorer-body-actions/file-explorer-body-actions.component'
+import {FileExplorerBodyActionsComponent} from './file-explorer-body-actions/file-explorer-body-actions.component';
 
 @NgModule({
   declarations: [
@@ -44,7 +44,7 @@ export class FileExplorerModule implements OnInit {
       menu: true,
       actions: false,
       status: false,
-      style: {width: "770px", height: "600px", top: "9%", left: "12%"}
+      style: {width: '770px', height: '600px', top: '9%', left: '12%'}
     });
 
   }
