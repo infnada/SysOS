@@ -35,9 +35,9 @@ import {FileExplorerBodyActionsComponent} from './file-explorer-body-actions/fil
 })
 export class FileExplorerModule implements OnInit {
 
-  constructor(private ApplicationsService: ApplicationsService) {
+  constructor(private Applications: ApplicationsService) {
 
-    ApplicationsService.registerApplication({
+    Applications.registerApplication({
       id: 'file-explorer',
       ico: 'folder',
       name: 'File Explorer',

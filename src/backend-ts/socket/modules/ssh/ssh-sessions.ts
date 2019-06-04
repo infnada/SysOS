@@ -1,7 +1,7 @@
 import path from 'path';
 import readConfig from 'read-config';
-const config =  readConfig(path.join(__dirname, '/filesystem/etc/expressjs/config.json'));
 import ssh2 from 'ssh2';
+const config =  readConfig(path.join(__dirname, '../../../filesystem/etc/expressjs/config.json'));
 
 export class SshSessionsModule {
 
@@ -40,7 +40,7 @@ export class SshSessionsModule {
     return this.sshSessions;
   }
 
-  async getSession(type, uuid) {
+  getSession(type, uuid) {
     return this.sshSessions[type][uuid];
   }
 

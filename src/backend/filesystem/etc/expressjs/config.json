@@ -8,10 +8,10 @@
     "port": 22,
     "term": "xterm-color"
   },
-  "uniqueCookie": "uniqueId", // DO NOT CHANGE
+  "uniqueCookie": "uniqueId",
   "session": {
     "name": "SysOS",
-    "secret": "SysOsSecret" // MUST CHANGE
+    "secret": "SysOsSecret"
   },
   "algorithms": {
     "kex": [
@@ -29,12 +29,12 @@
       "aes128-gcm@openssh.com",
       "aes256-gcm",
       "aes256-gcm@openssh.com",
-      "aes256-cbc" // for some legacy systems
+      "aes256-cbc"
     ],
     "hmac": [
       "hmac-sha2-256",
       "hmac-sha2-512",
-      "hmac-sha1" // for some legacy systems
+      "hmac-sha1"
     ],
     "compress": [
       "none",

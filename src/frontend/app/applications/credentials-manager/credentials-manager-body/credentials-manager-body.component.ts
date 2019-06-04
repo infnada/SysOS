@@ -40,11 +40,11 @@ export class CredentialsManagerBodyComponent implements OnInit {
     };
   }
 
-  constructor(private CredentialsManagerService: CredentialsManagerService,
+  constructor(private CredentialsManager: CredentialsManagerService,
               private formBuilder: FormBuilder) {
 
-    this.CredentialsManagerService.credentials.subscribe(credentials => this.credentials = credentials);
-    this.CredentialsManagerService.activeCredential.subscribe(credential => {
+    this.CredentialsManager.credentials.subscribe(credentials => this.credentials = credentials);
+    this.CredentialsManager.activeCredential.subscribe(credential => {
 
       if (this.credentialForm) this.credentialForm.reset();
       this.activeCredential = credential;
@@ -79,17 +79,17 @@ export class CredentialsManagerBodyComponent implements OnInit {
     if (this.activeCredential !== null) this.credentialForm.value.uuid = this.activeCredential;
     delete this.credentialForm.value.confirmPassword;
 
-    this.CredentialsManagerService.saveCredential(this.credentialForm.value).then(() => {
+    this.CredentialsManager.saveCredential(this.credentialForm.value).then(() => {
       this.submitted = false;
       this.credentialForm.reset();
     });
   }
 
   setActiveCredential(credential: Credential): void {
-    this.CredentialsManagerService.setActiveCredential(credential.uuid);
+    this.CredentialsManager.setActiveCredential(credential.uuid);
 
-    (<FormControl> this.credentialForm.controls['description']).setValue(credential.description);
-    (<FormControl> this.credentialForm.controls['username']).setValue(credential.username);
+    (this.credentialForm.controls.description as FormControl).setValue(credential.description);
+    (this.credentialForm.controls.username as FormControl).setValue(credential.username);
   }
 
 }

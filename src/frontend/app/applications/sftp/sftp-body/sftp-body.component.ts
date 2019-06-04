@@ -17,13 +17,13 @@ export class SftpBodyComponent implements OnInit {
 
   viewSide: boolean = true;
 
-  constructor(private SftpService: SftpService) {
+  constructor(private Sftp: SftpService) {
   }
 
   ngOnInit() {
-    this.SftpService.connections.subscribe(connections => this.connections = connections);
-    this.SftpService.activeConnection.subscribe(connection => this.activeConnection = connection);
-    this.SftpService.viewExchange.subscribe(view => this.viewExchange = view);
+    this.Sftp.connections.subscribe(connections => this.connections = connections);
+    this.Sftp.activeConnection.subscribe(connection => this.activeConnection = connection);
+    this.Sftp.viewExchange.subscribe(view => this.viewExchange = view);
   }
 
   toggleSide(): void {
@@ -31,7 +31,7 @@ export class SftpBodyComponent implements OnInit {
   }
 
   setActiveConnection(connection: SftpConnection): void {
-    this.SftpService.setActiveConnection(connection.uuid);
+    this.Sftp.setActiveConnection(connection.uuid);
   }
 
 }

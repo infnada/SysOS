@@ -22,11 +22,11 @@ export class SftpBodyNewConnectionComponent implements OnInit {
   submitted: boolean = false;
 
   constructor(private formBuilder: FormBuilder,
-              private SftpService: SftpService,
-              private ApplicationsService: ApplicationsService,
-              private CredentialsManagerService: CredentialsManagerService) {
+              private Sftp: SftpService,
+              private Applications: ApplicationsService,
+              private CredentialsManager: CredentialsManagerService) {
 
-    this.CredentialsManagerService.credentials.subscribe(credentials => this.credentials = credentials);
+    this.CredentialsManager.credentials.subscribe(credentials => this.credentials = credentials);
   }
 
   ngOnInit() {
@@ -40,17 +40,17 @@ export class SftpBodyNewConnectionComponent implements OnInit {
       uuid: [null]
     });
 
-    this.SftpService.activeConnection.subscribe((activeConnection: string) => {
+    this.Sftp.activeConnection.subscribe((activeConnection: string) => {
 
       if (!activeConnection) return;
 
-      (<FormControl> this.connectionForm.controls['description']).setValue(this.getActiveConnection().description);
-      (<FormControl> this.connectionForm.controls['host']).setValue(this.getActiveConnection().host);
-      (<FormControl> this.connectionForm.controls['port']).setValue(this.getActiveConnection().port);
-      (<FormControl> this.connectionForm.controls['credential']).setValue(this.getActiveConnection().credential);
-      (<FormControl> this.connectionForm.controls['save']).setValue(this.getActiveConnection().save);
-      (<FormControl> this.connectionForm.controls['autologin']).setValue(this.getActiveConnection().autologin);
-      (<FormControl> this.connectionForm.controls['uuid']).setValue(this.getActiveConnection().uuid);
+      (this.connectionForm.controls.description as FormControl).setValue(this.getActiveConnection().description);
+      (this.connectionForm.controls.host as FormControl).setValue(this.getActiveConnection().host);
+      (this.connectionForm.controls.port as FormControl).setValue(this.getActiveConnection().port);
+      (this.connectionForm.controls.credential as FormControl).setValue(this.getActiveConnection().credential);
+      (this.connectionForm.controls.save as FormControl).setValue(this.getActiveConnection().save);
+      (this.connectionForm.controls.autologin as FormControl).setValue(this.getActiveConnection().autologin);
+      (this.connectionForm.controls.uuid as FormControl).setValue(this.getActiveConnection().uuid);
     });
   }
 
@@ -64,19 +64,19 @@ export class SftpBodyNewConnectionComponent implements OnInit {
       return;
     }
 
-    this.SftpService.connect(this.connectionForm.value);
+    this.Sftp.connect(this.connectionForm.value);
 
     this.submitted = false;
     this.connectionForm.reset();
   }
 
   manageCredentials() {
-    this.ApplicationsService.openApplication('credentials-manager');
-    this.ApplicationsService.toggleApplication('credentials-manager');
+    this.Applications.openApplication('credentials-manager');
+    this.Applications.toggleApplication('credentials-manager');
   }
 
   getActiveConnection(): SftpConnection {
-    return this.SftpService.getActiveConnection();
+    return this.Sftp.getActiveConnection();
   }
 
 }

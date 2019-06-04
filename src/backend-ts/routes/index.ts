@@ -1,11 +1,12 @@
 import path from 'path';
 import readConfig from 'read-config';
-const config =  readConfig(path.join(__dirname, '/filesystem/etc/expressjs/config.json'));
 import log4js from 'log4js';
-const logger = log4js.getLogger('mainlog');
 import multiparty from 'connect-multiparty';
-const multipartyMiddleware = multiparty();
 import {ApiGlobalsModule} from './api/api-globals';
+
+const config =  readConfig(path.join(__dirname, '../filesystem/etc/expressjs/config.json'));
+const logger = log4js.getLogger('mainlog');
+const multipartyMiddleware = multiparty();
 
 export class RoutesModule {
 

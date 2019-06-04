@@ -5,7 +5,7 @@
         <i class="fa fa-user fa-5x fa-user-login"></i>
       </button>
       <div class="profile__form">
-        <div class="profile__fields" (capsLock)="capsOn=$event">
+        <div class="profile__fields" (appCapsLock)="capsOn=$event">
           <form autocomplete="off" ngNativeValidate>
             <div class="field">
               <input type="text" id="fieldUser" class="input" autocomplete="off" name="username" [(ngModel)]="username" required pattern=.*\S.* />

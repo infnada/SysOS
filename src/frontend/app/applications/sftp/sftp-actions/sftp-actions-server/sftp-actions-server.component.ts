@@ -26,49 +26,49 @@ export class SftpActionsServerComponent implements OnInit {
   lastPath: string[] = [];
   nextPath: string[] = [];
 
-  constructor(private FileSystemUiService: FileSystemUiService,
-              private SftpService: SftpService,
-              private SftpServerService: SftpServerService) {
+  constructor(private FileSystemUi: FileSystemUiService,
+              private Sftp: SftpService,
+              private SftpServer: SftpServerService) {
 
-    this.goPathBackSubscription = this.SftpServerService.getObserverGoPathBack().subscribe(() => {
+    this.goPathBackSubscription = this.SftpServer.getObserverGoPathBack().subscribe(() => {
       this.goPathBack();
     });
 
-    this.goToPathSubscription = this.FileSystemUiService.getObserverGoToPath().subscribe((data) => {
+    this.goToPathSubscription = this.FileSystemUi.getObserverGoToPath().subscribe((data) => {
       if (data.application === 'sftp#server') this.goToPath(data.path);
     });
   }
 
   ngOnInit(): void {
-    this.SftpServerService.currentPath.subscribe(path => this.currentPath = path);
-    this.SftpServerService.currentData.subscribe(data => this.currentData = data);
-    this.SftpServerService.viewAsList.subscribe(data => this.viewAsList = data);
-    this.SftpServerService.search.subscribe(data => this.search = data);
+    this.SftpServer.currentPath.subscribe(path => this.currentPath = path);
+    this.SftpServer.currentData.subscribe(data => this.currentData = data);
+    this.SftpServer.viewAsList.subscribe(data => this.viewAsList = data);
+    this.SftpServer.search.subscribe(data => this.search = data);
   }
 
   getActiveConnection(): SftpConnection {
-    return this.SftpService.getActiveConnection();
+    return this.Sftp.getActiveConnection();
   }
 
   /**
    * Creates a new folder
    */
   UIcreateFolder(): void {
-    this.FileSystemUiService.UIcreateFolder(this.getActiveConnection().uuid, this.currentPath, '.window--sftp .window__main');
+    this.FileSystemUi.UIcreateFolder(this.getActiveConnection().uuid, this.currentPath, '.window--sftp .window__main');
   }
 
   /**
    * Sets view mode (icons, detailed...)
    */
   toggleView(): void {
-    this.SftpServerService.toggleView();
+    this.SftpServer.toggleView();
   }
 
   /**
    * Get current path data
    */
   reloadPath(newPath?: string): void {
-    this.SftpServerService.reloadPath(this.getActiveConnection().uuid, newPath);
+    this.SftpServer.reloadPath(this.getActiveConnection().uuid, newPath);
     this.searchChange(null);
   }
 
@@ -115,7 +115,7 @@ export class SftpActionsServerComponent implements OnInit {
   }
 
   searchChange(event: string): void {
-    this.SftpServerService.setSearch(event);
+    this.SftpServer.setSearch(event);
   }
 
 }

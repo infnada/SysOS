@@ -14,8 +14,8 @@ import {WmksMenuComponent} from './wmks-menu/wmks-menu.component';
 })
 export class WmksModule implements OnInit {
 
-  constructor(private ApplicationsService: ApplicationsService) {
-    ApplicationsService.registerApplication({
+  constructor(private Applications: ApplicationsService) {
+    Applications.registerApplication({
       id: 'wmks',
       ico: 'television',
       name: 'VM Remote Console',

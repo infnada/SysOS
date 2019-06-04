@@ -22,8 +22,8 @@ import {SshStatusComponent} from './ssh-status/ssh-status.component';
 })
 export class SshModule implements OnInit {
 
-  constructor(private ApplicationsService: ApplicationsService) {
-    ApplicationsService.registerApplication({
+  constructor(private Applications: ApplicationsService) {
+    Applications.registerApplication({
       id: 'ssh',
       ico: 'terminal',
       name: 'SSH',

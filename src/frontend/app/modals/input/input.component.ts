@@ -9,7 +9,7 @@ import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 export class InputComponent implements OnInit {
   @Input() title: string;
   @Input() text: string;
-  @Input() button_text: string;
+  @Input() buttonText: string;
   @Input() inputValue: string;
 
   constructor(public activeModal: NgbActiveModal) {

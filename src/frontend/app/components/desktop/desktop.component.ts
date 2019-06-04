@@ -1,6 +1,5 @@
 import {Component, OnInit, ViewChild, ElementRef, AfterViewInit} from '@angular/core';
 import {MatMenuTrigger} from '@angular/material';
-import {ToastrService} from 'ngx-toastr';
 import {Subscription} from 'rxjs';
 
 import Selectable from 'selectable.js';
@@ -27,7 +26,7 @@ export class DesktopComponent implements OnInit, AfterViewInit {
   reloadPathSubscription: Subscription;
 
   openedApplications: Application[];
-  taskbar__item_open: string;
+  taskbarItemOpen: string;
 
   copyFrom: string;
   cutFrom: string;
@@ -89,22 +88,21 @@ export class DesktopComponent implements OnInit, AfterViewInit {
     if (typeof item.text === 'function') return item.text(file);
   }
 
-  constructor(private toastr: ToastrService,
-              private FileSystemService: FileSystemService,
-              private FileSystemUiService: FileSystemUiService,
-              private ApplicationsService: ApplicationsService) {
+  constructor(private FileSystem: FileSystemService,
+              private FileSystemUi: FileSystemUiService,
+              private Applications: ApplicationsService) {
 
-    this.reloadPathSubscription = this.FileSystemUiService.getRefreshPath().subscribe(path => {
+    this.reloadPathSubscription = this.FileSystemUi.getRefreshPath().subscribe(path => {
       if (path === '/root/Desktop/') this.reloadPath();
     });
   }
 
   ngOnInit() {
-    this.ApplicationsService.openedApplications.subscribe(applications => this.openedApplications = applications);
-    this.ApplicationsService.taskbar__item_open.subscribe(application => this.taskbar__item_open = application);
+    this.Applications.openedApplications.subscribe(applications => this.openedApplications = applications);
+    this.Applications.taskbarItemOpen.subscribe(application => this.taskbarItemOpen = application);
 
-    this.FileSystemUiService.copyFrom.subscribe(path => this.copyFrom = path);
-    this.FileSystemUiService.cutFrom.subscribe(path => this.cutFrom = path);
+    this.FileSystemUi.copyFrom.subscribe(path => this.copyFrom = path);
+    this.FileSystemUi.cutFrom.subscribe(path => this.cutFrom = path);
 
     this.reloadPath();
   }
@@ -133,7 +131,7 @@ export class DesktopComponent implements OnInit, AfterViewInit {
    * Get current path data
    */
   private reloadPath(): void {
-    this.FileSystemService.getFileSystemPath(null, this.desktopFiles.currentPath).subscribe(
+    this.FileSystem.getFileSystemPath(null, this.desktopFiles.currentPath).subscribe(
       (res: Array<any>) => {
         this.desktopFiles.currentData = res;
         this.resetActive();
@@ -148,39 +146,39 @@ export class DesktopComponent implements OnInit, AfterViewInit {
    * On file dragstart
    */
   onDragStart(): void {
-    this.FileSystemUiService.setCurrentFileDrag('/root/Desktop/');
+    this.FileSystemUi.setCurrentFileDrag('/root/Desktop/');
   }
 
   UIonDropItem($event): void {
-    this.FileSystemUiService.UIonDropItem(null, $event, this.desktopFiles.currentPath);
+    this.FileSystemUi.UIonDropItem(null, $event, this.desktopFiles.currentPath);
   }
 
   getFileType(longname: string): string {
-    return this.FileSystemService.getFileType(longname);
+    return this.FileSystem.getFileType(longname);
   }
 
   UIdownloadFromURL(): void {
-    this.FileSystemUiService.UIdownloadFromURL(null, this.desktopFiles.currentPath, '.desktop .desktop__body');
+    this.FileSystemUi.UIdownloadFromURL(null, this.desktopFiles.currentPath, '.desktop .desktop__body');
   }
 
   UIcreateFolder(): void {
-    this.FileSystemUiService.UIcreateFolder(null, this.desktopFiles.currentPath, '.desktop .desktop__body');
+    this.FileSystemUi.UIcreateFolder(null, this.desktopFiles.currentPath, '.desktop .desktop__body');
   }
 
   UIrenameFile(file: SysOSFile): void {
-    this.FileSystemUiService.UIrenameFile(null, this.desktopFiles.currentPath, file, '.desktop .desktop__body');
+    this.FileSystemUi.UIrenameFile(null, this.desktopFiles.currentPath, file, '.desktop .desktop__body');
   }
 
   UIdeleteSelected(file: SysOSFile): void {
-    this.FileSystemUiService.UIdeleteSelected(null, this.desktopFiles.currentPath, file, '.desktop .desktop__body');
+    this.FileSystemUi.UIdeleteSelected(null, this.desktopFiles.currentPath, file, '.desktop .desktop__body');
   }
 
   UIpasteFile(): void {
-    this.FileSystemUiService.UIpasteFile(null, this.desktopFiles.currentPath);
+    this.FileSystemUi.UIpasteFile(null, this.desktopFiles.currentPath);
   }
 
   UIdoWithFile(file: SysOSFile): void {
-    this.FileSystemUiService.UIdoWithFile('file-explorer', this.desktopFiles.currentPath, file);
+    this.FileSystemUi.UIdoWithFile('file-explorer', this.desktopFiles.currentPath, file);
   }
 
   /**
@@ -189,7 +187,7 @@ export class DesktopComponent implements OnInit, AfterViewInit {
   handleDesktopClick($event): void {
 
     if ($event.target.attributes.id !== undefined && $event.target.attributes.id.value === 'desktop_body') {
-      this.ApplicationsService.toggleApplication(null);
+      this.Applications.toggleApplication(null);
       this.currentActive = null;
     }
 
@@ -217,7 +215,7 @@ export class DesktopComponent implements OnInit, AfterViewInit {
   }
 
   setCurrentHoverApplication(): void {
-    this.ApplicationsService.setCurrentHoverApplication('desktop');
+    this.Applications.setCurrentHoverApplication('desktop');
   }
 
   /**
@@ -225,7 +223,7 @@ export class DesktopComponent implements OnInit, AfterViewInit {
    */
   handleItemKeyPress(keyEvent: KeyboardEvent): void {
     // Do nothing if some application is active
-    if (this.taskbar__item_open !== null) return;
+    if (this.taskbarItemOpen !== null) return;
 
     // Do nothing if there is no active item unless its side arrows
     if (this.currentActive === null && keyEvent.code !== 'ArrowLeft' && keyEvent.code === 'ArrowRight') return;

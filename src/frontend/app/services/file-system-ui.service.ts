@@ -16,8 +16,8 @@ export class FileSystemUiService {
   private subject = new Subject<any>();
   private subjectGoToPath = new Subject<any>();
 
-  private _copyFrom: BehaviorSubject<string>;
-  private _cutFrom: BehaviorSubject<string>;
+  private $copyFrom: BehaviorSubject<string>;
+  private $cutFrom: BehaviorSubject<string>;
   private dataStore: {  // This is where we will store our data in memory
     copyFrom: string,
     cutFrom: string
@@ -27,16 +27,16 @@ export class FileSystemUiService {
 
   currentFileDrag: string = null;
 
-  constructor(private ModalService: ModalService,
-              private toastr: ToastrService,
-              private FileSystemService: FileSystemService,
-              private ApplicationsService: ApplicationsService) {
+  constructor(private Modal: ModalService,
+              private Toastr: ToastrService,
+              private FileSystem: FileSystemService,
+              private Applications: ApplicationsService) {
 
     this.dataStore = {copyFrom: null, cutFrom: null};
-    this._copyFrom = <BehaviorSubject<string>> new BehaviorSubject(null);
-    this._cutFrom = <BehaviorSubject<string>> new BehaviorSubject(null);
-    this.copyFrom = this._copyFrom.asObservable();
-    this.cutFrom = this._cutFrom.asObservable();
+    this.$copyFrom = new BehaviorSubject(null) as BehaviorSubject<string>;
+    this.$cutFrom = new BehaviorSubject(null) as BehaviorSubject<string>;
+    this.copyFrom = this.$copyFrom.asObservable();
+    this.cutFrom = this.$cutFrom.asObservable();
 
   }
 
@@ -44,18 +44,18 @@ export class FileSystemUiService {
    * Creates a new folder
    */
   UIcreateFolder(connectionUuid: string, currentPath: string, selector: string) {
-    this.ModalService.openRegisteredModal('input', selector,
+    this.Modal.openRegisteredModal('input', selector,
       {
         title: 'Create new folder',
         text: 'Folder name',
-        button_text: 'Create',
+        buttonText: 'Create',
         inputValue: 'NewFolder'
       }
     ).then((modalInstance) => {
       modalInstance.result.then((name: string) => {
         if (!name) return;
 
-        return this.FileSystemService.createFolder(connectionUuid, currentPath, name).subscribe(
+        return this.FileSystem.createFolder(connectionUuid, currentPath, name).subscribe(
           () => {
             this.refreshPath(currentPath);
           },
@@ -73,18 +73,18 @@ export class FileSystemUiService {
    * Rename file
    */
   UIrenameFile(connectionUuid: string, currentPath: string, file: { longname: string, filename: string }, selector: string) {
-    this.ModalService.openRegisteredModal('input', selector,
+    this.Modal.openRegisteredModal('input', selector,
       {
         title: 'Rename file',
         text: 'File name',
-        button_text: 'Rename',
+        buttonText: 'Rename',
         inputValue: file.filename
       }
     ).then((modalInstance) => {
       modalInstance.result.then((name: string) => {
         if (!name) return;
 
-        return this.FileSystemService.renameFile(connectionUuid, currentPath, file.filename, name).subscribe(
+        return this.FileSystem.renameFile(connectionUuid, currentPath, file.filename, name).subscribe(
           () => {
             this.refreshPath(currentPath);
           },
@@ -103,7 +103,7 @@ export class FileSystemUiService {
    * Deletes selected files or folders
    */
   UIdeleteSelected(connectionUuid: string, currentPath: string, file: { longname: string, filename: string }, selector: string) {
-    this.ModalService.openRegisteredModal('question', selector,
+    this.Modal.openRegisteredModal('question', selector,
       {
         title: 'Delete file ' + file.filename,
         text: 'Delete ' + file.filename + ' from SysOS?'
@@ -111,7 +111,7 @@ export class FileSystemUiService {
     ).then((modalInstance) => {
       modalInstance.result.then((result: boolean) => {
         if (result === true) {
-          return this.FileSystemService.deleteFile(connectionUuid, currentPath, file.filename).subscribe(
+          return this.FileSystem.deleteFile(connectionUuid, currentPath, file.filename).subscribe(
             () => {
               this.refreshPath(currentPath);
             },
@@ -135,13 +135,13 @@ export class FileSystemUiService {
     const pasteTo = currentPath;
 
     if (this.dataStore.cutFrom) {
-      return this.FileSystemService.moveFile(connectionUuid, this.dataStore.cutFrom, pasteTo).subscribe(
+      return this.FileSystem.moveFile(connectionUuid, this.dataStore.cutFrom, pasteTo).subscribe(
         () => {
           this.refreshPath(currentPath);
           this.dataStore.cutFrom = null;
 
           // broadcast data to subscribers
-          this._cutFrom.next(Object.assign({}, this.dataStore).cutFrom);
+          this.$cutFrom.next(Object.assign({}, this.dataStore).cutFrom);
         },
         error => {
           console.error('File System -> Error while moving file -> ', error);
@@ -151,13 +151,13 @@ export class FileSystemUiService {
     }
 
     if (this.dataStore.copyFrom) {
-      return this.FileSystemService.copyFile(connectionUuid, this.dataStore.copyFrom, pasteTo).subscribe(
+      return this.FileSystem.copyFile(connectionUuid, this.dataStore.copyFrom, pasteTo).subscribe(
         () => {
           this.refreshPath(currentPath);
           this.dataStore.copyFrom = null;
 
           // broadcast data to subscribers
-          this._copyFrom.next(Object.assign({}, this.dataStore).copyFrom);
+          this.$copyFrom.next(Object.assign({}, this.dataStore).copyFrom);
         },
         error => {
           console.error('File System -> Error while copying file -> ', error);
@@ -171,21 +171,21 @@ export class FileSystemUiService {
    * Downloads content from URL
    */
   UIdownloadFromURL(connectionUuid: string, currentPath: string, selector: string) {
-    this.ModalService.openRegisteredModal('input', selector,
+    this.Modal.openRegisteredModal('input', selector,
       {
         title: 'Download file from URL',
         text: 'File URL',
-        button_text: 'Download',
+        buttonText: 'Download',
         inputValue: ''
       }
     ).then((modalInstance) => {
       modalInstance.result.then((name: string) => {
         if (!name) return;
 
-        return this.FileSystemService.downloadFileFromInet(connectionUuid, currentPath, name).subscribe(
+        return this.FileSystem.downloadFileFromInet(connectionUuid, currentPath, name).subscribe(
           () => {
             this.refreshPath(currentPath);
-            this.toastr.success('File downloaded to ' + currentPath, 'Download file from URL');
+            this.Toastr.success('File downloaded to ' + currentPath, 'Download file from URL');
           },
           error => {
             console.error('Desktop -> Error while downloading file -> ', error);
@@ -206,8 +206,8 @@ export class FileSystemUiService {
     this.dataStore.copyFrom = currentPath + file.filename;
 
     // broadcast data to subscribers
-    this._cutFrom.next(Object.assign({}, this.dataStore).cutFrom);
-    this._copyFrom.next(Object.assign({}, this.dataStore).copyFrom);
+    this.$cutFrom.next(Object.assign({}, this.dataStore).cutFrom);
+    this.$copyFrom.next(Object.assign({}, this.dataStore).copyFrom);
 
   }
 
@@ -219,8 +219,8 @@ export class FileSystemUiService {
     this.dataStore.cutFrom = currentPath + file.filename;
 
     // broadcast data to subscribers
-    this._copyFrom.next(Object.assign({}, this.dataStore).copyFrom);
-    this._cutFrom.next(Object.assign({}, this.dataStore).cutFrom);
+    this.$copyFrom.next(Object.assign({}, this.dataStore).copyFrom);
+    this.$cutFrom.next(Object.assign({}, this.dataStore).cutFrom);
   }
 
   /**
@@ -228,15 +228,15 @@ export class FileSystemUiService {
    */
   UIdoWithFile(applicationId: string, currentPath: string, file: { longname: string, filename: string }) {
     let realApplication = applicationId;
-    const filetype = this.FileSystemService.getFileType(file.longname);
+    const filetype = this.FileSystem.getFileType(file.longname);
 
     // Like SFTP application, applicationId could have a 'sub application'. The # symbol separates its values.
     if (applicationId.indexOf('#') !== -1) realApplication = applicationId.substring(0, applicationId.indexOf('#'));
 
     if (filetype === 'folder') {
 
-      if (!this.ApplicationsService.isApplicationOpened(realApplication)) {
-        this.ApplicationsService.openApplication(realApplication, {
+      if (!this.Applications.isApplicationOpened(realApplication)) {
+        this.Applications.openApplication(realApplication, {
           path: currentPath + file.filename + '/'
         });
       } else {
@@ -251,11 +251,11 @@ export class FileSystemUiService {
     } else {
       const filePath = currentPath + file.filename;
 
-      this.FileSystemService.getFileContents(filePath).subscribe(
+      this.FileSystem.getFileContents(filePath).subscribe(
         (res: any) => {
 
-          if (!this.ApplicationsService.isApplicationOpened('notepad')) {
-            this.ApplicationsService.openApplication('notepad', {
+          if (!this.Applications.isApplicationOpened('notepad')) {
+            this.Applications.openApplication('notepad', {
               data: res
             });
           } else {
@@ -276,7 +276,7 @@ export class FileSystemUiService {
 
   UIonDropItem(connectionUuid: string, $event: CdkDragDrop<any>, dropPath: string): void {
 
-    this.FileSystemService.moveFile(connectionUuid, this.currentFileDrag + '/' + $event.item.data.filename, dropPath).subscribe(
+    this.FileSystem.moveFile(connectionUuid, this.currentFileDrag + '/' + $event.item.data.filename, dropPath).subscribe(
       () => {
 
         this.refreshPath(this.currentFileDrag);

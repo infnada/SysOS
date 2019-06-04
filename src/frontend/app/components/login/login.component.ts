@@ -15,23 +15,23 @@ export class LoginComponent implements OnInit {
 
   loginExpanded: boolean = false;
 
-  constructor(private UserStateService: UserStateService,
-              private MainService: MainService) {
+  constructor(private UserState: UserStateService,
+              private Main: MainService) {
   }
 
   ngOnInit() {
   }
 
   login(username: string, password: string): void {
-    this.UserStateService.loginUser(username, password).subscribe(
+    this.UserState.loginUser(username, password).subscribe(
       (res: { status: string }) => {
         if (res.status === 'ok') {
-          this.UserStateService.setState({
+          this.UserState.setState({
             userLoggedIn: true,
             username: 'root'
           });
 
-          return this.MainService.init();
+          return this.Main.init();
         }
 
         console.log(res);

@@ -30,7 +30,7 @@ export class SftpBodyLocalComponent implements OnInit {
   reloadPathSubscription: Subscription;
   selectable: Selectable;
 
-  taskbar__item_open: string;
+  taskbarItemOpen: string;
   copyFrom: string;
   cutFrom: string;
   currentPath: string;
@@ -95,37 +95,37 @@ export class SftpBodyLocalComponent implements OnInit {
     if (typeof item.text === 'function') return item.text(file);
   }
 
-  constructor(private FileSystemService: FileSystemService,
-              private FileSystemUiService: FileSystemUiService,
-              private ApplicationsService: ApplicationsService,
-              private SftpService: SftpService,
-              private SftpLocalService: SftpLocalService) {
+  constructor(private FileSystem: FileSystemService,
+              private FileSystemUi: FileSystemUiService,
+              private Applications: ApplicationsService,
+              private Sftp: SftpService,
+              private SftpLocal: SftpLocalService) {
 
-    this.reloadPathSubscription = this.FileSystemUiService.getRefreshPath().subscribe(path => {
+    this.reloadPathSubscription = this.FileSystemUi.getRefreshPath().subscribe(path => {
       if (path === this.currentPath) this.reloadPath();
     });
   }
 
   ngOnInit() {
-    this.ApplicationsService.taskbar__item_open.subscribe(applications => this.taskbar__item_open = applications);
-    this.FileSystemUiService.copyFrom.subscribe(path => this.copyFrom = path);
-    this.FileSystemUiService.cutFrom.subscribe(path => this.cutFrom = path);
-    this.SftpLocalService.currentPath.subscribe(path => this.currentPath = path);
-    this.SftpLocalService.currentData.subscribe(data => {
+    this.Applications.taskbarItemOpen.subscribe(applications => this.taskbarItemOpen = applications);
+    this.FileSystemUi.copyFrom.subscribe(path => this.copyFrom = path);
+    this.FileSystemUi.cutFrom.subscribe(path => this.cutFrom = path);
+    this.SftpLocal.currentPath.subscribe(path => this.currentPath = path);
+    this.SftpLocal.currentData.subscribe(data => {
       this.currentData = data;
       this.resetActive();
     });
-    this.SftpLocalService.viewAsList.subscribe(data => this.viewAsList = data);
-    this.SftpLocalService.search.subscribe(data => this.search = data);
-    this.SftpService.viewExchange.subscribe(view => this.viewExchange = view);
+    this.SftpLocal.viewAsList.subscribe(data => this.viewAsList = data);
+    this.SftpLocal.search.subscribe(data => this.search = data);
+    this.Sftp.viewExchange.subscribe(view => this.viewExchange = view);
 
     this.selectable = new Selectable({
       appendTo: this.selectableContainer.nativeElement,
       ignore: 'a'
     });
 
-    if (this.application.init_data && this.application.init_data.path) {
-      return this.goToPath(this.application.init_data.path);
+    if (this.application.initData && this.application.initData.path) {
+      return this.goToPath(this.application.initData.path);
     }
 
     this.goToPath('/');
@@ -143,48 +143,48 @@ export class SftpBodyLocalComponent implements OnInit {
    * Get current path data
    */
   private reloadPath(): void {
-    this.SftpLocalService.reloadPath();
+    this.SftpLocal.reloadPath();
   }
 
   /**
    * On file dragstart
    */
   onDragStart(): void {
-    this.FileSystemUiService.setCurrentFileDrag(this.currentPath);
+    this.FileSystemUi.setCurrentFileDrag(this.currentPath);
   }
 
   UIonDropItem($event): void {
-    this.FileSystemUiService.UIonDropItem(null, $event, this.currentPath);
+    this.FileSystemUi.UIonDropItem(null, $event, this.currentPath);
   }
 
   UIdownloadFromURL(): void {
-    this.FileSystemUiService.UIdownloadFromURL(null, this.currentPath, '.window--sftp .window__main');
+    this.FileSystemUi.UIdownloadFromURL(null, this.currentPath, '.window--sftp .window__main');
   }
 
   UIcreateFolder(): void {
-    this.FileSystemUiService.UIcreateFolder(null, this.currentPath, '.window--sftp .window__main');
+    this.FileSystemUi.UIcreateFolder(null, this.currentPath, '.window--sftp .window__main');
   }
 
   UIrenameFile(file: SysOSFile): void {
-    this.FileSystemUiService.UIrenameFile(null, this.currentPath, file, '.window--sftp .window__main');
+    this.FileSystemUi.UIrenameFile(null, this.currentPath, file, '.window--sftp .window__main');
   }
 
   UIdeleteSelected(file: SysOSFile): void {
-    this.FileSystemUiService.UIdeleteSelected(null, this.currentPath, file, '.window--sftp .window__main');
+    this.FileSystemUi.UIdeleteSelected(null, this.currentPath, file, '.window--sftp .window__main');
   }
 
   UIpasteFile(): void {
-    this.FileSystemUiService.UIpasteFile(null, this.currentPath);
+    this.FileSystemUi.UIpasteFile(null, this.currentPath);
   }
 
   UIdoWithFile(file: SysOSFile): void {
-    this.FileSystemUiService.UIdoWithFile('sftp#local', this.currentPath, file);
+    this.FileSystemUi.UIdoWithFile('sftp#local', this.currentPath, file);
   }
 
   uploadFiles(files: File[]): void {
 
     files.forEach((file: File, i: number) => {
-      this.httpEmitter[i] = this.FileSystemService.uploadFile(this.currentPath, file).subscribe(
+      this.httpEmitter[i] = this.FileSystem.uploadFile(this.currentPath, file).subscribe(
         event => {
           this.httpEvent = event;
 
@@ -202,7 +202,7 @@ export class SftpBodyLocalComponent implements OnInit {
   }
 
   goToPath(path: string): void {
-    this.FileSystemUiService.sendGoToPath({
+    this.FileSystemUi.sendGoToPath({
       application: 'sftp#local',
       path
     });
@@ -239,7 +239,7 @@ export class SftpBodyLocalComponent implements OnInit {
   handleItemKeyPress(keyEvent: KeyboardEvent): void {
     console.log(keyEvent);
     // Do nothing if some application is active
-    if (this.taskbar__item_open !== 'sftp') return;
+    if (this.taskbarItemOpen !== 'sftp') return;
 
     // Do nothing if there is no active item unless its side arrows
     if (this.currentActive === null && keyEvent.code !== 'ArrowLeft' && keyEvent.code === 'ArrowRight') return;
@@ -273,7 +273,7 @@ export class SftpBodyLocalComponent implements OnInit {
 
       this.UIdoWithFile(currentFile);
     } else if (keyEvent.code === 'Backspace') {
-      this.SftpLocalService.sendGoPathBack();
+      this.SftpLocal.sendGoPathBack();
     }
   }
 

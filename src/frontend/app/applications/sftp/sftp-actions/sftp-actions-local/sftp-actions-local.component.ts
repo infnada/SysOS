@@ -24,45 +24,45 @@ export class SftpActionsLocalComponent implements OnInit {
   lastPath: string[] = [];
   nextPath: string[] = [];
 
-  constructor(private FileSystemUiService: FileSystemUiService,
-              private SftpLocalService: SftpLocalService) {
+  constructor(private FileSystemUi: FileSystemUiService,
+              private SftpLocal: SftpLocalService) {
 
-    this.goPathBackSubscription = this.SftpLocalService.getObserverGoPathBack().subscribe(() => {
+    this.goPathBackSubscription = this.SftpLocal.getObserverGoPathBack().subscribe(() => {
       this.goPathBack();
     });
 
-    this.goToPathSubscription = this.FileSystemUiService.getObserverGoToPath().subscribe((data) => {
+    this.goToPathSubscription = this.FileSystemUi.getObserverGoToPath().subscribe((data) => {
       console.log(data);
       if (data.application === 'sftp#local') this.goToPath(data.path);
     });
   }
 
   ngOnInit(): void {
-    this.SftpLocalService.currentPath.subscribe(path => this.currentPath = path);
-    this.SftpLocalService.currentData.subscribe(data => this.currentData = data);
-    this.SftpLocalService.viewAsList.subscribe(data => this.viewAsList = data);
-    this.SftpLocalService.search.subscribe(data => this.search = data);
+    this.SftpLocal.currentPath.subscribe(path => this.currentPath = path);
+    this.SftpLocal.currentData.subscribe(data => this.currentData = data);
+    this.SftpLocal.viewAsList.subscribe(data => this.viewAsList = data);
+    this.SftpLocal.search.subscribe(data => this.search = data);
   }
 
   /**
    * Creates a new folder
    */
   UIcreateFolder(): void {
-    this.FileSystemUiService.UIcreateFolder(null, this.currentPath, '.window--sftp .window__main');
+    this.FileSystemUi.UIcreateFolder(null, this.currentPath, '.window--sftp .window__main');
   }
 
   /**
    * Sets view mode (icons, detailed...)
    */
   toggleView(): void {
-    this.SftpLocalService.toggleView();
+    this.SftpLocal.toggleView();
   }
 
   /**
    * Get current path data
    */
   reloadPath(newPath?: string): void {
-    this.SftpLocalService.reloadPath(newPath);
+    this.SftpLocal.reloadPath(newPath);
     this.searchChange(null);
   }
 
@@ -109,7 +109,7 @@ export class SftpActionsLocalComponent implements OnInit {
   }
 
   searchChange(event: string): void {
-    this.SftpLocalService.setSearch(event);
+    this.SftpLocal.setSearch(event);
   }
 
 }

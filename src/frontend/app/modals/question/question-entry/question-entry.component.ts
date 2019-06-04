@@ -10,14 +10,14 @@ export class QuestionEntryComponent {
   @Input() selector: string;
   @Output() OutputNgbModalRef: NgbModalRef;
 
-  constructor(private NgbModal: NgbModal) {
+  constructor(private ngbModal: NgbModal) {
     setTimeout(() => {
       this.launchModal();
     }, 0);
   }
 
   launchModal(): void {
-    this.OutputNgbModalRef = this.NgbModal.open(
+    this.OutputNgbModalRef = this.ngbModal.open(
       QuestionComponent,
       {
         centered: true,

@@ -18,21 +18,21 @@ export class TaskBarComponent implements OnInit {
     if (event.previousIndex === event.currentIndex) return;
 
     moveItemInArray(this.taskBarApplications, event.previousIndex, event.currentIndex);
-    this.ApplicationsService.saveTaskBarApplicationsOrder();
+    this.Applications.saveTaskBarApplicationsOrder();
   }
 
-  constructor(private ApplicationsService: ApplicationsService) {
+  constructor(private Applications: ApplicationsService) {
     setInterval(() => {
       this.clock = new Date().toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit', hour12: true});
     }, 1000);
   }
 
   ngOnInit() {
-    this.ApplicationsService.taskBarApplications.subscribe(applications => this.taskBarApplications = applications);
+    this.Applications.taskBarApplications.subscribe(applications => this.taskBarApplications = applications);
   }
 
   minimizeToDesktop(): void {
-    this.ApplicationsService.sendToggleApplication(null);
+    this.Applications.sendToggleApplication(null);
   }
 
 }

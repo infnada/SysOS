@@ -24,7 +24,7 @@ export class SnmpSessionsModule {
     return this.snmpSessions[type][uuid];
   }
 
-  async closeSession(type, uuid) {
+  closeSession(type, uuid) {
     return this.snmpSessions[type][uuid].close();
   }
 
@@ -32,7 +32,7 @@ export class SnmpSessionsModule {
     return this.snmpSessions;
   }
 
-  async getSession(type, uuid) {
+  getSession(type, uuid) {
     return this.snmpSessions[type][uuid];
   }
 

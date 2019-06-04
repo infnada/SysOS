@@ -14,17 +14,17 @@ export class StartMenuComponent implements OnInit {
   @ViewChild(MatMenuTrigger) contextMenuApp: MatMenuTrigger;
 
   applications: Application[];
-  taskbar__item_open: string;
+  taskbarItemOpen: string;
 
   openedMenu: string;
 
 
-  constructor(private ApplicationsService: ApplicationsService) {
+  constructor(private Applications: ApplicationsService) {
   }
 
   ngOnInit() {
-    this.ApplicationsService.applications.subscribe(applications => this.applications = applications);
-    this.ApplicationsService.taskbar__item_open.subscribe(applications => this.taskbar__item_open = applications);
+    this.Applications.applications.subscribe(applications => this.applications = applications);
+    this.Applications.taskbarItemOpen.subscribe(applications => this.taskbarItemOpen = applications);
   }
 
   openMenu(menu: string) {

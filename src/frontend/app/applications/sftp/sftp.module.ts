@@ -54,9 +54,9 @@ import {SftpService} from './services/sftp.service';
 })
 export class SftpModule {
 
-  constructor(private ApplicationsService: ApplicationsService,
-              private SftpService: SftpService) {
-    ApplicationsService.registerApplication({
+  constructor(private Applications: ApplicationsService,
+              private Sftp: SftpService) {
+    Applications.registerApplication({
       id: 'sftp',
       ico: 'upload',
       name: 'SFTP',
@@ -66,7 +66,7 @@ export class SftpModule {
       style: {width: '1275px', height: '600px', top: '9%', left: '10%'}
     });
 
-    this.SftpService.initConnections();
+    this.Sftp.initConnections();
   }
 
 }

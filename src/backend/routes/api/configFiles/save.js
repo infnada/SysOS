@@ -19,7 +19,7 @@ router.post('/', function (req, res) {
   var apiGlobals = require('../globals.js')(req, res);
   var data = req.body.data;
   var file = req.body.file;
-  var full_save = req.body.full_save;
+  var fullSave = req.body.fullSave;
 
   if (typeof data === 'undefined') return apiGlobals.serverError('data_undefined');
   if (typeof file === 'undefined') return apiGlobals.serverError('file_undefined');
@@ -27,7 +27,7 @@ router.post('/', function (req, res) {
   /**
    * Rewrite all config file with received data
    */
-  if (full_save) {
+  if (fullSave) {
     return jsonfile.writeFile(path.join(__dirname, '../../../filesystem/etc/' + file), data, {flag: 'w'}, function (e) {
       if (e && e.code) return apiGlobals.serverError(e.code);
       if (e) return apiGlobals.serverError(e);

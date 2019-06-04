@@ -12,10 +12,10 @@ import {SftpConnection} from '../SftpConnection';
 export class SftpServerService {
   private subjectGoPathBack = new Subject<any>();
 
-  private _currentPath: BehaviorSubject<string>;
-  private _currentData: BehaviorSubject<SysOSFile[]>;
-  private _viewAsList: BehaviorSubject<boolean>;
-  private _search: BehaviorSubject<object>;
+  private $currentPath: BehaviorSubject<string>;
+  private $currentData: BehaviorSubject<SysOSFile[]>;
+  private $viewAsList: BehaviorSubject<boolean>;
+  private $search: BehaviorSubject<object>;
   private dataStore: {  // This is where we will store our data in memory
     currentPath: string,
     currentData: SysOSFile[],
@@ -27,32 +27,32 @@ export class SftpServerService {
   viewAsList: Observable<any>;
   search: Observable<any>;
 
-  constructor(private FileSystemService: FileSystemService,
-              private SftpService: SftpService,
+  constructor(private FileSystem: FileSystemService,
+              private Sftp: SftpService,
               private socket: Socket) {
     this.dataStore = {currentPath: '/', currentData: [], viewAsList: false, search: null};
-    this._currentPath = <BehaviorSubject<string>> new BehaviorSubject('/');
-    this._currentData = <BehaviorSubject<SysOSFile[]>> new BehaviorSubject([]);
-    this._viewAsList = <BehaviorSubject<boolean>> new BehaviorSubject(false);
-    this._search = <BehaviorSubject<object>> new BehaviorSubject({filename: null});
-    this.currentPath = this._currentPath.asObservable();
-    this.currentData = this._currentData.asObservable();
-    this.viewAsList = this._viewAsList.asObservable();
-    this.search = this._search.asObservable();
+    this.$currentPath = new BehaviorSubject('/') as BehaviorSubject<string>;
+    this.$currentData = new BehaviorSubject([]) as BehaviorSubject<SysOSFile[]>;
+    this.$viewAsList = new BehaviorSubject(false) as BehaviorSubject<boolean>;
+    this.$search = new BehaviorSubject({filename: null}) as BehaviorSubject<object>;
+    this.currentPath = this.$currentPath.asObservable();
+    this.currentData = this.$currentData.asObservable();
+    this.viewAsList = this.$viewAsList.asObservable();
+    this.search = this.$search.asObservable();
 
     this.socket
       .fromEvent('sftp__data')
       .subscribe((data: { uuid: string, path: string, text: SysOSFile[] }) => {
         console.log(data);
-        const currentConnection: SftpConnection = this.SftpService.getActiveConnection();
+        const currentConnection: SftpConnection = this.Sftp.getActiveConnection();
 
         if (currentConnection.uuid === data.uuid) {
           this.dataStore.currentData = data.text;
           this.dataStore.currentPath = data.path;
 
           // broadcast data to subscribers
-          this._currentPath.next(Object.assign({}, this.dataStore).currentPath);
-          this._currentData.next(Object.assign({}, this.dataStore).currentData);
+          this.$currentPath.next(Object.assign({}, this.dataStore).currentPath);
+          this.$currentData.next(Object.assign({}, this.dataStore).currentData);
         }
 
       });
@@ -64,18 +64,18 @@ export class SftpServerService {
   }
 
   reloadPath(connectionUuid: string, path?: string): void {
-    this.FileSystemService.getFileSystemPath(connectionUuid, (path ? path : this.dataStore.currentPath)).subscribe(
+    this.FileSystem.getFileSystemPath(connectionUuid, (path ? path : this.dataStore.currentPath)).subscribe(
       (res: SysOSFile[]) => {
         this.dataStore.currentData = res;
 
         // broadcast data to subscribers
-        this._currentData.next(Object.assign({}, this.dataStore).currentData);
+        this.$currentData.next(Object.assign({}, this.dataStore).currentData);
 
         if (path) {
           this.dataStore.currentPath = path;
 
           // broadcast data to subscribers
-          this._currentPath.next(Object.assign({}, this.dataStore).currentPath);
+          this.$currentPath.next(Object.assign({}, this.dataStore).currentPath);
         }
       },
       error => {
@@ -88,14 +88,14 @@ export class SftpServerService {
     this.dataStore.viewAsList = !this.dataStore.viewAsList;
 
     // broadcast data to subscribers
-    this._viewAsList.next(Object.assign({}, this.dataStore).viewAsList);
+    this.$viewAsList.next(Object.assign({}, this.dataStore).viewAsList);
   }
 
   setSearch(data: string): void {
     this.dataStore.search = {filename: data};
 
     // broadcast data to subscribers
-    this._search.next(Object.assign({}, this.dataStore).search);
+    this.$search.next(Object.assign({}, this.dataStore).search);
   }
 
   sendGoPathBack(): void {

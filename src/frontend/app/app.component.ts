@@ -17,24 +17,24 @@ export class AppComponent implements OnInit {
   openedApplications: Application[];
   userLoggedIn: boolean;
 
-  constructor(private ViewContainerRef: ViewContainerRef,
+  constructor(private viewContainerRef: ViewContainerRef,
               private cookieService: CookieService,
-              private MainService: MainService,
-              private ModalService: ModalService,
-              private UserStateService: UserStateService) {
+              private Main: MainService,
+              private Modal: ModalService,
+              private UserState: UserStateService) {
 
-    this.ModalService.setMainContainerRef(this.ViewContainerRef);
+    this.Modal.setMainContainerRef(this.viewContainerRef);
   }
 
   ngOnInit() {
-    this.UserStateService.currentState.subscribe(state => this.userLoggedIn = state.userLoggedIn);
+    this.UserState.currentState.subscribe(state => this.userLoggedIn = state.userLoggedIn);
 
     if (this.cookieService.check('uniqueId')) {
 
-      this.UserStateService.getSession().subscribe(
+      this.UserState.getSession().subscribe(
         (res: { status: string }) => {
           if (res.status === 'ok') {
-            this.UserStateService.setState({
+            this.UserState.setState({
               userLoggedIn: true,
               username: 'root'
             });
@@ -42,7 +42,7 @@ export class AppComponent implements OnInit {
             /**
              * INIT
              */
-            this.MainService.init();
+            this.Main.init();
           }
 
           if (res.status === 'error') {

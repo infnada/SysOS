@@ -20,8 +20,8 @@ import {DatastoreExplorerMenuComponent} from './datastore-explorer-menu/datastor
 })
 export class DatastoreExplorerModule implements OnInit {
 
-  constructor(private ApplicationsService: ApplicationsService) {
-    ApplicationsService.registerApplication({
+  constructor(private Applications: ApplicationsService) {
+    Applications.registerApplication({
       id: 'datastore-explorer',
       ico: 'database',
       name: 'Datastore Explorer',

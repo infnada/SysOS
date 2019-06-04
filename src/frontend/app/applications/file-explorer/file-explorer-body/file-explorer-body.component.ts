@@ -31,7 +31,7 @@ export class FileExplorerBodyComponent implements OnInit {
   reloadPathSubscription: Subscription;
   selectable: Selectable;
 
-  taskbar__item_open: string;
+  taskbarItemOpen: string;
   copyFrom: string;
   cutFrom: string;
   currentPath: string;
@@ -95,35 +95,35 @@ export class FileExplorerBodyComponent implements OnInit {
     if (typeof item.text === 'function') return item.text(file);
   }
 
-  constructor(private FileSystemService: FileSystemService,
-              private FileSystemUiService: FileSystemUiService,
-              private ApplicationsService: ApplicationsService,
-              private FileExplorerService: FileExplorerService) {
+  constructor(private FileSystem: FileSystemService,
+              private FileSystemUi: FileSystemUiService,
+              private Applications: ApplicationsService,
+              private FileExplorer: FileExplorerService) {
 
-    this.reloadPathSubscription = this.FileSystemUiService.getRefreshPath().subscribe(path => {
+    this.reloadPathSubscription = this.FileSystemUi.getRefreshPath().subscribe(path => {
       if (path === this.currentPath) this.reloadPath();
     });
   }
 
   ngOnInit() {
-    this.ApplicationsService.taskbar__item_open.subscribe(applications => this.taskbar__item_open = applications);
-    this.FileSystemUiService.copyFrom.subscribe(path => this.copyFrom = path);
-    this.FileSystemUiService.cutFrom.subscribe(path => this.cutFrom = path);
-    this.FileExplorerService.currentPath.subscribe(path => this.currentPath = path);
-    this.FileExplorerService.currentData.subscribe(data => {
+    this.Applications.taskbarItemOpen.subscribe(applications => this.taskbarItemOpen = applications);
+    this.FileSystemUi.copyFrom.subscribe(path => this.copyFrom = path);
+    this.FileSystemUi.cutFrom.subscribe(path => this.cutFrom = path);
+    this.FileExplorer.currentPath.subscribe(path => this.currentPath = path);
+    this.FileExplorer.currentData.subscribe(data => {
       this.currentData = data;
       this.resetActive();
     });
-    this.FileExplorerService.viewAsList.subscribe(data => this.viewAsList = data);
-    this.FileExplorerService.search.subscribe(data => this.search = data);
+    this.FileExplorer.viewAsList.subscribe(data => this.viewAsList = data);
+    this.FileExplorer.search.subscribe(data => this.search = data);
 
     this.selectable = new Selectable({
       appendTo: this.selectableContainer.nativeElement,
       ignore: 'a'
     });
 
-    if (this.application.init_data && this.application.init_data.path) {
-      return this.goToPath(this.application.init_data.path);
+    if (this.application.initData && this.application.initData.path) {
+      return this.goToPath(this.application.initData.path);
     }
 
     this.goToPath('/');
@@ -141,48 +141,48 @@ export class FileExplorerBodyComponent implements OnInit {
    * Get current path data
    */
   private reloadPath(): void {
-    this.FileExplorerService.reloadPath();
+    this.FileExplorer.reloadPath();
   }
 
   /**
    * On file dragstart
    */
   onDragStart(): void {
-    this.FileSystemUiService.setCurrentFileDrag(this.currentPath);
+    this.FileSystemUi.setCurrentFileDrag(this.currentPath);
   }
 
   UIonDropItem($event): void {
-    this.FileSystemUiService.UIonDropItem(null, $event, this.currentPath);
+    this.FileSystemUi.UIonDropItem(null, $event, this.currentPath);
   }
 
   UIdownloadFromURL(): void {
-    this.FileSystemUiService.UIdownloadFromURL(null, this.currentPath, '.window--file-explorer .window__main');
+    this.FileSystemUi.UIdownloadFromURL(null, this.currentPath, '.window--file-explorer .window__main');
   }
 
   UIcreateFolder(): void {
-    this.FileSystemUiService.UIcreateFolder(null, this.currentPath, '.window--file-explorer .window__main');
+    this.FileSystemUi.UIcreateFolder(null, this.currentPath, '.window--file-explorer .window__main');
   }
 
   UIrenameFile(file: SysOSFile): void {
-    this.FileSystemUiService.UIrenameFile(null, this.currentPath, file, '.window--file-explorer .window__main');
+    this.FileSystemUi.UIrenameFile(null, this.currentPath, file, '.window--file-explorer .window__main');
   }
 
   UIdeleteSelected(file: SysOSFile): void {
-    this.FileSystemUiService.UIdeleteSelected(null, this.currentPath, file, '.window--file-explorer .window__main');
+    this.FileSystemUi.UIdeleteSelected(null, this.currentPath, file, '.window--file-explorer .window__main');
   }
 
   UIpasteFile(): void {
-    this.FileSystemUiService.UIpasteFile(null, this.currentPath);
+    this.FileSystemUi.UIpasteFile(null, this.currentPath);
   }
 
   UIdoWithFile(file: SysOSFile): void {
-    this.FileSystemUiService.UIdoWithFile('file-explorer', this.currentPath, file);
+    this.FileSystemUi.UIdoWithFile('file-explorer', this.currentPath, file);
   }
 
   uploadFiles(files: File[]): void {
 
     files.forEach((file: File, i: number) => {
-      this.httpEmitter[i] = this.FileSystemService.uploadFile(this.currentPath, file).subscribe(
+      this.httpEmitter[i] = this.FileSystem.uploadFile(this.currentPath, file).subscribe(
         event => {
           this.httpEvent = event;
 
@@ -200,7 +200,7 @@ export class FileExplorerBodyComponent implements OnInit {
   }
 
   goToPath(path: string): void {
-    this.FileSystemUiService.sendGoToPath({
+    this.FileSystemUi.sendGoToPath({
       application: 'file-explorer',
       path
     });
@@ -241,7 +241,7 @@ export class FileExplorerBodyComponent implements OnInit {
   handleItemKeyPress(keyEvent: KeyboardEvent): void {
     console.log(keyEvent);
     // Do nothing if some application is active
-    if (this.taskbar__item_open !== 'file-explorer') return;
+    if (this.taskbarItemOpen !== 'file-explorer') return;
 
     // Do nothing if there is no active item unless its side arrows
     if (this.currentActive === null && keyEvent.code !== 'ArrowLeft' && keyEvent.code === 'ArrowRight') return;
@@ -275,7 +275,7 @@ export class FileExplorerBodyComponent implements OnInit {
 
       this.UIdoWithFile(currentFile);
     } else if (keyEvent.code === 'Backspace') {
-      this.FileExplorerService.sendGoPathBack();
+      this.FileExplorer.sendGoPathBack();
     }
   }
 

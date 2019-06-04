@@ -9,8 +9,8 @@ import {Socket} from 'ngx-socket-io';
 })
 export class MainService {
 
-  constructor(private ApplicationsService: ApplicationsService,
-              private ModalService: ModalService,
+  constructor(private Applications: ApplicationsService,
+              private Modal: ModalService,
               private socket: Socket) {
   }
 
@@ -38,10 +38,10 @@ export class MainService {
       console.log(err);
     });
 
-    this.ApplicationsService.getInstalledApplications().then(() => {
-      this.ApplicationsService.getTaskBarApplications();
+    this.Applications.getInstalledApplications().then(() => {
+      this.Applications.getTaskBarApplications();
     });
-    return this.ModalService.getInstalledModals();
+    return this.Modal.getInstalledModals();
 
   }
 }

@@ -2,7 +2,7 @@ import path from 'path';
 import readConfig from 'read-config';
 import {SshSessionsModule} from './ssh-sessions';
 import {SocketModule} from '../socket';
-const config =  readConfig(path.join(__dirname, '/filesystem/etc/expressjs/config.json'));
+const config =  readConfig(path.join(__dirname, '../../../filesystem/etc/expressjs/config.json'));
 const term = config.ssh.term;
 const termCols = 80;
 const termRows = 24;

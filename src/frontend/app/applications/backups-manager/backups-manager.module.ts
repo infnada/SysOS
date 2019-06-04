@@ -20,8 +20,8 @@ import {BackupsManagerMenuComponent} from './backups-manager-menu/backups-manage
 })
 export class BackupsManagerModule implements OnInit {
 
-  constructor(private ApplicationsService: ApplicationsService) {
-    ApplicationsService.registerApplication({
+  constructor(private Applications: ApplicationsService) {
+    Applications.registerApplication({
       id: 'backups-manager',
       ico: 'hdd-o',
       name: 'Backups Manager',

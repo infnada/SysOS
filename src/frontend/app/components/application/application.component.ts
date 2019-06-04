@@ -45,18 +45,18 @@ export class ApplicationComponent implements OnInit, AfterViewInit {
   fullWidth: string = window.innerWidth + 'px';
 
   constructor(private compiler: Compiler,
-              private ApplicationsService: ApplicationsService) {
+              private Applications: ApplicationsService) {
 
     /**
      * broadcast functions
      */
 
     // Called from Task Bar Context Menu
-    this.closeAppSubscription = this.ApplicationsService.getObserverCloseApplication().subscribe(application => {
+    this.closeAppSubscription = this.Applications.getObserverCloseApplication().subscribe(application => {
       if (application.id === this.application.id) this.close();
     });
 
-    this.togglingAppSubscription = this.ApplicationsService.getObserverToggleApplication().subscribe(id => {
+    this.togglingAppSubscription = this.Applications.getObserverToggleApplication().subscribe(id => {
 
       // Called to minimize all applications
       if (id === null) return this.minimize();
@@ -66,12 +66,12 @@ export class ApplicationComponent implements OnInit, AfterViewInit {
 
         // Application minimized, set it active
         if (this.isMinimized) {
-          this.ApplicationsService.toggleApplication(id);
+          this.Applications.toggleApplication(id);
           return this.isMinimized = false;
         }
 
         // Application opened but not active
-        if (!this.ApplicationsService.isActiveApplication(id)) return this.ApplicationsService.toggleApplication(id);
+        if (!this.Applications.isActiveApplication(id)) return this.Applications.toggleApplication(id);
 
         // Application is active, minimize it
         return this.minimize();
@@ -118,22 +118,22 @@ export class ApplicationComponent implements OnInit, AfterViewInit {
 
         if (actionsFactory) {
           const actionsComponentRef = this.appActions.createComponent(actionsFactory);
-          (<any> actionsComponentRef.instance).application = this.application;
+          (actionsComponentRef.instance as any).application = this.application;
         }
 
         if (bodyFactory) {
           const bodyComponentRef = this.appActions.createComponent(bodyFactory);
-          (<any> bodyComponentRef.instance).application = this.application;
+          (bodyComponentRef.instance as any).application = this.application;
         }
 
         if (menuFactory) {
           const menuComponentRef = this.appActions.createComponent(menuFactory);
-          (<any> menuComponentRef.instance).application = this.application;
+          (menuComponentRef.instance as any).application = this.application;
         }
 
         if (statusFactory) {
           const statusComponentRef = this.appActions.createComponent(statusFactory);
-          (<any> statusComponentRef.instance).application = this.application;
+          (statusComponentRef.instance as any).application = this.application;
         }
 
       });
@@ -169,7 +169,7 @@ export class ApplicationComponent implements OnInit, AfterViewInit {
   }
 
   onDragStart(event: CdkDragStart<string[]>): void {
-    this.ApplicationsService.toggleApplication(this.application.id);
+    this.Applications.toggleApplication(this.application.id);
 
     // $(this).css({'z-index' : zIndex++});
 
@@ -182,16 +182,16 @@ export class ApplicationComponent implements OnInit, AfterViewInit {
    * ng-class functions
    */
   isVisible(): boolean {
-    return this.ApplicationsService.isActiveApplication(this.application.id);
+    return this.Applications.isActiveApplication(this.application.id);
   }
 
   /*
    * (click) functions
    */
   focusApplication(): void {
-    if (this.ApplicationsService.isActiveApplication(this.application.id)) return;
+    if (this.Applications.isActiveApplication(this.application.id)) return;
     if (this.isMinimized) return;
-    this.ApplicationsService.toggleApplication(this.application.id);
+    this.Applications.toggleApplication(this.application.id);
   }
 
   close(): void {
@@ -201,12 +201,12 @@ export class ApplicationComponent implements OnInit, AfterViewInit {
 
     setTimeout(() => {
       this.isClosing = false;
-      this.ApplicationsService.closeApplication(this.application.id);
+      this.Applications.closeApplication(this.application.id);
       // hide $(parentWindow).hide()
     }, 500);
 
     // Close application in taskbar
-    this.ApplicationsService.toggleApplication(null);
+    this.Applications.toggleApplication(null);
 
     // TODO: Set closest application active. Issue #3
     // var closest = $('.window').not('.window--minimized, .window--closing,
@@ -217,7 +217,7 @@ export class ApplicationComponent implements OnInit, AfterViewInit {
 
   minimize(): void {
     this.isMinimized = true;
-    this.ApplicationsService.toggleApplication(null);
+    this.Applications.toggleApplication(null);
   }
 
   maximize(): void {
@@ -260,7 +260,7 @@ export class ApplicationComponent implements OnInit, AfterViewInit {
   }
 
   setCurrentHoverApplication(app: string) {
-    this.ApplicationsService.setCurrentHoverApplication(app);
+    this.Applications.setCurrentHoverApplication(app);
   }
 
   appCss(): { height: string, width: string, top: string, left: string } {

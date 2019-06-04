@@ -1,7 +1,7 @@
 import validator from 'validator';
 import path from 'path';
 import readConfig from 'read-config';
-const config =  readConfig(path.join(__dirname, '/filesystem/etc/expressjs/config.json'));
+const config =  readConfig(path.resolve(__dirname, '../../filesystem/etc/expressjs/config.json'));
 import {SshModule} from './ssh/ssh';
 import {SnmpModule} from './snmp/snmp';
 import {Connection} from '../../interfaces/connection';

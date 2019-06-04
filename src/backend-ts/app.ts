@@ -2,26 +2,32 @@
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
-import express from 'express';
-import path from 'path';
 import {configure, getLogger, connectLogger} from 'log4js';
-import readConfig from 'read-config';
+import {createServer, Server} from 'http';
+import {createServer as createServers, Server as Servers} from 'https';
+import fs from 'fs';
+import express from 'express';
+import socketIo from 'socket.io';
 import session from 'express-session';
-import favicon from 'serve-favicon';
 import cookieParser from 'cookie-parser';
-import bodyParser from 'body-parser';
 import compress from 'compression';
 import cors from 'cors';
+import favicon from 'serve-favicon';
+import bodyParser from 'body-parser';
 import helmet from 'helmet';
-import http from 'http';
-import https from 'https';
-import csrf from 'csurf';
-import fs from 'fs';
+import path from 'path';
+import readConfig from 'read-config';
 
-export class AppModule {
+import {SocketModule} from './socket';
+import {RoutesModule} from './routes';
 
-  private config = readConfig(path.join(__dirname, '/filesystem/etc/expressjs/config.json'));
-  readonly logger;
+export class Init {
+  public config = readConfig(path.join(__dirname, '/filesystem/etc/expressjs/config.json'));
+  private app: express.Application;
+  private server: Server;
+  private servers: Servers;
+  private io: socketIo.Server;
+  private logger;
   private options = {
     key: fs.readFileSync(__dirname + '/ssl/key.pem'),
     cert: fs.readFileSync(__dirname + '/ssl/cert.pem')
@@ -37,47 +43,35 @@ export class AppModule {
       res.set('x-timestamp', Date.now());
     }
   };
-  Session = session({
+  private Session = session({
     secret: this.config.session.secret,
     name: this.config.session.name,
     resave: false,
     saveUninitialized: true,
     expires: new Date(Date.now() + 8 * 60 * 60 * 1000)
   });
-  app: express.Application = express();
-  Server;
-  Servers;
 
 
   constructor() {
+    this.createApp();
+    this.logging();
+    this.createServer();
+    this.sockets();
+    this.listen();
+    this.errorHandler();
+    this.routing();
+  }
 
-    configure({
-      appenders: {
-        file: {type: 'file', filename: 'logs/log4js.log'},
-        console: {type: 'console', level: 'trace'}
-      },
-      categories: {
-        default: {appenders: ['console'], level: 'trace'},
-        mainlog: {appenders: ['console'], level: 'trace'}
-      }
-    });
-
-    this.logger = getLogger('mainlog');
+  private createApp(): void {
+    this.app = express();
     this.app.use(this.Session);
     this.app.use(compress({
-        filter: (req, res) => {
-          return (/json|text|javascript|css/).test(res.getHeader('Content-Type'));
+        filter: (req: express.Request, res: express.Response) => {
+          return (/json|text|javascript|css/).test((res.getHeader('Content-Type') as string));
         },
         level: 9
       }
     ));
-    this.app.use(connectLogger(this.logger, {
-      level: 'auto',
-      format: ':remote-addr - :remote-user [:date] \":method :url HTTP/:http-version\"' +
-              ' :status :response-time ms - :res[content-length] -  \":referrer\"',
-      nolog: '\\.gif|\\.jpg$|\\.js$|\\.png$|\\.css$||\\.woff$'
-    }));
-
     this.app.use(bodyParser.urlencoded({
       extended: true
     }));
@@ -112,19 +106,84 @@ export class AppModule {
       res.status(403);
       res.send("session has expired or form tampered with");
     });*/
+  }
 
-    /**
-     * Init Expressjs
-     */
-    // Create HTTP server and redirect everything to HTTPS
-    this.Server = http.createServer((req, res) => {
+  private logging(): void {
+    configure({
+      appenders: {
+        file: {type: 'file', filename: path.join(__dirname, 'logs/log4js.log')},
+        console: {type: 'console', level: 'trace'}
+      },
+      categories: {
+        default: {appenders: ['console'], level: 'trace'},
+        mainlog: {appenders: ['console'], level: 'trace'}
+      }
+    });
+
+    this.logger = getLogger('mainlog');
+    this.app.use(connectLogger(this.logger, {
+      level: 'auto',
+      format: ':remote-addr - :remote-user [:date] \":method :url HTTP/:http-version\"' +
+        ' :status :response-time ms - :res[content-length] -  \":referrer\"',
+      nolog: '\\.gif|\\.jpg$|\\.js$|\\.png$|\\.css$||\\.woff$'
+    }));
+  }
+
+  private createServer(): void {
+
+    this.server = createServer((req: express.Request, res: express.Response) => {
       res.writeHead(301, {Location: 'https://' + req.headers.host + ':' + this.config.listen.ports + req.url});
       res.end();
     });
-
-    // Create main HTTPS server
-    this.Servers = https.createServer(this.options, this.app);
-
+    this.servers = createServers(this.options, this.app);
   }
 
+  private sockets(): void {
+    this.io = socketIo(this.servers);
+
+    this.io.use((socket: socketIo.Socket, next) => {
+      const handshake = socket.request;
+
+      this.Session(handshake, {}, (err: any) => {
+        if (err) {
+          return next(new Error(err));
+        }
+        const socketSession = handshake.session;
+        console.log(socketSession);
+        // TODO: check the session is valid
+        next();
+      });
+    });
+
+    // bring up socket
+    this.io.on('connection', (socket: socketIo.Socket) => {
+      return new SocketModule(socket);
+    });
+  }
+
+  private listen(): void {
+    this.server.listen({host: this.config.listen.ip, port: this.config.listen.port}, () => {
+      console.log('Running server on port %s', this.config.listen.port);
+    });
+    this.servers.listen({host: this.config.listen.ip, port: this.config.listen.ports}, () => {
+      console.log('Running server on port %s', this.config.listen.port);
+    });
+  }
+
+  private errorHandler(): void {
+    this.server.on('error', (err: any) => {
+      console.log('HTTP server.listen ERROR: ' + err.code);
+    });
+    this.servers.on('error', (err: any) => {
+      console.log('HTTPS server.listen ERROR: ' + err.code);
+    });
+  }
+
+  private routing(): void {
+    new RoutesModule(this.app, this.io).init();
+  }
+
+  public getApp(): express.Application {
+    return this.app;
+  }
 }

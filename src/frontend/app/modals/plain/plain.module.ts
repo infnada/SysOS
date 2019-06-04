@@ -18,9 +18,9 @@ import {ModalService} from '../../services/modal.service';
 })
 export class PlainModule {
 
-  constructor(private ModalService: ModalService) {
+  constructor(private Modal: ModalService) {
 
-    ModalService.registerModal({
+    Modal.registerModal({
       modalId: 'plain',
       size: 'sm'
     });

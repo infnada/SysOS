@@ -32,7 +32,7 @@ export class FileSystemService {
     formData.append('file', file);
 
     const req = new HttpRequest<FormData>('POST', '/api/file/upload', formData, {
-      reportProgress: true//, responseType: 'text'
+      reportProgress: true // , responseType: 'text'
     });
 
     return this.http.request(req);
@@ -110,7 +110,9 @@ export class FileSystemService {
     });
   }
 
-  downloadFileFromInet(connectionUuid: string, path: string, url: string, credential?: { username: string, password: string }): Observable<any> {
+  downloadFileFromInet(connectionUuid: string, path: string, url: string,
+                       credential?: { username: string, password: string }
+                       ): Observable<any> {
 
     if (connectionUuid) {
       return this.http.post('/api/remoteFile/download_from_url', {
@@ -150,11 +152,11 @@ export class FileSystemService {
     });
   }
 
-  saveConfigFile(data: any, file: string, full_save: boolean): Observable<any> {
+  saveConfigFile(data: any, file: string, fullSave: boolean): Observable<any> {
     return this.http.post('/api/configFiles/save', {
       data,
       file,
-      full_save
+      fullSave
     });
   }
 

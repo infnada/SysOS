@@ -15,37 +15,37 @@ export class ApplicationsService {
   private subjectCloseApplication = new Subject<any>();
   private subjectToggleApplication = new Subject<any>();
 
-  private _applications: BehaviorSubject<Application[]>;
-  private _taskBarApplications: BehaviorSubject<Application[]>;
-  private _openedApplications: BehaviorSubject<Application[]>;
-  private _taskbar__item_open: BehaviorSubject<string>;
+  private $applications: BehaviorSubject<Application[]>;
+  private $taskBarApplications: BehaviorSubject<Application[]>;
+  private $openedApplications: BehaviorSubject<Application[]>;
+  private $taskbarItemOpen: BehaviorSubject<string>;
   private dataStore: {  // This is where we will store our data in memory
     applications: Application[],
     taskBarApplications: Application[],
     openedApplications: Application[],
-    taskbar__item_open: string
+    taskbarItemOpen: string
   };
   applications: Observable<any>;
   taskBarApplications: Observable<any>;
   openedApplications: Observable<any>;
-  taskbar__item_open: Observable<any>;
+  taskbarItemOpen: Observable<any>;
 
   currentHoverApplication: string = null;
 
   constructor(private loader: SystemJsNgModuleLoader,
               private injector: Injector,
               private http: HttpClient,
-              private toastr: ToastrService,
-              private FileSystemService: FileSystemService) {
-    this.dataStore = {taskBarApplications: [], openedApplications: [], applications: [], taskbar__item_open: null};
-    this._applications = <BehaviorSubject<Application[]>> new BehaviorSubject([]);
-    this._taskBarApplications = <BehaviorSubject<Application[]>> new BehaviorSubject([]);
-    this._openedApplications = <BehaviorSubject<Application[]>> new BehaviorSubject([]);
-    this._taskbar__item_open = <BehaviorSubject<string>> new BehaviorSubject(null);
-    this.taskBarApplications = this._taskBarApplications.asObservable();
-    this.openedApplications = this._openedApplications.asObservable();
-    this.applications = this._applications.asObservable();
-    this.taskbar__item_open = this._taskbar__item_open.asObservable();
+              private Toastr: ToastrService,
+              private FileSystem: FileSystemService) {
+    this.dataStore = {taskBarApplications: [], openedApplications: [], applications: [], taskbarItemOpen: null};
+    this.$applications = new BehaviorSubject([]) as BehaviorSubject<Application[]>;
+    this.$taskBarApplications = new BehaviorSubject([]) as BehaviorSubject<Application[]>;
+    this.$openedApplications = new BehaviorSubject([]) as BehaviorSubject<Application[]>;
+    this.$taskbarItemOpen = new BehaviorSubject(null) as BehaviorSubject<string>;
+    this.taskBarApplications = this.$taskBarApplications.asObservable();
+    this.openedApplications = this.$openedApplications.asObservable();
+    this.applications = this.$applications.asObservable();
+    this.taskbarItemOpen = this.$taskbarItemOpen.asObservable();
   }
 
 
@@ -92,7 +92,7 @@ export class ApplicationsService {
   errorHandler(e: any): Error {
     if (!e) throw new Error('e_not_found');
 
-    this.toastr.error(e, 'General Error');
+    this.Toastr.error(e, 'General Error');
     console.error('Applications Factory -> General Error -> [%s]', e);
     return new Error(e);
   }
@@ -109,7 +109,7 @@ export class ApplicationsService {
     this.dataStore.applications.push(data);
 
     // broadcast data to subscribers
-    this._applications.next(Object.assign({}, this.dataStore).applications);
+    this.$applications.next(Object.assign({}, this.dataStore).applications);
   }
 
   /**
@@ -119,20 +119,21 @@ export class ApplicationsService {
   registerTaskBarApplication(data: Application, save?: boolean): void {
     if (!data) throw new Error('id_not_found');
 
-    console.debug('Applications Factory -> Registering application in TaskBar -> id [%s], pinned [%s], save [%s]', data.id, data.pinned, save);
+    console.debug('Applications Factory -> Registering application in TaskBar -> id [%s], pinned [%s], save [%s]',
+      data.id, data.pinned, save);
 
-    const application_index = this.getApplicationIndexInTaskBar(data.id);
+    const applicationIndex = this.getApplicationIndexInTaskBar(data.id);
 
     // Applications already in Task Bar
     if (this.isApplicationInTaskBar(data.id)) {
 
       // Delete if unpin application and is not opened
       if (data.pinned === false && !this.isApplicationOpened(data.id)) {
-        this.dataStore.taskBarApplications.splice(application_index, 1);
+        this.dataStore.taskBarApplications.splice(applicationIndex, 1);
       } else {
 
         // Pin or unpin opened application application
-        this.dataStore.taskBarApplications[application_index].pinned = data.pinned;
+        this.dataStore.taskBarApplications[applicationIndex].pinned = data.pinned;
       }
 
     } else {
@@ -144,7 +145,7 @@ export class ApplicationsService {
     }
 
     // broadcast data to subscribers
-    this._taskBarApplications.next(Object.assign({}, this.dataStore).taskBarApplications);
+    this.$taskBarApplications.next(Object.assign({}, this.dataStore).taskBarApplications);
 
     // Save new config to file
     if (save === true) {
@@ -184,15 +185,15 @@ export class ApplicationsService {
     });
 
     // broadcast data to subscribers
-    this._openedApplications.next(Object.assign({}, this.dataStore).openedApplications);
-    this._taskBarApplications.next(Object.assign({}, this.dataStore).taskBarApplications);
+    this.$openedApplications.next(Object.assign({}, this.dataStore).openedApplications);
+    this.$taskBarApplications.next(Object.assign({}, this.dataStore).taskBarApplications);
   }
 
   /**
    * @Description
    * Opens a new application
    */
-  openApplication(id: string, init_data?: any): void {
+  openApplication(id: string, initData?: any): void {
     if (!id) throw new Error('id_not_found');
 
     let app;
@@ -204,7 +205,7 @@ export class ApplicationsService {
       app = this.getApplicationById(id);
     }
 
-    app.init_data = init_data;
+    app.initData = initData;
 
     // Check if application is already opened
     if (this.isApplicationOpened(app.id)) return;
@@ -218,7 +219,7 @@ export class ApplicationsService {
     this.dataStore.openedApplications.push(app);
 
     // broadcast data to subscribers
-    this._openedApplications.next(Object.assign({}, this.dataStore).openedApplications);
+    this.$openedApplications.next(Object.assign({}, this.dataStore).openedApplications);
   }
 
   /**
@@ -228,7 +229,7 @@ export class ApplicationsService {
   isActiveApplication(id: string): boolean {
     if (!id) throw new Error('id_not_found');
 
-    return this.dataStore.taskbar__item_open === id;
+    return this.dataStore.taskbarItemOpen === id;
   }
 
   /**
@@ -247,15 +248,15 @@ export class ApplicationsService {
     if (typeof id !== 'string' && id !== null) throw new Error('error_id');
 
     if (id === null) {
-      this.dataStore.taskbar__item_open = null;
+      this.dataStore.taskbarItemOpen = null;
     } else if (this.isActiveApplication(id)) {
-      this.dataStore.taskbar__item_open = null;
+      this.dataStore.taskbarItemOpen = null;
     } else {
-      this.dataStore.taskbar__item_open = id;
+      this.dataStore.taskbarItemOpen = id;
     }
 
     // broadcast data to subscribers
-    this._taskbar__item_open.next(Object.assign({}, this.dataStore).taskbar__item_open);
+    this.$taskbarItemOpen.next(Object.assign({}, this.dataStore).taskbarItemOpen);
   }
 
   /**
@@ -284,9 +285,9 @@ export class ApplicationsService {
       this.dataStore.applications.push({id: 'start', ico: 'windows', name: 'Start Menu', menu: true});
 
       // broadcast data to subscribers
-      this._applications.next(Object.assign({}, this.dataStore).applications);
+      this.$applications.next(Object.assign({}, this.dataStore).applications);
 
-      this.FileSystemService.getFileSystemPath(null, '/bin/applications').subscribe(
+      this.FileSystem.getFileSystemPath(null, '/bin/applications').subscribe(
         (res: { filename: string }[]) => {
           console.debug('Applications Factory -> Get Installed Applications successfully');
 
@@ -381,7 +382,7 @@ export class ApplicationsService {
    * Returns all pinned applications
    */
   getTaskBarApplications(): void {
-    this.FileSystemService.getConfigFile('desktop/task_bar.json').subscribe(
+    this.FileSystem.getConfigFile('desktop/task_bar.json').subscribe(
       (res: { id: string }[]) => {
         console.debug('Applications Factory -> Get TaskBar Applications successfully');
 
@@ -404,11 +405,11 @@ export class ApplicationsService {
    * Function called after Sort taskbar applications
    */
   saveTaskBarApplicationsOrder(): void {
-    const applications_to_save = this.dataStore.taskBarApplications.filter(obj => {
+    const applicationsToSave = this.dataStore.taskBarApplications.filter(obj => {
       return obj.pinned === true && obj.id !== 'start';
     });
 
-    this.FileSystemService.saveConfigFile(applications_to_save, 'desktop/task_bar.json', true).subscribe(
+    this.FileSystem.saveConfigFile(applicationsToSave, 'desktop/task_bar.json', true).subscribe(
       () => {
         console.debug('Applications Factory -> TaskBar applications saved');
       },

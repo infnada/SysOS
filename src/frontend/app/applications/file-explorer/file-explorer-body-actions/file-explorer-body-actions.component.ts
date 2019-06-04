@@ -26,44 +26,44 @@ export class FileExplorerBodyActionsComponent implements OnInit {
   lastPath: string[] = [];
   nextPath: string[] = [];
 
-  constructor(private FileSystemUiService: FileSystemUiService,
-              private FileExplorerService: FileExplorerService) {
+  constructor(private FileSystemUi: FileSystemUiService,
+              private FileExplorer: FileExplorerService) {
 
-    this.goPathBackSubscription = this.FileExplorerService.getObserverGoPathBack().subscribe(() => {
+    this.goPathBackSubscription = this.FileExplorer.getObserverGoPathBack().subscribe(() => {
       this.goPathBack();
     });
 
-    this.goToPathSubscription = this.FileSystemUiService.getObserverGoToPath().subscribe((data) => {
+    this.goToPathSubscription = this.FileSystemUi.getObserverGoToPath().subscribe((data) => {
       if (data.application === 'file-explorer') this.goToPath(data.path);
     });
   }
 
   ngOnInit(): void {
-    this.FileExplorerService.currentPath.subscribe(path => this.currentPath = path);
-    this.FileExplorerService.currentData.subscribe(data => this.currentData = data);
-    this.FileExplorerService.viewAsList.subscribe(data => this.viewAsList = data);
-    this.FileExplorerService.search.subscribe(data => this.search = data);
+    this.FileExplorer.currentPath.subscribe(path => this.currentPath = path);
+    this.FileExplorer.currentData.subscribe(data => this.currentData = data);
+    this.FileExplorer.viewAsList.subscribe(data => this.viewAsList = data);
+    this.FileExplorer.search.subscribe(data => this.search = data);
   }
 
   /**
    * Creates a new folder
    */
   UIcreateFolder(): void {
-    this.FileSystemUiService.UIcreateFolder(null, this.currentPath, '.window--file-explorer .window__main');
+    this.FileSystemUi.UIcreateFolder(null, this.currentPath, '.window--file-explorer .window__main');
   }
 
   /**
    * Sets view mode (icons, detailed...)
    */
   toggleView(): void {
-    this.FileExplorerService.toggleView();
+    this.FileExplorer.toggleView();
   }
 
   /**
    * Get current path data
    */
   reloadPath(newPath?: string): void {
-    this.FileExplorerService.reloadPath(newPath);
+    this.FileExplorer.reloadPath(newPath);
     this.searchChange(null);
   }
 
@@ -103,7 +103,8 @@ export class FileExplorerBodyActionsComponent implements OnInit {
         this.currentPath.split('/').splice(0, path + 1).join('/') + '/'
     );
 
-    // Push the actual path to lastPath array (used by goPathBack()) when currentPath exists. This happens when the application is opened for 1st time.
+    // Push the actual path to lastPath array (used by goPathBack()) when currentPath exists.
+    // This happens when the application is opened for 1st time.
     if (typeof this.currentPath !== 'undefined') this.lastPath.push(this.currentPath);
 
     // Reset nextPath
@@ -113,7 +114,7 @@ export class FileExplorerBodyActionsComponent implements OnInit {
   }
 
   searchChange(event: string): void {
-    this.FileExplorerService.setSearch(event);
+    this.FileExplorer.setSearch(event);
   }
 
 }

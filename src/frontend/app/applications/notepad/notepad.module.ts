@@ -21,8 +21,8 @@ import {NotepadMenuComponent} from './notepad-menu/notepad-menu.component';
 })
 export class NotepadModule implements OnInit {
 
-  constructor(private ApplicationsService: ApplicationsService) {
-    ApplicationsService.registerApplication({
+  constructor(private Applications: ApplicationsService) {
+    Applications.registerApplication({
       id: 'notepad',
       ico: 'pencil',
       name: 'Notepad',

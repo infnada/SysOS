@@ -26,7 +26,7 @@ export class ModalService {
   constructor(private loader: SystemJsNgModuleLoader,
               private injector: Injector,
               private compiler: Compiler,
-              private FileSystemService: FileSystemService) {
+              private FileSystem: FileSystemService) {
   }
 
 
@@ -39,7 +39,7 @@ export class ModalService {
    * Returns all scripts to load as SysOS applications
    */
   getInstalledModals() {
-    this.FileSystemService.getFileSystemPath(null, '/bin/modals').subscribe(
+    this.FileSystem.getFileSystemPath(null, '/bin/modals').subscribe(
       (res: { filename: string }[]) => {
         console.debug('Modal Factory -> Get Installed Modals successfully');
 
@@ -112,17 +112,17 @@ export class ModalService {
 
     return new Promise((resolve) => {
 
-      const ViewContainerRef: ViewContainerRef = this.mainContainerRef;
+      const viewContainerRef: ViewContainerRef = this.mainContainerRef;
       const cmpFactory = this.registeredModals[modalId].factory.componentFactories.find(
         x => x.componentType.name === modalId.charAt(0).toUpperCase() + modalId.slice(1) + 'EntryComponent'
       );
-      const cmpRef = ViewContainerRef.createComponent(cmpFactory, 0, this.registeredModals[modalId].modRef.injector);
+      const cmpRef = viewContainerRef.createComponent(cmpFactory, 0, this.registeredModals[modalId].modRef.injector);
 
-      (<any> cmpRef.instance).size = this.registeredModals[modalId].size;
-      (<any> cmpRef.instance).selector = selector;
+      (cmpRef.instance as any).size = this.registeredModals[modalId].size;
+      (cmpRef.instance as any).selector = selector;
 
       setTimeout(() => {
-        this.modalInstances[selector] = (<any> cmpRef.instance).OutputNgbModalRef;
+        this.modalInstances[selector] = (cmpRef.instance as any).OutputNgbModalRef;
 
         for (const [key, value] of Object.entries(resolvers)) {
           this.modalInstances[selector].componentInstance[key] = value;
@@ -154,7 +154,7 @@ export class ModalService {
    * Change text of already created modal
    */
   changeModalText(text: string, selector: string) {
-    this.modalInstances[selector].componentInstance['text'] = text;
+    this.modalInstances[selector].componentInstance.text = text;
   }
 
   /**

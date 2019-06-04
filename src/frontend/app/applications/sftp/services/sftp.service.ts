@@ -3,7 +3,7 @@ import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {Socket} from 'ngx-socket-io';
 import {ToastrService} from 'ngx-toastr';
-import {v4 as uuid} from 'uuid';
+import {v4 as uuidv4} from 'uuid';
 
 import {ModalService} from '../../../services/modal.service';
 import {FileSystemService} from '../../../services/file-system.service';
@@ -15,9 +15,9 @@ import {SftpConnection} from '../SftpConnection';
 })
 export class SftpService {
 
-  private _connections: BehaviorSubject<SftpConnection[]>;
-  private _activeConnection: BehaviorSubject<string>;
-  private _viewExchange: BehaviorSubject<boolean>;
+  private $connections: BehaviorSubject<SftpConnection[]>;
+  private $activeConnection: BehaviorSubject<string>;
+  private $viewExchange: BehaviorSubject<boolean>;
   private dataStore: {  // This is where we will store our data in memory
     connections: SftpConnection[],
     activeConnection: string,
@@ -27,17 +27,17 @@ export class SftpService {
   activeConnection: Observable<any>;
   viewExchange: Observable<any>;
 
-  constructor(private toastr: ToastrService,
+  constructor(private Toastr: ToastrService,
               private socket: Socket,
-              private FileSystemService: FileSystemService,
-              private ModalService: ModalService) {
+              private FileSystem: FileSystemService,
+              private Modal: ModalService) {
     this.dataStore = {connections: [], activeConnection: null, viewExchange: false};
-    this._connections = <BehaviorSubject<SftpConnection[]>> new BehaviorSubject([]);
-    this._activeConnection = <BehaviorSubject<string>> new BehaviorSubject(null);
-    this._viewExchange = <BehaviorSubject<boolean>> new BehaviorSubject(false);
-    this.connections = this._connections.asObservable();
-    this.activeConnection = this._activeConnection.asObservable();
-    this.viewExchange = this._viewExchange.asObservable();
+    this.$connections = new BehaviorSubject([]) as BehaviorSubject<SftpConnection[]>;
+    this.$activeConnection = new BehaviorSubject(null) as BehaviorSubject<string>;
+    this.$viewExchange = new BehaviorSubject(false) as BehaviorSubject<boolean>;
+    this.connections = this.$connections.asObservable();
+    this.activeConnection = this.$activeConnection.asObservable();
+    this.viewExchange = this.$viewExchange.asObservable();
 
     this.socket
       .fromEvent('sftp__prop')
@@ -58,20 +58,20 @@ export class SftpService {
             this.getConnectionByUuid(data.uuid).state = 'disconnected';
           }
           this.getConnectionByUuid(data.uuid).error = data.text;
-          this.toastr.error(data.text, 'Error (' + this.getConnectionByUuid(data.uuid).host + ')');
+          this.Toastr.error(data.text, 'Error (' + this.getConnectionByUuid(data.uuid).host + ')');
 
           // CONN OK
         } else if (data.text === 'SSH CONNECTION ESTABLISHED') {
           this.getConnectionByUuid(data.uuid).state = 'connected';
           this.getConnectionByUuid(data.uuid).error = null;
-          this.toastr.success(data.text, 'Connected (' + this.getConnectionByUuid(data.uuid).host + ')');
+          this.Toastr.success(data.text, 'Connected (' + this.getConnectionByUuid(data.uuid).host + ')');
           // $('#server_body').focus();
         }
       });
   }
 
   initConnections(): void {
-    this.FileSystemService.getConfigFile('applications/sftp/config.json').subscribe(
+    this.FileSystem.getConfigFile('applications/sftp/config.json').subscribe(
       (res: SftpConnection[]) => {
         console.debug('Sftp Factory -> Get credentials successfully');
 
@@ -82,11 +82,11 @@ export class SftpService {
         this.dataStore.connections = res;
 
         // broadcast data to subscribers
-        this._connections.next(Object.assign({}, this.dataStore).connections);
+        this.$connections.next(Object.assign({}, this.dataStore).connections);
       },
       error => {
         console.error('Sftp Factory -> Error while getting credentials -> ', error);
-        return this.toastr.error('Error getting connections.', 'SFTP');
+        return this.Toastr.error('Error getting connections.', 'SFTP');
       });
   }
 
@@ -106,14 +106,14 @@ export class SftpService {
     this.dataStore.activeConnection = uuid;
 
     // broadcast data to subscribers
-    this._activeConnection.next(Object.assign({}, this.dataStore).activeConnection);
+    this.$activeConnection.next(Object.assign({}, this.dataStore).activeConnection);
   }
 
   toggleExchange(): void {
     this.dataStore.viewExchange = !this.dataStore.viewExchange;
 
     // broadcast data to subscribers
-    this._viewExchange.next(Object.assign({}, this.dataStore).viewExchange);
+    this.$viewExchange.next(Object.assign({}, this.dataStore).viewExchange);
   }
 
   connect(connection: SftpConnection): void {
@@ -124,14 +124,14 @@ export class SftpService {
     if (connection.uuid) {
       connection.state = 'disconnected';
 
-      const currentConnectionIndex = this.dataStore.connections.findIndex((connection) => {
-        return connection.uuid === connection.uuid;
+      const currentConnectionIndex = this.dataStore.connections.findIndex((obj) => {
+        return obj.uuid === connection.uuid;
       });
 
       this.dataStore.connections[currentConnectionIndex] = connection;
 
     } else {
-      connection.uuid = uuid();
+      connection.uuid = uuidv4();
 
       this.dataStore.connections.push({
         uuid: connection.uuid,
@@ -146,7 +146,7 @@ export class SftpService {
     }
 
     // broadcast data to subscribers
-    this._connections.next(Object.assign({}, this.dataStore).connections);
+    this.$connections.next(Object.assign({}, this.dataStore).connections);
 
     if (connection.save) this.saveConnection(connection);
 
@@ -170,13 +170,14 @@ export class SftpService {
 
     console.debug('Connections Factory [%s] -> Saving connection -> host [%s]', connection.uuid, connection.host);
 
-    this.FileSystemService.saveConfigFile(connection, configFile, false).subscribe(
+    this.FileSystem.saveConfigFile(connection, configFile, false).subscribe(
       () => {
         console.debug('Connections Factory [%s] -> Saved connection successfully -> host [%s]', connection.uuid, connection.host);
       },
       error => {
-        console.error('Connections Factory [%s] -> Error while saving connection -> host [%s] -> ', connection.uuid, connection.host, error);
-        this.toastr.error('Error while saving connection.', 'Infrastructure Manager');
+        console.error('Connections Factory [%s] -> Error while saving connection -> host [%s] -> ',
+          connection.uuid, connection.host, error);
+        this.Toastr.error('Error while saving connection.', 'Infrastructure Manager');
       });
 
   }
@@ -194,7 +195,7 @@ export class SftpService {
     this.getConnectionByUuid(uuid).state = 'disconnected';
 
     // broadcast data to subscribers
-    this._connections.next(Object.assign({}, this.dataStore).connections);
+    this.$connections.next(Object.assign({}, this.dataStore).connections);
   }
 
   deleteConnection(uuid?: string): void {
@@ -202,7 +203,7 @@ export class SftpService {
 
     const configFile = 'applications/sftp/config.json';
 
-    this.ModalService.openRegisteredModal('question', '.window--sftp .window__main',
+    this.Modal.openRegisteredModal('question', '.window--sftp .window__main',
       {
         title: 'Delete connection ' + this.getConnectionByUuid(uuid).description,
         text: 'Remove the selected connection from the inventory?'
@@ -216,14 +217,14 @@ export class SftpService {
           this.disconnectConnection(uuid);
           this.setActiveConnection(null);
 
-          this.FileSystemService.deleteConfigFromFile(uuid, configFile).subscribe(
+          this.FileSystem.deleteConfigFromFile(uuid, configFile).subscribe(
             () => {
               this.dataStore.connections = this.dataStore.connections.filter((connection) => {
                 return connection.uuid !== uuid;
               });
 
               // broadcast data to subscribers
-              this._connections.next(Object.assign({}, this.dataStore).connections);
+              this.$connections.next(Object.assign({}, this.dataStore).connections);
 
               console.debug('Connections Factory [%s] -> Connection deleted successfully', uuid);
             },
@@ -247,7 +248,7 @@ export class SftpService {
       return;
     }
 
-    this.ModalService.openRegisteredModal('question', '.window--sftp .window__main',
+    this.Modal.openRegisteredModal('question', '.window--sftp .window__main',
       {
         title: 'Edit connection ' + this.getConnectionByUuid(uuid).description,
         text: 'Your connection will be disconnected before editing it. Continue?'

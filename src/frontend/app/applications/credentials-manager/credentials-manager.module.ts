@@ -27,10 +27,10 @@ import {CredentialsManagerService} from './credentials-manager.service';
 })
 export class CredentialsManagerModule {
 
-  constructor(private ApplicationsService: ApplicationsService,
-              private CredentialsManagerService: CredentialsManagerService) {
+  constructor(private Applications: ApplicationsService,
+              private CredentialsManager: CredentialsManagerService) {
 
-    ApplicationsService.registerApplication({
+    Applications.registerApplication({
       id: 'credentials-manager',
       ico: 'key',
       name: 'Credentials Manager',
@@ -40,7 +40,7 @@ export class CredentialsManagerModule {
       style: {width: '870px', height: '600px', top: '7%', left: '10%'}
     });
 
-    CredentialsManagerService.initCredentials();
+    CredentialsManager.initCredentials();
   }
 
 }

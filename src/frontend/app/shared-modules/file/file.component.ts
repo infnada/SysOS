@@ -95,8 +95,8 @@ export class FileComponent implements OnInit, AfterViewInit {
     if (typeof item.text === 'function') return item.text(file);
   }
 
-  constructor(private FileSystemService: FileSystemService,
-              private FileSystemUiService: FileSystemUiService) {
+  constructor(private FileSystem: FileSystemService,
+              private FileSystemUi: FileSystemUiService) {
   }
 
   ngOnInit() {
@@ -107,30 +107,30 @@ export class FileComponent implements OnInit, AfterViewInit {
   }
 
   getFileType(longname: string): string {
-    return this.FileSystemService.getFileType(longname);
+    return this.FileSystem.getFileType(longname);
   }
 
   UIrenameFile(file: SysOSFile) {
-    this.FileSystemUiService.UIrenameFile(null, this.currentPath, file, this.selector);
+    this.FileSystemUi.UIrenameFile(null, this.currentPath, file, this.selector);
   }
 
   UIdeleteSelected(file: SysOSFile) {
-    this.FileSystemUiService.UIdeleteSelected(null, this.currentPath, file, this.selector);
+    this.FileSystemUi.UIdeleteSelected(null, this.currentPath, file, this.selector);
   }
 
   UIcopyFile(file: SysOSFile) {
-    this.FileSystemUiService.UIcopyFile(this.currentPath, file);
+    this.FileSystemUi.UIcopyFile(this.currentPath, file);
   }
 
   UIcutFile(file: SysOSFile) {
-    this.FileSystemUiService.UIcutFile(this.currentPath, file);
+    this.FileSystemUi.UIcutFile(this.currentPath, file);
   }
 
   UIdoWithFile(file: SysOSFile) {
     let realApplication = this.application.id;
     if (this.subApplication) realApplication = this.application.id + '#' + this.subApplication;
 
-    this.FileSystemUiService.UIdoWithFile(realApplication, this.currentPath, file);
+    this.FileSystemUi.UIdoWithFile(realApplication, this.currentPath, file);
   }
 
 }

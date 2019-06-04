@@ -11,8 +11,8 @@ import {Credential} from './credential';
 })
 export class CredentialsManagerService {
 
-  private _credentials: BehaviorSubject<Credential[]>;
-  private _activeCredential: BehaviorSubject<string>;
+  private $credentials: BehaviorSubject<Credential[]>;
+  private $activeCredential: BehaviorSubject<string>;
   private dataStore: {  // This is where we will store our data in memory
     credentials: Credential[],
     activeCredential: string
@@ -24,17 +24,17 @@ export class CredentialsManagerService {
               private toastr: ToastrService) {
 
     this.dataStore = { credentials: [], activeCredential: null };
-    this._credentials = <BehaviorSubject<Credential[]>> new BehaviorSubject([]);
-    this._activeCredential = <BehaviorSubject<string>> new BehaviorSubject(null);
-    this.credentials = this._credentials.asObservable();
-    this.activeCredential = this._activeCredential.asObservable();
+    this.$credentials = new BehaviorSubject([]) as BehaviorSubject<Credential[]>;
+    this.$activeCredential = new BehaviorSubject(null) as BehaviorSubject<string>;
+    this.credentials = this.$credentials.asObservable();
+    this.activeCredential = this.$activeCredential.asObservable();
   }
 
   setActiveCredential(uuid: string): void {
     this.dataStore.activeCredential = uuid;
 
     // broadcast data to subscribers
-    this._activeCredential.next(Object.assign({}, this.dataStore).activeCredential);
+    this.$activeCredential.next(Object.assign({}, this.dataStore).activeCredential);
   }
 
   initCredentials(): void {
@@ -45,7 +45,7 @@ export class CredentialsManagerService {
         this.dataStore.credentials = res;
 
         // broadcast data to subscribers
-        this._credentials.next(Object.assign({}, this.dataStore).credentials);
+        this.$credentials.next(Object.assign({}, this.dataStore).credentials);
       },
       error => {
         console.error('Credentials Factory -> Error while getting credentials -> ', error);
@@ -65,8 +65,8 @@ export class CredentialsManagerService {
         });
 
         // broadcast data to subscribers
-        this._credentials.next(Object.assign({}, this.dataStore).credentials);
-        this._activeCredential.next(Object.assign({}, this.dataStore).activeCredential);
+        this.$credentials.next(Object.assign({}, this.dataStore).credentials);
+        this.$activeCredential.next(Object.assign({}, this.dataStore).activeCredential);
 
         console.debug('Credentials Factory -> Deleted credential successfully');
         return this.toastr.success('Credential deleted.', 'Credential Manager');
@@ -103,8 +103,8 @@ export class CredentialsManagerService {
           this.dataStore.activeCredential = null;
 
           // broadcast data to subscribers
-          this._credentials.next(Object.assign({}, this.dataStore).credentials);
-          this._activeCredential.next(Object.assign({}, this.dataStore).activeCredential);
+          this.$credentials.next(Object.assign({}, this.dataStore).credentials);
+          this.$activeCredential.next(Object.assign({}, this.dataStore).activeCredential);
 
           console.debug('Credentials Factory -> Saved credential successfully');
           this.toastr.success('Credential saved.', 'Credential Manager');

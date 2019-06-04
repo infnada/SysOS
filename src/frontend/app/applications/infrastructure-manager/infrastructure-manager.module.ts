@@ -22,8 +22,8 @@ import {InfrastructureManagerStatusComponent} from './infrastructure-manager-sta
 })
 export class InfrastructureManagerModule implements OnInit {
 
-  constructor(private ApplicationsService: ApplicationsService) {
-    ApplicationsService.registerApplication({
+  constructor(private Applications: ApplicationsService) {
+    Applications.registerApplication({
       id: 'infrastructure-manager',
       ico: 'server',
       name: 'Infrastructure Manager',

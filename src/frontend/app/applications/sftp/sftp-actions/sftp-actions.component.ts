@@ -13,42 +13,42 @@ export class SftpActionsComponent implements OnInit {
 
   activeConnection: string;
 
-  constructor(private SftpService: SftpService) { }
+  constructor(private Sftp: SftpService) { }
 
   ngOnInit() {
-    this.SftpService.activeConnection.subscribe(connection => this.activeConnection = connection);
+    this.Sftp.activeConnection.subscribe(connection => this.activeConnection = connection);
   }
 
   getActiveConnection(): SftpConnection {
-    return this.SftpService.getActiveConnection();
+    return this.Sftp.getActiveConnection();
   }
 
   toggleExchange(): void {
-    this.SftpService.toggleExchange();
+    this.Sftp.toggleExchange();
   }
 
   newConnection() {
     if (this.activeConnection === null) return;
 
-    this.SftpService.setActiveConnection(null);
+    this.Sftp.setActiveConnection(null);
   }
 
   disconnectConnection() {
     if (this.activeConnection === null) return;
 
-    this.SftpService.disconnectConnection();
+    this.Sftp.disconnectConnection();
   }
 
   deleteConnection() {
     if (this.activeConnection === null) return;
 
-    this.SftpService.deleteConnection();
+    this.Sftp.deleteConnection();
   }
 
   editConnection() {
     if (this.activeConnection === null) return;
 
-    this.SftpService.editConnection();
+    this.Sftp.editConnection();
   }
 
 }

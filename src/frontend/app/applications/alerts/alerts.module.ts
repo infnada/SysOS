@@ -18,8 +18,8 @@ import {AlertsMenuComponent} from './alerts-menu/alerts-menu.component';
 })
 export class AlertsModule implements OnInit {
 
-  constructor(private ApplicationsService: ApplicationsService) {
-    ApplicationsService.registerApplication({
+  constructor(private Applications: ApplicationsService) {
+    Applications.registerApplication({
       id: 'alerts',
       ico: 'bullhorn',
       name: 'Alerts',

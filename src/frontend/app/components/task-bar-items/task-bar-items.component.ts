@@ -15,12 +15,14 @@ export class TaskBarItemsComponent implements OnInit {
   @ViewChild(MatMenuTrigger) contextMenuApp: MatMenuTrigger;
   @Input() application: Application;
 
-  taskbar__item_open: string;
+  taskbarItemOpen: string;
   contextMenuPosition = {x: '0px', y: '0px'};
   appContextMenuItems: ContextMenuItem[] = [
     {
       id: 1, text: (application: Application) => {
-        return '<span class="fa-stack"><i class="fa fa-stack-2x fa-' + this.getApplicationById(application.id).ico + '"></i></span> ' + this.getApplicationById(application.id).name;
+        return '<span class="fa-stack">' +
+          '<i class="fa fa-stack-2x fa-' + this.getApplicationById(application.id).ico + '"></i>' +
+          '</span> ' + this.getApplicationById(application.id).name;
       }, action: (application: Application) => {
         this.toggleApplication(application.id);
       }
@@ -29,12 +31,14 @@ export class TaskBarItemsComponent implements OnInit {
     {
       id: 3, text: (application: Application) => {
         if (application.pinned) {
-          return '<span class="fa-stack"><i class="fa fa-thumb-tack fa-stack-2x"></i><i class="fa fa-ban fa-stack-1x text-danger"></i></span> Unpin from Task Bar';
+          return '<span class="fa-stack">' +
+            '<i class="fa fa-thumb-tack fa-stack-2x"></i><i class="fa fa-ban fa-stack-1x text-danger"></i>' +
+            '</span> Unpin from Task Bar';
         }
         return '<span class="fa-stack"><i class="fa fa-stack-2x fa-thumb-tack fa-rotate-90"></i></span> Pin to Task Bar';
       }, action: (application: Application) => {
         // Pin application
-        this.ApplicationsService.registerTaskBarApplication({
+        this.Applications.registerTaskBarApplication({
           id: application.id,
           pinned: !application.pinned
         }, true);
@@ -42,7 +46,7 @@ export class TaskBarItemsComponent implements OnInit {
     },
     {
       id: 4, text: '<span class="fa-stack"><i class="fa fa-stack-2x fa-times"></i></span> Close', action: (application: Application) => {
-        this.ApplicationsService.sendCloseApplication(application);
+        this.Applications.sendCloseApplication(application);
       }, disabled: (application: Application) => {
         return !this.isApplicationOpened(application.id);
       }
@@ -68,22 +72,22 @@ export class TaskBarItemsComponent implements OnInit {
     if (typeof item.text === 'function') return item.text(application);
   }
 
-  constructor(private ApplicationsService: ApplicationsService) { }
+  constructor(private Applications: ApplicationsService) { }
 
   ngOnInit() {
-    this.ApplicationsService.taskbar__item_open.subscribe(application => this.taskbar__item_open = application);
+    this.Applications.taskbarItemOpen.subscribe(application => this.taskbarItemOpen = application);
   }
 
   closeApplication(id: string): void {
-    this.ApplicationsService.closeApplication(id);
+    this.Applications.closeApplication(id);
   }
 
   getApplicationById(id: string): Application {
-    return this.ApplicationsService.getApplicationById(id);
+    return this.Applications.getApplicationById(id);
   }
 
   isStartOpened(id: string): boolean {
-    return this.taskbar__item_open === id && id === 'start';
+    return this.taskbarItemOpen === id && id === 'start';
   }
 
   isItemOpened(id: string): boolean {
@@ -91,24 +95,24 @@ export class TaskBarItemsComponent implements OnInit {
   }
 
   isItemActive(id: string): boolean {
-    return this.taskbar__item_open === id && id !== 'start';
+    return this.taskbarItemOpen === id && id !== 'start';
   }
 
   isApplicationOpened(id: string): boolean {
-    return this.ApplicationsService.isApplicationOpened(id);
+    return this.Applications.isApplicationOpened(id);
   }
 
   toggleApplication(id: string): void {
-    if (id === 'start') return this.ApplicationsService.toggleApplication(id);
+    if (id === 'start') return this.Applications.toggleApplication(id);
 
     // Open application
     if (!this.isApplicationOpened(id)) {
-      this.ApplicationsService.openApplication(id);
-      this.ApplicationsService.toggleApplication(id);
+      this.Applications.openApplication(id);
+      this.Applications.toggleApplication(id);
     }
 
     // Emitting to application directives (minimize or maximize)
-    this.ApplicationsService.sendToggleApplication(id);
+    this.Applications.sendToggleApplication(id);
   }
 
 }

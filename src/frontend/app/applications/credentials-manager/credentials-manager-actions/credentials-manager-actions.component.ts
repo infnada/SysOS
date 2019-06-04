@@ -13,8 +13,8 @@ export class CredentialsManagerActionsComponent implements OnInit {
 
   activeCredential: string;
 
-  constructor(private CredentialsManagerService: CredentialsManagerService) {
-    this.CredentialsManagerService.activeCredential.subscribe(credential => this.activeCredential = credential);
+  constructor(private CredentialsManager: CredentialsManagerService) {
+    this.CredentialsManager.activeCredential.subscribe(credential => this.activeCredential = credential);
   }
 
   ngOnInit() {
@@ -23,12 +23,12 @@ export class CredentialsManagerActionsComponent implements OnInit {
   newCredential(): void {
     if (this.activeCredential === null) return;
 
-    this.CredentialsManagerService.setActiveCredential(null);
+    this.CredentialsManager.setActiveCredential(null);
   }
 
   deleteCredential(): void {
     if (this.activeCredential === null) return;
 
-    this.CredentialsManagerService.deleteCredential(this.activeCredential);
+    this.CredentialsManager.deleteCredential(this.activeCredential);
   }
 }

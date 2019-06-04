@@ -11,14 +11,14 @@ import {SftpConnection} from '../SftpConnection';
 export class SftpStatusComponent implements OnInit {
   @Input() application: Application;
 
-  constructor(private SftpService: SftpService) {
+  constructor(private Sftp: SftpService) {
   }
 
   ngOnInit() {
   }
 
   getActiveConnection(): SftpConnection {
-    return this.SftpService.getActiveConnection();
+    return this.Sftp.getActiveConnection();
   }
 
 }
