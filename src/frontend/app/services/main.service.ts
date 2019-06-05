@@ -3,13 +3,15 @@ import {Injectable} from '@angular/core';
 import {ModalService} from './modal.service';
 import {ApplicationsService} from './applications.service';
 import {Socket} from 'ngx-socket-io';
+import {NGXLogger} from 'ngx-logger';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MainService {
 
-  constructor(private Applications: ApplicationsService,
+  constructor(private logger: NGXLogger,
+              private Applications: ApplicationsService,
               private Modal: ModalService,
               private socket: Socket) {
   }
@@ -24,18 +26,17 @@ export class MainService {
     });
 
     window.addEventListener( 'contextmenu', (e) => {
-      console.log(e);
       e.preventDefault();
     });
 
     this.socket.on('connect', () => {
-      console.log('SysOs -> Socket.io connected');
+      this.logger.debug('[SysOs] -> Socket.io connected');
     });
     this.socket.on('disconnect', (err) => {
-      console.log(err);
+      this.logger.error('[SysOs] -> Socket.io disconnect', err);
     });
     this.socket.on('error', (err) => {
-      console.log(err);
+      this.logger.error('[SysOs] -> Socket.io error', err);
     });
 
     this.Applications.getInstalledApplications().then(() => {

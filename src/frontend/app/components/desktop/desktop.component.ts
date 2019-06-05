@@ -11,6 +11,7 @@ import {ApplicationsService} from '../../services/applications.service';
 import {ContextMenuItem} from '../../interfaces/context-menu-item';
 import {Application} from '../../interfaces/application';
 import {SysOSFile} from '../../interfaces/file';
+import {NGXLogger} from 'ngx-logger';
 
 @Component({
   selector: 'app-desktop',
@@ -72,23 +73,8 @@ export class DesktopComponent implements OnInit, AfterViewInit {
     }
   ];
 
-  onDesktopContextMenu(event: MouseEvent): void {
-    this.contextMenuPosition.x = event.clientX + 'px';
-    this.contextMenuPosition.y = event.clientY + 'px';
-    this.contextMenuDesktop.openMenu();
-  }
-
-  checkIfDisabled(item: ContextMenuItem): boolean {
-    if (item.disabled) return item.disabled();
-    return false;
-  }
-
-  contextToText(item: ContextMenuItem, file?: SysOSFile): string {
-    if (typeof item.text === 'string') return item.text;
-    if (typeof item.text === 'function') return item.text(file);
-  }
-
-  constructor(private FileSystem: FileSystemService,
+  constructor(private logger: NGXLogger,
+              private FileSystem: FileSystemService,
               private FileSystemUi: FileSystemUiService,
               private Applications: ApplicationsService) {
 
@@ -132,14 +118,32 @@ export class DesktopComponent implements OnInit, AfterViewInit {
    */
   private reloadPath(): void {
     this.FileSystem.getFileSystemPath(null, this.desktopFiles.currentPath).subscribe(
-      (res: Array<any>) => {
-        this.desktopFiles.currentData = res;
+      (res: { data: SysOSFile[] }) => {
+        this.desktopFiles.currentData = res.data;
         this.resetActive();
       },
       error => {
-        console.error('Desktop -> Error while getting fileSystemPath -> ', error);
-        console.error(error);
+        this.logger.error('Desktop -> Error while getting fileSystemPath -> ', error);
       });
+  }
+
+  /**
+   * context-menu
+   */
+  onDesktopContextMenu(event: MouseEvent): void {
+    this.contextMenuPosition.x = event.clientX + 'px';
+    this.contextMenuPosition.y = event.clientY + 'px';
+    this.contextMenuDesktop.openMenu();
+  }
+
+  checkIfDisabled(item: ContextMenuItem): boolean {
+    if (item.disabled) return item.disabled();
+    return false;
+  }
+
+  contextToText(item: ContextMenuItem, file?: SysOSFile): string {
+    if (typeof item.text === 'string') return item.text;
+    if (typeof item.text === 'function') return item.text(file);
   }
 
   /**
@@ -151,10 +155,6 @@ export class DesktopComponent implements OnInit, AfterViewInit {
 
   UIonDropItem($event): void {
     this.FileSystemUi.UIonDropItem(null, $event, this.desktopFiles.currentPath);
-  }
-
-  getFileType(longname: string): string {
-    return this.FileSystem.getFileType(longname);
   }
 
   UIdownloadFromURL(): void {

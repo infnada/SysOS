@@ -38,7 +38,7 @@ export class CredentialsManagerService {
   }
 
   initCredentials(): void {
-    this.http.get('/api/credential/init').subscribe(
+    this.http.get('/api/credential/').subscribe(
       (res: Credential[]) => {
         console.debug('Credentials Factory -> Get credentials successfully');
 
@@ -54,9 +54,7 @@ export class CredentialsManagerService {
   }
 
   deleteCredential(uuid: string): void {
-    this.http.post('/api/credential/delete', {
-      uuid
-    }).subscribe(
+    this.http.delete(`/api/credential/${uuid}`).subscribe(
       () => {
         this.dataStore.activeCredential = null;
 
@@ -81,10 +79,10 @@ export class CredentialsManagerService {
 
     return new Promise((resolve, reject) => {
 
-      this.http.post('/api/credential/save', {
+      this.http.put('/api/credential/', {
         credential
       }).subscribe(
-        (res: { data: { response: string } }) => {
+        (res: { data: string }) => {
           const credentialExists = this.dataStore.credentials.filter(el => {
             return el.uuid === credential.uuid;
           })[0];
@@ -94,7 +92,7 @@ export class CredentialsManagerService {
             credentialExists.username = credential.username;
           } else {
             this.dataStore.credentials.push({
-              uuid: res.data.response,
+              uuid: res.data,
               description: credential.description,
               username: credential.username
             });

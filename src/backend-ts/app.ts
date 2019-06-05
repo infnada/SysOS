@@ -14,10 +14,10 @@ import compress from 'compression';
 import cors from 'cors';
 import favicon from 'serve-favicon';
 import bodyParser from 'body-parser';
-import helmet from 'helmet';
+import * as helmet from 'helmet';
 import path from 'path';
 import readConfig from 'read-config';
-
+import MemoryStore from 'memorystore';
 import {SocketModule} from './socket';
 import {RoutesModule} from './routes';
 
@@ -43,12 +43,19 @@ export class Init {
       res.set('x-timestamp', Date.now());
     }
   };
+  private MemoryStore = MemoryStore(session);
+  private sessionStore = new this.MemoryStore({
+    checkPeriod: 86400000 // prune expired entries every 24h
+  });
   private Session = session({
+    store: this.sessionStore,
     secret: this.config.session.secret,
     name: this.config.session.name,
     resave: false,
     saveUninitialized: true,
-    expires: new Date(Date.now() + 8 * 60 * 60 * 1000)
+    cookie: {
+      expires: new Date(Date.now() + 8 * 60 * 60 * 1000)
+    }
   });
 
 
@@ -122,7 +129,7 @@ export class Init {
 
     this.logger = getLogger('mainlog');
     this.app.use(connectLogger(this.logger, {
-      level: 'auto',
+      level: 'trace',
       format: ':remote-addr - :remote-user [:date] \":method :url HTTP/:http-version\"' +
         ' :status :response-time ms - :res[content-length] -  \":referrer\"',
       nolog: '\\.gif|\\.jpg$|\\.js$|\\.png$|\\.css$||\\.woff$'
@@ -141,16 +148,19 @@ export class Init {
   private sockets(): void {
     this.io = socketIo(this.servers);
 
-    this.io.use((socket: socketIo.Socket, next) => {
-      const handshake = socket.request;
+    this.io.use((socket: socketIo.Socket, next: express.NextFunction) => {
 
-      this.Session(handshake, {}, (err: any) => {
+      this.sessionStore.get(socket.id, (err, sockSession) => {
         if (err) {
+          this.logger.error('[APP] Get Session -> ' + err.code);
           return next(new Error(err));
         }
-        const socketSession = handshake.session;
-        console.log(socketSession);
-        // TODO: check the session is valid
+
+        console.log(socket.client.request.session);
+        console.log(socket.request.session);
+        console.log(sockSession);
+        // TODO:
+        // socket.client.request.session = session;
         next();
       });
     });
@@ -163,19 +173,19 @@ export class Init {
 
   private listen(): void {
     this.server.listen({host: this.config.listen.ip, port: this.config.listen.port}, () => {
-      console.log('Running server on port %s', this.config.listen.port);
+      this.logger.info('Running server on port %s', this.config.listen.port);
     });
     this.servers.listen({host: this.config.listen.ip, port: this.config.listen.ports}, () => {
-      console.log('Running server on port %s', this.config.listen.port);
+      this.logger.info('Running server on port %s', this.config.listen.ports);
     });
   }
 
   private errorHandler(): void {
     this.server.on('error', (err: any) => {
-      console.log('HTTP server.listen ERROR: ' + err.code);
+      this.logger.error('HTTP server.listen ERROR: ' + err.code);
     });
     this.servers.on('error', (err: any) => {
-      console.log('HTTPS server.listen ERROR: ' + err.code);
+      this.logger.error('HTTPS server.listen ERROR: ' + err.code);
     });
   }
 

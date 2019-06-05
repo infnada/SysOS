@@ -13,6 +13,7 @@ import {NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
 import {FileSystemService} from './file-system.service';
 
 import {Modal} from '../interfaces/modal';
+import {NGXLogger} from 'ngx-logger';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +24,8 @@ export class ModalService {
   modalInstances = [];
   registeredModals: Modal[] = [];
 
-  constructor(private loader: SystemJsNgModuleLoader,
+  constructor(private logger: NGXLogger,
+              private loader: SystemJsNgModuleLoader,
               private injector: Injector,
               private compiler: Compiler,
               private FileSystem: FileSystemService) {
@@ -40,10 +42,10 @@ export class ModalService {
    */
   getInstalledModals() {
     this.FileSystem.getFileSystemPath(null, '/bin/modals').subscribe(
-      (res: { filename: string }[]) => {
-        console.debug('Modal Factory -> Get Installed Modals successfully');
+      (res: { data: { filename: string }[] }) => {
+        this.logger.debug('Modal Factory -> Get Installed Modals successfully');
 
-        res = [
+        res.data = [
           {
             filename: 'input-module.js'
           },
@@ -55,14 +57,13 @@ export class ModalService {
           }
         ];
 
-        res.forEach((value) => {
+        res.data.forEach((value) => {
           this.loadModal(value);
         });
 
       },
       error => {
-        console.error('Modal Factory -> Error while getting installed modals -> ', error);
-        console.error(error);
+        this.logger.error('Modal Factory -> Error while getting installed modals -> ', error);
       });
   }
 
@@ -100,7 +101,7 @@ export class ModalService {
   }
 
   registerModal(data: Modal): void {
-    console.debug('Modal Factory -> New modal registration -> id [%s]', data.modalId);
+    this.logger.debug('Modal Factory -> New modal registration -> id [%s]', data.modalId);
 
     this.registeredModals[data.modalId] = data;
   }

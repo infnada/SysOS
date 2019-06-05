@@ -57,9 +57,7 @@ export class ApiGlobalsModule {
     return this.res.json(
       {
         status: 'ok',
-        data: {
-          response: data
-        }
+        data
       }
     );
   }

@@ -7,6 +7,7 @@ import {ToastrService} from 'ngx-toastr';
 import {ModalService} from './modal.service';
 import {ApplicationsService} from './applications.service';
 import {FileSystemService} from './file-system.service';
+import {NGXLogger} from 'ngx-logger';
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +28,8 @@ export class FileSystemUiService {
 
   currentFileDrag: string = null;
 
-  constructor(private Modal: ModalService,
+  constructor(private logger: NGXLogger,
+              private Modal: ModalService,
               private Toastr: ToastrService,
               private FileSystem: FileSystemService,
               private Applications: ApplicationsService) {
@@ -60,8 +62,7 @@ export class FileSystemUiService {
             this.refreshPath(currentPath);
           },
           error => {
-            console.error('File System -> Error while creating folder -> ', error);
-            console.error(error);
+            this.logger.error('File System -> Error while creating folder -> ', error);
           });
       });
 
@@ -89,8 +90,7 @@ export class FileSystemUiService {
             this.refreshPath(currentPath);
           },
           error => {
-            console.error('File System -> Error while renaming file -> ', error);
-            console.error(error);
+            this.logger.error('File System -> Error while renaming file -> ', error);
           });
 
       });
@@ -116,8 +116,7 @@ export class FileSystemUiService {
               this.refreshPath(currentPath);
             },
             error => {
-              console.error('File System -> Error while deleting folder -> ', error);
-              console.error(error);
+              this.logger.error('File System -> Error while deleting folder -> ', error);
             });
         }
 
@@ -144,8 +143,7 @@ export class FileSystemUiService {
           this.$cutFrom.next(Object.assign({}, this.dataStore).cutFrom);
         },
         error => {
-          console.error('File System -> Error while moving file -> ', error);
-          console.error(error);
+          this.logger.error('File System -> Error while moving file -> ', error);
         });
 
     }
@@ -160,8 +158,7 @@ export class FileSystemUiService {
           this.$copyFrom.next(Object.assign({}, this.dataStore).copyFrom);
         },
         error => {
-          console.error('File System -> Error while copying file -> ', error);
-          console.error(error);
+          this.logger.error('File System -> Error while copying file -> ', error);
         });
 
     }
@@ -188,8 +185,7 @@ export class FileSystemUiService {
             this.Toastr.success('File downloaded to ' + currentPath, 'Download file from URL');
           },
           error => {
-            console.error('Desktop -> Error while downloading file -> ', error);
-            console.error(error);
+            this.logger.error('Desktop -> Error while downloading file -> ', error);
           });
 
       });
@@ -264,8 +260,7 @@ export class FileSystemUiService {
 
         },
         error => {
-          console.error('Desktop -> Error while getting file contents -> ', error);
-          console.error(error);
+          this.logger.error('Desktop -> Error while getting file contents -> ', error);
         });
     }
   }
@@ -283,8 +278,7 @@ export class FileSystemUiService {
         this.refreshPath(dropPath);
       },
       error => {
-        console.error('Desktop -> Error while moving file -> ', error);
-        console.error(error);
+        this.logger.error('Desktop -> Error while moving file -> ', error);
       });
   }
 

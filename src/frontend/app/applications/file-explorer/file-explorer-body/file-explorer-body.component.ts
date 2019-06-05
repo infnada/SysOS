@@ -14,6 +14,7 @@ import {FileExplorerService} from '../file-explorer.service';
 import {Application} from '../../../interfaces/application';
 import {SysOSFile} from '../../../interfaces/file';
 import {ContextMenuItem} from '../../../interfaces/context-menu-item';
+import {NGXLogger} from 'ngx-logger';
 
 
 @Component({
@@ -95,7 +96,8 @@ export class FileExplorerBodyComponent implements OnInit {
     if (typeof item.text === 'function') return item.text(file);
   }
 
-  constructor(private FileSystem: FileSystemService,
+  constructor(private logger: NGXLogger,
+              private FileSystem: FileSystemService,
               private FileSystemUi: FileSystemUiService,
               private Applications: ApplicationsService,
               private FileExplorer: FileExplorerService) {
@@ -188,10 +190,9 @@ export class FileExplorerBodyComponent implements OnInit {
 
           if (event instanceof HttpResponse) {
             delete this.httpEmitter[i];
-            console.log('request done', event);
           }
         },
-        error => console.log('Error Uploading', error)
+        error => this.logger.log('[FileExplorerBody] Error Uploading file', error)
       );
 
       files.splice(i, 1);
@@ -239,7 +240,6 @@ export class FileExplorerBodyComponent implements OnInit {
    * Keypress on item focus
    */
   handleItemKeyPress(keyEvent: KeyboardEvent): void {
-    console.log(keyEvent);
     // Do nothing if some application is active
     if (this.taskbarItemOpen !== 'file-explorer') return;
 

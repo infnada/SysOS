@@ -1,20 +1,33 @@
 import path from 'path';
 import readConfig from 'read-config';
 import log4js from 'log4js';
-import multiparty from 'connect-multiparty';
+import express from 'express';
+
 import {ApiGlobalsModule} from './api/api-globals';
 
-const config =  readConfig(path.join(__dirname, '../filesystem/etc/expressjs/config.json'));
+import file from './api/file';
+import configFile from './api/configFile';
+import folder from './api/folder';
+import credential from './api/credential';
+
+const config = readConfig(path.join(__dirname, '../filesystem/etc/expressjs/config.json'));
 const logger = log4js.getLogger('mainlog');
-const multipartyMiddleware = multiparty();
 
 export class RoutesModule {
 
-  ApiGlobalsModule: ApiGlobalsModule;
+  constructor(private app,
+              private io: any) {
+  }
 
-  init() {
-    this.app.use((req, res, next) => {
-      this.ApiGlobalsModule = new ApiGlobalsModule(req, res);
+  init(): void {
+    this.securityMiddleware();
+    this.setRoutes();
+    this.errorRouteHandler();
+  }
+
+  securityMiddleware(): void {
+    this.app.use((req: express.Request & { io: any }, res: express.Response, next: express.NextFunction) => {
+      const apiGlobals = new ApiGlobalsModule(req, res);
 
       // List of urls that login is not needed.
       const regexList = [
@@ -40,45 +53,35 @@ export class RoutesModule {
       // No legged_in or deleted uniqueId cookie
       if (!req.signedCookies[config.uniqueCookie]) {
         logger.warn('no_uniqueId_cookie ' + req.url);
-        return this.ApiGlobalsModule.responseNoValid('no_uniqueId_cookie');
+        return apiGlobals.responseNoValid('no_uniqueId_cookie');
       }
 
       // Session deleted from redis
       if (!req.session.uuid) {
         logger.warn('no_user_id ' + req.url);
-        return this.ApiGlobalsModule.responseNoValid('no_user_id');
+        return apiGlobals.responseNoValid('no_user_id');
       }
 
       // Session user_id and uniqueId not match. Modified uniqueId cookie.
       if (req.session.uuid !== req.signedCookies[config.uniqueCookie]) {
         logger.warn('invalid_uniqueId_cookie ' + req.url);
-        return this.ApiGlobalsModule.responseNoValid('invalid_uniqueId_cookie');
+        return apiGlobals.responseNoValid('invalid_uniqueId_cookie');
       }
 
       // Include socket.io properties to request object
       req.io = this.io;
       return next();
     });
+  }
 
-    this.app.use('/api/file/upload', multipartyMiddleware, require('./api/file/upload.js'));
-    this.app.use('/api/file/rename', require('./api/file/rename.js'));
-    this.app.use('/api/file/delete', require('./api/file/delete.js'));
-    this.app.use('/api/file/get', require('./api/file/get.js'));
-    this.app.use('/api/file/download_from_url', require('./api/file/download_from_url.js'));
-    this.app.use('/api/file/copy', require('./api/file/copy.js'));
-    this.app.use('/api/file/move', require('./api/file/move.js'));
+  setRoutes(): void {
+    this.app.use('/api/file/', file);
+    this.app.use('/api/configFile/', configFile);
+    this.app.use('/api/folder/', folder);
+    this.app.use('/api/credential/', credential);
 
-    this.app.use('/api/remoteFile/chmod', require('./api/remoteFile/chmod.js'));
-    this.app.use('/api/remoteFile/delete', require('./api/remoteFile/delete.js'));
-    this.app.use('/api/remoteFile/rename', require('./api/remoteFile/rename.js'));
-    this.app.use('/api/remoteFile/download_from_url', require('./api/remoteFile/download_from_url.js'));
-    this.app.use('/api/remoteFile/copy', require('./api/remoteFile/copy.js'));
-    this.app.use('/api/remoteFile/move', require('./api/remoteFile/move.js'));
     // upload & download called from socket.io
-
-    this.app.use('/api/folder/create', require('./api/folder/create.js'));
-    this.app.use('/api/folder/get', require('./api/folder/get.js'));
-
+    /*
     this.app.use('/api/remoteFolder/create', require('./api/remoteFolder/create.js'));
     this.app.use('/api/remoteFolder/get', require('./api/remoteFolder/get.js'));
 
@@ -105,39 +108,26 @@ export class RoutesModule {
 
     this.app.use('/api/netapp/call', require('./api/netapp/call.js'));
 
-    this.app.use('/api/credential/login', require('./api/credential/login.js'));
-    this.app.use('/api/credential/init', require('./api/credential/init.js'));
-    this.app.use('/api/credential/save', require('./api/credential/save.js'));
-    this.app.use('/api/credential/delete', require('./api/credential/delete.js'));
-
-    this.app.use('/api/configFiles/get', require('./api/configFiles/get.js'));
-    this.app.use('/api/configFiles/save', require('./api/configFiles/save.js'));
-    this.app.use('/api/configFiles/delete', require('./api/configFiles/delete.js'));
-
     this.app.use('/api/applications/get_application_file', require('./api/applications/get_application_file.js'));
 
     this.app.use('/api/video/get_video', require('./api/video/get_video.js'));
+*/
+    this.app.get('/getSession', (req: express.Request, res: express.Response) => {
+      const apiGlobals = new ApiGlobalsModule(req, res);
 
-    this.app.get('/getSession', (req, res) => {
-      res.send({status: 'ok'});
+      apiGlobals.validResponse();
     });
+  }
 
+  errorRouteHandler(): void {
     // express error handling
-    this.app.use((req, res) => {
+    this.app.use((req: express.Request, res: express.Response) => {
       res.status(404).send('Sorry can\'t find that!');
     });
 
-    this.app.use((err, req, res) => {
+    this.app.use((err: Error, req: express.Request, res: express.Response) => {
       console.error(err.stack);
       res.status(500).send('Something broke!');
     });
   }
-
-  constructor(private app,
-              private io: any) {
-
-    this.init();
-
-  }
-
 }

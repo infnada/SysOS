@@ -4,6 +4,7 @@ import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {FileSystemService} from '../../services/file-system.service';
 
 import {SysOSFile} from '../../interfaces/file';
+import {NGXLogger} from 'ngx-logger';
 
 @Injectable({
   providedIn: 'root'
@@ -26,7 +27,8 @@ export class FileExplorerService {
   viewAsList: Observable<any>;
   search: Observable<any>;
 
-  constructor(private FileSystem: FileSystemService) {
+  constructor(private logger: NGXLogger,
+              private FileSystem: FileSystemService) {
     this.dataStore = {currentPath: '/', currentData: [], viewAsList: false, search: null};
     this.$currentPath = new BehaviorSubject('/') as BehaviorSubject<string>;
     this.$currentData = new BehaviorSubject([]) as BehaviorSubject<SysOSFile[]>;
@@ -40,8 +42,8 @@ export class FileExplorerService {
 
   reloadPath(path?: string): void {
     this.FileSystem.getFileSystemPath(null, (path ? path : this.dataStore.currentPath)).subscribe(
-      (res: SysOSFile[]) => {
-        this.dataStore.currentData = res;
+      (res: { data: SysOSFile[] }) => {
+        this.dataStore.currentData = res.data;
 
         // broadcast data to subscribers
         this.$currentData.next(Object.assign({}, this.dataStore).currentData);
@@ -54,8 +56,7 @@ export class FileExplorerService {
         }
       },
       error => {
-        console.error('File Explorer -> Error while getting fileSystemPath -> ', error);
-        console.error(error);
+        this.logger.error('File Explorer -> Error while getting fileSystemPath -> ', error);
       });
   }
 

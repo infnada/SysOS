@@ -7,6 +7,7 @@ import {ResizeEvent} from 'angular-resizable-element';
 import {ApplicationsService} from '../../services/applications.service';
 
 import {Application} from '../../interfaces/application';
+import {NGXLogger} from 'ngx-logger';
 
 @Component({
   selector: 'app-application',
@@ -45,6 +46,7 @@ export class ApplicationComponent implements OnInit, AfterViewInit {
   fullWidth: string = window.innerWidth + 'px';
 
   constructor(private compiler: Compiler,
+              private logger: NGXLogger,
               private Applications: ApplicationsService) {
 
     /**
@@ -53,10 +55,13 @@ export class ApplicationComponent implements OnInit, AfterViewInit {
 
     // Called from Task Bar Context Menu
     this.closeAppSubscription = this.Applications.getObserverCloseApplication().subscribe(application => {
+      this.logger.debug('[Application Component] Closing application [%s]', application.id);
+
       if (application.id === this.application.id) this.close();
     });
 
     this.togglingAppSubscription = this.Applications.getObserverToggleApplication().subscribe(id => {
+      this.logger.debug('[Application Component] Toggling application [%s]', id);
 
       // Called to minimize all applications
       if (id === null) return this.minimize();
@@ -93,6 +98,8 @@ export class ApplicationComponent implements OnInit, AfterViewInit {
     const applicationComponent = this.application.id.charAt(0).toUpperCase() + this.application.id.replace(/-(.)/g, (match, group1) => {
       return group1.toUpperCase();
     }).slice(1);
+
+    this.logger.debug('[Application Component] Compiling application [%s]', applicationComponent);
 
     // the missing step, need to use Compiler to resolve the module's embedded components
     this.compiler.compileModuleAndAllComponentsAsync<any>(this.application.factory.moduleType)
@@ -148,6 +155,8 @@ export class ApplicationComponent implements OnInit, AfterViewInit {
   }
 
   onDrop(event: CdkDragRelease<string[]>): void {
+    this.logger.debug('[Application Component] onDrop event');
+
     const bounding = this.appElement.nativeElement.getBoundingClientRect();
 
     // Maximise if application is outside of viewport
@@ -169,6 +178,7 @@ export class ApplicationComponent implements OnInit, AfterViewInit {
   }
 
   onDragStart(event: CdkDragStart<string[]>): void {
+    this.logger.debug('[Application Component] onDragStart event');
     this.Applications.toggleApplication(this.application.id);
 
     // $(this).css({'z-index' : zIndex++});
@@ -189,12 +199,14 @@ export class ApplicationComponent implements OnInit, AfterViewInit {
    * (click) functions
    */
   focusApplication(): void {
+    this.logger.debug('[Application Component] focusApplication event');
     if (this.Applications.isActiveApplication(this.application.id)) return;
     if (this.isMinimized) return;
     this.Applications.toggleApplication(this.application.id);
   }
 
   close(): void {
+    this.logger.debug('[Application Component] close event');
 
     // Close this application
     this.isClosing = true;
@@ -216,11 +228,13 @@ export class ApplicationComponent implements OnInit, AfterViewInit {
   }
 
   minimize(): void {
+    this.logger.debug('[Application Component] minimize event');
     this.isMinimized = true;
     this.Applications.toggleApplication(null);
   }
 
   maximize(): void {
+    this.logger.debug('[Application Component] maximize event');
     this.isMaximized = !this.isMaximized;
 
     if (!this.isMaximized) {

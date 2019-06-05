@@ -7,6 +7,7 @@ import {ToastrService} from 'ngx-toastr';
 import {FileSystemService} from './file-system.service';
 
 import {Application} from '../interfaces/application';
+import {NGXLogger} from 'ngx-logger';
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +33,8 @@ export class ApplicationsService {
 
   currentHoverApplication: string = null;
 
-  constructor(private loader: SystemJsNgModuleLoader,
+  constructor(private logger: NGXLogger,
+              private loader: SystemJsNgModuleLoader,
               private injector: Injector,
               private http: HttpClient,
               private Toastr: ToastrService,
@@ -93,7 +95,7 @@ export class ApplicationsService {
     if (!e) throw new Error('e_not_found');
 
     this.Toastr.error(e, 'General Error');
-    console.error('Applications Factory -> General Error -> [%s]', e);
+    this.logger.error('Applications Factory -> General Error -> [%s]', e);
     return new Error(e);
   }
 
@@ -104,7 +106,7 @@ export class ApplicationsService {
   registerApplication(data: Application): void {
     if (!data) throw new Error('data_not_found');
 
-    console.debug('Applications Factory -> New application registration -> id [%s], name [%s]', data.id, data.name);
+    this.logger.debug('Applications Factory -> New application registration -> id [%s], name [%s]', data.id, data.name);
 
     this.dataStore.applications.push(data);
 
@@ -119,7 +121,7 @@ export class ApplicationsService {
   registerTaskBarApplication(data: Application, save?: boolean): void {
     if (!data) throw new Error('id_not_found');
 
-    console.debug('Applications Factory -> Registering application in TaskBar -> id [%s], pinned [%s], save [%s]',
+    this.logger.debug('Applications Factory -> Registering application in TaskBar -> id [%s], pinned [%s], save [%s]',
       data.id, data.pinned, save);
 
     const applicationIndex = this.getApplicationIndexInTaskBar(data.id);
@@ -138,7 +140,7 @@ export class ApplicationsService {
 
     } else {
 
-      console.debug('Applications Factory -> Register application in TaskBar -> id [%s], pinned [%s]', data.id, data.pinned);
+      this.logger.debug('Applications Factory -> Register application in TaskBar -> id [%s], pinned [%s]', data.id, data.pinned);
 
       // Application not in Task Bar
       this.dataStore.taskBarApplications.push(data);
@@ -172,7 +174,7 @@ export class ApplicationsService {
   closeApplication(id: string): void {
     if (!id) throw new Error('id_not_found');
 
-    console.debug('Applications Factory -> Closing application -> id [%s]', id);
+    this.logger.debug('Applications Factory -> Closing application -> id [%s]', id);
 
     // Delete application object
     this.dataStore.openedApplications = this.dataStore.openedApplications.filter(el => {
@@ -198,7 +200,7 @@ export class ApplicationsService {
 
     let app;
 
-    console.debug('Applications Factory -> Opening application -> id [%s]', id);
+    this.logger.debug('Applications Factory -> Opening application -> id [%s]', id);
 
     // If app is not an object get all application data
     if (typeof id === 'string') {
@@ -288,10 +290,10 @@ export class ApplicationsService {
       this.$applications.next(Object.assign({}, this.dataStore).applications);
 
       this.FileSystem.getFileSystemPath(null, '/bin/applications').subscribe(
-        (res: { filename: string }[]) => {
-          console.debug('Applications Factory -> Get Installed Applications successfully');
+        (res: { data: { filename: string }[] }) => {
+          this.logger.debug('Applications Factory -> Get Installed Applications successfully');
 
-          res = [
+          res.data = [
             {
               filename: 'alerts-module.js'
             },
@@ -326,15 +328,14 @@ export class ApplicationsService {
 
           // Register every application
           return Promise.all(
-            res.map((application) => this.loadApplication(application))
+            res.data.map((application) => this.loadApplication(application))
           ).then(() => {
             return resolve();
           });
 
         },
         error => {
-          console.error('Applications Factory -> Error while getting installed applications -> ', error);
-          console.error(error);
+          this.logger.error('Applications Factory -> Error while getting installed applications -> ', error);
           return reject();
         });
 
@@ -384,7 +385,7 @@ export class ApplicationsService {
   getTaskBarApplications(): void {
     this.FileSystem.getConfigFile('desktop/task_bar.json').subscribe(
       (res: { id: string }[]) => {
-        console.debug('Applications Factory -> Get TaskBar Applications successfully');
+        this.logger.debug('Applications Factory -> Get TaskBar Applications successfully');
 
         // Register Start button
         this.registerTaskBarApplication({id: 'start', pinned: true});
@@ -395,8 +396,7 @@ export class ApplicationsService {
         });
       },
       error => {
-        console.error('Applications Factory -> Error while getting TaskBar applications -> ', error);
-        console.error(error);
+        this.logger.error('Applications Factory -> Error while getting TaskBar applications -> ', error);
       });
   }
 
@@ -411,11 +411,10 @@ export class ApplicationsService {
 
     this.FileSystem.saveConfigFile(applicationsToSave, 'desktop/task_bar.json', true).subscribe(
       () => {
-        console.debug('Applications Factory -> TaskBar applications saved');
+        this.logger.debug('Applications Factory -> TaskBar applications saved');
       },
       error => {
-        console.error(error);
-        console.debug('Applications Factory -> Error while saving TaskBar applications -> ', error);
+        this.logger.error('Applications Factory -> Error while saving TaskBar applications -> ', error);
       });
   }
 

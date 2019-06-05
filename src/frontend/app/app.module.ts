@@ -15,6 +15,7 @@ import {ResizableModule} from 'angular-resizable-element';
 import {NgbModalModule} from '@ng-bootstrap/ng-bootstrap';
 import {MonacoEditorModule} from 'ngx-monaco-editor';
 import {SocketIoModule, SocketIoConfig} from 'ngx-socket-io';
+import {LoggerModule, NgxLoggerLevel} from 'ngx-logger';
 
 import {AppComponent} from './app.component';
 import {LoginComponent} from './components/login/login.component';
@@ -67,6 +68,7 @@ const config: SocketIoConfig = {
     NgbModalModule,
     MonacoEditorModule.forRoot(),
     SocketIoModule.forRoot(config),
+    LoggerModule.forRoot({level: NgxLoggerLevel.DEBUG}),
     // Shared module import
     FileModule
   ],

@@ -9,6 +9,7 @@ import {ModalService} from '../../../services/modal.service';
 import {FileSystemService} from '../../../services/file-system.service';
 
 import {SftpConnection} from '../SftpConnection';
+import {NGXLogger} from 'ngx-logger';
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +28,8 @@ export class SftpService {
   activeConnection: Observable<any>;
   viewExchange: Observable<any>;
 
-  constructor(private Toastr: ToastrService,
+  constructor(private logger: NGXLogger,
+              private Toastr: ToastrService,
               private socket: Socket,
               private FileSystem: FileSystemService,
               private Modal: ModalService) {
@@ -42,7 +44,6 @@ export class SftpService {
     this.socket
       .fromEvent('sftp__prop')
       .subscribe((data: { uuid: string, prop: string, text: string }) => {
-        console.log(data);
 
         this.getConnectionByUuid(data.uuid)[data.prop] = data.text;
 
@@ -73,7 +74,7 @@ export class SftpService {
   initConnections(): void {
     this.FileSystem.getConfigFile('applications/sftp/config.json').subscribe(
       (res: SftpConnection[]) => {
-        console.debug('Sftp Factory -> Get credentials successfully');
+        this.logger.debug('Sftp Factory -> Get connections successfully');
 
         res.forEach((connection) => {
           connection.state = 'disconnected';
@@ -85,7 +86,7 @@ export class SftpService {
         this.$connections.next(Object.assign({}, this.dataStore).connections);
       },
       error => {
-        console.error('Sftp Factory -> Error while getting credentials -> ', error);
+        this.logger.error('Sftp Factory -> Error while getting credentials -> ', error);
         return this.Toastr.error('Error getting connections.', 'SFTP');
       });
   }
@@ -119,7 +120,7 @@ export class SftpService {
   connect(connection: SftpConnection): void {
     if (!connection) throw new Error('connection_not_found');
 
-    console.debug('Connections Factory -> Connect received -> host [%s]', connection.host);
+    this.logger.debug('Sftp Factory -> Connect received -> host [%s]', connection.host);
 
     if (connection.uuid) {
       connection.state = 'disconnected';
@@ -157,7 +158,7 @@ export class SftpService {
       credential: connection.credential,
       uuid: connection.uuid
     }, (e) => {
-      console.log(e);
+      this.logger.error('Sftp Factory -> Error while emitting [new-session] -> ', e);
     });
 
     this.setActiveConnection(connection.uuid);
@@ -168,14 +169,14 @@ export class SftpService {
 
     const configFile = 'applications/sftp/config.json';
 
-    console.debug('Connections Factory [%s] -> Saving connection -> host [%s]', connection.uuid, connection.host);
+    this.logger.debug('Sftp Factory [%s] -> Saving connection -> host [%s]', connection.uuid, connection.host);
 
     this.FileSystem.saveConfigFile(connection, configFile, false).subscribe(
       () => {
-        console.debug('Connections Factory [%s] -> Saved connection successfully -> host [%s]', connection.uuid, connection.host);
+        this.logger.debug('Sftp Factory [%s] -> Saved connection successfully -> host [%s]', connection.uuid, connection.host);
       },
       error => {
-        console.error('Connections Factory [%s] -> Error while saving connection -> host [%s] -> ',
+        this.logger.error('Sftp Factory [%s] -> Error while saving connection -> host [%s] -> ',
           connection.uuid, connection.host, error);
         this.Toastr.error('Error while saving connection.', 'Infrastructure Manager');
       });
@@ -185,7 +186,7 @@ export class SftpService {
   disconnectConnection(uuid?: string): void {
     if (!uuid) uuid = this.dataStore.activeConnection;
 
-    console.debug('Connections Factory [%s] -> Disconnecting connection', uuid);
+    this.logger.debug('Sft`p Factory [%s] -> Disconnecting connection', uuid);
 
     this.socket.emit('[disconnect-session]', {
       type: 'sftp',
@@ -212,7 +213,7 @@ export class SftpService {
       modalInstance.result.then((result: boolean) => {
         if (result === true) {
 
-          console.debug('Connections Factory [%s] -> Deleting connection', uuid);
+          this.logger.debug('Sftp Factory [%s] -> Deleting connection', uuid);
 
           this.disconnectConnection(uuid);
           this.setActiveConnection(null);
@@ -226,11 +227,10 @@ export class SftpService {
               // broadcast data to subscribers
               this.$connections.next(Object.assign({}, this.dataStore).connections);
 
-              console.debug('Connections Factory [%s] -> Connection deleted successfully', uuid);
+              this.logger.debug('Sftp Factory [%s] -> Connection deleted successfully', uuid);
             },
             error => {
-              console.error('Connections Factory [%s] -> Error while deleting connection -> ', uuid, error);
-              console.error(error);
+              this.logger.error('Sftp Factory [%s] -> Error while deleting connection -> ', uuid, error);
             });
 
         }

@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 
 import {UserStateService} from '../../services/user-state.service';
 import {MainService} from '../../services/main.service';
+import {NGXLogger} from 'ngx-logger';
 
 @Component({
   selector: 'app-login',
@@ -15,7 +16,8 @@ export class LoginComponent implements OnInit {
 
   loginExpanded: boolean = false;
 
-  constructor(private UserState: UserStateService,
+  constructor(private logger: NGXLogger,
+              private UserState: UserStateService,
               private Main: MainService) {
   }
 
@@ -33,11 +35,9 @@ export class LoginComponent implements OnInit {
 
           return this.Main.init();
         }
-
-        console.log(res);
       },
       error => {
-        console.error(error);
+        this.logger.error(error);
       });
   }
 
