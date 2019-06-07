@@ -38,8 +38,8 @@ export class SftpLocalService {
 
   reloadPath(path?: string): void {
     this.FileSystem.getFileSystemPath(null, (path ? path : this.dataStore.currentPath)).subscribe(
-      (res: SysOSFile[]) => {
-        this.dataStore.currentData = res;
+      (res: { data: SysOSFile[] }) => {
+        this.dataStore.currentData = res.data;
 
         // broadcast data to subscribers
         this.$currentData.next(Object.assign({}, this.dataStore).currentData);

@@ -26,6 +26,7 @@ export class FileSystemUiService {
   copyFrom: Observable<any>;
   cutFrom: Observable<any>;
 
+  currentCopyCutFile: string = null;
   currentFileDrag: string = null;
 
   constructor(private logger: NGXLogger,
@@ -134,7 +135,7 @@ export class FileSystemUiService {
     const pasteTo = currentPath;
 
     if (this.dataStore.cutFrom) {
-      return this.FileSystem.moveFile(connectionUuid, this.dataStore.cutFrom, pasteTo).subscribe(
+      return this.FileSystem.moveFile(connectionUuid, this.dataStore.cutFrom, pasteTo + this.currentCopyCutFile).subscribe(
         () => {
           this.refreshPath(currentPath);
           this.dataStore.cutFrom = null;
@@ -149,7 +150,7 @@ export class FileSystemUiService {
     }
 
     if (this.dataStore.copyFrom) {
-      return this.FileSystem.copyFile(connectionUuid, this.dataStore.copyFrom, pasteTo).subscribe(
+      return this.FileSystem.copyFile(connectionUuid, this.dataStore.copyFrom, pasteTo + this.currentCopyCutFile).subscribe(
         () => {
           this.refreshPath(currentPath);
           this.dataStore.copyFrom = null;
@@ -213,6 +214,7 @@ export class FileSystemUiService {
   UIcutFile(currentPath: string, file: { longname: string, filename: string }) {
     this.dataStore.copyFrom = null;
     this.dataStore.cutFrom = currentPath + file.filename;
+    this.currentCopyCutFile = file.filename;
 
     // broadcast data to subscribers
     this.$copyFrom.next(Object.assign({}, this.dataStore).copyFrom);
@@ -271,7 +273,10 @@ export class FileSystemUiService {
 
   UIonDropItem(connectionUuid: string, $event: CdkDragDrop<any>, dropPath: string): void {
 
-    this.FileSystem.moveFile(connectionUuid, this.currentFileDrag + '/' + $event.item.data.filename, dropPath).subscribe(
+    this.FileSystem.moveFile(connectionUuid,
+      this.currentFileDrag + $event.item.data.filename,
+      dropPath + $event.item.data.filename
+    ).subscribe(
       () => {
 
         this.refreshPath(this.currentFileDrag);

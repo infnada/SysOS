@@ -1,10 +1,11 @@
 import {Router} from 'express';
-import express from 'express';
-import {ApiGlobalsModule} from './api-globals';
-import fs from 'fs-extra';
-import path from 'path';
-import childProcess from 'child_process';
 import {getLogger} from 'log4js';
+import * as express from 'express';
+import * as path from 'path';
+import * as childProcess from 'child_process';
+import fs from 'fs-extra';
+
+import {ApiGlobalsModule} from './api-globals';
 
 const logger = getLogger('mainlog');
 const router = Router();
@@ -16,7 +17,7 @@ router.get(':folderName(*)', (req: express.Request, res: express.Response) => {
   const apiGlobals = new ApiGlobalsModule(req, res);
 
   const execute = (command: string): Promise<string> => {
-    logger.info(`[API Folder] -> Executing command -> ${command}`);
+    logger.info(`[API Folder] -> Executing command -> command [${command}]`);
     return new Promise((resolve, reject) => {
       childProcess.exec(command, (error: Error, stdout: string, stderr: string): void => {
         if (error) return reject(error);
@@ -58,6 +59,8 @@ router.get(':folderName(*)', (req: express.Request, res: express.Response) => {
  * Create folder
  */
 router.post(':folderName(*)', (req: express.Request, res: express.Response) => {
+  logger.info(`[API Folder] -> Creating folder -> folder [${req.params.folderName}]`);
+
   const apiGlobals = new ApiGlobalsModule(req, res);
 
   const dirname = path.join(__dirname, '../../filesystem') + req.params.folderName;

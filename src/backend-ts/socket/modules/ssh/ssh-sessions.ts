@@ -1,6 +1,7 @@
-import path from 'path';
+import * as path from 'path';
 import readConfig from 'read-config';
 import ssh2 from 'ssh2';
+
 const config =  readConfig(path.join(__dirname, '../../../filesystem/etc/expressjs/config.json'));
 
 export class SshSessionsModule {

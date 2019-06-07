@@ -1,7 +1,9 @@
-import path from 'path';
+import * as path from 'path';
 import readConfig from 'read-config';
+
 import {SshSessionsModule} from './ssh-sessions';
 import {SocketModule} from '../socket';
+
 const config =  readConfig(path.join(__dirname, '../../../filesystem/etc/expressjs/config.json'));
 const term = config.ssh.term;
 const termCols = 80;
@@ -12,7 +14,7 @@ export class SshModule {
   SshSessionsModule: SshSessionsModule = new SshSessionsModule();
   SocketModule: SocketModule = new SocketModule(this.socket);
 
-  constructor(private socket) {
+  constructor(private socket?) {
 
   }
 

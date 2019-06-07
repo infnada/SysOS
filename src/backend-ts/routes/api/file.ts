@@ -1,14 +1,17 @@
 import {Router} from 'express';
-import express from 'express';
-import {ApiGlobalsModule} from './api-globals';
+import {getLogger} from 'log4js';
+import * as express from 'express';
+import * as path from 'path';
+import * as url from 'url';
+import * as childProcess from 'child_process';
 import multiparty from 'connect-multiparty';
 import fs from 'fs-extra';
-import path from 'path';
 import readConfig from 'read-config';
-import url from 'url';
-import childProcess from 'child_process';
-import {ConnectFiles} from '../../interfaces/connect-file';
 
+import {ConnectFiles} from '../../interfaces/connect-file';
+import {ApiGlobalsModule} from './api-globals';
+
+const logger = getLogger('mainlog');
 const multipartyMiddleware = multiparty();
 const router = Router();
 
@@ -17,6 +20,8 @@ const router = Router();
  * Get file
  */
 router.get(':fileName(*)', (req: express.Request, res: express.Response) => {
+  logger.info(`[API File] -> Get file -> file [${req.params.fileName}]`);
+
   const apiGlobals = new ApiGlobalsModule(req, res);
 
   const options = {
@@ -37,7 +42,9 @@ router.get(':fileName(*)', (req: express.Request, res: express.Response) => {
 /**
  * New file
  */
-router.post(':type', multipartyMiddleware, (req: express.Request  & { files: ConnectFiles }, res: express.Response) => {
+router.post('/:type', multipartyMiddleware, (req: express.Request  & { files: ConnectFiles }, res: express.Response) => {
+  logger.info(`[API File] -> Creating file -> type [${req.params.type}]`);
+
   const apiGlobals = new ApiGlobalsModule(req, res);
 
   /**
@@ -47,12 +54,16 @@ router.post(':type', multipartyMiddleware, (req: express.Request  & { files: Con
   if (req.params.type === 'upload') {
     if (typeof req.body.path === 'undefined') return apiGlobals.serverError('path_undefined');
 
+    logger.info(`[API File] -> Creating file -> Uploading file -> file [${req.body.path}]`);
+
     const createDirIfNotExists = (dir) => {
       const dirName = path.dirname(dir);
-      if (fs.existsSync(dirName)) {
-        return true;
-      }
+      if (fs.existsSync(dirName)) return true;
+
       createDirIfNotExists(dirName);
+
+      logger.info(`[API File] -> Creating file -> Creating folder -> folder [${dirName}]`);
+
       fs.mkdirSync(dirName);
     };
 
@@ -73,8 +84,9 @@ router.post(':type', multipartyMiddleware, (req: express.Request  & { files: Con
         if (err && err.code) return apiGlobals.serverError(err.code);
         if (err) return apiGlobals.serverError(err);
 
-        apiGlobals.validResponse();
-        console.log('The file: ' + req.files.file.name + ' was saved to ' + file.path);
+        logger.info(`[API File] -> Creating file -> Upload complete -> ${req.files.file.name} was saved to ${file.path}`);
+
+        return apiGlobals.validResponse();
       });
     });
   }
@@ -89,6 +101,8 @@ router.post(':type', multipartyMiddleware, (req: express.Request  & { files: Con
     if (typeof req.body.url === 'undefined') return apiGlobals.serverError('url_undefined');
     if (typeof req.body.path === 'undefined') return apiGlobals.serverError('path_undefined');
 
+    logger.info(`[API File] -> Creating file -> Downloading file from internet -> path [${req.body.path}], url [${req.body.url}]`);
+
     let curl;
     const fileUrl = url.parse(req.body.url).href;
     const fileName = url.parse(fileUrl).pathname.split('/').pop();
@@ -97,7 +111,7 @@ router.post(':type', multipartyMiddleware, (req: express.Request  & { files: Con
     if (req.body.credential && req.body.credential.length !== 0) {
       const credentials = readConfig(path.join(__dirname, '../../../filesystem/root/credentials.json'));
 
-      const credential = credentials.saved_credentials.filter((obj) =>  {
+      const credential = credentials.filter((obj) =>  {
         return obj.uuid === req.body.credentialial;
       })[0];
 
@@ -116,9 +130,12 @@ router.post(':type', multipartyMiddleware, (req: express.Request  & { files: Con
     });
     curl.on('exit', (code) => {
       if (code !== 0) {
-        console.log('Failed: ' + code);
+        logger.error(`[API File] -> Creating file -> Downloading file from internet -> curlError -> ${code}`);
         return apiGlobals.serverError(code);
       }
+
+      logger.info(`[API File] -> Creating file -> Downloading file from internet -> Upload complete \
+                  -> ${req.files.file.name} was saved to ${file.path}`);
       return apiGlobals.validResponse();
     });
   }
@@ -129,11 +146,13 @@ router.post(':type', multipartyMiddleware, (req: express.Request  & { files: Con
  * req.body.dst is required
  */
 router.patch('/:type/:fileName(*)', (req: express.Request, res: express.Response) => {
+  logger.info(`[API File] -> Rename/Move/Copy file -> type [${req.params.type}], file [${req.params.fileName}], dst [${req.body.dst}]`);
+
   const apiGlobals = new ApiGlobalsModule(req, res);
 
   if (typeof req.body.dst === 'undefined') return apiGlobals.serverError('dst_undefined');
 
-  const oldDirname = path.join(__dirname, '../../filesystem') + req.params.fileName;
+  const oldDirname = path.join(__dirname, '../../filesystem/') + req.params.fileName;
   const newDirname = path.join(__dirname, '../../filesystem') + req.body.dst;
 
   if (req.params.type === 'copy') fs.copySync(oldDirname, newDirname);
@@ -147,6 +166,8 @@ router.patch('/:type/:fileName(*)', (req: express.Request, res: express.Response
  * Delete file
  */
 router.delete(':fileName(*)', (req: express.Request, res: express.Response) => {
+  logger.info(`[API File] -> Delete file -> file [${req.params.fileName}]`);
+
   const apiGlobals = new ApiGlobalsModule(req, res);
 
   const dirName = path.join(__dirname, '../../filesystem') + req.params.fileName;

@@ -5,19 +5,21 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 import {configure, getLogger, connectLogger} from 'log4js';
 import {createServer, Server} from 'http';
 import {createServer as createServers, Server as Servers} from 'https';
-import fs from 'fs';
+import * as fs from 'fs';
+import * as bodyParser from 'body-parser';
+import * as helmet from 'helmet';
+import * as path from 'path';
+import favicon from 'serve-favicon';
+import cookieParser from 'cookie-parser';
+import cookie from 'cookie';
+import compress from 'compression';
+import readConfig from 'read-config';
+import MemoryStore from 'memorystore';
 import express from 'express';
 import socketIo from 'socket.io';
 import session from 'express-session';
-import cookieParser from 'cookie-parser';
-import compress from 'compression';
 import cors from 'cors';
-import favicon from 'serve-favicon';
-import bodyParser from 'body-parser';
-import * as helmet from 'helmet';
-import path from 'path';
-import readConfig from 'read-config';
-import MemoryStore from 'memorystore';
+
 import {SocketModule} from './socket';
 import {RoutesModule} from './routes';
 
@@ -57,6 +59,9 @@ export class Init {
       expires: new Date(Date.now() + 8 * 60 * 60 * 1000)
     }
   });
+  private sessionCookie = this.config.session.name;
+  private sessionSecret = this.config.session.secret;
+  private uniqueCookie = this.config.uniqueCookie;
 
 
   constructor() {
@@ -150,19 +155,38 @@ export class Init {
 
     this.io.use((socket: socketIo.Socket, next: express.NextFunction) => {
 
-      this.sessionStore.get(socket.id, (err, sockSession) => {
-        if (err) {
-          this.logger.error('[APP] Get Session -> ' + err.code);
-          return next(new Error(err));
-        }
+      if (socket.handshake.headers.cookie) {
 
-        console.log(socket.client.request.session);
-        console.log(socket.request.session);
-        console.log(sockSession);
-        // TODO:
-        // socket.client.request.session = session;
-        next();
-      });
+        this.logger.trace('socketjs -> socket_id [%s] -> Socket have header cookies', socket.id);
+
+        // Cookies from browser socket.io
+        const socketCookies = cookie.parse(socket.handshake.headers.cookie);
+        if (socketCookies[this.sessionCookie]) {
+
+          // Check if signed cookie
+          const sid = cookieParser.signedCookie(socketCookies[this.sessionCookie], this.sessionSecret);
+          if (!sid) return next(new Error('Session cookie signature is not valid'));
+          const uid = cookieParser.signedCookie(socketCookies[this.uniqueCookie], this.sessionSecret);
+          if (!uid) return next(new Error('Unique cookie signature is not valid'));
+
+          const sessionID = socketCookies[this.sessionCookie].substring(2, 34);
+
+          this.sessionStore.get(sessionID, (err, sockSession) => {
+            if (err) {
+              this.logger.error('[APP] Get Session -> ' + err.code);
+              return next(new Error(err));
+            }
+
+            socket.client.request.session = sockSession;
+            next();
+          });
+
+        } else {
+          this.logger.error('Socket/missingCookies -> Use error -> Missing cookie header');
+          return next(new Error('missing_cookie_headers'));
+        }
+      }
+
     });
 
     // bring up socket

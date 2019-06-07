@@ -1,22 +1,28 @@
 import {Router} from 'express';
-import express from 'express';
-import {ApiGlobalsModule} from './api-globals';
-import path from 'path';
+import {v4 as uuidv4} from 'uuid';
+import {getLogger} from 'log4js';
+import * as express from 'express';
+import * as session from 'express-session';
+import * as path from 'path';
 import readConfig from 'read-config';
 import jsonfile from 'jsonfile';
-import uuid from 'uuid';
-import * as session from 'express-session';
 
+import {ApiGlobalsModule} from './api-globals';
+
+const logger = getLogger('mainlog');
 const router = Router();
 
 /**
  * Get credentials
  */
 router.get('/', (req: express.Request, res: express.Response) => {
+  logger.info(`[API Credentials] -> Get credentials`);
+
   const apiGlobals = new ApiGlobalsModule(req, res);
 
   let fileData = readConfig(path.join(__dirname, '../../filesystem/root/credentials.json'), {skipUnresolved: true});
-  fileData = fileData.saved_credentials.filter((props) => {
+
+  fileData = fileData.filter((props) => {
     delete props.password;
     return true;
   });
@@ -28,20 +34,24 @@ router.get('/', (req: express.Request, res: express.Response) => {
  * Save credentials
  */
 router.put('/', (req: express.Request, res: express.Response) => {
+  logger.info(`[API Credentials] -> Save credentials -> fullSave [${req.body.fullSave}]`);
+
   const apiGlobals = new ApiGlobalsModule(req, res);
 
-  const data = req.body.data;
+  const credential = req.body.credential;
   const fullSave = req.body.fullSave;
 
-  if (typeof data === 'undefined') return apiGlobals.serverError('data_undefined');
+  if (typeof credential === 'undefined') return apiGlobals.serverError('credential_undefined');
 
   /**
    * Rewrite all config file with received data
    */
   if (fullSave) {
-    return jsonfile.writeFile(path.join(__dirname, '../../filesystem/root/credentials.json'), data, {flag: 'w'}, (e) => {
+    return jsonfile.writeFile(path.join(__dirname, '../../filesystem/root/credentials.json'), credential, {flag: 'w'}, (e) => {
       if (e && e.code) return apiGlobals.serverError(e.code);
       if (e) return apiGlobals.serverError(e);
+
+      logger.info(`[API Credentials] -> Save credentials -> fullSave [${req.body.fullSave}] -> Credential saved`);
 
       return apiGlobals.validResponse();
     });
@@ -53,46 +63,44 @@ router.put('/', (req: express.Request, res: express.Response) => {
   const config = readConfig(path.join(__dirname, '../../filesystem/root/credentials.json'), {skipUnresolved: true});
 
   // Create new uuid (is new entry)
-  if (!data.hasOwnProperty('uuid')) {
+  if (!credential.hasOwnProperty('uuid')) {
+    credential.uuid = uuidv4();
+    config.push(credential);
 
-    return uuid((e, id) => {
-      if (e && e.code) return apiGlobals.serverError(e.code);
-      if (e) return apiGlobals.serverError(e);
+    return jsonfile.writeFile(path.join(__dirname, '../../filesystem/root/credentials.json'), config, {flag: 'w'}, (err) => {
+      if (err && err.code) return apiGlobals.serverError(err.code);
+      if (err) return apiGlobals.serverError(err);
 
-      data.uuid = id;
-      config.push(data);
+      logger.info(`[API Credentials] -> Save credentials -> fullSave [${req.body.fullSave}] -> New credential saved \
+      with uuid [${credential.uuid}]`);
 
-      return jsonfile.writeFile(path.join(__dirname, '../../filesystem/root/credentials.json'), config, {flag: 'w'}, (err) => {
-        if (err && err.code) return apiGlobals.serverError(err.code);
-        if (err) return apiGlobals.serverError(err);
-
-        return apiGlobals.responseJsonData(id);
-      });
-
+      return apiGlobals.responseJsonData(credential.uuid);
     });
-
   }
 
   // Edit or New with uuid created by client
   const objIndex = config.findIndex((obj) => {
-    return obj.uuid === data.uuid;
+    return obj.uuid === credential.uuid;
   });
 
   if (objIndex !== -1) {
 
     // Edit
-    config[objIndex] = data;
+    config[objIndex] = credential;
   } else {
 
     // New
-    config.push(data);
+    config.push(credential);
   }
 
   return jsonfile.writeFile(path.join(__dirname, '../../filesystem/root/credentials.json'), config, {flag: 'w'}, (e) => {
     if (e && e.code) return apiGlobals.serverError(e.code);
     if (e) return apiGlobals.serverError(e);
 
-    return apiGlobals.responseJsonData(data.uuid);
+    logger.info(`[API Credentials] -> Save credentials -> fullSave [${req.body.fullSave}] -> Credential saved \
+    with uuid [${credential.uuid}]`);
+
+    return apiGlobals.responseJsonData(credential.uuid);
   });
 });
 
@@ -100,11 +108,13 @@ router.put('/', (req: express.Request, res: express.Response) => {
  * Delete credential
  */
 router.delete('/:uuid', (req: express.Request, res: express.Response) => {
+  logger.info(`[API Credentials] -> Delete credentials -> uuid [${req.params.uuid}]`);
+
   const apiGlobals = new ApiGlobalsModule(req, res);
 
   let fileData = readConfig(path.join(__dirname, '../../filesystem/root/credentials.json'), {skipUnresolved: true});
 
-  fileData = fileData.saved_credentials.filter((obj) => {
+  fileData = fileData.filter((obj) => {
     return obj.uuid !== req.params.uuid;
   });
 
@@ -120,6 +130,8 @@ router.delete('/:uuid', (req: express.Request, res: express.Response) => {
  * Login
  */
 router.post('/login', (req: express.Request & { session: session.Store }, res: express.Response) => {
+  logger.info(`[API Credentials] -> Login -> user [${req.body.username}]`);
+
   const apiGlobals = new ApiGlobalsModule(req, res);
 
   const user = req.body.username;

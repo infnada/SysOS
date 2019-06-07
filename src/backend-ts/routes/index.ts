@@ -1,17 +1,19 @@
-import path from 'path';
+import {getLogger} from 'log4js';
+import * as path from 'path';
+import * as express from 'express';
 import readConfig from 'read-config';
-import log4js from 'log4js';
-import express from 'express';
 
 import {ApiGlobalsModule} from './api/api-globals';
 
 import file from './api/file';
-import configFile from './api/configFile';
+import remoteFile from './api/remote-file';
+import configFile from './api/config-file';
 import folder from './api/folder';
+import remoteFolder from './api/remote-folder';
 import credential from './api/credential';
 
 const config = readConfig(path.join(__dirname, '../filesystem/etc/expressjs/config.json'));
-const logger = log4js.getLogger('mainlog');
+const logger = getLogger('mainlog');
 
 export class RoutesModule {
 
@@ -75,16 +77,19 @@ export class RoutesModule {
   }
 
   setRoutes(): void {
+    this.app.use('/api/file/:b', (req, res, next) => {
+      console.log(req.params.b);
+      next();
+    });
     this.app.use('/api/file/', file);
+    this.app.use('/api/remoteFile/', remoteFile);
     this.app.use('/api/configFile/', configFile);
     this.app.use('/api/folder/', folder);
+    this.app.use('/api/remoteFolder/', remoteFolder);
     this.app.use('/api/credential/', credential);
 
     // upload & download called from socket.io
     /*
-    this.app.use('/api/remoteFolder/create', require('./api/remoteFolder/create.js'));
-    this.app.use('/api/remoteFolder/get', require('./api/remoteFolder/get.js'));
-
     this.app.use('/api/remoteServer/get_kernel', require('./api/remoteServer/get_kernel.js'));
     this.app.use('/api/remoteServer/get_cpu', require('./api/remoteServer/get_cpu.js'));
     this.app.use('/api/remoteServer/get_disk', require('./api/remoteServer/get_disk.js'));

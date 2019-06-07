@@ -198,8 +198,9 @@ export class SftpBodyServerComponent implements OnInit {
 
           if (event instanceof HttpResponse) {
             delete this.httpEmitter[i];
-            console.log('request done', event);
           }
+
+          this.reloadPath();
         },
         error => console.log('Error Uploading', error)
       );

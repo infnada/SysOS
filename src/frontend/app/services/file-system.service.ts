@@ -68,12 +68,12 @@ export class FileSystemService {
       connectionUuid, path, oldName, newName);
 
     if (connectionUuid) {
-      return this.http.post(`/api/remoteFile/rename/${connectionUuid}/${path + oldName}`, {
+      return this.http.patch(`/api/remoteFile/rename/${connectionUuid}/${path + oldName}`, {
         dst: path + newName
       });
     }
 
-    return this.http.post(`/api/file/rename/${path + oldName}`, {
+    return this.http.patch(`/api/file/rename/${path + oldName}`, {
       dst: path + newName
     });
   }
@@ -82,7 +82,7 @@ export class FileSystemService {
     this.logger.debug('[fileSystem Service] copyFile -> connectionUuid[%s], src[%s], dst[%s]', connectionUuid, src, dst);
 
     if (connectionUuid) {
-      return this.http.post(`/api/remoteFile/copy/${connectionUuid}/${src}`, {
+      return this.http.patch(`/api/remoteFile/copy/${connectionUuid}/${src}`, {
         dst
       });
     }
@@ -96,12 +96,12 @@ export class FileSystemService {
     this.logger.debug('[fileSystem Service] moveFile -> connectionUuid[%s], src[%s], dst[%s]', connectionUuid, src, dst);
 
     if (connectionUuid) {
-      return this.http.post(`/api/remoteFile/move/${connectionUuid}/${src}`, {
+      return this.http.patch(`/api/remoteFile/move/${connectionUuid}/${src}`, {
         dst
       });
     }
 
-    return this.http.post(`/api/file/move/${src}`, {
+    return this.http.patch(`/api/file/move/${src}`, {
       dst
     });
   }

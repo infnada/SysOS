@@ -5,6 +5,7 @@ import {BehaviorSubject, Observable} from 'rxjs';
 import {ToastrService} from 'ngx-toastr';
 
 import {Credential} from './credential';
+import {NGXLogger} from 'ngx-logger';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +22,8 @@ export class CredentialsManagerService {
   activeCredential: Observable<any>;
 
   constructor(private http: HttpClient,
-              private toastr: ToastrService) {
+              private logger: NGXLogger,
+              private Toastr: ToastrService) {
 
     this.dataStore = { credentials: [], activeCredential: null };
     this.$credentials = new BehaviorSubject([]) as BehaviorSubject<Credential[]>;
@@ -39,17 +41,17 @@ export class CredentialsManagerService {
 
   initCredentials(): void {
     this.http.get('/api/credential/').subscribe(
-      (res: Credential[]) => {
-        console.debug('Credentials Factory -> Get credentials successfully');
+      (res: { data: Credential[] }) => {
+        this.logger.debug('Credentials Factory -> Get credentials successfully');
 
-        this.dataStore.credentials = res;
+        this.dataStore.credentials = res.data;
 
         // broadcast data to subscribers
         this.$credentials.next(Object.assign({}, this.dataStore).credentials);
       },
       error => {
-        console.error('Credentials Factory -> Error while getting credentials -> ', error);
-        return this.toastr.error('Error getting credentials.', 'Credential Manager');
+        this.logger.error('Credentials Factory -> Error while getting credentials -> ', error);
+        return this.Toastr.error('Error getting credentials.', 'Credential Manager');
       });
   }
 
@@ -66,12 +68,12 @@ export class CredentialsManagerService {
         this.$credentials.next(Object.assign({}, this.dataStore).credentials);
         this.$activeCredential.next(Object.assign({}, this.dataStore).activeCredential);
 
-        console.debug('Credentials Factory -> Deleted credential successfully');
-        return this.toastr.success('Credential deleted.', 'Credential Manager');
+        this.logger.debug('Credentials Factory -> Deleted credential successfully');
+        return this.Toastr.success('Credential deleted.', 'Credential Manager');
       },
       error => {
-        console.error('Credentials Factory -> Error while deleting credentials -> ', error);
-        return this.toastr.error('Error deleting credential.', 'Credential Manager');
+        this.logger.error('Credentials Factory -> Error while deleting credentials -> ', error);
+        return this.Toastr.error('Error deleting credential.', 'Credential Manager');
       });
   }
 
@@ -104,13 +106,13 @@ export class CredentialsManagerService {
           this.$credentials.next(Object.assign({}, this.dataStore).credentials);
           this.$activeCredential.next(Object.assign({}, this.dataStore).activeCredential);
 
-          console.debug('Credentials Factory -> Saved credential successfully');
-          this.toastr.success('Credential saved.', 'Credential Manager');
+          this.logger.debug('Credentials Factory -> Saved credential successfully');
+          this.Toastr.success('Credential saved.', 'Credential Manager');
           return resolve();
         },
         error => {
-          console.error('Credentials Factory -> Error while saving credentials -> ', error);
-          this.toastr.error('Error saving credential.', 'Credential Manager');
+          this.logger.error('Credentials Factory -> Error while saving credentials -> ', error);
+          this.Toastr.error('Error saving credential.', 'Credential Manager');
           return reject();
         });
 

@@ -1,17 +1,23 @@
 import {Router} from 'express';
-import express from 'express';
-import {ApiGlobalsModule} from './api-globals';
-import path from 'path';
+import {getLogger} from 'log4js';
+import * as express from 'express';
+import * as path from 'path';
 import readConfig from 'read-config';
 import jsonfile from 'jsonfile';
 import uuid from 'uuid';
 
+
+import {ApiGlobalsModule} from './api-globals';
+
+const logger = getLogger('mainlog');
 const router = Router();
 
 /**
  * Get config file
  */
 router.get(':fileName(*)', (req: express.Request, res: express.Response) => {
+  logger.info(`[API configFile] -> Get configFile -> fileName [${req.params.fileName}]`);
+
   const fileData = readConfig(path.join(__dirname, '../../filesystem/etc/' + req.params.fileName), {skipUnresolved: true});
   res.json(fileData);
 });
@@ -20,6 +26,8 @@ router.get(':fileName(*)', (req: express.Request, res: express.Response) => {
  * Save config file
  */
 router.put(':fileName(*)', (req: express.Request, res: express.Response) => {
+  logger.info(`[API configFile] -> Save configFile -> fileName [${req.params.fileName}], fullSave [${req.body.fullSave}]`);
+
   const apiGlobals = new ApiGlobalsModule(req, res);
 
   const data = req.body.data;
@@ -93,6 +101,8 @@ router.put(':fileName(*)', (req: express.Request, res: express.Response) => {
  * Delete config file
  */
 router.delete('/:uuid/:fileName(*)', (req: express.Request, res: express.Response) => {
+  logger.info(`[API configFile] -> Delete configFile -> fileName [${req.params.fileName}]`);
+
   const apiGlobals = new ApiGlobalsModule(req, res);
 
   let fileData = readConfig(path.join(__dirname, '../../filesystem/etc/' + req.params.fileName), {skipUnresolved: true});

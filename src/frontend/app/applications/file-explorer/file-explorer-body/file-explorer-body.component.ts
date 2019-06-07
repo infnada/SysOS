@@ -191,6 +191,8 @@ export class FileExplorerBodyComponent implements OnInit {
           if (event instanceof HttpResponse) {
             delete this.httpEmitter[i];
           }
+
+          this.reloadPath();
         },
         error => this.logger.log('[FileExplorerBody] Error Uploading file', error)
       );

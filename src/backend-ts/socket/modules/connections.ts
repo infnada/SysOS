@@ -1,11 +1,13 @@
+import * as path from 'path';
 import validator from 'validator';
-import path from 'path';
 import readConfig from 'read-config';
-const config =  readConfig(path.resolve(__dirname, '../../filesystem/etc/expressjs/config.json'));
+
 import {SshModule} from './ssh/ssh';
 import {SnmpModule} from './snmp/snmp';
 import {Connection} from '../../interfaces/connection';
 import {CredentialsModule} from '../../routes/modules/credentials';
+
+const config =  readConfig(path.resolve(__dirname, '../../filesystem/etc/expressjs/config.json'));
 
 export class ConnectionsModule {
 

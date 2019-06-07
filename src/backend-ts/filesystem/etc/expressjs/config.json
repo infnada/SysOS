@@ -10,7 +10,7 @@
   },
   "uniqueCookie": "uniqueId", // DO NOT CHANGE
   "session": {
-    "name": "SysOS",
+    "name": "SysOS", // DO NOT CHANGE
     "secret": "SysOsSecret" // MUST CHANGE
   },
   "algorithms": {
