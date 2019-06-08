@@ -64,8 +64,8 @@ export class SshModule {
             if (err) { return this.closeOnError(type, err, uuid); }
 
             this.SocketModule.emitProp(type, 'connected', uuid, 'type');
-            this.socket.on('ssh_session__geometry', (cols, rows) => {
-              stream.setWindow(rows, cols);
+            this.socket.on('ssh_session__geometry', (data) => {
+              stream.setWindow(data.rows, data.cols);
             });
             this.socket.on('ssh_session__data', (data, id) => {
               if (id !== uuid) { return; }

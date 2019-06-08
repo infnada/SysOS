@@ -19,7 +19,7 @@ const router = Router();
 /**
  * Get file
  */
-router.get(':fileName(*)', (req: express.Request, res: express.Response) => {
+router.get('/:fileName(*)', (req: express.Request, res: express.Response) => {
   logger.info(`[API File] -> Get file -> file [${req.params.fileName}]`);
 
   const apiGlobals = new ApiGlobalsModule(req, res);
@@ -165,7 +165,7 @@ router.patch('/:type/:fileName(*)', (req: express.Request, res: express.Response
 /**
  * Delete file
  */
-router.delete(':fileName(*)', (req: express.Request, res: express.Response) => {
+router.delete('/:fileName(*)', (req: express.Request, res: express.Response) => {
   logger.info(`[API File] -> Delete file -> file [${req.params.fileName}]`);
 
   const apiGlobals = new ApiGlobalsModule(req, res);

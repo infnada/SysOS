@@ -19,8 +19,8 @@ const sshSessions: SshSessionsModule = new SshSessionsModule();
  * req.body.url is required
  * req.body.credential is optional
  */
-router.post(':uuid', (req: express.Request  & { files: ConnectFiles }, res: express.Response) => {
-  logger.info(`[API File] -> Creating file -> uuid [${req.params.uuid}]`);
+router.post('/:uuid', (req: express.Request  & { files: ConnectFiles }, res: express.Response) => {
+  logger.info(`[API RemoteFile] -> Creating file -> uuid [${req.params.uuid}]`);
 
   const apiGlobals = new ApiGlobalsModule(req, res);
 
@@ -48,8 +48,8 @@ router.post(':uuid', (req: express.Request  & { files: ConnectFiles }, res: expr
  * Rename/Move/Copy/Chmod file
  * req.body.dst or req.body.permissions is required
  */
-router.patch(':uuid/:type/:fileName(*)', (req: express.Request, res: express.Response) => {
-  logger.info(`[API Remote File] -> Rename/Move/Copy file -> uuid [${req.params.uuid}], type [${req.params.type}], \
+router.patch('/:uuid/:type/:fileName(*)', (req: express.Request, res: express.Response) => {
+  logger.info(`[API RemoteFile] -> Rename/Move/Copy file -> uuid [${req.params.uuid}], type [${req.params.type}], \
   file [${req.params.fileName}], dst [${req.body.dst}]`);
 
   const apiGlobals = new ApiGlobalsModule(req, res);
@@ -84,8 +84,8 @@ router.patch(':uuid/:type/:fileName(*)', (req: express.Request, res: express.Res
 /**
  * Delete file
  */
-router.delete(':uuid/:fileName(*)', (req: express.Request, res: express.Response) => {
-  logger.info(`[API File] -> Delete file -> file [${req.params.fileName}]`);
+router.delete('/:uuid/:fileName(*)', (req: express.Request, res: express.Response) => {
+  logger.info(`[API RemoteFile] -> Delete file -> file [${req.params.fileName}]`);
 
   const apiGlobals = new ApiGlobalsModule(req, res);
   const sshSession = sshSessions.getSession('sftp', req.params.uuid);

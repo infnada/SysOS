@@ -12,24 +12,24 @@ const sshSessions: SshSessionsModule = new SshSessionsModule();
 /**
  * Get folder contents
  */
-router.get(':uuid/:folderName(*)', (req: express.Request, res: express.Response) => {
+router.get('/:uuid/:folderName(*)', (req: express.Request, res: express.Response) => {
   logger.info(`[API RemoteFolder] -> Get contents -> uuid [${req.params.uuid}], folderName [${req.params.folderName}]`);
 
   const apiGlobals = new ApiGlobalsModule(req, res);
   const sshSession = sshSessions.getSession('sftp', req.params.uuid);
 
-  sshSession.sftpSession.readdir(req.params.folderName, (e) => {
+  sshSession.sftpSession.readdir(req.params.folderName, (e, data) => {
     if (e && e.code) return apiGlobals.serverError(e.code);
     if (e) return apiGlobals.serverError(e);
 
-    return apiGlobals.validResponse();
+    return apiGlobals.responseJsonData(data);
   });
 });
 
 /**
  * Create folder
  */
-router.post(':uuid/:folderName(*)', (req: express.Request, res: express.Response) => {
+router.post('/:uuid/:folderName(*)', (req: express.Request, res: express.Response) => {
   logger.info(`[API RemoteFolder] -> Creating folder ->  uuid [${req.params.uuid}], folder [${req.params.folderName}]`);
 
   const apiGlobals = new ApiGlobalsModule(req, res);

@@ -13,7 +13,7 @@ const router = Router();
 /**
  * Get folder contents
  */
-router.get(':folderName(*)', (req: express.Request, res: express.Response) => {
+router.get('/:folderName(*)', (req: express.Request, res: express.Response) => {
   const apiGlobals = new ApiGlobalsModule(req, res);
 
   const execute = (command: string): Promise<string> => {
@@ -58,7 +58,7 @@ router.get(':folderName(*)', (req: express.Request, res: express.Response) => {
 /**
  * Create folder
  */
-router.post(':folderName(*)', (req: express.Request, res: express.Response) => {
+router.post('/:folderName(*)', (req: express.Request, res: express.Response) => {
   logger.info(`[API Folder] -> Creating folder -> folder [${req.params.folderName}]`);
 
   const apiGlobals = new ApiGlobalsModule(req, res);

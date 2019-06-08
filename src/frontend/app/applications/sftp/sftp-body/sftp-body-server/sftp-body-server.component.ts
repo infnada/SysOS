@@ -125,7 +125,7 @@ export class SftpBodyServerComponent implements OnInit {
 
     this.selectable = new Selectable({
       appendTo: this.selectableContainer.nativeElement,
-      ignore: 'a'
+      ignore: ['a', '.main_form']
     });
 
     if (this.application.initData && this.application.initData.path) {
@@ -151,6 +151,8 @@ export class SftpBodyServerComponent implements OnInit {
    * Get current path data
    */
   private reloadPath(): void {
+    if (!this.getActiveConnection()) return;
+
     this.SftpServer.reloadPath(this.getActiveConnection().uuid);
   }
 

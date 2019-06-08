@@ -3,25 +3,25 @@ import readConfig from 'read-config';
 import ssh2 from 'ssh2';
 
 const config =  readConfig(path.join(__dirname, '../../../filesystem/etc/expressjs/config.json'));
+const sshSessions: {ssh: [], sftp: [], smanager: []} = {
+  ssh: [],
+  sftp: [],
+  smanager: []
+};
 
 export class SshSessionsModule {
 
-  SSH = ssh2.Client;
-  algorithms = config.algorithms;
-  sshSessions: {ssh: [], sftp: [], smanager: []} = {
-    ssh: [],
-    sftp: [],
-    smanager: []
-  };
+  private SSH = ssh2.Client;
+  private algorithms = config.algorithms;
 
   constructor() {
 
   }
 
   async createSession(type, uuid, host, port, username, password) {
-    this.sshSessions[type][uuid] = new this.SSH();
+    sshSessions[type][uuid] = new this.SSH();
 
-    await this.sshSessions[type][uuid].connect({
+    await sshSessions[type][uuid].connect({
       host,
       port,
       username,
@@ -30,19 +30,19 @@ export class SshSessionsModule {
       algorithms: this.algorithms
     });
 
-    return this.sshSessions[type][uuid];
+    return sshSessions[type][uuid];
   }
 
   closeSession(type, uuid) {
-    this.sshSessions[type][uuid].end();
+    sshSessions[type][uuid].end();
   }
 
   async getAllSessions() {
-    return this.sshSessions;
+    return sshSessions;
   }
 
   getSession(type, uuid) {
-    return this.sshSessions[type][uuid];
+    return sshSessions[type][uuid];
   }
 
 }

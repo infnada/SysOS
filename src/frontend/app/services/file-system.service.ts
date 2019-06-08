@@ -17,20 +17,20 @@ export class FileSystemService {
     this.logger.debug('[fileSystem Service] createFolder -> connectionUuid[%s], path[%s], name[%s]', connectionUuid, path, name);
 
     if (connectionUuid) {
-      return this.http.post(`/api/folder/${connectionUuid}/${path + name}`, {});
+      return this.http.post(`/api/remoteFolder/${connectionUuid}/${encodeURIComponent(path + name)}`, {});
     }
 
-    return this.http.post(`/api/folder/${path + name}`, {});
+    return this.http.post(`/api/folder/${encodeURIComponent(path + name)}`, {});
   }
 
   getFileSystemPath(connectionUuid: string, path: string): Observable<any> {
     this.logger.debug('[fileSystem Service] getFileSystemPath -> connectionUuid[%s], path[%s]', connectionUuid, path);
 
     if (connectionUuid) {
-      return this.http.get(`/api/remoteFolder/${connectionUuid}/${path}`);
+      return this.http.get(`/api/remoteFolder/${connectionUuid}/${encodeURIComponent(path)}`);
     }
 
-    return this.http.get(`/api/folder/${path}`);
+    return this.http.get(`/api/folder/${encodeURIComponent(path)}`);
   }
 
   uploadFile(path: string, file: File): Observable<any> {
@@ -50,17 +50,17 @@ export class FileSystemService {
   getFileContents(path: string): Observable<any> {
     this.logger.debug('[fileSystem Service] getFileContents -> path[%s]', path);
 
-    return this.http.get(`/api/file/${path}`, {responseType: 'blob'});
+    return this.http.get(`/api/file/${encodeURIComponent(path)}`, {responseType: 'blob'});
   }
 
   deleteFile(connectionUuid: string, path: string, name: string): Observable<any> {
     this.logger.debug('[fileSystem Service] deleteFile -> connectionUuid[%s], path[%s], name[%s]', connectionUuid, path, name);
 
     if (connectionUuid) {
-      return this.http.delete(`/api/remoteFile/${connectionUuid}/${path + name}`);
+      return this.http.delete(`/api/remoteFile/${connectionUuid}/${encodeURIComponent(path + name)}`);
     }
 
-    return this.http.delete(`/api/file/${path + name}`);
+    return this.http.delete(`/api/file/${encodeURIComponent(path + name)}`);
   }
 
   renameFile(connectionUuid: string, path: string, oldName: string, newName: string): Observable<any> {
@@ -68,12 +68,12 @@ export class FileSystemService {
       connectionUuid, path, oldName, newName);
 
     if (connectionUuid) {
-      return this.http.patch(`/api/remoteFile/rename/${connectionUuid}/${path + oldName}`, {
+      return this.http.patch(`/api/remoteFile/rename/${connectionUuid}/${encodeURIComponent(path + oldName)}`, {
         dst: path + newName
       });
     }
 
-    return this.http.patch(`/api/file/rename/${path + oldName}`, {
+    return this.http.patch(`/api/file/rename/${encodeURIComponent(path + oldName)}`, {
       dst: path + newName
     });
   }
@@ -82,12 +82,12 @@ export class FileSystemService {
     this.logger.debug('[fileSystem Service] copyFile -> connectionUuid[%s], src[%s], dst[%s]', connectionUuid, src, dst);
 
     if (connectionUuid) {
-      return this.http.patch(`/api/remoteFile/copy/${connectionUuid}/${src}`, {
+      return this.http.patch(`/api/remoteFile/copy/${connectionUuid}/${encodeURIComponent(src)}`, {
         dst
       });
     }
 
-    return this.http.patch(`/api/file/copy/${src}`, {
+    return this.http.patch(`/api/file/copy/${encodeURIComponent(src)}`, {
       dst
     });
   }
@@ -96,12 +96,12 @@ export class FileSystemService {
     this.logger.debug('[fileSystem Service] moveFile -> connectionUuid[%s], src[%s], dst[%s]', connectionUuid, src, dst);
 
     if (connectionUuid) {
-      return this.http.patch(`/api/remoteFile/move/${connectionUuid}/${src}`, {
+      return this.http.patch(`/api/remoteFile/move/${connectionUuid}/${encodeURIComponent(src)}`, {
         dst
       });
     }
 
-    return this.http.patch(`/api/file/move/${src}`, {
+    return this.http.patch(`/api/file/move/${encodeURIComponent(src)}`, {
       dst
     });
   }
@@ -131,13 +131,13 @@ export class FileSystemService {
   getConfigFile(file: string): Observable<any> {
     this.logger.debug('[fileSystem Service] getConfigFile -> file[%s]', file);
 
-    return this.http.get(`/api/configFile/${file}`);
+    return this.http.get(`/api/configFile/${encodeURIComponent(file)}`);
   }
 
   saveConfigFile(data: any, file: string, fullSave: boolean): Observable<any> {
     this.logger.debug('[fileSystem Service] saveConfigFile -> data[%s], file[%s], fullSave[%s]', 'any', file, fullSave);
 
-    return this.http.post(`/api/configFile/${file}`, {
+    return this.http.post(`/api/configFile/${encodeURIComponent(file)}`, {
       data,
       fullSave
     });
@@ -146,7 +146,7 @@ export class FileSystemService {
   deleteConfigFromFile(uuid: string, file: string): Observable<any> {
     this.logger.debug('[fileSystem Service] deleteConfigFromFile -> uuid[%s], file[%s]', uuid, file);
 
-    return this.http.delete(`/api/configFile/${uuid}/${file}`);
+    return this.http.delete(`/api/configFile/${uuid}/${encodeURIComponent(file)}`);
   }
 
   getFileType(longname: string): string {
