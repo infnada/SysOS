@@ -11,6 +11,8 @@ import configFile from './api/config-file';
 import folder from './api/folder';
 import remoteFolder from './api/remote-folder';
 import credential from './api/credential';
+import netapp from './api/netapp';
+import vmware from './api/vmware';
 
 const config = readConfig(path.join(__dirname, '../filesystem/etc/expressjs/config.json'));
 const logger = getLogger('mainlog');
@@ -82,11 +84,13 @@ export class RoutesModule {
       next();
     });
     this.app.use('/api/file/', file);
-    this.app.use('/api/remoteFile/', remoteFile);
-    this.app.use('/api/configFile/', configFile);
+    this.app.use('/api/remote-file/', remoteFile);
+    this.app.use('/api/config-file/', configFile);
     this.app.use('/api/folder/', folder);
-    this.app.use('/api/remoteFolder/', remoteFolder);
+    this.app.use('/api/remote-folder/', remoteFolder);
     this.app.use('/api/credential/', credential);
+    this.app.use('/api/netapp/', netapp);
+    this.app.use('/api/vmware/', vmware);
 
     // upload & download called from socket.io
     /*
@@ -103,16 +107,6 @@ export class RoutesModule {
     this.app.use('/api/remoteServer/run_hids', require('./api/remoteServer/run_hids.js'));
     this.app.use('/api/remoteServer/do_ping', require('./api/remoteServer/do_ping.js'));
     this.app.use('/api/remoteServer/do_snmp', require('./api/remoteServer/do_snmp.js'));
-
-    this.app.use('/api/vcenter/getClientVersion', require('./api/vcenter/getClientVersion.js'));
-    this.app.use('/api/vcenter/connect', require('./api/vcenter/connect.js'));
-    this.app.use('/api/vcenter/connectSoap', require('./api/vcenter/connectSoap.js'));
-    this.app.use('/api/vcenter/call', require('./api/vcenter/call.js'));
-    this.app.use('/api/vcenter/callSoap', require('./api/vcenter/callSoap.js'));
-    this.app.use('/api/vcenter/upload_to_datastore', require('./api/vcenter/upload_to_datastore.js'));
-
-    this.app.use('/api/netapp/call', require('./api/netapp/call.js'));
-
     this.app.use('/api/applications/get_application_file', require('./api/applications/get_application_file.js'));
 
     this.app.use('/api/video/get_video', require('./api/video/get_video.js'));

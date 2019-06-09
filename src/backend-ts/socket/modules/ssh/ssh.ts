@@ -67,9 +67,9 @@ export class SshModule {
             this.socket.on('ssh_session__geometry', (data) => {
               stream.setWindow(data.rows, data.cols);
             });
-            this.socket.on('ssh_session__data', (data, id) => {
-              if (id !== uuid) { return; }
-              stream.write(data);
+            this.socket.on('ssh_session__data', (data) => {
+              if (data.uuid !== uuid) { return; }
+              stream.write(data.data);
             });
 
             stream.on('data', (data) => {
@@ -109,19 +109,19 @@ export class SshModule {
             /**
              * sftp_session__file_upload
              */
-            this.socket.on('sftp_session__file_upload', (source, destination, id) => {
-              if (id !== uuid) { return; }
+            this.socket.on('sftp_session__file_upload', (data) => {
+              if (data.connectionUuid !== uuid) { return; }
 
               let percentage = 0;
 
-              sftp.fastPut(path.join(__dirname, '../../filesystem') + source, destination, {
+              sftp.fastPut(path.join(__dirname, '../../filesystem') + data.src, data.dst, {
                 step: (a, b, c) => {
 
                   const result: number = parseInt(((a * 100) / c).toFixed(), 10);
                   if (result !== percentage) {
                     percentage = result;
 
-                    this.SocketModule.emitProgress(result, source, destination, 'upload', id);
+                    this.SocketModule.emitProgress(result, data.src, data.dst, 'upload', data.connectionUuid);
                     // emit percentage
                   }
                 }
@@ -134,21 +134,21 @@ export class SshModule {
             /**
              * sftp_session__file_download
              */
-            this.socket.on('sftp_session__file_download', (destination, source, id) => {
-              if (id !== uuid) { return; }
+            this.socket.on('sftp_session__file_download', (data) => {
+              if (data.connectionUuid !== uuid) { return; }
 
-              console.log(source, destination);
+              console.log(data.src, data.dst);
 
               let percentage = 0;
 
-              sftp.fastGet(source, path.join(__dirname, '../../filesystem') + destination, {
+              sftp.fastGet(data.src, path.join(__dirname, '../../filesystem') + data.dst, {
                 step: (a, b, c) => {
 
                   const result: number = parseInt(((a * 100) / c).toFixed(), 10);
                   if (result !== percentage) {
                     percentage = result;
 
-                    this.SocketModule.emitProgress(result, source, destination, 'download', id);
+                    this.SocketModule.emitProgress(result, data.src, data.dst, 'download', data.connectionUuid);
                     // emit percentage
                   }
                 }

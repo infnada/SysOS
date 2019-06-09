@@ -102,7 +102,7 @@ export class FileExplorerBodyComponent implements OnInit {
               private Applications: ApplicationsService,
               private FileExplorer: FileExplorerService) {
 
-    this.reloadPathSubscription = this.FileSystemUi.getRefreshPath().subscribe(path => {
+    this.reloadPathSubscription = this.FileSystemUi.getObserverRefreshPath().subscribe(path => {
       if (path === this.currentPath) this.reloadPath();
     });
   }

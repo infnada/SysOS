@@ -7,7 +7,6 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
 import {FilterPipeModule} from 'ngx-filter-pipe';
 
 import {ApplicationsService} from '../../services/applications.service';
-import {SftpComponent} from './sftp.component';
 import {SftpActionsComponent} from './sftp-actions/sftp-actions.component';
 import {SftpBodyComponent} from './sftp-body/sftp-body.component';
 import {SftpMenuComponent} from './sftp-menu/sftp-menu.component';
@@ -25,7 +24,6 @@ import {SftpService} from './services/sftp.service';
 
 @NgModule({
   declarations: [
-    SftpComponent,
     SftpActionsComponent,
     SftpBodyComponent,
     SftpMenuComponent,

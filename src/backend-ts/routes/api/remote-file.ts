@@ -85,7 +85,7 @@ router.patch('/:uuid/:type/:fileName(*)', (req: express.Request, res: express.Re
  * Delete file
  */
 router.delete('/:uuid/:fileName(*)', (req: express.Request, res: express.Response) => {
-  logger.info(`[API RemoteFile] -> Delete file -> file [${req.params.fileName}]`);
+  logger.info(`[API RemoteFile] -> Delete file -> uuid [${req.params.uuid}], file [${req.params.fileName}]`);
 
   const apiGlobals = new ApiGlobalsModule(req, res);
   const sshSession = sshSessions.getSession('sftp', req.params.uuid);

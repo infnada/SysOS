@@ -1,20 +1,37 @@
-import {Component, Input, OnInit, ViewChild, ElementRef} from '@angular/core';
+import {Component, Input, OnInit, ViewChild, ElementRef, ViewEncapsulation} from '@angular/core';
 
 import {Socket} from 'ngx-socket-io';
-import {FitAddon} from 'xterm-addon-fit';
+import * as fit from 'xterm/lib/addons/fit/fit';
 
 import {Application} from '../../../interfaces/application';
 import {SshService} from '../ssh.service';
 import {SshConnection} from '../SshConnection';
+import {Terminal} from "xterm";
 
 @Component({
+  encapsulation: ViewEncapsulation.None,
   selector: 'app-ssh-body',
   templateUrl: './ssh-body.component.html',
   styleUrls: ['./ssh-body.component.scss']
 })
 export class SshBodyComponent implements OnInit {
   @Input() application: Application;
-  @ViewChild('terminalContainer') terminalContainer: ElementRef;
+
+  private terminalContainer: ElementRef;
+  private currentTerminal: Terminal;
+  @ViewChild('terminalContainer') set content(content: ElementRef) {
+    this.terminalContainer = content;
+
+    if (!this.activeConnection) return;
+
+    this.currentTerminal = this.Ssh.getSshTerminal(this.activeConnection);
+
+    if (!this.terminalContainer) return;
+
+    this.currentTerminal.open(this.terminalContainer.nativeElement);
+
+    this.onBodyResize();
+  }
 
   connections: SshConnection[];
   activeConnection: string;
@@ -27,24 +44,7 @@ export class SshBodyComponent implements OnInit {
 
   ngOnInit() {
     this.Ssh.connections.subscribe(connections => this.connections = connections);
-    this.Ssh.activeConnection.subscribe(activeConnection => {
-      this.activeConnection = activeConnection;
-
-      if (!activeConnection) return;
-
-      const currentTerminal: any = this.Ssh.getSshTerminal(activeConnection);
-      currentTerminal.loadAddon(new FitAddon());
-      currentTerminal.open(this.terminalContainer.nativeElement, {
-        focus: true
-      });
-      currentTerminal.fit();
-
-      this.socket.emit('ssh_session__geometry', {
-        cols: currentTerminal.cols,
-        rows: currentTerminal.rows,
-        uuid: activeConnection
-      });
-    });
+    this.Ssh.activeConnection.subscribe(activeConnection => this.activeConnection = activeConnection);
   }
 
   toggleSide(): void {
@@ -57,6 +57,15 @@ export class SshBodyComponent implements OnInit {
 
   getActiveConnection(): SshConnection {
     return this.Ssh.getActiveConnection();
+  }
+
+  onBodyResize(): void {
+    fit.fit(this.currentTerminal);
+    this.socket.emit('ssh_session__geometry', {
+      cols: this.currentTerminal.cols,
+      rows: this.currentTerminal.rows,
+      uuid: this.activeConnection
+    });
   }
 
 }

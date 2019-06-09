@@ -11,8 +11,8 @@
   </tr>
   </thead>
   <tbody>
-  <tr *ngIf="!uploadFiles"><td colspan="7" class="center">No recent transactions.</td></tr>
-  <tr *ngFor="let f of uploadFiles">
+  <tr *ngIf="!filesExchange"><td colspan="7" class="center">No recent transactions.</td></tr>
+  <tr *ngFor="let f of filesExchange; index as $index">
     <td>{{$index + 1}}</td>
     <td *ngIf="!f.exchange">Local to SysOS</td>
     <td *ngIf="f.exchange == 'upload'">SysOS to Server</td>
@@ -23,16 +23,16 @@
     <td *ngIf="!f.path" title="/{{f.name}}">/{{f.name}}</td>
     <td>{{f.size}}</td>
     <td>
-        <span class="progress" ng-show="f.progress >= 0">
-          <div style="width:{{f.progress}}%">{{f.progress}}%</div>
-        </span>
+      <span class="progress" *ngIf="f.progress >= 0">
+        <div style="width: {{f.progress}}%">{{f.progress}}%</div>
+      </span>
     </td>
     <td class="text-navy">
       <button class="btn btn-xs" (click)="f.upload.abort();f.upload.aborted=true" ng-show="f.upload != null && f.progress < 100 && !f.upload.aborted">
         Abort<span ng-show="isResumeSupported">/Pause</span>
       </button>
-      <button class="btn btn-xs" (click)="sftpB.uploadFile(f);f.upload.aborted=false" ng-show="isResumeSupported && f.upload != null && f.upload.aborted">Resume</button>
-      <button class="btn btn-xs" (click)="sftpB.restart(f);f.upload.aborted=false" ng-show="isResumeSupported && f.upload != null && (f.progress == 100 || f.upload.aborted)">Restart</button>
+      <button class="btn btn-xs" (click)="uploadFile(f);f.upload.aborted=false" ng-show="isResumeSupported && f.upload != null && f.upload.aborted">Resume</button>
+      <button class="btn btn-xs" (click)="restart(f);f.upload.aborted=false" ng-show="isResumeSupported && f.upload != null && (f.progress == 100 || f.upload.aborted)">Restart</button>
     </td>
   </tr>
   </tbody>

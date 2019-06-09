@@ -35,7 +35,7 @@ export class SftpBodyNewConnectionComponent implements OnInit {
       host: ['', Validators.required],
       port: [22, Validators.required],
       credential: ['', [Validators.required]],
-      save: [false],
+      save: [true],
       autologin: [false],
       uuid: [null]
     });

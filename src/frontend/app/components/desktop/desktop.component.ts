@@ -78,7 +78,7 @@ export class DesktopComponent implements OnInit, AfterViewInit {
               private FileSystemUi: FileSystemUiService,
               private Applications: ApplicationsService) {
 
-    this.reloadPathSubscription = this.FileSystemUi.getRefreshPath().subscribe(path => {
+    this.reloadPathSubscription = this.FileSystemUi.getObserverRefreshPath().subscribe(path => {
       if (path === '/root/Desktop/') this.reloadPath();
     });
   }

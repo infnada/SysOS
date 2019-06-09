@@ -40,35 +40,6 @@ export class SftpService {
     this.connections = this.$connections.asObservable();
     this.activeConnection = this.$activeConnection.asObservable();
     this.viewExchange = this.$viewExchange.asObservable();
-
-    this.socket
-      .fromEvent('sftp__prop')
-      .subscribe((data: { uuid: string, prop: string, text: string }) => {
-
-        this.getConnectionByUuid(data.uuid)[data.prop] = data.text;
-
-        // CONN CLOSE
-        if (data.prop === 'status' && data.text === 'CONN CLOSE') {
-          this.getConnectionByUuid(data.uuid).state = 'disconnected';
-
-          // CON ERROR
-        } else if (data.prop === 'status' && data.text !== 'SSH CONNECTION ESTABLISHED') {
-
-          // Error connecting
-          if (this.getConnectionByUuid(data.uuid).state === 'new') {
-            this.getConnectionByUuid(data.uuid).state = 'disconnected';
-          }
-          this.getConnectionByUuid(data.uuid).error = data.text;
-          this.Toastr.error(data.text, 'Error (' + this.getConnectionByUuid(data.uuid).host + ')');
-
-          // CONN OK
-        } else if (data.text === 'SSH CONNECTION ESTABLISHED') {
-          this.getConnectionByUuid(data.uuid).state = 'connected';
-          this.getConnectionByUuid(data.uuid).error = null;
-          this.Toastr.success(data.text, 'Connected (' + this.getConnectionByUuid(data.uuid).host + ')');
-          // $('#server_body').focus();
-        }
-      });
   }
 
   initConnections(): void {

@@ -101,7 +101,7 @@ export class SftpBodyLocalComponent implements OnInit {
               private Sftp: SftpService,
               private SftpLocal: SftpLocalService) {
 
-    this.reloadPathSubscription = this.FileSystemUi.getRefreshPath().subscribe(path => {
+    this.reloadPathSubscription = this.FileSystemUi.getObserverRefreshPath().subscribe(path => {
       if (path === this.currentPath) this.reloadPath();
     });
   }

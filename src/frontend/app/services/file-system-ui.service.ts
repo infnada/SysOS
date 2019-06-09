@@ -3,19 +3,21 @@ import {CdkDragDrop} from '@angular/cdk/drag-drop';
 
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {ToastrService} from 'ngx-toastr';
+import {NGXLogger} from 'ngx-logger';
 
 import {ModalService} from './modal.service';
 import {ApplicationsService} from './applications.service';
 import {FileSystemService} from './file-system.service';
-import {NGXLogger} from 'ngx-logger';
+import {SysOSFile} from '../interfaces/file';
 
 @Injectable({
   providedIn: 'root'
 })
 export class FileSystemUiService {
 
-  private subject = new Subject<any>();
+  private subjectRefreshPath = new Subject<any>();
   private subjectGoToPath = new Subject<any>();
+  private subjectDownloadRemoteFile = new Subject<any>();
 
   private $copyFrom: BehaviorSubject<string>;
   private $cutFrom: BehaviorSubject<string>;
@@ -288,11 +290,11 @@ export class FileSystemUiService {
   }
 
   refreshPath(path: string): void {
-    this.subject.next(path);
+    this.subjectRefreshPath.next(path);
   }
 
-  getRefreshPath(): Observable<any> {
-    return this.subject.asObservable();
+  getObserverRefreshPath(): Observable<any> {
+    return this.subjectRefreshPath.asObservable();
   }
 
   sendGoToPath(data: { application: string, path: string }): void {
@@ -301,5 +303,13 @@ export class FileSystemUiService {
 
   getObserverGoToPath(): Observable<any> {
     return this.subjectGoToPath.asObservable();
+  }
+
+  sendDownloadRemoteFile(data: { path: string, file: SysOSFile, connectionUuid: string, applicationId: string }): void {
+    this.subjectDownloadRemoteFile.next(data);
+  }
+
+  getObserverDownloadRemoteFile(): Observable<any> {
+    return this.subjectDownloadRemoteFile.asObservable();
   }
 }

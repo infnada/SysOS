@@ -1,10 +1,14 @@
 import {Injectable} from '@angular/core';
+
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
+import {ToastrService} from 'ngx-toastr';
+import {Socket} from 'ngx-socket-io';
+
 import {SysOSFile} from '../../../interfaces/file';
 import {FileSystemService} from '../../../services/file-system.service';
-import {Socket} from 'ngx-socket-io';
 import {SftpService} from './sftp.service';
 import {SftpConnection} from '../SftpConnection';
+
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +31,8 @@ export class SftpServerService {
   viewAsList: Observable<any>;
   search: Observable<any>;
 
-  constructor(private FileSystem: FileSystemService,
+  constructor(private Toastr: ToastrService,
+              private FileSystem: FileSystemService,
               private Sftp: SftpService,
               private socket: Socket) {
     this.dataStore = {currentPath: '/', currentData: [], viewAsList: false, search: null};
@@ -58,9 +63,47 @@ export class SftpServerService {
       });
 
     this.socket
+      .fromEvent('sftp__prop')
+      .subscribe((data: { uuid: string, prop: string, text: string }) => {
+
+        this.Sftp.getConnectionByUuid(data.uuid)[data.prop] = data.text;
+
+        // CONN CLOSE
+        if (data.prop === 'status' && data.text === 'CONN CLOSE') {
+          this.Sftp.getConnectionByUuid(data.uuid).state = 'disconnected';
+
+          // CON ERROR
+        } else if (data.prop === 'status' && data.text !== 'SSH CONNECTION ESTABLISHED') {
+
+          // Error connecting
+          if (this.Sftp.getConnectionByUuid(data.uuid).state === 'new') {
+            this.Sftp.getConnectionByUuid(data.uuid).state = 'disconnected';
+          }
+          this.Sftp.getConnectionByUuid(data.uuid).error = data.text;
+          this.Toastr.error(data.text, 'Error (' + this.Sftp.getConnectionByUuid(data.uuid).host + ')');
+
+          // CONN OK
+        } else if (data.text === 'SSH CONNECTION ESTABLISHED') {
+          this.Sftp.getConnectionByUuid(data.uuid).state = 'connected';
+          this.Sftp.getConnectionByUuid(data.uuid).error = null;
+          this.Toastr.success(data.text, 'Connected (' + this.Sftp.getConnectionByUuid(data.uuid).host + ')');
+          // $('#server_body').focus();
+        }
+      });
+
+    // TODO: sftp exchange
+    this.socket
       .fromEvent('sftp__progress')
       .subscribe(data => console.log(data));
 
+  }
+
+  downloadFileToSysOS(src: string, dst: string, connectionUuid: string): void {
+    this.socket.emit('sftp_session__file_download', {
+      src,
+      dst,
+      connectionUuid
+    });
   }
 
   reloadPath(connectionUuid: string, path?: string): void {

@@ -5,7 +5,6 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatDividerModule, MatMenuModule, MatButtonModule, MatSlideToggleModule} from '@angular/material';
 
 import {ApplicationsService} from '../../services/applications.service';
-import {SshComponent} from './ssh.component';
 import {SshActionsComponent} from './ssh-actions/ssh-actions.component';
 import {SshBodyComponent} from './ssh-body/ssh-body.component';
 import {SshMenuComponent} from './ssh-menu/ssh-menu.component';
@@ -15,7 +14,6 @@ import {SshService} from './ssh.service';
 
 @NgModule({
   declarations: [
-    SshComponent,
     SshActionsComponent,
     SshBodyComponent,
     SshMenuComponent,

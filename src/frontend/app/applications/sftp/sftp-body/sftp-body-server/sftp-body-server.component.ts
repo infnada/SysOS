@@ -82,29 +82,13 @@ export class SftpBodyServerComponent implements OnInit {
     }
   ];
 
-  onBodyContextMenu(event: MouseEvent): void {
-    this.contextMenuPosition.x = event.clientX + 'px';
-    this.contextMenuPosition.y = event.clientY + 'px';
-    this.contextMenuBody.openMenu();
-  }
-
-  checkIfDisabled(item: ContextMenuItem): boolean {
-    if (item.disabled) return item.disabled();
-    return false;
-  }
-
-  contextToText(item: ContextMenuItem, file?: SysOSFile): string {
-    if (typeof item.text === 'string') return item.text;
-    if (typeof item.text === 'function') return item.text(file);
-  }
-
   constructor(private FileSystem: FileSystemService,
               private FileSystemUi: FileSystemUiService,
               private Applications: ApplicationsService,
               private Sftp: SftpService,
               private SftpServer: SftpServerService) {
 
-    this.reloadPathSubscription = this.FileSystemUi.getRefreshPath().subscribe(path => {
+    this.reloadPathSubscription = this.FileSystemUi.getObserverRefreshPath().subscribe(path => {
       if (path === this.currentPath) this.reloadPath();
     });
   }
@@ -133,6 +117,25 @@ export class SftpBodyServerComponent implements OnInit {
     }
 
     this.goToPath('/');
+  }
+
+  /**
+   * ContextMenu
+   */
+  onBodyContextMenu(event: MouseEvent): void {
+    this.contextMenuPosition.x = event.clientX + 'px';
+    this.contextMenuPosition.y = event.clientY + 'px';
+    this.contextMenuBody.openMenu();
+  }
+
+  checkIfDisabled(item: ContextMenuItem): boolean {
+    if (item.disabled) return item.disabled();
+    return false;
+  }
+
+  contextToText(item: ContextMenuItem, file?: SysOSFile): string {
+    if (typeof item.text === 'string') return item.text;
+    if (typeof item.text === 'function') return item.text(file);
   }
 
   getActiveConnection(): SftpConnection {

@@ -50,6 +50,7 @@
     "ngx-order-pipe": "^2.0.2",
     "ngx-socket-io": "^2.1.1",
     "ngx-toastr": "^10.0.2",
+    "node-fetch": "^2.6.0",
     "read-config": "^1.6.0",
     "rxjs": "~6.3.3",
     "selectable.js": "^0.17.2",
