@@ -18,9 +18,9 @@
   <div class="secondary-content__new__box__toggle toggle_left pointer visible-lg" *ngIf="!viewSide" (click)="toggleSide()">
     <i class="fa fa-arrow-right sidebar-open-font open-sidebar"></i>
   </div>
-  <div class="window__main row no_padding">
+  <div class="window__main row no_padding" [ngClass]="{'with__stats': viewExchange === true}">
     <app-sftp-body-local [application]="application"></app-sftp-body-local>
     <app-sftp-body-server [application]="application"></app-sftp-body-server>
-    <app-sftp-body-exchange [application]="application" *ngIf="viewExchange === true"></app-sftp-body-exchange>
+    <app-sftp-body-exchange [application]="application"></app-sftp-body-exchange>
   </div>
 </div>

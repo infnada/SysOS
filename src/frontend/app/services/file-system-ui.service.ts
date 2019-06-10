@@ -18,6 +18,8 @@ export class FileSystemUiService {
   private subjectRefreshPath = new Subject<any>();
   private subjectGoToPath = new Subject<any>();
   private subjectDownloadRemoteFile = new Subject<any>();
+  private subjectUploadFileToRemote = new Subject<any>();
+  private subjectUploadFileToSysOS = new Subject<any>();
 
   private $copyFrom: BehaviorSubject<string>;
   private $cutFrom: BehaviorSubject<string>;
@@ -65,7 +67,7 @@ export class FileSystemUiService {
             this.refreshPath(currentPath);
           },
           error => {
-            this.logger.error('File System -> Error while creating folder -> ', error);
+            this.logger.error('[FileSystemUI] -> UIcreateFolder -> Error while creating folder -> ', error);
           });
       });
 
@@ -93,7 +95,7 @@ export class FileSystemUiService {
             this.refreshPath(currentPath);
           },
           error => {
-            this.logger.error('File System -> Error while renaming file -> ', error);
+            this.logger.error('[FileSystemUI] -> UIrenameFile -> Error while renaming file -> ', error);
           });
 
       });
@@ -119,7 +121,7 @@ export class FileSystemUiService {
               this.refreshPath(currentPath);
             },
             error => {
-              this.logger.error('File System -> Error while deleting folder -> ', error);
+              this.logger.error('[FileSystemUI] -> UIdeleteSelected -> Error while deleting folder -> ', error);
             });
         }
 
@@ -146,7 +148,7 @@ export class FileSystemUiService {
           this.$cutFrom.next(Object.assign({}, this.dataStore).cutFrom);
         },
         error => {
-          this.logger.error('File System -> Error while moving file -> ', error);
+          this.logger.error('[FileSystemUI] -> UIpasteFile -> Error while moving file -> ', error);
         });
 
     }
@@ -161,7 +163,7 @@ export class FileSystemUiService {
           this.$copyFrom.next(Object.assign({}, this.dataStore).copyFrom);
         },
         error => {
-          this.logger.error('File System -> Error while copying file -> ', error);
+          this.logger.error('[FileSystemUI] -> UIpasteFile -> Error while copying file -> ', error);
         });
 
     }
@@ -188,7 +190,7 @@ export class FileSystemUiService {
             this.Toastr.success('File downloaded to ' + currentPath, 'Download file from URL');
           },
           error => {
-            this.logger.error('Desktop -> Error while downloading file -> ', error);
+            this.logger.error('[FileSystemUI] -> UIdownloadFromURL -> Error while downloading file -> ', error);
           });
 
       });
@@ -264,7 +266,7 @@ export class FileSystemUiService {
 
         },
         error => {
-          this.logger.error('Desktop -> Error while getting file contents -> ', error);
+          this.logger.error('[FileSystemUI] -> UIdoWithFile -> Error while getting file contents -> ', error);
         });
     }
   }
@@ -274,6 +276,9 @@ export class FileSystemUiService {
   }
 
   UIonDropItem(connectionUuid: string, $event: CdkDragDrop<any>, dropPath: string): void {
+
+    // Do not move files to same directory
+    if (this.currentFileDrag === dropPath) return;
 
     this.FileSystem.moveFile(connectionUuid,
       this.currentFileDrag + $event.item.data.filename,
@@ -285,7 +290,7 @@ export class FileSystemUiService {
         this.refreshPath(dropPath);
       },
       error => {
-        this.logger.error('Desktop -> Error while moving file -> ', error);
+        this.logger.error('[FileSystemUI] -> UIonDropItem -> Error while moving file -> ', error);
       });
   }
 
@@ -311,5 +316,21 @@ export class FileSystemUiService {
 
   getObserverDownloadRemoteFile(): Observable<any> {
     return this.subjectDownloadRemoteFile.asObservable();
+  }
+
+  sendUploadToRemote(data: { path: string, file: SysOSFile, applicationId: string }): void {
+    this.subjectUploadFileToRemote.next(data);
+  }
+
+  getObserverUploadToRemote(): Observable<any> {
+    return this.subjectUploadFileToRemote.asObservable();
+  }
+
+  sendUploadToSysOS(data: { dst: string, file: File, applicationId: string }): void {
+    this.subjectUploadFileToSysOS.next(data);
+  }
+
+  getObserverUploadToSysOS(): Observable<any> {
+    return this.subjectUploadFileToSysOS.asObservable();
   }
 }

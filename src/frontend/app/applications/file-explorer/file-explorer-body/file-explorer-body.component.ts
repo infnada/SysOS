@@ -80,22 +80,6 @@ export class FileExplorerBodyComponent implements OnInit {
     }
   ];
 
-  onBodyContextMenu(event: MouseEvent): void {
-    this.contextMenuPosition.x = event.clientX + 'px';
-    this.contextMenuPosition.y = event.clientY + 'px';
-    this.contextMenuBody.openMenu();
-  }
-
-  checkIfDisabled(item: ContextMenuItem): boolean {
-    if (item.disabled) return item.disabled();
-    return false;
-  }
-
-  contextToText(item: ContextMenuItem, file?: SysOSFile): string {
-    if (typeof item.text === 'string') return item.text;
-    if (typeof item.text === 'function') return item.text(file);
-  }
-
   constructor(private logger: NGXLogger,
               private FileSystem: FileSystemService,
               private FileSystemUi: FileSystemUiService,
@@ -129,6 +113,25 @@ export class FileExplorerBodyComponent implements OnInit {
     }
 
     this.goToPath('/');
+  }
+
+  /**
+   * ContextMenu
+   */
+  onBodyContextMenu(event: MouseEvent): void {
+    this.contextMenuPosition.x = event.clientX + 'px';
+    this.contextMenuPosition.y = event.clientY + 'px';
+    this.contextMenuBody.openMenu();
+  }
+
+  checkIfDisabled(item: ContextMenuItem): boolean {
+    if (item.disabled) return item.disabled();
+    return false;
+  }
+
+  contextToText(item: ContextMenuItem, file?: SysOSFile): string {
+    if (typeof item.text === 'string') return item.text;
+    if (typeof item.text === 'function') return item.text(file);
   }
 
   /**

@@ -1,9 +1,11 @@
+import {getLogger} from 'log4js';
 import * as path from 'path';
 import readConfig from 'read-config';
 
 import {SshSessionsModule} from './ssh-sessions';
 import {SocketModule} from '../socket';
 
+const logger = getLogger('mainlog');
 const config =  readConfig(path.join(__dirname, '../../../filesystem/etc/expressjs/config.json'));
 const term = config.ssh.term;
 const termCols = 80;
@@ -18,24 +20,24 @@ export class SshModule {
 
   }
 
-  private closeOnError(type, err, uuid) {
-    console.log(err);
+  private closeOnError(type: string, err: any, uuid: string): void {
+    logger.info(`[Socket SSH] -> closeOnError -> type [${type}], uuid [${uuid}], [${err}]`);
     // sshSession.closeSession(type, uuid);
     this.SocketModule.emitProp(type, err, uuid, 'status');
     // this.SocketModule.emitProp(type, 'disconnected', uuid, 'type');
   }
 
-  newConnection(type, uuid, host, port, username, password) {
+  newConnection(type: string, uuid: string, host: string, port: number, username: string, password: string): void {
 
     this.SshSessionsModule.createSession(type, uuid, host, port, username, password).then((session: any) => {
       // session.on('end', function (err) { this.SocketModule.emitProp(type, "CONN END BY HOST " + err, uuid, 'status'); });
       session.on('close', () => {
         this.SocketModule.emitProp(type, 'CONN CLOSE', uuid, 'status');
       });
-      session.on('error', (err) => {
+      session.on('error', (err: any) => {
         this.SocketModule.emitProp(type, 'CONN ERROR ' + err, uuid, 'status');
       });
-      session.on('banner', (data) => {
+      session.on('banner', (data: any) => {
 
         // need to convert to cr/lf for proper formatting
         data = data.replace(/\r?\n/g, '\r\n');
@@ -43,9 +45,7 @@ export class SshModule {
       });
 
       if (type === 'ssh') {
-        session.on('keyboard-interactive', (name, instructions, instructionsLang, prompts, finish) => {
-          finish([password]);
-        });
+        session.on('keyboard-interactive', (name, instructions, instructionsLang, prompts, finish) => finish([password]));
       }
 
       session.on('ready', () => {
@@ -61,20 +61,16 @@ export class SshModule {
             cols: termCols,
             rows: termRows
           }, (err, stream) => {
-            if (err) { return this.closeOnError(type, err, uuid); }
+            if (err) return this.closeOnError(type, err, uuid);
 
             this.SocketModule.emitProp(type, 'connected', uuid, 'type');
-            this.socket.on('ssh_session__geometry', (data) => {
-              stream.setWindow(data.rows, data.cols);
-            });
+            this.socket.on('ssh_session__geometry', (data) => stream.setWindow(data.rows, data.cols));
             this.socket.on('ssh_session__data', (data) => {
-              if (data.uuid !== uuid) { return; }
+              if (data.uuid !== uuid) return;
               stream.write(data.data);
             });
 
-            stream.on('data', (data) => {
-              this.SocketModule.emitData(type, data, uuid);
-            });
+            stream.on('data', (data) => this.SocketModule.emitData(type, data, uuid));
             stream.on('close', (code, signal) => {
               err = {
                 message: ((code || signal) ?
@@ -83,25 +79,23 @@ export class SshModule {
               };
               this.closeOnError(type, err, uuid);
             });
-            stream.stderr.on('data', () => {
-              this.SocketModule.emitProp(type, err, uuid, 'status');
-            });
+            stream.stderr.on('data', () => this.SocketModule.emitProp(type, err, uuid, 'status'));
 
           });
 
-          /**
-           * SFTP
-           */
+        /**
+         * SFTP
+         */
         } else if (type === 'sftp') {
           session.sftp((err, sftp) => {
-            if (err) { return this.closeOnError(type, err, uuid); }
+            if (err) return this.closeOnError(type, err, uuid);
 
             session.sftpSession = sftp;
 
             this.SocketModule.emitProp(type, 'connected', uuid, 'type');
 
             sftp.readdir('/', (e, data) => {
-              if (e) { return this.closeOnError(type, e, uuid); }
+              if (e) return this.closeOnError(type, e, uuid);
 
               this.SocketModule.emitPath(type, data, uuid, '/');
             });
@@ -109,52 +103,71 @@ export class SshModule {
             /**
              * sftp_session__file_upload
              */
-            this.socket.on('sftp_session__file_upload', (data) => {
-              if (data.connectionUuid !== uuid) { return; }
+            this.socket.on('sftp_session__file_upload', (data: {src: string, dst: string, connectionUuid: string}) => {
+              if (data.connectionUuid !== uuid) return;
+
+              logger.info(`[Socket SSH] -> sftp_session__file_upload -> src [${data.src}], dst [${data.dst}], \
+              connectionUuid [${data.connectionUuid}]`);
 
               let percentage = 0;
 
-              sftp.fastPut(path.join(__dirname, '../../filesystem') + data.src, data.dst, {
-                step: (a, b, c) => {
+              sftp.fastPut(path.join(__dirname, '../../../filesystem') + data.src, data.dst, {
+                step: (totalTransferred: number, chunk: number, total: number) => {
+                  const result: number = parseInt(((totalTransferred * 100) / total).toFixed(), 10);
 
-                  const result: number = parseInt(((a * 100) / c).toFixed(), 10);
+                  if (result === 100) return;
+
                   if (result !== percentage) {
                     percentage = result;
 
-                    this.SocketModule.emitProgress(result, data.src, data.dst, 'upload', data.connectionUuid);
                     // emit percentage
+                    this.SocketModule.emitProgress(result, data.src, data.dst, 'upload', data.connectionUuid);
                   }
                 }
               }, (e) => {
-                console.log(e);
-                if (e) { return this.closeOnError(type, e, uuid); }
+                if (e) return this.closeOnError(type, e, uuid);
+
+                // emit percentage
+                this.SocketModule.emitProgress(100, data.src, data.dst, 'upload', data.connectionUuid);
+
+                logger.info(`[Socket SSH] -> sftp_session__file_upload -> Finished -> src [${data.src}], dst [${data.dst}], \
+                connectionUuid [${data.connectionUuid}]`);
               });
             });
 
             /**
              * sftp_session__file_download
              */
-            this.socket.on('sftp_session__file_download', (data) => {
-              if (data.connectionUuid !== uuid) { return; }
+            this.socket.on('sftp_session__file_download', (data: {src: string, dst: string, connectionUuid: string}) => {
+              if (data.connectionUuid !== uuid) return;
 
-              console.log(data.src, data.dst);
+              logger.info(`[Socket SSH] -> sftp_session__file_download -> src [${data.src}], dst [${data.dst}], \
+              connectionUuid [${data.connectionUuid}]`);
 
               let percentage = 0;
 
-              sftp.fastGet(data.src, path.join(__dirname, '../../filesystem') + data.dst, {
-                step: (a, b, c) => {
+              sftp.fastGet(data.src, path.join(__dirname, '../../../filesystem') + data.dst, {
+                step: (totalTransferred: number, chunk: number, total: number) => {
+                  const result: number = parseInt(((totalTransferred * 100) / total).toFixed(), 10);
 
-                  const result: number = parseInt(((a * 100) / c).toFixed(), 10);
+                  if (result === 100) return;
+
                   if (result !== percentage) {
                     percentage = result;
+                    console.log(result);
 
-                    this.SocketModule.emitProgress(result, data.src, data.dst, 'download', data.connectionUuid);
                     // emit percentage
+                    this.SocketModule.emitProgress(result, data.src, data.dst, 'download', data.connectionUuid);
                   }
                 }
               }, (e) => {
-                console.log(e);
-                if (e) { return this.closeOnError(type, e, uuid); }
+                if (e) return this.closeOnError(type, e, uuid);
+
+                // emit percentage
+                this.SocketModule.emitProgress(100, data.src, data.dst, 'download', data.connectionUuid);
+
+                logger.info(`[Socket SSH] -> sftp_session__file_download -> Finished -> src [${data.src}], dst [${data.dst}], \
+                connectionUuid [${data.connectionUuid}]`);
               });
             });
 
@@ -168,9 +181,9 @@ export class SshModule {
             });
           });
 
-          /**
-           * SMANAGER
-           */
+        /**
+         * SMANAGER
+         */
         } else if (type === 'smanager') {
           this.SocketModule.emitProp(type, 'connected', uuid, 'type');
         }
@@ -182,12 +195,8 @@ export class SshModule {
   closeConnection(type, uuid) {
     if (uuid === null) {
       this.SshSessionsModule.getAllSessions().then(sessions => {
-        sessions.ssh.forEach((session: any) => {
-          session.end();
-        });
-        sessions.sftp.forEach((session: any) => {
-          session.end();
-        });
+        sessions.ssh.forEach((session: any) => session.end());
+        sessions.sftp.forEach((session: any) => session.end());
       });
     } else {
       this.SocketModule.emitProp(type, 'disconnected', uuid, 'type');

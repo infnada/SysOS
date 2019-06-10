@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
+import {Application} from '../../../interfaces/application';
 
 @Component({
   selector: 'app-infrastructure-manager-actions',
@@ -6,6 +7,7 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./infrastructure-manager-actions.component.scss']
 })
 export class InfrastructureManagerActionsComponent implements OnInit {
+  @Input() application: Application;
 
   constructor() { }
 

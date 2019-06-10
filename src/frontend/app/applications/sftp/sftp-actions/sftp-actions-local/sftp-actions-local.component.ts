@@ -32,7 +32,6 @@ export class SftpActionsLocalComponent implements OnInit {
     });
 
     this.goToPathSubscription = this.FileSystemUi.getObserverGoToPath().subscribe((data) => {
-      console.log(data);
       if (data.application === 'sftp#local') this.goToPath(data.path);
     });
   }

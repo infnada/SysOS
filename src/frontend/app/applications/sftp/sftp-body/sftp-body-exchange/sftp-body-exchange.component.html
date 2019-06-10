@@ -1,4 +1,4 @@
-<table class="table table-hover table-elipsis">
+<table class="table table-hover table-elipsis" *ngIf="viewExchange === true">
   <thead>
   <tr>
     <th>#</th>
@@ -17,10 +17,9 @@
     <td *ngIf="!f.exchange">Local to SysOS</td>
     <td *ngIf="f.exchange == 'upload'">SysOS to Server</td>
     <td *ngIf="f.exchange == 'download'">Server to SysOS</td>
-    <td *ngIf="!f.source" title="Local device">Local device</td>
+    <td *ngIf="f.exchange == 'local'">Local device</td>
     <td *ngIf="f.source" title="{{f.source}}">{{f.source}}</td>
-    <td *ngIf="f.path" title="/{{f.path}}">/{{f.path}}</td>
-    <td *ngIf="!f.path" title="/{{f.name}}">/{{f.name}}</td>
+    <td *ngIf="f.path" title="{{f.path}}">{{f.path}}</td>
     <td>{{f.size}}</td>
     <td>
       <span class="progress" *ngIf="f.progress >= 0">
@@ -28,11 +27,9 @@
       </span>
     </td>
     <td class="text-navy">
-      <button class="btn btn-xs" (click)="f.upload.abort();f.upload.aborted=true" ng-show="f.upload != null && f.progress < 100 && !f.upload.aborted">
-        Abort<span ng-show="isResumeSupported">/Pause</span>
-      </button>
-      <button class="btn btn-xs" (click)="uploadFile(f);f.upload.aborted=false" ng-show="isResumeSupported && f.upload != null && f.upload.aborted">Resume</button>
-      <button class="btn btn-xs" (click)="restart(f);f.upload.aborted=false" ng-show="isResumeSupported && f.upload != null && (f.progress == 100 || f.upload.aborted)">Restart</button>
+      <button class="btn" type="button" mat-flat-button color="primary" (click)="f.upload.abort();f.upload.aborted=true" *ngIf="f.upload != null && f.progress < 100 && !f.upload.aborted">Abort<span *ngIf="isResumeSupported">/Pause</span></button>
+      <button class="btn" type="button" mat-flat-button color="primary" (click)="uploadFile(f);f.upload.aborted=false" *ngIf="isResumeSupported && f.upload != null && f.upload.aborted">Resume</button>
+      <button class="btn" type="button" mat-flat-button color="primary" (click)="restart(f);f.upload.aborted=false" *ngIf="isResumeSupported && f.upload != null && (f.progress == 100 || f.upload.aborted)">Restart</button>
     </td>
   </tr>
   </tbody>

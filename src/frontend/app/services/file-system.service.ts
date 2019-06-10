@@ -121,7 +121,7 @@ export class FileSystemService {
       });
     }
 
-    return this.http.put('/api/file/download_from_url', {
+    return this.http.post('/api/file/download_from_url', {
       url,
       path,
       credential

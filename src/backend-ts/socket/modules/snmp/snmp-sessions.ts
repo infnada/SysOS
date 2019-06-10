@@ -11,7 +11,7 @@ export class SnmpSessionsModule {
 
   }
 
-  async createSession(type, uuid, host, community) {
+  async createSession(type: string, uuid: string, host: string, community: string): snmp {
     this.snmpSessions[type][uuid] = await snmp.createSession(host, community, {
       port: 161,
       retries: 1,
@@ -24,15 +24,15 @@ export class SnmpSessionsModule {
     return this.snmpSessions[type][uuid];
   }
 
-  closeSession(type, uuid) {
+  closeSession(type: string, uuid: string): void {
     return this.snmpSessions[type][uuid].close();
   }
 
-  async getAllSessions() {
+  async getAllSessions(): Promise<any> {
     return this.snmpSessions;
   }
 
-  getSession(type, uuid) {
+  getSession(type: string, uuid: string): snmp {
     return this.snmpSessions[type][uuid];
   }
 

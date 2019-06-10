@@ -495,6 +495,7 @@ li li .list__toggle:before {
 .main_form {
   padding: 40px;
   height: 100%;
+  overflow-y: scroll;
 }
 
 .window__side .menu__item {
@@ -520,11 +521,6 @@ li li .list__toggle:before {
   margin:0;
   padding:0;
   height: 100%;
-}
-.folders__body.with__stats {
-  margin:0;
-  padding:0;
-  height: 70%;
 }
 
 .folders__body.last > div {

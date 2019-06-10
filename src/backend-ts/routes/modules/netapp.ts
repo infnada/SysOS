@@ -18,9 +18,9 @@ export class NetAppModule {
       body: xml,
       headers: {
         'Content-Type': 'text/xml',
-        'Authorization': 'Basic ' + new Buffer(username + ':' + password).toString('base64'),
+        Authorization: 'Basic ' + new Buffer(username + ':' + password).toString('base64'),
         'Content-Length': Buffer.byteLength(xml),
-        'Expect': '100-continue'
+        Expect: '100-continue'
       }
     }).then(res => parseString(res));
 

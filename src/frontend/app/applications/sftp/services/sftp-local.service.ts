@@ -2,9 +2,11 @@ import { Injectable } from '@angular/core';
 
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {Socket} from 'ngx-socket-io';
+import {NGXLogger} from 'ngx-logger';
 
 import {SysOSFile} from '../../../interfaces/file';
 import {FileSystemService} from '../../../services/file-system.service';
+
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +29,10 @@ export class SftpLocalService {
   viewAsList: Observable<any>;
   search: Observable<any>;
 
-  constructor(private socket: Socket,
+
+
+  constructor(private logger: NGXLogger,
+              private socket: Socket,
               private FileSystem: FileSystemService) {
     this.dataStore = {currentPath: '/', currentData: [], viewAsList: false, search: null};
     this.$currentPath = new BehaviorSubject('/') as BehaviorSubject<string>;
@@ -40,8 +45,13 @@ export class SftpLocalService {
     this.search = this.$search.asObservable();
   }
 
-  // localPath + filename, serverPath + filename, currentConnection
-  uploadFileToServer(src: string, dst: string, connectionUuid: string): void {
+  uploadFileToSysOS(dst: string, file: File): Observable<any> {
+    this.logger.debug('Sftp -> uploadFileToSysOS -> dst []', dst);
+    return this.FileSystem.uploadFile(dst, file);
+  }
+
+  uploadFileToRemote(src: string, dst: string, connectionUuid: string): void {
+    this.logger.debug('Sftp -> sftp_session__file_upload -> src [], dst [], connectionUuid []', src, dst, connectionUuid);
     this.socket.emit('sftp_session__file_upload', {
       src,
       dst,

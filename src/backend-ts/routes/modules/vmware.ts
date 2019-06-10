@@ -15,7 +15,7 @@ export class VMWareModule {
     return fetch(proto + '://' + host + ':' + port + '/client/clients.xml', {
       method: 'GET',
       headers: {
-        'Accept': 'application/xml',
+        Accept: 'application/xml',
         'Content-Type': 'application/xml'
       }
     }).then(res => parseString(res));
@@ -28,9 +28,9 @@ export class VMWareModule {
     return fetch(proto + '://' + host + ':' + port + '/rest/com/vmware/cis/session', {
       method: 'GET',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-Type': 'application/json',
-        'Authorization': 'Basic ' + new Buffer(username + ':' + password).toString('base64')
+        Authorization: 'Basic ' + new Buffer(username + ':' + password).toString('base64')
       }
     }).then(res => res);
 
@@ -39,14 +39,14 @@ export class VMWareModule {
   callApi(host, port, path, cookie): Promise<any> {
     const proto = (port === '80' ? 'http' : 'https');
 
-    //https://code.vmware.com/apis/191/vsphere-automation
+    // https://code.vmware.com/apis/191/vsphere-automation
 
     return fetch(proto + '://' + host + ':' + port + '' + path, {
       method: 'GET',
       headers: {
-        'Accept': 'application/json',
+        Accept: 'application/json',
         'Content-Type': 'application/json',
-        'Cookie': cookie
+        Cookie: cookie
       }
     }).then(res => res);
 
@@ -66,9 +66,9 @@ export class VMWareModule {
       body: xml,
       headers: {
         'Content-Type': 'text/xml',
-        'SOAPAction': 'urn:vim25/6.0',
+        SOAPAction: 'urn:vim25/6.0',
         'Content-Length': Buffer.byteLength(xml),
-        'Expect': '100-continue'
+        Expect: '100-continue'
       }
     }).then(res => parseString(res));
 
@@ -84,10 +84,10 @@ export class VMWareModule {
       body: xml,
       headers: {
         'Content-Type': 'text/xml',
-        'SOAPAction': action,
+        SOAPAction: action,
         'Content-Length': Buffer.byteLength(xml),
-        'Expect': '100-continue',
-        'Cookie': cookie
+        Expect: '100-continue',
+        Cookie: cookie
       }
     }).then(res => parseString(res));
 

@@ -40,7 +40,6 @@ export class SftpBodyServerComponent implements OnInit {
   viewAsList: boolean;
   search: { filename: string } = null;
   activeConnection: string;
-  viewExchange: boolean;
 
   currentActive: number = 0;
 
@@ -105,7 +104,6 @@ export class SftpBodyServerComponent implements OnInit {
     this.SftpServer.viewAsList.subscribe(data => this.viewAsList = data);
     this.SftpServer.search.subscribe(data => this.search = data);
     this.Sftp.activeConnection.subscribe(connection => this.activeConnection = connection);
-    this.Sftp.viewExchange.subscribe(view => this.viewExchange = view);
 
     this.selectable = new Selectable({
       appendTo: this.selectableContainer.nativeElement,

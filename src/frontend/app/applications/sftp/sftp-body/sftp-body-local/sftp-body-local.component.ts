@@ -37,14 +37,12 @@ export class SftpBodyLocalComponent implements OnInit {
   currentData: Array<SysOSFile>;
   viewAsList: boolean;
   search: { filename: string } = null;
-  viewExchange: boolean;
 
   currentActive: number = 0;
 
   files: File[] = [];
   progress: number;
-  httpEmitter: Subscription[] = [];
-  httpEvent: HttpEvent<{}>;
+
 
   bodyContextMenuItems: ContextMenuItem[] = [
     {
@@ -79,22 +77,6 @@ export class SftpBodyLocalComponent implements OnInit {
     }
   ];
 
-  onBodyContextMenu(event: MouseEvent): void {
-    this.contextMenuPosition.x = event.clientX + 'px';
-    this.contextMenuPosition.y = event.clientY + 'px';
-    this.contextMenuBody.openMenu();
-  }
-
-  checkIfDisabled(item: ContextMenuItem): boolean {
-    if (item.disabled) return item.disabled();
-    return false;
-  }
-
-  contextToText(item: ContextMenuItem, file?: SysOSFile): string {
-    if (typeof item.text === 'string') return item.text;
-    if (typeof item.text === 'function') return item.text(file);
-  }
-
   constructor(private FileSystem: FileSystemService,
               private FileSystemUi: FileSystemUiService,
               private Applications: ApplicationsService,
@@ -117,7 +99,6 @@ export class SftpBodyLocalComponent implements OnInit {
     });
     this.SftpLocal.viewAsList.subscribe(data => this.viewAsList = data);
     this.SftpLocal.search.subscribe(data => this.search = data);
-    this.Sftp.viewExchange.subscribe(view => this.viewExchange = view);
 
     this.selectable = new Selectable({
       appendTo: this.selectableContainer.nativeElement,
@@ -129,6 +110,25 @@ export class SftpBodyLocalComponent implements OnInit {
     }
 
     this.goToPath('/');
+  }
+
+  /**
+   * ContextMenu
+   */
+  onBodyContextMenu(event: MouseEvent): void {
+    this.contextMenuPosition.x = event.clientX + 'px';
+    this.contextMenuPosition.y = event.clientY + 'px';
+    this.contextMenuBody.openMenu();
+  }
+
+  checkIfDisabled(item: ContextMenuItem): boolean {
+    if (item.disabled) return item.disabled();
+    return false;
+  }
+
+  contextToText(item: ContextMenuItem, file?: SysOSFile): string {
+    if (typeof item.text === 'string') return item.text;
+    if (typeof item.text === 'function') return item.text(file);
   }
 
   /**
@@ -184,18 +184,11 @@ export class SftpBodyLocalComponent implements OnInit {
   uploadFiles(files: File[]): void {
 
     files.forEach((file: File, i: number) => {
-      this.httpEmitter[i] = this.FileSystem.uploadFile(this.currentPath, file).subscribe(
-        event => {
-          this.httpEvent = event;
-
-          if (event instanceof HttpResponse) {
-            delete this.httpEmitter[i];
-          }
-
-          this.reloadPath();
-        },
-        error => console.log('Error Uploading', error)
-      );
+      this.FileSystemUi.sendUploadToSysOS({
+        dst: this.currentPath,
+        file,
+        applicationId: this.application.id
+      });
 
       files.splice(i, 1);
     });

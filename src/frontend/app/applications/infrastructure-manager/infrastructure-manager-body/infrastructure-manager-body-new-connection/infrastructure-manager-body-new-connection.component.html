@@ -1,0 +1,104 @@
+<ng-container *ngIf="!newConnectionType">
+  <div class="main_form">
+    <p>Select the type of server you want to register with managed infrastructure. All registred servers can be found under the Manager servers node on the Infrastructure tab.</p>
+    <table class="table table-hover m-t-xl">
+      <tbody>
+      <tr class="cursor-pointer" (click)="setConnectionType('vmware')">
+        <th class="col-sm-2 p-m"><img src="/img/vmware.png" width="75px"></th>
+        <td class="lh-2">Adds vCenter Server (recommended), or standalone vSphere Hypervisor (ESX/ESXi)</td>
+      </tr>
+      <tr class="cursor-pointer" (click)="setConnectionType('netapp')">
+        <th class="col-sm-2 p-m"><img src="/img/netapp.png" width="75px"></th>
+        <td class="lh-2">Adds NetApp FAS/AFF series. NFS, Fibre Channel (FC) and iSCSI connectivity is supported.</td>
+      </tr>
+      <tr class="cursor-pointer" (click)="setConnectionType('windows')">
+        <th class="col-sm-2 p-m"><i class="fa fa-windows"></i></th>
+        <td class="lh-2">Adds Microsoft Windows Server (Windows 2008 or later)</td>
+      </tr>
+      <tr class="cursor-pointer" (click)="setConnectionType('linux')">
+        <th class="col-sm-2 p-m"><i class="fa fa-linux"></i></th>
+        <td class="lh-2">Adds Linux server (must have SSH)</td>
+      </tr>
+      <tr class="cursor-pointer" (click)="setConnectionType('snmp')">
+        <th class="col-sm-2 p-m"><i class="fa fa-server"></i></th>
+        <td class="lh-2">Adds SNMP node for monitoring</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="newConnectionType">
+  <form class="main_form form-horizontal" [formGroup]="connectionForm" (ngSubmit)="sendConnect()">
+    <div class="form-group">
+      <div class="col-12">
+        <input type="text" class="form-control" placeholder="Description" formControlName="description" [ngClass]="{ 'is-invalid': submitted && f.description.errors }">
+      </div>
+      <div class="col-12" *ngIf="submitted && f.description.errors">
+        <small class="text-danger pull-left" *ngIf="f.description.errors.required">Please insert a description</small>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-12">
+        <input type="text" class="form-control" placeholder="Host" formControlName="host" [ngClass]="{ 'is-invalid': submitted && f.host.errors }">
+      </div>
+      <div class="col-12" *ngIf="submitted && f.host.errors">
+        <small class="text-danger pull-left" *ngIf="f.host.errors.required">Please insert a host</small>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-12">
+        <input type="text" class="form-control" placeholder="Port" formControlName="port" [ngClass]="{ 'is-invalid': submitted && f.port.errors }">
+      </div>
+      <div class="col-12">
+        <small *ngIf="f.type.value !== 'vmware'" class="pull-left">Default VMware web service port is 443. If connection cannot be established, check for possible port customization in the vCenter Server or ESX(i) server settings</small>
+        <small *ngIf="f.type.value !== 'linux'" class="pull-left">Default SSH service port is 22. If connection cannot be established, check for possible port customization in the SSH service settings</small>
+      </div>
+      <div class="col-12" *ngIf="submitted && f.port.errors">
+        <small class="text-danger pull-left" *ngIf="f.port.errors.required">Please insert a port</small>
+      </div>
+    </div>
+    <div class="form-group" *ngIf="f.type.value !== 'snmp'">
+      <div class="col-12">
+        <select class="form-control" formControlName="credential" [ngClass]="{ 'is-invalid': submitted && f.credential.errors }">
+          <option value="">-- Select Credential --</option>
+          <option *ngFor="let credential of credentials" [value]="credential.uuid">
+            {{credential.description}} - {{credential.username}}
+          </option>
+        </select>
+      </div>
+      <div class="col-12" *ngIf="submitted && f.credential.errors">
+        <small class="text-danger pull-left" *ngIf="f.credential.errors.required">Please insert a credential</small>
+      </div>
+      <div class="col-12">
+        <small class="pull-left text-primary cursor-pointer" (click)="manageCredentials()">Manage Credentials</small>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-12">
+        <input type="text" class="form-control" placeholder="Community" formControlName="community" [ngClass]="{ 'is-invalid': submitted && f.community.errors }">
+      </div>
+      <div class="col-12" *ngIf="submitted && f.community.errors">
+        <small class="text-danger pull-left" *ngIf="f.community.errors.required">Please insert a community</small>
+      </div>
+    </div>
+    <div class="form-group pt-3">
+      <div class="col-12">
+        Save Connection in config file
+        <mat-slide-toggle class="pull-right" formControlName="save"></mat-slide-toggle>
+      </div>
+    </div>
+    <div class="form-group" *ngIf="f.save">
+      <div class="col-12">
+        Auto Login
+        <mat-slide-toggle class="pull-right" formControlName="autologin"></mat-slide-toggle>
+      </div>
+    </div>
+    <div>
+      <button class="btn mr-3" type="button" mat-flat-button color="accent" *ngIf="f.save">Save</button>
+      <button class="btn mr-3" type="button" mat-flat-button color="accent" *ngIf="f.uuid">Save & Rescan</button>
+      <button class="btn" type="submit" mat-flat-button color="primary">Connect</button>
+    </div>
+  </form>
+</ng-container>
+

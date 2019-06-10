@@ -58,9 +58,7 @@ export class SshBodyNewConnectionComponent implements OnInit {
     this.submitted = true;
 
     // stop here if form is invalid
-    if (this.connectionForm.invalid) {
-      return;
-    }
+    if (this.connectionForm.invalid) return;
 
     this.Ssh.connect(this.connectionForm.value);
 

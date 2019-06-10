@@ -20,6 +20,7 @@ export class FileComponent implements OnInit, AfterViewInit {
   @ViewChild('selectableFileElement') selectableFileElement: ElementRef;
   @Input() application: Application;
   @Input() connectionUuid: string = null;
+  @Input() uploadAllowed: boolean = false;
   @Input() subApplication: string;
   @Input() file: SysOSFile;
   @Input() isCurrentActive: boolean;
@@ -29,58 +30,81 @@ export class FileComponent implements OnInit, AfterViewInit {
   @Input() selector: string;
 
   contextMenuPosition = {x: '0px', y: '0px'};
-  fileContextMenuItems: ContextMenuItem[] = [
-    {
-      id: 1, text: (this.connectionUuid ? '<i class="fa fa-cloud-download"></i> Download to SysOS' :
-        '<i class="fa fa-download"></i> Download to local'), action: (file: SysOSFile) => {
+  fileContextMenuItems: ContextMenuItem[];
 
-        if (this.connectionUuid) this.UIdownloadFileToSysOS(file);
+  constructor(private FileSystem: FileSystemService,
+              private FileSystemUi: FileSystemUiService) {
+  }
 
-      }
-    },
-    {
-      id: 2, text: (file: SysOSFile) => {
-        const filetype = this.getFileType(file.longname);
+  ngOnInit() {
+    this.fileContextMenuItems = [
+      {
+        id: 0, text: '<i class="fa fa-upload"></i> Upload to Remote', action: (file: SysOSFile) => {
 
-        if (filetype === 'folder') {
-          return '<i class="fa fa-folder-open"></i> Open';
-        } else {
-          return '<i class="fa fa-edit"></i> Open with Notepad';
+          this.UIuploadFileToRemote(file);
+        }, disabled: () => {
+          return !this.uploadAllowed;
         }
-      }, action: (file: SysOSFile) => {
-        this.UIdoWithFile(file);
-      }
-    },
-    {id: 3, text: 'divider'},
-    {
-      id: 4, text: '<i class="fa fa-files-o"></i> Copy', action: (file: SysOSFile) => {
-        this.UIcopyFile(file);
-      }
-    },
-    {
-      id: 6, text: '<i class="fa fa-scissors"></i> Cut', action: (file: SysOSFile) => {
-        this.UIcutFile(file);
-      }
-    },
-    {id: 7, text: 'divider'},
-    {
-      id: 8, text: '<i class="fa fa-font"></i> Rename', action: (file: SysOSFile) => {
-        return this.UIrenameFile(file);
-      }
-    },
-    {
-      id: 9, text: '<i class="fa fa-remove"></i> Delete', action: (file: SysOSFile) => {
-        return this.UIdeleteSelected(file);
-      }
-    },
-    {id: 10, text: 'divider'},
-    {
-      id: 11, text: '<i class="fa fa-lock"></i> Permissions', action: (file: SysOSFile) => {
-        // TODO
-      }
-    }
-  ];
+      },
+      {
+        id: 1, text: (this.connectionUuid !== null ? '<i class="fa fa-cloud-download"></i> Download to SysOS' :
+          '<i class="fa fa-download"></i> Download to local'), action: (file: SysOSFile) => {
 
+          if (this.connectionUuid) this.UIdownloadFileToSysOS(file);
+
+        }
+      },
+      {
+        id: 2, text: (file: SysOSFile) => {
+          const filetype = this.getFileType(file.longname);
+
+          if (filetype === 'folder') {
+            return '<i class="fa fa-folder-open"></i> Open';
+          } else {
+            return '<i class="fa fa-edit"></i> Open with Notepad';
+          }
+        }, action: (file: SysOSFile) => {
+          this.UIdoWithFile(file);
+        }
+      },
+      {id: 3, text: 'divider'},
+      {
+        id: 4, text: '<i class="fa fa-files-o"></i> Copy', action: (file: SysOSFile) => {
+          this.UIcopyFile(file);
+        }
+      },
+      {
+        id: 6, text: '<i class="fa fa-scissors"></i> Cut', action: (file: SysOSFile) => {
+          this.UIcutFile(file);
+        }
+      },
+      {id: 7, text: 'divider'},
+      {
+        id: 8, text: '<i class="fa fa-font"></i> Rename', action: (file: SysOSFile) => {
+          return this.UIrenameFile(file);
+        }
+      },
+      {
+        id: 9, text: '<i class="fa fa-remove"></i> Delete', action: (file: SysOSFile) => {
+          return this.UIdeleteSelected(file);
+        }
+      },
+      {id: 10, text: 'divider'},
+      {
+        id: 11, text: '<i class="fa fa-lock"></i> Permissions', action: (file: SysOSFile) => {
+          // TODO
+        }
+      }
+    ];
+  }
+
+  ngAfterViewInit() {
+    this.selectable.add(this.selectableFileElement.nativeElement);
+  }
+
+  /**
+   * ContextMenu
+   */
   onFileContextMenu(event: MouseEvent): void {
     event.preventDefault();
     event.stopPropagation();
@@ -97,17 +121,6 @@ export class FileComponent implements OnInit, AfterViewInit {
   contextToText(item: ContextMenuItem, file?: SysOSFile): string {
     if (typeof item.text === 'string') return item.text;
     if (typeof item.text === 'function') return item.text(file);
-  }
-
-  constructor(private FileSystem: FileSystemService,
-              private FileSystemUi: FileSystemUiService) {
-  }
-
-  ngOnInit() {
-  }
-
-  ngAfterViewInit() {
-    this.selectable.add(this.selectableFileElement.nativeElement);
   }
 
   getFileType(longname: string): string {
@@ -135,6 +148,14 @@ export class FileComponent implements OnInit, AfterViewInit {
       path: this.currentPath,
       file,
       connectionUuid: this.connectionUuid,
+      applicationId: this.application.id
+    });
+  }
+
+  UIuploadFileToRemote(file: SysOSFile) {
+    this.FileSystemUi.sendUploadToRemote({
+      path: this.currentPath,
+      file,
       applicationId: this.application.id
     });
   }

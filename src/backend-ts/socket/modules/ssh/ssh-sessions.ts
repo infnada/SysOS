@@ -18,7 +18,7 @@ export class SshSessionsModule {
 
   }
 
-  async createSession(type, uuid, host, port, username, password) {
+  async createSession(type: string, uuid: string, host: string, port: number, username: string, password: string): ssh2.Client {
     sshSessions[type][uuid] = new this.SSH();
 
     await sshSessions[type][uuid].connect({
@@ -33,15 +33,15 @@ export class SshSessionsModule {
     return sshSessions[type][uuid];
   }
 
-  closeSession(type, uuid) {
+  closeSession(type: string, uuid: string): void {
     sshSessions[type][uuid].end();
   }
 
-  async getAllSessions() {
+  async getAllSessions(): Promise<any> {
     return sshSessions;
   }
 
-  getSession(type, uuid) {
+  getSession(type: string, uuid: string): ssh2.Client {
     return sshSessions[type][uuid];
   }
 

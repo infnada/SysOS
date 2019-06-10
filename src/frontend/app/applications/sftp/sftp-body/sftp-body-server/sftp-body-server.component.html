@@ -1,4 +1,4 @@
-<div class="col folders__body" [ngClass]="{'with__stats': viewExchange === true}" #selectableContainer>
+<div class="col folders__body" #selectableContainer>
 
   <app-sftp-body-new-connection [application]="application" *ngIf="activeConnection === null || getActiveConnection().state === 'disconnected'"></app-sftp-body-new-connection>
 

@@ -3,18 +3,19 @@ import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {ToastrService} from 'ngx-toastr';
 import {Socket} from 'ngx-socket-io';
+import {NGXLogger} from 'ngx-logger';
 
 import {SysOSFile} from '../../../interfaces/file';
 import {FileSystemService} from '../../../services/file-system.service';
 import {SftpService} from './sftp.service';
 import {SftpConnection} from '../SftpConnection';
 
-
 @Injectable({
   providedIn: 'root'
 })
 export class SftpServerService {
   private subjectGoPathBack = new Subject<any>();
+  private subjectFileProgress = new Subject<any>();
 
   private $currentPath: BehaviorSubject<string>;
   private $currentData: BehaviorSubject<SysOSFile[]>;
@@ -31,7 +32,8 @@ export class SftpServerService {
   viewAsList: Observable<any>;
   search: Observable<any>;
 
-  constructor(private Toastr: ToastrService,
+  constructor(private logger: NGXLogger,
+              private Toastr: ToastrService,
               private FileSystem: FileSystemService,
               private Sftp: SftpService,
               private socket: Socket) {
@@ -94,11 +96,12 @@ export class SftpServerService {
     // TODO: sftp exchange
     this.socket
       .fromEvent('sftp__progress')
-      .subscribe(data => console.log(data));
+      .subscribe(data => this.sendFileProgress(data));
 
   }
 
   downloadFileToSysOS(src: string, dst: string, connectionUuid: string): void {
+    this.logger.debug('Sftp -> sftp_session__file_download -> src [], dst [], connectionUuid []', src, dst, connectionUuid);
     this.socket.emit('sftp_session__file_download', {
       src,
       dst,
@@ -122,8 +125,7 @@ export class SftpServerService {
         }
       },
       error => {
-        console.error('File Explorer -> Error while getting fileSystemPath -> ', error);
-        console.error(error);
+        this.logger.error('Sftp -> Error while getting fileSystemPath -> ', error);
       });
   }
 
@@ -147,5 +149,13 @@ export class SftpServerService {
 
   getObserverGoPathBack(): Observable<any> {
     return this.subjectGoPathBack.asObservable();
+  }
+
+  sendFileProgress(data): void {
+    this.subjectFileProgress.next(data);
+  }
+
+  getObserverFileProgress(): Observable<any> {
+    return this.subjectFileProgress.asObservable();
   }
 }
