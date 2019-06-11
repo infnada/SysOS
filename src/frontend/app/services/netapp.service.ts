@@ -3,7 +3,7 @@ import {HttpClient} from '@angular/common/http';
 
 import {map} from 'rxjs/operators';
 import {NGXLogger} from 'ngx-logger';
-import {Observable, Subscription} from 'rxjs';
+import {Observable} from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -90,13 +90,13 @@ export class NetappService {
   /**
    * PUBLIC FUNCTIONS
    */
-  getSystemVersion(credential, host, port): Subscription {
+  getSystemVersion(credential, host, port): Promise<any> {
     return this.doCall(
       credential,
       host, port,
       null,
       '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'><system-get-version/></netapp>'
-    ).subscribe((data: any) => {
+    ).pipe(map((data: any) => {
       return this.validResponse({
         build_timestamp: data['build-timestamp'][0],
         is_clustered: data['is-clustered'][0],
@@ -108,32 +108,32 @@ export class NetappService {
         }
       });
 
-    });
+    })).toPromise();
   }
 
-  getOntapiVersion(credential, host, port): Subscription {
+  getOntapiVersion(credential, host, port): Promise<any> {
     return this.doCall(
       credential,
       host,
       port,
       null,
       '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'><system-get-ontapi-version/></netapp>'
-    ).subscribe((data: any) => {
+    ).pipe(map((data: any) => {
       return this.validResponse({
         major_version: data['major-version'][0],
         minor_version: data['minor-version'][0]
       });
 
-    });
+    })).toPromise();
   }
 
-  getLicenses(credential, host, port): Subscription {
+  getLicenses(credential, host, port): Promise<any> {
     return this.doCall(
       credential,
       host, port,
       null,
       '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'><license-v2-status-list-info/></netapp>'
-    ).subscribe((data: any) => {
+    ).pipe(map((data: any) => {
       const results = [];
 
       data['license-v2-status']['0']['license-v2-status-info'].forEach(license => {
@@ -141,33 +141,33 @@ export class NetappService {
       });
 
       return this.validResponse(results);
-    });
+    })).toPromise();
   }
 
-  getMetrocluster(credential, host, port): Subscription {
+  getMetrocluster(credential, host, port): Promise<any> {
     return this.doCall(
       credential,
       host,
       port,
       null,
       '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'><metrocluster-get/></netapp>'
-    ).subscribe((data: any) => {
+    ).pipe(map((data: any) => {
       return this.validResponse({
         local_cluster_name: data.attributes[0]['metrocluster-info'][0]['local-cluster-name'][0],
         local_configuration_state: data.attributes[0]['metrocluster-info'][0]['local-configuration-state'][0]
       });
 
-    });
+    })).toPromise();
   }
 
-  getClusterIdentity(credential, host, port): Subscription {
+  getClusterIdentity(credential, host, port): Promise<any> {
     return this.doCall(
       credential,
       host,
       port,
       null,
       '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'><cluster-identity-get/></netapp>'
-    ).subscribe((data: any) => {
+    ).pipe(map((data: any) => {
       return this.validResponse({
         cluster_contact: data.attributes[0]['cluster-identity-info'][0]['cluster-contact'][0],
         cluster_location: data.attributes[0]['cluster-identity-info'][0]['cluster-location'][0],
@@ -176,10 +176,10 @@ export class NetappService {
         cluster_uuid: data.attributes[0]['cluster-identity-info'][0]['cluster-uuid'][0],
         rdb_uuid: data.attributes[0]['cluster-identity-info'][0]['rdb-uuid'][0]
       });
-    });
+    })).toPromise();
   }
 
-  getQtrees(credential, host, port, vfiler, results = [], nextTag = null): Subscription {
+  getQtrees(credential, host, port, vfiler, results = [], nextTag = null): Promise<any> {
     const xml = `
 <netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
   <qtree-list-iter>
@@ -188,13 +188,7 @@ export class NetappService {
   </qtree-list-iter>
 </netapp>`;
 
-    return this.doCall(
-      credential,
-      host,
-      port,
-      null,
-      xml
-    ).subscribe((data: any) => {
+    return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
       // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
       if (data['attributes-list']) {
 
@@ -209,10 +203,10 @@ export class NetappService {
       }
 
       return this.validResponse(results);
-    });
+    })).toPromise();
   }
 
-  getNetInterfaces(credential, host, port, vfiler, results = [], nextTag = null): Subscription {
+  getNetInterfaces(credential, host, port, vfiler?, results = [], nextTag = null): Promise<any> {
     const xml = `
 <netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
   <net-interface-get-iter>
@@ -221,13 +215,7 @@ export class NetappService {
   </net-interface-get-iter>
 </netapp>`;
 
-    return this.doCall(
-      credential,
-      host,
-      port,
-      null,
-      xml
-    ).subscribe((data: any) => {
+    return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
       // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
       if (data['attributes-list']) {
 
@@ -242,10 +230,10 @@ export class NetappService {
       }
 
       return this.validResponse(results);
-    });
+    })).toPromise();
   }
 
-  getFcpInterfaces(credential, host, port, vfiler, results = [], nextTag = null): Subscription {
+  getFcpInterfaces(credential, host, port, vfiler?, results = [], nextTag = null): Promise<any> {
     const xml = `
 <netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
   <fcp-interface-get-iter>
@@ -254,13 +242,7 @@ export class NetappService {
   </fcp-interface-get-iter>
 </netapp>`;
 
-    return this.doCall(
-      credential,
-      host,
-      port,
-      null,
-      xml
-    ).subscribe((data: any) => {
+    return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
       // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
       if (data['attributes-list']) {
 
@@ -275,10 +257,10 @@ export class NetappService {
       }
 
       return this.validResponse(results);
-    });
+    })).toPromise();
   }
 
-  getFcpAdapters(credential, host, port, results = [], nextTag = null): Subscription {
+  getFcpAdapters(credential, host, port, results = [], nextTag = null): Promise<any> {
     const xml = `
 <netapp version='1.15' xmlns='http://www.netapp.com/filer/admin'>
   <fcp-adapter-get-iter>
@@ -287,13 +269,7 @@ export class NetappService {
   </fcp-adapter-get-iter>
 </netapp>`;
 
-    return this.doCall(
-      credential,
-      host,
-      port,
-      null,
-      xml
-    ).subscribe((data: any) => {
+    return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
       // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
       if (data['attributes-list']) {
 
@@ -308,25 +284,25 @@ export class NetappService {
       }
 
       return this.validResponse(results);
-    });
+    })).toPromise();
   }
 
-  getNFSStatus(credential, host, port, vfiler): Subscription {
+  getNFSStatus(credential, host, port, vfiler): Promise<any> {
     return this.doCall(
       credential,
       host,
       port,
       null,
       `<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin'${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}><nfs-status/></netapp>`
-    ).subscribe(data => {
+    ).pipe(map((data: any) => {
       return this.validResponse({
         is_drained: data['is-drained'][0],
         is_enabled: data['is-enabled'][0]
       });
-    });
+    })).toPromise();
   }
 
-  getVservers(credential, host, port, results = [], nextTag = null): Subscription {
+  getVservers(credential, host, port, results = [], nextTag = null): Promise<any> {
     const xml = `
 <netapp version='1.15' xmlns='http://www.netapp.com/filer/admin'>
   <vserver-get-iter>
@@ -335,13 +311,7 @@ export class NetappService {
   </vserver-get-iter>
 </netapp>`;
 
-    return this.doCall(
-      credential,
-      host,
-      port,
-      null,
-      xml
-    ).subscribe((data: any) => {
+    return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
       // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
       if (data['attributes-list']) {
 
@@ -356,10 +326,10 @@ export class NetappService {
       }
 
       return this.validResponse(results);
-    });
+    })).toPromise();
   }
 
-  getVolumes(credential, host, port, vfiler, results = [], nextTag = null): Subscription {
+  getVolumes(credential, host, port, vfiler, results = [], nextTag = null): Promise<any> {
     const xml = `
 <netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
   <volume-get-iter>
@@ -368,7 +338,7 @@ export class NetappService {
   </volume-get-iter>
 </netapp>`;
 
-    return this.doCall(credential, host, port, null, xml).subscribe(data => {
+    return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
 
       // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
       if (data['attributes-list']) {
@@ -384,10 +354,10 @@ export class NetappService {
       }
 
       return this.validResponse(results);
-    });
+    })).toPromise();
   }
 
-  getSnapshots(credential, host, port, vfiler, volume, results = [], nextTag = null): Subscription {
+  getSnapshots(credential, host, port, vfiler, volume, results = [], nextTag = null): Promise<any> {
     const xml = `
 <netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
   <snapshot-get-iter>
@@ -396,7 +366,7 @@ export class NetappService {
   </snapshot-get-iter>
 </netapp>`;
 
-    return this.doCall(credential, host, port, null, xml).subscribe(data => {
+    return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
 
       // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
       if (data['attributes-list']) {
@@ -412,10 +382,10 @@ export class NetappService {
       }
 
       return this.validResponse(results);
-    });
+    })).toPromise();
   }
 
-  getSnapshotFiles(credential, host, port, vfiler, volume, snapshot, path = '', results = [], nextTag = null): Subscription {
+  getSnapshotFiles(credential, host, port, vfiler, volume, snapshot, path = '', results = [], nextTag = null): Promise<any> {
     const diPromises = [];
     const xml = `
 <netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
@@ -425,7 +395,7 @@ export class NetappService {
   </file-list-directory-iter>
 </netapp>`;
 
-    return this.doCall(credential, host, port, null, xml).subscribe(data => {
+    return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
       // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
       if (data['attributes-list']) {
 
@@ -447,7 +417,7 @@ export class NetappService {
         if (diPromises.length > 0) {
 
           // Get all files in each found directory
-          return $q.all(diPromises).then(res => {
+          return Promise.all(diPromises).then(res => {
 
             res = res[0].data;
 
@@ -468,10 +438,10 @@ export class NetappService {
       }
 
       return this.validResponse(results);
-    });
+    })).toPromise();
   }
 
-  snapshotRestoreFile(credential, host, port, vfiler, volume, snapshot, dst): Subscription {
+  snapshotRestoreFile(credential, host, port, vfiler, volume, snapshot, dst): Promise<any> {
     const xml = `
 <netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
   <snapshot-restore-file>
@@ -481,12 +451,12 @@ export class NetappService {
   </snapshot-restore-file>
 </netapp>`;
 
-    return this.doCall(credential, host, port, null, xml).subscribe(data => {
+    return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
       return this.validResponse(data.data.data.response.netapp);
-    });
+    })).toPromise();
   }
 
-  createSnapshot(credential, host, port, vfiler, volume, name): Subscription {
+  createSnapshot(credential, host, port, vfiler, volume, name): Promise<any> {
     const snapshotName = volume + '_SysOS_' + (name ? name : '') + '_' + new Date().toISOString().split('.')[0].replace(/:/g, '');
     const xml = `
 <netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
@@ -497,12 +467,12 @@ export class NetappService {
   </snapshot-create>
 </netapp>`;
 
-    return this.doCall(credential, host, port, null, xml).subscribe(data => {
+    return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
       return this.validResponse(data.$.status);
-    });
+    })).toPromise();
   }
 
-  deleteSnapshot(credential, host, port, vfiler, volume, snapshotName, snapshotUuid): Subscription {
+  deleteSnapshot(credential, host, port, vfiler, volume, snapshotName, snapshotUuid): Promise<any> {
     const xml = `
 <netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
   <snapshot-delete>
@@ -512,12 +482,12 @@ export class NetappService {
   </snapshot-delete>
 </netapp>`;
 
-    return this.doCall(credential, host, port, null, xml).subscribe(data => {
+    return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
       return this.validResponse(data.$.status);
-    });
+    })).toPromise();
   }
 
-  getLuns(credential, host, port, vfiler, volume, results = [], nextTag = null): Subscription {
+  getLuns(credential, host, port, vfiler, volume, results = [], nextTag = null): Promise<any> {
     const xml = `
 <netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
   <lun-get-iter>
@@ -526,7 +496,7 @@ export class NetappService {
   </lun-get-iter>
 </netapp>`;
 
-    return this.doCall(credential, host, port, null, xml).subscribe(data => {
+    return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
 
       // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
       if (data['attributes-list']) {
@@ -542,10 +512,10 @@ export class NetappService {
       }
 
       return this.validResponse(results);
-    });
+    })).toPromise();
   }
 
-  getFileInfo(credential, host, port, vfiler, volume, snapshot): Subscription {
+  getFileInfo(credential, host, port, vfiler, volume, snapshot): Promise<any> {
     const xml = `
 <netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
   <file-get-file-info>
@@ -553,12 +523,12 @@ export class NetappService {
   </file-get-file-info>
 </netapp>`;
 
-    return this.doCall(credential, host, port, null, xml).subscribe(data => {
+    return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
       return this.validResponse(this.parseNetAppObject(data['file-info'][0]));
-    });
+    })).toPromise();
   }
 
-  cloneVolumeFromSnapshot(credential, host, port, vfiler, parentVolume, volume, snapshot): Subscription {
+  cloneVolumeFromSnapshot(credential, host, port, vfiler, parentVolume, volume, snapshot): Promise<any> {
     const xml = `<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
   <volume-clone-create>
     <parent-volume>${parentVolume}</parent-volume>
@@ -568,12 +538,12 @@ export class NetappService {
   </volume-clone-create>
 </netapp>`;
 
-    return this.doCall(credential, host, port, null, xml).subscribe(data => {
+    return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
       return this.validResponse(data.$.status);
-    });
+    })).toPromise();
   }
 
-  mountVolume(credential, host, port, vfiler, volume, junction): Subscription {
+  mountVolume(credential, host, port, vfiler, volume, junction): Promise<any> {
     const xml = `
 <netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
   <volume-mount>
@@ -584,12 +554,12 @@ export class NetappService {
   </volume-mount>
 </netapp>`;
 
-    return this.doCall(credential, host, port, null, xml).subscribe(data => {
+    return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
       return this.validResponse(data.$.status);
-    });
+    })).toPromise();
   }
 
-  unmountVolume(credential, host, port, vfiler, volume): Subscription {
+  unmountVolume(credential, host, port, vfiler, volume): Promise<any> {
     const xml = `
 <netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
   <volume-unmount>
@@ -598,12 +568,12 @@ export class NetappService {
   </volume-unmount>
 </netapp>`;
 
-    return this.doCall(credential, host, port, null, xml).subscribe(data => {
+    return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
       return this.validResponse(data.$.status);
-    });
+    })).toPromise();
   }
 
-  setVolumeOffline(credential, host, port, vfiler, volume): Subscription {
+  setVolumeOffline(credential, host, port, vfiler, volume): Promise<any> {
     const xml = `
 <netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
   <volume-offline>
@@ -611,12 +581,12 @@ export class NetappService {
   </volume-offline>
 </netapp>`;
 
-    return this.doCall(credential, host, port, null, xml).subscribe(data => {
+    return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
       return this.validResponse(data.$.status);
-    });
+    })).toPromise();
   }
 
-  destroyVolume(credential, host, port, vfiler, volume): Subscription {
+  destroyVolume(credential, host, port, vfiler, volume): Promise<any> {
     const xml = `
 <netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
   <volume-destroy>
@@ -624,12 +594,12 @@ export class NetappService {
   </volume-destroy>
 </netapp>`;
 
-    return this.doCall(credential, host, port, null, xml).subscribe(data => {
+    return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
       return this.validResponse(data.$.status);
-    });
+    })).toPromise();
   }
 
-  getNFSExportRulesList(credential, host, port, vfiler, volume): Subscription {
+  getNFSExportRulesList(credential, host, port, vfiler, volume): Promise<any> {
     const results = [];
     const xml = `
 <netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
@@ -639,34 +609,34 @@ export class NetappService {
   </nfs-exportfs-list-rules-2>
 </netapp>`;
 
-    return this.doCall(credential, host, port, null, xml).subscribe(data => {
+    return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
 
       data.rules[0]['exports-rule-info-2'][0]['security-rules'][0]['security-rule-info'].forEach(rule => {
         results.push(this.parseNetAppObject(rule));
       });
 
       return this.validResponse(this.parseNetAppObject(data.rules[0]));
-    });
+    })).toPromise();
   }
 
-  getExportRules(credential, host, port, vfiler, policy): Subscription {
+  getExportRules(credential, host, port, vfiler, policy): Promise<any> {
     const results = [];
     const xml = `
 <netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
   <export-rule-get-iter>${policy ? '<query><export-rule-info><policy-name>' + policy + '</policy-name></export-rule-info></query>' : ''}</export-rule-get-iter>
 </netapp>`;
 
-    return this.doCall(credential, host, port, null, xml).subscribe(data => {
+    return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
 
       data['attributes-list'][0]['export-rule-info'].forEach(rule => {
         results.push(this.parseNetAppObject(rule));
       });
 
       return this.validResponse(data);
-    });
+    })).toPromise();
   }
 
-  setExportRule(credential, host, port, vfiler, policy, client): Subscription {
+  setExportRule(credential, host, port, vfiler, policy, client): Promise<any> {
     const results = [];
     const xml = `
 <netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
@@ -686,13 +656,13 @@ export class NetappService {
   </export-rule-create>
 </netapp>`;
 
-    return this.doCall(credential, host, port, null, xml).subscribe(data => {
+    return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
 
       data['attributes-list'][0]['export-rule-info'].forEach(rule => {
         results.push(this.parseNetAppObject(rule));
       });
 
       return this.validResponse(data);
-    });
+    })).toPromise();
   }
 }

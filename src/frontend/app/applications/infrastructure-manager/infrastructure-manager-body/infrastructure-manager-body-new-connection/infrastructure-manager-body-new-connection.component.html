@@ -4,23 +4,23 @@
     <table class="table table-hover m-t-xl">
       <tbody>
       <tr class="cursor-pointer" (click)="setConnectionType('vmware')">
-        <th class="col-sm-2 p-m"><img src="/img/vmware.png" width="75px"></th>
+        <th class="w-25 p-m"><img src="/assets/img/vmware.png" width="75px"></th>
         <td class="lh-2">Adds vCenter Server (recommended), or standalone vSphere Hypervisor (ESX/ESXi)</td>
       </tr>
       <tr class="cursor-pointer" (click)="setConnectionType('netapp')">
-        <th class="col-sm-2 p-m"><img src="/img/netapp.png" width="75px"></th>
+        <th class="w-25 p-m"><img src="/assets/img/netapp.png" width="75px"></th>
         <td class="lh-2">Adds NetApp FAS/AFF series. NFS, Fibre Channel (FC) and iSCSI connectivity is supported.</td>
       </tr>
       <tr class="cursor-pointer" (click)="setConnectionType('windows')">
-        <th class="col-sm-2 p-m"><i class="fa fa-windows"></i></th>
+        <th class="w-25 p-m"><i class="fa fa-windows"></i></th>
         <td class="lh-2">Adds Microsoft Windows Server (Windows 2008 or later)</td>
       </tr>
       <tr class="cursor-pointer" (click)="setConnectionType('linux')">
-        <th class="col-sm-2 p-m"><i class="fa fa-linux"></i></th>
+        <th class="w-25 p-m"><i class="fa fa-linux"></i></th>
         <td class="lh-2">Adds Linux server (must have SSH)</td>
       </tr>
       <tr class="cursor-pointer" (click)="setConnectionType('snmp')">
-        <th class="col-sm-2 p-m"><i class="fa fa-server"></i></th>
+        <th class="w-25 p-m"><i class="fa fa-server"></i></th>
         <td class="lh-2">Adds SNMP node for monitoring</td>
       </tr>
       </tbody>
@@ -51,8 +51,8 @@
         <input type="text" class="form-control" placeholder="Port" formControlName="port" [ngClass]="{ 'is-invalid': submitted && f.port.errors }">
       </div>
       <div class="col-12">
-        <small *ngIf="f.type.value !== 'vmware'" class="pull-left">Default VMware web service port is 443. If connection cannot be established, check for possible port customization in the vCenter Server or ESX(i) server settings</small>
-        <small *ngIf="f.type.value !== 'linux'" class="pull-left">Default SSH service port is 22. If connection cannot be established, check for possible port customization in the SSH service settings</small>
+        <small *ngIf="f.type.value === 'vmware'" class="pull-left">Default VMware web service port is 443. If connection cannot be established, check for possible port customization in the vCenter Server or ESX(i) server settings</small>
+        <small *ngIf="f.type.value === 'linux'" class="pull-left">Default SSH service port is 22. If connection cannot be established, check for possible port customization in the SSH service settings</small>
       </div>
       <div class="col-12" *ngIf="submitted && f.port.errors">
         <small class="text-danger pull-left" *ngIf="f.port.errors.required">Please insert a port</small>
@@ -74,7 +74,7 @@
         <small class="pull-left text-primary cursor-pointer" (click)="manageCredentials()">Manage Credentials</small>
       </div>
     </div>
-    <div class="form-group">
+    <div class="form-group" *ngIf="f.type.value === 'snmp'">
       <div class="col-12">
         <input type="text" class="form-control" placeholder="Community" formControlName="community" [ngClass]="{ 'is-invalid': submitted && f.community.errors }">
       </div>

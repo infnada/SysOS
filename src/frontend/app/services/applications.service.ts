@@ -121,7 +121,7 @@ export class ApplicationsService {
   registerTaskBarApplication(data: Application, save?: boolean): void {
     if (!data) throw new Error('id_not_found');
 
-    this.logger.debug('Applications Factory -> Registering application in TaskBar -> id [%s], pinned [%s], save [%s]',
+    this.logger.trace('Applications Factory -> Registering application in TaskBar -> id [%s], pinned [%s], save [%s]',
       data.id, data.pinned, save);
 
     const applicationIndex = this.getApplicationIndexInTaskBar(data.id);
@@ -140,7 +140,7 @@ export class ApplicationsService {
 
     } else {
 
-      this.logger.debug('Applications Factory -> Register application in TaskBar -> id [%s], pinned [%s]', data.id, data.pinned);
+      this.logger.trace('Applications Factory -> Register application in TaskBar -> id [%s], pinned [%s]', data.id, data.pinned);
 
       // Application not in Task Bar
       this.dataStore.taskBarApplications.push(data);
@@ -291,7 +291,7 @@ export class ApplicationsService {
 
       this.FileSystem.getFileSystemPath(null, '/bin/applications').subscribe(
         (res: { data: { filename: string }[] }) => {
-          this.logger.debug('Applications Factory -> Get Installed Applications successfully');
+          this.logger.info('Applications Factory -> Get Installed Applications successfully');
 
           res.data = [
             {
@@ -385,7 +385,7 @@ export class ApplicationsService {
   getTaskBarApplications(): void {
     this.FileSystem.getConfigFile('desktop/task_bar.json').subscribe(
       (res: { id: string }[]) => {
-        this.logger.debug('Applications Factory -> Get TaskBar Applications successfully');
+        this.logger.info('Applications Factory -> Get TaskBar Applications successfully');
 
         // Register Start button
         this.registerTaskBarApplication({id: 'start', pinned: true});

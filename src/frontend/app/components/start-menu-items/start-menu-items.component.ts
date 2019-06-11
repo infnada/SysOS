@@ -72,7 +72,6 @@ export class StartMenuItemsComponent implements OnInit {
     // Open application
     if (!this.Applications.isApplicationOpened(id)) {
       this.Applications.openApplication(id);
-      this.Applications.toggleApplication(id);
     }
 
     // Emitting to application directives (minimize or maximize)

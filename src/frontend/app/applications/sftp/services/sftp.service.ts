@@ -45,7 +45,7 @@ export class SftpService {
   initConnections(): void {
     this.FileSystem.getConfigFile('applications/sftp/config.json').subscribe(
       (res: SftpConnection[]) => {
-        this.logger.debug('Sftp Factory -> Get connections successfully');
+        this.logger.info('Sftp Factory -> Get connections successfully');
 
         res.forEach((connection) => {
           connection.state = 'disconnected';
@@ -157,7 +157,7 @@ export class SftpService {
   disconnectConnection(uuid?: string): void {
     if (!uuid) uuid = this.dataStore.activeConnection;
 
-    this.logger.debug('Sft`p Factory [%s] -> Disconnecting connection', uuid);
+    this.logger.debug('Sftp Factory [%s] -> Disconnecting connection', uuid);
 
     this.socket.emit('[disconnect-session]', {
       type: 'sftp',

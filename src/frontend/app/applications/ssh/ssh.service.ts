@@ -77,7 +77,7 @@ export class SshService {
   initConnections(): void {
     this.FileSystem.getConfigFile('applications/ssh/config.json').subscribe(
       (res: SshConnection[]) => {
-        this.logger.debug('Ssh Factory -> Get connections successfully');
+        this.logger.info('Ssh Factory -> Get connections successfully');
 
         res.forEach((connection) => {
           connection.state = 'disconnected';

@@ -29,7 +29,7 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.logger.debug('[SysOS] Initializing APP');
+    this.logger.info('[SysOS] Initializing APP');
     this.UserState.currentState.subscribe(state => this.userLoggedIn = state.userLoggedIn);
 
     if (this.cookieService.check('uniqueId')) {
@@ -38,7 +38,7 @@ export class AppComponent implements OnInit {
       this.UserState.getSession().subscribe(
         (res: { status: string }) => {
           if (res.status === 'ok') {
-            this.logger.debug('[SysOS] Getting session -> User logged in');
+            this.logger.info('[SysOS] Getting session -> User logged in');
             this.UserState.setState({
               userLoggedIn: true,
               username: 'root'

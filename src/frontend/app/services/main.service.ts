@@ -30,13 +30,13 @@ export class MainService {
     });
 
     this.socket.on('connect', () => {
-      this.logger.debug('[SysOs] -> Socket.io connected');
+      this.logger.info('[SysOs] -> Socket.io connected');
     });
     this.socket.on('disconnect', (err) => {
-      this.logger.error('[SysOs] -> Socket.io disconnect', err);
+      this.logger.fatal('[SysOs] -> Socket.io disconnect', err);
     });
     this.socket.on('error', (err) => {
-      this.logger.error('[SysOs] -> Socket.io error', err);
+      this.logger.fatal('[SysOs] -> Socket.io error', err);
     });
 
     this.Applications.getInstalledApplications().then(() => {

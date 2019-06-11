@@ -241,6 +241,7 @@ export class FileSystemUiService {
         this.Applications.openApplication(realApplication, {
           path: currentPath + file.filename + '/'
         });
+        this.Applications.sendToggleApplication(realApplication);
       } else {
 
         this.sendGoToPath({
@@ -260,6 +261,7 @@ export class FileSystemUiService {
             this.Applications.openApplication('notepad', {
               data: res
             });
+            this.Applications.sendToggleApplication('notepad');
           } else {
             // TODO: open new notepad tab
           }

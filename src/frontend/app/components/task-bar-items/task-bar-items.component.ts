@@ -108,7 +108,6 @@ export class TaskBarItemsComponent implements OnInit {
     // Open application
     if (!this.isApplicationOpened(id)) {
       this.Applications.openApplication(id);
-      this.Applications.toggleApplication(id);
     }
 
     // Emitting to application directives (minimize or maximize)

@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {NGXLogger} from 'ngx-logger';
 import {ToastrService} from 'ngx-toastr';
 import {Socket} from 'ngx-socket-io';
@@ -8,13 +8,17 @@ import {v4 as uuidv4} from 'uuid';
 
 import {IMConnection} from '../interfaces/IMConnection';
 import {FileSystemService} from '../../../services/file-system.service';
-import {InfrastructureManagerVmwareService} from './infrastructure-manager-vmware.service';
-import {InfrastructureManagerNetappService} from './infrastructure-manager-netapp.service';
+import {ModalService} from '../../../services/modal.service';
+import {IMLink} from '../interfaces/IMLink';
 
 @Injectable({
   providedIn: 'root'
 })
 export class InfrastructureManagerService {
+
+  private links: IMLink[];
+
+  private subjectConnectGetData = new Subject<any>();
 
   private $connections: BehaviorSubject<IMConnection[]>;
   private $activeConnection: BehaviorSubject<string>;
@@ -28,14 +32,19 @@ export class InfrastructureManagerService {
   constructor(private logger: NGXLogger,
               private Toastr: ToastrService,
               private socket: Socket,
-              private FileSystem: FileSystemService,
-              private InfrastructureManagerVMWare: InfrastructureManagerVmwareService,
-              private InfrastructureManagerNetApp: InfrastructureManagerNetappService) {
+              private Modal: ModalService,
+              private FileSystem: FileSystemService) {
     this.dataStore = {connections: [], activeConnection: null};
     this.$connections = new BehaviorSubject([]) as BehaviorSubject<IMConnection[]>;
     this.$activeConnection = new BehaviorSubject(null) as BehaviorSubject<string>;
     this.connections = this.$connections.asObservable();
     this.activeConnection = this.$activeConnection.asObservable();
+  }
+
+  getConnectionsByType(type: string): IMConnection[] {
+    return this.dataStore.connections.filter(obj => {
+      return obj.type === type;
+    });
   }
 
   getActiveConnection(): IMConnection {
@@ -93,8 +102,8 @@ export class InfrastructureManagerService {
 
     if (connection.save) this.saveConnection(connection);
 
-    if (connection.type === 'netapp') this.InfrastructureManagerNetApp.getNetAppData(connection);
-    if (connection.type === 'vmware') this.InfrastructureManagerVMWare.getVMwareData(connection);
+    if (connection.type === 'netapp') this.subjectConnectGetData.next(connection);
+    if (connection.type === 'vmware') this.subjectConnectGetData.next(connection);
     if (connection.type === 'windows' || connection.type === 'linux' || connection.type === 'snmp') {
       this.socket.emit('[new-session]', {
         type: 'smanager',
@@ -112,7 +121,7 @@ export class InfrastructureManagerService {
   /**
    * Add new Linux connection to connections array
    */
-  setNewConnectionLinux(connection: IMConnection, initialized?): void {
+  setNewConnectionLinux(connection: IMConnection, initialized?: boolean): void {
     if (initialized) {
       this.dataStore.connections.push(connection);
     } else {
@@ -136,7 +145,7 @@ export class InfrastructureManagerService {
   /**
    * Add new SNMP connection to connections array
    */
-  setNewConnectionSNMP(connection: IMConnection, initialized?): void {
+  setNewConnectionSNMP(connection: IMConnection, initialized?: boolean): void {
     if (initialized) {
       this.dataStore.connections.push(connection);
     } else {
@@ -162,7 +171,7 @@ export class InfrastructureManagerService {
   /**
    * Add new Virtual connection to connections array
    */
-  setNewConnectionVirtual(connection: IMConnection, initialized?): void {
+  setNewConnectionVirtual(connection: IMConnection, initialized?: boolean): void {
     if (initialized) {
       this.dataStore.connections.push(connection);
     } else {
@@ -186,7 +195,7 @@ export class InfrastructureManagerService {
   /**
    * Add new NetApp connection to connections array
    */
-  setNewConnectionNetApp(connection: IMConnection, initialized?): void {
+  setNewConnectionNetApp(connection: IMConnection, initialized?: boolean): void {
     if (initialized) {
       this.dataStore.connections.push(connection);
     } else {
@@ -229,5 +238,213 @@ export class InfrastructureManagerService {
         this.Toastr.error('Error while saving connection.', 'Infrastructure Manager');
       });
 
+  }
+
+  disconnectConnection(uuid?: string): void {
+    if (!uuid) uuid = this.dataStore.activeConnection;
+
+    this.logger.debug('Infrastructure Manager [%s] -> Disconnecting connection', uuid);
+
+    if (this.getConnectionByUuid(uuid).type === 'linux') {
+      this.socket.emit('[disconnect-session]', {
+        type: 'linux',
+        uuid
+      });
+    }
+
+    this.getConnectionByUuid(uuid).state = 'disconnected';
+
+    // broadcast data to subscribers
+    this.$connections.next(Object.assign({}, this.dataStore).connections);
+  }
+
+  deleteConnection(uuid?: string): void {
+    if (!uuid) uuid = this.dataStore.activeConnection;
+
+    const configFile = 'applications/infrastructure-manager/config.json';
+
+    this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
+      {
+        title: 'Delete connection ' + this.getConnectionByUuid(uuid).description,
+        text: 'Remove the selected connection from the inventory?'
+      }
+    ).then((modalInstance) => {
+      modalInstance.result.then((result: boolean) => {
+        if (result === true) {
+
+          this.logger.debug('Infrastructure Manager [%s] -> Deleting connection', uuid);
+
+          this.disconnectConnection(uuid);
+          this.setActiveConnection(null);
+
+          this.FileSystem.deleteConfigFromFile(uuid, configFile).subscribe(
+            () => {
+              this.dataStore.connections = this.dataStore.connections.filter((connection) => {
+                return connection.uuid !== uuid;
+              });
+
+              // broadcast data to subscribers
+              this.$connections.next(Object.assign({}, this.dataStore).connections);
+
+              this.logger.debug('Infrastructure Manager [%s] -> Connection deleted successfully', uuid);
+            },
+            error => {
+              this.logger.error('Infrastructure Manager [%s] -> Error while deleting connection -> ', uuid, error);
+            });
+
+        }
+      });
+    });
+
+  }
+
+  /**
+   * SHARED
+   */
+  /**
+   * @description
+   * Return a link if found
+   */
+  getLinkByStorageJunctionPath(virtualUuid: string, volume: string, junctionPath: string): IMLink[] {
+
+    // Get Datastore name by Junction Path
+    return this.links.filter((obj) => {
+      return obj.storage === virtualUuid && obj.volume === volume && obj.junction_path === junctionPath;
+    });
+  }
+
+  /**
+   * @params
+   * type {String} [vmware, netapp] New node type to check against
+   * uuid {uuid} Main node uuid
+   */
+  // TODO: some storages could have the same LIF IP!!! and links will be wrong
+  checkLinkBetweenManagedNodes(type: string, uuid: string): IMLink[] {
+
+    const connection = this.getConnectionByUuid(uuid);
+
+    if (type === 'vmware') {
+
+      // Get all connection datastores
+      connection.data.Datastores.forEach((datastore) => {
+
+        if (datastore.summary.type === 'VMFS') return;
+
+        // Check if any storage volume contains the datastore remotePath as a volume junction path
+        this.getConnectionsByType('storage').forEach((storage) => {
+
+          // Checking for NetApp storage
+          if (storage.type === 'netapp') {
+
+            // check if storage have any interface that match the datastore.remoteHost and datastore.type
+            const foundInterface = storage.data.Ifaces.netifaces.filter((obj) => {
+              return obj.address ===  datastore.info.nas.remoteHost &&
+                     obj['data-protocols']['data-protocols'] === (datastore.info.nas.type === 'NFS41' ? 'nfs' : datastore.info.nas.type);
+            })[0];
+
+            // If not found any storage interface matching, return
+            if (!foundInterface) return;
+
+            // Search any Data Vservers with allowed protocol that match the datastore.type
+            const foundVserver = storage.data.Vservers.filter((obj) => {
+              return obj['vserver-type'] === 'data' &&
+                     obj['vserver-name'] === foundInterface.vserver &&
+                     obj['allowed-protocols'].protocol === (datastore.info.nas.type === 'NFS41' ? 'nfs' : datastore.info.nas.type);
+            })[0];
+
+            if (!foundVserver) return;
+
+            // Search for each Volume containing as a junction path the current datastore remotePath
+            const foundVolume = foundVserver.Volumes.filter((obj) => {
+              return obj['volume-id-attributes']['junction-path'] === datastore.info.nas.remotePath;
+            })[0];
+
+            if (!foundVolume) return;
+
+            // TODO: CHECK VOLUME EXPORTS that match ESXi host
+
+            // Link found!
+            this.links.push({
+              virtual: uuid,
+              esxi_datastore: datastore.obj.name,
+              storage: storage.uuid,
+              vserver: foundVserver.uuid,
+              volume: foundVolume['volume-id-attributes'].uuid,
+              junction_path: datastore.info.nas.remotePath
+            });
+
+            this.logger.debug('Infrastructure Manager [%s] -> New link found when scanning a vCenter node. -> datastore [%s], junction [%s]',
+              connection.uuid, datastore.name, datastore.info.nas.remotePath);
+
+          // end NetApp
+          }
+        // end storages
+        });
+      // end datastore
+      });
+    // end vmware
+    }
+
+    if (type === 'netapp') {
+
+      // Get all vmware connections
+      this.getConnectionsByType('vmware').forEach((virtual) => {
+
+        // Get all vmware datastores
+        virtual.data.Datastores.forEach((datastore) => {
+
+          if (datastore.summary.type === 'VMFS') return;
+
+          // check if connection have any interface that match the vmware datastore.remoteHost
+          // and datastore.type
+          const foundInterface = connection.data.Ifaces.netifaces.filter((obj) => {
+            return obj.address === datastore.info.nas.remoteHost &&
+                   obj['data-protocols']['data-protocol'] === (datastore.info.nas.type === 'NFS41' ? 'nfs' : datastore.info.nas.type);
+          })[0];
+
+          // If not found any storage interface matching, return
+          if (!foundInterface) return;
+
+          const foundVserver = connection.data.Vservers.filter((obj) => {
+            return obj['vserver-type'] === 'data' &&
+              obj['vserver-name'] === foundInterface.vserver &&
+              obj['allowed-protocols'].protocol === (datastore.info.nas.type === 'NFS41' ? 'nfs' : datastore.info.nas.type);
+          })[0];
+
+          if (!foundVserver) return;
+
+          // Search for each Volume containing as a junction path the current datastore remotePath
+          const foundVolume = foundVserver.Volumes.filter((obj) => {
+            return obj['volume-id-attributes']['junction-path'] === datastore.info.nas.remotePath;
+          })[0];
+
+          if (!foundVolume) return;
+
+          // Link found!
+          this.links.push({
+            virtual: virtual.uuid,
+            esxi_datastore: datastore.obj.name,
+            storage: uuid,
+            vserver: foundVserver.uuid,
+            volume: foundVolume['volume-id-attributes'].uuid,
+            junction_path: datastore.info.nas.remotePath
+          });
+
+          this.logger.debug('Infrastructure Manager [%s] -> New link found when scanning a NetApp node. -> datastore [%s], junction [%s]',
+            connection.uuid, datastore.name, datastore.info.nas.remotePath);
+
+        // end datastore
+        });
+      // end virtual
+      });
+    // end netapp
+    }
+
+    return this.links;
+
+  }
+
+  getObserverConnectGetData(): Observable<any> {
+    return this.subjectConnectGetData.asObservable();
   }
 }

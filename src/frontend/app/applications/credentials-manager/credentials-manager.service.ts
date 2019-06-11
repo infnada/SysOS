@@ -42,7 +42,7 @@ export class CredentialsManagerService {
   initCredentials(): void {
     this.http.get('/api/credential/').subscribe(
       (res: { data: Credential[] }) => {
-        this.logger.debug('Credentials Factory -> Get credentials successfully');
+        this.logger.info('Credentials Factory -> Get credentials successfully');
 
         this.dataStore.credentials = res.data;
 

@@ -43,7 +43,7 @@ export class ModalService {
   getInstalledModals() {
     this.FileSystem.getFileSystemPath(null, '/bin/modals').subscribe(
       (res: { data: { filename: string }[] }) => {
-        this.logger.debug('Modal Factory -> Get Installed Modals successfully');
+        this.logger.info('Modal Factory -> Get Installed Modals successfully');
 
         res.data = [
           {

@@ -83,7 +83,7 @@ export class InfrastructureManagerBodyNewConnectionComponent implements OnInit {
 
   manageCredentials() {
     this.Applications.openApplication('credentials-manager');
-    this.Applications.toggleApplication('credentials-manager');
+    this.Applications.sendToggleApplication('credentials-manager');
   }
 
   getActiveConnection(): IMConnection {

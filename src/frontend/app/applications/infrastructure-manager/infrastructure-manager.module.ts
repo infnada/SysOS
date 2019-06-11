@@ -2,7 +2,7 @@ import {NgModule, OnInit} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
-import {MatDividerModule, MatMenuModule, MatButtonModule, MatSlideToggleModule} from '@angular/material';
+import {MatDividerModule, MatMenuModule, MatButtonModule, MatSlideToggleModule, MatTreeModule, MatIconModule} from '@angular/material';
 
 import {ApplicationsService} from '../../services/applications.service';
 import {InfrastructureManagerActionsComponent} from './infrastructure-manager-actions/infrastructure-manager-actions.component';
@@ -27,6 +27,8 @@ import {InfrastructureManagerBodyNewConnectionComponent} from './infrastructure-
     MatDividerModule,
     MatButtonModule,
     MatSlideToggleModule,
+    MatTreeModule,
+    MatIconModule
   ]
 })
 export class InfrastructureManagerModule implements OnInit {
