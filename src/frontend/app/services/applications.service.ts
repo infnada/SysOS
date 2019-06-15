@@ -222,6 +222,12 @@ export class ApplicationsService {
 
     // broadcast data to subscribers
     this.$openedApplications.next(Object.assign({}, this.dataStore).openedApplications);
+
+    // Emitting to application directives (minimize or maximize)
+    // setTimeout is needed to make sure application is initialized and subscribed to toggle event
+    setTimeout(() => {
+      this.sendToggleApplication(app.id);
+    }, 0);
   }
 
   /**

@@ -72,6 +72,9 @@ export class RoutesModule {
         return apiGlobals.responseNoValid('invalid_uniqueId_cookie');
       }
 
+      // Refresh cookies expires
+      res.cookie(config.uniqueCookie, req.signedCookies[config.uniqueCookie], {maxAge: 900000, signed: true});
+
       // Include socket.io properties to request object
       req.io = this.io;
       return next();

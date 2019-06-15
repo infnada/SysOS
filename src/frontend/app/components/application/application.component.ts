@@ -225,6 +225,10 @@ export class ApplicationComponent implements OnInit, AfterViewInit {
     // .window--opening').filter(function() { return $(this).css('z-index') < zIndex }).first();
 
     // $(closest).addClass('window--active');
+
+    // Unsubscribe when application is closed
+    this.togglingAppSubscription.unsubscribe();
+    this.closeAppSubscription.unsubscribe();
   }
 
   minimize(): void {

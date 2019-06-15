@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 
 import {NGXLogger} from 'ngx-logger';
-import {Observable, Subscription} from 'rxjs';
+import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 @Injectable({
@@ -162,21 +162,21 @@ export class VmwareService {
 
   private doCallSoap(credential: string, host: string, port: string, action: string, xml: string): Observable<any> {
 
-    return this.http.post('/api/vcenter/callSoap', {
+    return this.http.post('/api/vmware/callSoap', {
       credential,
       host,
       port,
       action,
       xml
-    }).pipe(map((data: any) => {
-      if (data.data.status === 'error') return this.errorHandler(data.data.data);
+    }).pipe(map((res: any) => {
+      if (res.status === 'error') return this.errorHandler(res.data);
 
       // Something is wrong
-      if (data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault']) {
-        return this.errorHandler(data.data.data.response['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault'][0].detail[0]);
+      if (res.data['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault']) {
+        return this.errorHandler(res.data['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault'][0].detail[0]);
       }
 
-      return data.data.data.response['soapenv:Envelope']['soapenv:Body'][0];
+      return res.data['soapenv:Envelope']['soapenv:Body'][0];
     },
     error => {
       this.logger.error('[VMWare] -> doCallSoap -> Error while doing the call -> ', error);
@@ -184,7 +184,7 @@ export class VmwareService {
 
   }
 
-  private getTaskResults(credential, host, port, taskId) {
+  private getTaskResults(credential, host, port, taskId): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -211,10 +211,10 @@ export class VmwareService {
 
       return res;
 
-    }));
+    })).toPromise();
   }
 
-  private getTaskStatus(credential, host, port, taskId) {
+  private getTaskStatus(credential, host, port, taskId): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -244,29 +244,42 @@ export class VmwareService {
         return setTimeout(() => this.getTaskStatus(credential, host, port, taskId), 2000);
       }
 
-      return this.getTaskResults(credential, host, port, taskId).subscribe((res) => {
+      return this.getTaskResults(credential, host, port, taskId).then((res) => {
         return res;
       });
-    }));
+    })).toPromise();
   }
 
   /**
    * Basics
    */
-  getClientVersion(host, port): Observable<any> {
-    return this.http.post('/api/vcenter/getClientVersion', {
+  getClientVersion(host, port): Promise<any> {
+    return this.http.post('/api/vmware/getClientVersion', {
       host,
       port
-    }).pipe(map((data: any) => {
-      return this.validResponse(data.data.data.response.ConfigRoot.clientConnection[0]);
+    }).pipe(map((res: any) => {
+      return this.validResponse(res.data.ConfigRoot.clientConnection[0]);
     },
     error => {
       this.logger.error('[VMWare] -> getClientVersion -> Error while doing the call -> ', error);
-    }));
+    })).toPromise();
   }
 
-  connectvCenterSoap(credential, host, port): Observable<any> {
-    return this.http.post('/api/vcenter/connectSoap', {
+  connectvCenter(credential, host, port): Promise<any> {
+    return this.http.post('/api/vmware/connect', {
+      host,
+      port,
+      credential
+    }).pipe(map((data: any) => {
+      return this.validResponse(data.data);
+    },
+    error => {
+      this.logger.error('[VMWare] -> connectvCenter -> Error while doing the call -> ', error);
+    })).toPromise();
+  }
+
+  connectvCenterSoap(credential, host, port): Promise<any> {
+    return this.http.post('/api/vmware/connectSoap', {
       host,
       port,
       credential
@@ -275,10 +288,10 @@ export class VmwareService {
     },
     error => {
       this.logger.error('[VMWare] -> connectvCenterSoap -> Error while doing the call -> ', error);
-    }));
+    })).toPromise();
   }
 
-  createAllBasicDataFilter(credential, host, port): Subscription {
+  createAllBasicDataFilter(credential, host, port): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <soap:Body>
@@ -364,6 +377,7 @@ export class VmwareService {
           <all>false</all>
           <pathSet>info</pathSet>
           <pathSet>host</pathSet>
+          <pathSet>summary.accessible</pathSet>
           <pathSet>summary.capacity</pathSet>
           <pathSet>summary.multipleHostAccess</pathSet>
           <pathSet>vm</pathSet>
@@ -1587,12 +1601,12 @@ export class VmwareService {
   </soap:Body>
 </soap:Envelope>`;
 
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       return this.validResponse(data.CreateFilterResponse[0].returnval[0]._);
-    });
+    })).toPromise();
   }
 
-  getWaitForUpdatesEx(credential, host, port): Subscription {
+  getWaitForUpdatesEx(credential, host, port): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -1605,12 +1619,12 @@ export class VmwareService {
     </WaitForUpdatesEx>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       return this.validResponse(data.WaitForUpdatesExResponse[0]);
-    });
+    })).toPromise();
   }
 
-  registerExtension(credential, host, port): Subscription {
+  registerExtension(credential, host, port): Promise<any> {
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -1661,12 +1675,12 @@ export class VmwareService {
   </soapenv:Body>
 </soapenv:Envelope>`;
 
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       return this.validResponse(data.RegisterExtensionResponse[0]);
-    });
+    })).toPromise();
   }
 
-  findSysOSExtension(credential, host, port): Subscription {
+  findSysOSExtension(credential, host, port): Promise<any> {
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
   <soapenv:Body>
@@ -1676,15 +1690,15 @@ export class VmwareService {
     </FindExtension>
   </soapenv:Body>
 </soapenv:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       return this.validResponse(data.FindExtensionResponse[0]);
-    });
+    })).toPromise();
   }
 
   /**
    * TaskManager
    */
-  createTask(credential, host, port, taskTypeId, objectType, objectId): Subscription {
+  createTask(credential, host, port, taskTypeId, objectType, objectId): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -1697,12 +1711,12 @@ export class VmwareService {
     </CreateTask>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       return this.validResponse(this.parseVMwareObject(data.CreateTaskResponse[0].returnval[0]));
-    });
+    })).toPromise();
   }
 
-  setTaskState(credential, host, port, taskId, state): Subscription {
+  setTaskState(credential, host, port, taskId, state): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -1713,12 +1727,12 @@ export class VmwareService {
     </SetTaskState>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       return this.validResponse(this.parseVMwareObject(data.SetTaskStateResponse[0]));
-    });
+    })).toPromise();
   }
 
-  updateTaskProgress(credential, host, port, taskId, progress): Subscription {
+  updateTaskProgress(credential, host, port, taskId, progress): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -1728,15 +1742,15 @@ export class VmwareService {
     </UpdateProgress>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       return this.validResponse(this.parseVMwareObject(data.UpdateProgressResponse[0]));
-    });
+    })).toPromise();
   }
 
   /**
    * Ticket
    */
-  acquireVMTicket(credential, host, port, vm): Subscription {
+  acquireVMTicket(credential, host, port, vm): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
@@ -1747,12 +1761,12 @@ export class VmwareService {
     </AcquireTicket>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       return this.validResponse(data.AcquireTicketResponse[0].returnval[0]);
-    });
+    })).toPromise();
   }
 
-  acquireNFCTicket(credential, host, port, esxiHost, datastore): Subscription {
+  acquireNFCTicket(credential, host, port, esxiHost, datastore): Promise<any> {
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:vim="urn:internalvim25">
@@ -1764,15 +1778,15 @@ export class VmwareService {
     </vim:NfcFileManagement>
   </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       return this.validResponse(data.NfcFileManagementResponse[0].returnval[0]);
-    });
+    })).toPromise();
   }
 
   /**
    * Host
    */
-  getComputeResource(credential, host, port, computeResource): Subscription {
+  getComputeResource(credential, host, port, computeResource): Promise<any> {
 
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
@@ -1793,7 +1807,7 @@ export class VmwareService {
   </soap:Body>
 </soap:Envelope>`;
 
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       const res = [];
 
       data.RetrievePropertiesResponse[0].returnval.forEach(value => {
@@ -1801,10 +1815,10 @@ export class VmwareService {
       });
 
       return this.validResponse(res);
-    });
+    })).toPromise();
   }
 
-  getClusterComputeResource(credential, host, port, clusterComputeResource): Subscription {
+  getClusterComputeResource(credential, host, port, clusterComputeResource): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -1824,7 +1838,7 @@ export class VmwareService {
   </soap:Body>
 </soap:Envelope>`;
 
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       const res = [];
 
       data.RetrievePropertiesResponse[0].returnval.forEach(value => {
@@ -1832,10 +1846,10 @@ export class VmwareService {
       });
 
       return this.validResponse(res);
-    });
+    })).toPromise();
   }
 
-  getResourcePool(credential, host, port, resourcePool): Subscription {
+  getResourcePool(credential, host, port, resourcePool): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -1855,12 +1869,12 @@ export class VmwareService {
   </soap:Body>
 </soap:Envelope>`;
 
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       return this.validResponse(this.parseVMwareObject(data.RetrievePropertiesResponse[0].returnval[0]));
-    });
+    })).toPromise();
   }
 
-  getHosts(credential, host, port, datacenterFolder): Subscription {
+  getHosts(credential, host, port, datacenterFolder): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <soap:Body>
@@ -1994,7 +2008,7 @@ export class VmwareService {
   </soap:Body>
 </soap:Envelope>`;
 
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       const res = [];
 
       data.RetrievePropertiesResponse[0].returnval.forEach(value => {
@@ -2002,10 +2016,10 @@ export class VmwareService {
       });
 
       return this.validResponse(res);
-    });
+    })).toPromise();
   }
 
-  getHost(credential, host, port, esxiHost): Subscription {
+  getHost(credential, host, port, esxiHost): Promise<any> {
 
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
@@ -2140,12 +2154,12 @@ export class VmwareService {
   </soap:Body>
 </soap:Envelope>`;
 
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       return this.validResponse(this.parseVMwareObject(data.RetrievePropertiesResponse[0].returnval[0]));
-    });
+    })).toPromise();
   }
 
-  getHostStorageSystem(credential, host, port, esxiHost): Subscription {
+  getHostStorageSystem(credential, host, port, esxiHost): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -2164,12 +2178,12 @@ export class VmwareService {
     </RetrieveProperties>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       return this.validResponse(data.RetrievePropertiesResponse[0].returnval[0].propSet[0].val[0]._);
-    });
+    })).toPromise();
   }
 
-  getHostStorageSystemData(credential, host, port, storageSystem): Subscription {
+  getHostStorageSystemData(credential, host, port, storageSystem): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -2190,7 +2204,7 @@ export class VmwareService {
     </RetrieveProperties>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       const res = [];
 
       data.RetrievePropertiesResponse[0].returnval.forEach(value => {
@@ -2198,10 +2212,10 @@ export class VmwareService {
       });
 
       return this.validResponse(res);
-    });
+    })).toPromise();
   }
 
-  getHostConnectionState(credential, host, port, esxiHost): Subscription {
+  getHostConnectionState(credential, host, port, esxiHost): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -2220,15 +2234,15 @@ export class VmwareService {
     </RetrieveProperties>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       return this.validResponse(data.RetrievePropertiesResponse[0].returnval[0].propSet[0].val[0]._);
-    });
+    })).toPromise();
   }
 
   // Gets networkSystem from ESXi host
   // return vmwareFactory.getHostConfigManagerNetworkSystem('adee0997-62ec-470e-aa81-045a446ceec5', 'mvcenter01',
   // '443', 'host-10');
-  getHostConfigManagerNetworkSystem(credential, host, port, esxiHost): Subscription {
+  getHostConfigManagerNetworkSystem(credential, host, port, esxiHost): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -2247,15 +2261,15 @@ export class VmwareService {
     </RetrieveProperties>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       return this.validResponse(data.RetrievePropertiesResponse[0].returnval[0].propSet[0].val[0]._);
-    });
+    })).toPromise();
   }
 
   // Gets datastoreSystem from ESXi host
   // return vmwareFactory.getHostConfigManagerDatastoreSystem('adee0997-62ec-470e-aa81-045a446ceec5',
   // 'mvcenter01', '443', 'host-10');
-  getHostConfigManagerDatastoreSystem(credential, host, port, esxiHost): Subscription {
+  getHostConfigManagerDatastoreSystem(credential, host, port, esxiHost): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -2274,15 +2288,15 @@ export class VmwareService {
     </RetrieveProperties>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       return this.validResponse(data.RetrievePropertiesResponse[0].returnval[0].propSet[0].val[0]._);
-    });
+    })).toPromise();
   }
 
   // Gets networkSystem Virtual NICS
   // vmwareFactory.getHostNetworkInfoVnic('adee0997-62ec-470e-aa81-045a446ceec5', 'mvcenter01', '443',
   // 'networkSystem-10');
-  getHostNetworkInfoVnic(credential, host, port, networkSystem): Subscription {
+  getHostNetworkInfoVnic(credential, host, port, networkSystem): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -2300,7 +2314,7 @@ export class VmwareService {
     </RetrieveProperties>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       const res = [];
 
       data.RetrievePropertiesResponse[0].returnval.forEach(value => {
@@ -2308,13 +2322,13 @@ export class VmwareService {
       });
 
       return this.validResponse(res);
-    });
+    })).toPromise();
   }
 
   // Gets networkSystem Console Virtual NICS
   // vmwareFactory.getHostNetworkInfoConsoleVnic('adee0997-62ec-470e-aa81-045a446ceec5', 'mvcenter01', '443',
   // 'networkSystem-10');
-  getHostNetworkInfoConsoleVnic(credential, host, port, networkSystem): Subscription {
+  getHostNetworkInfoConsoleVnic(credential, host, port, networkSystem): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -2332,7 +2346,7 @@ export class VmwareService {
     </RetrieveProperties>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       const res = [];
 
       data.RetrievePropertiesResponse[0].returnval.forEach(value => {
@@ -2340,13 +2354,13 @@ export class VmwareService {
       });
 
       return this.validResponse(res);
-    });
+    })).toPromise();
   }
 
   /**
    * Datastore
    */
-  getDatastores(credential, host, port, datacenterFolder): Subscription {
+  getDatastores(credential, host, port, datacenterFolder): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
@@ -2376,7 +2390,7 @@ export class VmwareService {
     </RetrieveProperties>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       const res = [];
 
       data.RetrievePropertiesResponse[0].returnval.forEach(value => {
@@ -2384,10 +2398,10 @@ export class VmwareService {
       });
 
       return this.validResponse(res);
-    });
+    })).toPromise();
   }
 
-  getDatastoresWithVMsData(credential, host, port, datacenterFolder): Subscription {
+  getDatastoresWithVMsData(credential, host, port, datacenterFolder): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <soap:Body>
@@ -2440,7 +2454,7 @@ export class VmwareService {
     </RetrieveProperties>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       const res = [];
 
       data.RetrievePropertiesResponse[0].returnval.forEach(value => {
@@ -2448,10 +2462,10 @@ export class VmwareService {
       });
 
       return this.validResponse(res);
-    });
+    })).toPromise();
   }
 
-  getDatastoreProps(credential, host, port, datastore): Subscription {
+  getDatastoreProps(credential, host, port, datastore): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -2470,12 +2484,12 @@ export class VmwareService {
     </RetrieveProperties>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       return this.validResponse(this.parseVMwareObject(data.RetrievePropertiesResponse[0].returnval[0]));
-    });
+    })).toPromise();
   }
 
-  getVMFileDataFromDatastore(credential, host, port, datastore, datastoreName, vmxPath, vmxFile): Subscription {
+  getVMFileDataFromDatastore(credential, host, port, datastore, datastoreName, vmxPath, vmxFile): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <soap:Body>
@@ -2496,17 +2510,17 @@ export class VmwareService {
     </SearchDatastore_Task>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       const taskId = data.SearchDatastore_TaskResponse[0].returnval[0]._;
 
-      return this.getTaskStatus(credential, host, port, taskId).subscribe((res: any) => {
+      return this.getTaskStatus(credential, host, port, taskId).then((res: any) => {
         return this.validResponse(res);
       });
 
-    });
+    })).toPromise();
   }
 
-  getFilesDataFromDatastore(credential, host, port, datastore, datastoreName, path): Subscription {
+  getFilesDataFromDatastore(credential, host, port, datastore, datastoreName, path): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <soap:Body>
@@ -2526,17 +2540,17 @@ export class VmwareService {
     </SearchDatastore_Task>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       const taskId = data.SearchDatastore_TaskResponse[0].returnval[0]._;
 
-      return this.getTaskStatus(credential, host, port, taskId).subscribe((res: any) => {
+      return this.getTaskStatus(credential, host, port, taskId).then((res: any) => {
         return this.validResponse(res);
       });
 
-    });
+    })).toPromise();
   }
 
-  deleteFileFromDatastore(credential, host, port, datastoreName, path, datacenter): Subscription {
+  deleteFileFromDatastore(credential, host, port, datastoreName, path, datacenter): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -2547,17 +2561,17 @@ export class VmwareService {
     </DeleteDatastoreFile_Task>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       const taskId = data.DeleteDatastoreFile_TaskResponse[0].returnval[0]._;
 
-      return this.getTaskStatus(credential, host, port, taskId).subscribe((res: any) => {
+      return this.getTaskStatus(credential, host, port, taskId).then((res: any) => {
         return this.validResponse(res);
       });
 
-    });
+    })).toPromise();
   }
 
-  moveFileFromDatastore(credential, host, port, srcDatastoreName, srcPath, srcDatacenter, dstDatastoreName, dstPath, dstDatacenter, force): Subscription {
+  moveFileFromDatastore(credential, host, port, srcDatastoreName, srcPath, srcDatacenter, dstDatastoreName, dstPath, dstDatacenter, force): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -2570,17 +2584,17 @@ export class VmwareService {
     </MoveDatastoreFile_Task>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       const taskId = data.MoveDatastoreFile_TaskResponse[0].returnval[0]._;
 
-      return this.getTaskStatus(credential, host, port, taskId).subscribe((res: any) => {
+      return this.getTaskStatus(credential, host, port, taskId).then((res: any) => {
         return this.validResponse(res);
       });
 
-    });
+    })).toPromise();
   }
 
-  copyFileFromDatastore(credential, host, port, srcDatastoreName, srcPath, srcDatacenter, dstDatastoreName, dstPath, dstDatacenter, force): Subscription {
+  copyFileFromDatastore(credential, host, port, srcDatastoreName, srcPath, srcDatacenter, dstDatastoreName, dstPath, dstDatacenter, force): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -2593,17 +2607,17 @@ export class VmwareService {
     </CopyDatastoreFile_Task>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       const taskId = data.CopyDatastoreFile_TaskResponse[0].returnval[0]._;
 
-      return this.getTaskStatus(credential, host, port, taskId).subscribe((res: any) => {
+      return this.getTaskStatus(credential, host, port, taskId).then((res: any) => {
         return this.validResponse(res);
       });
 
-    });
+    })).toPromise();
   }
 
-  createFolderToDatastore(credential, host, port, datastoreName, path, datacenter): Subscription {
+  createFolderToDatastore(credential, host, port, datastoreName, path, datacenter): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -2615,13 +2629,12 @@ export class VmwareService {
     </MakeDirectory>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       return data.MakeDirectoryResponse[0];
-
-    });
+    })).toPromise();
   }
 
-  mountDatastore(credential, host, port, datastoreSystem, datastoreHost, datastorePath, datastoreLocalName): Subscription {
+  mountDatastore(credential, host, port, datastoreSystem, datastoreHost, datastorePath, datastoreLocalName): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -2636,12 +2649,12 @@ export class VmwareService {
     </CreateNasDatastore>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       return this.validResponse(data.CreateNasDatastoreResponse[0].returnval[0]._);
-    });
+    })).toPromise();
   }
 
-  unmountDatastore(credential, host, port, datastoreSystem, datastore): Subscription {
+  unmountDatastore(credential, host, port, datastoreSystem, datastore): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -2651,15 +2664,15 @@ export class VmwareService {
     </RemoveDatastore>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       return this.validResponse(data.RemoveDatastoreResponse[0]);
-    });
+    })).toPromise();
   }
 
   /**
    *  VM
    */
-  getVMs(credential, host, port, datacenterFolder): Subscription {
+  getVMs(credential, host, port, datacenterFolder): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <soap:Body>
@@ -2702,7 +2715,7 @@ export class VmwareService {
     </RetrieveProperties>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       const res = [];
 
       data.RetrievePropertiesResponse[0].returnval.forEach(value => {
@@ -2710,10 +2723,10 @@ export class VmwareService {
       });
 
       return this.validResponse(res);
-    });
+    })).toPromise();
   }
 
-  getVMState(credential, host, port, vm, getAll): Subscription {
+  getVMState(credential, host, port, vm, getAll): Promise<any> {
     let xml;
 
     if (getAll) {
@@ -2761,12 +2774,12 @@ export class VmwareService {
 </soap:Envelope>`;
     }
 
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       return this.validResponse(this.parseVMwareObject(data.RetrievePropertiesResponse[0].returnval[0]));
-    });
+    })).toPromise();
   }
 
-  getVMPath(credential, host, port, vm) {
+  getVMPath(credential, host, port, vm): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -2787,12 +2800,12 @@ export class VmwareService {
   </soap:Body>
 </soap:Envelope>`;
 
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       return this.validResponse(this.parseVMwareObject(data.RetrievePropertiesResponse[0].returnval[0]));
-    });
+    })).toPromise();
   }
 
-  getVMRuntime(credential, host, port, vm): Subscription {
+  getVMRuntime(credential, host, port, vm): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -2813,12 +2826,12 @@ export class VmwareService {
   </soap:Body>
 </soap:Envelope>`;
 
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       return this.validResponse(this.parseVMwareObject(data.RetrievePropertiesResponse[0].returnval[0]));
-    });
+    })).toPromise();
   }
 
-  queryVMEvents(credential, host, port, vm): Subscription {
+  queryVMEvents(credential, host, port, vm): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -2836,7 +2849,7 @@ export class VmwareService {
     </QueryEvents>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       const res = [];
 
       data.QueryEventsResponse[0].returnval.forEach(value => {
@@ -2844,13 +2857,13 @@ export class VmwareService {
       });
 
       return this.validResponse(res);
-    });
+    })).toPromise();
   }
 
   /*
    * Returns VM Index "vm-xxx"
    */
-  searchIndexVM(credential, host, port, vmUuid): Subscription {
+  searchIndexVM(credential, host, port, vmUuid): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -2862,7 +2875,7 @@ export class VmwareService {
     </FindByUuid>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       const res = [];
 
       data.FindByUuidResponse[0].returnval.forEach(value => {
@@ -2870,10 +2883,10 @@ export class VmwareService {
       });
 
       return this.validResponse(res);
-    });
+    })).toPromise();
   }
 
-  registerVM(credential, host, port, esxiHost, esxiPath, vmName, esxiFolder, resourcePool) {
+  registerVM(credential, host, port, esxiHost, esxiPath, vmName, esxiFolder, resourcePool): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -2887,19 +2900,19 @@ export class VmwareService {
     </RegisterVM_Task>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       const taskId = data.RegisterVM_TaskResponse[0].returnval[0]._;
 
-      return this.getTaskStatus(credential, host, port, taskId).subscribe((res: any) => {
+      return this.getTaskStatus(credential, host, port, taskId).then((res: any) => {
         if (res[0].propSet.info.state !== 'success') return this.errorHandler(res[0].propSet.info);
 
         return this.validResponse(data[0].propSet.info);
       });
 
-    });
+    })).toPromise();
   }
 
-  unregisterVM(credential, host, port, vm): Subscription {
+  unregisterVM(credential, host, port, vm): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -2908,12 +2921,12 @@ export class VmwareService {
     </UnregisterVM>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       return this.validResponse(data.UnregisterVMResponse[0]);
-    });
+    })).toPromise();
   }
 
-  reconfigureVM(credential, host, port, vm, spec) {
+  reconfigureVM(credential, host, port, vm, spec): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -2923,19 +2936,19 @@ export class VmwareService {
     </ReconfigVM_Task>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       const taskId = data.ReconfigVM_TaskResponse[0].returnval[0]._;
 
-      return this.getTaskStatus(credential, host, port, taskId).subscribe((res: any) => {
+      return this.getTaskStatus(credential, host, port, taskId).then((res: any) => {
         if (res[0].propSet.info.state !== 'success') return this.errorHandler(res[0].propSet.info);
 
         return this.validResponse(data[0].propSet.info);
       });
 
-    });
+    })).toPromise();
   }
 
-  powerOnVM(credential, host, port, esxiHost, vm) {
+  powerOnVM(credential, host, port, esxiHost, vm): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -2945,17 +2958,17 @@ export class VmwareService {
     </PowerOnVM_Task>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       const taskId = data.PowerOnVM_TaskResponse[0].returnval[0]._;
 
-      return this.getTaskStatus(credential, host, port, taskId).subscribe((res: any) => {
+      return this.getTaskStatus(credential, host, port, taskId).then((res: any) => {
         return this.validResponse(res);
       });
 
-    });
+    })).toPromise();
   }
 
-  powerOffVM(credential, host, port, vm) {
+  powerOffVM(credential, host, port, vm): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -2964,17 +2977,17 @@ export class VmwareService {
     </PowerOffVM_Task>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       const taskId = data.PowerOffVM_TaskResponse[0].returnval[0]._;
 
-      return this.getTaskStatus(credential, host, port, taskId).subscribe((res: any) => {
+      return this.getTaskStatus(credential, host, port, taskId).then((res: any) => {
         return this.validResponse(res);
       });
 
-    });
+    })).toPromise();
   }
 
-  suspendVM(credential, host, port, vm) {
+  suspendVM(credential, host, port, vm): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -2983,17 +2996,17 @@ export class VmwareService {
     </SuspendVM_Task>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       const taskId = data.SuspendVM_TaskResponse[0].returnval[0]._;
 
-      return this.getTaskStatus(credential, host, port, taskId).subscribe((res: any) => {
+      return this.getTaskStatus(credential, host, port, taskId).then((res: any) => {
         return this.validResponse(res);
       });
 
-    });
+    })).toPromise();
   }
 
-  resetVM(credential, host, port, vm) {
+  resetVM(credential, host, port, vm): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -3002,17 +3015,17 @@ export class VmwareService {
     </ResetVM_Task>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       const taskId = data.ResetVM_TaskResponse[0].returnval[0]._;
 
-      return this.getTaskStatus(credential, host, port, taskId).subscribe((res: any) => {
+      return this.getTaskStatus(credential, host, port, taskId).then((res: any) => {
         return this.validResponse(res);
       });
 
-    });
+    })).toPromise();
   }
 
-  shutdownGuest(credential, host, port, vm): Subscription {
+  shutdownGuest(credential, host, port, vm): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -3021,12 +3034,12 @@ export class VmwareService {
     </ShutdownGuest>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       return this.validResponse(data.RebootGuestResponse[0]);
-    });
+    })).toPromise();
   }
 
-  rebootGuest(credential, host, port, vm): Subscription {
+  rebootGuest(credential, host, port, vm): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -3035,12 +3048,12 @@ export class VmwareService {
     </RebootGuest>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       return this.validResponse(data.RebootGuestResponse[0]);
-    });
+    })).toPromise();
   }
 
-  reloadVM(credential, host, port, vm): Subscription {
+  reloadVM(credential, host, port, vm): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -3049,15 +3062,15 @@ export class VmwareService {
     </Reload>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       return this.validResponse(data.ReloadResponse[0]);
-    });
+    })).toPromise();
   }
 
   /**
    * Snapshot
    */
-  createSnapShot(credential, host, port, vm, name, description, memory, quiesce) {
+  createSnapShot(credential, host, port, vm, name, description, memory, quiesce): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -3070,17 +3083,17 @@ export class VmwareService {
     </CreateSnapshot_Task>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       const taskId = data.CreateSnapshot_TaskResponse[0].returnval[0]._;
 
-      return this.getTaskStatus(credential, host, port, taskId).subscribe((res: any) => {
+      return this.getTaskStatus(credential, host, port, taskId).then((res: any) => {
         return this.validResponse(res);
       });
 
-    });
+    })).toPromise();
   }
 
-  getVMSnapshots(credential, host, port, vm): Subscription {
+  getVMSnapshots(credential, host, port, vm): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -3100,7 +3113,7 @@ export class VmwareService {
     </RetrieveProperties>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       const res = [];
 
       data.RetrievePropertiesResponse[0].returnval.forEach(value => {
@@ -3108,10 +3121,10 @@ export class VmwareService {
       });
 
       return this.validResponse(res);
-    });
+    })).toPromise();
   }
 
-  revertToSnapshot(credential, host, port, snapshot) {
+  revertToSnapshot(credential, host, port, snapshot): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -3120,17 +3133,17 @@ export class VmwareService {
     </RevertToSnapshot_Task>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       const taskId = data.RevertToSnapshot_TaskResponse[0].returnval[0]._;
 
-      return this.getTaskStatus(credential, host, port, taskId).subscribe((res: any) => {
+      return this.getTaskStatus(credential, host, port, taskId).then((res: any) => {
         return this.validResponse(res);
       });
 
-    });
+    })).toPromise();
   }
 
-  removeSnapshot(credential, host, port, snapshot, removeChildren) {
+  removeSnapshot(credential, host, port, snapshot, removeChildren): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -3140,20 +3153,20 @@ export class VmwareService {
     </RemoveSnapshot_Task>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       const taskId = data.RemoveSnapshot_TaskResponse[0].returnval[0]._;
 
-      return this.getTaskStatus(credential, host, port, taskId).subscribe((res: any) => {
+      return this.getTaskStatus(credential, host, port, taskId).then((res: any) => {
         return this.validResponse(res);
       });
 
-    });
+    })).toPromise();
   }
 
   /**
    * Perf
    */
-  queryAvailablePerfMetric(credential, host, port, objectType, objectId, intervalId): Subscription {
+  queryAvailablePerfMetric(credential, host, port, objectType, objectId, intervalId): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -3163,7 +3176,7 @@ export class VmwareService {
     </QueryAvailablePerfMetric>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       const res = [];
 
       data.QueryAvailablePerfMetricResponse[0].returnval.forEach(value => {
@@ -3171,10 +3184,10 @@ export class VmwareService {
       });
 
       return this.validResponse(res);
-    });
+    })).toPromise();
   }
 
-  queryPerfProviderSummary(credential, host, port, objectType, objectId): Subscription {
+  queryPerfProviderSummary(credential, host, port, objectType, objectId): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -3184,12 +3197,12 @@ export class VmwareService {
     </QueryPerfProviderSummary>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       return this.validResponse(data.QueryPerfProviderSummaryResponse[0].returnval[0]);
-    });
+    })).toPromise();
   }
 
-  queryPerfCounterByLevel(credential, host, port, level): Subscription {
+  queryPerfCounterByLevel(credential, host, port, level): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -3199,7 +3212,7 @@ export class VmwareService {
     </QueryPerfCounterByLevel>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       const res = [];
 
       data.QueryPerfCounterByLevelResponse[0].returnval.forEach(value => {
@@ -3207,10 +3220,10 @@ export class VmwareService {
       });
 
       return this.validResponse(res);
-    });
+    })).toPromise();
   }
 
-  queryPerfCounter(credential, host, port, counterId): Subscription {
+  queryPerfCounter(credential, host, port, counterId): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -3220,12 +3233,12 @@ export class VmwareService {
     </QueryPerfCounter>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       return this.validResponse(data.QueryPerfCounterResponse[0].returnval[0]);
-    });
+    })).toPromise();
   }
 
-  queryPerf(credential, host, port, objectType, objectId, startTime, endTime, maxSample): Subscription {
+  queryPerf(credential, host, port, objectType, objectId, startTime, endTime, maxSample): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
@@ -3240,16 +3253,16 @@ ${maxSample ? '<maxSample>' + maxSample + '</maxSample>' : ''}
     </QueryPerf>
   </soap:Body>
 </soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).subscribe((data: any) => {
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
       return this.validResponse(data.QueryPerfResponse[0].returnval[0]);
-    });
+    })).toPromise();
   }
 
   /**
    * Datastore Upload
    */
   uploadFileToDatastore(url, path, credential) {
-    return this.http.post('/api/vcenter/upload_to_datastore', {
+    return this.http.post('/api/vmware/upload_to_datastore', {
       url,
       path,
       credential

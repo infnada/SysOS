@@ -1,4 +1,4 @@
-import {NgModule, OnInit} from '@angular/core';
+import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
@@ -10,6 +10,7 @@ import {InfrastructureManagerBodyComponent} from './infrastructure-manager-body/
 import {InfrastructureManagerMenuComponent} from './infrastructure-manager-menu/infrastructure-manager-menu.component';
 import {InfrastructureManagerStatusComponent} from './infrastructure-manager-status/infrastructure-manager-status.component';
 import {InfrastructureManagerBodyNewConnectionComponent} from './infrastructure-manager-body/infrastructure-manager-body-new-connection/infrastructure-manager-body-new-connection.component';
+import {InfrastructureManagerService} from './services/infrastructure-manager.service';
 
 @NgModule({
   declarations: [
@@ -31,9 +32,10 @@ import {InfrastructureManagerBodyNewConnectionComponent} from './infrastructure-
     MatIconModule
   ]
 })
-export class InfrastructureManagerModule implements OnInit {
+export class InfrastructureManagerModule {
 
-  constructor(private Applications: ApplicationsService) {
+  constructor(private Applications: ApplicationsService,
+              private InfrastructureManager: InfrastructureManagerService) {
     Applications.registerApplication({
       id: 'infrastructure-manager',
       ico: 'server',
@@ -43,9 +45,8 @@ export class InfrastructureManagerModule implements OnInit {
       status: true,
       style: {width: '1700px', height: '750px', top: '8%', left: '7%'}
     });
-  }
 
-  ngOnInit() {
-
+    this.InfrastructureManager.initConnections();
+    this.InfrastructureManager.initLinksMap();
   }
 }

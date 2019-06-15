@@ -13,7 +13,7 @@ const router = Router();
  * Call
  */
 router.post('/call', (req: express.Request, res: express.Response) => {
-  logger.info(`[API NetApp] -> Call ->  host [${req.body.hos}]`);
+  logger.info(`[API NetApp] -> Call ->  host [${req.body.host}]`);
 
   const apiGlobals = new ApiGlobalsModule(req, res);
   const Credentials = new CredentialsModule();
@@ -27,9 +27,7 @@ router.post('/call', (req: express.Request, res: express.Response) => {
       '<?xml version=\'1.0\' encoding=\'utf-8\' ?><!DOCTYPE netapp SYSTEM \'file:/etc/netapp_filer.dtd\'>' + req.body.xml);
 
   }).then((body) => {
-
     return apiGlobals.responseJsonData(body);
-
   }).catch((e) => {
     if (e && e.code) return apiGlobals.serverError(e.code);
     if (e) return apiGlobals.serverError(e);

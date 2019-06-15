@@ -1,5 +1,6 @@
-import {fetch} from 'node-fetch';
-import xml2js from 'xml2js';
+import {Headers} from 'node-fetch';
+import fetch from 'node-fetch';
+import * as xml2js from 'xml2js';
 
 const parseString = xml2js.parseString;
 
@@ -12,26 +13,38 @@ export class VMWareModule {
   getClientVersion(host, port): Promise<any> {
     const proto = (port === '80' ? 'http' : 'https');
 
-    return fetch(proto + '://' + host + ':' + port + '/client/clients.xml', {
-      method: 'GET',
-      headers: {
-        Accept: 'application/xml',
-        'Content-Type': 'application/xml'
-      }
-    }).then(res => parseString(res));
+    const requestHeaders: any = new Headers();
+    requestHeaders.append('Accept', 'application/xml');
+    requestHeaders.append('Content-Type', 'application/xml');
+
+    return new Promise((resolve, reject) => {
+
+      return fetch(`${proto}://${host}:${port}/client/clients.xml`, {
+        method: 'GET',
+        headers: requestHeaders
+      }).then(res => res.text()
+      ).then(body => {
+        return parseString(body, (err, result) => {
+          if (err) return reject(err);
+          return resolve(result);
+        });
+      });
+
+    });
 
   }
 
   connect(host, port, username, password): Promise<any> {
     const proto = (port === '80' ? 'http' : 'https');
 
-    return fetch(proto + '://' + host + ':' + port + '/rest/com/vmware/cis/session', {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Authorization: 'Basic ' + new Buffer(username + ':' + password).toString('base64')
-      }
+    const requestHeaders: any = new Headers();
+    requestHeaders.append('Accept', 'application/json');
+    requestHeaders.append('Content-Type', 'application/json');
+    requestHeaders.append('Authorization', `Basic ${new Buffer(username + ':' + password).toString('base64')}`);
+
+    return fetch(`${proto}://${host}:${port}/rest/com/vmware/cis/session?~action=get`, {
+      method: 'POST',
+      headers: requestHeaders
     }).then(res => res);
 
   }
@@ -41,55 +54,70 @@ export class VMWareModule {
 
     // https://code.vmware.com/apis/191/vsphere-automation
 
-    return fetch(proto + '://' + host + ':' + port + '' + path, {
+    const requestHeaders: any = new Headers();
+    requestHeaders.append('Accept', 'application/json');
+    requestHeaders.append('Content-Type', 'application/json');
+    requestHeaders.append('Cookie', cookie);
+
+    return fetch(`${proto}://${host}:${port}${path}`, {
       method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-        Cookie: cookie
-      }
+      headers: requestHeaders
     }).then(res => res);
 
   }
 
   connectSoap(host, port, username, password) {
     const proto = (port === '80' ? 'http' : 'https');
-    const xml = '<?xml version="1.0" encoding="utf-8"?><soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" ' +
-      'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><soap:Body>' +
-      '<Login xmlns="urn:vim25"><_this type="SessionManager">SessionManager</_this><userName>' + username + '</userName>' +
-      '<password>' + password + '</password></Login></soap:Body></soap:Envelope>';
+    const xml = `<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Body>
+    <Login xmlns="urn:vim25">
+      <_this type="SessionManager">SessionManager</_this>
+      <userName>${username}</userName>
+      <password>${password}</password>
+    </Login>
+  </soap:Body>
+</soap:Envelope>`;
 
-    // TODO: port?
+    const requestHeaders: any = new Headers();
+    requestHeaders.append('Content-Type', 'text/xml');
+    requestHeaders.append('SOAPAction', 'urn:vim25/6.0');
+    requestHeaders.append('Content-Length', Buffer.byteLength(xml));
+    requestHeaders.append('Expect', '100-continue');
 
-    return fetch(host + '/sdk', {
+    return fetch(`${proto}://${host}:${port}/sdk`, {
       method: 'POST',
       body: xml,
-      headers: {
-        'Content-Type': 'text/xml',
-        SOAPAction: 'urn:vim25/6.0',
-        'Content-Length': Buffer.byteLength(xml),
-        Expect: '100-continue'
-      }
-    }).then(res => parseString(res));
+      headers: requestHeaders
+    }).then(res => res);
 
   }
 
   callApiSoap(host, port, action, xml, cookie) {
     const proto = (port === '80' ? 'http' : 'https');
 
-    // api version GET https://mvcenter01.intranet.com/client/clients.xml
+    const requestHeaders: any = new Headers();
+    requestHeaders.append('Content-Type', 'text/xml');
+    requestHeaders.append('SOAPAction', action);
+    requestHeaders.append('Content-Length', Buffer.byteLength(xml));
+    requestHeaders.append('Expect', '100-continue');
+    requestHeaders.append('Cookie', cookie);
 
-    return fetch(host + '/sdk', {
-      method: 'POST',
-      body: xml,
-      headers: {
-        'Content-Type': 'text/xml',
-        SOAPAction: action,
-        'Content-Length': Buffer.byteLength(xml),
-        Expect: '100-continue',
-        Cookie: cookie
-      }
-    }).then(res => parseString(res));
+    return new Promise((resolve, reject) => {
+
+      return fetch(`${proto}://${host}:${port}/sdk`, {
+        method: 'POST',
+        body: xml,
+        headers: requestHeaders
+      }).then(res => res.text()
+      ).then(body => {
+        return parseString(body, (err, result) => {
+          if (err) return reject(err);
+          return resolve(result);
+        });
+      });
+
+    });
 
   }
 

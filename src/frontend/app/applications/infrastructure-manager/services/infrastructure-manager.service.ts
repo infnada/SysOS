@@ -10,35 +10,171 @@ import {IMConnection} from '../interfaces/IMConnection';
 import {FileSystemService} from '../../../services/file-system.service';
 import {ModalService} from '../../../services/modal.service';
 import {IMLink} from '../interfaces/IMLink';
+import {IMNode} from '../interfaces/IMNode';
 
 @Injectable({
   providedIn: 'root'
 })
 export class InfrastructureManagerService {
 
-  private links: IMLink[];
+  private linksMap: IMLink[];
 
   private subjectConnectGetData = new Subject<any>();
 
   private $connections: BehaviorSubject<IMConnection[]>;
   private $activeConnection: BehaviorSubject<string>;
+  private $treeData: BehaviorSubject<IMNode[]>;
   private dataStore: {  // This is where we will store our data in memory
     connections: IMConnection[],
-    activeConnection: string
+    activeConnection: string,
+    treeData: IMNode[]
   };
   connections: Observable<any>;
   activeConnection: Observable<any>;
+  treeData: Observable<any>;
 
   constructor(private logger: NGXLogger,
               private Toastr: ToastrService,
               private socket: Socket,
               private Modal: ModalService,
               private FileSystem: FileSystemService) {
-    this.dataStore = {connections: [], activeConnection: null};
+    this.dataStore = {connections: [], activeConnection: null, treeData: []};
     this.$connections = new BehaviorSubject([]) as BehaviorSubject<IMConnection[]>;
     this.$activeConnection = new BehaviorSubject(null) as BehaviorSubject<string>;
+    this.$treeData = new BehaviorSubject([]) as BehaviorSubject<IMNode[]>;
     this.connections = this.$connections.asObservable();
     this.activeConnection = this.$activeConnection.asObservable();
+    this.treeData = this.$treeData.asObservable();
+  }
+
+  /**
+   * getTreeData
+   * @description Extract all connections data and prepares an object usable by MatTreeFlatDataSource
+   */
+  getTreeData(): IMNode[] {
+    const treeData = [
+      {
+        name: 'Storage',
+        type: 'storage',
+        children: []
+      },
+      {
+        name: 'Virtual',
+        type: 'virtual',
+        children: []
+      }
+    ];
+
+    // Set treeData for storage
+    this.getConnectionsByType('netapp').forEach((storage, sti) => {
+      const storageObject: IMNode = {
+        name: storage.data.Base.name,
+        data: {
+          uuid: storage.uuid
+        },
+        type: 'netapp'
+      };
+
+      if (!storage.data.Vservers) return;
+      storage.data.Vservers.forEach((vserver, vsi) => {
+        const vserverObject: IMNode = {
+          name: vserver['vserver-name'],
+          type: 'vserver'
+        };
+
+        // Set Vservers as children
+        if (!storageObject.children) storageObject.children = [];
+        storageObject.children[vsi] = vserverObject;
+
+        if (!vserver.Volumes) return;
+        vserver.Volumes.forEach((volume, voi) => {
+          const volumeObject: IMNode = {
+            name: volume['volume-id-attributes'].name,
+            data: {
+              uuid: storage.uuid,
+              volume
+            },
+            type: 'volume'
+          };
+
+          // Set Volumes as children
+          if (!storageObject.children[vsi].children) storageObject.children[vsi].children = [];
+          storageObject.children[vsi].children[voi] = volumeObject;
+
+          if (!volume.Snapshots) return;
+          volume.Snapshots.forEach((snapshot, sni) => {
+            const snapshotObject: IMNode = {
+              name: snapshot.name,
+              data: {
+                uuid: storage.uuid,
+                volume,
+                snapshot
+              },
+              type: 'snapshot'
+            };
+
+            // Set Snapshots as children
+            if (!storageObject.children[vsi].children[voi].children) storageObject.children[vsi].children[voi].children = [];
+            storageObject.children[vsi].children[voi].children[sni] = snapshotObject;
+          });
+        });
+      });
+
+      treeData[0].children[sti] = storageObject;
+    });
+
+    // Recursively for virtual data
+    const getChildren = (virtual: IMConnection, current): void => {
+      current.name = current.changeSet.find(set => set.name[0] === 'name').val[0]._;
+      current.type = current.obj[0].$.type;
+      current.data = {
+        uuid: virtual.uuid
+      };
+      current.children = virtual.data.Data.filter(obj => {
+        // Return when property name === 'parent' and it's value === func.parent name
+        return obj.changeSet.find(set => set.name[0] === 'parent' && set.hasOwnProperty('val') && set.val[0]._ === current.obj[0]._);
+      });
+
+      if (current.type === 'VirtualMachine') current.data.powerState = current.changeSet.find(set => set.name[0] === 'runtime.powerState').val[0]._;
+      if (current.type === 'Datastore') current.data.accessible = current.changeSet.find(set => set.name[0] === 'summary.accessible').val[0]._;
+      if (current.type === 'HostSystem') {
+        current.data.connectionState = current.changeSet.find(set => set.name[0] === 'runtime').val[0].connectionState[0];
+        current.data.powerState = current.changeSet.find(set => set.name[0] === 'runtime').val[0].powerState[0];
+      }
+
+      delete current.kind;
+
+      // Recursively get children
+      current.children.forEach(child => {
+        getChildren(virtual, child);
+      });
+
+    };
+
+    // Set treeData for virtual
+    this.getConnectionsByType('vmware').forEach((virtual, vii) => {
+      const virtualObject: IMNode = {
+        name: virtual.host,
+        data: {
+          uuid: virtual.uuid
+        },
+        type: 'vmware'
+      };
+
+      // Virtual connection not initialized
+      if (!virtual.data.Data) return treeData[1].children[vii] = virtualObject;
+
+      // Get main parent object
+      virtualObject.children = [virtual.data.Data.find(obj => {
+        return obj.changeSet.find(set => set.name[0] === 'parent' && !set.hasOwnProperty('val'));
+      })];
+
+      getChildren(virtual, virtualObject.children[0]);
+
+      treeData[1].children[vii] = virtualObject;
+    });
+
+    return treeData;
   }
 
   getConnectionsByType(type: string): IMConnection[] {
@@ -66,6 +202,53 @@ export class InfrastructureManagerService {
     this.$activeConnection.next(Object.assign({}, this.dataStore).activeConnection);
   }
 
+  /**
+   * Connections
+   */
+
+  /**
+   * @Description
+   * Called when application is initialized
+   */
+  initConnections(): void {
+    this.FileSystem.getConfigFile('applications/infrastructure-manager/config.json').subscribe(
+    (res: IMConnection[]) => {
+      this.logger.info('Infrastructure Manager Factory -> Get connections successfully');
+
+      res.forEach((connection) => {
+        connection.state = 'disconnected';
+
+        this.setConnectionByType(connection);
+
+        this.initializeConnection(connection);
+      });
+
+      // broadcast data to subscribers
+      this.connectionsUpdated();
+    },
+    error => {
+      this.logger.error('Infrastructure Manager Factory -> Error while getting connections -> ', error);
+      return this.Toastr.error('Error getting connections.', 'Infrastructure Manager');
+    });
+  }
+
+  initLinksMap(): void {
+    this.FileSystem.getConfigFile('applications/infrastructure-manager/links.json').subscribe(
+      (res: IMLink[]) => {
+        this.logger.info('Infrastructure Manager Factory -> Get linksMap successfully');
+
+        this.linksMap = res;
+      },
+      error => {
+        this.logger.error('Infrastructure Manager Factory -> Error while getting linksMap -> ', error);
+        return this.Toastr.error('Error getting linksMap.', 'Infrastructure Manager');
+      });
+  }
+
+  /**
+   * @Description
+   * Called when user starts a new connection
+   */
   connect(connection: IMConnection): void {
     if (!connection) throw new Error('connection_not_found');
 
@@ -94,14 +277,26 @@ export class InfrastructureManagerService {
 
       connection.uuid = uuidv4();
 
-      if (connection.type === 'linux') this.setNewConnectionLinux(connection);
-      if (connection.type === 'snmp') this.setNewConnectionSNMP(connection);
-      if (connection.type === 'vmware') this.setNewConnectionVirtual(connection);
-      if (connection.type === 'netapp') this.setNewConnectionNetApp(connection);
+      this.setConnectionByType(connection);
     }
+
+    this.connectionsUpdated();
 
     if (connection.save) this.saveConnection(connection);
 
+    this.initializeConnection(connection);
+
+    this.setActiveConnection(connection.uuid);
+  }
+
+  setConnectionByType(connection: IMConnection): void {
+    if (connection.type === 'linux') this.setNewConnectionLinux(connection);
+    if (connection.type === 'snmp') this.setNewConnectionSNMP(connection);
+    if (connection.type === 'vmware') this.setNewConnectionVirtual(connection);
+    if (connection.type === 'netapp') this.setNewConnectionNetApp(connection);
+  }
+
+  initializeConnection(connection: IMConnection) {
     if (connection.type === 'netapp') this.subjectConnectGetData.next(connection);
     if (connection.type === 'vmware') this.subjectConnectGetData.next(connection);
     if (connection.type === 'windows' || connection.type === 'linux' || connection.type === 'snmp') {
@@ -113,10 +308,7 @@ export class InfrastructureManagerService {
         uuid: connection.uuid
       });
     }
-
-    this.setActiveConnection(connection.uuid);
   }
-
 
   /**
    * Add new Linux connection to connections array
@@ -137,9 +329,6 @@ export class InfrastructureManagerService {
         state: 'disconnected'
       });
     }
-
-    // broadcast data to subscribers
-    this.$connections.next(Object.assign({}, this.dataStore).connections);
   }
 
   /**
@@ -163,9 +352,6 @@ export class InfrastructureManagerService {
         community: connection.community
       });
     }
-
-    // broadcast data to subscribers
-    this.$connections.next(Object.assign({}, this.dataStore).connections);
   }
 
   /**
@@ -184,12 +370,14 @@ export class InfrastructureManagerService {
         type: connection.type,
         autologin: connection.autologin,
         save: connection.save,
+        data: {
+          Base: {
+            name: connection.host
+          }
+        },
         state: 'disconnected'
       });
     }
-
-    // broadcast data to subscribers
-    this.$connections.next(Object.assign({}, this.dataStore).connections);
   }
 
   /**
@@ -208,12 +396,33 @@ export class InfrastructureManagerService {
         type: connection.type,
         autologin: connection.autologin,
         save: connection.save,
+        data: {
+          Base: {
+            name: connection.host
+          }
+        },
         state: 'disconnected'
       });
     }
+  }
 
-    // broadcast data to subscribers
-    this.$connections.next(Object.assign({}, this.dataStore).connections);
+  /**
+   * Save node links to config file
+   */
+  private saveLinksMap(): void {
+    this.logger.debug('Connections Factory -> Saving linksMap');
+
+    const configFile = 'applications/infrastructure-manager/links.json';
+
+    this.FileSystem.saveConfigFile(this.linksMap, configFile, false).subscribe(
+    () => {
+      this.logger.debug('Infrastructure Manager Factory [%s] -> linksMap saved successfully');
+    },
+    error => {
+      this.logger.error('Infrastructure Manager [%s] -> Error while saving linksMap -> ', error);
+      this.Toastr.error('Error while saving linksMap.', 'Infrastructure Manager');
+    });
+
   }
 
   /**
@@ -228,15 +437,15 @@ export class InfrastructureManagerService {
     const configFile = 'applications/infrastructure-manager/config.json';
 
     this.FileSystem.saveConfigFile(connection, configFile, false).subscribe(
-      () => {
-        this.logger.debug('Infrastructure Manager Factory [%s] -> Saved connection successfully -> host [%s]',
-          connection.uuid, connection.host);
-      },
-      error => {
-        this.logger.error('Infrastructure Manager [%s] -> Error while saving connection -> host [%s] -> ',
-          connection.uuid, connection.host, error);
-        this.Toastr.error('Error while saving connection.', 'Infrastructure Manager');
-      });
+    () => {
+      this.logger.debug('Infrastructure Manager Factory [%s] -> Saved connection successfully -> host [%s]',
+        connection.uuid, connection.host);
+    },
+    error => {
+      this.logger.error('Infrastructure Manager [%s] -> Error while saving connection -> host [%s] -> ',
+        connection.uuid, connection.host, error);
+      this.Toastr.error('Error while saving connection.', 'Infrastructure Manager');
+    });
 
   }
 
@@ -255,7 +464,7 @@ export class InfrastructureManagerService {
     this.getConnectionByUuid(uuid).state = 'disconnected';
 
     // broadcast data to subscribers
-    this.$connections.next(Object.assign({}, this.dataStore).connections);
+    this.connectionsUpdated();
   }
 
   deleteConnection(uuid?: string): void {
@@ -284,7 +493,7 @@ export class InfrastructureManagerService {
               });
 
               // broadcast data to subscribers
-              this.$connections.next(Object.assign({}, this.dataStore).connections);
+              this.connectionsUpdated();
 
               this.logger.debug('Infrastructure Manager [%s] -> Connection deleted successfully', uuid);
             },
@@ -298,6 +507,39 @@ export class InfrastructureManagerService {
 
   }
 
+  editConnection(uuid?: string): void {
+    if (!uuid) uuid = this.dataStore.activeConnection;
+
+    if (this.getConnectionByUuid(uuid).state === 'disconnected') {
+      this.setActiveConnection(uuid);
+      this.disconnectConnection();
+      return;
+    }
+
+    this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
+      {
+        title: 'Edit connection ' + this.getConnectionByUuid(uuid).description,
+        text: 'Your connection will be disconnected before editing it. Continue?'
+      }
+    ).then((modalInstance) => {
+      modalInstance.result.then((result: boolean) => {
+        if (result === true) {
+
+          this.setActiveConnection(uuid);
+          this.disconnectConnection();
+
+        }
+      });
+    });
+
+  }
+
+  refreshConnection(uuid?: string): void {
+    if (!uuid) uuid = this.dataStore.activeConnection;
+
+    this.connect(this.getConnectionByUuid(uuid));
+  }
+
   /**
    * SHARED
    */
@@ -308,21 +550,19 @@ export class InfrastructureManagerService {
   getLinkByStorageJunctionPath(virtualUuid: string, volume: string, junctionPath: string): IMLink[] {
 
     // Get Datastore name by Junction Path
-    return this.links.filter((obj) => {
+    return this.linksMap.filter((obj) => {
       return obj.storage === virtualUuid && obj.volume === volume && obj.junction_path === junctionPath;
     });
   }
 
   /**
-   * @params
-   * type {String} [vmware, netapp] New node type to check against
-   * uuid {uuid} Main node uuid
+   * @description check link between storage and virtual nodes
    */
   // TODO: some storages could have the same LIF IP!!! and links will be wrong
-  checkLinkBetweenManagedNodes(type: string, uuid: string): IMLink[] {
+  checkLinkBetweenManagedNodes(type: string, uuid: string): void {
 
     const connection = this.getConnectionByUuid(uuid);
-
+/*
     if (type === 'vmware') {
 
       // Get all connection datastores
@@ -364,7 +604,7 @@ export class InfrastructureManagerService {
             // TODO: CHECK VOLUME EXPORTS that match ESXi host
 
             // Link found!
-            this.links.push({
+            this.linksMap.push({
               virtual: uuid,
               esxi_datastore: datastore.obj.name,
               storage: storage.uuid,
@@ -421,7 +661,7 @@ export class InfrastructureManagerService {
           if (!foundVolume) return;
 
           // Link found!
-          this.links.push({
+          this.linksMap.push({
             virtual: virtual.uuid,
             esxi_datastore: datastore.obj.name,
             storage: uuid,
@@ -439,12 +679,34 @@ export class InfrastructureManagerService {
       });
     // end netapp
     }
-
-    return this.links;
+*/
+    this.saveLinksMap();
 
   }
 
+  /**
+   * @description We use this to bypass circular module dependency.
+   * IM(component) -> IMS(this service) -> $(Obs) -> IM -> IMNetApp/IMVMWare (Since IMNetApp/IMVMWare already have IMS as dependency)
+   * So we can't call IMNetApp/IMVMWare directly from IMS
+   */
   getObserverConnectGetData(): Observable<any> {
     return this.subjectConnectGetData.asObservable();
+  }
+
+  /**
+   * @description
+   * Called manually every time any property/value from this.dataStore.connections is modified.
+   * This allows us to set new treeData for MatTreeFlatDataSource.
+   */
+  connectionsUpdated() {
+    if (JSON.stringify(this.dataStore.treeData) !== JSON.stringify(this.getTreeData())) {
+      this.dataStore.treeData = this.getTreeData();
+
+      // broadcast data to subscribers if treeData has changed aswell
+      this.$treeData.next(Object.assign({}, this.dataStore).treeData);
+    }
+
+    // broadcast data to subscribers
+    this.$connections.next(Object.assign({}, this.dataStore).connections);
   }
 }

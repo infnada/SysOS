@@ -141,12 +141,8 @@ export class ModalService {
   openLittleModal(title: string, text: string, selector: string, modalId: string) {
 
     return this.openRegisteredModal(modalId, selector, {
-      title: () => {
-        return title;
-      },
-      text: () => {
-        return text;
-      }
+      title,
+      text
     });
 
   }

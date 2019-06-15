@@ -76,22 +76,22 @@ export class SshService {
 
   initConnections(): void {
     this.FileSystem.getConfigFile('applications/ssh/config.json').subscribe(
-      (res: SshConnection[]) => {
-        this.logger.info('Ssh Factory -> Get connections successfully');
+    (res: SshConnection[]) => {
+      this.logger.info('Ssh Factory -> Get connections successfully');
 
-        res.forEach((connection) => {
-          connection.state = 'disconnected';
-        });
-
-        this.dataStore.connections = res;
-
-        // broadcast data to subscribers
-        this.$connections.next(Object.assign({}, this.dataStore).connections);
-      },
-      error => {
-        this.logger.error('Ssh Factory -> Error while getting credentials -> ', error);
-        return this.Toastr.error('Error getting connections.', 'SSH');
+      res.forEach((connection) => {
+        connection.state = 'disconnected';
       });
+
+      this.dataStore.connections = res;
+
+      // broadcast data to subscribers
+      this.$connections.next(Object.assign({}, this.dataStore).connections);
+    },
+    error => {
+      this.logger.error('Ssh Factory -> Error while getting credentials -> ', error);
+      return this.Toastr.error('Error getting connections.', 'SSH');
+    });
   }
 
   getActiveConnection(): SshConnection {

@@ -70,7 +70,6 @@ export class SftpBodyNewConnectionComponent implements OnInit {
 
   manageCredentials() {
     this.Applications.openApplication('credentials-manager');
-    this.Applications.sendToggleApplication('credentials-manager');
   }
 
   getActiveConnection(): SftpConnection {

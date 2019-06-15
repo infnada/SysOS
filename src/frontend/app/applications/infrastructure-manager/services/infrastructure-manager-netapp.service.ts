@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 
-import {Subscription} from 'rxjs';
+import {NGXLogger} from 'ngx-logger';
 import {ToastrService} from 'ngx-toastr';
 
 import {ModalService} from '../../../services/modal.service';
@@ -14,18 +14,12 @@ import {InfrastructureManagerVmwareService} from './infrastructure-manager-vmwar
 })
 export class InfrastructureManagerNetappService {
 
-  private connectGetDataSubscription: Subscription;
-
-  constructor(private Toastr: ToastrService,
+  constructor(private logger: NGXLogger,
+              private Toastr: ToastrService,
               private Modal: ModalService,
               private NetApp: NetappService,
               private InfrastructureManagerVmware: InfrastructureManagerVmwareService,
               private InfrastructureManager: InfrastructureManagerService) {
-
-    this.connectGetDataSubscription = this.InfrastructureManager.getObserverConnectGetData().subscribe((connection) => {
-      if (connection.type === 'vmware') this.getNetAppData(connection);
-    });
-
   }
 
   /**
@@ -79,6 +73,7 @@ export class InfrastructureManagerNetappService {
     }).then((res) => {
 
       // Set interfaces
+      this.InfrastructureManager.getConnectionByUuid(connection.uuid).data.Ifaces = [];
       this.InfrastructureManager.getConnectionByUuid(connection.uuid).data.Ifaces.netifaces = res[0].data;
       this.InfrastructureManager.getConnectionByUuid(connection.uuid).data.Ifaces.fcpifaces = res[1].data;
       this.InfrastructureManager.getConnectionByUuid(connection.uuid).data.Ifaces.fcpadapters = res[2].data;
@@ -101,9 +96,7 @@ export class InfrastructureManagerNetappService {
 
       Object.entries(res[7].data).forEach(([key, vserver]) => {
 
-        if (vserver['vserver-type'] === 'admin') {
-          this.InfrastructureManager.getConnectionByUuid(connection.uuid).data.Base.name = vserver['vserver-name'];
-        }
+        if (vserver['vserver-type'] === 'admin') this.InfrastructureManager.getConnectionByUuid(connection.uuid).data.Base.name = vserver['vserver-name'];
 
         // GET Volumes per vServer
         if (vserver['vserver-type'] === 'data') {
@@ -170,13 +163,16 @@ export class InfrastructureManagerNetappService {
       // TODO: Check if any volume is mounted to a managed virtual node and link it.
       return this.InfrastructureManager.checkLinkBetweenManagedNodes('netapp', connection.uuid);
 
-    }).then((data) => {
+    }).then(() => {
       this.Modal.changeModalText('Saving connection to file', '.window--infrastructure-manager .window__main');
 
       this.InfrastructureManager.saveConnection(this.InfrastructureManager.getConnectionByUuid(connection.uuid));
       this.Modal.closeModal('.window--infrastructure-manager .window__main');
 
       this.Toastr.success('NetApp connection added successfully');
+
+      // Tell InfrastructureManager that we changed connections data
+      this.InfrastructureManager.connectionsUpdated();
 
     }).catch((e) => {
       this.Modal.closeModal('.window--infrastructure-manager .window__main');
@@ -185,11 +181,11 @@ export class InfrastructureManagerNetappService {
       this.InfrastructureManager.deleteConnection(connection.uuid);
 
       if (e.message === 'ENOTFOUND') {
-        return this.Toastr.error('Host not found (' + connection.host + ')', 'Error trying to connect to NetApp');
+        return this.Toastr.error(`Host not found (${connection.host})`, 'Error trying to connect to NetApp');
       }
 
       if (e.message === 'ETIMEDOUT') {
-        return this.Toastr.error('Timeout while connecting to ' + connection.host, 'Error trying to connect to NetApp');
+        return this.Toastr.error(`Timeout while connecting to ${connection.host}`, 'Error trying to connect to NetApp');
       }
 
       this.Toastr.error(e.message, 'Error getting data from NetApp');
@@ -201,31 +197,46 @@ export class InfrastructureManagerNetappService {
    * @description
    * Refresh NetApp volume data
    */
-  getVolumeData(data): void {
-    const vserverIndex = this.InfrastructureManager.getConnectionByUuid(data.uuid).data.Vservers.findIndex((item) => {
-      return item['vserver-name'] === data.vserver_name;
+  getVolumeData(connectionUuid, volume): void {
+    this.logger.debug('Infrastructure Manager [%s] -> getVolumeData -> volume [%s]', volume['volume-id-attributes'].uuid, volume['volume-id-attributes'].name);
+    const connection = this.InfrastructureManager.getConnectionByUuid(connectionUuid);
+
+    const vserverIndex = this.InfrastructureManager.getConnectionByUuid(connection.uuid).data.Vservers.findIndex((item) => {
+      return item['vserver-name'] === volume['volume-id-attributes']['owning-vserver-name'];
     });
-    const volumeIndex = this.InfrastructureManager.getConnectionByUuid(data.uuid).data.Vservers[vserverIndex].Volumes.findIndex((item) => {
-      return item['volume-id-attributes'].name === data.volume_name;
+    const volumeIndex = this.InfrastructureManager.getConnectionByUuid(connection.uuid).data.Vservers[vserverIndex].Volumes.findIndex((item) => {
+      return item['volume-id-attributes'].name === volume['volume-id-attributes'].name;
     });
 
-    this.Modal.openLittleModal('PLEASE WAIT', 'Getting NetApp Volume data...', '.window--infrastructure-manager .window__main', 'plain').then(() => {
+    this.Modal.openLittleModal('PLEASE WAIT', 'Getting NetApp Volume data...', '.window--infrastructure-manager .window__main', 'plain');
 
-      return this.NetApp.getSnapshots(data.credential, data.host, data.port, data.vserver_name, data.volume_name).then((snapshots) => {
-        if (snapshots.status === 'error') throw new Error('Failed to get snapshots');
+    this.NetApp.getSnapshots(
+      connection.credential,
+      connection.host,
+      connection.port,
+      volume['volume-id-attributes']['owning-vserver-name'],
+      volume['volume-id-attributes'].name
+    ).then((res) => {
+      if (res.status === 'error') {
+        this.logger.error('Infrastructure Manager [%s] -> Error creating storage snapshot -> volume [%s] -> ',
+          volume['volume-id-attributes'].uuid, volume['volume-id-attributes'].name, res.error.reason);
 
-        this.InfrastructureManager.getConnectionByUuid(data.uuid).data.Vservers[vserverIndex].Volumes[volumeIndex].Snapshots = snapshots.data;
-      }).then(() => {
-        this.Modal.changeModalText('Saving connection to file', '.window--infrastructure-manager .window__main');
+        this.Toastr.error(res.error.reason, 'Create Volume Snapshot');
+        throw new Error('Failed to get snapshots');
+      }
 
-        this.InfrastructureManager.saveConnection(this.InfrastructureManager.getConnectionByUuid(data.uuid));
+      this.InfrastructureManager.getConnectionByUuid(connection.uuid).data.Vservers[vserverIndex].Volumes[volumeIndex].Snapshots = res.data;
 
-        this.Modal.closeModal('.window--infrastructure-manager .window__main');
-      }).catch((e) => {
-        this.Modal.closeModal('.window--infrastructure-manager .window__main');
+      this.Modal.changeModalText('Saving connection to file', '.window--infrastructure-manager .window__main');
+      this.InfrastructureManager.saveConnection(this.InfrastructureManager.getConnectionByUuid(connection.uuid));
 
-        throw e;
-      });
+      this.Modal.closeModal('.window--infrastructure-manager .window__main');
+
+      // Tell InfrastructureManager that we changed connections data
+      this.InfrastructureManager.connectionsUpdated();
+    }).catch((e) => {
+      this.Modal.closeModal('.window--infrastructure-manager .window__main');
+      throw e;
     });
   }
 
@@ -331,6 +342,110 @@ export class InfrastructureManagerNetappService {
       this.InfrastructureManager.saveConnection(this.InfrastructureManager.getConnectionByUuid(uuid));
 
       this.Modal.closeModal('.window--infrastructure-manager .window__main');
+
+      // Tell InfrastructureManager that we changed connections data
+      this.InfrastructureManager.connectionsUpdated();
+    }).catch((e) => {
+      this.Modal.closeModal('.window--infrastructure-manager .window__main');
+      throw e;
+    });
+  }
+
+  createStorageSnapShot(connectionUuid, volume): void {
+    this.logger.debug('Infrastructure Manager [%s] -> Ask for create storage snapshot -> volume [%s]', volume['volume-id-attributes'].uuid, volume['volume-id-attributes'].name);
+    const connection = this.InfrastructureManager.getConnectionByUuid(connectionUuid);
+
+    this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
+      {
+        title: 'Create storage snapshot',
+        text: `Do you want to create a Storage snapshot for ${volume['volume-id-attributes'].name} volume?`
+      }
+    ).then((modalInstance) => {
+      modalInstance.result.then((result: boolean) => {
+        if (result !== true)  return;
+
+        this.logger.debug('Infrastructure Manager [%s] -> Creating storage snapshot -> volume [%s]', volume['volume-id-attributes'].uuid, volume['volume-id-attributes'].name);
+
+        this.Modal.openLittleModal('PLEASE WAIT', 'Creating volume snapshot', '.window--infrastructure-manager .window__main', 'plain');
+
+        return this.NetApp.createSnapshot(
+          connection.credential,
+          connection.host,
+          connection.port,
+          volume['volume-id-attributes']['owning-vserver-name'],
+          volume['volume-id-attributes'].name
+        ).then((res) => {
+          if (res.status === 'error') {
+            this.logger.error('Infrastructure Manager [%s] -> Error creating storage snapshot -> volume [%s] -> ',
+              volume['volume-id-attributes'].uuid, volume['volume-id-attributes'].name, res.error.reason);
+
+            this.Toastr.error(res.error.reason, 'Create Volume Snapshot');
+            throw new Error('Failed to create Volume Snapshot');
+          }
+
+          this.logger.debug('Infrastructure Manager [%s] -> Storage snapshot created successfully -> volume [%s]',
+            volume['volume-id-attributes'].uuid, volume['volume-id-attributes'].name);
+
+          this.Modal.closeModal('.window--infrastructure-manager .window__main');
+          this.Toastr.success(`Snapshot created successfully for volume ${volume['volume-id-attributes'].name}`, 'Create Volume Snapshot');
+
+          // Refresh volume data to fetch the new snapshot
+          return this.getVolumeData(connectionUuid, volume);
+        });
+
+      });
+
+    }).catch((e) => {
+      this.Modal.closeModal('.window--infrastructure-manager .window__main');
+      throw e;
+    });
+  }
+
+  deleteStorageSnapShot(connectionUuid, volume, snapshot): void {
+    this.logger.debug('Infrastructure Manager [%s] -> Ask for delete storage snapshot -> snapshot [%s]', snapshot['snapshot-instance-uuid'], snapshot.name);
+    const connection = this.InfrastructureManager.getConnectionByUuid(connectionUuid);
+
+    this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
+      {
+        title: 'Delete storage snapshot',
+        text: `Do you want to delete the storage snapshot ${snapshot.name}?`
+      }
+    ).then((modalInstance) => {
+      modalInstance.result.then((result: boolean) => {
+        if (result !== true)  return;
+
+        this.logger.debug('Infrastructure Manager [%s] -> Deleting storage snapshot -> snapshot [%s]', snapshot['snapshot-instance-uuid'], snapshot.name);
+
+        this.Modal.openLittleModal('PLEASE WAIT', 'Deleting volume snapshot', '.window--infrastructure-manager .window__main', 'plain');
+
+        return this.NetApp.deleteSnapshot(
+          connection.credential,
+          connection.host,
+          connection.port,
+          volume['volume-id-attributes']['owning-vserver-name'],
+          volume['volume-id-attributes'].name,
+          snapshot.name,
+          snapshot['snapshot-instance-uuid']
+        ).then((res) => {
+          if (res.status === 'error') {
+            this.logger.error('Infrastructure Manager [%s] -> Error deleting storage snapshot -> snapshot [%s], volume [%s] -> ',
+              snapshot['snapshot-instance-uuid'], snapshot.name, volume['volume-id-attributes'].name, res.error.reason);
+
+            this.Toastr.error(res.error.reason, 'Delete Volume Snapshot');
+            throw new Error('Failed to delete Volume Snapshot');
+          }
+
+          this.logger.debug('Infrastructure Manager [%s] -> Storage snapshot deleted successfully -> napshot [%s], volume [%s]',
+            snapshot['snapshot-instance-uuid'], snapshot.name, volume['volume-id-attributes'].name);
+
+          this.Modal.closeModal('.window--infrastructure-manager .window__main');
+          this.Toastr.success(`Snapshot ${snapshot.name} deleted successfully for volume ${volume['volume-id-attributes'].name}`, 'Create Volume Snapshot');
+
+          // Refresh volume data to fetch the new snapshot
+          return this.getVolumeData(connectionUuid, volume);
+        });
+
+      });
 
     }).catch((e) => {
       this.Modal.closeModal('.window--infrastructure-manager .window__main');

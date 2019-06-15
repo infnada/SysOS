@@ -46,21 +46,23 @@ router.post('/connect', (req: express.Request, res: express.Response) => {
   const description = req.body.description;
 
   // Get username and password from credential
-  return Credentials.getCredential( req.body.credential).then((cred) => {
+  return Credentials.getCredential(req.body.credential).then((cred) => {
     return VMWare.connect(req.body.host, req.body.port, cred.username, cred.password);
   }).then((response) => {
 
-    if (response.statusCode < 400) {
+    console.log(response);
+
+    if (response.ok) {
 
       // Save the vmware-api-session and host to cookies on the client
-      if (response.headers['set-cookie'] && response.headers['set-cookie'][0].startsWith('vmware-api-session')) {
-        res.cookie(apiCookie, response.headers['set-cookie'][0], {maxAge: 900000, httpOnly: true});
+      if (response.headers.raw()['set-cookie'] && response.headers.raw()['set-cookie'][0].startsWith('vmware-api-session')) {
+        res.cookie(apiCookie, response.headers.raw()['set-cookie'][0], {maxAge: 900000, httpOnly: true});
       }
 
       return apiGlobals.validResponse();
     }
 
-    return apiGlobals.serverError(response.statusMessage);
+    return apiGlobals.serverError('Error: ' + response.status + ':' + response.statusText);
   }).catch((e) => {
     if (e && e.code) return apiGlobals.serverError(e.code);
     if (e) return apiGlobals.serverError(e);
@@ -84,19 +86,20 @@ router.post('/connectSoap', (req: express.Request, res: express.Response) => {
   // Get username and password from credential
   return Credentials.getCredential(req.body.credential).then((cred) => {
     return VMWare.connectSoap(req.body.host, req.body.port, cred.username, cred.password);
-  }).then((data) => {
+  }).then((response) => {
 
-    if (data[0].statusCode < 400) {
+    if (response.ok) {
 
       // Save the vmware-api-session and host to cookies on the client
-      if (data[0].headers['set-cookie'] && data[0].headers['set-cookie'][0].startsWith('vmware_soap_session')) {
-        res.cookie(apiCookie, data[0].headers['set-cookie'][0], {maxAge: 900000, httpOnly: true});
+      console.log(response.headers['set-cookie']);
+      if (response.headers.raw()['set-cookie'] && response.headers.raw()['set-cookie'][0].startsWith('vmware_soap_session')) {
+        res.cookie(apiCookie, response.headers.raw()['set-cookie'][0], {maxAge: 900000, httpOnly: true});
       }
 
       return apiGlobals.validResponse();
     }
 
-    return apiGlobals.serverError('Error: ' + data[0].statusCode + ':' + data[0].statusMessage);
+    return apiGlobals.serverError('Error: ' + response.status + ':' + response.statusText);
   }).catch((e) => {
     if (e && e.code) return apiGlobals.serverError(e.code);
     if (e) return apiGlobals.serverError(e);

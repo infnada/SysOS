@@ -241,3 +241,672 @@ h1, h2, h3, h4, h5, h6 {
 .window__controls--right {
   right: 0;
 }
+
+
+//////////
+// VS ICONS
+// https://communities.vmware.com/thread/471107
+//////////
+.vs-icon {
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 3px;
+}
+
+.vsphere-icon-Add_Host {
+  background: url("/assets/img/svg-sprite.svg") 73.34334763948497% 39.63963963963964% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-Host_Connect {
+  background: url("/assets/img/svg-sprite.svg") 84.50214592274678% 56.75675675675676% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-Host_Disconnect {
+  background: url("/assets/img/svg-sprite.svg") 51.88412017167382% 34.24324324324325% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-Host_Maintenance_Mode_Enter {
+  background: url("/assets/img/svg-sprite.svg") 29.184549356223176% 56.75675675675676% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-Host_Maintenance_Mode_Exit {
+  background: url("/assets/img/svg-sprite.svg") 23.175965665236053% 67.56756756756756% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-Host_Policy {
+  background: url("/assets/img/svg-sprite.svg") 30.901287553648068% 75.67567567567568% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-Host_Reboot {
+  background: url("/assets/img/svg-sprite.svg") 84.50214592274678% 16.216216216216218% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-action-remove {
+  background: url("/assets/img/svg-sprite.svg") 84.50214592274678% 24.324324324324323% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-add {
+  background: url("/assets/img/svg-sprite.svg") 84.50214592274678% 32.432432432432435% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-cloud-network {
+  background: url("/assets/img/svg-sprite.svg") 84.50214592274678% 48.648648648648646% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-cloud-network-alert {
+  background: url("/assets/img/svg-sprite.svg") 92.2274678111588% 64.86486486486487% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-cloud-network-warning {
+  background: url("/assets/img/svg-sprite.svg") 15.450643776824034% 100% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-cluster {
+  background: url("/assets/img/svg-sprite.svg") 73.34334763948497% 31.53153153153153% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-cluster-24x {
+  background: url("/assets/img/svg-sprite.svg") 33.77777777777778% 46.728971962616825% no-repeat;
+  width: 26px;
+  height: 26px;
+}
+
+.vsphere-icon-cluster-error {
+  background: url("/assets/img/svg-sprite.svg") 73.34334763948497% 47.747747747747745% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-cluster-warning {
+  background: url("/assets/img/svg-sprite.svg") 73.34334763948497% 55.85585585585586% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-collapse {
+  background: url("/assets/img/svg-sprite.svg") 64.83057851239668% 32.909090909090914% no-repeat;
+  width: 9px;
+  height: 9px;
+}
+
+.vsphere-icon-cpu-summary {
+  background: url("/assets/img/svg-sprite.svg") 22.22222222222222% 46.728971962616825% no-repeat;
+  width: 26px;
+  height: 26px;
+}
+
+.vsphere-icon-datacenter {
+  background: url("/assets/img/svg-sprite.svg") 59.609442060085826% 34.24324324324325% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-datacenter-error {
+  background: url("/assets/img/svg-sprite.svg") 43.201716738197426% 22.52252252252252% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-datacenter-warning {
+  background: url("/assets/img/svg-sprite.svg") 43.201716738197426% 30.63063063063063% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-datastore {
+  background: url("/assets/img/svg-sprite.svg") 21.459227467811157% 56.75675675675676% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-datastore-24x {
+  background: url("/assets/img/svg-sprite.svg") 45.333333333333336% 46.728971962616825% no-repeat;
+  width: 26px;
+  height: 26px;
+}
+
+.vsphere-icon-datastore-cluster {
+  background: url("/assets/img/svg-sprite.svg") 36.90987124463519% 56.75675675675676% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-datastore-cluster-error {
+  background: url("/assets/img/svg-sprite.svg") 44.63519313304721% 56.75675675675676% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-datastore-cluster-warning {
+  background: url("/assets/img/svg-sprite.svg") 52.36051502145923% 56.75675675675676% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-datastore-error {
+  background: url("/assets/img/svg-sprite.svg") 60.08583690987125% 56.75675675675676% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-datastore-inaccessible {
+  background: url("/assets/img/svg-sprite.svg") 0 67.56756756756756% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-datastore-maintenance {
+  background: url("/assets/img/svg-sprite.svg") 7.725321888412017% 67.56756756756756% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-datastore-warning {
+  background: url("/assets/img/svg-sprite.svg") 15.450643776824034% 67.56756756756756% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-dell {
+  background: url("/assets/img/svg-sprite.svg") 0 52.63157894736842% no-repeat;
+  width: 50px;
+  height: 50px;
+}
+
+.vsphere-icon-dv-switch {
+  background: url("/assets/img/svg-sprite.svg") 30.901287553648068% 67.56756756756756% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-dv-switch-alert {
+  background: url("/assets/img/svg-sprite.svg") 38.62660944206009% 67.56756756756756% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-dv-switch-warning {
+  background: url("/assets/img/svg-sprite.svg") 46.351931330472105% 67.56756756756756% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-event-console {
+  background: url("/assets/img/svg-sprite.svg") 54.07725321888412% 67.56756756756756% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-filebrowser-copy {
+  background: url("/assets/img/svg-sprite.svg") 61.802575107296136% 67.56756756756756% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-filebrowser-download {
+  background: url("/assets/img/svg-sprite.svg") 69.52789699570816% 67.56756756756756% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-filebrowser-move {
+  background: url("/assets/img/svg-sprite.svg") 0 75.67567567567568% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-filebrowser-upload {
+  background: url("/assets/img/svg-sprite.svg") 7.725321888412017% 75.67567567567568% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-folder {
+  background: url("/assets/img/svg-sprite.svg") 15.450643776824034% 75.67567567567568% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-folder-add {
+  background: url("/assets/img/svg-sprite.svg") 23.175965665236053% 75.67567567567568% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-fujitsu {
+  background: url("/assets/img/svg-sprite.svg") 0 26.31578947368421% no-repeat;
+  width: 100.66px;
+  height: 50px;
+}
+
+.vsphere-icon-help-info {
+  background: url("/assets/img/svg-sprite.svg") 38.62660944206009% 75.67567567567568% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-help-info-hover {
+  background: url("/assets/img/svg-sprite.svg") 46.351931330472105% 75.67567567567568% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-host {
+  background: url("/assets/img/svg-sprite.svg") 54.07725321888412% 75.67567567567568% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-host-disconnected {
+  background: url("/assets/img/svg-sprite.svg") 61.802575107296136% 75.67567567567568% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-host-error {
+  background: url("/assets/img/svg-sprite.svg") 69.52789699570816% 75.67567567567568% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-host-maintenance {
+  background: url("/assets/img/svg-sprite.svg") 84.50214592274678% 0 no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-host-warning {
+  background: url("/assets/img/svg-sprite.svg") 84.50214592274678% 8.108108108108109% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-hp {
+  background: url("/assets/img/svg-sprite.svg") 60.14427860696517% 0 no-repeat;
+  width: 50px;
+  height: 50.02px;
+}
+
+.vsphere-icon-ibm {
+  background: url("/assets/img/svg-sprite.svg") 0 0 no-repeat;
+  width: 120.89px;
+  height: 50px;
+}
+
+.vsphere-icon-memory-summary {
+  background: url("/assets/img/svg-sprite.svg") 56.888888888888886% 46.728971962616825% no-repeat;
+  width: 26px;
+  height: 26px;
+}
+
+.vsphere-icon-network {
+  background: url("/assets/img/svg-sprite.svg") 84.50214592274678% 40.54054054054054% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-network-24x {
+  background: url("/assets/img/svg-sprite.svg") 75.95111111111112% 0 no-repeat;
+  width: 26px;
+  height: 26px;
+}
+
+.vsphere-icon-network-error {
+  background: url("/assets/img/svg-sprite.svg") 73.34334763948497% 23.423423423423422% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-network-warning {
+  background: url("/assets/img/svg-sprite.svg") 84.50214592274678% 64.86486486486487% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-ovf-deploy {
+  background: url("/assets/img/svg-sprite.svg") 84.50214592274678% 72.97297297297297% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-plugin {
+  background: url("/assets/img/svg-sprite.svg") 0 83.78378378378379% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-precheck-error {
+  background: url("/assets/img/svg-sprite.svg") 7.725321888412017% 83.78378378378379% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-precheck-ok {
+  background: url("/assets/img/svg-sprite.svg") 15.450643776824034% 83.78378378378379% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-precheck-warning {
+  background: url("/assets/img/svg-sprite.svg") 23.175965665236053% 83.78378378378379% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-remove {
+  background: url("/assets/img/svg-sprite.svg") 30.901287553648068% 83.78378378378379% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-rescan-hba {
+  background: url("/assets/img/svg-sprite.svg") 38.62660944206009% 83.78378378378379% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-rescan-storage {
+  background: url("/assets/img/svg-sprite.svg") 46.351931330472105% 83.78378378378379% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-resource-pool {
+  background: url("/assets/img/svg-sprite.svg") 54.07725321888412% 83.78378378378379% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-roles-clone,
+.vsphere-icon-roles-clone\:regular {
+  background: url("/assets/img/svg-sprite.svg") 61.802575107296136% 83.78378378378379% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-roles-clone:hover,
+.vsphere-icon-roles-clone\:hover {
+  background: url("/assets/img/svg-sprite.svg") 69.52789699570816% 83.78378378378379% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-rules-profile {
+  background: url("/assets/img/svg-sprite.svg") 77.25321888412017% 83.78378378378379% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-scsi-adapter {
+  background: url("/assets/img/svg-sprite.svg") 92.2274678111588% 0 no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-scsi-adapter-warning {
+  background: url("/assets/img/svg-sprite.svg") 92.2274678111588% 8.108108108108109% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-status-error {
+  background: url("/assets/img/svg-sprite.svg") 92.2274678111588% 16.216216216216218% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-status-ok {
+  background: url("/assets/img/svg-sprite.svg") 92.2274678111588% 24.324324324324323% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-status-unknown {
+  background: url("/assets/img/svg-sprite.svg") 92.2274678111588% 32.432432432432435% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-status-warning {
+  background: url("/assets/img/svg-sprite.svg") 92.2274678111588% 40.54054054054054% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-storage-device-mount {
+  background: url("/assets/img/svg-sprite.svg") 92.2274678111588% 48.648648648648646% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-storage-device-unmount {
+  background: url("/assets/img/svg-sprite.svg") 92.2274678111588% 56.75675675675676% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-storage-summary {
+  background: url("/assets/img/svg-sprite.svg") 75.95111111111112% 12.149532710280374% no-repeat;
+  width: 26px;
+  height: 26px;
+}
+
+.vsphere-icon-storage-system-refresh {
+  background: url("/assets/img/svg-sprite.svg") 92.2274678111588% 72.97297297297297% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-task-console {
+  background: url("/assets/img/svg-sprite.svg") 92.2274678111588% 81.08108108108108% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-toolbar-add,
+.vsphere-icon-toolbar-add\:regular {
+  background: url("/assets/img/svg-sprite.svg") 0 91.89189189189189% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-toolbar-add-folder {
+  background: url("/assets/img/svg-sprite.svg") 7.725321888412017% 91.89189189189189% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-toolbar-add-vm {
+  background: url("/assets/img/svg-sprite.svg") 15.450643776824034% 91.89189189189189% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-toolbar-add:hover,
+.vsphere-icon-toolbar-add\:hover {
+  background: url("/assets/img/svg-sprite.svg") 23.175965665236053% 91.89189189189189% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-toolbar-edit {
+  background: url("/assets/img/svg-sprite.svg") 30.901287553648068% 91.89189189189189% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-toolbar-host-question {
+  background: url("/assets/img/svg-sprite.svg") 38.62660944206009% 91.89189189189189% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-toolbar-more {
+  background: url("/assets/img/svg-sprite.svg") 46.351931330472105% 91.89189189189189% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-toolbar-network-add {
+  background: url("/assets/img/svg-sprite.svg") 54.07725321888412% 91.89189189189189% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-toolbar-remove {
+  background: url("/assets/img/svg-sprite.svg") 61.802575107296136% 91.89189189189189% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-toolbar-roles {
+  background: url("/assets/img/svg-sprite.svg") 69.52789699570816% 91.89189189189189% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-uplink-port-group {
+  background: url("/assets/img/svg-sprite.svg") 77.25321888412017% 91.89189189189189% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-uplink-port-group-alert {
+  background: url("/assets/img/svg-sprite.svg") 84.97854077253218% 91.89189189189189% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-uplink-port-group-warning {
+  background: url("/assets/img/svg-sprite.svg") 99.95278969957081% 0 no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-vapp {
+  background: url("/assets/img/svg-sprite.svg") 99.95278969957081% 8.108108108108109% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-vcenter {
+  background: url("/assets/img/svg-sprite.svg") 99.95278969957081% 16.216216216216218% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-virtual-port-group {
+  background: url("/assets/img/svg-sprite.svg") 99.95278969957081% 24.324324324324323% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-virtual-port-group-alert {
+  background: url("/assets/img/svg-sprite.svg") 99.95278969957081% 32.432432432432435% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-virtual-port-group-warning {
+  background: url("/assets/img/svg-sprite.svg") 99.95278969957081% 40.54054054054054% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-vm {
+  background: url("/assets/img/svg-sprite.svg") 99.95278969957081% 48.648648648648646% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-vm-add {
+  background: url("/assets/img/svg-sprite.svg") 99.95278969957081% 56.75675675675676% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-vm-add-from-template {
+  background: url("/assets/img/svg-sprite.svg") 99.95278969957081% 64.86486486486487% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-vm-error {
+  background: url("/assets/img/svg-sprite.svg") 99.95278969957081% 72.97297297297297% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-vm-information {
+  background: url("/assets/img/svg-sprite.svg") 99.95278969957081% 81.08108108108108% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-vm-on {
+  background: url("/assets/img/svg-sprite.svg") 99.95278969957081% 89.1891891891892% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-vm-suspended {
+  background: url("/assets/img/svg-sprite.svg") 0 100% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-vm-template {
+  background: url("/assets/img/svg-sprite.svg") 7.725321888412017% 100% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-vm-templates-24x {
+  background: url("/assets/img/svg-sprite.svg") 53.72888888888889% 23.373831775700936% no-repeat;
+  width: 26px;
+  height: 26px;
+}
+
+.vsphere-icon-vm-warning {
+  background: url("/assets/img/svg-sprite.svg") 23.175965665236053% 100% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-vsphere-admin {
+  background: url("/assets/img/svg-sprite.svg") 63.04291845493562% 22.53153153153153% no-repeat;
+  width: 18px;
+  height: 18px;
+}
+
+.vsphere-icon-vsphere-inventory-lists {
+  background: url("/assets/img/svg-sprite.svg") 30.901287553648068% 100% no-repeat;
+  width: 18px;
+  height: 18px;
+}

@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 
-import {map} from 'rxjs/operators';
 import {NGXLogger} from 'ngx-logger';
 import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -72,18 +72,17 @@ export class NetappService {
       path,
       xml
     }).pipe(map((data: any) => {
+      if (data.status === 'error') return this.errorHandler(data.errno);
+      if (!data.data.netapp) return this.errorHandler(data.data.response);
+      if (data.data.netapp.results[0].$.status === 'failed') {
+        return this.errorHandler(data.data.response.netapp.results[0].$);
+      }
 
-        if (data.data.status === 'error') return this.errorHandler(data.data.data.errno);
-        if (!data.data.data.response.netapp) return this.errorHandler(data.data.data.response);
-        if (data.data.data.response.netapp.results[0].$.status === 'failed') {
-          return this.errorHandler(data.data.data.response.netapp.results[0].$);
-        }
-
-        return data.data.data.response.netapp.results[0];
-      },
-      error => {
-        this.logger.error('[NetApp] -> doCall -> Error while doing the call -> ', error);
-      }));
+      return data.data.netapp.results[0];
+    },
+    error => {
+      this.logger.error('[NetApp] -> doCall -> Error while doing the call -> ', error);
+    }));
 
   }
 
@@ -95,7 +94,7 @@ export class NetappService {
       credential,
       host, port,
       null,
-      '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'><system-get-version/></netapp>'
+      `<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin'><system-get-version/></netapp>`
     ).pipe(map((data: any) => {
       return this.validResponse({
         build_timestamp: data['build-timestamp'][0],
@@ -117,7 +116,7 @@ export class NetappService {
       host,
       port,
       null,
-      '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'><system-get-ontapi-version/></netapp>'
+      `<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin'><system-get-ontapi-version/></netapp>`
     ).pipe(map((data: any) => {
       return this.validResponse({
         major_version: data['major-version'][0],
@@ -132,7 +131,7 @@ export class NetappService {
       credential,
       host, port,
       null,
-      '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'><license-v2-status-list-info/></netapp>'
+      `<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin'><license-v2-status-list-info/></netapp>`
     ).pipe(map((data: any) => {
       const results = [];
 
@@ -150,7 +149,7 @@ export class NetappService {
       host,
       port,
       null,
-      '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'><metrocluster-get/></netapp>'
+      `<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin'><metrocluster-get/></netapp>`
     ).pipe(map((data: any) => {
       return this.validResponse({
         local_cluster_name: data.attributes[0]['metrocluster-info'][0]['local-cluster-name'][0],
@@ -166,7 +165,7 @@ export class NetappService {
       host,
       port,
       null,
-      '<netapp version=\'1.15\' xmlns=\'http://www.netapp.com/filer/admin\'><cluster-identity-get/></netapp>'
+      `<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin'><cluster-identity-get/></netapp>`
     ).pipe(map((data: any) => {
       return this.validResponse({
         cluster_contact: data.attributes[0]['cluster-identity-info'][0]['cluster-contact'][0],
@@ -456,7 +455,7 @@ export class NetappService {
     })).toPromise();
   }
 
-  createSnapshot(credential, host, port, vfiler, volume, name): Promise<any> {
+  createSnapshot(credential, host, port, vfiler, volume, name?): Promise<any> {
     const snapshotName = volume + '_SysOS_' + (name ? name : '') + '_' + new Date().toISOString().split('.')[0].replace(/:/g, '');
     const xml = `
 <netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
