@@ -30,7 +30,7 @@
 
       <app-file-explorer-body-actions [application]="application"></app-file-explorer-body-actions>
 
-      <div id="local_body" class="folders" #selectableContainer cdkDropList (cdkDropListDropped)="UIonDropItem($event)" (click)="handleBodyClick($event)" (window:keydown)="handleItemKeyPress($event)" (contextmenu)="onBodyContextMenu($event)">
+      <div id="local_body" class="folders" #selectableContainer cdkDropList (cdkDropListDropped)="UIonDropItem($event)" (click)="handleBodyClick($event)" tabindex="0" (keydown)="handleItemKeyPress($event)" (contextmenu)="onBodyContextMenu($event)">
 
         <ngfUploadStatus
           [(percent)] = "progress"

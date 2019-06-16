@@ -237,4 +237,10 @@ export class InfrastructureManagerVmwareService {
   doWithVM(connectionUuid: string, vm: {}, action: string): void {
 
   }
+
+  getConnectionDatastores(connectionUuid): Array<any> {
+    return this.InfrastructureManager.getConnectionByUuid(connectionUuid).data.Data.filter(obj => {
+      return obj.type === 'Datastore';
+    });
+  }
 }

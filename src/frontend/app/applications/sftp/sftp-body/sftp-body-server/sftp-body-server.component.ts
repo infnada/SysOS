@@ -1,5 +1,4 @@
 import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
-import {HttpEvent, HttpResponse} from '@angular/common/http';
 import {MatMenuTrigger} from '@angular/material';
 
 import {Subscription} from 'rxjs';
@@ -45,8 +44,6 @@ export class SftpBodyServerComponent implements OnInit {
 
   files: File[] = [];
   progress: number;
-  httpEmitter: Subscription[] = [];
-  httpEvent: HttpEvent<{}>;
 
   bodyContextMenuItems: ContextMenuItem[] = [
     {
@@ -161,11 +158,11 @@ export class SftpBodyServerComponent implements OnInit {
    * On file dragstart
    */
   onDragStart(): void {
-    this.FileSystemUi.setCurrentFileDrag(this.currentPath);
+    this.FileSystemUi.setCurrentFileDrag(this.currentPath, 'sftp', this.activeConnection);
   }
 
   UIonDropItem($event): void {
-    this.FileSystemUi.UIonDropItem(this.getActiveConnection().uuid, $event, this.currentPath);
+    this.FileSystemUi.UIonDropItem('sftp', $event, this.currentPath, this.getActiveConnection().uuid);
   }
 
   UIdownloadFromURL(): void {
@@ -190,27 +187,6 @@ export class SftpBodyServerComponent implements OnInit {
 
   UIdoWithFile(file: SysOSFile): void {
     this.FileSystemUi.UIdoWithFile('sftp#server', this.currentPath, file);
-  }
-
-  uploadFiles(files: File[]): void {
-
-    files.forEach((file: File, i: number) => {
-      this.httpEmitter[i] = this.FileSystem.uploadFile(this.currentPath, file).subscribe(
-        event => {
-          this.httpEvent = event;
-
-          if (event instanceof HttpResponse) {
-            delete this.httpEmitter[i];
-          }
-
-          this.reloadPath();
-        },
-        error => console.log('Error Uploading', error)
-      );
-
-      files.splice(i, 1);
-    });
-
   }
 
   goToPath(path: string): void {

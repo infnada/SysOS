@@ -239,10 +239,12 @@ export class VmwareService {
       const taskInfo = this.parseVMwareObject(data.RetrievePropertiesResponse[0].returnval[0]);
 
       if (taskInfo['info.state'] === 'running') {
-        console.log(taskInfo);
+        console.log('running', taskInfo);
 
         return setTimeout(() => this.getTaskStatus(credential, host, port, taskId), 2000);
       }
+
+      console.log('finished', taskInfo);
 
       return this.getTaskResults(credential, host, port, taskId).then((res) => {
         return res;
@@ -2544,6 +2546,7 @@ export class VmwareService {
       const taskId = data.SearchDatastore_TaskResponse[0].returnval[0]._;
 
       return this.getTaskStatus(credential, host, port, taskId).then((res: any) => {
+        console.log(res);
         return this.validResponse(res);
       });
 

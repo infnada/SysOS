@@ -157,7 +157,7 @@ export class FileExplorerBodyComponent implements OnInit {
   }
 
   UIonDropItem($event): void {
-    this.FileSystemUi.UIonDropItem(null, $event, this.currentPath);
+    this.FileSystemUi.UIonDropItem('file-explorer', $event, this.currentPath);
   }
 
   UIdownloadFromURL(): void {

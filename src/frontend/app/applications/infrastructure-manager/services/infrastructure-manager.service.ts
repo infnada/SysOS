@@ -218,7 +218,7 @@ export class InfrastructureManagerService {
       res.forEach((connection) => {
         connection.state = 'disconnected';
 
-        this.setConnectionByType(connection);
+        this.setConnectionByType(connection, true);
 
         this.initializeConnection(connection);
       });
@@ -289,11 +289,11 @@ export class InfrastructureManagerService {
     this.setActiveConnection(connection.uuid);
   }
 
-  setConnectionByType(connection: IMConnection): void {
-    if (connection.type === 'linux') this.setNewConnectionLinux(connection);
-    if (connection.type === 'snmp') this.setNewConnectionSNMP(connection);
-    if (connection.type === 'vmware') this.setNewConnectionVirtual(connection);
-    if (connection.type === 'netapp') this.setNewConnectionNetApp(connection);
+  setConnectionByType(connection: IMConnection, initialized?: boolean): void {
+    if (connection.type === 'linux') this.setNewConnectionLinux(connection, initialized);
+    if (connection.type === 'snmp') this.setNewConnectionSNMP(connection, initialized);
+    if (connection.type === 'vmware') this.setNewConnectionVirtual(connection, initialized);
+    if (connection.type === 'netapp') this.setNewConnectionNetApp(connection, initialized);
   }
 
   initializeConnection(connection: IMConnection) {

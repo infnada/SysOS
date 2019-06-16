@@ -32,6 +32,8 @@ export class FileSystemUiService {
 
   currentCopyCutFile: string = null;
   currentFileDrag: string = null;
+  currentFileDragApplication: string = null;
+  currentFileDragConnectionUuid: string = null;
 
   constructor(private logger: NGXLogger,
               private Modal: ModalService,
@@ -271,15 +273,48 @@ export class FileSystemUiService {
     }
   }
 
-  setCurrentFileDrag(path: string): void {
+  setCurrentFileDrag(path: string, applicationId?: string, connectionUuid?: string): void {
     this.currentFileDrag = path;
+    this.currentFileDragApplication = (applicationId ? applicationId : null);
+    this.currentFileDragConnectionUuid = (connectionUuid ? connectionUuid : null);
   }
 
-  UIonDropItem(connectionUuid: string, $event: CdkDragDrop<any>, dropPath: string): void {
+  UIonDropItem(applicationId: string, $event: CdkDragDrop<any>, dropPath: string, connectionUuid?: string): void {
+
+    // Download from server
+    if (this.currentFileDragApplication && !connectionUuid) {
+      console.log('download from server');
+      this.sendDownloadRemoteFile({
+        path: this.currentFileDrag,
+        file: $event.item.data,
+        connectionUuid: this.currentFileDragConnectionUuid,
+        applicationId
+      });
+
+      return;
+    }
+    // Upload to server
+    if (!this.currentFileDragApplication && connectionUuid) {
+      console.log('upload to server');
+      this.sendUploadToRemote({
+        path: this.currentFileDrag,
+        file: $event.item.data,
+        applicationId
+      });
+
+      return;
+    }
+
+    if (this.currentFileDragApplication && applicationId && this.currentFileDragApplication !== applicationId) {
+      this.logger.error('[FileSystemUI] -> UIonDropItem -> D&D from different applications -> drag [%s], drop [%s]', this.currentFileDragApplication, applicationId);
+      this.Toastr.error('Remote to Remote is not allowed', 'Drag&Drop');
+      return;
+    }
 
     // Do not move files to same directory
     if (this.currentFileDrag === dropPath) return;
 
+    // D&D from/to same applications or local/local
     this.FileSystem.moveFile(connectionUuid,
       this.currentFileDrag + $event.item.data.filename,
       dropPath + $event.item.data.filename

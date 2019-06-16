@@ -1,0 +1,21 @@
+app-datastore-explorer-body-local, app-datastore-explorer-body-server {
+  height: auto;
+  width: 50%;
+  display: flex;
+}
+
+app-datastore-explorer-body-exchange {
+  height: 0;
+}
+
+.with__stats {
+  app-datastore-explorer-body-local, app-datastore-explorer-body-server {
+    height: 70%;
+  }
+
+  app-datastore-explorer-body-exchange {
+    width: 100%;
+    height: 30%;
+  }
+}
+

@@ -1,3 +1,26 @@
-<p>
-  datastore-explorer-body works!
-</p>
+<div class="window__body" [ngClass]="{'with_status': application.status, 'with_actions': application.actions}">
+
+  <div class="window__side" *ngIf="viewSide">
+    <ng-container *ngFor="let connection of connections; index as $index">
+      <div class="menu__item" *ngIf="connection != undefined" [ngClass]="{'active': connection.uuid === activeConnection}" (click)="setActiveConnection(connection)">
+        <h5>
+          {{connection.name}} <small>({{connection.host}})</small>
+          <i class="fa fa-circle pull-right m-t-f" [ngClass]="{'text-danger': connection.state == 'disconnected', 'text-success': connection.state == 'connected'}"></i>
+        </h5>
+      </div>
+    </ng-container>
+    <div class="secondary-content__new__box__toggle pointer visible-lg">
+      <div class="secondary-content__new__box__toggle__slide" (click)="toggleSide()">
+        <i class="fa fa-arrow-left sidebar-open-font open-sidebar"></i>
+      </div>
+    </div>
+  </div>
+  <div class="secondary-content__new__box__toggle toggle_left pointer visible-lg" *ngIf="!viewSide" (click)="toggleSide()">
+    <i class="fa fa-arrow-right sidebar-open-font open-sidebar"></i>
+  </div>
+  <div class="window__main row no_padding" [ngClass]="{'with__stats': viewExchange === true}">
+    <app-datastore-explorer-body-local [application]="application"></app-datastore-explorer-body-local>
+    <app-datastore-explorer-body-server [application]="application"></app-datastore-explorer-body-server>
+    <app-datastore-explorer-body-exchange [application]="application"></app-datastore-explorer-body-exchange>
+  </div>
+</div>

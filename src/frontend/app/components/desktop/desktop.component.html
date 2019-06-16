@@ -1,13 +1,13 @@
 <div class="desktop" cdkDropListGroup>
   <div class="col-xl-12 desktop__body">
-    <div id="desktop_body" class="folders"
+    <div id="desktop_body" class="folders" tabindex="0"
          #selectableContainer
          cdkDropList
          (cdkDropListDropped)="UIonDropItem($event)"
          [cdkDropListData]="'/root/Desktop'"
          (mouseover)="setCurrentHoverApplication();"
          (click)="handleDesktopClick($event)"
-         (window:keydown)="handleItemKeyPress($event)"
+         (keydown)="handleItemKeyPress($event)"
          (contextmenu)="onDesktopContextMenu($event)"
     >
 

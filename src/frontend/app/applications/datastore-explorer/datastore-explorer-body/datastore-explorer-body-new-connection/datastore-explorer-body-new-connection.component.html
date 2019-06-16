@@ -1,0 +1,38 @@
+<ng-container *ngIf="!newConnectionType">
+  <div class="main_form">
+    <p>Explore your managed vCenter ot ESXi Datastores or NetApp Volumes</p>
+    <table class="table table-hover m-t-xl">
+      <tbody>
+      <tr class="cursor-pointer" (click)="setConnectionType('vmware')">
+        <th class="w-25 p-m"><img src="/assets/img/vmware.png" width="75px"></th>
+        <td class="lh-2">Select any managed Datastore from your vCenters or ESXi hosts.</td>
+      </tr>
+      <tr class="cursor-pointer" (click)="setConnectionType('netapp')">
+        <th class="w-25 p-m"><img src="/assets/img/NetApp.png" width="75px"></th>
+        <td class="lh-2">Select any managed NetApp volume. If SnapShot dir "visible" option is enabled, you will be able to see SnapShots files. (You should not modify it).</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="newConnectionType">
+  <form class="main_form form-horizontal" [formGroup]="connectionForm" (ngSubmit)="sendConnect()">
+    <div class="form-group">
+      <div class="col-12">
+        <select class="form-control" formControlName="datastore" [ngClass]="{ 'is-invalid': submitted && f.datastore.errors }">
+          <option value="">-- Select Datastore --</option>
+          <option *ngFor="let datastore of datastores; index as $index" [value]="$index">
+            {{datastore.host}} - {{datastore.name}}
+          </option>
+        </select>
+      </div>
+      <div class="col-12" *ngIf="submitted && f.datastore.errors">
+        <small class="text-danger pull-left" *ngIf="f.datastore.errors.required">Please select a datastore</small>
+      </div>
+    </div>
+    <div>
+      <button class="btn" type="submit" mat-flat-button color="primary">Connect</button>
+    </div>
+  </form>
+</ng-container>

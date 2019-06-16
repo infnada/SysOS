@@ -1,26 +1,27 @@
 import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 import {MatMenuTrigger} from '@angular/material';
-import {HttpEvent, HttpResponse} from '@angular/common/http';
 
 import {Subscription} from 'rxjs';
 import Selectable from 'selectable.js';
 
-import {ApplicationsService} from '../../../../services/applications.service';
 import {FileSystemService} from '../../../../services/file-system.service';
 import {FileSystemUiService} from '../../../../services/file-system-ui.service';
-import {SftpService} from '../../services/sftp.service';
-import {SftpLocalService} from '../../services/sftp-local.service';
+import {ApplicationsService} from '../../../../services/applications.service';
+import {DatastoreExplorerService} from '../../services/datastore-explorer.service';
+import {DatastoreExplorerServerService} from '../../services/datastore-explorer-server.service';
 
+import {SysOSFile} from '../../../../interfaces/file';
 import {Application} from '../../../../interfaces/application';
 import {ContextMenuItem} from '../../../../interfaces/context-menu-item';
-import {SysOSFile} from '../../../../interfaces/file';
+
+import {DatastoreExplorerConnection} from '../../DatastoreExplorerConnection';
 
 @Component({
-  selector: 'app-sftp-body-local',
-  templateUrl: './sftp-body-local.component.html',
-  styleUrls: ['./sftp-body-local.component.scss']
+  selector: 'app-datastore-explorer-body-server',
+  templateUrl: './datastore-explorer-body-server.component.html',
+  styleUrls: ['./datastore-explorer-body-server.component.scss']
 })
-export class SftpBodyLocalComponent implements OnInit {
+export class DatastoreExplorerBodyServerComponent implements OnInit {
   @Input() application: Application;
   @ViewChild('selectableContainer') selectableContainer: ElementRef;
   @ViewChild(MatMenuTrigger) contextMenuBody: MatMenuTrigger;
@@ -37,12 +38,12 @@ export class SftpBodyLocalComponent implements OnInit {
   currentData: Array<SysOSFile>;
   viewAsList: boolean;
   search: { filename: string } = null;
+  activeConnection: string;
 
   currentActive: number = 0;
 
   files: File[] = [];
   progress: number;
-
 
   bodyContextMenuItems: ContextMenuItem[] = [
     {
@@ -80,8 +81,8 @@ export class SftpBodyLocalComponent implements OnInit {
   constructor(private FileSystem: FileSystemService,
               private FileSystemUi: FileSystemUiService,
               private Applications: ApplicationsService,
-              private Sftp: SftpService,
-              private SftpLocal: SftpLocalService) {
+              private DatastoreExplorer: DatastoreExplorerService,
+              private DatastoreExplorerServer: DatastoreExplorerServerService) {
 
     this.reloadPathSubscription = this.FileSystemUi.getObserverRefreshPath().subscribe(path => {
       if (path === this.currentPath) this.reloadPath();
@@ -92,17 +93,18 @@ export class SftpBodyLocalComponent implements OnInit {
     this.Applications.taskbarItemOpen.subscribe(applications => this.taskbarItemOpen = applications);
     this.FileSystemUi.copyFrom.subscribe(path => this.copyFrom = path);
     this.FileSystemUi.cutFrom.subscribe(path => this.cutFrom = path);
-    this.SftpLocal.currentPath.subscribe(path => this.currentPath = path);
-    this.SftpLocal.currentData.subscribe(data => {
+    this.DatastoreExplorerServer.currentPath.subscribe(path => this.currentPath = path);
+    this.DatastoreExplorerServer.currentData.subscribe(data => {
       this.currentData = data;
       this.resetActive();
     });
-    this.SftpLocal.viewAsList.subscribe(data => this.viewAsList = data);
-    this.SftpLocal.search.subscribe(data => this.search = data);
+    this.DatastoreExplorerServer.viewAsList.subscribe(data => this.viewAsList = data);
+    this.DatastoreExplorerServer.search.subscribe(data => this.search = data);
+    this.DatastoreExplorer.activeConnection.subscribe(connection => this.activeConnection = connection);
 
     this.selectable = new Selectable({
       appendTo: this.selectableContainer.nativeElement,
-      ignore: 'a'
+      ignore: ['a', '.main_form']
     });
 
     if (this.application.initData && this.application.initData.path) {
@@ -131,6 +133,10 @@ export class SftpBodyLocalComponent implements OnInit {
     if (typeof item.text === 'function') return item.text(file);
   }
 
+  getActiveConnection(): DatastoreExplorerConnection {
+    return this.DatastoreExplorer.getActiveConnection();
+  }
+
   /**
    * Sets the fist item in the current path as active
    */
@@ -143,61 +149,49 @@ export class SftpBodyLocalComponent implements OnInit {
    * Get current path data
    */
   private reloadPath(): void {
-    this.SftpLocal.reloadPath();
+    if (!this.getActiveConnection()) return;
+
+    this.DatastoreExplorerServer.reloadPath(this.getActiveConnection().uuid);
   }
 
   /**
    * On file dragstart
    */
   onDragStart(): void {
-    this.FileSystemUi.setCurrentFileDrag(this.currentPath);
+    this.FileSystemUi.setCurrentFileDrag(this.currentPath, 'datastore-explorer', this.activeConnection);
   }
 
   UIonDropItem($event): void {
-    this.FileSystemUi.UIonDropItem('sftp', $event, this.currentPath);
+    this.FileSystemUi.UIonDropItem('datastore-explorer', $event, this.currentPath, this.getActiveConnection().uuid);
   }
 
   UIdownloadFromURL(): void {
-    this.FileSystemUi.UIdownloadFromURL(null, this.currentPath, '.window--sftp .window__main');
+    this.FileSystemUi.UIdownloadFromURL(this.getActiveConnection().uuid, this.currentPath, '.window--datastore-explorer .window__main');
   }
 
   UIcreateFolder(): void {
-    this.FileSystemUi.UIcreateFolder(null, this.currentPath, '.window--sftp .window__main');
+    this.FileSystemUi.UIcreateFolder(this.getActiveConnection().uuid, this.currentPath, '.window--datastore-explorer .window__main');
   }
 
   UIrenameFile(file: SysOSFile): void {
-    this.FileSystemUi.UIrenameFile(null, this.currentPath, file, '.window--sftp .window__main');
+    this.FileSystemUi.UIrenameFile(this.getActiveConnection().uuid, this.currentPath, file, '.window--datastore-explorer .window__main');
   }
 
   UIdeleteSelected(file: SysOSFile): void {
-    this.FileSystemUi.UIdeleteSelected(null, this.currentPath, file, '.window--sftp .window__main');
+    this.FileSystemUi.UIdeleteSelected(this.getActiveConnection().uuid, this.currentPath, file, '.window--datastore-explorer .window__main');
   }
 
   UIpasteFile(): void {
-    this.FileSystemUi.UIpasteFile(null, this.currentPath);
+    this.FileSystemUi.UIpasteFile(this.getActiveConnection().uuid, this.currentPath);
   }
 
   UIdoWithFile(file: SysOSFile): void {
-    this.FileSystemUi.UIdoWithFile('sftp#local', this.currentPath, file);
-  }
-
-  uploadFiles(files: File[]): void {
-
-    files.forEach((file: File, i: number) => {
-      this.FileSystemUi.sendUploadToSysOS({
-        dst: this.currentPath,
-        file,
-        applicationId: this.application.id
-      });
-
-      files.splice(i, 1);
-    });
-
+    this.FileSystemUi.UIdoWithFile('datastore-explorer#server', this.currentPath, file);
   }
 
   goToPath(path: string): void {
     this.FileSystemUi.sendGoToPath({
-      application: 'sftp#local',
+      application: 'datastore-explorer#server',
       path
     });
   }
@@ -233,7 +227,7 @@ export class SftpBodyLocalComponent implements OnInit {
   handleItemKeyPress(keyEvent: KeyboardEvent): void {
     console.log(keyEvent);
     // Do nothing if some application is active
-    if (this.taskbarItemOpen !== 'sftp') return;
+    if (this.taskbarItemOpen !== 'datastore-explorer') return;
 
     // Do nothing if there is no active item unless its side arrows
     if (this.currentActive === null && keyEvent.code !== 'ArrowLeft' && keyEvent.code === 'ArrowRight') return;
@@ -267,7 +261,7 @@ export class SftpBodyLocalComponent implements OnInit {
 
       this.UIdoWithFile(currentFile);
     } else if (keyEvent.code === 'Backspace') {
-      this.SftpLocal.sendGoPathBack();
+      this.DatastoreExplorerServer.sendGoPathBack();
     }
   }
 

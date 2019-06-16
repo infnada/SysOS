@@ -6,9 +6,6 @@
   <a class="window__item" (click)="toggleView()">
     <i class="fa fa-list"></i>
   </a>
-  <a class="window__item">
-    <i class="fa fa-terminal"></i>
-  </a>
   <a class="window__item separator"></a>
   <a class="window__back" (click)="goPathBack()">
     <i class="fa fa-arrow-left"></i>
@@ -22,7 +19,7 @@
   <div class="window__path">
     <a (click)="goToPath(null)">
       <i class="fa fa-desktop"></i>
-      Server /
+      SysOS /
     </a>
 
     <ng-container *ngFor="let path of currentPath.split('/'); index as $index">

@@ -154,7 +154,7 @@ export class DesktopComponent implements OnInit, AfterViewInit {
   }
 
   UIonDropItem($event): void {
-    this.FileSystemUi.UIonDropItem(null, $event, this.desktopFiles.currentPath);
+    this.FileSystemUi.UIonDropItem('desktop', $event, this.desktopFiles.currentPath);
   }
 
   UIdownloadFromURL(): void {
