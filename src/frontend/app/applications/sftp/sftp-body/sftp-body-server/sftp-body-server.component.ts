@@ -170,15 +170,15 @@ export class SftpBodyServerComponent implements OnInit {
   }
 
   UIcreateFolder(): void {
-    this.FileSystemUi.UIcreateFolder(this.getActiveConnection().uuid, this.currentPath, '.window--sftp .window__main');
+    this.FileSystemUi.UIcreateFolder(this.getActiveConnection(), this.currentPath, '.window--sftp .window__main');
   }
 
   UIrenameFile(file: SysOSFile): void {
-    this.FileSystemUi.UIrenameFile(this.getActiveConnection().uuid, this.currentPath, file, '.window--sftp .window__main');
+    this.FileSystemUi.UIrenameFile(this.getActiveConnection(), this.currentPath, file, '.window--sftp .window__main');
   }
 
   UIdeleteSelected(file: SysOSFile): void {
-    this.FileSystemUi.UIdeleteSelected(this.getActiveConnection().uuid, this.currentPath, file, '.window--sftp .window__main');
+    this.FileSystemUi.UIdeleteSelected(this.getActiveConnection(), this.currentPath, file, '.window--sftp .window__main');
   }
 
   UIpasteFile(): void {

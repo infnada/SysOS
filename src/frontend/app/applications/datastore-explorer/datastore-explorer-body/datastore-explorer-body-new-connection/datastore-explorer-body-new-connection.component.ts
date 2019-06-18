@@ -62,7 +62,8 @@ export class DatastoreExplorerBodyNewConnectionComponent implements OnInit {
             credential: connection.credential,
             host: connection.host,
             port: connection.port,
-            datacenter: datastore.datacenter
+            datacenter: datastore.datacenter,
+            type: 'vmware'
           });
         });
       });

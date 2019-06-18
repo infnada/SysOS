@@ -54,7 +54,7 @@ export class DatastoreExplorerActionsServerComponent implements OnInit {
    * Creates a new folder
    */
   UIcreateFolder(): void {
-    this.FileSystemUi.UIcreateFolder(this.getActiveConnection().uuid, this.currentPath, '.window--datastore-explorer .window__main');
+    this.FileSystemUi.UIcreateFolder(this.getActiveConnection(), this.currentPath, '.window--datastore-explorer .window__main');
   }
 
   /**

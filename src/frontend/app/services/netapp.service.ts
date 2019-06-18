@@ -47,7 +47,7 @@ export class NetappService {
    * Custom errorHandler function for NetAppFactory
    */
   private errorHandler(e: any): { status: string, error: any } {
-    return {
+    throw {
       status: 'error',
       error: (e.html && e.html.head[0].title ? e.html.head[0].title : e)
     };

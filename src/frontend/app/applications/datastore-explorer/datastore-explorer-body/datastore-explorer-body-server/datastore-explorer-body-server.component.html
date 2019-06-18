@@ -9,7 +9,7 @@
     <div id="local_body" class="folders" cdkDropList (cdkDropListDropped)="UIonDropItem($event)" (click)="handleBodyClick($event)" tabindex="0" (keydown)="handleItemKeyPress($event)" (contextmenu)="onBodyContextMenu($event)">
 
       <ng-container *ngIf="viewAsList === false">
-        <app-file *ngFor="let file of currentData | filterBy: search; index as $index" cdkDrag cdkDragBoundary=".desktop" [cdkDragData]="file" (cdkDragStarted)="onDragStart()" [application]="application" subApplication="server" connectionUuid="{{activeConnection}}" [viewAsList]="viewAsList" [selectable]=selectable [file]=file [isCurrentActive]="$index === currentActive" [currentPath]="currentPath" [selector]="'.window--datastore-explorer .window__main'" (click)="setCurrentActive($index)"></app-file>
+        <app-file *ngFor="let file of currentData | filterBy: search; index as $index" cdkDrag cdkDragBoundary=".desktop" [cdkDragData]="file" (cdkDragStarted)="onDragStart()" [application]="application" subApplication="server" [connection]="getActiveConnection()" [viewAsList]="viewAsList" [selectable]=selectable [file]=file [isCurrentActive]="$index === currentActive" [currentPath]="currentPath" [selector]="'.window--datastore-explorer .window__main'" (click)="setCurrentActive($index)"></app-file>
       </ng-container>
 
       <ng-container *ngIf="viewAsList === true">
@@ -23,7 +23,7 @@
           </thead>
           <tbody>
 
-          <app-file *ngFor="let file of currentData | filterBy: search; index as $index" cdkDrag cdkDragBoundary=".desktop" [cdkDragData]="file" (cdkDragStarted)="onDragStart()" [application]="application" subApplication="server" connectionUuid="{{activeConnection}}" [viewAsList]="viewAsList" [selectable]=selectable [file]=file [isCurrentActive]="$index === currentActive" [currentPath]="currentPath" [selector]="'.window--datastore-explorer .window__main'" (click)="setCurrentActive($index)"></app-file>
+          <app-file *ngFor="let file of currentData | filterBy: search; index as $index" cdkDrag cdkDragBoundary=".desktop" [cdkDragData]="file" (cdkDragStarted)="onDragStart()" [application]="application" subApplication="server" [connection]="getActiveConnection()" [viewAsList]="viewAsList" [selectable]=selectable [file]=file [isCurrentActive]="$index === currentActive" [currentPath]="currentPath" [selector]="'.window--datastore-explorer .window__main'" (click)="setCurrentActive($index)"></app-file>
 
           </tbody>
         </table>

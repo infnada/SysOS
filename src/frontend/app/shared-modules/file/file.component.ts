@@ -9,6 +9,9 @@ import {FileSystemUiService} from '../../services/file-system-ui.service';
 import {SysOSFile} from '../../interfaces/file';
 import {ContextMenuItem} from '../../interfaces/context-menu-item';
 import {Application} from '../../interfaces/application';
+import {IMConnection} from '../../applications/infrastructure-manager/interfaces/IMConnection';
+import {SftpConnection} from '../../applications/sftp/SftpConnection';
+import {DatastoreExplorerConnection} from '../../applications/datastore-explorer/DatastoreExplorerConnection';
 
 @Component({
   selector: 'app-file',
@@ -19,7 +22,7 @@ export class FileComponent implements OnInit, AfterViewInit {
   @ViewChild(MatMenuTrigger) contextMenuFile: MatMenuTrigger;
   @ViewChild('selectableFileElement') selectableFileElement: ElementRef;
   @Input() application: Application;
-  @Input() connectionUuid: string = null;
+  @Input() connection: null|IMConnection|SftpConnection|DatastoreExplorerConnection = null;
   @Input() uploadAllowed: boolean = false;
   @Input() subApplication: string;
   @Input() file: SysOSFile;
@@ -47,10 +50,10 @@ export class FileComponent implements OnInit, AfterViewInit {
         }
       },
       {
-        id: 1, text: (this.connectionUuid !== null ? '<i class="fa fa-cloud-download"></i> Download to SysOS' :
+        id: 1, text: (this.connection && this.connection.uuid !== null ? '<i class="fa fa-cloud-download"></i> Download to SysOS' :
           '<i class="fa fa-download"></i> Download to local'), action: (file: SysOSFile) => {
 
-          if (this.connectionUuid) this.UIdownloadFileToSysOS(file);
+          if (this.connection.uuid) this.UIdownloadFileToSysOS(file);
 
         }
       },
@@ -128,11 +131,11 @@ export class FileComponent implements OnInit, AfterViewInit {
   }
 
   UIrenameFile(file: SysOSFile) {
-    this.FileSystemUi.UIrenameFile(this.connectionUuid, this.currentPath, file, this.selector);
+    this.FileSystemUi.UIrenameFile(this.connection, this.currentPath, file, this.selector);
   }
 
   UIdeleteSelected(file: SysOSFile) {
-    this.FileSystemUi.UIdeleteSelected(this.connectionUuid, this.currentPath, file, this.selector);
+    this.FileSystemUi.UIdeleteSelected(this.connection, this.currentPath, file, this.selector);
   }
 
   UIcopyFile(file: SysOSFile) {
@@ -147,7 +150,7 @@ export class FileComponent implements OnInit, AfterViewInit {
     this.FileSystemUi.sendDownloadRemoteFile({
       path: this.currentPath,
       file,
-      connectionUuid: this.connectionUuid,
+      connectionUuid: this.connection.uuid,
       applicationId: this.application.id
     });
   }

@@ -8,7 +8,11 @@ import {NGXLogger} from 'ngx-logger';
 import {ModalService} from './modal.service';
 import {ApplicationsService} from './applications.service';
 import {FileSystemService} from './file-system.service';
+import {VmwareService} from './vmware.service';
 import {SysOSFile} from '../interfaces/file';
+import {IMConnection} from '../applications/infrastructure-manager/interfaces/IMConnection';
+import {SftpConnection} from '../applications/sftp/SftpConnection';
+import {DatastoreExplorerConnection} from '../applications/datastore-explorer/DatastoreExplorerConnection';
 
 @Injectable({
   providedIn: 'root'
@@ -39,7 +43,8 @@ export class FileSystemUiService {
               private Modal: ModalService,
               private Toastr: ToastrService,
               private FileSystem: FileSystemService,
-              private Applications: ApplicationsService) {
+              private Applications: ApplicationsService,
+              private VMWare: VmwareService) {
 
     this.dataStore = {copyFrom: null, cutFrom: null};
     this.$copyFrom = new BehaviorSubject(null) as BehaviorSubject<string>;
@@ -52,7 +57,7 @@ export class FileSystemUiService {
   /**
    * Creates a new folder
    */
-  UIcreateFolder(connectionUuid: string, currentPath: string, selector: string) {
+  UIcreateFolder(connection: null|IMConnection|SftpConnection|DatastoreExplorerConnection, currentPath: string, selector: string) {
     this.Modal.openRegisteredModal('input', selector,
       {
         title: 'Create new folder',
@@ -64,23 +69,45 @@ export class FileSystemUiService {
       modalInstance.result.then((name: string) => {
         if (!name) return;
 
-        return this.FileSystem.createFolder(connectionUuid, currentPath, name).subscribe(
-          () => {
+        if (connection === null || connection.type === 'linux') {
+          this.FileSystem.createFolder((connection === null ? null : connection.uuid), currentPath, name).subscribe(
+            () => {
+              this.refreshPath(currentPath);
+            },
+            error => {
+              this.logger.error('[FileSystemUI] -> UIcreateFolder -> Error while creating folder -> ', error);
+            });
+        }
+
+        if (connection.type === 'vmware') {
+          this.Modal.openLittleModal('PLEASE WAIT', 'Creating folder...', selector, 'plain');
+
+          this.VMWare.createFolderToDatastore(
+            connection.credential,
+            connection.host,
+            connection.port,
+            (connection as DatastoreExplorerConnection).name,
+            currentPath + name,
+            (connection as DatastoreExplorerConnection).datacenter
+          ).then((data) => {
+            if (data.status === 'error') throw new Error('Failed to create folder');
+
+            this.Modal.closeModal(selector);
+
             this.refreshPath(currentPath);
-          },
-          error => {
-            this.logger.error('[FileSystemUI] -> UIcreateFolder -> Error while creating folder -> ', error);
+          }).catch((error) => {
+            this.logger.error('[DatastoreExplorerServer] -> UIcreateFolder -> Error while creating folder -> ', error);
+            this.Modal.closeModal(selector);
           });
+        }
       });
-
     });
-
   }
 
   /**
    * Rename file
    */
-  UIrenameFile(connectionUuid: string, currentPath: string, file: { longname: string, filename: string }, selector: string) {
+  UIrenameFile(connection: null|IMConnection|SftpConnection|DatastoreExplorerConnection, currentPath: string, file: { longname: string, filename: string }, selector: string) {
     this.Modal.openRegisteredModal('input', selector,
       {
         title: 'Rename file',
@@ -92,45 +119,95 @@ export class FileSystemUiService {
       modalInstance.result.then((name: string) => {
         if (!name) return;
 
-        return this.FileSystem.renameFile(connectionUuid, currentPath, file.filename, name).subscribe(
-          () => {
+        if (connection === null || connection.type === 'linux') {
+          this.FileSystem.renameFile((connection === null ? null : connection.uuid), currentPath, file.filename, name).subscribe(
+            () => {
+              this.refreshPath(currentPath);
+            },
+            error => {
+              this.logger.error('[FileSystemUI] -> UIrenameFile -> Error while renaming file -> ', error);
+            });
+        }
+
+        if (connection.type === 'vmware') {
+          this.Modal.openLittleModal('PLEASE WAIT', 'Moving file...', selector, 'plain');
+
+          this.VMWare.moveFileFromDatastore(
+            connection.credential,
+            connection.host,
+            connection.port,
+            (connection as DatastoreExplorerConnection).name,
+            currentPath + file.filename, // original file name
+            (connection as DatastoreExplorerConnection).datacenter,
+            (connection as DatastoreExplorerConnection).name,
+            currentPath + name, // new file name
+            (connection as DatastoreExplorerConnection).datacenter
+          ).then((data) => {
+            if (data.status === 'error') throw new Error('Failed to rename the fie');
+
+            this.Modal.closeModal(selector);
+
             this.refreshPath(currentPath);
-          },
-          error => {
-            this.logger.error('[FileSystemUI] -> UIrenameFile -> Error while renaming file -> ', error);
+          }).catch((error) => {
+            this.logger.error('[DatastoreExplorerServer] -> UIcreateFolder -> Error while creating folder -> ', error);
+            this.Modal.closeModal(selector);
           });
-
+        }
       });
-
     });
-
   }
 
   /**
    * Deletes selected files or folders
    */
-  UIdeleteSelected(connectionUuid: string, currentPath: string, file: { longname: string, filename: string }, selector: string) {
+  UIdeleteSelected(connection: null|IMConnection|SftpConnection|DatastoreExplorerConnection, currentPath: string, file: { longname: string, filename: string }, selector: string) {
     this.Modal.openRegisteredModal('question', selector,
       {
-        title: 'Delete file ' + file.filename,
-        text: 'Delete ' + file.filename + ' from SysOS?'
+        title: `Delete file ${file.filename}`,
+        text: `Delete ${file.filename} from ${
+          connection === null ? 'SysOS' :
+            connection.type === 'linux' ? `${connection.host} Server` :
+              `${(connection as DatastoreExplorerConnection).name} Datastore`
+        }?`
       }
     ).then((modalInstance) => {
       modalInstance.result.then((result: boolean) => {
         if (result === true) {
-          return this.FileSystem.deleteFile(connectionUuid, currentPath, file.filename).subscribe(
-            () => {
+
+          if (connection === null || connection.type === 'linux') {
+            this.FileSystem.deleteFile((connection === null ? null : connection.uuid), currentPath, file.filename).subscribe(
+              () => {
+                this.refreshPath(currentPath);
+              },
+              error => {
+                this.logger.error('[FileSystemUI] -> UIdeleteSelected -> Error while deleting folder -> ', error);
+              });
+          }
+
+          if (connection.type === 'vmware') {
+            this.Modal.openLittleModal('PLEASE WAIT', 'Deleting file...', selector, 'plain');
+
+            this.VMWare.deleteFileFromDatastore(
+              connection.credential,
+              connection.host,
+              connection.port,
+              (connection as DatastoreExplorerConnection).name,
+              currentPath + file.filename,
+              (connection as DatastoreExplorerConnection).datacenter
+            ).then((data) => {
+              if (data.status === 'error') throw new Error('Failed to delete the fie');
+
+              this.Modal.closeModal(selector);
+
               this.refreshPath(currentPath);
-            },
-            error => {
-              this.logger.error('[FileSystemUI] -> UIdeleteSelected -> Error while deleting folder -> ', error);
+            }).catch((error) => {
+              this.logger.error('[DatastoreExplorerServer] -> UIcreateFolder -> Error while creating folder -> ', error);
+              this.Modal.closeModal(selector);
             });
+          }
         }
-
       });
-
     });
-
   }
 
   /**
@@ -293,6 +370,7 @@ export class FileSystemUiService {
 
       return;
     }
+
     // Upload to server
     if (!this.currentFileDragApplication && connectionUuid) {
       console.log('upload to server');

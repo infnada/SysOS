@@ -54,7 +54,7 @@ export class SftpActionsServerComponent implements OnInit {
    * Creates a new folder
    */
   UIcreateFolder(): void {
-    this.FileSystemUi.UIcreateFolder(this.getActiveConnection().uuid, this.currentPath, '.window--sftp .window__main');
+    this.FileSystemUi.UIcreateFolder(this.getActiveConnection(), this.currentPath, '.window--sftp .window__main');
   }
 
   /**

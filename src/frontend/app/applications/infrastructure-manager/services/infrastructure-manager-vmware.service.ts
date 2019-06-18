@@ -238,9 +238,27 @@ export class InfrastructureManagerVmwareService {
 
   }
 
+  /**
+   * Returns all datastores with his parent Datacenter
+   */
   getConnectionDatastores(connectionUuid): Array<any> {
-    return this.InfrastructureManager.getConnectionByUuid(connectionUuid).data.Data.filter(obj => {
+    const datastores = this.InfrastructureManager.getConnectionByUuid(connectionUuid).data.Data.filter(obj => {
       return obj.type === 'Datastore';
     });
+
+    const getParentObjectByType = (type: string, ofParent: string) => {
+      const parentObject = this.InfrastructureManager.getConnectionByUuid(connectionUuid).data.Data.find(obj => {
+        return obj.obj[0]._ === ofParent;
+      });
+
+      if (parentObject.type === type) return parentObject.obj[0]._;
+      return getParentObjectByType(type, parentObject.changeSet.find(set => set.name[0] === 'parent').val[0]._);
+    };
+
+    datastores.forEach((datastore) => {
+      datastore.datacenter = getParentObjectByType('Datacenter', datastore.obj[0]._);
+    });
+
+    return datastores;
   }
 }

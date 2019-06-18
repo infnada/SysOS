@@ -113,6 +113,7 @@ export class SftpService {
         credential: connection.credential,
         autologin: connection.autologin,
         save: connection.save,
+        type: 'linux',
         state: 'disconnected'
       });
     }

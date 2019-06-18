@@ -7,5 +7,6 @@ export interface SftpConnection {
   autologin: boolean;
   save: boolean;
   state: string;
+  type: string;
   error?: string;
 }

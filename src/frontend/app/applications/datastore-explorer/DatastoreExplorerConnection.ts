@@ -6,5 +6,6 @@ export interface DatastoreExplorerConnection {
   host: string;
   port: number;
   datacenter: string;
+  type: string;
   state?: string;
 }

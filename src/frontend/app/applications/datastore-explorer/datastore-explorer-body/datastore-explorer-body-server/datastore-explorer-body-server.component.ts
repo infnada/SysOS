@@ -13,7 +13,6 @@ import {DatastoreExplorerServerService} from '../../services/datastore-explorer-
 import {SysOSFile} from '../../../../interfaces/file';
 import {Application} from '../../../../interfaces/application';
 import {ContextMenuItem} from '../../../../interfaces/context-menu-item';
-
 import {DatastoreExplorerConnection} from '../../DatastoreExplorerConnection';
 
 @Component({
@@ -47,32 +46,27 @@ export class DatastoreExplorerBodyServerComponent implements OnInit {
 
   bodyContextMenuItems: ContextMenuItem[] = [
     {
-      id: 1, text: '<i class="fa fa-download"></i> Download from URL to current folder', action: () => {
-        this.UIdownloadFromURL();
+      id: 0, text: '<i class="fa fa-folder"></i> Create Folder', action: () => {
+        this.UIcreateFolder();
       }
     },
+    {id: 1, text: 'divider'},
     {
-      id: 2, text: '<i class="fa fa-folder"></i> Create Folder', action: () => {
-        this.UIcreateFolder();
+      id: 2, text: '<i class="fa fa-refresh"></i> Refresh', action: () => {
+        this.reloadPath();
       }
     },
     {id: 3, text: 'divider'},
     {
-      id: 4, text: '<i class="fa fa-refresh"></i> Refresh', action: () => {
-        this.reloadPath();
-      }
-    },
-    {id: 5, text: 'divider'},
-    {
-      id: 6, text: '<i class="fa fa-clipboard"></i> Paste', action: () => {
+      id: 4, text: '<i class="fa fa-clipboard"></i> Paste', action: () => {
         this.UIpasteFile();
       }, disabled: () => {
         return this.copyFrom === null && this.cutFrom === null;
       }
     },
-    {id: 7, text: 'divider'},
+    {id: 5, text: 'divider'},
     {
-      id: 8, text: '<i class="fa fa-lock"></i> Permissions', action: () => {
+      id: 6, text: '<i class="fa fa-lock"></i> Permissions', action: () => {
         // TODO
       }
     }
@@ -165,20 +159,16 @@ export class DatastoreExplorerBodyServerComponent implements OnInit {
     this.FileSystemUi.UIonDropItem('datastore-explorer', $event, this.currentPath, this.getActiveConnection().uuid);
   }
 
-  UIdownloadFromURL(): void {
-    this.FileSystemUi.UIdownloadFromURL(this.getActiveConnection().uuid, this.currentPath, '.window--datastore-explorer .window__main');
-  }
-
   UIcreateFolder(): void {
-    this.FileSystemUi.UIcreateFolder(this.getActiveConnection().uuid, this.currentPath, '.window--datastore-explorer .window__main');
+    this.FileSystemUi.UIcreateFolder(this.getActiveConnection(), this.currentPath, '.window--datastore-explorer .window__main');
   }
 
   UIrenameFile(file: SysOSFile): void {
-    this.FileSystemUi.UIrenameFile(this.getActiveConnection().uuid, this.currentPath, file, '.window--datastore-explorer .window__main');
+    this.FileSystemUi.UIrenameFile(this.getActiveConnection(), this.currentPath, file, '.window--datastore-explorer .window__main');
   }
 
   UIdeleteSelected(file: SysOSFile): void {
-    this.FileSystemUi.UIdeleteSelected(this.getActiveConnection().uuid, this.currentPath, file, '.window--datastore-explorer .window__main');
+    this.FileSystemUi.UIdeleteSelected(this.getActiveConnection(), this.currentPath, file, '.window--datastore-explorer .window__main');
   }
 
   UIpasteFile(): void {

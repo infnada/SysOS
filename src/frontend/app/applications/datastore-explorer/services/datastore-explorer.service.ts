@@ -107,6 +107,7 @@ export class DatastoreExplorerService {
         port: connection.port,
         credential: connection.credential,
         datacenter: connection.datacenter,
+        type: 'vmware',
         state: 'disconnected'
       });
     }

@@ -144,7 +144,7 @@ export class VmwareService {
    * Custom errorHandler function for VMwareFactory
    */
   private errorHandler(e: any): { status: string, error: any } {
-    return {
+    throw {
       status: 'error',
       error: e
     };
@@ -241,7 +241,11 @@ export class VmwareService {
       if (taskInfo['info.state'] === 'running') {
         console.log('running', taskInfo);
 
-        return setTimeout(() => this.getTaskStatus(credential, host, port, taskId), 2000);
+        return new Observable(observer => {
+          setTimeout(() => {
+            observer.next(this.getTaskStatus(credential, host, port, taskId));
+          }, 2000);
+        }).toPromise();
       }
 
       console.log('finished', taskInfo);
@@ -2574,7 +2578,7 @@ export class VmwareService {
     })).toPromise();
   }
 
-  moveFileFromDatastore(credential, host, port, srcDatastoreName, srcPath, srcDatacenter, dstDatastoreName, dstPath, dstDatacenter, force): Promise<any> {
+  moveFileFromDatastore(credential, host, port, srcDatastoreName, srcPath, srcDatacenter, dstDatastoreName, dstPath, dstDatacenter, force?): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
