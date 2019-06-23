@@ -1,0 +1,51 @@
+.taskbar__item {
+  display: inline-block;
+  margin-right: 4px;
+  text-align: center;
+  width: 48px;
+  height: 48px;
+  font-size: 22px;
+  color: white;
+  border: 1px solid transparent;
+  transition: all 100ms;
+}
+.taskbar__item:hover {
+  background-color: rgba(120, 144, 156, 0.15);
+}
+.taskbar__item > i {
+  display: inline-block;
+  vertical-align: middle;
+  margin-top: 6px;
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+}
+
+.taskbar__item--active {
+  background-color: #b5c05c;
+}
+.taskbar__item--active.taskbar__item--explorer {
+  background-color: #0097A7;
+}
+.taskbar__item--active.taskbar__item--mail {
+  background-color: #5C6BC0;
+}
+.taskbar__item--active.taskbar__item--notepad {
+  background-color: #EC407A;
+}
+
+.taskbar__item--open {
+  box-shadow: inset 0 -2px 0 rgba(255, 255, 255, 0.35);
+}
+
+.taskbar__item--start {
+  color: #378fe7;
+  transition: background-color 250ms;
+}
+.taskbar__item--start.start--open {
+  color: white;
+}
+
+.start--open {
+  background-color: #1976D2 !important;
+}

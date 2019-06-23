@@ -1,0 +1,34 @@
+{
+  "/": {
+    "target":  {
+      "host": "localhost",
+      "protocol": "https:",
+      "port": 8080
+    },
+    "secure": false,
+    "logLevel": "debug",
+    "ws":true
+  },
+  "/api/*": {
+    "target":  {
+      "host": "localhost",
+      "protocol": "https:",
+      "port": 8080
+    },
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true
+  },
+  "/getSession": {
+    "target":  {
+      "host": "localhost",
+      "protocol": "https:",
+      "port": 8080
+    },
+    "secure": false,
+    "logLevel": "debug",
+    "changeOrigin": true
+  }
+}
+
+

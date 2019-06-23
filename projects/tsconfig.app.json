@@ -1,0 +1,121 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@sysos/libs-application": [
+        "dist/libs/sysos-libs-application"
+      ],
+      "@sysos/libs-application/*": [
+        "dist/libs/sysos-libs-application/*"
+      ],
+      "@sysos/libs-file-system": [
+        "dist/libs/sysos-libs-file-system"
+      ],
+      "@sysos/libs-file-system/*": [
+        "dist/libs/sysos-libs-file-system/*"
+      ],
+      "@sysos/libs-modal": [
+        "dist/libs/sysos-libs-modal"
+      ],
+      "@sysos/libs-modal/*": [
+        "dist/libs/sysos-libs-modal/*"
+      ],
+      "@sysos/libs-vmware": [
+        "dist/libs/sysos-libs-vmware"
+      ],
+      "@sysos/libs-vmware/*": [
+        "dist/libs/sysos-libs-vmware/*"
+      ],
+      "@sysos/libs-netapp": [
+        "dist/libs/sysos-libs-netapp"
+      ],
+      "@sysos/libs-netapp/*": [
+        "dist/libs/sysos-libs-netapp/*"
+      ],
+      "@sysos/libs-user": [
+        "dist/libs/sysos-libs-user"
+      ],
+      "@sysos/libs-user/*": [
+        "dist/libs/sysos-libs-user/*"
+      ],
+      "@sysos/libs-types": [
+        "dist/libs/sysos-libs-types"
+      ],
+      "@sysos/libs-types/*": [
+        "dist/libs/sysos-libs-types/*"
+      ],
+      "@sysos/libs-file-system-ui": [
+        "dist/libs/sysos-libs-file-system-ui"
+      ],
+      "@sysos/libs-file-system-ui/*": [
+        "dist/libs/sysos-libs-file-system-ui/*"
+      ],
+      "@sysos/libs-file": [
+        "dist/libs/sysos-libs-file"
+      ],
+      "@sysos/libs-file/*": [
+        "dist/libs/sysos-libs-file/*"
+      ],
+      "@sysos/libs-selectable": [
+        "dist/libs/sysos-libs-selectable"
+      ],
+      "@sysos/libs-selectable/*": [
+        "dist/libs/sysos-libs-selectable/*"
+      ],
+      "@sysos/app-backups-manager": [
+        "dist/applications/sysos-app-backups-manager"
+      ],
+      "@sysos/app-backups-manager/*": [
+        "dist/applications/sysos-app-backups-manager/*"
+      ],
+      "@sysos/app-datastore-explorer": [
+        "dist/applications/sysos-app-datastore-explorer"
+      ],
+      "@sysos/app-datastore-explorer/*": [
+        "dist/applications/sysos-app-datastore-explorer/*"
+      ],
+      "@sysos/app-file-explorer": [
+        "dist/applications/sysos-app-file-explorer"
+      ],
+      "@sysos/app-file-explorer/*": [
+        "dist/applications/sysos-app-file-explorer/*"
+      ],
+      "@sysos/app-infrastructure-manager": [
+        "dist/applications/sysos-app-infrastructure-manager"
+      ],
+      "@sysos/app-infrastructure-manager/*": [
+        "dist/applications/sysos-app-infrastructure-manager/*"
+      ],
+      "@sysos/app-notepad": [
+        "dist/applications/sysos-app-notepad"
+      ],
+      "@sysos/app-notepad/*": [
+        "dist/applications/sysos-app-notepad/*"
+      ],
+      "@sysos/app-sftp": [
+        "dist/applications/sysos-app-sftp"
+      ],
+      "@sysos/app-sftp/*": [
+        "dist/applications/sysos-app-sftp/*"
+      ],
+      "@sysos/app-ssh": [
+        "dist/applications/sysos-app-ssh"
+      ],
+      "@sysos/app-ssh/*": [
+        "dist/applications/sysos-app-ssh/*"
+      ],
+      "@sysos/app-credentials-manager": [
+        "dist/applications/sysos-app-credentials-manager"
+      ],
+      "@sysos/app-credentials-manager/*": [
+        "dist/applications/sysos-app-credentials-manager/*"
+      ],
+      "@sysos/app-wmks": [
+        "dist/applications/sysos-app-wmks"
+      ],
+      "@sysos/app-wmks/*": [
+        "dist/applications/sysos-app-wmks/*"
+      ]
+    }
+  }
+}

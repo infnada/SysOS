@@ -1,0 +1,14 @@
+.side__list {
+  transition: opacity 200ms, height 2s;
+
+  ul {
+    opacity: 0;
+    height: 0;
+  }
+}
+
+.side__list--open ul {
+  opacity: 1 !important;
+  height: auto !important;
+}
+

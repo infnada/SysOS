@@ -1,0 +1,130 @@
+<div class="window__body" [ngClass]="{'with_status': application.status, 'with_actions': application.actions}">
+  <div class="window__side" *ngIf="viewSide">
+
+    <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+      <!-- This is the tree node template for leaf nodes -->
+      <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding matTreeNodePaddingIndent="10" (contextmenu)="onTreeContextMenu($event, node)">
+        <!-- use a disabled button to provide padding for tree leaf -->
+        <button mat-icon-button disabled></button>
+        <ng-container *ngIf="node.type === 'storage'"><i class="fa fa-database"></i> </ng-container>
+        <ng-container *ngIf="node.type === 'netapp'"><img src="/assets/img/NetApp-logo.png" width="16px" /> </ng-container>
+        <ng-container *ngIf="node.type === 'vserver'"><i class="fa fa-server"></i> </ng-container>
+        <ng-container *ngIf="node.type === 'volume'"><i class="vs-icon vsphere-icon-datastore"></i> </ng-container>
+        <ng-container *ngIf="node.type === 'snapshot'"><i class="fa fa-camera"></i> </ng-container>
+        <ng-container *ngIf="node.type === 'virtual'"><i class="fa fa-cloud"></i> </ng-container>
+        <ng-container *ngIf="node.type === 'vmware'"><i class="vs-icon vsphere-icon-vcenter"></i> </ng-container>
+        <ng-container *ngIf="node.type === 'Datacenter'"><i class="vs-icon vsphere-icon-datacenter"></i> </ng-container>
+        <ng-container *ngIf="node.type === 'ClusterComputeResource'"><i class="vs-icon vsphere-icon-cluster"></i> </ng-container>
+        <ng-container *ngIf="node.type === 'HostSystem'"><i class="vs-icon" [ngClass]="{'vsphere-icon-host-disconnected': node.data.powerState === 'poweredOff', 'vsphere-icon-host': node.data.powerState === 'poweredOn'}"></i> </ng-container>
+        <ng-container *ngIf="node.type === 'Folder'"><i class="vs-icon vsphere-icon-folder"></i> </ng-container>
+        <ng-container *ngIf="node.type === 'ResourcePool'"><i class="vs-icon vsphere-icon-resource-pool"></i> </ng-container>
+        <ng-container *ngIf="node.type === 'VirtualMachine'"><i class="vs-icon" [ngClass]="{'vsphere-icon-vm': node.data.powerState === 'poweredOff', 'vsphere-icon-vm-on': node.data.powerState === 'poweredOn', 'vsphere-icon-vm-suspended': node.data.powerState === 'suspended'}"></i> </ng-container>
+        <ng-container *ngIf="node.type === 'Datastore'"><i class="vs-icon" [ngClass]="{'vsphere-icon-datastore': node.data.accessible === 'true', 'vsphere-icon-datastore-inaccessible': node.data.accessible === 'false'}"></i> </ng-container>
+        {{node.name}}
+
+        <div style="position: fixed"
+             [style.left]="contextMenuPosition.x"
+             [style.top]="contextMenuPosition.y"
+             [matMenuTriggerFor]="contextMenuTree"
+             [matMenuTriggerData]="{item: node}">
+        </div>
+      </mat-tree-node>
+      <!-- This is the tree node template for expandable nodes -->
+      <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding matTreeNodePaddingIndent="10" (contextmenu)="onTreeContextMenu($event, node)">
+        <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'toggle ' + node.name">
+          <mat-icon class="mat-icon-rtl-mirror">
+            {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+          </mat-icon>
+        </button>
+        <ng-container *ngIf="node.type === 'storage'"><i class="fa fa-database"></i> </ng-container>
+        <ng-container *ngIf="node.type === 'netapp'"><img src="/assets/img/NetApp-logo.png" width="16px" /> </ng-container>
+        <ng-container *ngIf="node.type === 'vserver'"><i class="fa fa-server"></i> </ng-container>
+        <ng-container *ngIf="node.type === 'volume'"><i class="vs-icon vsphere-icon-datastore"></i> </ng-container>
+        <ng-container *ngIf="node.type === 'snapshot'"><i class="fa fa-camera"></i> </ng-container>
+        <ng-container *ngIf="node.type === 'virtual'"><i class="fa fa-cloud"></i> </ng-container>
+        <ng-container *ngIf="node.type === 'vmware'"><i class="vs-icon vsphere-icon-vcenter"></i> </ng-container>
+        <ng-container *ngIf="node.type === 'Datacenter'"><i class="vs-icon vsphere-icon-datacenter"></i> </ng-container>
+        <ng-container *ngIf="node.type === 'ClusterComputeResource'"><i class="vs-icon vsphere-icon-cluster"></i> </ng-container>
+        <ng-container *ngIf="node.type === 'HostSystem'"><i class="vs-icon" [ngClass]="{'vsphere-icon-host-disconnected': node.data.powerState === 'poweredOff', 'vsphere-icon-host': node.data.powerState === 'poweredOn'}"></i> </ng-container>
+        <ng-container *ngIf="node.type === 'Folder'"><i class="vs-icon vsphere-icon-folder"></i> </ng-container>
+        <ng-container *ngIf="node.type === 'ResourcePool'"><i class="vs-icon vsphere-icon-resource-pool"></i> </ng-container>
+        <ng-container *ngIf="node.type === 'VirtualMachine'"><i class="vs-icon" [ngClass]="{'vsphere-icon-vm': node.data.powerState === 'poweredOff', 'vsphere-icon-vm-on': node.data.powerState === 'poweredOn', 'vsphere-icon-vm-suspended': node.data.powerState === 'suspended'}"></i> </ng-container>
+        <ng-container *ngIf="node.type === 'Datastore'"><i class="vs-icon" [ngClass]="{'vsphere-icon-datastore': node.data.accessible === 'true', 'vsphere-icon-datastore-inaccessible': node.data.accessible === 'false'}"></i> </ng-container>
+        {{node.name}}
+
+        <div style="position: fixed"
+             [style.left]="contextMenuPosition.x"
+             [style.top]="contextMenuPosition.y"
+             [matMenuTriggerFor]="contextMenuTree"
+             [matMenuTriggerData]="{item: node}">
+        </div>
+      </mat-tree-node>
+
+      <mat-menu #contextMenuTree="matMenu">
+        <ng-template matMenuContent let-item="item">
+          <ng-container *ngFor="let menuItem of treeContextMenuItems(item)">
+
+            <!-- Item has submenu -->
+            <ng-container *ngIf="menuItem.subMenu">
+              <mat-menu #contextSubMenuTree="matMenu">
+                <ng-template matMenuContent let-item="item" let-subMenu="subMenu">
+                  <ng-container *ngFor="let menuItem of subMenu()">
+
+                    <button mat-menu-item *ngIf="menuItem.text !== 'divider'" (click)="menuItem.action(item)" [disabled]="checkIfDisabled(menuItem)" [innerHTML]="contextToText(menuItem)"></button>
+
+                    <mat-divider *ngIf="menuItem.text === 'divider'"></mat-divider>
+                  </ng-container>
+                </ng-template>
+              </mat-menu>
+
+              <button mat-menu-item [matMenuTriggerFor]="contextSubMenuTree" [matMenuTriggerData]="{item: item, subMenu: menuItem.subMenu}" *ngIf="menuItem.text !== 'divider'" (click)="menuItem.action(item)" [disabled]="checkIfDisabled(menuItem)" [innerHTML]="contextToText(menuItem)"></button>
+            </ng-container>
+            <!-- End submenu -->
+
+            <ng-container *ngIf="!menuItem.subMenu">
+              <button mat-menu-item *ngIf="menuItem.text !== 'divider'" (click)="menuItem.action(item)" [disabled]="checkIfDisabled(menuItem)" [innerHTML]="contextToText(menuItem)"></button>
+            </ng-container>
+
+            <mat-divider *ngIf="menuItem.text === 'divider'"></mat-divider>
+          </ng-container>
+        </ng-template>
+      </mat-menu>
+
+    </mat-tree>
+
+  </div>
+  <div class="secondary-content__new__box__toggle pointer visible-lg">
+    <div class="secondary-content__new__box__toggle__slide" (click)="toggleSide()">
+      <i class="fa fa-arrow-left sidebar-open-font open-sidebar"></i>
+    </div>
+  </div>
+  <div class="secondary-content__new__box__toggle toggle_left pointer visible-lg" *ngIf="!viewSide" (click)="toggleSide()">
+    <i class="fa fa-arrow-right sidebar-open-font open-sidebar"></i>
+  </div>
+  <div class="window__main">
+    <div class="col">
+      <saim-body-new-connection [application]="application" *ngIf="activeConnection === null || getActiveConnection().state === 'disconnected'"></saim-body-new-connection>
+    </div>
+    <!--<div ng-if="smB.showvCenter == true">
+	  <div ng-include="'templates/applications/vcenter-type-smanager.html'" include-replace></div>
+	</div>
+	<div ng-if="smB.showSnapshot == true">
+	  <div ng-include="'templates/applications/snapshot-type-smanager.html'" include-replace></div>
+	</div>
+	<div ng-if="smB.showVm == true || smB.showStandalone == true && smB.getActiveConnection().state != 'disconnected' && smB.getActiveConnection().so != 'snmp'">
+	  <div ng-include="'templates/applications/standalone-type-smanager.html'" include-replace></div>
+	</div>
+	<div ng-if="smB.getActiveConnection().so == 'snmp'">
+	  <div ng-include="'templates/applications/snmp-type-smanager.html'" include-replace></div>
+	</div>
+	<div ng-if="smB.showNewConnectionType == true">
+	  <div ng-include="'templates/applications/new-connection-type-smanager.html'" include-replace></div>
+	</div>
+	<div ng-if="smB.showNewConnection == true || smB.getActiveConnection().state == 'disconnected'">
+	  <div ng-include="'templates/applications/new-connection-smanager.html'" include-replace></div>
+	</div>
+	<div ng-if="smB.showConfigureConnection == true">
+	  <div ng-include="'templates/applications/configure-connection-smanager.html'" include-replace></div>
+	</div>-->
+  </div>
+</div>

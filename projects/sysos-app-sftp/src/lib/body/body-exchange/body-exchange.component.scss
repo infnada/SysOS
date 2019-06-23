@@ -1,0 +1,47 @@
+.table {
+  margin-bottom: 0;
+  height: 100%;
+  display: grid;
+
+  tr {
+    display: inline-table;
+    width: 100%;
+  }
+
+  tbody {
+    overflow-y: scroll;
+  }
+}
+.table-elipsis td {
+  max-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 24px;
+  padding: 4px;
+}
+
+.table-elipsis td:nth-child(1) {
+  width: 5%;
+}
+.table-elipsis td:nth-child(2) {
+  width: 10%;
+}
+.table-elipsis td:nth-child(3) {
+  width: 20%;
+}
+.table-elipsis td:nth-child(4) {
+  width: 20%;
+}
+.table-elipsis td:nth-child(5) {
+  width: 7%;
+}
+.table-elipsis td:nth-child(6) {
+  width: 10%;
+}
+.table-elipsis td:nth-child(7) {
+  width: 13%;
+}
+.table-elipsis td:nth-child(8) {
+  width: 15%;
+}

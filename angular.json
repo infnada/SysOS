@@ -1,0 +1,862 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "SysOS": {
+      "root": "",
+      "sourceRoot": "src/frontend",
+      "projectType": "application",
+      "prefix": "app",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/SysOS/public",
+            "index": "src/frontend/index.html",
+            "main": "src/frontend/main.ts",
+            "polyfills": "src/frontend/polyfills.ts",
+            "tsConfig": "src/frontend/tsconfig.app.json",
+            "assets": [
+              "src/frontend/favicon.ico",
+              "src/frontend/assets",
+              {
+                "glob": "**/*",
+                "input": "node_modules/ngx-monaco-editor/assets/monaco",
+                "output": "./assets/monaco/"
+              }
+            ],
+            "styles": [
+              "src/frontend/styles.scss"
+            ],
+            "scripts": [
+              "node_modules/systemjs/dist/system.js"
+            ],
+            "es5BrowserSupport": true
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "src/frontend/environments/environment.ts",
+                  "with": "src/frontend/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "SysOS:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "SysOS:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "SysOS:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "src/frontend/test.ts",
+            "polyfills": "src/frontend/polyfills.ts",
+            "tsConfig": "src/frontend/tsconfig.spec.json",
+            "karmaConfig": "src/frontend/karma.conf.js",
+            "styles": [
+              "src/frontend/styles.scss"
+            ],
+            "scripts": [],
+            "assets": [
+              "src/frontend/favicon.ico",
+              "src/frontend/assets"
+            ]
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "src/frontend/tsconfig.app.json",
+              "src/frontend/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "SysOS-e2e": {
+      "root": "e2e/",
+      "projectType": "application",
+      "prefix": "",
+      "architect": {
+        "e2e": {
+          "builder": "@angular-devkit/build-angular:protractor",
+          "options": {
+            "protractorConfig": "e2e/protractor.conf.js",
+            "devServerTarget": "SysOS:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "SysOS:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": "e2e/tsconfig.e2e.json",
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-libs-application": {
+      "root": "projects/sysos-libs-application",
+      "sourceRoot": "projects/sysos-libs-application/src",
+      "projectType": "library",
+      "prefix": "slapp",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-libs-application/tsconfig.lib.json",
+            "project": "projects/sysos-libs-application/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-libs-application/src/test.ts",
+            "tsConfig": "projects/sysos-libs-application/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-libs-application/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-libs-application/tsconfig.lib.json",
+              "projects/sysos-libs-application/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-libs-fileSystem": {
+      "root": "projects/sysos-libs-file-system",
+      "sourceRoot": "projects/sysos-libs-file-system/src",
+      "projectType": "library",
+      "prefix": "slfs",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-libs-file-system/tsconfig.lib.json",
+            "project": "projects/sysos-libs-file-system/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-libs-file-system/src/test.ts",
+            "tsConfig": "projects/sysos-libs-file-system/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-libs-file-system/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-libs-file-system/tsconfig.lib.json",
+              "projects/sysos-libs-file-system/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-libs-modal": {
+      "root": "projects/sysos-libs-modal",
+      "sourceRoot": "projects/sysos-libs-modal/src",
+      "projectType": "library",
+      "prefix": "slmodal",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-libs-modal/tsconfig.lib.json",
+            "project": "projects/sysos-libs-modal/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-libs-modal/src/test.ts",
+            "tsConfig": "projects/sysos-libs-modal/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-libs-modal/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-libs-modal/tsconfig.lib.json",
+              "projects/sysos-libs-modal/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-libs-vmware": {
+      "root": "projects/sysos-libs-vmware",
+      "sourceRoot": "projects/sysos-libs-vmware/src",
+      "projectType": "library",
+      "prefix": "slvmware",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-libs-vmware/tsconfig.lib.json",
+            "project": "projects/sysos-libs-vmware/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-libs-vmware/src/test.ts",
+            "tsConfig": "projects/sysos-libs-vmware/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-libs-vmware/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-libs-vmware/tsconfig.lib.json",
+              "projects/sysos-libs-vmware/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-libs-netapp": {
+      "root": "projects/sysos-libs-netapp",
+      "sourceRoot": "projects/sysos-libs-netapp/src",
+      "projectType": "library",
+      "prefix": "slnetapp",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-libs-netapp/tsconfig.lib.json",
+            "project": "projects/sysos-libs-netapp/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-libs-netapp/src/test.ts",
+            "tsConfig": "projects/sysos-libs-netapp/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-libs-netapp/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-libs-netapp/tsconfig.lib.json",
+              "projects/sysos-libs-netapp/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-libs-user": {
+      "root": "projects/sysos-libs-user",
+      "sourceRoot": "projects/sysos-libs-user/src",
+      "projectType": "library",
+      "prefix": "sluser",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-libs-user/tsconfig.lib.json",
+            "project": "projects/sysos-libs-user/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-libs-user/src/test.ts",
+            "tsConfig": "projects/sysos-libs-user/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-libs-user/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-libs-user/tsconfig.lib.json",
+              "projects/sysos-libs-user/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-libs-types": {
+      "root": "projects/sysos-libs-types",
+      "sourceRoot": "projects/sysos-libs-types/src",
+      "projectType": "library",
+      "prefix": "sltypes",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-libs-types/tsconfig.lib.json",
+            "project": "projects/sysos-libs-types/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-libs-types/src/test.ts",
+            "tsConfig": "projects/sysos-libs-types/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-libs-types/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-libs-types/tsconfig.lib.json",
+              "projects/sysos-libs-types/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-libs-fileSystemUi": {
+      "root": "projects/sysos-libs-file-system-ui",
+      "sourceRoot": "projects/sysos-libs-file-system-ui/src",
+      "projectType": "library",
+      "prefix": "slfsui",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-libs-file-system-ui/tsconfig.lib.json",
+            "project": "projects/sysos-libs-file-system-ui/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-libs-file-system-ui/src/test.ts",
+            "tsConfig": "projects/sysos-libs-file-system-ui/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-libs-file-system-ui/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-libs-file-system-ui/tsconfig.lib.json",
+              "projects/sysos-libs-file-system-ui/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-libs-file": {
+      "root": "projects/sysos-libs-file",
+      "sourceRoot": "projects/sysos-libs-file/src",
+      "projectType": "library",
+      "prefix": "slf",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-libs-file/tsconfig.lib.json",
+            "project": "projects/sysos-libs-file/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-libs-file/src/test.ts",
+            "tsConfig": "projects/sysos-libs-file/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-libs-file/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-libs-file/tsconfig.lib.json",
+              "projects/sysos-libs-file/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-app-backups-manager": {
+      "root": "projects/sysos-app-backups-manager",
+      "sourceRoot": "projects/sysos-app-backups-manager/src",
+      "projectType": "library",
+      "prefix": "sabm",
+      "schematics": {
+        "@schematics/angular:component": {
+          "styleext": "scss"
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-app-backups-manager/tsconfig.lib.json",
+            "project": "projects/sysos-app-backups-manager/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-app-backups-manager/src/test.ts",
+            "tsConfig": "projects/sysos-app-backups-manager/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-app-backups-manager/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-app-backups-manager/tsconfig.lib.json",
+              "projects/sysos-app-backups-manager/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-app-datastore-explorer": {
+      "root": "projects/sysos-app-datastore-explorer",
+      "sourceRoot": "projects/sysos-app-datastore-explorer/src",
+      "projectType": "library",
+      "prefix": "sade",
+      "schematics": {
+        "@schematics/angular:component": {
+          "styleext": "scss"
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-app-datastore-explorer/tsconfig.lib.json",
+            "project": "projects/sysos-app-datastore-explorer/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-app-datastore-explorer/src/test.ts",
+            "tsConfig": "projects/sysos-app-datastore-explorer/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-app-datastore-explorer/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-app-datastore-explorer/tsconfig.lib.json",
+              "projects/sysos-app-datastore-explorer/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-app-file-explorer": {
+      "root": "projects/sysos-app-file-explorer",
+      "sourceRoot": "projects/sysos-app-file-explorer/src",
+      "projectType": "library",
+      "prefix": "safe",
+      "schematics": {
+        "@schematics/angular:component": {
+          "styleext": "scss"
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-app-file-explorer/tsconfig.lib.json",
+            "project": "projects/sysos-app-file-explorer/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-app-file-explorer/src/test.ts",
+            "tsConfig": "projects/sysos-app-file-explorer/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-app-file-explorer/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-app-file-explorer/tsconfig.lib.json",
+              "projects/sysos-app-file-explorer/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-app-infrastructure-manager": {
+      "root": "projects/sysos-app-infrastructure-manager",
+      "sourceRoot": "projects/sysos-app-infrastructure-manager/src",
+      "projectType": "library",
+      "prefix": "saim",
+      "schematics": {
+        "@schematics/angular:component": {
+          "styleext": "scss"
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-app-infrastructure-manager/tsconfig.lib.json",
+            "project": "projects/sysos-app-infrastructure-manager/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-app-infrastructure-manager/src/test.ts",
+            "tsConfig": "projects/sysos-app-infrastructure-manager/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-app-infrastructure-manager/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-app-infrastructure-manager/tsconfig.lib.json",
+              "projects/sysos-app-infrastructure-manager/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-app-notepad": {
+      "root": "projects/sysos-app-notepad",
+      "sourceRoot": "projects/sysos-app-notepad/src",
+      "projectType": "library",
+      "prefix": "san",
+      "schematics": {
+        "@schematics/angular:component": {
+          "styleext": "scss"
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-app-notepad/tsconfig.lib.json",
+            "project": "projects/sysos-app-notepad/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-app-notepad/src/test.ts",
+            "tsConfig": "projects/sysos-app-notepad/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-app-notepad/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-app-notepad/tsconfig.lib.json",
+              "projects/sysos-app-notepad/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-app-sftp": {
+      "root": "projects/sysos-app-sftp",
+      "sourceRoot": "projects/sysos-app-sftp/src",
+      "projectType": "library",
+      "prefix": "sasftp",
+      "schematics": {
+        "@schematics/angular:component": {
+          "styleext": "scss"
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-app-sftp/tsconfig.lib.json",
+            "project": "projects/sysos-app-sftp/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-app-sftp/src/test.ts",
+            "tsConfig": "projects/sysos-app-sftp/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-app-sftp/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-app-sftp/tsconfig.lib.json",
+              "projects/sysos-app-sftp/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-app-ssh": {
+      "root": "projects/sysos-app-ssh",
+      "sourceRoot": "projects/sysos-app-ssh/src",
+      "projectType": "library",
+      "prefix": "sassh",
+      "schematics": {
+        "@schematics/angular:component": {
+          "styleext": "scss"
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-app-ssh/tsconfig.lib.json",
+            "project": "projects/sysos-app-ssh/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-app-ssh/src/test.ts",
+            "tsConfig": "projects/sysos-app-ssh/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-app-ssh/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-app-ssh/tsconfig.lib.json",
+              "projects/sysos-app-ssh/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-app-credentials-manager": {
+      "root": "projects/sysos-app-credentials-manager",
+      "sourceRoot": "projects/sysos-app-credentials-manager/src",
+      "projectType": "library",
+      "prefix": "sacm",
+      "schematics": {
+        "@schematics/angular:component": {
+          "styleext": "scss"
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-app-credentials-manager/tsconfig.lib.json",
+            "project": "projects/sysos-app-credentials-manager/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-app-credentials-manager/src/test.ts",
+            "tsConfig": "projects/sysos-app-credentials-manager/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-app-credentials-manager/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-app-credentials-manager/tsconfig.lib.json",
+              "projects/sysos-app-credentials-manager/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-app-wmks": {
+      "root": "projects/sysos-app-wmks",
+      "sourceRoot": "projects/sysos-app-wmks/src",
+      "projectType": "library",
+      "prefix": "sawmks",
+      "schematics": {
+        "@schematics/angular:component": {
+          "styleext": "scss"
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-app-wmks/tsconfig.lib.json",
+            "project": "projects/sysos-app-wmks/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-app-wmks/src/test.ts",
+            "tsConfig": "projects/sysos-app-wmks/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-app-wmks/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-app-wmks/tsconfig.lib.json",
+              "projects/sysos-app-wmks/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-libs-selectable": {
+      "root": "projects/sysos-libs-selectable",
+      "sourceRoot": "projects/sysos-libs-selectable/src",
+      "projectType": "library",
+      "prefix": "slsel",
+      "schematics": {
+        "@schematics/angular:component": {
+          "styleext": "scss"
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-libs-selectable/tsconfig.lib.json",
+            "project": "projects/sysos-libs-selectable/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-libs-selectable/src/test.ts",
+            "tsConfig": "projects/sysos-libs-selectable/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-libs-selectable/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-libs-selectable/tsconfig.lib.json",
+              "projects/sysos-libs-selectable/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "defaultProject": "SysOS"
+}

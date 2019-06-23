@@ -1,0 +1,21 @@
+sade-body-local, sade-body-server {
+  height: auto;
+  width: 50%;
+  display: flex;
+}
+
+sade-body-exchange {
+  height: 0;
+}
+
+.with__stats {
+  sade-body-local, sade-body-server {
+    height: 70%;
+  }
+
+  sade-body-exchange {
+    width: 100%;
+    height: 30%;
+  }
+}
+

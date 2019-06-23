@@ -1,0 +1,21 @@
+{
+  "name": "@sysos/app-file-explorer",
+  "version": "0.0.1",
+  "license": "MIT",
+  "private": false,
+  "peerDependencies": {
+    "@angular/cdk": "^7.3.7",
+    "@angular/common": "^7.2.0",
+    "@angular/core": "^7.2.0",
+    "@angular/forms": "~7.2.0",
+    "@angular/material": "^7.3.7",
+    "angular-file": "^1.2.2",
+    "ngx-filter-pipe": "^2.1.2",
+    "ngx-logger": "^3.3.13",
+    "@sysos/libs-file": "0.0.1",
+    "@sysos/libs-file-system": "0.0.1",
+    "@sysos/libs-file-system-ui": "0.0.1",
+    "@sysos/libs-application": "0.0.1",
+    "@sysos/libs-selectable": "0.0.1"
+  }
+}

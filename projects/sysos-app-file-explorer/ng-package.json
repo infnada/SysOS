@@ -1,0 +1,17 @@
+{
+  "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
+  "dest": "../../dist/applications/sysos-app-file-explorer",
+  "lib": {
+    "entryFile": "src/public-api.ts",
+    "umdModuleIds": {
+      "ngx-filter-pipe": "ngxFilterPipe",
+      "angular-file": "angularFile",
+      "ngx-logger": "ngxLogger",
+      "@sysos/libs-file": "SysOSLibsFile",
+      "@sysos/libs-file-system": "SysOSLibsFileSystem",
+      "@sysos/libs-file-system-ui": "SysOSLibsFileSystemUi",
+      "@sysos/libs-application": "SysOSLibsApplication",
+      "@sysos/libs-selectable": "SysOSLibsSelectable"
+    }
+  }
+}

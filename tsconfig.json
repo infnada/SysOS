@@ -1,0 +1,138 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./dist/out-tsc",
+    "sourceMap": true,
+    "declaration": false,
+    "module": "es2015",
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "es5",
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "lib": [
+      "es2018",
+      "dom"
+    ],
+    "paths": {
+      "@sysos/libs-application": [
+        "projects/sysos-libs-application/src/public-api"
+      ],
+      "@sysos/libs-application/*": [
+        "projects/sysos-libs-application/*"
+      ],
+      "@sysos/libs-file-system": [
+        "projects/sysos-libs-file-system/src/public-api"
+      ],
+      "@sysos/libs-file-system/*": [
+        "projects/sysos-libs-file-system/*"
+      ],
+      "@sysos/libs-modal": [
+        "projects/sysos-libs-modal/src/public-api"
+      ],
+      "@sysos/libs-modal/*": [
+        "projects/sysos-libs-modal/*"
+      ],
+      "@sysos/libs-vmware": [
+        "projects/sysos-libs-vmware/src/public-api"
+      ],
+      "@sysos/libs-vmware/*": [
+        "projects/sysos-libs-vmware/*"
+      ],
+      "@sysos/libs-netapp": [
+        "projects/sysos-libs-netapp/src/public-api"
+      ],
+      "@sysos/libs-netapp/*": [
+        "projects/sysos-libs-netapp/*"
+      ],
+      "@sysos/libs-user": [
+        "projects/sysos-libs-user/src/public-api"
+      ],
+      "@sysos/libs-user/*": [
+        "projects/sysos-libs-user/*"
+      ],
+      "@sysos/libs-types": [
+        "projects/sysos-libs-types/src/public-api"
+      ],
+      "@sysos/libs-types/*": [
+        "projects/sysos-libs-types/*"
+      ],
+      "@sysos/libs-file-system-ui": [
+        "projects/sysos-libs-file-system-ui/src/public-api"
+      ],
+      "@sysos/libs-file-system-ui/*": [
+        "projects/sysos-libs-file-system-ui/*"
+      ],
+      "@sysos/libs-file": [
+        "projects/sysos-libs-file/src/public-api"
+      ],
+      "@sysos/libs-file/*": [
+        "projects/sysos-libs-file/*"
+      ],
+      "@sysos/libs-selectable": [
+        "projects/sysos-libs-selectable/src/public-api"
+      ],
+      "@sysos/libs-selectable/*": [
+        "projects/sysos-libs-selectable/*"
+      ],
+      "@sysos/app-backups-manager": [
+        "projects/sysos-app-backups-manager/src/public-api"
+      ],
+      "@sysos/app-backups-manager/*": [
+        "projects//sysos-app-backups-manager/*"
+      ],
+      "@sysos/app-datastore-explorer": [
+        "projects/sysos-app-datastore-explorer/src/public-api"
+      ],
+      "@sysos/app-datastore-explorer/*": [
+        "projects/sysos-app-datastore-explorer/*"
+      ],
+      "@sysos/app-file-explorer": [
+        "projects/sysos-app-file-explorer/src/public-api"
+      ],
+      "@sysos/app-file-explorer/*": [
+        "projects/sysos-app-file-explorer/*"
+      ],
+      "@sysos/app-infrastructure-manager": [
+        "projects/sysos-app-infrastructure-manager/src/public-api"
+      ],
+      "@sysos/app-infrastructure-manager/*": [
+        "projects/sysos-app-infrastructure-manager/*"
+      ],
+      "@sysos/app-notepad": [
+        "projects/sysos-app-notepad/src/public-api"
+      ],
+      "@sysos/app-notepad/*": [
+        "projects/sysos-app-notepad/*"
+      ],
+      "@sysos/app-sftp": [
+        "projects/sysos-app-sftp/src/public-api"
+      ],
+      "@sysos/app-sftp/*": [
+        "projects/sysos-app-sftp/*"
+      ],
+      "@sysos/app-ssh": [
+        "projects/sysos-app-ssh/src/public-api"
+      ],
+      "@sysos/app-ssh/*": [
+        "projects/sysos-app-ssh/*"
+      ],
+      "@sysos/app-credentials-manager": [
+        "projects/sysos-app-credentials-manager/src/public-api"
+      ],
+      "@sysos/app-credentials-manager/*": [
+        "projects/sysos-app-credentials-manager/*"
+      ],
+      "@sysos/app-wmks": [
+        "projects/sysos-app-wmks/src/public-api"
+      ],
+      "@sysos/app-wmks/*": [
+        "projects/sysos-app-wmks/*"
+      ]
+    }
+  }
+}

@@ -1,0 +1,33 @@
+<div class="window window--{{application.id}}"
+     #appElement
+     cdkDrag
+     mwlResizable
+     [resizeEdges]="{bottom: true, right: true, top: true, left: true}"
+     [enableGhostResize]="true"
+     [resizeCursorPrecision]="10"
+     (resizing)="onResize($event)"
+     (window:resize)="onWindowsResize($event)"
+     (click)="focusApplication()"
+     (mouseover)="setCurrentHoverApplication(application.id)"
+     [ngStyle]="appCss()"
+     [ngClass]="{'window--active': isVisible(), 'window--closing': isClosing, 'window--opening': isOpening, 'window--minimized': isMinimized, 'window--maximized': isMaximized}"
+     (cdkDragReleased)="onDrop($event)"
+     (cdkDragStarted)="onDragStart($event)"
+>
+  <div class="window__titlebar" (dblclick)="maximize()" cdkDragHandle>
+    <div class="window__controls window__controls--left" (click)="toggleMenu()">
+      <a class="window__icon"><i class="fa fa-{{application.ico}}"></i></a>
+      <a class="window__menutoggle" [ngClass]="{'window__menutoggle--open': isMenuOpened}"><i class="fa fa-bars"></i></a>
+    </div>
+    <span class="window__title">{{application.name}}</span>
+    <div class="window__controls window__controls--right">
+      <a class="window__minimize" (click)="minimize()"><i class="fa fa-minus"></i></a>
+      <a class="window__maximize" (click)="maximize()"><i class="fa"></i></a>
+      <a class="window__close" (click)="close(); $event.stopPropagation();"><i class="fa fa-close"></i></a>
+    </div>
+  </div>
+  <ng-container #appActions></ng-container>
+  <ng-container #appBody></ng-container>
+  <ng-container #appMenu></ng-container>
+  <ng-container #appStatus></ng-container>
+</div>
