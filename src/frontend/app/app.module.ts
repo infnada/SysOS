@@ -86,6 +86,7 @@ import {MonacoEditorModule} from 'ngx-monaco-editor'; // this is an application 
 
 import {SysosLibsFileModule} from '@sysos/libs-file';
 import {SysosLibsApplicationModule} from '@sysos/libs-application';
+import {SysosLibsSelectableService} from '@sysos/libs-selectable';
 
 import {AppComponent} from './app.component';
 import {LoginComponent} from './login/login.component';
@@ -154,7 +155,8 @@ export function createCompiler(fn: CompilerFactory): Compiler {
       useFactory: createCompiler,
       deps: [CompilerFactory]
     },
-    CookieService
+    CookieService,
+    SysosLibsSelectableService
   ],
   bootstrap: [AppComponent]
 })

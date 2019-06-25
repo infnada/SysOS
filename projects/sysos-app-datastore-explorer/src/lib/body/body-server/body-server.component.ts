@@ -16,7 +16,8 @@ import {DatastoreExplorerConnection} from '../../types/datastore-explorer-connec
 @Component({
   selector: 'sade-body-server',
   templateUrl: './body-server.component.html',
-  styleUrls: ['./body-server.component.scss']
+  styleUrls: ['./body-server.component.scss'],
+  providers: [SysosLibsSelectableService]
 })
 export class BodyServerComponent implements OnInit {
   @Input() application: Application;

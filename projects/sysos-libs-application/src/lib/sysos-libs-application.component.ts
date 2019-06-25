@@ -94,12 +94,6 @@ export class SysosLibsApplicationComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
 
-    const applicationComponent = this.application.id.charAt(0).toUpperCase() + this.application.id.replace(/-(.)/g, (match, group1) => {
-      return group1.toUpperCase();
-    }).slice(1);
-
-    this.logger.debug('[Application Component] Compiling application [%s]', applicationComponent);
-
     // the missing step, need to use Compiler to resolve the module's embedded components
     this.compiler.compileModuleAndAllComponentsAsync<any>(this.application.factory.moduleType)
       .then((factory) => {
@@ -129,18 +123,18 @@ export class SysosLibsApplicationComponent implements OnInit, AfterViewInit {
         }
 
         if (bodyFactory) {
-          const bodyComponentRef = this.appActions.createComponent(bodyFactory);
+          const bodyComponentRef = this.appBody.createComponent(bodyFactory);
           (bodyComponentRef.instance as any).application = this.application;
         }
 
         if (menuFactory) {
-          const menuComponentRef = this.appActions.createComponent(menuFactory);
+          const menuComponentRef = this.appMenu.createComponent(menuFactory);
           (menuComponentRef.instance as any).application = this.application;
           (menuComponentRef.instance as any).isMenuOpened = this.isMenuOpened;
         }
 
         if (statusFactory) {
-          const statusComponentRef = this.appActions.createComponent(statusFactory);
+          const statusComponentRef = this.appStatus.createComponent(statusFactory);
           (statusComponentRef.instance as any).application = this.application;
         }
 

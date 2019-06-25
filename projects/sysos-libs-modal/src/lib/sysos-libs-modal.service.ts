@@ -24,7 +24,7 @@ export class SysosLibsModalService {
   registeredModals: Modal[] = [];
 
   constructor(private logger: NGXLogger,
-              //private loader: SystemJsNgModuleLoader,
+              // private loader: SystemJsNgModuleLoader,
               private injector: Injector,
               private compiler: Compiler,
               private FileSystem: SysosLibsFileSystemService) {

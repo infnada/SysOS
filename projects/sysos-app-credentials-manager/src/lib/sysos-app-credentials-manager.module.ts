@@ -28,7 +28,7 @@ import {SysosAppCredentialsManagerService} from './services/sysos-app-credential
     MatButtonModule,
     ToastrModule.forRoot()
   ],
-  exports: [],
+  exports: []
 })
 export class SysosAppCredentialsManagerModule {
   constructor(private Applications: SysosLibsApplicationService,

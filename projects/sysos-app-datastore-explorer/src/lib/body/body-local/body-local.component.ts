@@ -15,7 +15,8 @@ import {SysosAppDatastoreExplorerLocalService} from '../../services/sysos-app-da
 @Component({
   selector: 'sade-body-local',
   templateUrl: './body-local.component.html',
-  styleUrls: ['./body-local.component.scss']
+  styleUrls: ['./body-local.component.scss'],
+  providers: [SysosLibsSelectableService]
 })
 export class BodyLocalComponent implements OnInit {
   @Input() application: Application;

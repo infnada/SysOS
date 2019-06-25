@@ -7,12 +7,13 @@ import {ToastrModule} from 'ngx-toastr';
 
 import {SysosLibsApplicationService} from '@sysos/libs-application';
 
-import {SysosAppInfrastructureManagerService} from './services/sysos-app-infrastructure-manager.service';
 import {ActionsComponent} from './actions/actions.component';
 import {BodyComponent} from './body/body.component';
 import {BodyNewConnectionComponent} from './body/body-new-connection/body-new-connection.component';
 import {MenuComponent} from './menu/menu.component';
 import {StatusComponent} from './status/status.component';
+
+import {SysosAppInfrastructureManagerService} from './services/sysos-app-infrastructure-manager.service';
 
 @NgModule({
   declarations: [

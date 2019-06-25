@@ -18,9 +18,7 @@ export interface Rect {
   width: number;
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class SysosLibsSelectableService {
   private renderer: Renderer2;
 
@@ -224,10 +222,10 @@ export class SysosLibsSelectableService {
     this.renderer.listen(document, 'touchmove', (event: DragEvent) => this.eventDrag(event));
     this.renderer.listen(document, 'mousemove', (event: DragEvent) => this.eventDrag(event));
 
-    this.renderer.listen(document, 'end', () => this.eventEnd(event));
-    this.renderer.listen(document, 'touchend', () => this.eventEnd(event));
-    this.renderer.listen(document, 'touchcancel', () => this.eventEnd(event));
-    this.renderer.listen(document, 'mouseup', () => this.eventEnd(event));
+    this.renderer.listen(document, 'end', () => this.eventEnd());
+    this.renderer.listen(document, 'touchend', () => this.eventEnd());
+    this.renderer.listen(document, 'touchcancel', () => this.eventEnd());
+    this.renderer.listen(document, 'mouseup', () => this.eventEnd());
 
     this.renderer.listen(this._window(), 'scroll', () => this.eventRefresh());
     this.renderer.listen(this._window(), 'resize', () => this.eventRefresh());
@@ -307,18 +305,6 @@ export class SysosLibsSelectableService {
     }
 
     if (this.config.autoRefresh) this.refresh();
-
-    if (shift && this.startEl) {
-
-      const items = this.items;
-      let currentIndex: number = this.getNodes().indexOf(node);
-      const lastIndex = this.getNodes().indexOf(this.startEl);
-      const step = currentIndex < lastIndex ? 1 : -1;
-
-      while ((currentIndex += step) && currentIndex !== lastIndex) {
-        items[currentIndex].selecting = true;
-      }
-    }
 
     for (const item of this.items) {
       const el = item.node;
@@ -402,7 +388,7 @@ export class SysosLibsSelectableService {
     this.renderer.setStyle(this.lasso, 'height', this.coords.y2 + 'px');
     this.renderer.setStyle(this.lasso, 'opacity', 1);
   }
-  eventEnd(event) {
+  eventEnd() {
     if (!this.dragging) return;
 
     this.dragging = false;
@@ -422,14 +408,6 @@ export class SysosLibsSelectableService {
       this.renderer.setStyle(this.lasso, 'width', 0);
       this.renderer.setStyle(this.lasso, 'height', 0);
       this.renderer.setStyle(this.lasso, 'opacity', 0);
-
-      // the lasso was the event.target so let's get the actual
-      // node below the pointer
-      let node = document.elementFromPoint(event.pageX, event.pageY);
-
-      if (!node) {
-        node = this.container;
-      }
     }
 
     // loop over items and check their state

@@ -13,7 +13,8 @@ import {IMConnection, SftpConnection, DatastoreExplorerConnection} from '@sysos/
 @Component({
   selector: 'slf-sysos-libs-file',
   templateUrl: './sysos-libs-file.component.html',
-  styleUrls: ['./sysos-libs-file.component.scss']
+  styleUrls: ['./sysos-libs-file.component.scss'],
+  providers: [SysosLibsSelectableService]
 })
 export class SysosLibsFileComponent implements OnInit, AfterViewInit {
   @ViewChild(MatMenuTrigger) contextMenuFile: MatMenuTrigger;

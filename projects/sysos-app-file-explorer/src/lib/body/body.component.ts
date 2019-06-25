@@ -16,7 +16,8 @@ import {SysosAppFileExplorerService} from '../services/sysos-app-file-explorer.s
 @Component({
   selector: 'safe-body',
   templateUrl: './body.component.html',
-  styleUrls: ['./body.component.scss']
+  styleUrls: ['./body.component.scss'],
+  providers: [SysosLibsSelectableService]
 })
 export class BodyComponent implements OnInit {
   @Input() application: Application;

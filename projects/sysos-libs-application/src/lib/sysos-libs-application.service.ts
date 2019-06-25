@@ -41,6 +41,7 @@ export class SysosLibsApplicationService {
               private http: HttpClient,
               private Toastr: ToastrService,
               private FileSystem: SysosLibsFileSystemService) {
+
     this.dataStore = {taskBarApplications: [], openedApplications: [], applications: [], taskbarItemOpen: null};
     this.$applications = new BehaviorSubject([]) as BehaviorSubject<Application[]>;
     this.$taskBarApplications = new BehaviorSubject([]) as BehaviorSubject<Application[]>;
@@ -357,7 +358,7 @@ export class SysosLibsApplicationService {
    */
   loadApplication(application: { filename: string }) {
 
-    return new Promise(async (resolve) => {
+    return new Promise((resolve) => {
       let moduleCamel = application.filename
         .toLowerCase()
         .replace('.umd.js', '')

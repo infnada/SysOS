@@ -1,5 +1,5 @@
 import {CommonModule} from '@angular/common';
-import {NgModule} from '@angular/core';
+import {NgModule, Optional, SkipSelf} from '@angular/core';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 
 import {ResizableModule} from 'angular-resizable-element';
@@ -22,4 +22,10 @@ import {SysosLibsApplicationComponent} from './sysos-libs-application.component'
   ]
 })
 export class SysosLibsApplicationModule {
+  constructor(@Optional() @SkipSelf() parentModule: SysosLibsApplicationModule) {
+    if (parentModule) {
+      throw new Error(
+        'SysosLibsApplicationModule is already loaded. Import it in the AppModule only');
+    }
+  }
 }

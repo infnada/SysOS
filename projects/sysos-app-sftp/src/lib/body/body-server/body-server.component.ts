@@ -16,7 +16,8 @@ import {SftpConnection} from '../../types/sftp-connection';
 @Component({
   selector: 'sasftp-body-server',
   templateUrl: './body-server.component.html',
-  styleUrls: ['./body-server.component.scss']
+  styleUrls: ['./body-server.component.scss'],
+  providers: [SysosLibsSelectableService]
 })
 export class BodyServerComponent implements OnInit {
   @Input() application: Application;
