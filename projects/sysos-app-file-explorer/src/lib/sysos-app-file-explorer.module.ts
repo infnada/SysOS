@@ -7,8 +7,8 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
 import {FilterPipeModule} from 'ngx-filter-pipe';
 import {ngfModule} from 'angular-file';
 
-import {SysosLibsApplicationService} from '@sysos/libs-application';
-import {SysosLibsFileModule} from '@sysos/libs-file';
+import {SysosLibApplicationService} from '@sysos/lib-application';
+import {SysosLibFileModule} from '@sysos/lib-file';
 
 import {BodyComponent} from './body/body.component';
 import {MenuComponent} from './menu/menu.component';
@@ -29,12 +29,12 @@ import {ActionsBodyComponent} from './actions/actions-body/actions-body.componen
     DragDropModule,
     ngfModule,
     // Shared module import
-    SysosLibsFileModule
+    SysosLibFileModule
   ],
   exports: []
 })
 export class SysosAppFileExplorerModule {
-  constructor(private Applications: SysosLibsApplicationService) {
+  constructor(private Applications: SysosLibApplicationService) {
     Applications.registerApplication({
       id: 'file-explorer',
       ico: 'folder',

@@ -2,8 +2,8 @@ import {Component, Input, OnInit} from '@angular/core';
 
 import {Subscription} from 'rxjs';
 
-import {Application} from '@sysos/libs-application';
-import {SysosLibsFileSystemUiService} from '@sysos/libs-file-system-ui';
+import {Application} from '@sysos/lib-application';
+import {SysosLibFileSystemUiService} from '@sysos/lib-file-system-ui';
 
 import {SysosAppSftpService} from '../../services/sysos-app-sftp.service';
 import {SysosAppSftpLocalService} from '../../services/sysos-app-sftp-local.service';
@@ -36,7 +36,7 @@ export class BodyExchangeComponent implements OnInit {
     exchange: string
   }[] = [];
 
-  constructor(private FileSystemUi: SysosLibsFileSystemUiService,
+  constructor(private FileSystemUi: SysosLibFileSystemUiService,
               private Sftp: SysosAppSftpService,
               private SftpLocal: SysosAppSftpLocalService,
               private SftpServer: SysosAppSftpServerService) {

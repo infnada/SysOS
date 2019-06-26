@@ -44,7 +44,7 @@
         </div>
 
         <ng-container *ngIf="viewAsList === false">
-          <slf-sysos-libs-file *ngFor="let file of currentData | filterBy: search; index as $index" cdkDrag cdkDragBoundary=".desktop" [cdkDragData]="file" (cdkDragStarted)="onDragStart()" [application]="application" [viewAsList]="viewAsList" [selectable]=Selectable [file]=file [isCurrentActive]="$index === currentActive" [currentPath]="currentPath" [selector]="'.window--file-explorer .window__main'" (click)="setCurrentActive($index)"></slf-sysos-libs-file>
+          <slf-sysos-lib-file *ngFor="let file of currentData | filterBy: search; index as $index" cdkDrag cdkDragBoundary=".desktop" [cdkDragData]="file" (cdkDragStarted)="onDragStart()" [application]="application" [viewAsList]="viewAsList" [selectable]=Selectable [file]=file [isCurrentActive]="$index === currentActive" [currentPath]="currentPath" [selector]="'.window--file-explorer .window__main'" (click)="setCurrentActive($index)"></slf-sysos-lib-file>
         </ng-container>
 
         <ng-container *ngIf="viewAsList === true">
@@ -58,7 +58,7 @@
             </thead>
             <tbody>
 
-            <slf-sysos-libs-file *ngFor="let file of currentData | filterBy: search; index as $index" cdkDrag cdkDragBoundary=".desktop" [cdkDragData]="file" (cdkDragStarted)="onDragStart()" [application]="application" [viewAsList]="viewAsList" [selectable]=Selectable [file]=file [isCurrentActive]="$index === currentActive" [currentPath]="currentPath" [selector]="'.window--file-explorer .window__main'" (click)="setCurrentActive($index)"></slf-sysos-libs-file>
+            <slf-sysos-lib-file *ngFor="let file of currentData | filterBy: search; index as $index" cdkDrag cdkDragBoundary=".desktop" [cdkDragData]="file" (cdkDragStarted)="onDragStart()" [application]="application" [viewAsList]="viewAsList" [selectable]=Selectable [file]=file [isCurrentActive]="$index === currentActive" [currentPath]="currentPath" [selector]="'.window--file-explorer .window__main'" (click)="setCurrentActive($index)"></slf-sysos-lib-file>
 
             </tbody>
           </table>

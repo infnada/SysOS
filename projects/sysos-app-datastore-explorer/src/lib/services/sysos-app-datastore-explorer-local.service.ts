@@ -4,8 +4,8 @@ import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {Socket} from 'ngx-socket-io';
 import {NGXLogger} from 'ngx-logger';
 
-import {SysOSFile} from '@sysos/libs-types';
-import {SysosLibsFileSystemService} from '@sysos/libs-file-system';
+import {SysOSFile} from '@sysos/lib-types';
+import {SysosLibFileSystemService} from '@sysos/lib-file-system';
 
 @Injectable({
   providedIn: 'root'
@@ -32,7 +32,7 @@ export class SysosAppDatastoreExplorerLocalService {
 
   constructor(private logger: NGXLogger,
               private socket: Socket,
-              private FileSystem: SysosLibsFileSystemService) {
+              private FileSystem: SysosLibFileSystemService) {
     this.dataStore = {currentPath: '/', currentData: [], viewAsList: false, search: null};
     this.$currentPath = new BehaviorSubject('/') as BehaviorSubject<string>;
     this.$currentData = new BehaviorSubject([]) as BehaviorSubject<SysOSFile[]>;

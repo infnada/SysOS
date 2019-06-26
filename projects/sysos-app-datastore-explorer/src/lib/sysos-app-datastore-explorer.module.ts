@@ -8,8 +8,8 @@ import {FilterPipeModule} from 'ngx-filter-pipe';
 import {ngfModule} from 'angular-file';
 import {ToastrModule} from 'ngx-toastr';
 
-import {SysosLibsApplicationService} from '@sysos/libs-application';
-import {SysosLibsFileModule} from '@sysos/libs-file';
+import {SysosLibApplicationService} from '@sysos/lib-application';
+import {SysosLibFileModule} from '@sysos/lib-file';
 
 import {ActionsComponent} from './actions/actions.component';
 import {ActionsLocalComponent} from './actions/actions-local/actions-local.component';
@@ -48,12 +48,12 @@ import {StatusComponent} from './status/status.component';
     ngfModule,
     ToastrModule.forRoot(),
     // Shared module import
-    SysosLibsFileModule
+    SysosLibFileModule
   ],
   exports: []
 })
 export class SysosAppDatastoreExplorerModule {
-  constructor(private Applications: SysosLibsApplicationService) {
+  constructor(private Applications: SysosLibApplicationService) {
     Applications.registerApplication({
       id: 'datastore-explorer',
       ico: 'database',

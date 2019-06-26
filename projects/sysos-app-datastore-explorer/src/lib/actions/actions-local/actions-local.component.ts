@@ -2,9 +2,9 @@ import {Component, Input, OnInit} from '@angular/core';
 
 import {Subscription} from 'rxjs';
 
-import {SysosLibsFileSystemUiService} from '@sysos/libs-file-system-ui';
-import {Application} from '@sysos/libs-application';
-import {SysOSFile} from '@sysos/libs-types';
+import {SysosLibFileSystemUiService} from '@sysos/lib-file-system-ui';
+import {Application} from '@sysos/lib-application';
+import {SysOSFile} from '@sysos/lib-types';
 
 import {SysosAppDatastoreExplorerLocalService} from '../../services/sysos-app-datastore-explorer-local.service';
 
@@ -28,7 +28,7 @@ export class ActionsLocalComponent implements OnInit {
   lastPath: string[] = [];
   nextPath: string[] = [];
 
-  constructor(private FileSystemUi: SysosLibsFileSystemUiService,
+  constructor(private FileSystemUi: SysosLibFileSystemUiService,
               private DatastoreExplorerLocal: SysosAppDatastoreExplorerLocalService) {
 
     this.goPathBackSubscription = this.DatastoreExplorerLocal.getObserverGoPathBack().subscribe(() => {

@@ -3,8 +3,8 @@ import {Injectable} from '@angular/core';
 import {Socket} from 'ngx-socket-io';
 import {NGXLogger} from 'ngx-logger';
 
-import {SysosLibsModalService} from '@sysos/libs-modal';
-import {SysosLibsApplicationService} from '@sysos/libs-application';
+import {SysosLibModalService} from '@sysos/lib-modal';
+import {SysosLibApplicationService} from '@sysos/lib-application';
 
 @Injectable({
   providedIn: 'root'
@@ -12,8 +12,8 @@ import {SysosLibsApplicationService} from '@sysos/libs-application';
 export class MainService {
 
   constructor(private logger: NGXLogger,
-              private Applications: SysosLibsApplicationService,
-              private Modal: SysosLibsModalService,
+              private Applications: SysosLibApplicationService,
+              private Modal: SysosLibModalService,
               private socket: Socket) {
   }
 

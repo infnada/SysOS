@@ -2,9 +2,9 @@ import {Component, Input, OnInit} from '@angular/core';
 
 import {Subscription} from 'rxjs';
 
-import {SysosLibsFileSystemUiService} from '@sysos/libs-file-system-ui';
-import {Application} from '@sysos/libs-application';
-import {SysOSFile} from '@sysos/libs-types';
+import {SysosLibFileSystemUiService} from '@sysos/lib-file-system-ui';
+import {Application} from '@sysos/lib-application';
+import {SysOSFile} from '@sysos/lib-types';
 
 import {SysosAppFileExplorerService} from '../../services/sysos-app-file-explorer.service';
 
@@ -27,7 +27,7 @@ export class ActionsBodyComponent implements OnInit {
   lastPath: string[] = [];
   nextPath: string[] = [];
 
-  constructor(private FileSystemUi: SysosLibsFileSystemUiService,
+  constructor(private FileSystemUi: SysosLibFileSystemUiService,
               private FileExplorer: SysosAppFileExplorerService) {
 
     this.goPathBackSubscription = this.FileExplorer.getObserverGoPathBack().subscribe(() => {

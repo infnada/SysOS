@@ -18,18 +18,17 @@ import * as ngxSocketIo from 'ngx-socket-io';
 import * as NgxSocketIoService from 'ngx-socket-io/src/socket-io.service';
 import * as angularFile from 'angular-file';
 import * as uuid from 'uuid';
-import * as SysOSLibApplications from '@sysos/libs-application';
-import * as SysOSLibFile from '@sysos/libs-file';
-import * as SysOSLibFileSystem from '@sysos/libs-file-system';
-import * as SysOSLibFileSystemUi from '@sysos/libs-file-system-ui';
-import * as SysOSLibModal from '@sysos/libs-modal';
-import * as SysOSLibNetApp from '@sysos/libs-netapp';
-import * as SysOSLibSelectable from '@sysos/libs-selectable';
-import * as SysOSLibTypes from '@sysos/libs-types';
-import * as SysOSLibUser from '@sysos/libs-user';
-import * as SysOSLibVMWare from '@sysos/libs-vmware';
-
-import * as SysOSAppIngrastructureManager from '@sysos/app-infrastructure-manager';
+import * as SysOSLibApplications from '@sysos/lib-application';
+import * as SysOSLibFile from '@sysos/lib-file';
+import * as SysOSLibFileSystem from '@sysos/lib-file-system';
+import * as SysOSLibFileSystemUi from '@sysos/lib-file-system-ui';
+import * as SysOSLibModal from '@sysos/lib-modal';
+import * as SysOSLibNetApp from '@sysos/lib-netapp';
+import * as SysOSLibSelectable from '@sysos/lib-selectable';
+import * as SysOSLibServiceInjector from '@sysos/lib-service-injector';
+import * as SysOSLibTypes from '@sysos/lib-types';
+import * as SysOSLibUser from '@sysos/lib-user';
+import * as SysOSLibVMWare from '@sysos/lib-vmware';
 
 import * as NgxMonacoEditor from 'ngx-monaco-editor';
 import * as xterm from 'xterm';
@@ -52,18 +51,17 @@ SystemJS.set('ngx-socket-io', SystemJS.newModule(ngxSocketIo));
 SystemJS.set('ngx-socket-io/src/socket-io.service', SystemJS.newModule(NgxSocketIoService));
 SystemJS.set('angular-file', SystemJS.newModule(angularFile));
 SystemJS.set('uuid', SystemJS.newModule(uuid));
-SystemJS.set('@sysos/libs-application', SystemJS.newModule(SysOSLibApplications));
-SystemJS.set('@sysos/libs-file', SystemJS.newModule(SysOSLibFile));
-SystemJS.set('@sysos/libs-file-system', SystemJS.newModule(SysOSLibFileSystem));
-SystemJS.set('@sysos/libs-file-system-ui', SystemJS.newModule(SysOSLibFileSystemUi));
-SystemJS.set('@sysos/libs-modal', SystemJS.newModule(SysOSLibModal));
-SystemJS.set('@sysos/libs-netapp', SystemJS.newModule(SysOSLibNetApp));
-SystemJS.set('@sysos/libs-selectable', SystemJS.newModule(SysOSLibSelectable));
-SystemJS.set('@sysos/libs-types', SystemJS.newModule(SysOSLibTypes));
-SystemJS.set('@sysos/libs-user', SystemJS.newModule(SysOSLibUser));
-SystemJS.set('@sysos/libs-vmware', SystemJS.newModule(SysOSLibVMWare));
-
-SystemJS.set('@sysos/app-infrastructure-manager', SystemJS.newModule(SysOSAppIngrastructureManager));
+SystemJS.set('@sysos/lib-application', SystemJS.newModule(SysOSLibApplications));
+SystemJS.set('@sysos/lib-file', SystemJS.newModule(SysOSLibFile));
+SystemJS.set('@sysos/lib-file-system', SystemJS.newModule(SysOSLibFileSystem));
+SystemJS.set('@sysos/lib-file-system-ui', SystemJS.newModule(SysOSLibFileSystemUi));
+SystemJS.set('@sysos/lib-modal', SystemJS.newModule(SysOSLibModal));
+SystemJS.set('@sysos/lib-netapp', SystemJS.newModule(SysOSLibNetApp));
+SystemJS.set('@sysos/lib-selectable', SystemJS.newModule(SysOSLibSelectable));
+SystemJS.set('@sysos/lib-service-injector', SystemJS.newModule(SysOSLibServiceInjector));
+SystemJS.set('@sysos/lib-types', SystemJS.newModule(SysOSLibTypes));
+SystemJS.set('@sysos/lib-user', SystemJS.newModule(SysOSLibUser));
+SystemJS.set('@sysos/lib-vmware', SystemJS.newModule(SysOSLibVMWare));
 
 SystemJS.set('ngx-monaco-editor', SystemJS.newModule(NgxMonacoEditor));
 SystemJS.set('xterm', SystemJS.newModule(xterm));
@@ -84,9 +82,10 @@ import {LoggerModule, NgxLoggerLevel} from 'ngx-logger';
 import {OrderModule} from 'ngx-order-pipe';
 import {MonacoEditorModule} from 'ngx-monaco-editor'; // this is an application required module...
 
-import {SysosLibsFileModule} from '@sysos/libs-file';
-import {SysosLibsApplicationModule} from '@sysos/libs-application';
-import {SysosLibsSelectableService} from '@sysos/libs-selectable';
+import {SysosLibFileModule} from '@sysos/lib-file';
+import {SysosLibApplicationModule} from '@sysos/lib-application';
+import {SysosLibSelectableService} from '@sysos/lib-selectable';
+import {SysosLibServiceInjectorModule} from '@sysos/lib-service-injector';
 
 import {AppComponent} from './app.component';
 import {LoginComponent} from './login/login.component';
@@ -134,8 +133,9 @@ export function createCompiler(fn: CompilerFactory): Compiler {
     SocketIoModule.forRoot(config),
     LoggerModule.forRoot({level: NgxLoggerLevel.DEBUG}),
     OrderModule,
-    SysosLibsApplicationModule,
-    SysosLibsFileModule,
+    SysosLibApplicationModule,
+    SysosLibFileModule,
+    SysosLibServiceInjectorModule,
 
     MonacoEditorModule.forRoot()
   ],
@@ -156,7 +156,7 @@ export function createCompiler(fn: CompilerFactory): Compiler {
       deps: [CompilerFactory]
     },
     CookieService,
-    SysosLibsSelectableService
+    SysosLibSelectableService
   ],
   bootstrap: [AppComponent]
 })

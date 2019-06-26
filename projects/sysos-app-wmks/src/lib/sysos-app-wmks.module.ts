@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 
-import {SysosLibsApplicationService} from '@sysos/libs-application';
+import {SysosLibApplicationService} from '@sysos/lib-application';
 
 import {SysosAppWmksComponent} from './sysos-app-wmks.component';
 
@@ -12,7 +12,7 @@ import {SysosAppWmksComponent} from './sysos-app-wmks.component';
   exports: [SysosAppWmksComponent]
 })
 export class SysosAppWmksModule {
-  constructor(private Applications: SysosLibsApplicationService) {
+  constructor(private Applications: SysosLibApplicationService) {
     Applications.registerApplication({
       id: 'wmks',
       ico: 'television',

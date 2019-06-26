@@ -1,8 +1,8 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import {MatMenuTrigger} from '@angular/material';
 
-import {Application, SysosLibsApplicationService} from '@sysos/libs-application';
-import {ContextMenuItem} from '@sysos/libs-types';
+import {Application, SysosLibApplicationService} from '@sysos/lib-application';
+import {ContextMenuItem} from '@sysos/lib-types';
 
 @Component({
   selector: 'app-start-menu-items',
@@ -58,7 +58,7 @@ export class StartMenuItemsComponent implements OnInit {
     if (typeof item.text === 'function') return item.text(application);
   }
 
-  constructor(private Applications: SysosLibsApplicationService) { }
+  constructor(private Applications: SysosLibApplicationService) { }
 
   ngOnInit() {
     this.Applications.taskbarItemOpen.subscribe(applications => this.taskbarItemOpen = applications);

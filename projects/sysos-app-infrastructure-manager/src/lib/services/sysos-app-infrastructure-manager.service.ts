@@ -6,8 +6,8 @@ import {ToastrService} from 'ngx-toastr';
 import {Socket} from 'ngx-socket-io';
 import {v4 as uuidv4} from 'uuid';
 
-import {SysosLibsModalService} from '@sysos/libs-modal';
-import {SysosLibsFileSystemService} from '@sysos/libs-file-system';
+import {SysosLibModalService} from '@sysos/lib-modal';
+import {SysosLibFileSystemService} from '@sysos/lib-file-system';
 
 import {IMConnection} from '../types/imconnection';
 import {IMLink} from '../types/imlink';
@@ -36,8 +36,8 @@ export class SysosAppInfrastructureManagerService {
   constructor(private logger: NGXLogger,
               private Toastr: ToastrService,
               private socket: Socket,
-              private Modal: SysosLibsModalService,
-              private FileSystem: SysosLibsFileSystemService) {
+              private Modal: SysosLibModalService,
+              private FileSystem: SysosLibFileSystemService) {
     this.dataStore = {connections: [], activeConnection: null, treeData: []};
     this.$connections = new BehaviorSubject([]) as BehaviorSubject<IMConnection[]>;
     this.$activeConnection = new BehaviorSubject(null) as BehaviorSubject<string>;

@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 
 import {SysosAppDatastoreExplorerService} from '../services/sysos-app-datastore-explorer.service';
-import {Application} from '@sysos/libs-application';
+import {Application} from '@sysos/lib-application';
 import {DatastoreExplorerConnection} from '../types/datastore-explorer-connection';
 
 @Component({

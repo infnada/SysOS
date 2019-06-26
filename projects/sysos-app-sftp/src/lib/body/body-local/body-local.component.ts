@@ -3,11 +3,11 @@ import {MatMenuTrigger} from '@angular/material';
 
 import {Subscription} from 'rxjs';
 
-import {SysosLibsSelectableService} from '@sysos/libs-selectable';
-import {SysosLibsFileSystemService} from '@sysos/libs-file-system';
-import {SysosLibsFileSystemUiService} from '@sysos/libs-file-system-ui';
-import {SysosLibsApplicationService, Application} from '@sysos/libs-application';
-import {ContextMenuItem, SysOSFile} from '@sysos/libs-types';
+import {SysosLibSelectableService} from '@sysos/lib-selectable';
+import {SysosLibFileSystemService} from '@sysos/lib-file-system';
+import {SysosLibFileSystemUiService} from '@sysos/lib-file-system-ui';
+import {SysosLibApplicationService, Application} from '@sysos/lib-application';
+import {ContextMenuItem, SysOSFile} from '@sysos/lib-types';
 
 import {SysosAppSftpService} from '../../services/sysos-app-sftp.service';
 import {SysosAppSftpLocalService} from '../../services/sysos-app-sftp-local.service';
@@ -16,7 +16,7 @@ import {SysosAppSftpLocalService} from '../../services/sysos-app-sftp-local.serv
   selector: 'sasftp-body-local',
   templateUrl: './body-local.component.html',
   styleUrls: ['./body-local.component.scss'],
-  providers: [SysosLibsSelectableService]
+  providers: [SysosLibSelectableService]
 })
 export class BodyLocalComponent implements OnInit {
   @Input() application: Application;
@@ -73,10 +73,10 @@ export class BodyLocalComponent implements OnInit {
     }
   ];
 
-  constructor(public Selectable: SysosLibsSelectableService,
-              private FileSystem: SysosLibsFileSystemService,
-              private FileSystemUi: SysosLibsFileSystemUiService,
-              private Applications: SysosLibsApplicationService,
+  constructor(public Selectable: SysosLibSelectableService,
+              private FileSystem: SysosLibFileSystemService,
+              private FileSystemUi: SysosLibFileSystemUiService,
+              private Applications: SysosLibApplicationService,
               private Sftp: SysosAppSftpService,
               private SftpLocal: SysosAppSftpLocalService) {
 

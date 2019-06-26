@@ -2,65 +2,71 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "paths": {
-      "@sysos/libs-application": [
-        "dist/libs/sysos-libs-application"
+      "@sysos/lib-application": [
+        "dist/libs/sysos-lib-application"
       ],
-      "@sysos/libs-application/*": [
-        "dist/libs/sysos-libs-application/*"
+      "@sysos/lib-application/*": [
+        "dist/libs/sysos-lib-application/*"
       ],
-      "@sysos/libs-file-system": [
-        "dist/libs/sysos-libs-file-system"
+      "@sysos/lib-file-system": [
+        "dist/libs/sysos-lib-file-system"
       ],
-      "@sysos/libs-file-system/*": [
-        "dist/libs/sysos-libs-file-system/*"
+      "@sysos/lib-file-system/*": [
+        "dist/libs/sysos-lib-file-system/*"
       ],
-      "@sysos/libs-modal": [
-        "dist/libs/sysos-libs-modal"
+      "@sysos/lib-modal": [
+        "dist/libs/sysos-lib-modal"
       ],
-      "@sysos/libs-modal/*": [
-        "dist/libs/sysos-libs-modal/*"
+      "@sysos/lib-modal/*": [
+        "dist/libs/sysos-lib-modal/*"
       ],
-      "@sysos/libs-vmware": [
-        "dist/libs/sysos-libs-vmware"
+      "@sysos/lib-vmware": [
+        "dist/libs/sysos-lib-vmware"
       ],
-      "@sysos/libs-vmware/*": [
-        "dist/libs/sysos-libs-vmware/*"
+      "@sysos/lib-vmware/*": [
+        "dist/libs/sysos-lib-vmware/*"
       ],
-      "@sysos/libs-netapp": [
-        "dist/libs/sysos-libs-netapp"
+      "@sysos/lib-netapp": [
+        "dist/libs/sysos-lib-netapp"
       ],
-      "@sysos/libs-netapp/*": [
-        "dist/libs/sysos-libs-netapp/*"
+      "@sysos/lib-netapp/*": [
+        "dist/libs/sysos-lib-netapp/*"
       ],
-      "@sysos/libs-user": [
-        "dist/libs/sysos-libs-user"
+      "@sysos/lib-user": [
+        "dist/libs/sysos-lib-user"
       ],
-      "@sysos/libs-user/*": [
-        "dist/libs/sysos-libs-user/*"
+      "@sysos/lib-user/*": [
+        "dist/libs/sysos-lib-user/*"
       ],
-      "@sysos/libs-types": [
-        "dist/libs/sysos-libs-types"
+      "@sysos/lib-types": [
+        "dist/libs/sysos-lib-types"
       ],
-      "@sysos/libs-types/*": [
-        "dist/libs/sysos-libs-types/*"
+      "@sysos/lib-types/*": [
+        "dist/libs/sysos-lib-types/*"
       ],
-      "@sysos/libs-file-system-ui": [
-        "dist/libs/sysos-libs-file-system-ui"
+      "@sysos/lib-file-system-ui": [
+        "dist/libs/sysos-lib-file-system-ui"
       ],
-      "@sysos/libs-file-system-ui/*": [
-        "dist/libs/sysos-libs-file-system-ui/*"
+      "@sysos/lib-file-system-ui/*": [
+        "dist/libs/sysos-lib-file-system-ui/*"
       ],
-      "@sysos/libs-file": [
-        "dist/libs/sysos-libs-file"
+      "@sysos/lib-file": [
+        "dist/libs/sysos-lib-file"
       ],
-      "@sysos/libs-file/*": [
-        "dist/libs/sysos-libs-file/*"
+      "@sysos/lib-file/*": [
+        "dist/libs/sysos-lib-file/*"
       ],
-      "@sysos/libs-selectable": [
-        "dist/libs/sysos-libs-selectable"
+      "@sysos/lib-selectable": [
+        "dist/libs/sysos-lib-selectable"
       ],
-      "@sysos/libs-selectable/*": [
-        "dist/libs/sysos-libs-selectable/*"
+      "@sysos/lib-selectable/*": [
+        "dist/libs/sysos-lib-selectable/*"
+      ],
+      "@sysos/lib-service-injector": [
+        "dist/libs/sysos-lib-service-injector"
+      ],
+      "@sysos/lib-service-injector/*": [
+        "dist/libs/sysos-lib-service-injector/*"
       ],
       "@sysos/app-backups-manager": [
         "dist/applications/sysos-app-backups-manager"
@@ -115,6 +121,24 @@
       ],
       "@sysos/app-wmks/*": [
         "dist/applications/sysos-app-wmks/*"
+      ],
+      "@sysos/modal-input": [
+        "dist/sysos-modal-input"
+      ],
+      "@sysos/modal-input/*": [
+        "dist/sysos-modal-input/*"
+      ],
+      "@sysos/modal-plain": [
+        "dist/sysos-modal-plain"
+      ],
+      "@sysos/modal-plain/*": [
+        "dist/sysos-modal-plain/*"
+      ],
+      "@sysos/modal-question": [
+        "dist/sysos-modal-question"
+      ],
+      "@sysos/modal-question/*": [
+        "dist/sysos-modal-question/*"
       ]
     }
   }

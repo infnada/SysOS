@@ -6,9 +6,9 @@ import {ToastrService} from 'ngx-toastr';
 import {NGXLogger} from 'ngx-logger';
 import {v4 as uuidv4} from 'uuid';
 
-import {SysosLibsModalService} from '@sysos/libs-modal';
-import {SysosLibsFileSystemService} from '@sysos/libs-file-system';
-import {SysosLibsVmwareService} from '@sysos/libs-vmware';
+import {SysosLibModalService} from '@sysos/lib-modal';
+import {SysosLibFileSystemService} from '@sysos/lib-file-system';
+import {SysosLibVmwareService} from '@sysos/lib-vmware';
 
 import {DatastoreExplorerConnection} from '../types/datastore-explorer-connection';
 
@@ -31,9 +31,9 @@ export class SysosAppDatastoreExplorerService {
   constructor(private logger: NGXLogger,
               private Toastr: ToastrService,
               private socket: Socket,
-              private FileSystem: SysosLibsFileSystemService,
-              private Modal: SysosLibsModalService,
-              private VMWare: SysosLibsVmwareService) {
+              private FileSystem: SysosLibFileSystemService,
+              private Modal: SysosLibModalService,
+              private VMWare: SysosLibVmwareService) {
     this.dataStore = {connections: [], activeConnection: null, viewExchange: false};
     this.$connections = new BehaviorSubject([]) as BehaviorSubject<DatastoreExplorerConnection[]>;
     this.$activeConnection = new BehaviorSubject(null) as BehaviorSubject<string>;

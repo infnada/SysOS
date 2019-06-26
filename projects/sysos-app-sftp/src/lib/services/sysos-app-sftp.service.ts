@@ -6,8 +6,8 @@ import {Socket} from 'ngx-socket-io';
 import {ToastrService} from 'ngx-toastr';
 import {v4 as uuidv4} from 'uuid';
 
-import {SysosLibsModalService} from '@sysos/libs-modal';
-import {SysosLibsFileSystemService} from '@sysos/libs-file-system';
+import {SysosLibModalService} from '@sysos/lib-modal';
+import {SysosLibFileSystemService} from '@sysos/lib-file-system';
 
 import {SftpConnection} from '../types/sftp-connection';
 
@@ -30,8 +30,8 @@ export class SysosAppSftpService {
   constructor(private logger: NGXLogger,
               private Toastr: ToastrService,
               private socket: Socket,
-              private Modal: SysosLibsModalService,
-              private FileSystem: SysosLibsFileSystemService) {
+              private Modal: SysosLibModalService,
+              private FileSystem: SysosLibFileSystemService) {
     this.dataStore = {connections: [], activeConnection: null, viewExchange: false};
     this.$connections = new BehaviorSubject([]) as BehaviorSubject<SftpConnection[]>;
     this.$activeConnection = new BehaviorSubject(null) as BehaviorSubject<string>;

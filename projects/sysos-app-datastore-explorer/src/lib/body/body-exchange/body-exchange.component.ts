@@ -2,8 +2,8 @@ import {Component, Input, OnInit} from '@angular/core';
 
 import {Subscription} from 'rxjs';
 
-import {Application} from '@sysos/libs-application';
-import {SysosLibsFileSystemUiService} from '@sysos/libs-file-system-ui';
+import {Application} from '@sysos/lib-application';
+import {SysosLibFileSystemUiService} from '@sysos/lib-file-system-ui';
 
 import {SysosAppDatastoreExplorerService} from '../../services/sysos-app-datastore-explorer.service';
 import {SysosAppDatastoreExplorerServerService} from '../../services/sysos-app-datastore-explorer-server.service';
@@ -36,7 +36,7 @@ export class BodyExchangeComponent implements OnInit {
     exchange: string
   }[] = [];
 
-  constructor(private FileSystemUi: SysosLibsFileSystemUiService,
+  constructor(private FileSystemUi: SysosLibFileSystemUiService,
               private DatastoreExplorer: SysosAppDatastoreExplorerService,
               private DatastoreExplorerServer: SysosAppDatastoreExplorerServerService,
               private DatastoreExplorerLocal: SysosAppDatastoreExplorerLocalService) {

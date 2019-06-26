@@ -13,9 +13,10 @@
     "prod:start": "node dist/SysOS/index.js",
     "dev:start": "npm-run-all build dev:proxy",
     "dev:proxy": "ng serve --proxy-config proxy.conf.json",
-    "build": "npm-run-all clean lint-backend lint-frontend build-backend build-libs build-apps build-frontend copy-extra",
-    "build-libs": "ng build sysos-libs-fileSystem && ng build sysos-libs-application && ng build sysos-libs-modal && ng build sysos-libs-netapp && ng build sysos-libs-selectable && ng build sysos-libs-types && ng build sysos-libs-user && ng build sysos-libs-vmware && ng build sysos-libs-fileSystemUi && ng build sysos-libs-file",
+    "build": "npm-run-all clean lint-backend lint-frontend build-backend build-libs build-modals build-apps build-frontend copy-extra",
+    "build-libs": "ng build sysos-lib-fileSystem && ng build sysos-lib-application && ng build sysos-lib-modal && ng build sysos-lib-netapp && ng build sysos-lib-selectable && ng build sysos-lib-types && ng build sysos-lib-user && ng build sysos-lib-vmware && ng build sysos-lib-fileSystemUi && ng build sysos-lib-file",
     "build-apps": "ng build sysos-app-backups-manager && ng build sysos-app-credentials-manager && ng build sysos-app-file-explorer && ng build sysos-app-infrastructure-manager && ng build sysos-app-datastore-explorer && ng build sysos-app-notepad && ng build sysos-app-sftp && ng build sysos-app-ssh && ng build sysos-app-wmks",
+    "build-modals": "ng build sysos-modal-input && ng build sysos-modal-plain && ng build sysos-modal-question",
     "build-frontend": "ng build",
     "build-backend": "tsc --build src/backend/tsconfig.json",
     "lint-frontend": "ng lint",
@@ -24,7 +25,7 @@
     "test": "ng test",
     "e2e": "ng e2e",
     "clean": "rm -rf dist/SysOS/*",
-    "copy-extra": "cp -rf src/backend/app/ssl dist/SysOS/ && cp -rf src/backend/app/filesystem dist/SysOS/ && cp dist/applications/*/bundles/* dist/SysOS/filesystem/bin/applications/"
+    "copy-extra": "cp -rf src/backend/app/ssl dist/SysOS/ && cp -rf src/backend/app/filesystem dist/SysOS/ && cp dist/applications/*/bundles/* dist/SysOS/filesystem/bin/applications/ && cp dist/modals/*/bundles/* dist/SysOS/filesystem/bin/modals/"
   },
   "private": false,
   "dependencies": {

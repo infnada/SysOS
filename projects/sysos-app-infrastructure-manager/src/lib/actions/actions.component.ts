@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 
-import {Application} from '@sysos/libs-application';
+import {Application} from '@sysos/lib-application';
 
 @Component({
   selector: 'saim-actions',

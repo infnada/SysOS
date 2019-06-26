@@ -2,9 +2,9 @@ import {Component, Input, OnInit} from '@angular/core';
 
 import {Subscription} from 'rxjs';
 
-import {Application} from '@sysos/libs-application';
-import {SysOSFile} from '@sysos/libs-types';
-import {SysosLibsFileSystemUiService} from '@sysos/libs-file-system-ui';
+import {Application} from '@sysos/lib-application';
+import {SysOSFile} from '@sysos/lib-types';
+import {SysosLibFileSystemUiService} from '@sysos/lib-file-system-ui';
 
 import {SysosAppSftpService} from '../../services/sysos-app-sftp.service';
 import {SysosAppSftpServerService} from '../../services/sysos-app-sftp-server.service';
@@ -29,7 +29,7 @@ export class ActionsServerComponent implements OnInit {
   lastPath: string[] = [];
   nextPath: string[] = [];
 
-  constructor(private FileSystemUi: SysosLibsFileSystemUiService,
+  constructor(private FileSystemUi: SysosLibFileSystemUiService,
               private Sftp: SysosAppSftpService,
               private SftpServer: SysosAppSftpServerService) {
 

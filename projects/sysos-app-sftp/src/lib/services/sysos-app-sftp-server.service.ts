@@ -5,8 +5,8 @@ import {ToastrService} from 'ngx-toastr';
 import {Socket} from 'ngx-socket-io';
 import {NGXLogger} from 'ngx-logger';
 
-import {SysOSFile} from '@sysos/libs-types';
-import {SysosLibsFileSystemService} from '@sysos/libs-file-system';
+import {SysOSFile} from '@sysos/lib-types';
+import {SysosLibFileSystemService} from '@sysos/lib-file-system';
 import {SysosAppSftpService} from './sysos-app-sftp.service';
 import {SftpConnection} from '../types/sftp-connection';
 
@@ -35,7 +35,7 @@ export class SysosAppSftpServerService {
   constructor(private logger: NGXLogger,
               private Toastr: ToastrService,
               private socket: Socket,
-              private FileSystem: SysosLibsFileSystemService,
+              private FileSystem: SysosLibFileSystemService,
               private Sftp: SysosAppSftpService) {
     this.dataStore = {currentPath: '/', currentData: [], viewAsList: false, search: null};
     this.$currentPath = new BehaviorSubject('/') as BehaviorSubject<string>;

@@ -1,8 +1,9 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 
-import {SysosLibsApplicationService, Application} from '@sysos/libs-application';
-import {SysosAppCredentialsManagerService, Credential} from '@sysos/app-credentials-manager';
+import {SysosLibApplicationService, Application} from '@sysos/lib-application';
+import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
+import {Credential} from '@sysos/app-credentials-manager';
 
 import {SysosAppSftpService} from '../../services/sysos-app-sftp.service';
 import {SftpConnection} from '../../types/sftp-connection';
@@ -15,15 +16,18 @@ import {SftpConnection} from '../../types/sftp-connection';
 export class BodyNewConnectionComponent implements OnInit {
   @Input() application: Application;
 
+  private CredentialsManager;
+
   credentials: Credential[];
   connectionForm: FormGroup;
   submitted: boolean = false;
 
   constructor(private formBuilder: FormBuilder,
-              private Applications: SysosLibsApplicationService,
-              private CredentialsManager: SysosAppCredentialsManagerService,
+              private Applications: SysosLibApplicationService,
+              private serviceInjector: SysosLibServiceInjectorService,
               private Sftp: SysosAppSftpService) {
 
+    this.CredentialsManager = this.serviceInjector.get('SysosAppCredentialsManagerService');
     this.CredentialsManager.credentials.subscribe(credentials => this.credentials = credentials);
   }
 

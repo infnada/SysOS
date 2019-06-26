@@ -5,11 +5,11 @@ import {MatMenuTrigger} from '@angular/material';
 import {Subscription} from 'rxjs';
 import {NGXLogger} from 'ngx-logger';
 
-import {SysosLibsSelectableService} from '@sysos/libs-selectable';
-import {SysosLibsFileSystemService} from '@sysos/libs-file-system';
-import {SysosLibsFileSystemUiService} from '@sysos/libs-file-system-ui';
-import {SysosLibsApplicationService, Application} from '@sysos/libs-application';
-import {SysOSFile, ContextMenuItem} from '@sysos/libs-types';
+import {SysosLibSelectableService} from '@sysos/lib-selectable';
+import {SysosLibFileSystemService} from '@sysos/lib-file-system';
+import {SysosLibFileSystemUiService} from '@sysos/lib-file-system-ui';
+import {SysosLibApplicationService, Application} from '@sysos/lib-application';
+import {SysOSFile, ContextMenuItem} from '@sysos/lib-types';
 
 import {SysosAppFileExplorerService} from '../services/sysos-app-file-explorer.service';
 
@@ -17,7 +17,7 @@ import {SysosAppFileExplorerService} from '../services/sysos-app-file-explorer.s
   selector: 'safe-body',
   templateUrl: './body.component.html',
   styleUrls: ['./body.component.scss'],
-  providers: [SysosLibsSelectableService]
+  providers: [SysosLibSelectableService]
 })
 export class BodyComponent implements OnInit {
   @Input() application: Application;
@@ -77,10 +77,10 @@ export class BodyComponent implements OnInit {
   ];
 
   constructor(private logger: NGXLogger,
-              public Selectable: SysosLibsSelectableService,
-              private FileSystem: SysosLibsFileSystemService,
-              private FileSystemUi: SysosLibsFileSystemUiService,
-              private Applications: SysosLibsApplicationService,
+              public Selectable: SysosLibSelectableService,
+              private FileSystem: SysosLibFileSystemService,
+              private FileSystemUi: SysosLibFileSystemUiService,
+              private Applications: SysosLibApplicationService,
               private FileExplorer: SysosAppFileExplorerService) {
 
     this.reloadPathSubscription = this.FileSystemUi.getObserverRefreshPath().subscribe(path => {

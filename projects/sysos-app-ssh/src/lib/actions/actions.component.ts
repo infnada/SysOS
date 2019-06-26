@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Application} from '@sysos/libs-application';
+import {Application} from '@sysos/lib-application';
 import {SysosAppSshService} from '../services/sysos-app-ssh.service';
 import {SshConnection} from '../types/ssh-connection';
 

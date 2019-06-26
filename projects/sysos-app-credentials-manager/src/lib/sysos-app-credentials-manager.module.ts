@@ -5,7 +5,8 @@ import {MatButtonModule} from '@angular/material/button';
 
 import {ToastrModule} from 'ngx-toastr';
 
-import {SysosLibsApplicationService} from '@sysos/libs-application';
+import {SysosLibApplicationService} from '@sysos/lib-application';
+import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
 
 import {ActionsComponent} from './actions/actions.component';
 import {BodyComponent} from './body/body.component';
@@ -31,8 +32,11 @@ import {SysosAppCredentialsManagerService} from './services/sysos-app-credential
   exports: []
 })
 export class SysosAppCredentialsManagerModule {
-  constructor(private Applications: SysosLibsApplicationService,
+  constructor(private serviceInjector: SysosLibServiceInjectorService,
+              private Applications: SysosLibApplicationService,
               private CredentialsManager: SysosAppCredentialsManagerService) {
+
+    this.serviceInjector.set('SysosAppCredentialsManagerService', this.CredentialsManager);
 
     Applications.registerApplication({
       id: 'credentials-manager',

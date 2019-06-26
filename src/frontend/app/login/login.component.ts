@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 
 import {NGXLogger} from 'ngx-logger';
 
-import {SysosLibsUserService} from '@sysos/libs-user';
+import {SysosLibUserService} from '@sysos/lib-user';
 
 import {MainService} from '../services/main.service';
 
@@ -19,7 +19,7 @@ export class LoginComponent implements OnInit {
   loginExpanded: boolean = false;
 
   constructor(private logger: NGXLogger,
-              private UserState: SysosLibsUserService,
+              private UserState: SysosLibUserService,
               private Main: MainService) {
   }
 

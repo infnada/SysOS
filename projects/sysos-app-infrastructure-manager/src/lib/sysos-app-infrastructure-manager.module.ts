@@ -5,7 +5,8 @@ import {MatDividerModule, MatMenuModule, MatButtonModule, MatSlideToggleModule, 
 
 import {ToastrModule} from 'ngx-toastr';
 
-import {SysosLibsApplicationService} from '@sysos/libs-application';
+import {SysosLibApplicationService} from '@sysos/lib-application';
+import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
 
 import {ActionsComponent} from './actions/actions.component';
 import {BodyComponent} from './body/body.component';
@@ -14,6 +15,7 @@ import {MenuComponent} from './menu/menu.component';
 import {StatusComponent} from './status/status.component';
 
 import {SysosAppInfrastructureManagerService} from './services/sysos-app-infrastructure-manager.service';
+import {SysosAppInfrastructureVmwareService} from './services/sysos-app-infrastructure-vmware.service';
 
 @NgModule({
   declarations: [
@@ -38,8 +40,14 @@ import {SysosAppInfrastructureManagerService} from './services/sysos-app-infrast
   exports: []
 })
 export class SysosAppInfrastructureManagerModule {
-  constructor(private Applications: SysosLibsApplicationService,
-              private InfrastructureManager: SysosAppInfrastructureManagerService) {
+  constructor(private serviceInjector: SysosLibServiceInjectorService,
+              private Applications: SysosLibApplicationService,
+              private InfrastructureManager: SysosAppInfrastructureManagerService,
+              private InfrastructureVmwareService: SysosAppInfrastructureVmwareService) {
+
+    this.serviceInjector.set('SysosAppInfrastructureManagerService', this.InfrastructureManager);
+    this.serviceInjector.set('SysosAppInfrastructureVmwareService', this.InfrastructureVmwareService);
+
     Applications.registerApplication({
       id: 'infrastructure-manager',
       ico: 'server',

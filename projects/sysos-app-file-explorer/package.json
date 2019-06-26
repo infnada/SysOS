@@ -12,10 +12,10 @@
     "angular-file": "^1.2.2",
     "ngx-filter-pipe": "^2.1.2",
     "ngx-logger": "^3.3.13",
-    "@sysos/libs-file": "0.0.1",
-    "@sysos/libs-file-system": "0.0.1",
-    "@sysos/libs-file-system-ui": "0.0.1",
-    "@sysos/libs-application": "0.0.1",
-    "@sysos/libs-selectable": "0.0.1"
+    "@sysos/lib-file": "0.0.1",
+    "@sysos/lib-file-system": "0.0.1",
+    "@sysos/lib-file-system-ui": "0.0.1",
+    "@sysos/lib-application": "0.0.1",
+    "@sysos/lib-selectable": "0.0.1"
   }
 }

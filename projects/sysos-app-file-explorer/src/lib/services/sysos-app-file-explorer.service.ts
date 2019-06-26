@@ -3,8 +3,8 @@ import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {NGXLogger} from 'ngx-logger';
 
-import {SysosLibsFileSystemService} from '@sysos/libs-file-system';
-import {SysOSFile} from '@sysos/libs-types';
+import {SysosLibFileSystemService} from '@sysos/lib-file-system';
+import {SysOSFile} from '@sysos/lib-types';
 
 @Injectable({
   providedIn: 'root'
@@ -28,7 +28,7 @@ export class SysosAppFileExplorerService {
   search: Observable<any>;
 
   constructor(private logger: NGXLogger,
-              private FileSystem: SysosLibsFileSystemService) {
+              private FileSystem: SysosLibFileSystemService) {
     this.dataStore = {currentPath: '/', currentData: [], viewAsList: false, search: null};
     this.$currentPath = new BehaviorSubject('/') as BehaviorSubject<string>;
     this.$currentData = new BehaviorSubject([]) as BehaviorSubject<SysOSFile[]>;

@@ -11,7 +11,7 @@
          (contextmenu)="onDesktopContextMenu($event)"
     >
 
-      <slf-sysos-libs-file *ngFor="let file of desktopFiles.currentData; index as $index" cdkDrag cdkDragBoundary=".desktop" [cdkDragData]="file" (cdkDragStarted)="onDragStart()" [application]="{id: 'file-explorer'}" [selectable]=Selectable [file]=file [isCurrentActive]="$index === currentActive" [currentPath]="desktopFiles.currentPath" [selector]="'.desktop .desktop__body'" (click)="setCurrentActive($index)"></slf-sysos-libs-file>
+      <slf-sysos-lib-file *ngFor="let file of desktopFiles.currentData; index as $index" cdkDrag cdkDragBoundary=".desktop" [cdkDragData]="file" (cdkDragStarted)="onDragStart()" [application]="{id: 'file-explorer'}" [selectable]=Selectable [file]=file [isCurrentActive]="$index === currentActive" [currentPath]="desktopFiles.currentPath" [selector]="'.desktop .desktop__body'" (click)="setCurrentActive($index)"></slf-sysos-lib-file>
 
       <div style="position: fixed"
            [style.left]="contextMenuPosition.x"
@@ -32,7 +32,7 @@
     <app-task-bar></app-task-bar>
 
     <ng-container *ngFor="let application of openedApplications">
-      <slapp-sysos-libs-application *ngIf="application.id !== 'start'" [application]="application"></slapp-sysos-libs-application>
+      <slapp-sysos-lib-application *ngIf="application.id !== 'start'" [application]="application"></slapp-sysos-lib-application>
     </ng-container>
   </div>
 </div>

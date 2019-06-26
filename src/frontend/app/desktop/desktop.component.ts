@@ -4,12 +4,12 @@ import {MatMenuTrigger} from '@angular/material';
 import {Subscription} from 'rxjs';
 import {NGXLogger} from 'ngx-logger';
 
-import {SysosLibsSelectableService} from '@sysos/libs-selectable';
-import {SysosLibsFileSystemService} from '@sysos/libs-file-system';
-import {SysosLibsFileSystemUiService} from '@sysos/libs-file-system-ui';
-import {Application, SysosLibsApplicationService} from '@sysos/libs-application';
+import {SysosLibSelectableService} from '@sysos/lib-selectable';
+import {SysosLibFileSystemService} from '@sysos/lib-file-system';
+import {SysosLibFileSystemUiService} from '@sysos/lib-file-system-ui';
+import {Application, SysosLibApplicationService} from '@sysos/lib-application';
 
-import {ContextMenuItem, SysOSFile} from '@sysos/libs-types';
+import {ContextMenuItem, SysOSFile} from '@sysos/lib-types';
 
 @Component({
   selector: 'app-desktop',
@@ -70,10 +70,10 @@ export class DesktopComponent implements OnInit, AfterViewInit {
   ];
 
   constructor(private logger: NGXLogger,
-              public Selectable: SysosLibsSelectableService,
-              private FileSystem: SysosLibsFileSystemService,
-              private FileSystemUi: SysosLibsFileSystemUiService,
-              private Applications: SysosLibsApplicationService) {
+              public Selectable: SysosLibSelectableService,
+              private FileSystem: SysosLibFileSystemService,
+              private FileSystemUi: SysosLibFileSystemUiService,
+              private Applications: SysosLibApplicationService) {
 
     this.reloadPathSubscription = this.FileSystemUi.getObserverRefreshPath().subscribe(path => {
       if (path === '/root/Desktop/') this.reloadPath();

@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {MatMenuTrigger} from '@angular/material';
 
-import {Application, SysosLibsApplicationService} from '@sysos/libs-application';
+import {Application, SysosLibApplicationService} from '@sysos/lib-application';
 
 @Component({
   selector: 'app-start-menu',
@@ -17,7 +17,7 @@ export class StartMenuComponent implements OnInit {
   openedMenu: string;
 
 
-  constructor(private Applications: SysosLibsApplicationService) {
+  constructor(private Applications: SysosLibApplicationService) {
   }
 
   ngOnInit() {

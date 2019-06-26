@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, FormControl, Validators} from '@angular/forms';
 
-import {Application} from '@sysos/libs-application';
+import {Application} from '@sysos/lib-application';
 
 import {SysosAppCredentialsManagerService} from '../services/sysos-app-credentials-manager.service';
 import {Credential} from '../types/credential';

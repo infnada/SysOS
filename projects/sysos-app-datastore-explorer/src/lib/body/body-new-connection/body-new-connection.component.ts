@@ -1,9 +1,10 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 
-import {SysosLibsModalService} from '@sysos/libs-modal';
-import {Application} from '@sysos/libs-application';
-import {SysosAppInfrastructureVmwareService, SysosAppInfrastructureManagerService, IMConnection} from '@sysos/app-infrastructure-manager';
+import {SysosLibModalService} from '@sysos/lib-modal';
+import {Application} from '@sysos/lib-application';
+import {IMConnection} from '@sysos/app-infrastructure-manager';
+import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
 
 import {DatastoreExplorerConnection} from '../../types/datastore-explorer-connection';
 import {SysosAppDatastoreExplorerService} from '../../services/sysos-app-datastore-explorer.service';
@@ -17,17 +18,22 @@ import {SysosAppDatastoreExplorerServerService} from '../../services/sysos-app-d
 export class BodyNewConnectionComponent implements OnInit {
   @Input() application: Application;
 
+  private InfrastructureManager;
+  private InfrastructureManagerVMWare;
+
   datastores: DatastoreExplorerConnection[] = [];
   connectionForm: FormGroup;
   submitted: boolean = false;
   newConnectionType: string = null;
 
   constructor(private formBuilder: FormBuilder,
-              private Modal: SysosLibsModalService,
-              private InfrastructureManager: SysosAppInfrastructureManagerService,
-              private InfrastructureManagerVMWare: SysosAppInfrastructureVmwareService,
+              private Modal: SysosLibModalService,
+              private serviceInjector: SysosLibServiceInjectorService,
               private DatastoreExplorer: SysosAppDatastoreExplorerService,
               private DatastoreExplorerServer: SysosAppDatastoreExplorerServerService) {
+
+    this.InfrastructureManager = this.serviceInjector.get('SysosAppInfrastructureManagerService');
+    this.InfrastructureManagerVMWare = this.serviceInjector.get('SysosAppInfrastructureVmwareService');
 
   }
 
@@ -49,7 +55,6 @@ export class BodyNewConnectionComponent implements OnInit {
   setConnectionType(type: string): void {
     this.newConnectionType = type;
 
-    // TODO get datacenter
     if (type === 'vmware') {
       this.InfrastructureManager.getConnectionsByType('vmware').forEach((connection: IMConnection) => {
         this.InfrastructureManagerVMWare.getConnectionDatastores(connection.uuid).forEach(datastore => {

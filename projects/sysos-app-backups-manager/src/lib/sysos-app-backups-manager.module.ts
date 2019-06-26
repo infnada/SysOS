@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 
-import {SysosLibsApplicationService} from '@sysos/libs-application';
+import {SysosLibApplicationService} from '@sysos/lib-application';
 
 import {SysosAppBackupsManagerComponent} from './sysos-app-backups-manager.component';
 
@@ -10,7 +10,7 @@ import {SysosAppBackupsManagerComponent} from './sysos-app-backups-manager.compo
   exports: [SysosAppBackupsManagerComponent]
 })
 export class SysosAppBackupsManagerModule {
-  constructor(private Applications: SysosLibsApplicationService) {
+  constructor(private Applications: SysosLibApplicationService) {
     Applications.registerApplication({
       id: 'backups-manager',
       ico: 'hdd-o',

@@ -7,8 +7,8 @@ import {ToastrService} from 'ngx-toastr';
 import {Socket} from 'ngx-socket-io';
 import {Terminal} from 'xterm';
 
-import {SysosLibsFileSystemService} from '@sysos/libs-file-system';
-import {SysosLibsModalService} from '@sysos/libs-modal';
+import {SysosLibFileSystemService} from '@sysos/lib-file-system';
+import {SysosLibModalService} from '@sysos/lib-modal';
 
 import {SshConnection} from '../types/ssh-connection';
 
@@ -30,8 +30,8 @@ export class SysosAppSshService {
   constructor(private logger: NGXLogger,
               private Toastr: ToastrService,
               private socket: Socket,
-              private FileSystem: SysosLibsFileSystemService,
-              private Modal: SysosLibsModalService) {
+              private FileSystem: SysosLibFileSystemService,
+              private Modal: SysosLibModalService) {
     this.dataStore = {connections: [], activeConnection: null};
     this.$connections = new BehaviorSubject([]) as BehaviorSubject<SshConnection[]>;
     this.$activeConnection = new BehaviorSubject(null) as BehaviorSubject<string>;

@@ -6,8 +6,8 @@ import {MatMenuTrigger} from '@angular/material';
 import {Subscription} from 'rxjs';
 import {NGXLogger} from 'ngx-logger';
 
-import {SysosLibsApplicationService, Application} from '@sysos/libs-application';
-import {ContextMenuItem} from '@sysos/libs-types';
+import {SysosLibApplicationService, Application} from '@sysos/lib-application';
+import {ContextMenuItem} from '@sysos/lib-types';
 
 import {SysosAppInfrastructureManagerService} from '../services/sysos-app-infrastructure-manager.service';
 import {SysosAppInfrastructureNetappService} from '../services/sysos-app-infrastructure-netapp.service';
@@ -51,7 +51,7 @@ export class BodyComponent implements OnInit {
   hasChild = (_: number, node: InfrastructureManagerFlatNode) => node.expandable;
 
   constructor(private logger: NGXLogger,
-              private Applications: SysosLibsApplicationService,
+              private Applications: SysosLibApplicationService,
               private InfrastructureManager: SysosAppInfrastructureManagerService,
               private InfrastructureManagerNetApp: SysosAppInfrastructureNetappService,
               private InfrastructureManagerVMWare: SysosAppInfrastructureVmwareService) {

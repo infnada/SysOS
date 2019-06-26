@@ -3,9 +3,9 @@ import {Component, OnInit, ViewContainerRef} from '@angular/core';
 import {CookieService} from 'ngx-cookie-service';
 import {NGXLogger} from 'ngx-logger';
 
-import {SysosLibsUserService} from '@sysos/libs-user';
-import {SysosLibsModalService} from '@sysos/libs-modal';
-import {Application} from '@sysos/libs-application';
+import {SysosLibUserService} from '@sysos/lib-user';
+import {SysosLibModalService} from '@sysos/lib-modal';
+import {Application} from '@sysos/lib-application';
 
 import {MainService} from './services/main.service';
 
@@ -22,8 +22,8 @@ export class AppComponent implements OnInit {
               private cookieService: CookieService,
               private logger: NGXLogger,
               private Main: MainService,
-              private Modal: SysosLibsModalService,
-              private UserState: SysosLibsUserService) {
+              private Modal: SysosLibModalService,
+              private UserState: SysosLibUserService) {
 
     this.Modal.setMainContainerRef(this.viewContainerRef);
   }

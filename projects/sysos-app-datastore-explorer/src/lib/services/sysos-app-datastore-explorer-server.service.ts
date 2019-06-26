@@ -4,10 +4,10 @@ import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {ToastrService} from 'ngx-toastr';
 import {NGXLogger} from 'ngx-logger';
 
-import {SysOSFile} from '@sysos/libs-types';
-import {SysosLibsFileSystemService} from '@sysos/libs-file-system';
-import {SysosLibsModalService} from '@sysos/libs-modal';
-import {SysosLibsVmwareService} from '@sysos/libs-vmware';
+import {SysOSFile} from '@sysos/lib-types';
+import {SysosLibFileSystemService} from '@sysos/lib-file-system';
+import {SysosLibModalService} from '@sysos/lib-modal';
+import {SysosLibVmwareService} from '@sysos/lib-vmware';
 
 import {SysosAppDatastoreExplorerService} from './sysos-app-datastore-explorer.service';
 
@@ -35,9 +35,9 @@ export class SysosAppDatastoreExplorerServerService {
 
   constructor(private logger: NGXLogger,
               private Toastr: ToastrService,
-              private FileSystem: SysosLibsFileSystemService,
-              private Modal: SysosLibsModalService,
-              private VMWare: SysosLibsVmwareService,
+              private FileSystem: SysosLibFileSystemService,
+              private Modal: SysosLibModalService,
+              private VMWare: SysosLibVmwareService,
               private DatastoreExplorer: SysosAppDatastoreExplorerService) {
     this.dataStore = {currentPath: '/', currentData: [], viewAsList: false, search: null};
     this.$currentPath = new BehaviorSubject('/') as BehaviorSubject<string>;

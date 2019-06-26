@@ -9,7 +9,7 @@
     <div id="local_body" class="folders" cdkDropList (cdkDropListDropped)="UIonDropItem($event)" (click)="handleBodyClick($event)" tabindex="0" (keydown)="handleItemKeyPress($event)" (contextmenu)="onBodyContextMenu($event)">
 
       <ng-container *ngIf="viewAsList === false">
-        <slf-sysos-libs-file *ngFor="let file of currentData | filterBy: search; index as $index" cdkDrag cdkDragBoundary=".desktop" [cdkDragData]="file" (cdkDragStarted)="onDragStart()" [application]="application" subApplication="server" [connection]="getActiveConnection()" [viewAsList]="viewAsList" [selectable]=Selectable [file]=file [isCurrentActive]="$index === currentActive" [currentPath]="currentPath" [selector]="'.window--datastore-explorer .window__main'" (click)="setCurrentActive($index)"></slf-sysos-libs-file>
+        <slf-sysos-lib-file *ngFor="let file of currentData | filterBy: search; index as $index" cdkDrag cdkDragBoundary=".desktop" [cdkDragData]="file" (cdkDragStarted)="onDragStart()" [application]="application" subApplication="server" [connection]="getActiveConnection()" [viewAsList]="viewAsList" [selectable]=Selectable [file]=file [isCurrentActive]="$index === currentActive" [currentPath]="currentPath" [selector]="'.window--datastore-explorer .window__main'" (click)="setCurrentActive($index)"></slf-sysos-lib-file>
       </ng-container>
 
       <ng-container *ngIf="viewAsList === true">
@@ -23,7 +23,7 @@
           </thead>
           <tbody>
 
-          <slf-sysos-libs-file *ngFor="let file of currentData | filterBy: search; index as $index" cdkDrag cdkDragBoundary=".desktop" [cdkDragData]="file" (cdkDragStarted)="onDragStart()" [application]="application" subApplication="server" [connection]="getActiveConnection()" [viewAsList]="viewAsList" [selectable]=Selectable [file]=file [isCurrentActive]="$index === currentActive" [currentPath]="currentPath" [selector]="'.window--datastore-explorer .window__main'" (click)="setCurrentActive($index)"></slf-sysos-libs-file>
+          <slf-sysos-lib-file *ngFor="let file of currentData | filterBy: search; index as $index" cdkDrag cdkDragBoundary=".desktop" [cdkDragData]="file" (cdkDragStarted)="onDragStart()" [application]="application" subApplication="server" [connection]="getActiveConnection()" [viewAsList]="viewAsList" [selectable]=Selectable [file]=file [isCurrentActive]="$index === currentActive" [currentPath]="currentPath" [selector]="'.window--datastore-explorer .window__main'" (click)="setCurrentActive($index)"></slf-sysos-lib-file>
 
           </tbody>
         </table>

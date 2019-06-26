@@ -3,8 +3,8 @@ import { Injectable } from '@angular/core';
 import {NGXLogger} from 'ngx-logger';
 import {ToastrService} from 'ngx-toastr';
 
-import {SysosLibsModalService} from '@sysos/libs-modal';
-import {SysosLibsVmwareService} from '@sysos/libs-vmware';
+import {SysosLibModalService} from '@sysos/lib-modal';
+import {SysosLibVmwareService} from '@sysos/lib-vmware';
 
 import {SysosAppInfrastructureManagerService} from './sysos-app-infrastructure-manager.service';
 import {IMConnection} from '../types/imconnection';
@@ -17,8 +17,8 @@ import {IMESXiHost} from '../types/imesxi-hosts';
 export class SysosAppInfrastructureVmwareService {
   constructor(private logger: NGXLogger,
               private Toastr: ToastrService,
-              private Modal: SysosLibsModalService,
-              private VMWare: SysosLibsVmwareService,
+              private Modal: SysosLibModalService,
+              private VMWare: SysosLibVmwareService,
               private InfrastructureManager: SysosAppInfrastructureManagerService) {
   }
 

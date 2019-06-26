@@ -5,7 +5,7 @@ import {MatDividerModule, MatMenuModule, MatButtonModule, MatSlideToggleModule} 
 
 import {ToastrModule} from 'ngx-toastr';
 
-import {SysosLibsApplicationService} from '@sysos/libs-application';
+import {SysosLibApplicationService} from '@sysos/lib-application';
 
 import {ActionsComponent} from './actions/actions.component';
 import {BodyComponent} from './body/body.component';
@@ -35,7 +35,7 @@ import {BodyNewConnectionComponent} from './body/body-new-connection/body-new-co
   exports: []
 })
 export class SysosAppSshModule {
-  constructor(private Applications: SysosLibsApplicationService,
+  constructor(private Applications: SysosLibApplicationService,
               private Ssh: SysosAppSshService) {
     Applications.registerApplication({
       id: 'ssh',

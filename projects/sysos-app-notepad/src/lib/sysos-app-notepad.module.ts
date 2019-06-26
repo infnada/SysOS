@@ -4,7 +4,7 @@ import {FormsModule} from '@angular/forms';
 
 import {MonacoEditorModule} from 'ngx-monaco-editor';
 
-import {SysosLibsApplicationService} from '@sysos/libs-application';
+import {SysosLibApplicationService} from '@sysos/lib-application';
 
 import {BodyComponent} from './body/body.component';
 import {MenuComponent} from './menu/menu.component';
@@ -22,7 +22,7 @@ import {MenuComponent} from './menu/menu.component';
   exports: []
 })
 export class SysosAppNotepadModule {
-  constructor(private Applications: SysosLibsApplicationService) {
+  constructor(private Applications: SysosLibApplicationService) {
     Applications.registerApplication({
       id: 'notepad',
       ico: 'pencil',

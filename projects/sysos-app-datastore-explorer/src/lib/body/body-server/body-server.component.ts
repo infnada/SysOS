@@ -3,11 +3,11 @@ import {MatMenuTrigger} from '@angular/material';
 
 import {Subscription} from 'rxjs';
 
-import {SysosLibsSelectableService} from '@sysos/libs-selectable';
-import {SysosLibsFileSystemService} from '@sysos/libs-file-system';
-import {SysosLibsFileSystemUiService} from '@sysos/libs-file-system-ui';
-import {SysosLibsApplicationService, Application} from '@sysos/libs-application';
-import {SysOSFile, ContextMenuItem} from '@sysos/libs-types';
+import {SysosLibSelectableService} from '@sysos/lib-selectable';
+import {SysosLibFileSystemService} from '@sysos/lib-file-system';
+import {SysosLibFileSystemUiService} from '@sysos/lib-file-system-ui';
+import {SysosLibApplicationService, Application} from '@sysos/lib-application';
+import {SysOSFile, ContextMenuItem} from '@sysos/lib-types';
 
 import {SysosAppDatastoreExplorerService} from '../../services/sysos-app-datastore-explorer.service';
 import {SysosAppDatastoreExplorerServerService} from '../../services/sysos-app-datastore-explorer-server.service';
@@ -17,7 +17,7 @@ import {DatastoreExplorerConnection} from '../../types/datastore-explorer-connec
   selector: 'sade-body-server',
   templateUrl: './body-server.component.html',
   styleUrls: ['./body-server.component.scss'],
-  providers: [SysosLibsSelectableService]
+  providers: [SysosLibSelectableService]
 })
 export class BodyServerComponent implements OnInit {
   @Input() application: Application;
@@ -70,10 +70,10 @@ export class BodyServerComponent implements OnInit {
     }
   ];
 
-  constructor(public Selectable: SysosLibsSelectableService,
-              private FileSystem: SysosLibsFileSystemService,
-              private FileSystemUi: SysosLibsFileSystemUiService,
-              private Applications: SysosLibsApplicationService,
+  constructor(public Selectable: SysosLibSelectableService,
+              private FileSystem: SysosLibFileSystemService,
+              private FileSystemUi: SysosLibFileSystemUiService,
+              private Applications: SysosLibApplicationService,
               private DatastoreExplorer: SysosAppDatastoreExplorerService,
               private DatastoreExplorerServer: SysosAppDatastoreExplorerServerService) {
 

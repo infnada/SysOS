@@ -1,8 +1,9 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 
-import {Application, SysosLibsApplicationService} from '@sysos/libs-application';
-import {Credential, SysosAppCredentialsManagerService} from '@sysos/app-credentials-manager';
+import {Application, SysosLibApplicationService} from '@sysos/lib-application';
+import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
+import {Credential} from '@sysos/app-credentials-manager';
 
 import {IMConnection} from '../../types/imconnection';
 import {SysosAppInfrastructureManagerService} from '../../services/sysos-app-infrastructure-manager.service';
@@ -15,15 +16,19 @@ import {SysosAppInfrastructureManagerService} from '../../services/sysos-app-inf
 export class BodyNewConnectionComponent implements OnInit {
   @Input() application: Application;
 
+  private CredentialsManager;
+
   credentials: Credential[];
   connectionForm: FormGroup;
   submitted: boolean = false;
   newConnectionType: string = null;
 
   constructor(private formBuilder: FormBuilder,
-              private Applications: SysosLibsApplicationService,
-              private CredentialsManager: SysosAppCredentialsManagerService,
+              private Applications: SysosLibApplicationService,
+              private serviceInjector: SysosLibServiceInjectorService,
               private InfrastructureManager: SysosAppInfrastructureManagerService) {
+
+    this.CredentialsManager = this.serviceInjector.get('SysosAppCredentialsManagerService');
     this.CredentialsManager.credentials.subscribe(credentials => this.credentials = credentials);
   }
 

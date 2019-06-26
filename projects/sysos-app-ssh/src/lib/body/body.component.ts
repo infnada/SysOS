@@ -4,7 +4,7 @@ import {Socket} from 'ngx-socket-io';
 import {Terminal} from 'xterm';
 import * as fit from 'xterm/lib/addons/fit/fit';
 
-import {Application} from '@sysos/libs-application';
+import {Application} from '@sysos/lib-application';
 
 import {SysosAppSshService} from '../services/sysos-app-ssh.service';
 import {SshConnection} from '../types/ssh-connection';

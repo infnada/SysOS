@@ -3,8 +3,8 @@ import {Injectable} from '@angular/core';
 import {NGXLogger} from 'ngx-logger';
 import {ToastrService} from 'ngx-toastr';
 
-import {SysosLibsModalService} from '@sysos/libs-modal';
-import {SysosLibsNetappService} from '@sysos/libs-netapp';
+import {SysosLibModalService} from '@sysos/lib-modal';
+import {SysosLibNetappService} from '@sysos/lib-netapp';
 
 import {IMConnection} from '../types/imconnection';
 import {SysosAppInfrastructureManagerService} from './sysos-app-infrastructure-manager.service';
@@ -16,8 +16,8 @@ import {SysosAppInfrastructureVmwareService} from './sysos-app-infrastructure-vm
 export class SysosAppInfrastructureNetappService {
   constructor(private logger: NGXLogger,
               private Toastr: ToastrService,
-              private Modal: SysosLibsModalService,
-              private NetApp: SysosLibsNetappService,
+              private Modal: SysosLibModalService,
+              private NetApp: SysosLibNetappService,
               private InfrastructureManager: SysosAppInfrastructureManagerService,
               private InfrastructureManagerVmware: SysosAppInfrastructureVmwareService) {
   }

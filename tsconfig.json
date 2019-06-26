@@ -19,65 +19,71 @@
       "dom"
     ],
     "paths": {
-      "@sysos/libs-application": [
-        "projects/sysos-libs-application/src/public-api"
+      "@sysos/lib-application": [
+        "projects/sysos-lib-application/src/public-api"
       ],
-      "@sysos/libs-application/*": [
-        "projects/sysos-libs-application/*"
+      "@sysos/lib-application/*": [
+        "projects/sysos-lib-application/*"
       ],
-      "@sysos/libs-file-system": [
-        "projects/sysos-libs-file-system/src/public-api"
+      "@sysos/lib-file-system": [
+        "projects/sysos-lib-file-system/src/public-api"
       ],
-      "@sysos/libs-file-system/*": [
-        "projects/sysos-libs-file-system/*"
+      "@sysos/lib-file-system/*": [
+        "projects/sysos-lib-file-system/*"
       ],
-      "@sysos/libs-modal": [
-        "projects/sysos-libs-modal/src/public-api"
+      "@sysos/lib-modal": [
+        "projects/sysos-lib-modal/src/public-api"
       ],
-      "@sysos/libs-modal/*": [
-        "projects/sysos-libs-modal/*"
+      "@sysos/lib-modal/*": [
+        "projects/sysos-lib-modal/*"
       ],
-      "@sysos/libs-vmware": [
-        "projects/sysos-libs-vmware/src/public-api"
+      "@sysos/lib-vmware": [
+        "projects/sysos-lib-vmware/src/public-api"
       ],
-      "@sysos/libs-vmware/*": [
-        "projects/sysos-libs-vmware/*"
+      "@sysos/lib-vmware/*": [
+        "projects/sysos-lib-vmware/*"
       ],
-      "@sysos/libs-netapp": [
-        "projects/sysos-libs-netapp/src/public-api"
+      "@sysos/lib-netapp": [
+        "projects/sysos-lib-netapp/src/public-api"
       ],
-      "@sysos/libs-netapp/*": [
-        "projects/sysos-libs-netapp/*"
+      "@sysos/lib-netapp/*": [
+        "projects/sysos-lib-netapp/*"
       ],
-      "@sysos/libs-user": [
-        "projects/sysos-libs-user/src/public-api"
+      "@sysos/lib-user": [
+        "projects/sysos-lib-user/src/public-api"
       ],
-      "@sysos/libs-user/*": [
-        "projects/sysos-libs-user/*"
+      "@sysos/lib-user/*": [
+        "projects/sysos-lib-user/*"
       ],
-      "@sysos/libs-types": [
-        "projects/sysos-libs-types/src/public-api"
+      "@sysos/lib-types": [
+        "projects/sysos-lib-types/src/public-api"
       ],
-      "@sysos/libs-types/*": [
-        "projects/sysos-libs-types/*"
+      "@sysos/lib-types/*": [
+        "projects/sysos-lib-types/*"
       ],
-      "@sysos/libs-file-system-ui": [
-        "projects/sysos-libs-file-system-ui/src/public-api"
+      "@sysos/lib-file-system-ui": [
+        "projects/sysos-lib-file-system-ui/src/public-api"
       ],
-      "@sysos/libs-file-system-ui/*": [
-        "projects/sysos-libs-file-system-ui/*"
+      "@sysos/lib-file-system-ui/*": [
+        "projects/sysos-lib-file-system-ui/*"
       ],
-      "@sysos/libs-file": [
-        "projects/sysos-libs-file/src/public-api"
+      "@sysos/lib-file": [
+        "projects/sysos-lib-file/src/public-api"
       ],
-      "@sysos/libs-file/*": [
-        "projects/sysos-libs-file/*"
+      "@sysos/lib-file/*": [
+        "projects/sysos-lib-file/*"
       ],
-      "@sysos/libs-selectable": [
-        "projects/sysos-libs-selectable/src/public-api"
+      "@sysos/lib-selectable": [
+        "projects/sysos-lib-selectable/src/public-api"
       ],
-      "@sysos/libs-selectable/*": [
-        "projects/sysos-libs-selectable/*"
+      "@sysos/lib-selectable/*": [
+        "projects/sysos-lib-selectable/*"
+      ],
+      "@sysos/lib-service-injector": [
+        "projects/sysos-lib-service-injector/src/public-api"
+      ],
+      "@sysos/lib-service-injector/*": [
+        "projects/sysos-lib-service-injector/*"
       ],
       "@sysos/app-backups-manager": [
         "projects/sysos-app-backups-manager/src/public-api"
@@ -132,6 +138,24 @@
       ],
       "@sysos/app-wmks/*": [
         "projects/sysos-app-wmks/*"
+      ],
+      "@sysos/modal-input": [
+        "projects/sysos-modal-input/src/public-api"
+      ],
+      "@sysos/modal-input/*": [
+        "projects/sysos-modal-input/*"
+      ],
+      "@sysos/modal-plain": [
+        "projects/sysos-modal-plain/src/public-api"
+      ],
+      "@sysos/modal-plain/*": [
+        "projects/sysos-modal-plain/*"
+      ],
+      "@sysos/modal-question": [
+        "projects/sysos-modal-question/src/public-api"
+      ],
+      "@sysos/modal-question/*": [
+        "projects/sysos-modal-question/*"
       ]
     }
   }

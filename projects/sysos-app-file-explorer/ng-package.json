@@ -7,11 +7,11 @@
       "ngx-filter-pipe": "ngxFilterPipe",
       "angular-file": "angularFile",
       "ngx-logger": "ngxLogger",
-      "@sysos/libs-file": "SysOSLibsFile",
-      "@sysos/libs-file-system": "SysOSLibsFileSystem",
-      "@sysos/libs-file-system-ui": "SysOSLibsFileSystemUi",
-      "@sysos/libs-application": "SysOSLibsApplication",
-      "@sysos/libs-selectable": "SysOSLibsSelectable"
+      "@sysos/lib-file": "SysOSLibFile",
+      "@sysos/lib-file-system": "SysOSLibFileSystem",
+      "@sysos/lib-file-system-ui": "SysOSLibFileSystemUi",
+      "@sysos/lib-application": "SysOSLibApplication",
+      "@sysos/lib-selectable": "SysOSLibSelectable"
     }
   }
 }
