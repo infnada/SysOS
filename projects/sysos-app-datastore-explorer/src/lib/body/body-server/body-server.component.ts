@@ -159,19 +159,19 @@ export class BodyServerComponent implements OnInit {
   }
 
   UIcreateFolder(): void {
-    this.FileSystemUi.UIcreateFolder(this.getActiveConnection(), this.currentPath, '.window--datastore-explorer .window__main');
+    this.FileSystemUi.UIcreateFolder(this.currentPath, '.window--datastore-explorer .window__main', 'vmware', { connection: this.getActiveConnection() });
   }
 
   UIrenameFile(file: SysOSFile): void {
-    this.FileSystemUi.UIrenameFile(this.getActiveConnection(), this.currentPath, file, '.window--datastore-explorer .window__main');
+    this.FileSystemUi.UIrenameFile(this.currentPath, file, '.window--datastore-explorer .window__main', 'vmware', { connection: this.getActiveConnection() });
   }
 
   UIdeleteSelected(file: SysOSFile): void {
-    this.FileSystemUi.UIdeleteSelected(this.getActiveConnection(), this.currentPath, file, '.window--datastore-explorer .window__main');
+    this.FileSystemUi.UIdeleteSelected(this.currentPath, file, '.window--datastore-explorer .window__main', 'vmware', { connection: this.getActiveConnection() });
   }
 
   UIpasteFile(): void {
-    this.FileSystemUi.UIpasteFile(this.getActiveConnection().uuid, this.currentPath);
+    this.FileSystemUi.UIpasteFile(this.currentPath, 'vmware', { connection: this.getActiveConnection() });
   }
 
   UIdoWithFile(file: SysOSFile): void {

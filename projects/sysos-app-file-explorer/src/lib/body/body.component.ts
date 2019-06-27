@@ -158,23 +158,23 @@ export class BodyComponent implements OnInit {
   }
 
   UIdownloadFromURL(): void {
-    this.FileSystemUi.UIdownloadFromURL(null, this.currentPath, '.window--file-explorer .window__main');
+    this.FileSystemUi.UIdownloadFromURL(this.currentPath, '.window--file-explorer .window__main');
   }
 
   UIcreateFolder(): void {
-    this.FileSystemUi.UIcreateFolder(null, this.currentPath, '.window--file-explorer .window__main');
+    this.FileSystemUi.UIcreateFolder(this.currentPath, '.window--file-explorer .window__main');
   }
 
   UIrenameFile(file: SysOSFile): void {
-    this.FileSystemUi.UIrenameFile(null, this.currentPath, file, '.window--file-explorer .window__main');
+    this.FileSystemUi.UIrenameFile(this.currentPath, file, '.window--file-explorer .window__main');
   }
 
   UIdeleteSelected(file: SysOSFile): void {
-    this.FileSystemUi.UIdeleteSelected(null, this.currentPath, file, '.window--file-explorer .window__main');
+    this.FileSystemUi.UIdeleteSelected(this.currentPath, file, '.window--file-explorer .window__main');
   }
 
   UIpasteFile(): void {
-    this.FileSystemUi.UIpasteFile(null, this.currentPath);
+    this.FileSystemUi.UIpasteFile(this.currentPath);
   }
 
   UIdoWithFile(file: SysOSFile): void {

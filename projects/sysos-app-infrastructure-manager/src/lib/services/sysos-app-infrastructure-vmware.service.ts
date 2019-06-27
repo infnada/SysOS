@@ -4,12 +4,12 @@ import {NGXLogger} from 'ngx-logger';
 import {ToastrService} from 'ngx-toastr';
 
 import {SysosLibModalService} from '@sysos/lib-modal';
+import {SysosLibFileSystemUiService} from '@sysos/lib-file-system-ui';
 import {SysosLibVmwareService} from '@sysos/lib-vmware';
 
 import {SysosAppInfrastructureManagerService} from './sysos-app-infrastructure-manager.service';
 import {IMConnection} from '../types/imconnection';
 import {IMESXiHost} from '../types/imesxi-hosts';
-
 
 @Injectable({
   providedIn: 'root'
@@ -18,6 +18,7 @@ export class SysosAppInfrastructureVmwareService {
   constructor(private logger: NGXLogger,
               private Toastr: ToastrService,
               private Modal: SysosLibModalService,
+              private FileSystemUi: SysosLibFileSystemUiService,
               private VMWare: SysosLibVmwareService,
               private InfrastructureManager: SysosAppInfrastructureManagerService) {
   }
@@ -261,5 +262,76 @@ export class SysosAppInfrastructureVmwareService {
     });
 
     return datastores;
+  }
+
+  registerFileSystemUiHandlers(): void {
+    this.FileSystemUi.createHandler('folder', 'vmware', (data) => {
+      this.Modal.openLittleModal('PLEASE WAIT', 'Creating folder...', data.selector, 'plain');
+
+      this.VMWare.createFolderToDatastore(
+        data.connection.credential,
+        data.connection.host,
+        data.connection.port,
+        data.connection.name,
+        data.currentPath + data.name,
+        data.connection.datacenter
+      ).then((res) => {
+        if (res.status === 'error') throw new Error('Failed to create folder');
+
+        this.Modal.closeModal(data.selector);
+
+        this.FileSystemUi.refreshPath(data.currentPath);
+      }).catch((error) => {
+        this.logger.error('[DatastoreExplorerServer] -> UIcreateFolder -> Error while creating folder -> ', error);
+        this.Modal.closeModal(data.selector);
+      });
+    });
+
+    this.FileSystemUi.createHandler('rename', 'vmware', (data) => {
+      this.Modal.openLittleModal('PLEASE WAIT', 'Moving file...', data.selector, 'plain');
+
+      this.VMWare.moveFileFromDatastore(
+        data.connection.credential,
+        data.connection.host,
+        data.connection.port,
+        data.connection.name,
+        data.currentPath + data.file.filename, // original file name
+        data.connection.datacenter,
+        data.connection.name,
+        data.currentPath + data.name, // new file name
+        data.connection.datacenter
+      ).then((res) => {
+        if (res.status === 'error') throw new Error('Failed to rename the fie');
+
+        this.Modal.closeModal(data.selector);
+
+        this.FileSystemUi.refreshPath(data.currentPath);
+      }).catch((error) => {
+        this.logger.error('[DatastoreExplorerServer] -> UIcreateFolder -> Error while creating folder -> ', error);
+        this.Modal.closeModal(data.selector);
+      });
+    });
+
+    this.FileSystemUi.createHandler('delete', 'vmware', (data) => {
+      this.Modal.openLittleModal('PLEASE WAIT', 'Deleting file...', data.selector, 'plain');
+
+      this.VMWare.deleteFileFromDatastore(
+        data.connection.credential,
+        data.connection.host,
+        data.connection.port,
+        data.connection.name,
+        data.currentPath + data.file.filename,
+        data.connection.datacenter
+      ).then((res) => {
+        if (res.status === 'error') throw new Error('Failed to delete the fie');
+
+        this.Modal.closeModal(data.selector);
+
+        this.FileSystemUi.refreshPath(data.currentPath);
+      }).catch((error) => {
+        this.logger.error('[DatastoreExplorerServer] -> UIcreateFolder -> Error while creating folder -> ', error);
+        this.Modal.closeModal(data.selector);
+      });
+    });
   }
 }

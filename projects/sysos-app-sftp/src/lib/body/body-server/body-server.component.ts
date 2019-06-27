@@ -164,23 +164,23 @@ export class BodyServerComponent implements OnInit {
   }
 
   UIdownloadFromURL(): void {
-    this.FileSystemUi.UIdownloadFromURL(this.getActiveConnection().uuid, this.currentPath, '.window--sftp .window__main');
+    this.FileSystemUi.UIdownloadFromURL(this.currentPath, '.window--sftp .window__main', 'linux', { connection: this.getActiveConnection() });
   }
 
   UIcreateFolder(): void {
-    this.FileSystemUi.UIcreateFolder(this.getActiveConnection(), this.currentPath, '.window--sftp .window__main');
+    this.FileSystemUi.UIcreateFolder(this.currentPath, '.window--sftp .window__main', 'linux', { connection: this.getActiveConnection() });
   }
 
   UIrenameFile(file: SysOSFile): void {
-    this.FileSystemUi.UIrenameFile(this.getActiveConnection(), this.currentPath, file, '.window--sftp .window__main');
+    this.FileSystemUi.UIrenameFile(this.currentPath, file, '.window--sftp .window__main', 'linux', { connection: this.getActiveConnection() });
   }
 
   UIdeleteSelected(file: SysOSFile): void {
-    this.FileSystemUi.UIdeleteSelected(this.getActiveConnection(), this.currentPath, file, '.window--sftp .window__main');
+    this.FileSystemUi.UIdeleteSelected(this.currentPath, file, '.window--sftp .window__main', 'linux', { connection: this.getActiveConnection() });
   }
 
   UIpasteFile(): void {
-    this.FileSystemUi.UIpasteFile(this.getActiveConnection().uuid, this.currentPath);
+    this.FileSystemUi.UIpasteFile(this.currentPath, 'linux', { connection: this.getActiveConnection() });
   }
 
   UIdoWithFile(file: SysOSFile): void {

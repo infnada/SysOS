@@ -60,5 +60,6 @@ export class SysosAppInfrastructureManagerModule {
 
     this.InfrastructureManager.initConnections();
     this.InfrastructureManager.initLinksMap();
+    this.InfrastructureVmwareService.registerFileSystemUiHandlers();
   }
 }

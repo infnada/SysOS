@@ -50,7 +50,7 @@ export class ActionsBodyComponent implements OnInit {
    * Creates a new folder
    */
   UIcreateFolder(): void {
-    this.FileSystemUi.UIcreateFolder(null, this.currentPath, '.window--file-explorer .window__main');
+    this.FileSystemUi.UIcreateFolder(this.currentPath, '.window--file-explorer .window__main');
   }
 
   /**

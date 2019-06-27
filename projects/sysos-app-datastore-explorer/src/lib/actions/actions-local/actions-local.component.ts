@@ -51,7 +51,7 @@ export class ActionsLocalComponent implements OnInit {
    * Creates a new folder
    */
   UIcreateFolder(): void {
-    this.FileSystemUi.UIcreateFolder(null, this.currentPath, '.window--datastore-explorer .window__main');
+    this.FileSystemUi.UIcreateFolder(this.currentPath, '.window--datastore-explorer .window__main');
   }
 
   /**

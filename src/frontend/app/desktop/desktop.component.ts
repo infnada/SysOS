@@ -155,23 +155,23 @@ export class DesktopComponent implements OnInit, AfterViewInit {
   }
 
   UIdownloadFromURL(): void {
-    this.FileSystemUi.UIdownloadFromURL(null, this.desktopFiles.currentPath, '.desktop .desktop__body');
+    this.FileSystemUi.UIdownloadFromURL(this.desktopFiles.currentPath, '.desktop .desktop__body');
   }
 
   UIcreateFolder(): void {
-    this.FileSystemUi.UIcreateFolder(null, this.desktopFiles.currentPath, '.desktop .desktop__body');
+    this.FileSystemUi.UIcreateFolder(this.desktopFiles.currentPath, '.desktop .desktop__body');
   }
 
   UIrenameFile(file: SysOSFile): void {
-    this.FileSystemUi.UIrenameFile(null, this.desktopFiles.currentPath, file, '.desktop .desktop__body');
+    this.FileSystemUi.UIrenameFile(this.desktopFiles.currentPath, file, '.desktop .desktop__body');
   }
 
   UIdeleteSelected(file: SysOSFile): void {
-    this.FileSystemUi.UIdeleteSelected(null, this.desktopFiles.currentPath, file, '.desktop .desktop__body');
+    this.FileSystemUi.UIdeleteSelected(this.desktopFiles.currentPath, file, '.desktop .desktop__body');
   }
 
   UIpasteFile(): void {
-    this.FileSystemUi.UIpasteFile(null, this.desktopFiles.currentPath);
+    this.FileSystemUi.UIpasteFile(this.desktopFiles.currentPath);
   }
 
   UIdoWithFile(file: SysOSFile): void {

@@ -50,7 +50,7 @@ export class ActionsLocalComponent implements OnInit {
    * Creates a new folder
    */
   UIcreateFolder(): void {
-    this.FileSystemUi.UIcreateFolder(null, this.currentPath, '.window--sftp .window__main');
+    this.FileSystemUi.UIcreateFolder(this.currentPath, '.window--sftp .window__main');
   }
 
   /**

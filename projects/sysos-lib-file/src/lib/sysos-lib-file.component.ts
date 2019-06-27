@@ -129,11 +129,11 @@ export class SysosLibFileComponent implements OnInit, AfterViewInit {
   }
 
   UIrenameFile(file: SysOSFile) {
-    this.FileSystemUi.UIrenameFile(this.connection, this.currentPath, file, this.selector);
+    this.FileSystemUi.UIrenameFile(this.currentPath, file, this.selector, this.connection.type, { connection: this.connection });
   }
 
   UIdeleteSelected(file: SysOSFile) {
-    this.FileSystemUi.UIdeleteSelected(this.connection, this.currentPath, file, this.selector);
+    this.FileSystemUi.UIdeleteSelected(this.currentPath, file, this.selector, this.connection.type, { connection: this.connection });
   }
 
   UIcopyFile(file: SysOSFile) {

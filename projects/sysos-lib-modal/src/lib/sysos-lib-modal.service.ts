@@ -111,8 +111,9 @@ export class SysosLibModalService {
 
       const viewContainerRef: ViewContainerRef = this.mainContainerRef;
       const cmpFactory = this.registeredModals[modalId].factory.componentFactories.find(
-        x => x.componentType.name === modalId.charAt(0).toUpperCase() + modalId.slice(1) + 'EntryComponent'
+        x => x.componentType.name === 'EntryComponent'
       );
+
       const cmpRef = viewContainerRef.createComponent(cmpFactory, 0, this.registeredModals[modalId].modRef.injector);
 
       (cmpRef.instance as any).size = this.registeredModals[modalId].size;

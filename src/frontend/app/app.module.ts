@@ -10,6 +10,7 @@ import * as angularMaterialButton from '@angular/material/button';
 import * as angularMaterialTree from '@angular/material/tree';
 import * as cdkTree from '@angular/cdk/tree';
 import * as cdkDragDrop from '@angular/cdk/drag-drop';
+import * as ngBootstrap from '@ng-bootstrap/ng-bootstrap';
 import * as rxjs from 'rxjs';
 import * as ngxLogger from 'ngx-logger';
 import * as ngxToastr from 'ngx-toastr';
@@ -43,6 +44,7 @@ SystemJS.set('@angular/material/button', SystemJS.newModule(angularMaterialButto
 SystemJS.set('@angular/material/tree', SystemJS.newModule(angularMaterialTree));
 SystemJS.set('@angular/cdk/tree', SystemJS.newModule(cdkTree));
 SystemJS.set('@angular/cdk/drag-drop', SystemJS.newModule(cdkDragDrop));
+SystemJS.set('@ng-bootstrap/ng-bootstrap', SystemJS.newModule(ngBootstrap));
 SystemJS.set('rxjs', SystemJS.newModule(rxjs));
 SystemJS.set('ngx-logger', SystemJS.newModule(ngxLogger));
 SystemJS.set('ngx-toastr', SystemJS.newModule(ngxToastr));
