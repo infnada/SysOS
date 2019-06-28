@@ -177,7 +177,7 @@
         }
       }
     },
-    "sysos-lib-fileSystem": {
+    "sysos-lib-file-system": {
       "root": "projects/sysos-lib-file-system",
       "sourceRoot": "projects/sysos-lib-file-system/src",
       "projectType": "library",
@@ -387,7 +387,7 @@
         }
       }
     },
-    "sysos-lib-fileSystemUi": {
+    "sysos-lib-file-system-ui": {
       "root": "projects/sysos-lib-file-system-ui",
       "sourceRoot": "projects/sysos-lib-file-system-ui/src",
       "projectType": "library",

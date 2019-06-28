@@ -3,8 +3,5 @@
   "dest": "../../dist/libs/sysos-lib-types",
   "lib": {
     "entryFile": "src/public-api.ts"
-  },
-  "whitelistedNonPeerDependencies": [
-    "."
-  ]
+  }
 }

@@ -3,8 +3,5 @@
   "dest": "../../dist/libs/sysos-lib-modal",
   "lib": {
     "entryFile": "src/public-api.ts"
-  },
-  "whitelistedNonPeerDependencies": [
-    "."
-  ]
+  }
 }

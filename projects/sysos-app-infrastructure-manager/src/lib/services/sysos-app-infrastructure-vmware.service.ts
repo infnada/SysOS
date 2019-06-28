@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 
 import {NGXLogger} from 'ngx-logger';
 import {ToastrService} from 'ngx-toastr';
@@ -134,7 +134,7 @@ export class SysosAppInfrastructureVmwareService {
 
       console.log(mainParent);*/
 
-    }).then( () => {
+    }).then(() => {
 
       // Check if any datastore is from a managed storage system and link it.
       return this.InfrastructureManager.checkLinkBetweenManagedNodes('vmware', connection.uuid);
@@ -153,7 +153,7 @@ export class SysosAppInfrastructureVmwareService {
 
       return this.VMWare.getWaitForUpdatesEx(connection.credential, connection.host, connection.port);
 
-    }).then( res => {
+    }).then(res => {
 
       console.log(res);
 

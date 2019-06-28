@@ -3,8 +3,5 @@
   "dest": "../../dist/libs/sysos-lib-user",
   "lib": {
     "entryFile": "src/public-api.ts"
-  },
-  "whitelistedNonPeerDependencies": [
-    "."
-  ]
+  }
 }

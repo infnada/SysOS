@@ -3,6 +3,7 @@ import {Injectable} from '@angular/core';
 import {NGXLogger} from 'ngx-logger';
 import {ToastrService} from 'ngx-toastr';
 
+import {SysosLibApplicationService} from "@sysos/lib-application";
 import {SysosLibModalService} from '@sysos/lib-modal';
 import {SysosLibNetappService} from '@sysos/lib-netapp';
 
@@ -17,6 +18,7 @@ export class SysosAppInfrastructureNetappService {
   constructor(private logger: NGXLogger,
               private Toastr: ToastrService,
               private Modal: SysosLibModalService,
+              private Applications: SysosLibApplicationService,
               private NetApp: SysosLibNetappService,
               private InfrastructureManager: SysosAppInfrastructureManagerService,
               private InfrastructureManagerVmware: SysosAppInfrastructureVmwareService) {
@@ -197,7 +199,7 @@ export class SysosAppInfrastructureNetappService {
    * @description
    * Refresh NetApp volume data
    */
-  getVolumeData(connectionUuid, volume): void {
+  getVolumeData(connectionUuid: string, volume: {[key: string]: any}): void {
     this.logger.debug('Infrastructure Manager [%s] -> getVolumeData -> volume [%s]', volume['volume-id-attributes'].uuid, volume['volume-id-attributes'].name);
     const connection = this.InfrastructureManager.getConnectionByUuid(connectionUuid);
 
@@ -244,7 +246,7 @@ export class SysosAppInfrastructureNetappService {
    * @description
    * Fetch NetApp SnapShots
    */
-  getSnapshotFiles(uuid, host, vserver, volume, snapshot) {
+  getSnapshotFiles(uuid: string, host: string, vserver: string, volume: string, snapshot: string) {
     let link;
     let datastoreIndex;
     let datastoreVM;
@@ -351,7 +353,7 @@ export class SysosAppInfrastructureNetappService {
     });
   }
 
-  createStorageSnapShot(connectionUuid, volume): void {
+  createStorageSnapShot(connectionUuid: string, volume: {[key: string]: any}): void {
     this.logger.debug('Infrastructure Manager [%s] -> Ask for create storage snapshot -> volume [%s]', volume['volume-id-attributes'].uuid, volume['volume-id-attributes'].name);
     const connection = this.InfrastructureManager.getConnectionByUuid(connectionUuid);
 
@@ -401,7 +403,7 @@ export class SysosAppInfrastructureNetappService {
     });
   }
 
-  deleteStorageSnapShot(connectionUuid, volume, snapshot): void {
+  deleteStorageSnapShot(connectionUuid: string, volume: {[key: string]: any}, snapshot: {[key: string]: any}): void {
     this.logger.debug('Infrastructure Manager [%s] -> Ask for delete storage snapshot -> snapshot [%s]', snapshot['snapshot-instance-uuid'], snapshot.name);
     const connection = this.InfrastructureManager.getConnectionByUuid(connectionUuid);
 
@@ -450,6 +452,190 @@ export class SysosAppInfrastructureNetappService {
     }).catch((e) => {
       this.Modal.closeModal('.window--infrastructure-manager .window__main');
       throw e;
+    });
+  }
+
+  openBackupsManager(connectionUuid: string, type: string, data: {[key: string]: any}) {
+    this.logger.debug('Infrastructure Manager [%s] -> Opening Backups Manager APP', connectionUuid);
+
+    this.Applications.openApplication('backups-manager', {
+      data: {
+        data,
+        type,
+        credential: this.InfrastructureManager.getConnectionByUuid(connectionUuid).credential,
+        host: this.InfrastructureManager.getConnectionByUuid(connectionUuid).host,
+        port: this.InfrastructureManager.getConnectionByUuid(connectionUuid).port
+      }
+    });
+  }
+
+  /**
+   * Storage Volume Snapshots
+   */
+  mountSnapShotAsDatastore(connectionUuid: string, snapshot: {[key: string]: any}) {
+    this.logger.debug('Infrastructure Manager [%s] -> Ask for mount storage snapshot into a datastore -> snapshot [%s]', snapshot['snapshot-instance-uuid'], snapshot.name);
+
+    this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
+      {
+        title: 'Mount Snapshot as Datastore',
+        text: 'Do you want to mount the Storage Snapshot to an ESXi host?'
+      }
+    ).then((modalInstance) => {
+      modalInstance.result.then((result: boolean) => {
+        if (result === true) {
+
+          this.logger.debug('Infrastructure Manager [%s] -> Launching Backups Manager for mounting storage snapshot into a datastore -> snapshot [%s]', snapshot['snapshot-instance-uuid'], snapshot.name);
+
+          this.openBackupsManager(connectionUuid, 'mount_restore_datastore', {
+            storage: _this.getActiveConnection(3),
+            vserver: _this.getActiveConnection(2),
+            volume: _this.getActiveConnection(1),
+            snapshots: snapshots,
+            snapshot: snapshot['snapshot-instance-uuid'],
+            ESXihosts: smanagerFactory.getESXihosts()
+          });
+
+        }
+      });
+    });
+  }
+
+  restoreVolumeFiles(connectionUuid: string, snapshot: {[key: string]: any}) {
+    this.logger.debug('Infrastructure Manager [%s] -> Ask for mount storage snapshot into a datastore to restore files -> snapshot [%s]', snapshot['snapshot-instance-uuid'], snapshot.name);
+
+    this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
+      {
+        title: 'Restore Datastore Files',
+        text: 'Do you want to mount the Storage Snapshot to an ESXi host and restore datastore files?'
+      }
+    ).then((modalInstance) => {
+      modalInstance.result.then((result: boolean) => {
+        if (result === true) {
+
+          this.logger.debug('Infrastructure Manager [%s] -> Launching Backups Manager for restoring a volume files -> snapshot [%s]', snapshot['snapshot-instance-uuid'], snapshot.name);
+
+          this.openBackupsManager(connectionUuid, 'restore_datastore_files', {
+            storage: _this.getActiveConnection(3),
+            vserver: _this.getActiveConnection(2),
+            volume: _this.getActiveConnection(1),
+            snapshots: snapshots,
+            snapshot: snapshot['snapshot-instance-uuid'],
+            ESXihosts: smanagerFactory.getESXihosts()
+          });
+
+        }
+      });
+    });
+  }
+
+  instantVM(connectionUuid: string, vm: {[key: string]: any}) {
+    // Not linked VM
+    if (vm.vm === null) {
+
+      vm.vm = {
+        vm: 'unknown',
+        name: vm.name,
+        summary: {
+          config: {
+            vmPathName: '[' + _this.getActiveConnection(1)['volume-id-attributes'].name + '] ' + vm.path
+          }
+        }
+      };
+    }
+
+    this.logger.debug('Infrastructure Manager [%s] -> Ask for Instant VM recovery -> vm [%s]', vm.vm.vm, vm.name);
+
+    this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
+      {
+        title: 'Instant VM recovery',
+        text: `Do you want to perform an Instant VM recovery of ${vm.name}?`
+      }
+    ).then((modalInstance) => {
+      modalInstance.result.then((result: boolean) => {
+        if (result === true) {
+
+          this.logger.debug('Infrastructure Manager [%s] -> Launching Backups Manager for Instant VM recovery -> vm [%s]', vm.vm.vm, vm.name);
+
+          this.openBackupsManager(connectionUuid, 'vm_instant_recovery', {
+            storage: _this.getActiveConnection(3),
+            vserver: _this.getActiveConnection(2),
+            volume: _this.getActiveConnection(1),
+            snapshots: [_this.getActiveConnection()],
+            snapshot: _this.getActiveConnection()['snapshot-instance-uuid'],
+            ESXihosts: smanagerFactory.getESXihosts(),
+            vm: vm.vm
+          });
+
+        }
+      });
+    });
+  }
+
+  restoreVM(connectionUuid: string, vm: {[key: string]: any}) {
+    this.logger.debug('Infrastructure Manager [%s] -> Ask for restore entire VM -> vm [%s]', vm.vm.vm, vm.name);
+
+    if (vm.vm === null) {
+      return this.Modal.openLittleModal('Error while restoring Backup', `Not found any linked VirtualMachine for ${vm.name}, maybe original VM was deleted from vCenter. Try doing an Instant VM restore`, '.window--smanager .window__main', 'plain');
+    }
+
+    this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
+      {
+        title: 'Restore entire VM',
+        text: `Do you want to perform a entire VM restore of ${vm.name}?`
+      }
+    ).then((modalInstance) => {
+      modalInstance.result.then((result: boolean) => {
+        if (result === true) {
+
+          this.logger.debug('Infrastructure Manager [%s] -> Launching Backups Manager for restore entire VM -> vm [%s]', vm.vm.vm, vm.name);
+
+          this.openBackupsManager(connectionUuid, 'restore_vm', {
+            storage: _this.getActiveConnection(3),
+            vserver: _this.getActiveConnection(2),
+            volume: _this.getActiveConnection(1),
+            snapshots: [_this.getActiveConnection()],
+            snapshot: _this.getActiveConnection()['snapshot-instance-uuid'],
+            ESXihosts: smanagerFactory.getESXihosts(),
+            vm: vm.vm,
+            current_location: {
+              uuid: vm.virtual,
+              credential: connectionsFactory.getConnectionByUuid($itemScope.vm.virtual).credential,
+              host: connectionsFactory.getConnectionByUuid($itemScope.vm.virtual).host,
+              port: connectionsFactory.getConnectionByUuid($itemScope.vm.virtual).port
+            }
+          });
+
+        }
+      });
+    });
+  }
+
+  restoreGuestFiles(connectionUuid: string, vm: {[key: string]: any}) {
+    this.logger.debug('Infrastructure Manager [%s] -> Ask for recovery VM Guest Files -> vm [%s]', vm.vm.vm, vm.name);
+
+    this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
+      {
+        title: 'Restore guest files',
+        text: `Do you want to perform a VM Guest Files recovery of ${vm.name}?`
+      }
+    ).then((modalInstance) => {
+      modalInstance.result.then((result: boolean) => {
+        if (result === true) {
+
+          this.logger.debug('Infrastructure Manager [%s] -> Launching Backups Manager for restore entire VM -> vm [%s]', vm.vm.vm, vm.name);
+
+          this.openBackupsManager(connectionUuid, 'restore_vm_guest_files', {
+            storage: _this.getActiveConnection(3),
+            vserver: _this.getActiveConnection(2),
+            volume: _this.getActiveConnection(1),
+            snapshots: [_this.getActiveConnection()],
+            snapshot: _this.getActiveConnection()['snapshot-instance-uuid'],
+            ESXihosts: smanagerFactory.getESXihosts(),
+            vm: vm.vm
+          });
+
+        }
+      });
     });
   }
 }

@@ -9,6 +9,7 @@
     "ngx-toastr": "^10.0.4",
     "ngx-logger": "^3.3.13",
     "rxjs": "~6.3.3",
-    "@sysos/lib-application": "~0.0.1"
+    "@sysos/lib-application": "~0.0.1",
+    "@sysos/lib-service-injector": "~0.0.1"
   }
 }

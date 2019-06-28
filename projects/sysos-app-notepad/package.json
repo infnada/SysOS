@@ -4,6 +4,8 @@
   "peerDependencies": {
     "@angular/common": "^7.2.0",
     "@angular/core": "^7.2.0",
-    "ngx-monaco-editor": "^7.0.0"
+    "@angular/forms": "~7.2.0",
+    "ngx-monaco-editor": "^7.0.0",
+    "@sysos/lib-application": "~0.0.1"
   }
 }

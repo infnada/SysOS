@@ -40,7 +40,8 @@ export class BodyComponent implements OnInit {
   contextMenuPosition = {x: '0px', y: '0px'};
   svContextMenu: ContextMenuItem[];
   volumeContextMenu: ContextMenuItem[];
-  snapshotContextMenu: ContextMenuItem[];
+  volumeSnapshotContextMenu: ContextMenuItem[];
+  volumeVMSnapshotontextMenu: ContextMenuItem[];
   VMContextMenu: ContextMenuItem[];
   datastoreContextMenu: ContextMenuItem[];
 
@@ -73,10 +74,10 @@ export class BodyComponent implements OnInit {
       this.dataSource.data = data;
     });
 
+    // Storage & Virtual
     this.svContextMenu = [
       {
         id: 0, text: '<i class="fa fa-pencil"></i> Edit Connection', action: (node: IMNode) => {
-          console.log(node);
           this.InfrastructureManager.editConnection(node.data.uuid);
         }
       },
@@ -95,7 +96,7 @@ export class BodyComponent implements OnInit {
     this.volumeContextMenu = [
       {
         id: 1, text: '<i class="fa fa-file"></i> Show datastore files', action: (node: IMNode) => {
-          this.openDatastoreBrowser(node.data.uuid, node.data.datastore);
+          this.openDatastoreExplorer(node.data.uuid, node.data.datastore);
         }
       },
       {
@@ -111,109 +112,38 @@ export class BodyComponent implements OnInit {
       }
     ];
 
-    this.snapshotContextMenu = [
+    this.volumeSnapshotContextMenu = [
       {
         id: 0, text: '<i class="fa fa-database"></i> Mount as Datastore', action: (node: IMNode) => {
-          /*
-          $log.debug('Infrastructure Manager [%s] -> Ask for mount storage snapshot into a datastore -> snapshot [%s]', $itemScope.snapshot['snapshot-instance-uuid'], $itemScope.snapshot.name);
-
-            smanagerFactory.setActiveConnection($itemScope.snapshot['snapshot-instance-uuid']);
-
-            // Wait for next digest circle before continue
-            $timeout(function () {
-                var modalInstance = modalFactory.openRegistredModal('question', '.window--smanager .window__main',
-                    {
-                        title: function () {
-                            return 'Mount Snapshot as Datastore';
-                        },
-                        text: function () {
-                            return 'Do you want to mount the Storage Snapshot to an ESXi host?';
-                        }
-                    }
-                );
-                modalInstance.result.then(function (res) {
-
-                    if (res !== true) return;
-                    ApplicationsFactory.openApplication('backupsm').then(function () {
-
-                        // Wait for next digest circle before continue in order, preventing $element.click event to "re" toggle to current application
-                        $timeout(function () {
-                            ApplicationsFactory.toggleApplication('backupsm');
-
-                            $log.debug('Infrastructure Manager [%s] -> Launching Backups Manager for mounting storage snapshot into a datastore ->
-                            snapshot [%s]', $itemScope.snapshot['snapshot-instance-uuid'], $itemScope.snapshot.name);
-
-                            var snapshots = _this.getActiveConnection(1).snapshots;
-                            if (!Array.isArray(snapshots)) snapshots = [snapshots];
-
-                            $rootScope.$broadcast('backupsm__mount_restore_datastore', {
-                                storage: _this.getActiveConnection(3),
-                                vserver: _this.getActiveConnection(2),
-                                volume: _this.getActiveConnection(1),
-                                snapshots: snapshots,
-                                snapshot: $itemScope.snapshot['snapshot-instance-uuid'],
-                                ESXihosts: smanagerFactory.getESXihosts()
-                            });
-                        }, 0, false);
-                    });
-                });
-            }, 0, false);
-          */
+          this.InfrastructureManagerNetApp.mountSnapShotAsDatastore(node.data.uuid, node.data.snapshot);
         }
       },
       {
-        id: 1, text: '<i class="fa fa-file"></i> Restore Datastore files', action: (node: IMNode) => {
-          /*
-          $log.debug('Infrastructure Manager [%s] -> Ask for mount storage snapshot into a datastore to restore files -> snapshot [%s]',
-          $itemScope.snapshot['snapshot-instance-uuid'], $itemScope.snapshot.name);
-
-            smanagerFactory.setActiveConnection($itemScope.snapshot['snapshot-instance-uuid']);
-
-            // Wait for next digest circle before continue
-            $timeout(function () {
-                var modalInstance = modalFactory.openRegistredModal('question', '.window--smanager .window__main',
-                    {
-                        title: function () {
-                            return 'Restore Datastore Files';
-                        },
-                        text: function () {
-                            return 'Do you want to mount the Storage Snapshot to an ESXi host and restore datastore files?';
-                        }
-                    }
-                );
-                modalInstance.result.then(function (res) {
-
-                    if (res !== true) return;
-                    ApplicationsFactory.openApplication('backupsm').then(function () {
-
-                        // Wait for next digest circle before continue in order, preventing $element.click event to "re" toggle to current application
-                        $timeout(function () {
-                            ApplicationsFactory.toggleApplication('backupsm');
-
-                            $log.debug('Infrastructure Manager [%s] -> Launching Backups Manager for restoring a volume files -> snapshot [%s]',
-                            $itemScope.snapshot['snapshot-instance-uuid'], $itemScope.snapshot.name);
-
-                            var snapshots = _this.getActiveConnection(1).snapshots;
-                            if (!Array.isArray(snapshots)) snapshots = [snapshots];
-
-                            $rootScope.$broadcast('backupsm__restore_datastore_files', {
-                                storage: _this.getActiveConnection(3),
-                                vserver: _this.getActiveConnection(2),
-                                volume: _this.getActiveConnection(1),
-                                snapshots: snapshots,
-                                snapshot: $itemScope.snapshot['snapshot-instance-uuid'],
-                                ESXihosts: smanagerFactory.getESXihosts()
-                            });
-                        }, 0, false);
-                    });
-                });
-            }, 0, false);
-           */
+        id: 1, text: '<i class="fa fa-file"></i> Restore Volume files', action: (node: IMNode) => {
+          this.InfrastructureManagerNetApp.restoreVolumeFiles(node.data.uuid, node.data.snapshot);
         }
       },
       {
         id: 2, text: '<i class="fa fa-trash"></i> Delete Storage SnapShot', action: (node: IMNode) => {
           this.InfrastructureManagerNetApp.deleteStorageSnapShot(node.data.uuid, node.data.volume, node.data.snapshot);
+        }
+      }
+    ];
+
+    this.volumeVMSnapshotontextMenu = [
+      {
+        id: 0, text: '<i class="fa fa-server"></i> Instant VM', action: (node: IMNode) => {
+          this.InfrastructureManagerNetApp.instantVM(node.data.uuid, node.data.vm);
+        }
+      },
+      {
+        id: 1, text: '<i class="fa fa-server"></i> Restore entire VM', action: (node: IMNode) => {
+          this.InfrastructureManagerNetApp.restoreVM(node.data.uuid, node.data.vm);
+        }
+      },
+      {
+        id: 2, text: '<i class="fa fa-files"></i> Restore Guest files', action: (node: IMNode) => {
+          this.InfrastructureManagerNetApp.restoreGuestFiles(node.data.uuid, node.data.vm);
         }
       }
     ];
@@ -317,7 +247,7 @@ export class BodyComponent implements OnInit {
     this.datastoreContextMenu = [
       {
         id: 0, text: '<i class="fa fa-file"></i> Show datastore files', action: (node: IMNode) => {
-          this.openDatastoreBrowser(node.data.uuid, node.data.datastore);
+          this.openDatastoreExplorer(node.data.uuid, node.data.datastore);
         }
       }
     ];
@@ -339,7 +269,7 @@ export class BodyComponent implements OnInit {
   treeContextMenuItems(item: IMNode) {
     if (item.type === 'netapp' || item.type === 'vmware') return this.svContextMenu;
     if (item.type === 'volume') return this.volumeContextMenu;
-    if (item.type === 'snapshot') return this.snapshotContextMenu;
+    if (item.type === 'snapshot') return this.volumeSnapshotContextMenu;
     if (item.type === 'VirtualMachine') return this.VMContextMenu;
   }
 
@@ -388,10 +318,10 @@ export class BodyComponent implements OnInit {
     });
   }
 
-  openDatastoreBrowser(connectionUuid, datastore) {
-    this.logger.debug('Infrastructure Manager [%s] -> Opening Remote Console APP -> datastore [%s]', datastore.uuid, datastore.name);
+  openDatastoreExplorer(connectionUuid, datastore) {
+    this.logger.debug('Infrastructure Manager [%s] -> Opening Datastore Explorer APP -> datastore [%s]', datastore.uuid, datastore.name);
 
-    this.Applications.openApplication('wmks', {
+    this.Applications.openApplication('datastore-explorer', {
       data: {
         uuid: datastore.uuid,
         name: datastore.name,

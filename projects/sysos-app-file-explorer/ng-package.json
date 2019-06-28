@@ -4,14 +4,15 @@
   "lib": {
     "entryFile": "src/public-api.ts",
     "umdModuleIds": {
-      "ngx-filter-pipe": "ngxFilterPipe",
-      "angular-file": "angularFile",
-      "ngx-logger": "ngxLogger",
-      "@sysos/lib-file": "SysOSLibFile",
-      "@sysos/lib-file-system": "SysOSLibFileSystem",
-      "@sysos/lib-file-system-ui": "SysOSLibFileSystemUi",
-      "@sysos/lib-application": "SysOSLibApplication",
-      "@sysos/lib-selectable": "SysOSLibSelectable"
+      "angular-file": "angular-file",
+      "ngx-filter-pipe": "ngx-filter-pipe",
+      "ngx-logger": "ngx-logger",
+      "@sysos/lib-application": "sysos.lib-application",
+      "@sysos/lib-file": "sysos.lib-file",
+      "@sysos/lib-file-system": "sysos.lib-file-system",
+      "@sysos/lib-file-system-ui": "sysos.lib-file-system-ui",
+      "@sysos/lib-selectable": "sysos.lib-selectable",
+      "@sysos/lib-types": "sysos.lib-types"
     }
   }
 }
