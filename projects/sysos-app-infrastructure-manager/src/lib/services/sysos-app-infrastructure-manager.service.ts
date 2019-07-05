@@ -556,6 +556,18 @@ export class SysosAppInfrastructureManagerService {
   }
 
   /**
+   * @description
+   * Return a link if found
+   *
+   * @params
+   */
+  getLinkByVMwareDatastore(virtualUuid: string, esxiDatastore: string): IMLink[] {
+    return this.linksMap.filter((obj) => {
+      return obj.virtual === virtualUuid && obj.esxi_datastore === esxiDatastore;
+    });
+  };
+
+  /**
    * @description check link between storage and virtual nodes
    */
   // TODO: some storages could have the same LIF IP!!! and links will be wrong

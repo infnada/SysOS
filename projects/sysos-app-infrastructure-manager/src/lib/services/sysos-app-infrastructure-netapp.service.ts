@@ -472,7 +472,7 @@ export class SysosAppInfrastructureNetappService {
   /**
    * Storage Volume Snapshots
    */
-  mountSnapShotAsDatastore(connectionUuid: string, snapshot: {[key: string]: any}) {
+  mountSnapShotAsDatastore(connectionUuid: string, snapshot: {[key: string]: any}): void {
     this.logger.debug('Infrastructure Manager [%s] -> Ask for mount storage snapshot into a datastore -> snapshot [%s]', snapshot['snapshot-instance-uuid'], snapshot.name);
 
     this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
@@ -500,7 +500,7 @@ export class SysosAppInfrastructureNetappService {
     });
   }
 
-  restoreVolumeFiles(connectionUuid: string, snapshot: {[key: string]: any}) {
+  restoreVolumeFiles(connectionUuid: string, snapshot: {[key: string]: any}): void {
     this.logger.debug('Infrastructure Manager [%s] -> Ask for mount storage snapshot into a datastore to restore files -> snapshot [%s]', snapshot['snapshot-instance-uuid'], snapshot.name);
 
     this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
@@ -528,7 +528,7 @@ export class SysosAppInfrastructureNetappService {
     });
   }
 
-  instantVM(connectionUuid: string, vm: {[key: string]: any}) {
+  instantVM(connectionUuid: string, vm: {[key: string]: any}): void {
     // Not linked VM
     if (vm.vm === null) {
 
@@ -571,11 +571,12 @@ export class SysosAppInfrastructureNetappService {
     });
   }
 
-  restoreVM(connectionUuid: string, vm: {[key: string]: any}) {
+  restoreVM(connectionUuid: string, vm: {[key: string]: any}): void {
     this.logger.debug('Infrastructure Manager [%s] -> Ask for restore entire VM -> vm [%s]', vm.vm.vm, vm.name);
 
     if (vm.vm === null) {
-      return this.Modal.openLittleModal('Error while restoring Backup', `Not found any linked VirtualMachine for ${vm.name}, maybe original VM was deleted from vCenter. Try doing an Instant VM restore`, '.window--smanager .window__main', 'plain');
+      this.Modal.openLittleModal('Error while restoring Backup', `Not found any linked VirtualMachine for ${vm.name}, maybe original VM was deleted from vCenter. Try doing an Instant VM restore`, '.window--smanager .window__main', 'plain');
+      return;
     }
 
     this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
@@ -610,7 +611,7 @@ export class SysosAppInfrastructureNetappService {
     });
   }
 
-  restoreGuestFiles(connectionUuid: string, vm: {[key: string]: any}) {
+  restoreGuestFiles(connectionUuid: string, vm: {[key: string]: any}): void {
     this.logger.debug('Infrastructure Manager [%s] -> Ask for recovery VM Guest Files -> vm [%s]', vm.vm.vm, vm.name);
 
     this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
@@ -637,5 +638,19 @@ export class SysosAppInfrastructureNetappService {
         }
       });
     });
+  }
+
+  backupVM(connectionUuid: string, vm: {[key: string]: any}): void {
+    this.logger.debug('Infrastructure Manager [%s] -> Launching VM Backup -> vm [%s]', vm.vm, vm.name);
+
+    if (!this.InfrastructureManager.getLinkByVMwareDatastore(connectionUuid, vm.datastore.ManagedObjectReference.name)) {
+      this.Modal.openLittleModal('Error while creating Backup', 'Not found any compatible NetApp storage. Make sure VMs that you want to backup are inside a NetApp volume and this is managed by SysOS.', '.window--infrastructure-manager .window__main', 'plain');
+      return;
+    }
+
+    this.openBackupsManager(connectionUuid, 'backup_vm', {
+      vm: vm.vm
+    });
+
   }
 }

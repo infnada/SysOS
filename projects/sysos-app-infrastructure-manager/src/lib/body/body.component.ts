@@ -211,21 +211,21 @@ export class BodyComponent implements OnInit {
               id: 0,
               text: '<i class="fa fa-server"></i> Instant VM',
               action: (node: IMNode) => {
-
+                this.InfrastructureManagerNetApp.instantVM(node.data.uuid, node.data.vm);
               }
             },
             {
               id: 1,
               text: '<i class="fa fa-server"></i> Restore entire VM',
               action: (node: IMNode) => {
-
+                this.InfrastructureManagerNetApp.restoreVM(node.data.uuid, node.data.vm);
               }
             },
             {
               id: 2,
               text: '<i class="fa fa-server"></i> Restore Guest Files',
               action: (node: IMNode) => {
-
+                this.InfrastructureManagerNetApp.restoreGuestFiles(node.data.uuid, node.data.vm);
               }
             }
           ];
@@ -233,7 +233,7 @@ export class BodyComponent implements OnInit {
       },
       {
         id: 4, text: '<i class="fa fa-server"></i> Backup', action: (node: IMNode) => {
-
+          this.InfrastructureManagerNetApp.backupVM(node.data.uuid, node.data.vm);
         }
       },
       {id: 5, text: 'divider'},

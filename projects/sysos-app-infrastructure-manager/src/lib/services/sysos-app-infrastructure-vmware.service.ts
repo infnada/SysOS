@@ -236,7 +236,64 @@ export class SysosAppInfrastructureVmwareService {
     return ESXihosts;
   }
 
-  doWithVM(connectionUuid: string, vm: {}, action: string): void {
+  doWithVM(connectionUuid: string, vm: {[key: string]: any}, action: 'powerOn'|'powerOff'|'suspend'|'reset'|'powerOffGuestOS'|'restartGuestOS'|'refresh'): void {
+
+    const connection = this.InfrastructureManager.getConnectionByUuid(connectionUuid);
+
+    this.VMWare.connectvCenterSoap(connection.credential, connection.host, connection.port).then((res) => {
+      if (res.status === 'error') throw new Error('Failed to connect to vCenter');
+
+      return this.VMWare.getVMRuntime(connection.credential, connection.host, connection.port, vm);
+    }).then((res) => {
+      if (res.status === 'error') throw new Error('Failed to get VM runtime');
+
+      // powerOn
+      if (action === 'powerOn') {
+        if (res.data.propSet.runtime.powerState === 'poweredOn') return res;
+        return this.VMWare.powerOnVM(connection.credential, connection.host, connection.port, res.data.propSet.runtime.host.name, vm);
+      }
+
+      // powerOff
+      if (action === 'powerOff') {
+        if (res.data.propSet.runtime.powerState === 'poweredOff') return res;
+        return this.VMWare.powerOffVM(connection.credential, connection.host, connection.port, vm);
+      }
+
+      // suspend
+      if (action === 'suspend') {
+        if (res.data.propSet.runtime.powerState !== 'poweredOn') return res;
+        return this.VMWare.suspendVM(connection.credential, connection.host, connection.port, vm);
+      }
+
+      // reset
+      if (action === 'reset') {
+        if (res.data.propSet.runtime.powerState !== 'poweredOn') return res;
+        return this.VMWare.resetVM(connection.credential, connection.host, connection.port, vm);
+      }
+
+      // powerOffGuestOS
+      if (action === 'powerOffGuestOS') {
+        if (res.data.propSet.runtime.powerState !== 'poweredOn') return res;
+        return this.VMWare.shutdownGuest(connection.credential, connection.host, connection.port, vm);
+      }
+
+      // restartGuestOS
+      if (action === 'restartGuestOS') {
+        if (res.data.propSet.runtime.powerState !== 'poweredOn') return res;
+        return this.VMWare.rebootGuest(connection.credential, connection.host, connection.port, vm);
+      }
+
+      // refresh
+      if (action === 'refresh') {
+        // TODO: still needed?
+      }
+
+    }).then((res) => {
+      if (res.status === 'error') throw new Error(`Failed to ${action} off VM`);
+
+    }).catch((e) => {
+      throw e;
+    });
 
   }
 
