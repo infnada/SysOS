@@ -5,11 +5,98 @@ import {ToastrService} from "ngx-toastr";
 import {v4 as uuidv4} from 'uuid';
 
 import {SysosLibFileSystemService} from "@sysos/lib-file-system";
-import {IMESXiHost} from "@sysos/app-infrastructure-manager";
 import {SysosLibModalService} from "@sysos/lib-modal";
 import {SysosLibApplicationService} from "@sysos/lib-application";
+import {IMESXiHost, IMConnection} from "@sysos/app-infrastructure-manager";
 
 import {SysosAppBackupsManagerHelpersService} from "./sysos-app-backups-manager-helpers.service";
+
+export interface NetAppVolume {
+  'volume-id-attributes': {
+    name: string;
+    node: string;
+    'junction-path': string;
+  }
+}
+
+export interface NetAppVserver {
+  'vserver-name': string;
+}
+
+export interface mountRestoreDatastore {
+  storage: IMConnection;
+  vserver: NetAppVserver;
+  volume: NetAppVolume;
+  snapshot: string;
+  uuid?: string;
+  virtual?: IMESXiHost['virtual'];
+  host?: IMESXiHost['host'];
+  volumeName?: string;
+  datastorePath?: string;
+}
+
+export interface restoreDatastoreFiles {
+  storage: IMConnection;
+  vserver: NetAppVserver;
+  volume: NetAppVolume;
+  snapshot: string;
+  uuid?: string;
+  virtual?: IMESXiHost['virtual'];
+  host?: IMESXiHost['host'];
+  esxi_datastore_name?: string;
+  volumeName?: string;
+  datastorePath?: string;
+}
+
+export interface restoreVmGuestFiles {
+  storage: IMConnection;
+  vserver: NetAppVserver;
+  volume: NetAppVolume;
+  snapshot: string;
+  vm: {
+    vm: string;
+    name: string;
+  };
+  uuid?: string;
+  virtual?: IMESXiHost['virtual'];
+  host?: IMESXiHost['host'];
+  volumeName?: string;
+  datastorePath?: string;
+}
+
+export interface vmInstantRecovery {
+  storage: IMConnection;
+  vserver: NetAppVserver;
+  volume: NetAppVolume;
+  snapshot: string;
+  vm: {
+    vm: string;
+    name: string;
+    powerOn: boolean;
+  };
+  uuid?: string;
+  virtual?: IMESXiHost['virtual'];
+  host?: IMESXiHost['host'] & {
+    folder: string;
+    resource_pool: string;
+  };
+  volumeName?: string;
+  datastorePath?: string;
+}
+
+export interface restoreVm {
+  virtual: IMESXiHost['virtual'];
+  storage: IMConnection;
+  vserver: NetAppVserver;
+  volume: NetAppVolume;
+  snapshot: string;
+  vm: {
+    vm: string;
+    name: string;
+    powerOn: boolean;
+  };
+  uuid?: string;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -53,42 +140,32 @@ export class SysosAppBackupsManagerService {
     });
   }
 
-  mountRestoreDatastore(data) {
-    this.logger.debug('Backups Manager [%s] -> Received event [%s] -> Initializing mount of datastore [%s] from -> storage [%s], vserver [%s], snapshot [%s]', data.uuid, event.name, data.volume['volume-id-attributes'].name, data.netapp_host, data.vserver['vserver-name'], data.snapshot);
-
-    data.type = 'mount_restore_datastore';
-    data.restore_name = 'Datastore mount (' + data.volume['volume-id-attributes'].name + ')';
+  mountRestoreDatastore(data: mountRestoreDatastore) {
     data.uuid = uuidv4();
 
+    this.logger.debug('Backups Manager [%s] -> Received event mountRestoreDatastore -> Initializing mount of datastore [%s] from -> storage [%s], vserver [%s], snapshot [%s]', data.uuid, data.volume['volume-id-attributes'].name, data.storage.host, data.vserver['vserver-name'], data.snapshot);
+
+    data.restore_name = 'Datastore mount (' + data.volume['volume-id-attributes'].name + ')';
     data.volume_junction = data.volume['volume-id-attributes']['junction-path'];
-    data.netapp_credential = data.storage.credential;
-    data.netapp_host = data.storage.host;
-    data.netapp_port = data.storage.port;
-    data.netapp_nfs_ip = $filter('filter')(data.storage.netifaces, {
+    data.esxi_datastore_name = 'SysOS_' + data.volume_junction.substr(1);
+    data.netapp_nfs_ip = $filter('filter')(data.storage.data.Data.netifaces, {
       vserver: data.vserver['vserver-name'],
       'current-node': data.volume['volume-id-attributes'].node
     });
-    data.esxi_datastore_name = 'SysOS_' + data.volume_junction.substr(1);
 
     backupsmFactory.setRestore(data);
     backupsmFactory.setRestoreStatus(data, 'init');
     backupsmFactory.setActive(data.uuid);
 
-    this.Modal.openRegisteredModal('ESXiSelectable', '.window--backups-manager .window__main',
-      {
-        title: 'Select ESXi host',
-        ESXihosts: data.ESXihosts
-      }
+    this.Modal.openRegisteredModal('esxi-selectable', '.window--backups-manager .window__main',
+      {}
     ).then((modalInstance) => {
-      modalInstance.result.then((result: IMESXiHost) => {
+      modalInstance.result.then((selectedData: IMESXiHost) => {
 
-        data.esxi_credential = result.connection_credential;
-        data.esxi_address = result.connection_address;
-        data.esxi_port = result.connection_port;
-        data.esxi_host = result.host;
-        data.esxi_datacenter = result.datacenter;
+        data.virtual = selectedData.virtual;
+        data.host = selectedData.host;
 
-        this.logger.debug('Backups Manager [%s] -> Received restore data from Modal -> esxi_host', data.uuid, result.host);
+        this.logger.debug('Backups Manager [%s] -> Received restore data from Modal -> esxi_host [%s]', data.uuid, data.host.host);
 
         this.Modal.openLittleModal('PLEASE WAIT', `Mounting ${data.volume['volume-id-attributes'].name} from Snapshot...`, '.window--backups-manager .window__main', 'plain');
 
@@ -108,42 +185,31 @@ export class SysosAppBackupsManagerService {
     });
   }
 
-  restoreDatastoreFiles(data) {
-    this.logger.debug('Backups Manager [%s] -> Received event [%s] -> Initializing restore of datastore files [%s] from -> storage [%s], vserver [%s], snapshot [%s]', data.uuid, event.name, data.volume['volume-id-attributes'].name, data.netapp_host, data.vserver['vserver-name'], data.snapshot);
-
-    data.type = 'restore_datastore_files';
-    data.restore_name = 'Datastore restore (' + data.volume['volume-id-attributes'].name + ')';
+  restoreDatastoreFiles(data: restoreDatastoreFiles) {
     data.uuid = uuidv4();
+    data.esxi_datastore_name = 'SysOS_' + data.volume['volume-id-attributes']['junction-path'].substr(1);
 
-    data.volume_junction = data.volume['volume-id-attributes']['junction-path'];
-    data.netapp_credential = data.storage.credential;
-    data.netapp_host = data.storage.host;
-    data.netapp_port = data.storage.port;
+    this.logger.debug('Backups Manager [%s] -> Received event restoreDatastoreFiles -> Initializing restore of datastore files [%s] from -> storage [%s], vserver [%s], snapshot [%s]', data.uuid, data.volume['volume-id-attributes'].name, data.storage.host, data.vserver['vserver-name'], data.snapshot);
+
+    data.restore_name = 'Datastore restore (' + data.volume['volume-id-attributes'].name + ')';
     data.netapp_nfs_ip = $filter('filter')(data.storage.netifaces, {
       vserver: data.vserver['vserver-name'],
       'current-node': data.volume['volume-id-attributes'].node
     });
-    data.esxi_datastore_name = 'SysOS_' + data.volume_junction.substr(1);
 
     backupsmFactory.setRestore(data);
     backupsmFactory.setRestoreStatus(data, 'init');
     backupsmFactory.setActive(data.uuid);
 
-    this.Modal.openRegisteredModal('ESXiSelectable', '.window--backups-manager .window__main',
-      {
-        title: 'Select ESXi host',
-        ESXihosts: data.ESXihosts
-      }
+    this.Modal.openRegisteredModal('esxi-selectable', '.window--backups-manager .window__main',
+      {}
     ).then((modalInstance) => {
-      modalInstance.result.then((result: IMESXiHost) => {
+      modalInstance.result.then((selectedData: IMESXiHost) => {
 
-        data.esxi_credential = result.connection_credential;
-        data.esxi_address = result.connection_address;
-        data.esxi_port = result.connection_port;
-        data.esxi_host = result.host;
-        data.esxi_datacenter = result.datacenter;
+        data.virtual = selectedData.virtual;
+        data.host = selectedData.host;
 
-        this.logger.debug('Backups Manager [%s] -> Received restore data from Modal -> esxi_host', data.uuid, result.host);
+        this.logger.debug('Backups Manager [%s] -> Received restore data from Modal -> esxi_host [%s] ', data.uuid, data.host.host);
 
         this.Modal.openLittleModal('PLEASE WAIT', 'Restoring ' + data.volume['volume-id-attributes'].name + ' files from Snapshot...', '.window--backups-manager .window__main', 'plain');
 
@@ -153,23 +219,17 @@ export class SysosAppBackupsManagerService {
           this.logger.debug('Backups Manager [%s] -> Restore finished successfully', data.uuid);
 
           // Open Datastore Brower application
-          ApplicationsFactory.openApplication('datastoreexplorer').then(function () {
-            // Wait for next digest circle before continue in order, preventing $element.click event to "re" toggle to current application
-            $timeout(function () {
-              ApplicationsFactory.toggleApplication('datastoreexplorer');
-            }, 0, false);
-          });
-
-          $timeout(function () {
-            $rootScope.$broadcast('datastoreexplorer__restore_datastore_files', {
-              credential: data.esxi_credential,
-              host: data.esxi_address,
-              port: data.esxi_port,
-              id: data.esxi_datastore,
+          this.Applications.openApplication('datastore-explorer', {
+            data: {
+              uuid: datastore.uuid,
               name: data.esxi_datastore_name,
+              credential: data.selectedHost.virtual.credential,
+              host: data.selectedHost.virtual.host,
+              port: data.selectedHost.virtual.port,
+              id: data.esxi_datastore,
               original_datastore: data.volume['volume-id-attributes'].name
-            });
-          }, 100);
+            }
+          });
 
           this.Modal.closeModal('.window--backups-manager .window__main');
           return backupsmFactory.setRestoreStatus(data, 'end');
@@ -183,44 +243,34 @@ export class SysosAppBackupsManagerService {
 
   }
 
-  restoreVmGuestFiles(data) {
-    this.logger.debug('Backups Manager [%s] -> Received event [%s] -> Initializing restore of VM guest files [%s] from -> storage [%s], vserver [%s], datastore [%s], snapshot [%s]', data.uuid, event.name, data.vm.name, data.storage.host, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name, data.snapshot);
+  restoreVmGuestFiles(data: restoreVmGuestFiles) {
+    data.uuid = uuidv4();
+
+    this.logger.debug('Backups Manager [%s] -> Received event restoreVmGuestFiles -> Initializing restore of VM guest files [%s] from -> storage [%s], vserver [%s], datastore [%s], snapshot [%s]', data.uuid, data.vm.name, data.storage.host, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name, data.snapshot);
 
     //TODO: folder.folder & resource_pool.resource_pool are required to publish the VM
 
-    data.type = 'restore_vm_guest_files';
     data.restore_name = 'VM guest files (' + data.vm.name + ')';
-    data.uuid = uuidv4();
-
     data.volume_junction = data.volume['volume-id-attributes']['junction-path'];
-    data.netapp_credential = data.storage.credential;
-    data.netapp_host = data.storage.host;
-    data.netapp_port = data.storage.port;
+    data.esxi_datastore_name = 'SysOS_' + data.volume_junction.substr(1);
     data.netapp_nfs_ip = $filter('filter')(data.storage.netifaces, {
       vserver: data.vserver['vserver-name'],
       'current-node': data.volume['volume-id-attributes'].node
     });
-    data.esxi_datastore_name = 'SysOS_' + data.volume_junction.substr(1);
 
     backupsmFactory.setRestore(data);
     backupsmFactory.setRestoreStatus(data, 'init');
     backupsmFactory.setActive(data.uuid);
 
-    this.Modal.openRegisteredModal('ESXiSelectable', '.window--backups-manager .window__main',
-      {
-        title: 'Select ESXi host',
-        ESXihosts: data.ESXihosts
-      }
+    this.Modal.openRegisteredModal('esxi-selectable', '.window--backups-manager .window__main',
+      {}
     ).then((modalInstance) => {
-      modalInstance.result.then((result: IMESXiHost) => {
+      modalInstance.result.then((selectedData: IMESXiHost) => {
 
-        data.esxi_credential = result.connection_credential;
-        data.esxi_address = result.connection_address;
-        data.esxi_port = result.connection_port;
-        data.esxi_host = result.host;
-        data.esxi_datacenter = result.datacenter;
+        data.virtual = selectedData.virtual;
+        data.host = selectedData.host;
 
-        this.logger.debug('Backups Manager [%s] -> Received restore data from Modal -> esxi_host', data.uuid, result.host);
+        this.logger.debug('Backups Manager [%s] -> Received restore data from Modal -> esxi_host [%s]', data.uuid, data.host.host);
 
         this.Modal.openLittleModal('PLEASE WAIT', `Restoring ${data.vm.name} guest files from Snapshot...`, '.window--backups-manager .window__main', 'plain');
 
@@ -241,29 +291,24 @@ export class SysosAppBackupsManagerService {
 
   }
 
-  vmInstantRecovery(data) {
-    this.logger.debug('Backups Manager [%s] -> Received event [%s] -> Initializing restore of VM [%s] from -> storage [%s], vserver [%s], datastore [%s], snapshot [%s]', data.uuid, event.name, data.vm.name, data.storage.host, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name, data.snapshot);
-
-    data.type = 'vm_instant_recovery';
-    data.restore_name = 'VM instant recovery (' + data.vm.name + ')';
-
+  vmInstantRecovery(data: vmInstantRecovery) {
     data.uuid = uuidv4();
+
+    this.logger.debug('Backups Manager [%s] -> Received event vmInstantRecovery -> Initializing restore of VM [%s] from -> storage [%s], vserver [%s], datastore [%s], snapshot [%s]', data.uuid, data.vm.name, data.storage.host, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name, data.snapshot);
+
+    data.restore_name = 'VM instant recovery (' + data.vm.name + ')';
     data.volume_junction = data.volume['volume-id-attributes']['junction-path'];
-    data.netapp_credential = data.storage.credential;
-    data.netapp_host = data.storage.host;
-    data.netapp_port = data.storage.port;
+    data.esxi_datastore_name = 'SysOS_' + data.volume_junction.substr(1);
     data.netapp_nfs_ip = $filter('filter')(data.storage.netifaces, {
       vserver: data.vserver['vserver-name'],
       'current-node': data.volume['volume-id-attributes'].node
     });
 
-    data.esxi_datastore_name = 'SysOS_' + data.volume_junction.substr(1);
-
     backupsmFactory.setRestore(data);
     backupsmFactory.setRestoreStatus(data, 'init');
     backupsmFactory.setActive(data.uuid);
 
-    this.Modal.openRegisteredModal('recoveryWizard', '.window--backups-manager .window__main',
+    this.Modal.openRegisteredModal('recovery-wizard', '.window--backups-manager .window__main',
       {
         title: `Select required data for Instant VM (${data.vm.name})`,
         data
@@ -271,16 +316,23 @@ export class SysosAppBackupsManagerService {
     ).then((modalInstance) => {
       modalInstance.result.then((res) => {
 
-        data.esxi_credential = res.host.connection_credential;
-        data.esxi_address = res.host.connection_address;
-        data.esxi_port = res.host.connection_port;
-        data.esxi_host = res.host.host;
-        data.folder = res.folder.folder;
-        data.resource_pool = res.resource_pool.obj.name;
-        data.vm.name = res.vm_name;
-        data.vm_power_on = res.vm_power_on;
+        data.virtual = {
+          uuid: res.virtual.uuid,
+          credential: res.virtual.credential,
+          host: res.virtual.host,
+          port: res.virtual.port,
+        };
 
-        this.logger.debug('Backups Manager [%s] -> Received restore data from Modal as new location -> esxi_host [%s], folder [%s], resource_pool [%s], vm_name [%s], vm_power_on [%s]', data.uuid, res.host.host, res.folder.folder, res.resource_pool.resource_pool, res.vm_name, res.vm_power_on);
+        data.host = {
+          host: res.host.host,
+          folder: res.folder.folder,
+          resource_pool: res.resource_pool.obj.name
+        };
+
+        data.vm.name = res.vm_name;
+        data.vm.powerOn = res.vm_power_on;
+
+        this.logger.debug('Backups Manager [%s] -> Received restore data from Modal as new location -> esxi_host [%s], folder [%s], resource_pool [%s], vm_name [%s], vm_power_on [%s]', data.uuid, data.host.host, data.host.folder, data.host.resource_pool, data.vm.name, data.vm.powerOn);
 
         this.Modal.openLittleModal('PLEASE WAIT', `Restoring ${data.vm.name} from Snapshot...`, '.window--backups-manager .window__main', 'plain');
 
@@ -301,22 +353,18 @@ export class SysosAppBackupsManagerService {
 
   }
 
-  restoreVm(data) {
-    this.logger.debug('Backups Manager [%s] -> Received event [%s] -> Initializing restore of VM [%s] from -> storage [%s], vserver [%s], datastore [%s], snapshot [%s]', data.uuid, event.name, data.vm.name, data.storage.host, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name, data.snapshot);
-
-    data.type = 'restore_vm';
-    data.restore_name = 'VM restore (' + data.vm.name + ')';
+  restoreVm(data: restoreVm) {
     data.uuid = uuidv4();
 
+    this.logger.debug('Backups Manager [%s] -> Received event restoreVm -> Initializing restore of VM [%s] from -> storage [%s], vserver [%s], datastore [%s], snapshot [%s]', data.uuid, data.vm.name, data.storage.host, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name, data.snapshot);
+
+    data.restore_name = 'VM restore (' + data.vm.name + ')';
+    data.esxi_datastore_name = 'SysOS_' + data.volume_junction.substr(1);
     data.volume_junction = data.volume['volume-id-attributes']['junction-path'];
-    data.netapp_credential = data.storage.credential;
-    data.netapp_host = data.storage.host;
-    data.netapp_port = data.storage.port;
     data.netapp_nfs_ip = $filter('filter')(data.storage.netifaces, {
       vserver: data.vserver['vserver-name'],
       'current-node': data.volume['volume-id-attributes'].node
     });
-    data.esxi_datastore_name = 'SysOS_' + data.volume_junction.substr(1);
 
     backupsmFactory.setRestore(data);
     backupsmFactory.setRestoreStatus(data, 'init');
@@ -330,12 +378,9 @@ export class SysosAppBackupsManagerService {
     ).then((modalInstance) => {
       modalInstance.result.then((res) => {
 
-        data.esxi_credential = data.current_location.credential;
-        data.esxi_address = data.current_location.host;
-        data.esxi_port = data.current_location.port;
-        data.vm_power_on = res.vm_power_on;
+        data.vm.powerOn = res.vm_power_on;
 
-        this.logger.debug('Backups Manager [%s] -> Received restore data from Modal as Original location -> instant_vm [%s]', data.uuid, data.vm_power_on);
+        this.logger.debug('Backups Manager [%s] -> Received restore data from Modal as Original location -> instant_vm [%s]', data.uuid, data.vm.powerOn);
 
         this.Modal.openLittleModal('PLEASE WAIT', `Restoring ${data.vm.name} from Snapshot...`, '.window--backups-manager .window__main', 'plain');
 
@@ -357,9 +402,8 @@ export class SysosAppBackupsManagerService {
   }
 
   backupVm(data) {
-    this.logger.debug('Backups Manager [%s] -> Received event [%s] -> Initializing backup', data.uuid, event.name);
+    this.logger.debug('Backups Manager [%s] -> Received event backupVm -> Initializing backup', data.uuid);
 
-    data.type = 'backup_vm';
     data.backup_name = 'VM backup (' + data.vm.name + ')';
     data.uuid = uuidv4();
 

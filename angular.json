@@ -1016,6 +1016,126 @@
           }
         }
       }
+    },
+    "sysos-modal-esxi-selectable": {
+      "root": "projects/sysos-modal-esxi-selectable",
+      "sourceRoot": "projects/sysos-modal-esxi-selectable/src",
+      "projectType": "library",
+      "prefix": "smesx",
+      "schematics": {
+        "@schematics/angular:component": {
+          "styleext": "scss"
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-modal-esxi-selectable/tsconfig.lib.json",
+            "project": "projects/sysos-modal-esxi-selectable/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-modal-esxi-selectable/src/test.ts",
+            "tsConfig": "projects/sysos-modal-esxi-selectable/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-modal-esxi-selectable/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-modal-esxi-selectable/tsconfig.lib.json",
+              "projects/sysos-modal-esxi-selectable/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-modal-backup-wizard": {
+      "root": "projects/sysos-modal-backup-wizard",
+      "sourceRoot": "projects/sysos-modal-backup-wizard/src",
+      "projectType": "library",
+      "prefix": "smbw",
+      "schematics": {
+        "@schematics/angular:component": {
+          "styleext": "scss"
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-modal-backup-wizard/tsconfig.lib.json",
+            "project": "projects/sysos-modal-backup-wizard/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-modal-backup-wizard/src/test.ts",
+            "tsConfig": "projects/sysos-modal-backup-wizard/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-modal-backup-wizard/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-modal-backup-wizard/tsconfig.lib.json",
+              "projects/sysos-modal-backup-wizard/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-modal-recovery-wizard": {
+      "root": "projects/sysos-modal-recovery-wizard",
+      "sourceRoot": "projects/sysos-modal-recovery-wizard/src",
+      "projectType": "library",
+      "prefix": "smrw",
+      "schematics": {
+        "@schematics/angular:component": {
+          "styleext": "scss"
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-modal-recovery-wizard/tsconfig.lib.json",
+            "project": "projects/sysos-modal-recovery-wizard/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-modal-recovery-wizard/src/test.ts",
+            "tsConfig": "projects/sysos-modal-recovery-wizard/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-modal-recovery-wizard/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-modal-recovery-wizard/tsconfig.lib.json",
+              "projects/sysos-modal-recovery-wizard/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
   "defaultProject": "SysOS"

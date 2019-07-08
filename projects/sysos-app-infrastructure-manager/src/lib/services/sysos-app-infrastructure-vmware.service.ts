@@ -191,23 +191,27 @@ export class SysosAppInfrastructureVmwareService {
     const connections = this.InfrastructureManager.getConnectionsByType('vmware');
     const ESXihosts: IMESXiHost[] = [];
 
-    connections.forEach((vcenter: IMConnection) => {
-      vcenter.data.Datacenters.forEach(datacenter => {
+    connections.forEach((vCenter: IMConnection) => {
+      vCenter.data.Datacenters.forEach(datacenter => {
 
         // Standalone hosts
         datacenter.Hosts.forEach(host => {
 
           // Setup basic connection information required for "Backups Manager" application
           ESXihosts.push({
-            connection_uuid: vcenter.uuid,
-            connection_state: host.connection_state,
-            host: host.host,
-            name: host.name,
-            power_state: host.power_state,
-            connection_credential: vcenter.credential,
-            connection_address: vcenter.host,
-            connection_port: vcenter.port,
-            datacenter: datacenter.datacenter
+            virtual: {
+              uuid: vCenter.uuid,
+              credential: vCenter.credential,
+              host: vCenter.host,
+              port: vCenter.port,
+            },
+            host: {
+              connection_state: host.connection_state,
+              host: host.host,
+              name: host.name,
+              power_state: host.power_state,
+              datacenter: datacenter.datacenter
+            }
           });
         });
 
@@ -217,15 +221,19 @@ export class SysosAppInfrastructureVmwareService {
 
             // Setup basic connection information required for "Backups Manager" application
             ESXihosts.push({
-              connection_uuid: vcenter.uuid,
-              connection_state: host.connection_state,
-              host: host.host,
-              name: host.name,
-              power_state: host.power_state,
-              connection_credential: vcenter.credential,
-              connection_address: vcenter.host,
-              connection_port: vcenter.port,
-              datacenter: datacenter.datacenter
+              virtual: {
+                uuid: vCenter.uuid,
+                credential: vCenter.credential,
+                host: vCenter.host,
+                port: vCenter.port,
+              },
+              host: {
+                connection_state: host.connection_state,
+                host: host.host,
+                name: host.name,
+                power_state: host.power_state,
+                datacenter: datacenter.datacenter
+              }
             });
           });
         });

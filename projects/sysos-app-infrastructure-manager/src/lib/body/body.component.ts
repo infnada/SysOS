@@ -41,7 +41,7 @@ export class BodyComponent implements OnInit {
   svContextMenu: ContextMenuItem[];
   volumeContextMenu: ContextMenuItem[];
   volumeSnapshotContextMenu: ContextMenuItem[];
-  volumeVMSnapshotontextMenu: ContextMenuItem[];
+  volumeVMSnapshotContextMenu: ContextMenuItem[];
   VMContextMenu: ContextMenuItem[];
   datastoreContextMenu: ContextMenuItem[];
 
@@ -115,12 +115,12 @@ export class BodyComponent implements OnInit {
     this.volumeSnapshotContextMenu = [
       {
         id: 0, text: '<i class="fa fa-database"></i> Mount as Datastore', action: (node: IMNode) => {
-          this.InfrastructureManagerNetApp.mountSnapShotAsDatastore(node.data.uuid, node.data.snapshot);
+          this.InfrastructureManagerNetApp.mountSnapShotAsDatastore(node.data.uuid, node.data.vserver, node.data.volume, node.data.snapshot);
         }
       },
       {
         id: 1, text: '<i class="fa fa-file"></i> Restore Volume files', action: (node: IMNode) => {
-          this.InfrastructureManagerNetApp.restoreVolumeFiles(node.data.uuid, node.data.snapshot);
+          this.InfrastructureManagerNetApp.restoreVolumeFiles(node.data.uuid, node.data.vserver, node.data.volume, node.data.snapshot);
         }
       },
       {
@@ -130,20 +130,20 @@ export class BodyComponent implements OnInit {
       }
     ];
 
-    this.volumeVMSnapshotontextMenu = [
+    this.volumeVMSnapshotContextMenu = [
       {
         id: 0, text: '<i class="fa fa-server"></i> Instant VM', action: (node: IMNode) => {
-          this.InfrastructureManagerNetApp.instantVM(node.data.uuid, node.data.vm);
+          this.InfrastructureManagerNetApp.instantVM(node.data.uuid, node.data.vserver, node.data.volume, node.data.snapshot, node.data.vm);
         }
       },
       {
         id: 1, text: '<i class="fa fa-server"></i> Restore entire VM', action: (node: IMNode) => {
-          this.InfrastructureManagerNetApp.restoreVM(node.data.uuid, node.data.vm);
+          this.InfrastructureManagerNetApp.restoreVM(node.data.uuid, node.data.vserver, node.data.volume, node.data.snapshot, node.data.vm);
         }
       },
       {
         id: 2, text: '<i class="fa fa-files"></i> Restore Guest files', action: (node: IMNode) => {
-          this.InfrastructureManagerNetApp.restoreGuestFiles(node.data.uuid, node.data.vm);
+          this.InfrastructureManagerNetApp.restoreGuestFiles(node.data.uuid, node.data.vserver, node.data.volume, node.data.snapshot, node.data.vm);
         }
       }
     ];
@@ -211,21 +211,21 @@ export class BodyComponent implements OnInit {
               id: 0,
               text: '<i class="fa fa-server"></i> Instant VM',
               action: (node: IMNode) => {
-                this.InfrastructureManagerNetApp.instantVM(node.data.uuid, node.data.vm);
+                this.InfrastructureManagerNetApp.instantVM(node.data.uuid, node.data.vserver, node.data.volume, node.data.snapshot, node.data.vm);
               }
             },
             {
               id: 1,
               text: '<i class="fa fa-server"></i> Restore entire VM',
               action: (node: IMNode) => {
-                this.InfrastructureManagerNetApp.restoreVM(node.data.uuid, node.data.vm);
+                this.InfrastructureManagerNetApp.restoreVM(node.data.uuid, node.data.vserver, node.data.volume, node.data.snapshot, node.data.vm);
               }
             },
             {
               id: 2,
               text: '<i class="fa fa-server"></i> Restore Guest Files',
               action: (node: IMNode) => {
-                this.InfrastructureManagerNetApp.restoreGuestFiles(node.data.uuid, node.data.vm);
+                this.InfrastructureManagerNetApp.restoreGuestFiles(node.data.uuid, node.data.vserver, node.data.volume, node.data.snapshot, node.data.vm);
               }
             }
           ];

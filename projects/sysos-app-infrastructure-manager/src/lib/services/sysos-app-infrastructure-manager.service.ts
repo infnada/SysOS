@@ -79,6 +79,10 @@ export class SysosAppInfrastructureManagerService {
       storage.data.Vservers.forEach((vserver, vsi) => {
         const vserverObject: IMNode = {
           name: vserver['vserver-name'],
+          data: {
+            uuid: storage.uuid,
+            vserver
+          },
           type: 'vserver'
         };
 
@@ -92,6 +96,7 @@ export class SysosAppInfrastructureManagerService {
             name: volume['volume-id-attributes'].name,
             data: {
               uuid: storage.uuid,
+              vserver,
               volume
             },
             type: 'volume'
@@ -107,6 +112,7 @@ export class SysosAppInfrastructureManagerService {
               name: snapshot.name,
               data: {
                 uuid: storage.uuid,
+                vserver,
                 volume,
                 snapshot
               },
@@ -162,7 +168,8 @@ export class SysosAppInfrastructureManagerService {
       };
 
       // Virtual connection not initialized
-      if (!virtual.data.Data) return treeData[1].children[vii] = virtualObject;
+      console.log(virtual);
+      if (!virtual.data || !virtual.data.Data) return treeData[1].children[vii] = virtualObject;
 
       // Get main parent object
       virtualObject.children = [virtual.data.Data.find(obj => {

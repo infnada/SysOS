@@ -1,9 +1,9 @@
-import { NgModule } from '@angular/core';
+import {NgModule} from '@angular/core';
 
 @NgModule({
   declarations: [],
-  imports: [
-  ],
+  imports: [],
   exports: []
 })
-export class SysosLibTypesModule { }
+export class SysosLibTypesModule {
+}

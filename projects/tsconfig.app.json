@@ -139,6 +139,24 @@
       ],
       "@sysos/modal-question/*": [
         "dist/sysos-modal-question/*"
+      ],
+      "@sysos/modal-esxi-selectable": [
+        "dist/sysos-modal-esxi-selectable"
+      ],
+      "@sysos/modal-esxi-selectable/*": [
+        "dist/sysos-modal-esxi-selectable/*"
+      ],
+      "@sysos/modal-backup-wizard": [
+        "dist/sysos-modal-backup-wizard"
+      ],
+      "@sysos/modal-backup-wizard/*": [
+        "dist/sysos-modal-backup-wizard/*"
+      ],
+      "@sysos/modal-recovery-wizard": [
+        "dist/sysos-modal-recovery-wizard"
+      ],
+      "@sysos/modal-recovery-wizard/*": [
+        "dist/sysos-modal-recovery-wizard/*"
       ]
     }
   }
