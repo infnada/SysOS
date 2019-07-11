@@ -1,3 +1,115 @@
-<p>
-  entry works!
-</p>
+<div class="modal-header">
+  <div class="modal-title" id="modal-title">{{title}}</div>
+  <div class="window__controls window__controls--right">
+    <a class="window__close" (click)="activeModal.close('Close click'); $event.stopPropagation();">
+      <i class="fa fa-close"></i>
+    </a>
+  </div>
+</div>
+<div class="modal-body modal-recovery-wizard" id="modal-body">
+  <mat-horizontal-stepper linear #stepper>
+    <mat-step [stepControl]="firstFormGroup">
+      <form [formGroup]="firstFormGroup">
+        <ng-template matStepLabel>SnapShot</ng-template>
+        <hr class="hr-text" data-content="Select a backup Snapshot">
+        <mat-radio-group aria-label="Select a snapshot" formControlName="snapshotFormControl">
+          <mat-radio-button *ngFor="let snapshot of data.storageSnapshots" [value]="snapshot['snapshot-instance-uuid']" disabled="snapshot.disabled">{{snapshot.name}}</mat-radio-button>
+        </mat-radio-group>
+        <div>
+          <button mat-button matStepperNext>Next</button>
+        </div>
+      </form>
+    </mat-step>
+    <mat-step [stepControl]="secondFormGroup">
+      <form [formGroup]="secondFormGroup">
+        <ng-template matStepLabel>Recovery mode</ng-template>
+        <hr class="hr-text" data-content="Select a restore location">
+        <mat-radio-group aria-label="Select a recovery mode" formControlName="recoveryModeFormControl">
+          <mat-radio-button value="original">
+            <h5>Restore to the original location</h5>Quickly initiate restore of selected VMs to the original location, and with the original name and settings. This option minimizes the chance of user input error.<br/><i class="fa fa-exclamation text-warning"></i> This virtual machine will be powered down during the restore process.
+          </mat-radio-button>
+          <mat-radio-button value="new">
+            <h5>Restore to a new location, or with different settings</h5>Customize restored VM location, and change its settings. The wizard will automatically populate all controls with the original VM settings as the default settings.
+          </mat-radio-button>
+        </mat-radio-group>
+        <div>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button matStepperNext>Next</button>
+        </div>
+      </form>
+    </mat-step>
+    <mat-step [stepControl]="thirdFormGroup">
+      <form [formGroup]="thirdFormGroup">
+        <ng-template matStepLabel>Destination</ng-template>
+        <hr class="hr-text" data-content="Virtual Machine options">
+        <mat-form-field>
+          <mat-label>Select a managed ESXi host</mat-label>
+          <mat-select [(ngModel)]="selectedHost" (selectionChange)="loadESXidata($event)" formControlName="hostFormControl">
+            <mat-option *ngFor="let host of ESXIHosts" [value]="host">
+              {{host.host.host}} - {{host.host.name}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-divider></mat-divider>
+        <mat-form-field>
+          <mat-label>Select a VM Folder</mat-label>
+          <mat-select [(ngModel)]="selectedFolder" formControlName="folderFormControl">
+            <mat-option *ngFor="let folder of hostFolders" [value]="folder">
+              {{folder.name}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-divider></mat-divider>
+        <mat-form-field>
+          <mat-label>Select a Resource Pool</mat-label>
+          <mat-select [(ngModel)]="selectedResourcePool" formControlName="resourcePoolFormControl">
+            <mat-option *ngFor="let resourcePool of hostResourcePools" [value]="resourcePool">
+              {{resourcePool.name}}
+            </mat-option>
+          </mat-select>
+          <mat-divider></mat-divider>
+          <mat-form-field class="w-100">
+            <input matInput #vmName maxlength="256" placeholder="Type a VM name" formControlName="vmNameFormControl">
+            <mat-hint align="end">{{vmName.value.length}} / 256</mat-hint>
+            <mat-error *ngIf="f3.vmNameFormControl.errors.required">
+              Email is <strong>required</strong>
+            </mat-error>
+          </mat-form-field>
+        </mat-form-field>
+        <mat-divider></mat-divider>
+        <mat-form-field>
+          <mat-slide-toggle [checked]="powerVM">
+            Power ON restored VM
+          </mat-slide-toggle>
+        </mat-form-field>
+        <div>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button matStepperNext>Next</button>
+        </div>
+      </form>
+    </mat-step>
+    <mat-step>
+      <ng-template matStepLabel>Ready to apply</ng-template>
+      <hr class="hr-text" data-content="Summary">
+      <ul>
+        <li>VM: {{data.vm.name}} from <strong>{{getSnapshotName()}}</strong></li>
+        <li>Original Datastore: {{data.volume['volume-id-attributes'].name}}</li>
+        <li *ngIf="secondFormGroup.value.restoreType == 'new'">Host: {{selectedHost.host.name}}</li>
+        <li *ngIf="secondFormGroup.value.restoreType == 'original'">Host: {{data.vm.runtime.host.name}}</li>
+        <li>New VM name: {{vmName}}</li>
+        <li>Power ON VM: {{powerVM}}</li>
+      </ul>
+      <p>
+        After you click Restore, the selected VM will be instantly recovered into your production environment. To finalize the recovery use Storage VMotion to move running VM to the production storage.<br/>
+        Alternatively, you can perform cold VM migration during your next maintenance window.
+      </p>
+      <p>
+        If you are performing manual recovery testing, remember to change VM network to non-production before powering on the VM.
+      </p>
+      <div>
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button (click)="activeModal.close()">Restore</button>
+      </div>
+    </mat-step>
+  </mat-horizontal-stepper>
+</div>

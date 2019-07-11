@@ -309,12 +309,10 @@ export class BodyComponent implements OnInit {
     this.logger.debug('Infrastructure Manager [%s] -> Opening Remote Console APP -> vm [%s]', vm.vm, vm.name);
 
     this.Applications.openApplication('wmks', {
-      data: {
-        vm: vm.vm,
-        credential: this.InfrastructureManager.getConnectionByUuid(connectionUuid).credential,
-        host: this.InfrastructureManager.getConnectionByUuid(connectionUuid).host,
-        port: this.InfrastructureManager.getConnectionByUuid(connectionUuid).port
-      }
+      vm: vm.vm,
+      credential: this.InfrastructureManager.getConnectionByUuid(connectionUuid).credential,
+      host: this.InfrastructureManager.getConnectionByUuid(connectionUuid).host,
+      port: this.InfrastructureManager.getConnectionByUuid(connectionUuid).port
     });
   }
 
@@ -322,13 +320,11 @@ export class BodyComponent implements OnInit {
     this.logger.debug('Infrastructure Manager [%s] -> Opening Datastore Explorer APP -> datastore [%s]', datastore.uuid, datastore.name);
 
     this.Applications.openApplication('datastore-explorer', {
-      data: {
-        uuid: datastore.uuid,
-        name: datastore.name,
-        credential: this.InfrastructureManager.getConnectionByUuid(connectionUuid).credential,
-        host: this.InfrastructureManager.getConnectionByUuid(connectionUuid).host,
-        port: this.InfrastructureManager.getConnectionByUuid(connectionUuid).port
-      }
+      uuid: datastore.uuid,
+      name: datastore.name,
+      credential: this.InfrastructureManager.getConnectionByUuid(connectionUuid).credential,
+      host: this.InfrastructureManager.getConnectionByUuid(connectionUuid).host,
+      port: this.InfrastructureManager.getConnectionByUuid(connectionUuid).port
     });
   }
 }

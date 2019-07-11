@@ -6,10 +6,9 @@ export interface IMESXiHost {
     port: number;
   };
   host: {
-    connection_state: string;
+    connectionState: string;
     host: string;
     name: string;
-    power_state: string;
-    datacenter: string;
+    powerState: string;
   };
 }

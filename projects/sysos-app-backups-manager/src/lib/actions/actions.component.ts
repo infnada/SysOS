@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 
 @Component({
   selector: 'sabm-actions',
@@ -7,9 +7,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ActionsComponent implements OnInit {
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit() {
+  }
+
+  newRestore() {
+    // TODO
   }
 
 }

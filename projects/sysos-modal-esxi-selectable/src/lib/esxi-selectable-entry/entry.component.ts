@@ -1,8 +1,8 @@
 import {Component, Input, Output} from '@angular/core';
 
-import {NgbModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
+import {NgbModal, NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
 
-import {SysosModalEsxiSelectableComponent} from "../sysos-modal-esxi-selectable.component";
+import {SysosModalEsxiSelectableComponent} from '../sysos-modal-esxi-selectable.component';
 
 @Component({
   template: ''

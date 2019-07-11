@@ -42,8 +42,8 @@ export class MainService {
 
     this.Applications.getInstalledApplications().then(() => {
       this.Applications.getTaskBarApplications();
+      this.Modal.getInstalledModals();
     });
-    return this.Modal.getInstalledModals();
 
   }
 }

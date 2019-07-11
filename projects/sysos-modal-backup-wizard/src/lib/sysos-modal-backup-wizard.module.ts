@@ -1,7 +1,7 @@
 import {NgModule} from '@angular/core';
-import {CommonModule} from "@angular/common";
+import {CommonModule} from '@angular/common';
 
-import {NgbActiveModal, NgbModalModule} from "@ng-bootstrap/ng-bootstrap";
+import {NgbActiveModal, NgbModalModule} from '@ng-bootstrap/ng-bootstrap';
 
 import {SysosLibModalService} from '@sysos/lib-modal';
 

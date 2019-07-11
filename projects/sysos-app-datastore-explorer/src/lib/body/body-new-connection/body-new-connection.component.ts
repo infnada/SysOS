@@ -57,15 +57,15 @@ export class BodyNewConnectionComponent implements OnInit {
 
     if (type === 'vmware') {
       this.InfrastructureManager.getConnectionsByType('vmware').forEach((connection: IMConnection) => {
-        this.InfrastructureManagerVMWare.getConnectionDatastores(connection.uuid).forEach(datastore => {
+        this.InfrastructureManagerVMWare.getObjectByType(connection.uuid, 'Datastore').forEach(datastore => {
 
           this.datastores.push({
             name: datastore.name,
-            datastoreId: datastore.obj[0]._,
+            datastoreId: datastore.obj.name,
             credential: connection.credential,
             host: connection.host,
             port: connection.port,
-            datacenter: datastore.datacenter,
+            datacenter: this.InfrastructureManagerVMWare.getParentObjectByType(connection.uuid, 'Datacenter', datastore.obj.name),
             type: 'vmware'
           });
         });

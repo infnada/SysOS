@@ -1,7 +1,7 @@
 <div class="window__body" [ngClass]="{'with_status': application.status, 'with_actions': application.actions}">
 
   <div class="window__side" *ngIf="viewSide">
-    <uib-accordion>
+    <!--<uib-accordion>
       <div uib-accordion-group class="panel-success" is-open="true">
         <uib-accordion-heading>
           <i class="fa m-t-f" ng-class="{'fa-chevron-down': $parent.isOpen, 'fa-chevron-right p-r-': !$parent.isOpen}"></i> <i class="fa fa-server m-t-f"></i> Backup Jobs
@@ -28,24 +28,24 @@
           </div>
         </uib-accordion>
       </div>
-    </uib-accordion>
+    </uib-accordion>-->
     <div class="secondary-content__new__box__toggle pointer visible-lg">
       <div class="secondary-content__new__box__toggle__slide" (click)="toggleSide()">
         <i class="fa fa-arrow-left sidebar-open-font open-sidebar"></i>
       </div>
     </div>
   </div>
-  <div class="secondary-content__new__box__toggle toggle_left pointer visible-lg" ng-if="!bmB.viewSide" ng-click="bmB.toggleSide()">
+  <div class="secondary-content__new__box__toggle toggle_left pointer visible-lg" *ngIf="!viewSide" (click)="toggleSide()">
     <i class="fa fa-arrow-right sidebar-open-font open-sidebar"></i>
   </div>
   <div class="window__main">
     <div class="col">
-      <div ng-if="bmB.showNewBackupType == true">
+      <!--<div ng-if="bmB.showNewBackupType == true">
         <div ng-include="'templates/applications/new-backup-type-backupsm.html'" include-replace></div>
       </div>
       <div ng-if="bmB.showRestore == true">
         <div ng-include="'templates/applications/restore-backupsm.html'"></div>
-      </div>
+      </div>-->
     </div>
   </div>
 </div>

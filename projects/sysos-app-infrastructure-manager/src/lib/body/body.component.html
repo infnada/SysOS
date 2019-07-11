@@ -15,11 +15,11 @@
         <ng-container *ngIf="node.type === 'vmware'"><i class="vs-icon vsphere-icon-vcenter"></i> </ng-container>
         <ng-container *ngIf="node.type === 'Datacenter'"><i class="vs-icon vsphere-icon-datacenter"></i> </ng-container>
         <ng-container *ngIf="node.type === 'ClusterComputeResource'"><i class="vs-icon vsphere-icon-cluster"></i> </ng-container>
-        <ng-container *ngIf="node.type === 'HostSystem'"><i class="vs-icon" [ngClass]="{'vsphere-icon-host-disconnected': node.data.powerState === 'poweredOff', 'vsphere-icon-host': node.data.powerState === 'poweredOn'}"></i> </ng-container>
+        <ng-container *ngIf="node.type === 'HostSystem'"><i class="vs-icon" [ngClass]="{'vsphere-icon-host-disconnected': node.data.runtime.powerState === 'poweredOff', 'vsphere-icon-host': node.data.runtime.powerState === 'poweredOn'}"></i> </ng-container>
         <ng-container *ngIf="node.type === 'Folder'"><i class="vs-icon vsphere-icon-folder"></i> </ng-container>
         <ng-container *ngIf="node.type === 'ResourcePool'"><i class="vs-icon vsphere-icon-resource-pool"></i> </ng-container>
-        <ng-container *ngIf="node.type === 'VirtualMachine'"><i class="vs-icon" [ngClass]="{'vsphere-icon-vm': node.data.powerState === 'poweredOff', 'vsphere-icon-vm-on': node.data.powerState === 'poweredOn', 'vsphere-icon-vm-suspended': node.data.powerState === 'suspended'}"></i> </ng-container>
-        <ng-container *ngIf="node.type === 'Datastore'"><i class="vs-icon" [ngClass]="{'vsphere-icon-datastore': node.data.accessible === 'true', 'vsphere-icon-datastore-inaccessible': node.data.accessible === 'false'}"></i> </ng-container>
+        <ng-container *ngIf="node.type === 'VirtualMachine'"><i class="vs-icon" [ngClass]="{'vsphere-icon-vm': node.data['runtime.powerState'] === 'poweredOff', 'vsphere-icon-vm-on': node.data['runtime.powerState'] === 'poweredOn', 'vsphere-icon-vm-suspended': node.data['runtime.powerState'] === 'suspended'}"></i> </ng-container>
+        <ng-container *ngIf="node.type === 'Datastore'"><i class="vs-icon" [ngClass]="{'vsphere-icon-datastore': node.data['summary.accessible'] === 'true', 'vsphere-icon-datastore-inaccessible': node.data['summary.accessible'] === 'false'}"></i> </ng-container>
         {{node.name}}
 
         <div style="position: fixed"

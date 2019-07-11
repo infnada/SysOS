@@ -6,20 +6,23 @@
     </a>
   </div>
 </div>
-<div class="modal-body" id="modal-body">
+<div class="modal-body modal-esxi-selectable" id="modal-body">
   <hr class="hr-text" data-content="Select an ESXi host">
-  <div class="form-group">
-    <div class="col-sm-12">
-      <select class="form-control" [(ngModel)]="selectedHost">
-        <option value="">-- Select a managed ESXi host --</option>
-        <option *ngFor="let host of ESXIHosts" [ngValue]="host">
-          {{host.host}} - {{host.name}}
-        </option>
-      </select>
-    </div>
+  <mat-form-field class="w-100">
+    <mat-label>Select a managed ESXi host</mat-label>
+    <mat-select [(ngModel)]="selectedHost" (selectionChange)="checkESXidata($event)">
+      <mat-option *ngFor="let host of ESXIHosts" [value]="host">
+        {{host.host.host}} - {{host.host.name}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <span *ngIf="foundIp === false">This ESXi host has no previous mounted Datastores from {{vserver['vserver-name']}}. Looking for best suitable IP to connect with {{volume['volume-id-attributes'].name}} Snapshot.</span>
+  <div *ngIf="foundIp === false && sameSubnetIp.length === 0">
+    <span>Can't find any good suitable IP to connect with. Please choose one manually.</span>
   </div>
 </div>
 <div class="modal-footer">
-  <button class="btn btn-primary" type="button" (click)="activeModal.close()" autofocus>Cancel</button>
+  <button class="btn btn-primary" type="button" (click)="activeModal.close()">Cancel</button>
   <button class="btn btn-default" type="button" (click)="activeModal.close(selectedHost)">Select</button>
 </div>

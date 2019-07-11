@@ -65,12 +65,12 @@ export class SysosLibFileSystemUiService {
    */
   createHandler(handlerType: 'folder'|'rename'|'delete'|'download'|'move'|'copy', type: string, fn: (data?) => any) {
 
-    if (handlerType === 'folder') this.createFolderHandlers[type] = {fn: fn};
-    if (handlerType === 'rename') this.renameFileHandlers[type] = {fn: fn};
-    if (handlerType === 'delete') this.deleteFileHandlers[type] = {fn: fn};
-    if (handlerType === 'download') this.downloadFromURLFileHandlers[type] = {fn: fn};
-    if (handlerType === 'move') this.moveFileHandlers[type] = {fn: fn};
-    if (handlerType === 'copy') this.copyFileHandlers[type] = {fn: fn};
+    if (handlerType === 'folder') this.createFolderHandlers[type] = {fn};
+    if (handlerType === 'rename') this.renameFileHandlers[type] = {fn};
+    if (handlerType === 'delete') this.deleteFileHandlers[type] = {fn};
+    if (handlerType === 'download') this.downloadFromURLFileHandlers[type] = {fn};
+    if (handlerType === 'move') this.moveFileHandlers[type] = {fn};
+    if (handlerType === 'copy') this.copyFileHandlers[type] = {fn};
 
   }
 

@@ -1,8 +1,8 @@
 import {Component, Input, Output} from '@angular/core';
 
-import {NgbModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
+import {NgbModal, NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
 
-import {SysosModalBackupWizardComponent} from "../sysos-modal-backup-wizard.component";
+import {SysosModalBackupWizardComponent} from '../sysos-modal-backup-wizard.component';
 
 @Component({
   template: ''

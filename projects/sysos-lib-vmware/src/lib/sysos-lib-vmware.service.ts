@@ -97,6 +97,17 @@ export class SysosLibVmwareService {
           } else if (v === Object(v) && Object.keys(v).length === 2 && v.hasOwnProperty('name') && v.hasOwnProperty('val')) {
             newObj[v.name[0]] = this.parseVMwareObject(v.val);
 
+            // Is an object
+            // Have 3 props
+            // Has prop "name" and has prop "val" and has prop "op"
+          } else if (v === Object(v) && Object.keys(v).length === 3 && v.hasOwnProperty('name') && v.hasOwnProperty('val') && v.hasOwnProperty('op')) {
+            newObj[v.name[0]] = this.parseVMwareObject(v.val);
+
+            // Is an object
+            // Have 2 props
+            // Has prop "name" and has prop "op"
+          } else if (v === Object(v) && Object.keys(v).length === 2 && v.hasOwnProperty('name') && v.hasOwnProperty('op')) {
+            newObj[v.name[0]] = null;
 
             // Is array
             // More than 1 length
@@ -161,7 +172,24 @@ export class SysosLibVmwareService {
     };
   }
 
-  private doCallSoap(credential: string, host: string, port: string, action: string, xml: string): Observable<any> {
+  doCall(host: string, port: number, path: string): Promise<any> {
+
+    return this.http.post('/api/vmware/call', {
+      host,
+      port,
+      path,
+    }).pipe(map((res: any) => {
+        if (res.status === 'error') return this.errorHandler(res.data);
+
+        return res.data;
+      },
+      error => {
+        this.logger.error('[VMWare] -> doCall -> Error while doing the call -> ', error);
+      })).toPromise();
+
+  }
+
+  private doCallSoap(credential: string, host: string, port: number, action: string, xml: string): Observable<any> {
 
     return this.http.post('/api/vmware/callSoap', {
       credential,
@@ -1627,7 +1655,7 @@ export class SysosLibVmwareService {
   </soap:Body>
 </soap:Envelope>`;
     return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
-      return this.validResponse(data.WaitForUpdatesExResponse[0]);
+      return this.validResponse(this.parseVMwareObject(data.WaitForUpdatesExResponse[0]));
     })).toPromise();
   }
 
@@ -2183,6 +2211,79 @@ export class SysosLibVmwareService {
         </objectSet>
       </specSet>
     </RetrieveProperties>
+  </soap:Body>
+</soap:Envelope>`;
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
+      return this.validResponse(data.RetrievePropertiesResponse[0].returnval[0].propSet[0].val[0]._);
+    })).toPromise();
+  }
+
+  getHostFirewallSystem(credential, host, port, esxiHost): Promise<any> {
+    const xml = `<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Body>
+    <RetrieveProperties xmlns="urn:vim25">
+      <_this type="PropertyCollector">propertyCollector</_this>
+      <specSet>
+        <propSet>
+          <type>HostSystem</type>
+          <all>false</all>
+          <pathSet>configManager.firewallSystem</pathSet>
+        </propSet>
+        <objectSet>
+          <obj type="HostSystem">${esxiHost}</obj>
+        </objectSet>
+      </specSet>
+    </RetrieveProperties>
+  </soap:Body>
+</soap:Envelope>`;
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
+      return this.validResponse(data.RetrievePropertiesResponse[0].returnval[0].propSet[0].val[0]._);
+    })).toPromise();
+  }
+
+  getHostFirewallRules(credential, host, port, esxiHost): Promise<any> {
+    const xml = `<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Body>
+    <RetrieveProperties xmlns="urn:vim25">
+      <_this type="PropertyCollector">propertyCollector</_this>
+      <specSet>
+        <propSet>
+          <type>HostSystem</type>
+          <all>false</all>
+          <pathSet>config.firewall</pathSet>
+        </propSet>
+        <objectSet>
+          <obj type="HostSystem">${esxiHost}</obj>
+        </objectSet>
+      </specSet>
+    </RetrieveProperties>
+  </soap:Body>
+</soap:Envelope>`;
+    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
+      return this.validResponse(this.parseVMwareObject(data.RetrievePropertiesResponse[0].returnval[0].propSet[0].val[0]));
+    })).toPromise();
+  }
+
+  updateHostFirewallRuleset(credential, host, port, firewallSystem, ruleId, ipAddress): Promise<any> {
+    const xml = `<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Body>
+    <UpdateRuleset xmlns="urn:vim25">
+      <_this type="HostFirewallSystem">${firewallSystem}</_this>
+      <id>${ruleId}</id>
+      <spec>
+        <allowedHosts>
+          <ipAddress>${ipAddress}</ipAddress>
+          <!-- <ipNetwork>
+             <network></network>
+             <prefixLength>0</prefixLength>
+          </ipNetwork> -->
+          <allIp>false</allIp>
+        </allowedHosts>
+      </spec>
+    </UpdateRuleset>
   </soap:Body>
 </soap:Envelope>`;
     return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {

@@ -79,7 +79,10 @@ export class SysosAppInfrastructureVmwareService {
 
     }).then((res) => {
 
-      this.InfrastructureManager.getConnectionByUuid(connection.uuid).data.Data = res.data.returnval[0].filterSet[0].objectSet;
+      // Convert object to array
+      this.InfrastructureManager.getConnectionByUuid(connection.uuid).data.Data = Object.keys(res.data.returnval.filterSet).map((key) => {
+        return res.data.returnval.filterSet[key];
+      });
 
       /*const getChildren = (parent) => {
 
@@ -192,50 +195,27 @@ export class SysosAppInfrastructureVmwareService {
     const ESXihosts: IMESXiHost[] = [];
 
     connections.forEach((vCenter: IMConnection) => {
-      vCenter.data.Datacenters.forEach(datacenter => {
 
-        // Standalone hosts
-        datacenter.Hosts.forEach(host => {
+      const hosts = vCenter.data.Data.filter(obj => {
+        return obj.type === 'HostSystem';
+      });
 
-          // Setup basic connection information required for "Backups Manager" application
-          ESXihosts.push({
-            virtual: {
-              uuid: vCenter.uuid,
-              credential: vCenter.credential,
-              host: vCenter.host,
-              port: vCenter.port,
-            },
-            host: {
-              connection_state: host.connection_state,
-              host: host.host,
-              name: host.name,
-              power_state: host.power_state,
-              datacenter: datacenter.datacenter
-            }
-          });
-        });
+      hosts.forEach(host => {
 
-        // Cluster hosts
-        datacenter.Clusters.forEach(cluster => {
-          cluster.Hosts.forEach(host => {
-
-            // Setup basic connection information required for "Backups Manager" application
-            ESXihosts.push({
-              virtual: {
-                uuid: vCenter.uuid,
-                credential: vCenter.credential,
-                host: vCenter.host,
-                port: vCenter.port,
-              },
-              host: {
-                connection_state: host.connection_state,
-                host: host.host,
-                name: host.name,
-                power_state: host.power_state,
-                datacenter: datacenter.datacenter
-              }
-            });
-          });
+        // Setup basic connection information required for "Backups Manager" application
+        ESXihosts.push({
+          virtual: {
+            uuid: vCenter.uuid,
+            credential: vCenter.credential,
+            host: vCenter.host,
+            port: vCenter.port,
+          },
+          host: {
+            connectionState: host.runtime.connectionState,
+            host: host.obj.name,
+            name: host.name,
+            powerState: host.runtime.powerState
+          }
         });
 
       });
@@ -306,27 +286,24 @@ export class SysosAppInfrastructureVmwareService {
   }
 
   /**
-   * Returns all datastores with his parent Datacenter
+   * Get Parent object by object type
    */
-  getConnectionDatastores(connectionUuid): Array<any> {
-    const datastores = this.InfrastructureManager.getConnectionByUuid(connectionUuid).data.Data.filter(obj => {
-      return obj.type === 'Datastore';
+  getParentObjectByType(connectionUuid: string, type: string, ofParent: string) {
+    const parentObject = this.InfrastructureManager.getConnectionByUuid(connectionUuid).data.Data.find(obj => {
+      return obj.obj.name === ofParent;
     });
 
-    const getParentObjectByType = (type: string, ofParent: string) => {
-      const parentObject = this.InfrastructureManager.getConnectionByUuid(connectionUuid).data.Data.find(obj => {
-        return obj.obj[0]._ === ofParent;
-      });
+    if (parentObject.type === type) return parentObject.obj.name;
+    return this.getParentObjectByType(connectionUuid, type, parentObject.parent.name);
+  }
 
-      if (parentObject.type === type) return parentObject.obj[0]._;
-      return getParentObjectByType(type, parentObject.changeSet.find(set => set.name[0] === 'parent').val[0]._);
-    };
-
-    datastores.forEach((datastore) => {
-      datastore.datacenter = getParentObjectByType('Datacenter', datastore.obj[0]._);
+  /**
+   * Returns all VMWare objects by specific type
+   */
+  getObjectByType(connectionUuid, type): Array<any> {
+    return this.InfrastructureManager.getConnectionByUuid(connectionUuid).data.Data.filter(obj => {
+      return obj.type === type;
     });
-
-    return datastores;
   }
 
   registerFileSystemUiHandlers(): void {

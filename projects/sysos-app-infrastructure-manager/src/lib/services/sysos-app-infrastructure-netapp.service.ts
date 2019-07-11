@@ -3,7 +3,7 @@ import {Injectable} from '@angular/core';
 import {NGXLogger} from 'ngx-logger';
 import {ToastrService} from 'ngx-toastr';
 
-import {SysosLibApplicationService} from "@sysos/lib-application";
+import {SysosLibApplicationService} from '@sysos/lib-application';
 import {SysosLibModalService} from '@sysos/lib-modal';
 import {SysosLibNetappService} from '@sysos/lib-netapp';
 
@@ -459,13 +459,11 @@ export class SysosAppInfrastructureNetappService {
     this.logger.debug('Infrastructure Manager [%s] -> Opening Backups Manager APP', connectionUuid);
 
     this.Applications.openApplication('backups-manager', {
-      data: {
-        data,
-        type,
-        credential: this.InfrastructureManager.getConnectionByUuid(connectionUuid).credential,
-        host: this.InfrastructureManager.getConnectionByUuid(connectionUuid).host,
-        port: this.InfrastructureManager.getConnectionByUuid(connectionUuid).port
-      }
+      data,
+      type,
+      credential: this.InfrastructureManager.getConnectionByUuid(connectionUuid).credential,
+      host: this.InfrastructureManager.getConnectionByUuid(connectionUuid).host,
+      port: this.InfrastructureManager.getConnectionByUuid(connectionUuid).port
     });
   }
 
@@ -474,6 +472,17 @@ export class SysosAppInfrastructureNetappService {
    */
   mountSnapShotAsDatastore(connectionUuid: string, vserver: {[key: string]: any}, volume: {[key: string]: any}, snapshot: {[key: string]: any}): void {
     this.logger.debug('Infrastructure Manager [%s] -> Ask for mount storage snapshot into a datastore -> snapshot [%s]', snapshot['snapshot-instance-uuid'], snapshot.name);
+
+    console.log(vserver);
+
+    if (!Array.isArray(vserver['allowed-protocols'].protocol) ||
+      (!vserver['allowed-protocols'].protocol.includes('nfs') &&
+      !vserver['allowed-protocols'].protocol.includes('iscsi') &&
+      !vserver['allowed-protocols'].protocol.includes('fcp'))
+    ) {
+      this.Modal.openLittleModal('UNABLE TO PROCEED', 'The selected Snapshot belongs to a Vserver without any supported protocol (NFS, FC/FCoE, iSCSI) configured.', '.window--infrastructure-manager .window__main', 'plain');
+      return;
+    }
 
     this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
       {
@@ -484,10 +493,10 @@ export class SysosAppInfrastructureNetappService {
       modalInstance.result.then((result: boolean) => {
         if (result === true) {
 
-          this.logger.debug('Infrastructure Manager [%s] -> Launching Backups Manager for mounting storage snapshot into a datastore -> snapshot [%s]', snapshot['snapshot-instance-uuid'], snapshot.name);
+          this.logger.debug(`Infrastructure Manager ${snapshot['snapshot-instance-uuid']} -> Launching Backups Manager for mounting storage snapshot into a datastore -> snapshot ${snapshot.name}`);
 
           this.openBackupsManager(connectionUuid, 'mount_restore_datastore', {
-            storage: connectionUuid,
+            storage: this.InfrastructureManager.getConnectionByUuid(connectionUuid),
             vserver,
             volume,
             snapshot
@@ -513,7 +522,7 @@ export class SysosAppInfrastructureNetappService {
           this.logger.debug('Infrastructure Manager [%s] -> Launching Backups Manager for restoring a volume files -> snapshot [%s]', snapshot['snapshot-instance-uuid'], snapshot.name);
 
           this.openBackupsManager(connectionUuid, 'restore_datastore_files', {
-            storage: connectionUuid,
+            storage: this.InfrastructureManager.getConnectionByUuid(connectionUuid),
             vserver,
             volume,
             snapshot
@@ -553,7 +562,7 @@ export class SysosAppInfrastructureNetappService {
           this.logger.debug('Infrastructure Manager [%s] -> Launching Backups Manager for Instant VM recovery -> vm [%s]', vm.vm.vm, vm.name);
 
           this.openBackupsManager(connectionUuid, 'vm_instant_recovery', {
-            storage: connectionUuid,
+            storage: this.InfrastructureManager.getConnectionByUuid(connectionUuid),
             vserver,
             volume,
             snapshot,
@@ -569,7 +578,12 @@ export class SysosAppInfrastructureNetappService {
     this.logger.debug('Infrastructure Manager [%s] -> Ask for restore entire VM -> vm [%s]', vm.vm.vm, vm.name);
 
     if (vm.vm === null) {
-      this.Modal.openLittleModal('Error while restoring Backup', `Not found any linked VirtualMachine for ${vm.name}, maybe original VM was deleted from vCenter. Try doing an Instant VM restore`, '.window--smanager .window__main', 'plain');
+      this.Modal.openLittleModal(
+        'Error while restoring Backup',
+        `Not found any linked VirtualMachine for ${vm.name}, maybe original VM was deleted from vCenter. Try doing an Instant VM restore`,
+        '.window--smanager .window__main',
+        'plain'
+      );
       return;
     }
 
@@ -585,7 +599,7 @@ export class SysosAppInfrastructureNetappService {
           this.logger.debug('Infrastructure Manager [%s] -> Launching Backups Manager for restore entire VM -> vm [%s]', vm.vm.vm, vm.name);
 
           this.openBackupsManager(connectionUuid, 'restore_vm', {
-            storage: connectionUuid,
+            storage: this.InfrastructureManager.getConnectionByUuid(connectionUuid),
             vserver,
             volume,
             snapshot,
@@ -629,7 +643,12 @@ export class SysosAppInfrastructureNetappService {
     this.logger.debug('Infrastructure Manager [%s] -> Launching VM Backup -> vm [%s]', vm.vm, vm.name);
 
     if (!this.InfrastructureManager.getLinkByVMwareDatastore(connectionUuid, vm.datastore.ManagedObjectReference.name)) {
-      this.Modal.openLittleModal('Error while creating Backup', 'Not found any compatible NetApp storage. Make sure VMs that you want to backup are inside a NetApp volume and this is managed by SysOS.', '.window--infrastructure-manager .window__main', 'plain');
+      this.Modal.openLittleModal(
+        'Error while creating Backup',
+        'Not found any compatible NetApp storage. Make sure VMs that you want to backup are inside a NetApp volume and this is managed by SysOS.',
+        '.window--infrastructure-manager .window__main',
+        'plain'
+      );
       return;
     }
 

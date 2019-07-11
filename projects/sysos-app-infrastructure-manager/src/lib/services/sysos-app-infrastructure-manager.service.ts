@@ -12,6 +12,7 @@ import {SysosLibFileSystemService} from '@sysos/lib-file-system';
 import {IMConnection} from '../types/imconnection';
 import {IMLink} from '../types/imlink';
 import {IMNode} from '../types/imnode';
+import {VMWareDatastore} from "../types/vmware-datastore";
 
 @Injectable({
   providedIn: 'root'
@@ -131,24 +132,22 @@ export class SysosAppInfrastructureManagerService {
 
     // Recursively for virtual data
     const getChildren = (virtual: IMConnection, current): void => {
-      current.name = current.changeSet.find(set => set.name[0] === 'name').val[0]._;
-      current.type = current.obj[0].$.type;
+      delete current.kind;
+
+      current.type = current.obj.type;
       current.data = {
         uuid: virtual.uuid
       };
       current.children = virtual.data.Data.filter(obj => {
-        // Return when property name === 'parent' and it's value === func.parent name
-        return obj.changeSet.find(set => set.name[0] === 'parent' && set.hasOwnProperty('val') && set.val[0]._ === current.obj[0]._);
+        return obj.parent && obj.parent.name === current.obj.name;
       });
 
-      if (current.type === 'VirtualMachine') current.data.powerState = current.changeSet.find(set => set.name[0] === 'runtime.powerState').val[0]._;
-      if (current.type === 'Datastore') current.data.accessible = current.changeSet.find(set => set.name[0] === 'summary.accessible').val[0]._;
-      if (current.type === 'HostSystem') {
-        current.data.connectionState = current.changeSet.find(set => set.name[0] === 'runtime').val[0].connectionState[0];
-        current.data.powerState = current.changeSet.find(set => set.name[0] === 'runtime').val[0].powerState[0];
-      }
+      // Move all object data into data property
+      Object.keys(current).forEach((key) => {
+        if (['children', 'data', 'type', 'name', 'parent', 'obj'].includes(key)) return;
 
-      delete current.kind;
+        current.data[key] = JSON.parse(JSON.stringify(current[key]));
+      });
 
       // Recursively get children
       current.children.forEach(child => {
@@ -168,12 +167,13 @@ export class SysosAppInfrastructureManagerService {
       };
 
       // Virtual connection not initialized
-      console.log(virtual);
       if (!virtual.data || !virtual.data.Data) return treeData[1].children[vii] = virtualObject;
+
+      console.log(virtual.data.Data);
 
       // Get main parent object
       virtualObject.children = [virtual.data.Data.find(obj => {
-        return obj.changeSet.find(set => set.name[0] === 'parent' && !set.hasOwnProperty('val'));
+        return obj.parent === null;
       })];
 
       getChildren(virtual, virtualObject.children[0]);
@@ -277,8 +277,7 @@ export class SysosAppInfrastructureManagerService {
       }).length > 0) {
         this.logger.error('Connections Factory -> Error while setting new connection -> type[%s], host [%s] -> Connection already exists',
           connection.type, connection.host);
-        this.Toastr.error('Node (' + connection.host + ') already exists. Please modify the existing connection properties or' +
-          ' ReScan the node.', 'Error creating connection');
+        this.Toastr.error(`Node (${connection.host}) already exists. Please modify the existing connection properties or ReScan the node.`, 'Error creating connection');
         return null;
       }
 
@@ -289,11 +288,17 @@ export class SysosAppInfrastructureManagerService {
 
     this.connectionsUpdated();
 
-    if (connection.save) this.saveConnection(connection);
+    // Save initial data then initialize
+    Promise.resolve().then(() => {
+      if (connection.save) return this.saveConnection(connection);
 
-    this.initializeConnection(connection);
+      return;
+    }).then(() => {
+      this.initializeConnection(connection);
 
-    this.setActiveConnection(connection.uuid);
+      this.setActiveConnection(connection.uuid);
+    });
+
   }
 
   setConnectionByType(connection: IMConnection, initialized?: boolean): void {
@@ -435,7 +440,7 @@ export class SysosAppInfrastructureManagerService {
   /**
    * Save connection to config file
    */
-  saveConnection(connection: IMConnection): void {
+  saveConnection(connection: IMConnection): Promise<any> {
     if (!connection) throw new Error('connection_not_found');
 
     this.logger.debug('Connections Factory [%s] -> Saving connection -> type [%s], host [%s]',
@@ -443,7 +448,7 @@ export class SysosAppInfrastructureManagerService {
 
     const configFile = 'applications/infrastructure-manager/config.json';
 
-    this.FileSystem.saveConfigFile(connection, configFile, false).subscribe(
+    return this.FileSystem.saveConfigFile(connection, configFile, false).toPromise().then(
       () => {
         this.logger.debug('Infrastructure Manager Factory [%s] -> Saved connection successfully -> host [%s]',
           connection.uuid, connection.host);
@@ -572,7 +577,7 @@ export class SysosAppInfrastructureManagerService {
     return this.linksMap.filter((obj) => {
       return obj.virtual === virtualUuid && obj.esxi_datastore === esxiDatastore;
     });
-  };
+  }
 
   /**
    * @description check link between storage and virtual nodes
@@ -580,15 +585,14 @@ export class SysosAppInfrastructureManagerService {
   // TODO: some storages could have the same LIF IP!!! and links will be wrong
   checkLinkBetweenManagedNodes(type: string, uuid: string): void {
 
-    const connection = this.getConnectionByUuid(uuid);
+    /*const connection = this.getConnectionByUuid(uuid);
 
-    /*
     if (type === 'vmware') {
 
       // Get all connection datastores
-      connection.data.Datastores.forEach((datastore) => {
+      this.InfrastructureManagerVMWare.getObjectByType(uuid, 'Datastore').forEach((datastore: VMWareDatastore) => {
 
-        if (datastore.summary.type === 'VMFS') return;
+        if (datastore['summary.type'] === 'VMFS') return;
 
         // Check if any storage volume contains the datastore remotePath as a volume junction path
         this.getConnectionsByType('storage').forEach((storage) => {
@@ -699,8 +703,7 @@ export class SysosAppInfrastructureManagerService {
       });
     // end netapp
     }
-    */
-    this.saveLinksMap();
+    this.saveLinksMap();*/
 
   }
 

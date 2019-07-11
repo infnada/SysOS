@@ -39,19 +39,9 @@ export class SysosLibModalService {
       (res: { data: { filename: string }[] }) => {
         this.logger.info('Modal Factory -> Get Installed Modals successfully');
 
-        res.data = [
-          {
-            filename: 'sysos-modal-input.umd.js'
-          },
-          {
-            filename: 'sysos-modal-plain.umd.js'
-          },
-          {
-            filename: 'sysos-modal-question.umd.js'
-          }
-        ];
-
         res.data.forEach((value) => {
+          if (value.filename.endsWith('.umd.js'))
+
           this.loadModal(value);
         });
 

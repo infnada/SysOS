@@ -25,7 +25,8 @@
     "test": "ng test",
     "e2e": "ng e2e",
     "clean": "rm -rf dist/SysOS/*",
-    "copy-extra": "cp -rf src/backend/app/ssl dist/SysOS/ && cp -rf src/backend/app/filesystem dist/SysOS/ && cp dist/applications/*/bundles/* dist/SysOS/filesystem/bin/applications/ && cp dist/modals/*/bundles/* dist/SysOS/filesystem/bin/modals/"
+    "copy-extra": "cp -rf src/backend/app/ssl dist/SysOS/ && cp -rf src/backend/app/filesystem dist/SysOS/ && cp dist/applications/*/bundles/* dist/SysOS/filesystem/bin/applications/ && cp dist/modals/*/bundles/* dist/SysOS/filesystem/bin/modals/",
+    "copy-apps": " cp dist/applications/*/bundles/* dist/SysOS/filesystem/bin/applications/ && cp dist/modals/*/bundles/* dist/SysOS/filesystem/bin/modals/"
   },
   "private": false,
   "dependencies": {

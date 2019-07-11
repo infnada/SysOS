@@ -1,6 +1,7 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
+import {MatSelectModule} from '@angular/material';
 
 import {NgbModalModule, NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 
@@ -17,7 +18,8 @@ import {EntryComponent} from './esxi-selectable-entry/entry.component';
   imports: [
     CommonModule,
     FormsModule,
-    NgbModalModule
+    NgbModalModule,
+    MatSelectModule
   ],
   exports: [],
   providers: [
