@@ -75,7 +75,7 @@ export class SysosAppInfrastructureNetappService {
     }).then((res) => {
 
       // Set interfaces
-      this.InfrastructureManager.getConnectionByUuid(connection.uuid).data.Ifaces = [];
+      this.InfrastructureManager.getConnectionByUuid(connection.uuid).data.Ifaces = {};
       this.InfrastructureManager.getConnectionByUuid(connection.uuid).data.Ifaces.netifaces = res[0].data;
       this.InfrastructureManager.getConnectionByUuid(connection.uuid).data.Ifaces.fcpifaces = res[1].data;
       this.InfrastructureManager.getConnectionByUuid(connection.uuid).data.Ifaces.fcpadapters = res[2].data;
@@ -135,7 +135,7 @@ export class SysosAppInfrastructureNetappService {
                 Object.entries(snapshots.data).forEach(([s, snapshot]: any) => {
 
                   // Get snapshot creation date
-                  shDataPromises.push(this.NetApp.getFileInfo(
+                  shDataPromises.push(this.NetApp.getSnapshotFileInfo(
                     connection.credential, connection.host, connection.port,
                     vserver['vserver-name'],
                     volume['volume-id-attributes'].name,
@@ -480,7 +480,12 @@ export class SysosAppInfrastructureNetappService {
       !vserver['allowed-protocols'].protocol.includes('iscsi') &&
       !vserver['allowed-protocols'].protocol.includes('fcp'))
     ) {
-      this.Modal.openLittleModal('UNABLE TO PROCEED', 'The selected Snapshot belongs to a Vserver without any supported protocol (NFS, FC/FCoE, iSCSI) configured.', '.window--infrastructure-manager .window__main', 'plain');
+      this.Modal.openLittleModal(
+        'UNABLE TO PROCEED',
+        'The selected Snapshot belongs to a Vserver without any supported protocol (NFS, FC/FCoE, iSCSI) configured.',
+        '.window--infrastructure-manager .window__main',
+        'plain'
+      );
       return;
     }
 

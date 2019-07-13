@@ -8,6 +8,7 @@ import {SysOSFile} from '@sysos/lib-types';
 import {SysosLibFileSystemService} from '@sysos/lib-file-system';
 import {SysosLibModalService} from '@sysos/lib-modal';
 import {SysosLibVmwareService} from '@sysos/lib-vmware';
+import {SysosLibNetappService} from "@sysos/lib-netapp";
 
 import {SysosAppDatastoreExplorerService} from './sysos-app-datastore-explorer.service';
 
@@ -38,6 +39,7 @@ export class SysosAppDatastoreExplorerServerService {
               private FileSystem: SysosLibFileSystemService,
               private Modal: SysosLibModalService,
               private VMWare: SysosLibVmwareService,
+              private NetApp: SysosLibNetappService,
               private DatastoreExplorer: SysosAppDatastoreExplorerService) {
     this.dataStore = {currentPath: '/', currentData: [], viewAsList: false, search: null};
     this.$currentPath = new BehaviorSubject('/') as BehaviorSubject<string>;
@@ -59,40 +61,58 @@ export class SysosAppDatastoreExplorerServerService {
   reloadPath(connectionUuid: string, path?: string): void {
     this.Modal.openLittleModal('PLEASE WAIT', 'Getting data...', '.window--datastore-explorer .window__main', 'plain');
 
-    this.VMWare.getFilesDataFromDatastore(
-      this.DatastoreExplorer.getConnectionByUuid(connectionUuid).credential,
-      this.DatastoreExplorer.getConnectionByUuid(connectionUuid).host,
-      this.DatastoreExplorer.getConnectionByUuid(connectionUuid).port,
-      this.DatastoreExplorer.getConnectionByUuid(connectionUuid).datastoreId,
-      this.DatastoreExplorer.getConnectionByUuid(connectionUuid).name,
-      (path ? path : this.dataStore.currentPath)
-    ).then((data) => {
+    Promise.resolve().then(() => {
+      if (this.DatastoreExplorer.getConnectionByUuid(connectionUuid).type === 'vmware') {
+        return this.VMWare.getFilesDataFromDatastore(
+          this.DatastoreExplorer.getConnectionByUuid(connectionUuid).credential,
+          this.DatastoreExplorer.getConnectionByUuid(connectionUuid).host,
+          this.DatastoreExplorer.getConnectionByUuid(connectionUuid).port,
+          this.DatastoreExplorer.getConnectionByUuid(connectionUuid).data.datastore.obj.name,
+          this.DatastoreExplorer.getConnectionByUuid(connectionUuid).data.datastore.name,
+          (path ? path : this.dataStore.currentPath)
+        )
+      }
+      if (this.DatastoreExplorer.getConnectionByUuid(connectionUuid).type === 'netapp') {
+        return this.NetApp.getVolumeFiles(
+          this.DatastoreExplorer.getConnectionByUuid(connectionUuid).credential,
+          this.DatastoreExplorer.getConnectionByUuid(connectionUuid).host,
+          this.DatastoreExplorer.getConnectionByUuid(connectionUuid).port,
+          this.DatastoreExplorer.getConnectionByUuid(connectionUuid).data.volume['volume-id-attributes']['owning-vserver-name'],
+          this.DatastoreExplorer.getConnectionByUuid(connectionUuid).data.volume['volume-id-attributes'].name,
+          (path ? path : this.dataStore.currentPath)
+        )
+      }
+    }).then((data) => {
       if (data.status === 'error') throw new Error('Failed to get Datastore files');
 
-      console.log(data);
+      if (this.DatastoreExplorer.getConnectionByUuid(connectionUuid).type === 'vmware') {
+        const obj = data.data[0].propSet.info.result;
 
-      const obj = data.data[0].propSet.info.result;
+        delete obj.datastore;
+        delete obj.folderPath;
+        delete obj.xsi_type;
 
-      delete obj.datastore;
-      delete obj.folderPath;
-      delete obj.xsi_type;
+        data = Object.keys(obj).map((key) => {
+          const toReturn = obj[key];
 
-      data = Object.keys(obj).map((key) => {
-        const toReturn = obj[key];
+          toReturn.filename = toReturn.path;
 
-        toReturn.filename = toReturn.path;
+          if (toReturn.xsi_type === 'FolderFileInfo') {
+            toReturn.longname = `d--------- ${toReturn.filename}`;
+          } else {
+            toReturn.longname = `---------- ${toReturn.filename}`;
+          }
 
-        if (toReturn.xsi_type === 'FolderFileInfo') {
-          toReturn.longname = `d--------- ${toReturn.filename}`;
-        } else {
-          toReturn.longname = `---------- ${toReturn.filename}`;
-        }
+          delete toReturn.xsi_type;
+          delete toReturn.path;
 
-        delete toReturn.xsi_type;
-        delete toReturn.path;
+          return toReturn;
+        });
+      }
 
-        return toReturn;
-      });
+      if (this.DatastoreExplorer.getConnectionByUuid(connectionUuid).type === 'netapp') {
+
+      }
 
       this.dataStore.currentData = data;
 
@@ -112,6 +132,7 @@ export class SysosAppDatastoreExplorerServerService {
       this.logger.error('DatastoreExplorer -> Error while getting fileSystemPath -> ', error);
       this.Modal.closeModal('.window--datastore-explorer .window__main');
     });
+
   }
 
   toggleView(): void {

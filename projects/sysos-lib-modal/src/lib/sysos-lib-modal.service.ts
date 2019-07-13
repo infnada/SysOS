@@ -40,9 +40,9 @@ export class SysosLibModalService {
         this.logger.info('Modal Factory -> Get Installed Modals successfully');
 
         res.data.forEach((value) => {
-          if (value.filename.endsWith('.umd.js'))
-
-          this.loadModal(value);
+          if (value.filename.endsWith('.umd.js')) {
+            this.loadModal(value);
+          }
         });
 
       },

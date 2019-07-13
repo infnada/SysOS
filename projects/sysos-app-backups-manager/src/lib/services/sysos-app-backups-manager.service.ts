@@ -127,7 +127,11 @@ export class SysosAppBackupsManagerService {
     this.setActive(data.uuid);
 
     this.Modal.openRegisteredModal('esxi-selectable', '.window--backups-manager .window__main',
-      {}
+      {
+        storage: data.storage,
+        vserver: data.vserver,
+        volume: data.volume
+      }
     ).then((modalInstance) => {
       modalInstance.result.then((selectedData: IMESXiHost) => {
         if (!selectedData) return;
@@ -187,7 +191,11 @@ export class SysosAppBackupsManagerService {
     // TODO: folder.folder & resource_pool.resource_pool are required to publish the VM
 
     this.Modal.openRegisteredModal('esxi-selectable', '.window--backups-manager .window__main',
-      {}
+      {
+        storage: data.storage,
+        vserver: data.vserver,
+        volume: data.volume
+      }
     ).then((modalInstance) => {
       modalInstance.result.then((selectedData: IMESXiHost) => {
         if (!selectedData) return;

@@ -302,39 +302,9 @@ export class SysosLibApplicationService {
         (res: { data: { filename: string }[] }) => {
           this.logger.info('Applications Factory -> Get Installed Applications successfully');
 
-          res.data = [
-            /*{
-              filename: 'sysos-app-alerts.umd.js'
-            },*/
-            {
-              filename: 'sysos-app-backups-manager.umd.js'
-            },
-            {
-              filename: 'sysos-app-credentials-manager.umd.js'
-            },
-            {
-              filename: 'sysos-app-file-explorer.umd.js'
-            },
-            {
-              filename: 'sysos-app-infrastructure-manager.umd.js'
-            },
-            {
-              filename: 'sysos-app-notepad.umd.js'
-            },
-            {
-              filename: 'sysos-app-sftp.umd.js'
-            },
-            {
-              filename: 'sysos-app-ssh.umd.js'
-            },
-            {
-              filename: 'sysos-app-wmks.umd.js'
-            },
-          ];
-
           // Register every application
           return Promise.all(
-            res.data.map((application) => this.loadApplication(application))
+            res.data.map((application) => application.filename.endsWith('.umd.js') ? this.loadApplication(application) : null)
           ).then(() => {
             return resolve();
           });

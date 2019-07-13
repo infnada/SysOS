@@ -1,6 +1,6 @@
 <ng-container *ngIf="!newConnectionType">
   <div class="main_form">
-    <p>Explore your managed vCenter ot ESXi Datastores or NetApp Volumes</p>
+    <p>Explore your managed vCenter/ESXi Datastores or NetApp Volumes</p>
     <table class="table table-hover m-t-xl">
       <tbody>
       <tr class="cursor-pointer" (click)="setConnectionType('vmware')">
@@ -20,10 +20,11 @@
   <form class="main_form form-horizontal" [formGroup]="connectionForm" (ngSubmit)="sendConnect()">
     <div class="form-group">
       <div class="col-12">
+
         <select class="form-control" formControlName="datastore" [ngClass]="{ 'is-invalid': submitted && f.datastore.errors }">
           <option value="">-- Select Datastore --</option>
           <option *ngFor="let datastore of datastores; index as $index" [value]="$index">
-            {{datastore.host}} - {{datastore.name}}
+            {{datastore.host}} - {{datastore.type === 'vmware' ? datastore.data.datastore.obj.name : datastore.type === 'netapp' ? datastore.data.volume['volume-id-attributes'].name : null}}
           </option>
         </select>
       </div>

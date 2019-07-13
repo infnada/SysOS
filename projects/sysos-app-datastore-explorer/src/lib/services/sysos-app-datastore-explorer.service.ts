@@ -100,13 +100,11 @@ export class SysosAppDatastoreExplorerService {
 
       this.dataStore.connections.push({
         uuid: connection.uuid,
-        datastoreId: connection.datastoreId,
-        name: connection.name,
         host: connection.host,
         port: connection.port,
         credential: connection.credential,
-        datacenter: connection.datacenter,
-        type: 'vmware',
+        type: connection.type,
+        data: connection.data,
         state: 'disconnected'
       });
     }
@@ -142,7 +140,7 @@ export class SysosAppDatastoreExplorerService {
 
     this.Modal.openRegisteredModal('question', '.window--datastore-explorer .window__main',
       {
-        title: 'Delete connection ' + this.getConnectionByUuid(uuid).name,
+        title: `Delete connection ${this.getConnectionByUuid(uuid).type}` === 'vmware' ? this.getConnectionByUuid(uuid).data.datastore.obj.name : this.getConnectionByUuid(uuid).type === 'netapp' ? this.getConnectionByUuid(uuid).data.volume['volume-id-attributes'].name : null,
         text: 'Remove the selected connection from the inventory?'
       }
     ).then((modalInstance) => {

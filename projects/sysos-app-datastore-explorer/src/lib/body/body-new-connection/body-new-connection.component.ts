@@ -1,10 +1,10 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 
+import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
 import {SysosLibModalService} from '@sysos/lib-modal';
 import {Application} from '@sysos/lib-application';
-import {IMConnection} from '@sysos/app-infrastructure-manager';
-import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
+import {IMConnection, NetAppVserver, NetAppVolume} from '@sysos/app-infrastructure-manager';
 
 import {DatastoreExplorerConnection} from '../../types/datastore-explorer-connection';
 import {SysosAppDatastoreExplorerService} from '../../services/sysos-app-datastore-explorer.service';
@@ -60,18 +60,39 @@ export class BodyNewConnectionComponent implements OnInit {
         this.InfrastructureManagerVMWare.getObjectByType(connection.uuid, 'Datastore').forEach(datastore => {
 
           this.datastores.push({
-            name: datastore.name,
-            datastoreId: datastore.obj.name,
             credential: connection.credential,
             host: connection.host,
             port: connection.port,
-            datacenter: this.InfrastructureManagerVMWare.getParentObjectByType(connection.uuid, 'Datacenter', datastore.obj.name),
+            data: {
+              datastore,
+              datacenter: this.InfrastructureManagerVMWare.getParentObjectByType(connection.uuid, 'Datacenter', datastore.obj.name)
+            },
             type: 'vmware'
           });
         });
       });
     }
-    if (type === 'netapp') this.Modal.openLittleModal('NetApp Volume Explorer', 'Not available in this release', '.window--datastore-explorer .window__main', 'plain');
+    if (type === 'netapp') {
+      this.InfrastructureManager.getConnectionsByType('netapp').forEach((connection: IMConnection) => {
+        connection.data.Vservers.forEach((vServer: NetAppVserver & { Volumes: NetAppVolume[] }) => {
+
+          if (vServer['vserver-type'] !== 'data') return;
+
+          vServer.Volumes.forEach((volume) => {
+            this.datastores.push({
+              credential: connection.credential,
+              host: connection.host,
+              port: connection.port,
+              data: {
+                volume
+              },
+              type: 'netapp'
+            });
+          });
+
+        });
+      });
+    }
   }
 
   sendConnect(): void {

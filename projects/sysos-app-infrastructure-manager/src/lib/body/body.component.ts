@@ -96,7 +96,9 @@ export class BodyComponent implements OnInit {
     this.volumeContextMenu = [
       {
         id: 1, text: '<i class="fa fa-file"></i> Show datastore files', action: (node: IMNode) => {
-          this.openDatastoreExplorer(node.data.uuid, node.data.datastore);
+          this.openDatastoreExplorer(node.data.uuid, 'netapp', {
+            volume: node.data.volume
+          });
         }
       },
       {
@@ -247,7 +249,9 @@ export class BodyComponent implements OnInit {
     this.datastoreContextMenu = [
       {
         id: 0, text: '<i class="fa fa-file"></i> Show datastore files', action: (node: IMNode) => {
-          this.openDatastoreExplorer(node.data.uuid, node.data.datastore);
+          this.openDatastoreExplorer(node.data.uuid, 'vmware', {
+            datastore: node.data.datastore
+          });
         }
       }
     ];
@@ -316,15 +320,15 @@ export class BodyComponent implements OnInit {
     });
   }
 
-  openDatastoreExplorer(connectionUuid, datastore) {
-    this.logger.debug('Infrastructure Manager [%s] -> Opening Datastore Explorer APP -> datastore [%s]', datastore.uuid, datastore.name);
+  openDatastoreExplorer(connectionUuid, type, data) {
+    this.logger.debug('Infrastructure Manager [%s] -> Opening Datastore Explorer APP -> datastore [%s]', connectionUuid, type);
 
     this.Applications.openApplication('datastore-explorer', {
-      uuid: datastore.uuid,
-      name: datastore.name,
       credential: this.InfrastructureManager.getConnectionByUuid(connectionUuid).credential,
       host: this.InfrastructureManager.getConnectionByUuid(connectionUuid).host,
-      port: this.InfrastructureManager.getConnectionByUuid(connectionUuid).port
+      port: this.InfrastructureManager.getConnectionByUuid(connectionUuid).port,
+      data,
+      type
     });
   }
 }

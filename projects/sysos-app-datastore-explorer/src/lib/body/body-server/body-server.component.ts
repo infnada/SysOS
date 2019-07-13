@@ -159,19 +159,19 @@ export class BodyServerComponent implements OnInit {
   }
 
   UIcreateFolder(): void {
-    this.FileSystemUi.UIcreateFolder(this.currentPath, '.window--datastore-explorer .window__main', 'vmware', { connection: this.getActiveConnection() });
+    this.FileSystemUi.UIcreateFolder(this.currentPath, '.window--datastore-explorer .window__main', this.getActiveConnection().type, { connection: this.getActiveConnection() });
   }
 
   UIrenameFile(file: SysOSFile): void {
-    this.FileSystemUi.UIrenameFile(this.currentPath, file, '.window--datastore-explorer .window__main', 'vmware', { connection: this.getActiveConnection() });
+    this.FileSystemUi.UIrenameFile(this.currentPath, file, '.window--datastore-explorer .window__main', this.getActiveConnection().type, { connection: this.getActiveConnection() });
   }
 
   UIdeleteSelected(file: SysOSFile): void {
-    this.FileSystemUi.UIdeleteSelected(this.currentPath, file, '.window--datastore-explorer .window__main', 'vmware', { connection: this.getActiveConnection() });
+    this.FileSystemUi.UIdeleteSelected(this.currentPath, file, '.window--datastore-explorer .window__main', this.getActiveConnection().type, { connection: this.getActiveConnection() });
   }
 
   UIpasteFile(): void {
-    this.FileSystemUi.UIpasteFile(this.currentPath, 'vmware', { connection: this.getActiveConnection() });
+    this.FileSystemUi.UIpasteFile(this.currentPath, this.getActiveConnection().type, { connection: this.getActiveConnection() });
   }
 
   UIdoWithFile(file: SysOSFile): void {

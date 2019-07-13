@@ -4,6 +4,7 @@
 
 export * from './lib/types/imconnection';
 export * from './lib/types/imesxi-hosts';
+export * from './lib/types/netapp-iface';
 export * from './lib/types/netapp-snapshot';
 export * from './lib/types/netapp-volume';
 export * from './lib/types/netapp-vserver';

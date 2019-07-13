@@ -73,71 +73,11 @@ export class SysosAppInfrastructureVmwareService {
 
     }).then((res) => {
 
-      console.log(res);
-
       return this.VMWare.getWaitForUpdatesEx(connection.credential, connection.host, connection.port);
 
     }).then((res) => {
 
-      // Convert object to array
-      this.InfrastructureManager.getConnectionByUuid(connection.uuid).data.Data = Object.keys(res.data.returnval.filterSet).map((key) => {
-        return res.data.returnval.filterSet[key];
-      });
-
-      /*const getChildren = (parent) => {
-
-        // Set parent object name
-        parent.kind = parent.kind[0];
-        parent.name = parent.changeSet.find(set => set.name[0] === 'name').val[0]._;
-        const parentSet = parent.changeSet.find(set => set.name[0] === 'parent');
-        parent.parent = (parentSet.hasOwnProperty('val') ? parentSet.val[0]._ : '');
-
-        parent.realName = parent.obj[0]._;
-        parent.realType = parent.obj[0].$.type;
-
-        // Delete unused properties
-        parent.changeSet = parent.changeSet.filter(set => set.name[0] !== 'name' && set.name[0] !== 'parent');
-        delete parent.obj;
-
-        // Get childrens
-        parent.children = res.data.returnval[0].filterSet[0].objectSet.filter(obj => {
-
-          // Return when property name === 'parent' and it's value === func.parent name
-          return obj.changeSet.find(set => set.name[0] === 'parent' && set.hasOwnProperty('val') && set.val[0]._ === parent.realName);
-        });
-
-        // Recursively get children
-        parent.children.forEach(child => {
-
-          // Remove child from response array
-          res.data.returnval[0].filterSet[0].objectSet.splice(
-            res.data.returnval[0].filterSet[0].objectSet.indexOf(child), 1
-          );
-
-
-          getChildren(child);
-        });
-
-      };
-
-      // Get main parent object
-      const mainParent = res.data.returnval[0].filterSet[0].objectSet.find(obj => {
-        return obj.changeSet.find(set => set.name[0] === 'parent' && !set.hasOwnProperty('val'));
-      });
-
-      // Remove element from response array
-      res.data.returnval[0].filterSet[0].objectSet.splice(
-        res.data.returnval[0].filterSet[0].objectSet.findIndex(obj => {
-          return obj.changeSet.find(set => set.name[0] === 'parent' && !set.hasOwnProperty('val'));
-        }), 1
-      );
-
-      // Get all children from mainParent object
-      getChildren(mainParent);
-
-      console.log(mainParent);*/
-
-    }).then(() => {
+      this.InfrastructureManager.getConnectionByUuid(connection.uuid).data.Data = res.data.returnval.filterSet.objectSet;
 
       // Check if any datastore is from a managed storage system and link it.
       return this.InfrastructureManager.checkLinkBetweenManagedNodes('vmware', connection.uuid);
@@ -153,12 +93,6 @@ export class SysosAppInfrastructureVmwareService {
 
       // Tell InfrastructureManager that we changed connections data
       this.InfrastructureManager.connectionsUpdated();
-
-      return this.VMWare.getWaitForUpdatesEx(connection.credential, connection.host, connection.port);
-
-    }).then(res => {
-
-      console.log(res);
 
     }).catch((e) => {
       this.Modal.closeModal('.window--infrastructure-manager .window__main');

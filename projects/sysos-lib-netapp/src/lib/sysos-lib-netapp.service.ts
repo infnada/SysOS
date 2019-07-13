@@ -24,7 +24,7 @@ export class SysosLibNetappService {
     Object.entries(data).forEach(([key, value]) => {
 
       if (Array.isArray(value) && value.length === 1 && value[0] !== Object(value[0])) {
-        parent[key] = value[0];
+        parent[key] = (value[0] === "true" ? true : value[0] === "false" ? false : value[0]);
       } else if (Array.isArray(value) && value.length === 1 && value[0] === Object(value[0])) {
         parent[key] = this.parseNetAppObject(value[0], parent[key]);
       } else if (Array.isArray(value) && value.length > 1 && value[0] === Object(value[0])) {
@@ -286,18 +286,15 @@ export class SysosLibNetappService {
     })).toPromise();
   }
 
-  getNFSStatus(credential, host, port, vfiler): Promise<any> {
+  getNFSService(credential, host, port, vfiler): Promise<any> {
     return this.doCall(
       credential,
       host,
       port,
       null,
-      `<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin'${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}><nfs-status/></netapp>`
+      `<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin'${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}><nfs-service-get/></netapp>`
     ).pipe(map((data: any) => {
-      return this.validResponse({
-        is_drained: data['is-drained'][0],
-        is_enabled: data['is-enabled'][0]
-      });
+      return this.validResponse(this.parseNetAppObject(data.attributes[0]['nfs-info'][0]));
     })).toPromise();
   }
 
@@ -349,6 +346,38 @@ export class SysosLibNetappService {
         if (data['next-tag']) {
           nextTag = data['next-tag'][0].replace(/</g, '&lt;').replace(/>/g, '&gt;');
           return this.getVolumes(credential, host, port, vfiler, results, nextTag);
+        }
+      }
+
+      return this.validResponse(results);
+    })).toPromise();
+  }
+
+  getVolumeFiles(credential, host, port, vfiler, volume, path = '', results = [], nextTag = null): Promise<any> {
+    const xml = `
+<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
+  <file-list-directory-iter>
+    <path>/vol/${volume}/${path}</path>
+    ${nextTag ? '<tag>' + nextTag + '</tag>' : ''}
+  </file-list-directory-iter>
+</netapp>`;
+
+    return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
+      // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
+      if (data['attributes-list']) {
+
+        // For each file found
+        data['attributes-list'][0]['file-info'].forEach(file => {
+          file = this.parseNetAppObject(file);
+          if (file.name === '.' || file.name === '..') return;
+
+          file.path = path;
+          results.push(file);
+        });
+
+        if (data['next-tag']) {
+          nextTag = data['next-tag'][0].replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          return this.getVolumeFiles(credential, host, port, vfiler, volume, path, results, nextTag);
         }
       }
 
@@ -440,6 +469,19 @@ export class SysosLibNetappService {
     })).toPromise();
   }
 
+  getSnapshotFileInfo(credential, host, port, vfiler, volume, snapshot): Promise<any> {
+    const xml = `
+<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
+  <file-get-file-info>
+    <path>/vol/${volume}/.snapshot/${snapshot}</path>
+  </file-get-file-info>
+</netapp>`;
+
+    return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
+      return this.validResponse(this.parseNetAppObject(data['file-info'][0]));
+    })).toPromise();
+  }
+
   snapshotRestoreFile(credential, host, port, vfiler, volume, snapshot, dst): Promise<any> {
     const xml = `
 <netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
@@ -511,19 +553,6 @@ export class SysosLibNetappService {
       }
 
       return this.validResponse(results);
-    })).toPromise();
-  }
-
-  getFileInfo(credential, host, port, vfiler, volume, snapshot): Promise<any> {
-    const xml = `
-<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
-  <file-get-file-info>
-    <path>/vol/${volume}/.snapshot/${snapshot}</path>
-  </file-get-file-info>
-</netapp>`;
-
-    return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
-      return this.validResponse(this.parseNetAppObject(data['file-info'][0]));
     })).toPromise();
   }
 

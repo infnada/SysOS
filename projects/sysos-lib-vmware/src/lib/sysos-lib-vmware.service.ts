@@ -66,7 +66,7 @@ export class SysosLibVmwareService {
 
         // Is an array of 1 value as string
       } else if (Array.isArray(value) && value.length === 1 && value[0] !== Object(value[0])) {
-        newObj[key] = value[0];
+        newObj[key] = (value[0] === "true" ? true : value[0] === "false" ? false : value[0]);
 
         // Is an array of 1 value as object
       } else if (Array.isArray(value) && value.length === 1 && value[0] === Object(value[0])) {
@@ -81,7 +81,7 @@ export class SysosLibVmwareService {
 
           // Is an array of 1 value as string
           if (Array.isArray(v) && v.length === 1 && v[0] !== Object(v[0])) {
-            newObj[k] = v[0];
+            newObj[k] = (v[0] === "true" ? true : v[0] === "false" ? false : v[0]);
 
             // Is an array of 1 value as object
           } else if (Array.isArray(v) && v.length === 1 && v[0] === Object(v[0])) {
@@ -95,13 +95,13 @@ export class SysosLibVmwareService {
             // Have 2 props
             // Has prop "name" and has prop "val"
           } else if (v === Object(v) && Object.keys(v).length === 2 && v.hasOwnProperty('name') && v.hasOwnProperty('val')) {
-            newObj[v.name[0]] = this.parseVMwareObject(v.val);
+            newObj[v.name[0]] = this.parseVMwareObject(v.val[0]);
 
             // Is an object
             // Have 3 props
             // Has prop "name" and has prop "val" and has prop "op"
           } else if (v === Object(v) && Object.keys(v).length === 3 && v.hasOwnProperty('name') && v.hasOwnProperty('val') && v.hasOwnProperty('op')) {
-            newObj[v.name[0]] = this.parseVMwareObject(v.val);
+            newObj[v.name[0]] = this.parseVMwareObject(v.val[0]);
 
             // Is an object
             // Have 2 props
@@ -121,12 +121,14 @@ export class SysosLibVmwareService {
 
             // Is an object
           } else if (v === Object(v)) {
-            newObj[k] = this.parseVMwareObject(v);
+            if (!newObj[key]) newObj[key] = [];
 
+            newObj[key][k] = this.parseVMwareObject(v);
 
             // Is array of strings
           } else if (typeof v === 'string') {
-            // do nothing
+            if (!newObj[key]) newObj[key] = [];
+            newObj[key][k] = newObj[k] = (v === "true" ? true : v === "false" ? false : v);;
 
           } else {
             newObj[k] = v;
@@ -138,7 +140,8 @@ export class SysosLibVmwareService {
         return newObj;
 
       } else if (typeof value === 'string') {
-        newObj[key] = value;
+        newObj[key] = (value === "true" ? true : value === "false" ? false : value);
+        return newObj;
       } else {
 
         console.log(value, key, 'errrrrr2 parsing');

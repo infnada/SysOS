@@ -1,11 +1,20 @@
+import {NetAppVolume} from "@sysos/app-infrastructure-manager";
+
 export interface DatastoreExplorerConnection {
   uuid?: string;
-  datastoreId: string;
-  name: string;
   credential: string;
   host: string;
   port: number;
-  datacenter: string;
   type: string;
+  data: {
+    datastore?:  {
+      name: string;
+      obj: {
+        name: string;
+      };
+    };
+    datacenter?: string;
+    volume?: NetAppVolume
+  };
   state?: string;
 }

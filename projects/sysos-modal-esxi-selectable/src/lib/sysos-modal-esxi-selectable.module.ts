@@ -1,7 +1,7 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
-import {MatSelectModule} from '@angular/material';
+import {MatSelectModule, MatSlideToggleModule} from '@angular/material';
 
 import {NgbModalModule, NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 
@@ -19,7 +19,8 @@ import {EntryComponent} from './esxi-selectable-entry/entry.component';
     CommonModule,
     FormsModule,
     NgbModalModule,
-    MatSelectModule
+    MatSelectModule,
+    MatSlideToggleModule
   ],
   exports: [],
   providers: [
@@ -36,7 +37,7 @@ export class SysosModalEsxiSelectableModule {
 
     Modal.registerModal({
       modalId: 'esxi-selectable',
-      size: 'sm'
+      size: 'lg'
     });
 
   }

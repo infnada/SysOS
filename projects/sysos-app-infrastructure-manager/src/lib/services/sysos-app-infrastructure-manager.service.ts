@@ -12,7 +12,7 @@ import {SysosLibFileSystemService} from '@sysos/lib-file-system';
 import {IMConnection} from '../types/imconnection';
 import {IMLink} from '../types/imlink';
 import {IMNode} from '../types/imnode';
-import {VMWareDatastore} from "../types/vmware-datastore";
+import {VMWareDatastore} from '../types/vmware-datastore';
 
 @Injectable({
   providedIn: 'root'
