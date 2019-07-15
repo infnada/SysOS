@@ -72,6 +72,7 @@ export class BodyComponent implements OnInit {
     this.InfrastructureManager.activeConnection.subscribe(activeConnection => this.activeConnection = activeConnection);
     this.InfrastructureManager.treeData.subscribe(data => {
       this.dataSource.data = data;
+      this.treeControl.expandAll();
     });
 
     // Storage & Virtual

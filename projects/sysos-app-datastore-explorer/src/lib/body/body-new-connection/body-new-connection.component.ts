@@ -48,6 +48,40 @@ export class BodyNewConnectionComponent implements OnInit {
 
       (this.connectionForm.controls.datastore as FormControl).setValue(this.getActiveConnection());
     });
+
+    /**
+     * If initData
+     */
+    if (this.application.initData && this.application.initData.type) {
+      if (this.application.initData.type === 'vmware') {
+        this.DatastoreExplorer.connect({
+          credential: this.application.initData.credential,
+          host: this.application.initData.host,
+          port: this.application.initData.port,
+          data: {
+            datastore: this.application.initData.data.datastore,
+            datacenter: this.InfrastructureManagerVMWare.getParentObjectByType(this.application.initData.uuid, 'Datacenter', this.application.initData.data.datastore.obj.name)
+          },
+          type: 'vmware'
+        }).then(() => {
+          this.DatastoreExplorerServer.reloadPath(this.getActiveConnection().uuid);
+        });
+      }
+
+      if (this.application.initData.type === 'netapp') {
+        this.DatastoreExplorer.connect({
+          credential: this.application.initData.credential,
+          host: this.application.initData.host,
+          port: this.application.initData.port,
+          data: {
+            volume: this.application.initData.data.volume
+          },
+          type: 'netapp'
+        }).then(() => {
+          this.DatastoreExplorerServer.reloadPath(this.getActiveConnection().uuid);
+        });
+      }
+    }
   }
 
   get f() { return this.connectionForm.controls; }

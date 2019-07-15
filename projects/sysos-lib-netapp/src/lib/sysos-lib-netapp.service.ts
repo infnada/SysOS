@@ -47,7 +47,12 @@ export class SysosLibNetappService {
    * Custom errorHandler function for NetAppFactory
    */
   private errorHandler(e: any): { status: string, error: any } {
-    throw {
+    console.error({
+      status: 'error',
+      error: (e.html && e.html.head[0].title ? e.html.head[0].title : e)
+    });
+
+    return {
       status: 'error',
       error: (e.html && e.html.head[0].title ? e.html.head[0].title : e)
     };
@@ -75,7 +80,7 @@ export class SysosLibNetappService {
         if (data.status === 'error') return this.errorHandler(data.errno);
         if (!data.data.netapp) return this.errorHandler(data.data.response);
         if (data.data.netapp.results[0].$.status === 'failed') {
-          return this.errorHandler(data.data.response.netapp.results[0].$);
+          return this.errorHandler(data.data.netapp.results[0].$);
         }
 
         return data.data.netapp.results[0];
@@ -96,6 +101,8 @@ export class SysosLibNetappService {
       null,
       `<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin'><system-get-version/></netapp>`
     ).pipe(map((data: any) => {
+      if (data.status === 'error') return data;
+
       return this.validResponse({
         build_timestamp: data['build-timestamp'][0],
         is_clustered: data['is-clustered'][0],
@@ -118,6 +125,8 @@ export class SysosLibNetappService {
       null,
       `<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin'><system-get-ontapi-version/></netapp>`
     ).pipe(map((data: any) => {
+      if (data.status === 'error') return data;
+
       return this.validResponse({
         major_version: data['major-version'][0],
         minor_version: data['minor-version'][0]
@@ -133,6 +142,8 @@ export class SysosLibNetappService {
       null,
       `<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin'><license-v2-status-list-info/></netapp>`
     ).pipe(map((data: any) => {
+      if (data.status === 'error') return data;
+
       const results = [];
 
       data['license-v2-status']['0']['license-v2-status-info'].forEach(license => {
@@ -151,6 +162,8 @@ export class SysosLibNetappService {
       null,
       `<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin'><metrocluster-get/></netapp>`
     ).pipe(map((data: any) => {
+      if (data.status === 'error') return data;
+
       return this.validResponse({
         local_cluster_name: data.attributes[0]['metrocluster-info'][0]['local-cluster-name'][0],
         local_configuration_state: data.attributes[0]['metrocluster-info'][0]['local-configuration-state'][0]
@@ -167,6 +180,8 @@ export class SysosLibNetappService {
       null,
       `<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin'><cluster-identity-get/></netapp>`
     ).pipe(map((data: any) => {
+      if (data.status === 'error') return data;
+
       return this.validResponse({
         cluster_contact: data.attributes[0]['cluster-identity-info'][0]['cluster-contact'][0],
         cluster_location: data.attributes[0]['cluster-identity-info'][0]['cluster-location'][0],
@@ -188,6 +203,8 @@ export class SysosLibNetappService {
 </netapp>`;
 
     return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
+      if (data.status === 'error') return data;
+
       // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
       if (data['attributes-list']) {
 
@@ -215,6 +232,8 @@ export class SysosLibNetappService {
 </netapp>`;
 
     return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
+      if (data.status === 'error') return data;
+
       // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
       if (data['attributes-list']) {
 
@@ -242,6 +261,8 @@ export class SysosLibNetappService {
 </netapp>`;
 
     return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
+      if (data.status === 'error') return data;
+
       // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
       if (data['attributes-list']) {
 
@@ -269,6 +290,8 @@ export class SysosLibNetappService {
 </netapp>`;
 
     return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
+      if (data.status === 'error') return data;
+
       // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
       if (data['attributes-list']) {
 
@@ -294,6 +317,8 @@ export class SysosLibNetappService {
       null,
       `<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin'${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}><nfs-service-get/></netapp>`
     ).pipe(map((data: any) => {
+      if (data.status === 'error') return data;
+
       return this.validResponse(this.parseNetAppObject(data.attributes[0]['nfs-info'][0]));
     })).toPromise();
   }
@@ -308,6 +333,8 @@ export class SysosLibNetappService {
 </netapp>`;
 
     return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
+      if (data.status === 'error') return data;
+
       // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
       if (data['attributes-list']) {
 
@@ -335,6 +362,7 @@ export class SysosLibNetappService {
 </netapp>`;
 
     return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
+      if (data.status === 'error') return data;
 
       // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
       if (data['attributes-list']) {
@@ -363,6 +391,8 @@ export class SysosLibNetappService {
 </netapp>`;
 
     return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
+      if (data.status === 'error') return data;
+
       // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
       if (data['attributes-list']) {
 
@@ -395,6 +425,7 @@ export class SysosLibNetappService {
 </netapp>`;
 
     return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
+      if (data.status === 'error') return data;
 
       // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
       if (data['attributes-list']) {
@@ -424,6 +455,8 @@ export class SysosLibNetappService {
 </netapp>`;
 
     return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
+      if (data.status === 'error') return data;
+
       // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
       if (data['attributes-list']) {
 
@@ -478,6 +511,8 @@ export class SysosLibNetappService {
 </netapp>`;
 
     return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
+      if (data.status === 'error') return data;
+
       return this.validResponse(this.parseNetAppObject(data['file-info'][0]));
     })).toPromise();
   }
@@ -493,6 +528,8 @@ export class SysosLibNetappService {
 </netapp>`;
 
     return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
+      if (data.status === 'error') return data;
+
       return this.validResponse(data.data.data.response.netapp);
     })).toPromise();
   }
@@ -509,6 +546,8 @@ export class SysosLibNetappService {
 </netapp>`;
 
     return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
+      if (data.status === 'error') return data;
+
       return this.validResponse(data.$.status);
     })).toPromise();
   }
@@ -524,6 +563,8 @@ export class SysosLibNetappService {
 </netapp>`;
 
     return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
+      if (data.status === 'error') return data;
+
       return this.validResponse(data.$.status);
     })).toPromise();
   }
@@ -538,6 +579,7 @@ export class SysosLibNetappService {
 </netapp>`;
 
     return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
+      if (data.status === 'error') return data;
 
       // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
       if (data['attributes-list']) {
@@ -567,6 +609,8 @@ export class SysosLibNetappService {
 </netapp>`;
 
     return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
+      if (data.status === 'error') return data;
+
       return this.validResponse(data.$.status);
     })).toPromise();
   }
@@ -583,6 +627,8 @@ export class SysosLibNetappService {
 </netapp>`;
 
     return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
+      if (data.status === 'error') return data;
+
       return this.validResponse(data.$.status);
     })).toPromise();
   }
@@ -597,6 +643,8 @@ export class SysosLibNetappService {
 </netapp>`;
 
     return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
+      if (data.status === 'error') return data;
+
       return this.validResponse(data.$.status);
     })).toPromise();
   }
@@ -610,6 +658,8 @@ export class SysosLibNetappService {
 </netapp>`;
 
     return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
+      if (data.status === 'error') return data;
+
       return this.validResponse(data.$.status);
     })).toPromise();
   }
@@ -623,27 +673,35 @@ export class SysosLibNetappService {
 </netapp>`;
 
     return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
+      if (data.status === 'error') return data;
+
       return this.validResponse(data.$.status);
     })).toPromise();
   }
 
-  getNFSExportRulesList(credential, host, port, vfiler, volume): Promise<any> {
+  getNFSExportRulesList(credential, host, port, vfiler, volumePath): Promise<any> {
     const results = [];
     const xml = `
 <netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
   <nfs-exportfs-list-rules-2>
-    <pathname>/${volume}</pathname>
+    <pathname>${volumePath}</pathname>
     <persistent>True</persistent>
   </nfs-exportfs-list-rules-2>
 </netapp>`;
 
     return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
+      if (data.status === 'error') return data;
 
-      data.rules[0]['exports-rule-info-2'][0]['security-rules'][0]['security-rule-info'].forEach(rule => {
-        results.push(this.parseNetAppObject(rule));
-      });
+      if (data.rules[0]['exports-rule-info-2']) {
+        data.rules[0]['exports-rule-info-2'][0]['security-rules'][0]['security-rule-info'].forEach(rule => {
+          results.push(this.parseNetAppObject(rule));
+        });
 
-      return this.validResponse(this.parseNetAppObject(data.rules[0]));
+        return this.validResponse(this.parseNetAppObject(data.rules[0]));
+      }
+
+      return this.validResponse([]);
+
     })).toPromise();
   }
 
@@ -655,6 +713,7 @@ export class SysosLibNetappService {
 </netapp>`;
 
     return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
+      if (data.status === 'error') return data;
 
       data['attributes-list'][0]['export-rule-info'].forEach(rule => {
         results.push(this.parseNetAppObject(rule));
@@ -685,10 +744,7 @@ export class SysosLibNetappService {
 </netapp>`;
 
     return this.doCall(credential, host, port, null, xml).pipe(map((data: any) => {
-
-      data['attributes-list'][0]['export-rule-info'].forEach(rule => {
-        results.push(this.parseNetAppObject(rule));
-      });
+      if (data.status === 'error') return data;
 
       return this.validResponse(data);
     })).toPromise();

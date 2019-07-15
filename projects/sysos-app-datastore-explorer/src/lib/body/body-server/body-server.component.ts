@@ -100,10 +100,6 @@ export class BodyServerComponent implements OnInit {
       ignore: ['a', '.main_form']
     });
 
-    if (this.application.initData && this.application.initData.path) {
-      return this.goToPath(this.application.initData.path);
-    }
-
     this.goToPath('/');
   }
 

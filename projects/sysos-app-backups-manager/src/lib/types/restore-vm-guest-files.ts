@@ -1,4 +1,4 @@
-import {IMESXiHost, IMConnection, NetAppSnapshot, NetAppVolume, NetAppVserver, VMWareObject, VMWareVM} from '@sysos/app-infrastructure-manager';
+import {IMESXiHost, IMConnection, NetAppSnapshot, NetAppVolume, NetAppVserver, NetAppIface, VMWareObject, VMWareVM} from '@sysos/app-infrastructure-manager';
 
 export interface RestoreVmGuestFiles {
   storage: IMConnection;
@@ -12,6 +12,7 @@ export interface RestoreVmGuestFiles {
     folder: string;
     resource_pool: string;
   };
+  iface?: NetAppIface
   volumeName?: string;
   datastorePath?: string;
 }

@@ -2746,17 +2746,19 @@ export class SysosLibVmwareService {
     })).toPromise();
   }
 
-  mountDatastore(credential, host, port, datastoreSystem, datastoreHost, datastorePath, datastoreLocalName): Promise<any> {
+  mountDatastore(credential, host, port, datastoreSystem, remoteHostNames, datastorePath, datastoreLocalName, protocolType: 'NFS' | 'NFS41'): Promise<any> {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
     <CreateNasDatastore xmlns="urn:vim25">
       <_this type="HostDatastoreSystem">${datastoreSystem}</_this>
       <spec>
-        <remoteHost>${datastoreHost}</remoteHost>
-        <remotePath>/${datastorePath}/</remotePath>
+        <remoteHost>${remoteHostNames}</remoteHost>
+        <remotePath>${datastorePath}</remotePath>
         <localPath>${datastoreLocalName}</localPath>
         <accessMode>readWrite</accessMode>
+        <type>${protocolType}</type>
+        <remoteHostNames>${remoteHostNames}</remoteHostNames>
       </spec>
     </CreateNasDatastore>
   </soap:Body>

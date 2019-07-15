@@ -70,15 +70,23 @@ export class SysosAppDatastoreExplorerService {
   }
 
   initConnection(uuid): Promise<any> {
-    this.Modal.openLittleModal('PLEASE WAIT', 'Connecting to Datastore...', '.window--datastore-explorer .window__main', 'plain');
 
-    return this.VMWare.connectvCenterSoap(this.getConnectionByUuid(uuid).credential, this.getConnectionByUuid(uuid).host, this.getConnectionByUuid(uuid).port).then((data) => {
-      if (data.status === 'error') throw new Error('Failed to connect to vCenter');
+    if (this.getConnectionByUuid(uuid).type === 'vmware') {
+      this.Modal.openLittleModal('PLEASE WAIT', 'Connecting to Datastore...', '.window--datastore-explorer .window__main', 'plain');
+      return this.VMWare.connectvCenterSoap(this.getConnectionByUuid(uuid).credential, this.getConnectionByUuid(uuid).host, this.getConnectionByUuid(uuid).port).then((data) => {
+        if (data.status === 'error') throw new Error('Failed to connect to vCenter');
 
+        this.getActiveConnection().state = 'connected';
+
+        this.Modal.closeModal('.window--datastore-explorer .window__main');
+      });
+    }
+
+    if (this.getConnectionByUuid(uuid).type === 'netapp') {
       this.getActiveConnection().state = 'connected';
+      return Promise.resolve();
+    }
 
-      this.Modal.closeModal('.window--datastore-explorer .window__main');
-    });
   }
 
   connect(connection: DatastoreExplorerConnection): Promise<any> {

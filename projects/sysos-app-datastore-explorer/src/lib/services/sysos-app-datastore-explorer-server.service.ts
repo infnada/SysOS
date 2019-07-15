@@ -85,14 +85,17 @@ export class SysosAppDatastoreExplorerServerService {
     }).then((data) => {
       if (data.status === 'error') throw new Error('Failed to get Datastore files');
 
+      let obj;
+
       if (this.DatastoreExplorer.getConnectionByUuid(connectionUuid).type === 'vmware') {
-        const obj = data.data[0].propSet.info.result;
+        obj = data.data[0].propSet.info.result.file;
 
         delete obj.datastore;
         delete obj.folderPath;
         delete obj.xsi_type;
 
         data = Object.keys(obj).map((key) => {
+          console.log(obj, key, obj[key]);
           const toReturn = obj[key];
 
           toReturn.filename = toReturn.path;
@@ -111,7 +114,21 @@ export class SysosAppDatastoreExplorerServerService {
       }
 
       if (this.DatastoreExplorer.getConnectionByUuid(connectionUuid).type === 'netapp') {
+        obj = data.data;
+        data = Object.keys(obj).map((key) => {
+          console.log(obj, key, obj[key]);
+          const toReturn = obj[key];
 
+          toReturn.filename = toReturn.name;
+
+          if (toReturn['file-type'] === 'directory') {
+            toReturn.longname = `d--------- ${toReturn.filename}`;
+          } else {
+            toReturn.longname = `---------- ${toReturn.filename}`;
+          }
+
+          return toReturn;
+        });
       }
 
       this.dataStore.currentData = data;

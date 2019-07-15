@@ -5,6 +5,7 @@ import {v4 as uuidv4} from 'uuid';
 
 import {SysosLibNetappService} from '@sysos/lib-netapp';
 import {SysosLibVmwareService} from '@sysos/lib-vmware';
+import {VMWareFirewallRule} from "@sysos/app-infrastructure-manager";
 
 import {MountRestoreDatastore} from '../types/mount-restore-datastore';
 import {RestoreDatastoreFiles} from '../types/restore-datastore-files';
@@ -460,16 +461,6 @@ export class SysosAppBackupsManagerHelpersService {
 
   /**
    * @description
-   * Returns snapshot object given snapshot uuid
-   */
-  getSnapshotName(data) {
-    return data.snapshots.filter(obj => {
-      return obj['snapshot-instance-uuid'] === data.snapshot;
-    })[0].name;
-  }
-
-  /**
-   * @description
    * Return the latest VM snapshot
    */
   getLastSnapshot(rootSnapshotList) {
@@ -483,7 +474,7 @@ export class SysosAppBackupsManagerHelpersService {
    * Checks if NetApp storage have required licenses
    */
   checkLicenses(data: MountRestoreDatastore | RestoreDatastoreFiles | RestoreVmGuestFiles | VmInstantRecovery) {
-    this.logger.debug('Backups Manager [%s] -> Cloning storage licenses -> storage [%s]', data.uuid, data.storage.host);
+    this.logger.debug('Backups Manager [%s] -> Check storage licenses -> storage [%s]', data.uuid, data.storage.host);
 
     return this.NetApp.getLicenses(
       data.storage.credential,
@@ -521,7 +512,7 @@ export class SysosAppBackupsManagerHelpersService {
 
     // Create Volume Clone
     this.logger.debug('Backups Manager [%s] -> Cloning volume from snapshot -> vserver [%s], volume [%s], snapshot [%s], volumeName [%s]',
-      data.uuid, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name, this.getSnapshotName(data), data.volumeName);
+      data.uuid, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name, data.snapshot.name, data.volumeName);
     return this.NetApp.cloneVolumeFromSnapshot(
       data.storage.credential,
       data.storage.host,
@@ -529,12 +520,12 @@ export class SysosAppBackupsManagerHelpersService {
       data.vserver['vserver-name'],
       data.volume['volume-id-attributes'].name,
       data.volumeName,
-      this.getSnapshotName(data)
+      data.snapshot.name
     ).then((res) => {
       if (res.status === 'error') {
 
         // Error duplicated volume, try next.
-        if (res.error.errno === '17') throw new Error('17');
+        if (res.error.errno === '17159') throw new Error('17159');
 
         throw new Error('Failed to clone Volume');
       }
@@ -543,7 +534,7 @@ export class SysosAppBackupsManagerHelpersService {
     }).then(() => {
 
       // Mount Volume Point
-      this.logger.debug('Backups Manager [%s] -> Mounting cloned volume -> vserver [%s], volume [%s]', data.uuid, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name);
+      this.logger.debug('Backups Manager [%s] -> Mounting namespace of cloned volume -> vserver [%s], volume [%s]', data.uuid, data.vserver['vserver-name'], data.volumeName);
       return this.NetApp.mountVolume(
         data.storage.credential,
         data.storage.host,
@@ -560,9 +551,9 @@ export class SysosAppBackupsManagerHelpersService {
     }).catch((e) => {
 
       // Error duplicated volume, try next.
-      if (e.message === '17') {
+      if (e.message === '17159') {
         this.logger.debug('Backups Manager [%s] -> Cloning volume from snapshot -> vserver [%s], volume [%s], snapshot [%s], volumeName [%s] -> Volume with same name found',
-          data.uuid, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name, this.getSnapshotName(data), data.volumeName);
+          data.uuid, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name, data.snapshot.name, data.volumeName);
 
         return this.cloneVolumeFromSnapshot(data, ++volumeNum);
       }
@@ -574,36 +565,88 @@ export class SysosAppBackupsManagerHelpersService {
 
   /**
    * @description
-   * Mount storage Datastore to ESXi host
+   * Checks ESXI firewall rules and adds new IP if needed
    */
-  mountVolumeToESXi(data: MountRestoreDatastore | RestoreDatastoreFiles | RestoreVmGuestFiles | VmInstantRecovery) {
-    this.logger.debug('Backups Manager [%s] -> Connection to vCenter using SOAP -> vCenter [%s]', data.uuid, data.virtual.host);
+  checkESXiFirewallRule(firewallRulesData, ruleName: string, data: MountRestoreDatastore | RestoreDatastoreFiles | RestoreVmGuestFiles | VmInstantRecovery): Promise<any> {
+    const firewallRule = firewallRulesData.data.ruleset.find((rule: VMWareFirewallRule) => {
+      return rule.key === ruleName;
+    });
 
-    let datastoreSystem: string;
+    if (!firewallRule) throw new Error(`No default rules for ${ruleName} found`);
 
-    return this.VMWare.connectvCenterSoap(data.virtual.credential, data.virtual.host, data.virtual.port).then((res) => {
-      if (res.status === 'error') throw new Error('Failed to connect to vCenter');
+    // IP Address already allowed by Firewall
+    if (firewallRule.allowedHosts.allIp === true) return;
+    if (firewallRule.allowedHosts.ipAddress && typeof firewallRule.allowedHosts.ipAddress === 'string' && firewallRule.allowedHosts.ipAddress === data.iface.address) return;
+    if (firewallRule.allowedHosts.ipAddress && Array.isArray(firewallRule.allowedHosts.ipAddress) && firewallRule.allowedHosts.ipAddress.includes(data.iface.address)) return;
+    // TODO check when is a network instead of an IP
 
-      // Get Datastore System from ESXi host to mount
-      this.logger.debug('Backups Manager [%s] -> Getting datastore system -> host [%s]', data.uuid, data.host.host);
-      return this.VMWare.getHostConfigManagerDatastoreSystem(data.virtual.credential, data.virtual.host, data.virtual.port, data.host.host);
+    let ipsRule;
 
-    }).then((res) => {
-      if (res.status === 'error') throw new Error('Failed to get datastoreSystem from vCenter');
+    // Create new string of ip for the firewall rule
+    if (firewallRule.allowedHosts.ipAddress && typeof firewallRule.allowedHosts.ipAddress === 'string' && firewallRule.allowedHosts.ipAddress === data.iface.address) {
+      ipsRule = `${firewallRule.allowedHosts.ipAddress}, ${data.iface.address}`;
+    }
+    if (firewallRule.allowedHosts.ipAddress && Array.isArray(firewallRule.allowedHosts.ipAddress) && firewallRule.allowedHosts.ipAddress.includes(data.iface.address)) {
+      ipsRule = `${firewallRule.allowedHosts.ipAddress.join(", ")}, ${data.iface.address}`;
+    }
 
-      datastoreSystem = res.data;
+    this.logger.debug('Backups Manager [%s] -> Updating firewall rules -> vCenter [%s], host [%s], rule [%s]', data.uuid, data.virtual.host, data.host.host, ruleName);
+    return this.VMWare.getHostFirewallSystem(data.virtual.credential, data.virtual.host, data.virtual.port, data.host.host).then((firewallSystem) => {
+      if (firewallSystem.status === 'error') throw new Error('Failed to get Host firewallSystem from vCenter');
 
-      this.logger.debug('Backups Manager [%s] -> Get Volume Exports -> vserver [%s], volume [%s], volumeName [%s]',
-        data.uuid, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name, data.volumeName);
-      return this.NetApp.getNFSExportRulesList(
-        data.storage.credential,
-        data.storage.host,
-        data.storage.port,
-        data.vserver['vserver-name'],
-        data.volume['volume-id-attributes'].name
-      );
+      return this.VMWare.updateHostFirewallRuleset(data.virtual.credential, data.virtual.host, data.virtual.port, firewallSystem.data, ruleName, ipsRule);
+    });
+  }
 
-    }).then((res) => {
+  /**
+   * @description
+   * Checks ESXI firewall rules and allows to mount a datastore
+   */
+  checkESXiFirewall(data: MountRestoreDatastore | RestoreDatastoreFiles | RestoreVmGuestFiles | VmInstantRecovery): Promise<any> {
+
+    return this.VMWare.getHostFirewallRules(data.virtual.credential, data.virtual.host, data.virtual.port, data.host.host).then((firewallRulesData) => {
+      if (firewallRulesData.status === 'error') throw new Error('Failed to get Host firewall rules from vCenter');
+
+      console.log(firewallRulesData);
+
+      // All outgoing data is allowed. Nothing to do.
+      if (firewallRulesData.data.defaultPolicy.outgoingBlocked === false) return;
+
+      // Check if storage interface is NFS and which protocol versions are enabled
+      if (data.iface['data-protocols']['data-protocol'] === 'nfs') {
+        return this.NetApp.getNFSService(data.storage.credential, data.storage.host, data.storage.port, data.vserver["vserver-name"]).then((serviceData) => {
+          if (serviceData.status === 'error') throw new Error('Failed to get NFS service status from Storage');
+
+          // NFS v4.1
+          if (serviceData.data['is-nfsv41-enabled']) return this.checkESXiFirewallRule(firewallRulesData, 'nfs41Client', data);
+
+          // NFS v3
+          if (serviceData.data['is-nfsv3-enabled']) return this.checkESXiFirewallRule(firewallRulesData, 'nfsClient', data);
+
+          throw new Error('NFS interface but not NFS (v3/4.1) protocol enabled in storage');
+        });
+      }
+
+      throw new Error('Selected interface is not NFS.');
+
+    });
+  }
+
+  /**
+   * @description
+   * Checks Storage volume export rules and allows to mount it into an ESXi server
+   */
+  checkStorageVolumeExports(data: MountRestoreDatastore | RestoreDatastoreFiles | RestoreVmGuestFiles | VmInstantRecovery): Promise<any> {
+    this.logger.debug('Backups Manager [%s] -> Get Volume Exports -> vserver [%s], volume [%s], volumeName [%s]',
+      data.uuid, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name, data.volumeName);
+
+    return this.NetApp.getNFSExportRulesList(
+      data.storage.credential,
+      data.storage.host,
+      data.storage.port,
+      data.vserver['vserver-name'],
+      `/${data.volumeName}`
+    ).then((res) => {
       if (res.status === 'error') throw new Error('Failed to get Volume Exports');
 
       console.log(res);
@@ -612,9 +655,6 @@ export class SysosAppBackupsManagerHelpersService {
       const allHostsExport = res.data['exports-rule-info-2']['security-rules']['security-rule-info'].filter(obj => {
         return obj['read-write']['exports-hostname-info']['all-hosts'] === true;
       });
-
-      return allHostsExport;
-    }).then((allHostsExport) => {
 
       if (allHostsExport.length === 0) {
 
@@ -626,8 +666,10 @@ export class SysosAppBackupsManagerHelpersService {
           const networkSystem = res.data;
           return this.VMWare.getHostNetworkInfoConsoleVnic(data.virtual.credential, data.virtual.host, data.virtual.port, networkSystem);
 
-        }).then((res) => {
+        }).then((networkInfo) => {
           if (res.status === 'error') throw new Error('Failed to get NetworkInfoConsoleVnic from vCenter');
+
+          console.log(networkInfo);
 
           const esxiExportAddress = '0.0.0.0/0'; // TODO
 
@@ -654,30 +696,50 @@ export class SysosAppBackupsManagerHelpersService {
       }
 
       return;
+    });
+  }
 
+  /**
+   * @description
+   * Mount storage Datastore to ESXi host
+   */
+  mountVolumeToESXi(data: MountRestoreDatastore | RestoreDatastoreFiles | RestoreVmGuestFiles | VmInstantRecovery) {
+    this.logger.debug('Backups Manager [%s] -> Connection to vCenter using SOAP -> vCenter [%s]', data.uuid, data.virtual.host);
+
+    return this.VMWare.connectvCenterSoap(data.virtual.credential, data.virtual.host, data.virtual.port).then((res) => {
+      if (res.status === 'error') throw new Error('Failed to connect to vCenter');
+
+      return this.checkStorageVolumeExports(data);
     }).then(() => {
 
-      // TODO: check esxi firewall rules to make sure NFS connectivity
-
-      return;
-
+      return this.checkESXiFirewall(data);
     }).then(() => {
 
-      // TODO: why use only NFS
-      const netappNFSip = data.storage.data.Ifaces.netifaces.filter(obj => {
-        return obj.vserver === data.vserver['vserver-name'] && obj['current-node'] === data.volume['volume-id-attributes'].node;
-      });
+      // Get Datastore System from ESXi host to mount
+      this.logger.debug('Backups Manager [%s] -> Getting datastore system -> host [%s]', data.uuid, data.host.host);
+
+      return Promise.all([
+        this.VMWare.getHostConfigManagerDatastoreSystem(data.virtual.credential, data.virtual.host, data.virtual.port, data.host.host),
+        this.NetApp.getNFSService(data.storage.credential, data.storage.host, data.storage.port, data.vserver["vserver-name"])
+      ]);
+    }).then((res) => {
+      if (res[0].status === 'error') throw new Error('Failed to get datastoreSystem from vCenter');
+      if (res[1].status === 'error') throw new Error('Failed to get NFS Service from Storage');
+
+      const datastoreSystem: string = res[0].data;
 
       this.logger.debug('Backups Manager [%s] -> Mount volume to ESXi -> datastoreSystem [%s], nfs_ip [%s], volume [%s], path [%s]',
-        data.uuid, datastoreSystem, netappNFSip[0].address, '/' + data.volumeName + '/', data.datastorePath);
+        data.uuid, datastoreSystem, data.iface.address, '/' + data.volumeName + '/', data.datastorePath);
+
       return this.VMWare.mountDatastore(
         data.virtual.credential,
         data.virtual.host,
         data.virtual.port,
         datastoreSystem,
-        netappNFSip[0].address, // TODO: why use the 1st ip
-        '/' + data.volumeName + '/',
-        data.datastorePath
+        data.iface.address,
+        `/${data.volumeName}/`,
+        data.datastorePath,
+        (res[1].data['is-nfsv41-enabled'] ? 'NFS41' : 'NFS')
       );
 
     }).then((res) => {
@@ -804,14 +866,14 @@ export class SysosAppBackupsManagerHelpersService {
       if (res.status === 'error') throw new Error('Failed to power off VM at vCenter');
 
       this.logger.debug('Backups Manager [%s] -> Get snapshot files from storage -> storage [%s], vserver [%s], volume [%s], snapshot [%s], path [%s]',
-        data.uuid, data.storage.host, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name, this.getSnapshotName(data), '/' + vmPath);
+        data.uuid, data.storage.host, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name, data.snapshot.name, '/' + vmPath);
       return this.NetApp.getSnapshotFiles(
         data.storage.credential,
         data.storage.host,
         data.storage.port,
         data.vserver['vserver-name'],
         data.volume['volume-id-attributes'].name,
-        this.getSnapshotName(data),
+        data.snapshot.name,
         '/' + vmPath
       );
     }).then((res) => {
@@ -826,12 +888,12 @@ export class SysosAppBackupsManagerHelpersService {
           data.storage.port,
           data.vserver['vserver-name'],
           data.volume['volume-id-attributes'].name,
-          this.getSnapshotName(data),
+          data.snapshot.name,
           '/vol/' + data.volume['volume-id-attributes'].name + '/' + vmPath + '/' + file.name
         ).then((forRes) => {
           this.logger.debug('Backups Manager [%s] -> Restoring file from storage snapshot -> storage [%s], vserver [%s], volume [%s], snapshot [%s], path [%s]',
             data.uuid, data.storage.host, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name,
-            this.getSnapshotName(data), '/vol/' + data.volume['volume-id-attributes'].name + '/' + vmPath + '/' + file.name);
+            data.snapshot.name, '/vol/' + data.volume['volume-id-attributes'].name + '/' + vmPath + '/' + file.name);
 
           if (forRes.status === 'error') throw new Error('Failed to restore file from storage snapshot');
         }));

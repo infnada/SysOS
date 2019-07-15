@@ -13,7 +13,7 @@
         <ng-template matStepLabel>SnapShot</ng-template>
         <hr class="hr-text" data-content="Select a backup Snapshot">
         <mat-radio-group aria-label="Select a snapshot" formControlName="snapshotFormControl">
-          <mat-radio-button *ngFor="let snapshot of data.storageSnapshots" [value]="snapshot['snapshot-instance-uuid']" disabled="snapshot.disabled">{{snapshot.name}}</mat-radio-button>
+          <mat-radio-button *ngFor="let snapshot of data.volume.Snapshots" [value]="snapshot['snapshot-instance-uuid']" disabled="snapshot.disabled">{{snapshot.name}}</mat-radio-button>
         </mat-radio-group>
         <div>
           <button mat-button matStepperNext>Next</button>
@@ -92,7 +92,7 @@
       <ng-template matStepLabel>Ready to apply</ng-template>
       <hr class="hr-text" data-content="Summary">
       <ul>
-        <li>VM: {{data.vm.name}} from <strong>{{getSnapshotName()}}</strong></li>
+        <li>VM: {{data.vm.name}} from <strong>{{data.snapshot.name}}</strong></li>
         <li>Original Datastore: {{data.volume['volume-id-attributes'].name}}</li>
         <li *ngIf="secondFormGroup.value.restoreType == 'new'">Host: {{selectedHost.host.name}}</li>
         <li *ngIf="secondFormGroup.value.restoreType == 'original'">Host: {{data.vm.runtime.host.name}}</li>

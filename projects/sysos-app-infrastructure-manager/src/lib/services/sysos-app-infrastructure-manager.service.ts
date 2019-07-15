@@ -169,8 +169,6 @@ export class SysosAppInfrastructureManagerService {
       // Virtual connection not initialized
       if (!virtual.data || !virtual.data.Data) return treeData[1].children[vii] = virtualObject;
 
-      console.log(virtual.data.Data);
-
       // Get main parent object
       virtualObject.children = [virtual.data.Data.find(obj => {
         return obj.parent === null;

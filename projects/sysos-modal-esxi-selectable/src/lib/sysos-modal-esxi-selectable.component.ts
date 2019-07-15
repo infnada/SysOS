@@ -6,15 +6,7 @@ import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
 import {SysosLibModalService} from '@sysos/lib-modal';
 import {SysosLibVmwareService} from '@sysos/lib-vmware';
 import {SysosLibNetappService} from "@sysos/lib-netapp";
-import {IMConnection, IMESXiHost, NetAppIface, NetAppVserver, NetAppVolume} from '@sysos/app-infrastructure-manager';
-
-export interface VMWareFirewallRule  {
-  key: string;
-  allowedHosts: {
-    allIp: boolean;
-    ipAddress?: string;
-  };
-}
+import {IMConnection, IMESXiHost, NetAppIface, NetAppVserver, NetAppVolume, VMWareFirewallRule} from '@sysos/app-infrastructure-manager';
 
 @Component({
   selector: 'smesx-sysos-modal-esxi-selectable',
@@ -67,7 +59,8 @@ export class SysosModalEsxiSelectableComponent {
       return iface.role === 'data' &&
         iface.vserver === this.vserver['vserver-name'] &&
         iface['operational-status'] === 'up' &&
-        iface['administrative-status'] === 'up';
+        iface['administrative-status'] === 'up' &&
+        iface['current-node'] === this.volume['volume-id-attributes'].node; // TODO: necessary this check?
     });
 
     this.Modal.openLittleModal('PLEASE WAIT', 'Connecting to vCenter...', '.modal-esxi-selectable', 'plain');
@@ -76,14 +69,6 @@ export class SysosModalEsxiSelectableComponent {
       if (connectionData.status === 'error') throw new Error('Failed to connect to vCenter');
 
       this.Modal.changeModalText('Getting data...', '.modal-esxi-selectable');
-
-      // check if any found IP is already used by any datastore on the selected host
-      //  if found, use that ip
-      // match any found IP within same subnet of host network
-      //  check host config.firewall protocol for the found IP
-      //    advertise permanent firewall changes if required
-
-      // TODO export: host.config.network.vnic.spec.ip.ipAddress
 
       return this.VMWare.getHost(this.selectedHost.virtual.credential, this.selectedHost.virtual.host, this.selectedHost.virtual.port, this.selectedHost.host.host);
     }).then((hostData) => {
@@ -97,6 +82,11 @@ export class SysosModalEsxiSelectableComponent {
       hostData.data.datastore.ManagedObjectReference.forEach((datastore) => {
         this.VMWare.getDatastoreProps(this.selectedHost.virtual.credential, this.selectedHost.virtual.host, this.selectedHost.virtual.port, datastore.name).then((datastoreData) => {
           console.log(datastoreData);
+
+          /*data.summary.type === 'NFS41'
+          data.info.nas.type
+          data.info.nas.remoteHost
+          data.info.nas.remoteHostNames*/
 
           // TODO: foundIp true?
         });
@@ -119,6 +109,8 @@ export class SysosModalEsxiSelectableComponent {
         };
 
         this.foundIfaces.forEach((iface) => {
+          // TODO: get correct ESXi address
+          // TODO: choose the lowest netmask
           if (ipInSameSubnet(hostData.data.config.network.vnic.spec.ip.ipAddress, iface.address, iface.netmask)) this.sameSubnetIp.push(iface);
         });
 
@@ -143,10 +135,13 @@ export class SysosModalEsxiSelectableComponent {
   checkIface() {
 
     if (this.selectedIface['data-protocols']['data-protocol'] === 'nfs' && !this.ifaceServiceData) {
+      this.Modal.openLittleModal('PLEASE WAIT', 'Checking storage service status...', '.modal-esxi-selectable', 'plain');
+
       this.NetApp.getNFSService(this.storage.credential, this.storage.host, this.storage.port, this.vserver["vserver-name"]).then((serviceData) => {
         if (serviceData.status === 'error') throw new Error('Failed to get NFS service status from Storage');
 
         this.ifaceServiceData = serviceData.data;
+        this.Modal.closeModal('.modal-esxi-selectable');
       });
     }
 
@@ -165,6 +160,7 @@ export class SysosModalEsxiSelectableComponent {
     if (firewallRule.allowedHosts.allIp === true) return true;
     if (firewallRule.allowedHosts.ipAddress && typeof firewallRule.allowedHosts.ipAddress === 'string' && firewallRule.allowedHosts.ipAddress === this.selectedIface.address) return true;
     if (firewallRule.allowedHosts.ipAddress && Array.isArray(firewallRule.allowedHosts.ipAddress) && firewallRule.allowedHosts.ipAddress.includes(this.selectedIface.address)) return true;
+    // TODO check when is a network instead of an IP
 
     return false;
   }

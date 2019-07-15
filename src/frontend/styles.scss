@@ -50,6 +50,10 @@ h1, h2, h3, h4, h5, h6 {
   cursor: pointer;
 }
 
+.absolute {
+  position: absolute;
+}
+
 .no_padding {
   padding: 0 !important;
 }
@@ -180,6 +184,13 @@ h1, h2, h3, h4, h5, h6 {
 //////////
 // MODALS
 //////////
+.modal.show .modal-dialog {
+  height: calc(100% - 56px);
+}
+.modal-backdrop {
+  width: 100%;
+  height: 100%;
+}
 .modal-content {
   border-radius: 0;
   box-shadow: 0 3px 3px rgba(0,0,0,.5);

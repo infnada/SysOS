@@ -1,4 +1,4 @@
-import {IMESXiHost, IMConnection, NetAppSnapshot, NetAppVolume, NetAppVserver} from '@sysos/app-infrastructure-manager';
+import {IMESXiHost, IMConnection, NetAppSnapshot, NetAppVolume, NetAppVserver, NetAppIface} from '@sysos/app-infrastructure-manager';
 
 export interface MountRestoreDatastore {
   storage: IMConnection;
@@ -8,6 +8,7 @@ export interface MountRestoreDatastore {
   uuid?: string;
   virtual?: IMESXiHost['virtual'];
   host?: IMESXiHost['host'];
+  iface?: NetAppIface
   volumeName?: string;
   datastorePath?: string;
 }

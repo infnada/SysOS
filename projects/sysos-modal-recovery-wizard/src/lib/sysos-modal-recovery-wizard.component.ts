@@ -8,8 +8,7 @@ import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
 import {SysosLibModalService} from '@sysos/lib-modal';
 import {SysosLibVmwareService} from '@sysos/lib-vmware';
 import {SysosLibNetappService} from '@sysos/lib-netapp';
-import {IMConnection, IMESXiHost, NetAppVolume, NetAppVserver} from '@sysos/app-infrastructure-manager';
-import {SysosAppBackupsManagerHelpersService} from '@sysos/app-backups-manager';
+import {IMConnection, IMESXiHost, NetAppVolume, NetAppVserver, NetAppSnapshot} from '@sysos/app-infrastructure-manager';
 
 @Component({
   selector: 'smrw-sysos-modal-recovery-wizard',
@@ -21,15 +20,9 @@ export class SysosModalRecoveryWizardComponent implements OnInit {
   @Input() data: {
     uuid: string;
     storage: IMConnection;
-    volume: NetAppVolume;
+    volume: NetAppVolume & { Snapshots: NetAppSnapshot[] };
     vserver: NetAppVserver;
-    storageSnapshots: [
-      {
-        'snapshot-instance-uuid': string;
-        name: string;
-        disabled?: boolean;
-      }
-    ];
+    snapshot: NetAppSnapshot & { disabled?: boolean; };
     vm: {
       name: string;
       runtime: {
@@ -65,8 +58,7 @@ export class SysosModalRecoveryWizardComponent implements OnInit {
               private serviceInjector: SysosLibServiceInjectorService,
               private Modal: SysosLibModalService,
               private VMWare: SysosLibVmwareService,
-              private NetApp: SysosLibNetappService,
-              private BackupsManagerHelpersService: SysosAppBackupsManagerHelpersService) {
+              private NetApp: SysosLibNetappService) {
 
     this.InfrastructureManagerVMWare = this.serviceInjector.get('SysosAppInfrastructureVmwareService');
     this.ESXIHosts = this.InfrastructureManagerVMWare.getESXihosts();
@@ -104,7 +96,7 @@ export class SysosModalRecoveryWizardComponent implements OnInit {
 
     if (!vmPath) throw new Error('SAFETY STOP: VM cannot be on root folder');
 
-    this.data.storageSnapshots.forEach((snapshot, i) => {
+    this.data.volume.Snapshots.forEach((snapshot, i) => {
 
       this.logger.debug(`Backups Manager [${this.data.uuid}] -> Check VM from storage snapshot -> storage [${this.data.storage.host}],
        vserver [${this.data.vserver['vserver-name']}], volume [${this.data.volume['volume-id-attributes'].name}], snapshot [${snapshot.name}], path [/${vmPath}]`);
@@ -120,7 +112,7 @@ export class SysosModalRecoveryWizardComponent implements OnInit {
         if (res.status === 'error') {
           this.logger.debug(`Backups Manager [${this.data.uuid}] -> No VM data at this storage snapshot -> storage [${this.data.storage.host}],
            vserver [${this.data.vserver['vserver-name']}], volume [${this.data.volume['volume-id-attributes'].name}], snapshot [${snapshot.name}], path [/${vmPath}]`);
-          this.data.storageSnapshots[i].disabled = true;
+          // TODO this.data.storageSnapshots[i].disabled = true;
         }
       }));
     });
@@ -180,10 +172,6 @@ export class SysosModalRecoveryWizardComponent implements OnInit {
         this.Modal.closeModal('.modal-recovery-wizard');
       });
     });
-  }
-
-  getSnapshotName(): string {
-    return this.BackupsManagerHelpersService.getSnapshotName(this.data);
   }
 
 }

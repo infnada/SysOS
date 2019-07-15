@@ -7,7 +7,7 @@ import {v4 as uuidv4} from 'uuid';
 import {SysosLibFileSystemService} from '@sysos/lib-file-system';
 import {SysosLibModalService} from '@sysos/lib-modal';
 import {SysosLibApplicationService} from '@sysos/lib-application';
-import {IMESXiHost} from '@sysos/app-infrastructure-manager';
+import {IMESXiHost, NetAppIface} from '@sysos/app-infrastructure-manager';
 
 import {SysosAppBackupsManagerHelpersService} from './sysos-app-backups-manager-helpers.service';
 import {RestoreDatastoreFiles} from '../types/restore-datastore-files';
@@ -83,11 +83,14 @@ export class SysosAppBackupsManagerService {
         volume: data.volume
       }
     ).then((modalInstance) => {
-      modalInstance.result.then((selectedData: IMESXiHost) => {
+      modalInstance.result.then((selectedData: { selectedHost: IMESXiHost, selectedIface: NetAppIface }) => {
         if (!selectedData) return;
 
-        data.virtual = selectedData.virtual;
-        data.host = selectedData.host;
+        console.log(data);
+
+        data.virtual = selectedData.selectedHost.virtual;
+        data.host = selectedData.selectedHost.host;
+        data.iface = selectedData.selectedIface;
 
         this.logger.debug('Backups Manager [%s] -> Received restore data from Modal -> esxi_host [%s]', data.uuid, data.host.host);
 
@@ -133,11 +136,12 @@ export class SysosAppBackupsManagerService {
         volume: data.volume
       }
     ).then((modalInstance) => {
-      modalInstance.result.then((selectedData: IMESXiHost) => {
+      modalInstance.result.then((selectedData: { selectedHost: IMESXiHost, selectedIface: NetAppIface }) => {
         if (!selectedData) return;
 
-        data.virtual = selectedData.virtual;
-        data.host = selectedData.host;
+        data.virtual = selectedData.selectedHost.virtual;
+        data.host = selectedData.selectedHost.host;
+        data.iface = selectedData.selectedIface;
 
         this.logger.debug('Backups Manager [%s] -> Received restore data from Modal -> esxi_host [%s] ', data.uuid, data.host.host);
 
@@ -197,16 +201,18 @@ export class SysosAppBackupsManagerService {
         volume: data.volume
       }
     ).then((modalInstance) => {
-      modalInstance.result.then((selectedData: IMESXiHost) => {
+      modalInstance.result.then((selectedData: { selectedHost: IMESXiHost, selectedIface: NetAppIface }) => {
         if (!selectedData) return;
 
-        data.virtual = selectedData.virtual;
+        data.virtual = selectedData.selectedHost.virtual;
         // TODO!!!
         data.host = {
-          ...selectedData.host,
+          ...selectedData.selectedHost.host,
           folder: 'na',
           resource_pool: 'na'
         };
+        data.iface = selectedData.selectedIface;
+
 
         this.logger.debug('Backups Manager [%s] -> Received restore data from Modal -> esxi_host [%s]', data.uuid, data.host.host);
 
@@ -260,7 +266,7 @@ export class SysosAppBackupsManagerService {
           folder: selectedData.folder.folder,
           resource_pool: selectedData.resource_pool.obj.name
         };
-
+        data.iface = selectedData.selectedIface;
         data.vm.name = selectedData.vmName;
         data.vm.powerOn = selectedData.powerOn;
 
