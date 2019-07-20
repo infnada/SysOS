@@ -12,7 +12,7 @@ export interface RestoreVmGuestFiles {
     folder: string;
     resource_pool: string;
   };
-  iface?: NetAppIface
+  iface?: NetAppIface;
   volumeName?: string;
   datastorePath?: string;
 }

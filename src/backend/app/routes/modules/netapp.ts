@@ -33,6 +33,8 @@ export class NetAppModule {
           if (err) return reject(err);
           return resolve(result);
         });
+      }).catch(e => {
+        return reject(e);
       });
 
     });

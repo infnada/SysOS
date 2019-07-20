@@ -136,113 +136,109 @@ export class BodyComponent implements OnInit {
     this.volumeVMSnapshotContextMenu = [
       {
         id: 0, text: '<i class="fa fa-server"></i> Instant VM', action: (node: IMNode) => {
-          this.InfrastructureManagerNetApp.instantVM(node.data.uuid, node.data.vserver, node.data.volume, node.data.snapshot, node.data.vm);
+          this.InfrastructureManagerNetApp.instantVM(node.data.uuid, null, node.data.vserver, node.data.volume, node.data.snapshot, node.data);
         }
       },
       {
         id: 1, text: '<i class="fa fa-server"></i> Restore entire VM', action: (node: IMNode) => {
-          this.InfrastructureManagerNetApp.restoreVM(node.data.uuid, node.data.vserver, node.data.volume, node.data.snapshot, node.data.vm);
+          this.InfrastructureManagerNetApp.restoreVM(node.data.uuid, null, node.data.vserver, node.data.volume, node.data.snapshot, node.data);
         }
       },
       {
         id: 2, text: '<i class="fa fa-files"></i> Restore Guest files', action: (node: IMNode) => {
-          this.InfrastructureManagerNetApp.restoreGuestFiles(node.data.uuid, node.data.vserver, node.data.volume, node.data.snapshot, node.data.vm);
+          this.InfrastructureManagerNetApp.restoreGuestFiles(node.data.uuid, node.data.vserver, node.data.volume, node.data.snapshot, node.data);
         }
       }
     ];
 
     this.VMContextMenu = [
       {
-        id: 0, text: '<i class="fa fa-power-off"></i> Power', subMenu: (): ContextMenuItem[] => {
-          return [
-            {
-              id: 0,
-              text: '<i class="fa fa-play text-success"></i> Power On',
-              action: (node: IMNode) => {
-                this.InfrastructureManagerVMWare.doWithVM(node.data.uuid, node.data.vm, 'powerOn');
-              }
-            },
-            {
-              id: 1,
-              text: '<i class="fa fa-stop text-danger"></i> Power Off',
-              action: (node: IMNode) => {
-                this.InfrastructureManagerVMWare.doWithVM(node.data.uuid, node.data.vm, 'powerOff');
-              }
-            },
-            {
-              id: 2,
-              text: '<i class="fa fa-pause text-warning"></i> Suspend',
-              action: (node: IMNode) => {
-                this.InfrastructureManagerVMWare.doWithVM(node.data.uuid, node.data.vm, 'suspend');
-              }
-            },
-            {
-              id: 4,
-              text: '<i class="fa fa-refresh"></i> Reset',
-              action: (node: IMNode) => {
-                this.InfrastructureManagerVMWare.doWithVM(node.data.uuid, node.data.vm, 'reset');
-              }
-            },
-            {id: 5, text: 'divider'},
-            {
-              id: 6,
-              text: '<i class="fa fa-stop text-danger"></i> Shut Down Guest OS',
-              action: (node: IMNode) => {
-                this.InfrastructureManagerVMWare.doWithVM(node.data.uuid, node.data.vm, 'powerOffGuestOS');
-              }
-            },
-            {
-              id: 7,
-              text: '<i class="fa fa-refresh"></i> Restart Guest OS',
-              action: (node: IMNode) => {
-                this.InfrastructureManagerVMWare.doWithVM(node.data.uuid, node.data.vm, 'restartGuestOS');
-              }
-            },
-          ];
-        }
+        id: 0, text: '<i class="fa fa-power-off"></i> Power', subMenu: [
+          {
+            id: 0,
+            text: '<i class="fa fa-play text-success"></i> Power On',
+            action: (node: IMNode) => {
+              this.InfrastructureManagerVMWare.doWithVM(node.data.uuid, node.data, 'powerOn');
+            }
+          },
+          {
+            id: 1,
+            text: '<i class="fa fa-stop text-danger"></i> Power Off',
+            action: (node: IMNode) => {
+              this.InfrastructureManagerVMWare.doWithVM(node.data.uuid, node.data, 'powerOff');
+            }
+          },
+          {
+            id: 2,
+            text: '<i class="fa fa-pause text-warning"></i> Suspend',
+            action: (node: IMNode) => {
+              this.InfrastructureManagerVMWare.doWithVM(node.data.uuid, node.data, 'suspend');
+            }
+          },
+          {
+            id: 4,
+            text: '<i class="fa fa-refresh"></i> Reset',
+            action: (node: IMNode) => {
+              this.InfrastructureManagerVMWare.doWithVM(node.data.uuid, node.data, 'reset');
+            }
+          },
+          {id: 5, text: 'divider'},
+          {
+            id: 6,
+            text: '<i class="fa fa-stop text-danger"></i> Shut Down Guest OS',
+            action: (node: IMNode) => {
+              this.InfrastructureManagerVMWare.doWithVM(node.data.uuid, node.data, 'powerOffGuestOS');
+            }
+          },
+          {
+            id: 7,
+            text: '<i class="fa fa-refresh"></i> Restart Guest OS',
+            action: (node: IMNode) => {
+              this.InfrastructureManagerVMWare.doWithVM(node.data.uuid, node.data, 'restartGuestOS');
+            }
+          }
+        ]
       },
       {
         id: 1, text: '<i class="fa fa-television"></i> Open Remote Console', action: (node: IMNode) => {
-          this.openRemoteConsole(node.data.uuid, node.data.vm);
+          this.openRemoteConsole(node.data.uuid, node.data);
         }
       },
       {id: 1, text: 'divider'},
       {
-        id: 3, text: '<i class="fa fa-server"></i> Restore', subMenu: (): ContextMenuItem[] => {
-          return [
-            {
-              id: 0,
-              text: '<i class="fa fa-server"></i> Instant VM',
-              action: (node: IMNode) => {
-                this.InfrastructureManagerNetApp.instantVM(node.data.uuid, node.data.vserver, node.data.volume, node.data.snapshot, node.data.vm);
-              }
-            },
-            {
-              id: 1,
-              text: '<i class="fa fa-server"></i> Restore entire VM',
-              action: (node: IMNode) => {
-                this.InfrastructureManagerNetApp.restoreVM(node.data.uuid, node.data.vserver, node.data.volume, node.data.snapshot, node.data.vm);
-              }
-            },
-            {
-              id: 2,
-              text: '<i class="fa fa-server"></i> Restore Guest Files',
-              action: (node: IMNode) => {
-                this.InfrastructureManagerNetApp.restoreGuestFiles(node.data.uuid, node.data.vserver, node.data.volume, node.data.snapshot, node.data.vm);
-              }
+        id: 3, text: '<i class="fa fa-server"></i> Restore', subMenu: [
+          {
+            id: 0,
+            text: '<i class="fa fa-server"></i> Instant VM',
+            action: (node: IMNode) => {
+              this.InfrastructureManagerVMWare.instantVM(node.data.uuid, node.data);
             }
-          ];
-        }
+          },
+          {
+            id: 1,
+            text: '<i class="fa fa-server"></i> Restore entire VM',
+            action: (node: IMNode) => {
+              this.InfrastructureManagerVMWare.restoreVM(node.data.uuid, node.data);
+            }
+          },
+          {
+            id: 2,
+            text: '<i class="fa fa-server"></i> Restore Guest Files',
+            action: (node: IMNode) => {
+              this.InfrastructureManagerNetApp.restoreGuestFiles(node.data.uuid, node.data.vserver, node.data.volume, node.data.snapshot, node.data);
+            }
+          }
+        ]
       },
       {
         id: 4, text: '<i class="fa fa-server"></i> Backup', action: (node: IMNode) => {
-          this.InfrastructureManagerNetApp.backupVM(node.data.uuid, node.data.vm);
+          this.InfrastructureManagerNetApp.backupVM(node.data.uuid, node.data);
         }
       },
       {id: 5, text: 'divider'},
       {
         id: 6, text: '<i class="fa fa-refresh"></i> Refresh', action: (node: IMNode) => {
-          this.InfrastructureManagerVMWare.doWithVM(node.data.uuid, node.data.vm, 'refresh');
+          this.InfrastructureManagerVMWare.doWithVM(node.data.uuid, node.data, 'refresh');
         }
       },
     ];

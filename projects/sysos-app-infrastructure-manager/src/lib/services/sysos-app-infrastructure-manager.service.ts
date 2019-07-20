@@ -7,12 +7,18 @@ import {Socket} from 'ngx-socket-io';
 import {v4 as uuidv4} from 'uuid';
 
 import {SysosLibModalService} from '@sysos/lib-modal';
+import {SysosLibApplicationService} from '@sysos/lib-application';
 import {SysosLibFileSystemService} from '@sysos/lib-file-system';
 
 import {IMConnection} from '../types/imconnection';
 import {IMLink} from '../types/imlink';
 import {IMNode} from '../types/imnode';
 import {VMWareDatastore} from '../types/vmware-datastore';
+import {VMWareObject} from "../types/vmware-object";
+import {NetAppIface} from "../types/netapp-iface";
+import {NetAppVserver} from "../types/netapp-vserver";
+import {NetAppVolume} from "../types/netapp-volume";
+import {IMDatastoreLink} from "../types/im-datastore-link";
 
 @Injectable({
   providedIn: 'root'
@@ -38,6 +44,7 @@ export class SysosAppInfrastructureManagerService {
               private Toastr: ToastrService,
               private socket: Socket,
               private Modal: SysosLibModalService,
+              private Applications: SysosLibApplicationService,
               private FileSystem: SysosLibFileSystemService) {
     this.dataStore = {connections: [], activeConnection: null, treeData: []};
     this.$connections = new BehaviorSubject([]) as BehaviorSubject<IMConnection[]>;
@@ -69,63 +76,64 @@ export class SysosAppInfrastructureManagerService {
     // Set treeData for storage
     this.getConnectionsByType('netapp').forEach((storage, sti) => {
       const storageObject: IMNode = {
-        name: storage.data.Base.name,
+        name: (storage.data ? storage.data.Base.name : storage.host),
         data: {
           uuid: storage.uuid
         },
         type: 'netapp'
       };
 
-      if (!storage.data.Vservers) return;
-      storage.data.Vservers.forEach((vserver, vsi) => {
-        const vserverObject: IMNode = {
-          name: vserver['vserver-name'],
-          data: {
-            uuid: storage.uuid,
-            vserver
-          },
-          type: 'vserver'
-        };
-
-        // Set Vservers as children
-        if (!storageObject.children) storageObject.children = [];
-        storageObject.children[vsi] = vserverObject;
-
-        if (!vserver.Volumes) return;
-        vserver.Volumes.forEach((volume, voi) => {
-          const volumeObject: IMNode = {
-            name: volume['volume-id-attributes'].name,
+      if (storage.data && storage.data.Vservers) {
+        storage.data.Vservers.forEach((vserver, vsi) => {
+          const vserverObject: IMNode = {
+            name: vserver['vserver-name'],
             data: {
               uuid: storage.uuid,
-              vserver,
-              volume
+              vserver
             },
-            type: 'volume'
+            type: 'vserver'
           };
 
-          // Set Volumes as children
-          if (!storageObject.children[vsi].children) storageObject.children[vsi].children = [];
-          storageObject.children[vsi].children[voi] = volumeObject;
+          // Set Vservers as children
+          if (!storageObject.children) storageObject.children = [];
+          storageObject.children[vsi] = vserverObject;
 
-          if (!volume.Snapshots) return;
-          volume.Snapshots.forEach((snapshot, sni) => {
-            const snapshotObject: IMNode = {
-              name: snapshot.name,
+          if (!vserver.Volumes) return;
+          vserver.Volumes.forEach((volume, voi) => {
+            const volumeObject: IMNode = {
+              name: volume['volume-id-attributes'].name,
               data: {
                 uuid: storage.uuid,
                 vserver,
-                volume,
-                snapshot
+                volume
               },
-              type: 'snapshot'
+              type: 'volume'
             };
 
-            // Set Snapshots as children
-            if (!storageObject.children[vsi].children[voi].children) storageObject.children[vsi].children[voi].children = [];
-            storageObject.children[vsi].children[voi].children[sni] = snapshotObject;
+            // Set Volumes as children
+            if (!storageObject.children[vsi].children) storageObject.children[vsi].children = [];
+            storageObject.children[vsi].children[voi] = volumeObject;
+
+            if (!volume.Snapshots) return;
+            volume.Snapshots.forEach((snapshot, sni) => {
+              const snapshotObject: IMNode = {
+                name: snapshot.name,
+                data: {
+                  uuid: storage.uuid,
+                  vserver,
+                  volume,
+                  snapshot
+                },
+                type: 'snapshot'
+              };
+
+              // Set Snapshots as children
+              if (!storageObject.children[vsi].children[voi].children) storageObject.children[vsi].children[voi].children = [];
+              storageObject.children[vsi].children[voi].children[sni] = snapshotObject;
+            });
           });
         });
-      });
+      }
 
       treeData[0].children[sti] = storageObject;
     });
@@ -136,7 +144,8 @@ export class SysosAppInfrastructureManagerService {
 
       current.type = current.obj.type;
       current.data = {
-        uuid: virtual.uuid
+        uuid: virtual.uuid,
+        data: {}
       };
       current.children = virtual.data.Data.filter(obj => {
         return obj.parent && obj.parent.name === current.obj.name;
@@ -144,9 +153,13 @@ export class SysosAppInfrastructureManagerService {
 
       // Move all object data into data property
       Object.keys(current).forEach((key) => {
-        if (['children', 'data', 'type', 'name', 'parent', 'obj'].includes(key)) return;
+        if (['children', 'data'].includes(key)) return;
 
-        current.data[key] = JSON.parse(JSON.stringify(current[key]));
+        if (['name', 'parent', 'obj', 'type'].includes(key)) {
+          current.data[key] = JSON.parse(JSON.stringify(current[key]));
+        } else {
+          current.data.data[key] = JSON.parse(JSON.stringify(current[key]));
+        }
       });
 
       // Recursively get children
@@ -459,56 +472,56 @@ export class SysosAppInfrastructureManagerService {
 
   }
 
-  disconnectConnection(uuid?: string): void {
-    if (!uuid) uuid = this.dataStore.activeConnection;
+  disconnectConnection(connectionUuid?: string): void {
+    if (!connectionUuid) connectionUuid = this.dataStore.activeConnection;
 
-    this.logger.debug('Infrastructure Manager [%s] -> Disconnecting connection', uuid);
+    this.logger.debug(`Infrastructure Manager [${connectionUuid}] -> Disconnecting connection`);
 
-    if (this.getConnectionByUuid(uuid).type === 'linux') {
+    if (this.getConnectionByUuid(connectionUuid).type === 'linux') {
       this.socket.emit('[disconnect-session]', {
         type: 'linux',
-        uuid
+        connectionUuid
       });
     }
 
-    this.getConnectionByUuid(uuid).state = 'disconnected';
+    this.getConnectionByUuid(connectionUuid).state = 'disconnected';
 
     // broadcast data to subscribers
     this.connectionsUpdated();
   }
 
-  deleteConnection(uuid?: string): void {
-    if (!uuid) uuid = this.dataStore.activeConnection;
+  deleteConnection(connectionUuid?: string): void {
+    if (!connectionUuid) connectionUuid = this.dataStore.activeConnection;
 
     const configFile = 'applications/infrastructure-manager/config.json';
 
     this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
       {
-        title: 'Delete connection ' + this.getConnectionByUuid(uuid).description,
+        title: `Delete connection ${this.getConnectionByUuid(connectionUuid).description}`,
         text: 'Remove the selected connection from the inventory?'
       }
     ).then((modalInstance) => {
       modalInstance.result.then((result: boolean) => {
         if (result === true) {
 
-          this.logger.debug('Infrastructure Manager [%s] -> Deleting connection', uuid);
+          this.logger.debug('Infrastructure Manager [%s] -> Deleting connection', connectionUuid);
 
-          this.disconnectConnection(uuid);
+          this.disconnectConnection(connectionUuid);
           this.setActiveConnection(null);
 
-          this.FileSystem.deleteConfigFromFile(uuid, configFile).subscribe(
+          this.FileSystem.deleteConfigFromFile(connectionUuid, configFile).subscribe(
             () => {
               this.dataStore.connections = this.dataStore.connections.filter((connection) => {
-                return connection.uuid !== uuid;
+                return connection.uuid !== connectionUuid;
               });
 
               // broadcast data to subscribers
               this.connectionsUpdated();
 
-              this.logger.debug('Infrastructure Manager [%s] -> Connection deleted successfully', uuid);
+              this.logger.debug('Infrastructure Manager [%s] -> Connection deleted successfully', connectionUuid);
             },
             error => {
-              this.logger.error('Infrastructure Manager [%s] -> Error while deleting connection -> ', uuid, error);
+              this.logger.error('Infrastructure Manager [%s] -> Error while deleting connection -> ', connectionUuid, error);
             });
 
         }
@@ -517,25 +530,25 @@ export class SysosAppInfrastructureManagerService {
 
   }
 
-  editConnection(uuid?: string): void {
-    if (!uuid) uuid = this.dataStore.activeConnection;
+  editConnection(connectionUuid?: string): void {
+    if (!connectionUuid) connectionUuid = this.dataStore.activeConnection;
 
-    if (this.getConnectionByUuid(uuid).state === 'disconnected') {
-      this.setActiveConnection(uuid);
+    if (this.getConnectionByUuid(connectionUuid).state === 'disconnected') {
+      this.setActiveConnection(connectionUuid);
       this.disconnectConnection();
       return;
     }
 
     this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
       {
-        title: 'Edit connection ' + this.getConnectionByUuid(uuid).description,
+        title: `Edit connection ${this.getConnectionByUuid(connectionUuid).description}`,
         text: 'Your connection will be disconnected before editing it. Continue?'
       }
     ).then((modalInstance) => {
       modalInstance.result.then((result: boolean) => {
         if (result === true) {
 
-          this.setActiveConnection(uuid);
+          this.setActiveConnection(connectionUuid);
           this.disconnectConnection();
 
         }
@@ -544,15 +557,31 @@ export class SysosAppInfrastructureManagerService {
 
   }
 
-  refreshConnection(uuid?: string): void {
-    if (!uuid) uuid = this.dataStore.activeConnection;
+  refreshConnection(connectionUuid?: string): void {
+    if (!connectionUuid) connectionUuid = this.dataStore.activeConnection;
 
-    this.connect(this.getConnectionByUuid(uuid));
+    this.connect(this.getConnectionByUuid(connectionUuid));
   }
 
   /**
    * SHARED
    */
+
+  /**
+   *
+   */
+  openBackupsManager(connectionUuid: string, type: string, data: { [key: string]: any }) {
+    this.logger.debug(`Infrastructure Manager [${connectionUuid}] -> Opening Backups Manager APP`);
+
+    this.Applications.openApplication('backups-manager', {
+      data,
+      type,
+      credential: this.getConnectionByUuid(connectionUuid).credential,
+      host: this.getConnectionByUuid(connectionUuid).host,
+      port: this.getConnectionByUuid(connectionUuid).port
+    });
+  }
+
   /**
    * @description
    * Return a link if found
@@ -593,7 +622,7 @@ export class SysosAppInfrastructureManagerService {
         if (datastore['summary.type'] === 'VMFS') return;
 
         // Check if any storage volume contains the datastore remotePath as a volume junction path
-        this.getConnectionsByType('storage').forEach((storage) => {
+        this.getConnectionsByType('netapp').forEach((storage) => {
 
           // Checking for NetApp storage
           if (storage.type === 'netapp') {
@@ -702,6 +731,61 @@ export class SysosAppInfrastructureManagerService {
     // end netapp
     }
     this.saveLinksMap();*/
+
+  }
+
+  /**
+   * Check if datastore is linked to any managed storage
+   */
+  checkDatastoreLinkWithManagedStorage(datastoreObj: VMWareObject & { data: VMWareDatastore }): IMDatastoreLink[] {
+    let results = [];
+
+    this.getConnectionsByType('netapp').forEach((storageObj: IMConnection) => {
+
+      // Checking for NetApp storage
+      if (storageObj.type === 'netapp') {
+
+        // check if storage have any interface that match the datastore.remoteHost and datastore.type
+        const foundInterface = storageObj.data.Ifaces.netifaces.filter((ifaceObj: NetAppIface) => {
+          return ifaceObj.address ===  datastoreObj.data.info.nas.remoteHost &&
+            ifaceObj['data-protocols']['data-protocol'] === (datastoreObj.data.info.nas.type === 'NFS41' || datastoreObj.data.info.nas.type === 'NFS' ? 'nfs' : datastoreObj.data.info.nas.type);
+        })[0];
+
+        // If not found any storage interface matching, return
+        if (!foundInterface) return;
+
+        // Search any Data Vservers with allowed protocol that match the datastore.type
+        const foundVserver = storageObj.data.Vservers.filter((vserverObj: NetAppVserver) => {
+          return vserverObj['vserver-type'] === 'data' &&
+            vserverObj['vserver-name'] === foundInterface.vserver &&
+            vserverObj['allowed-protocols'].protocol.includes(
+              (datastoreObj.data.info.nas.type === 'NFS41' || datastoreObj.data.info.nas.type === 'NFS' ? 'nfs' : datastoreObj.data.info.nas.type)
+            );
+        })[0];
+
+        if (!foundVserver) return;
+
+        // Search for each Volume containing as a junction path the current datastore remotePath
+        const foundVolume = foundVserver.Volumes.filter((volumeObj: NetAppVolume) => {
+          return volumeObj['volume-id-attributes']['junction-path'] === datastoreObj.data.info.nas.remotePath;
+        })[0];
+
+        if (!foundVolume) return;
+
+        // TODO: CHECK VOLUME EXPORTS that match ESXi host
+
+        // Link found!
+        results.push({
+          storage: storageObj,
+          vserver: foundVserver,
+          volume: foundVolume
+        });
+
+      }
+
+    });
+
+    return results;
 
   }
 

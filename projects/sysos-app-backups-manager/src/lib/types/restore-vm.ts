@@ -1,14 +1,17 @@
 import {IMESXiHost, IMConnection, NetAppSnapshot, NetAppVolume, NetAppVserver, VMWareObject, VMWareVM} from '@sysos/app-infrastructure-manager';
 
 export interface RestoreVm {
-  virtual: IMESXiHost['virtual'];
-  storage: IMConnection;
-  vserver: NetAppVserver;
-  volume: NetAppVolume;
-  snapshot: NetAppSnapshot;
+  virtual: IMConnection;
   vm: VMWareObject & { data: VMWareVM } & {
     powerOn?: boolean;
   };
   uuid?: string;
-  host?: IMESXiHost['host'];
+  storage?: IMConnection;
+  vserver?: NetAppVserver;
+  volume?: NetAppVolume;
+  snapshot?: NetAppSnapshot;
+  host?: IMESXiHost['host'] & {
+    folder: string;
+    resource_pool: string;
+  };
 }

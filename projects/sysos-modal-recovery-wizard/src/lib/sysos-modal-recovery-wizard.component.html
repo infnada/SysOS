@@ -7,13 +7,16 @@
   </div>
 </div>
 <div class="modal-body modal-recovery-wizard" id="modal-body">
-  <mat-horizontal-stepper linear #stepper>
+  <div *ngIf="!mainLinkFound">
+    <p>Can't proceed with the restore of {{data.vm.name}}, it's data isn't in any SysOS managed Storage System.</p>
+  </div>
+  <mat-horizontal-stepper linear #stepper *ngIf="data && data.volume">
     <mat-step [stepControl]="firstFormGroup">
       <form [formGroup]="firstFormGroup">
         <ng-template matStepLabel>SnapShot</ng-template>
         <hr class="hr-text" data-content="Select a backup Snapshot">
-        <mat-radio-group aria-label="Select a snapshot" formControlName="snapshotFormControl">
-          <mat-radio-button *ngFor="let snapshot of data.volume.Snapshots" [value]="snapshot['snapshot-instance-uuid']" disabled="snapshot.disabled">{{snapshot.name}}</mat-radio-button>
+        <mat-radio-group class="vertical-radio-group" aria-label="Select a snapshot" formControlName="snapshotFormControl">
+          <mat-radio-button class="vertical-radio-button" *ngFor="let snapshot of data.volume.Snapshots" [value]="snapshot['snapshot-instance-uuid']" [disabled]="snapshot.disabled">{{data.volume['volume-id-attributes'].name}} - {{snapshot.name}}</mat-radio-button>
         </mat-radio-group>
         <div>
           <button mat-button matStepperNext>Next</button>
@@ -25,7 +28,7 @@
         <ng-template matStepLabel>Recovery mode</ng-template>
         <hr class="hr-text" data-content="Select a restore location">
         <mat-radio-group aria-label="Select a recovery mode" formControlName="recoveryModeFormControl">
-          <mat-radio-button value="original">
+          <mat-radio-button value="original" disabled="type === 'vm_instant_recovery'">
             <h5>Restore to the original location</h5>Quickly initiate restore of selected VMs to the original location, and with the original name and settings. This option minimizes the chance of user input error.<br/><i class="fa fa-exclamation text-warning"></i> This virtual machine will be powered down during the restore process.
           </mat-radio-button>
           <mat-radio-button value="new">
@@ -44,12 +47,48 @@
         <hr class="hr-text" data-content="Virtual Machine options">
         <mat-form-field>
           <mat-label>Select a managed ESXi host</mat-label>
-          <mat-select [(ngModel)]="selectedHost" (selectionChange)="loadESXidata($event)" formControlName="hostFormControl">
+          <mat-select [(ngModel)]="selectedHost" (selectionChange)="checkESXidata()" formControlName="hostFormControl">
             <mat-option *ngFor="let host of ESXIHosts" [value]="host">
               {{host.host.host}} - {{host.host.name}}
             </mat-option>
           </mat-select>
         </mat-form-field>
+
+        <ng-container *ngIf="finishLoading">
+          <p>Looking for best suitable IP to connect with <strong>{{data.volume['volume-id-attributes'].name}}</strong> Snapshot.</p>
+
+          <p *ngIf="foundIp === false">This ESXi host has no previous mounted Datastores from <strong>{{data.vserver['vserver-name']}}</strong>.</p>
+
+          <p *ngIf="foundIp === false && sameSubnetIp.length === 0 && !selectedIface"><span class="text-danger">Can't find any good suitable IP to connect with</span>. Please choose one manually.</p>
+
+          <ng-container *ngIf="selectedIface">
+            <p>Will use <strong>{{selectedIface.address}}</strong> over <strong>{{selectedIface['data-protocols']['data-protocol']}}</strong> to connect with <strong>{{data.volume['volume-id-attributes'].name}}</strong> Snapshot.</p>
+            <ul *ngIf="selectedIface['data-protocols']['data-protocol'] === 'nfs' && ifaceServiceData">
+              <li>
+                Version 3 Support <i class="fa" [ngClass]="ifaceServiceData['is-nfsv3-enabled'] === true ? 'fa-check text-success' : 'fa-close text-danger'"></i><br />
+                <span *ngIf="ifaceServiceData['is-nfsv3-enabled'] === true && !checkFirewallNFS(3)" class="text-danger"><i class="fa fa-exclamation-triangle"></i> ESXi firewall rules will be permanently changed adding the selected storage IP.</span>
+              </li>
+              <li>
+                Version 4.1 Support <i class="fa" [ngClass]="ifaceServiceData['is-nfsv41-enabled'] === true ? 'fa-check text-success' : 'fa-close text-danger'"></i><br />
+                <span *ngIf="ifaceServiceData['is-nfsv41-enabled'] === true && !checkFirewallNFS(4)" class="text-danger"><i class="fa fa-exclamation-triangle"></i> ESXi firewall rules will be permanently changed adding the selected storage IP.</span>
+              </li>
+            </ul>
+          </ng-container>
+
+          <mat-slide-toggle class="mb-3" [(ngModel)]="manualIp" *ngIf="foundIfaces.length > 1 && forceManualIp === false">
+            Choose different IP
+          </mat-slide-toggle>
+
+          <mat-form-field class="w-100" *ngIf="foundIfaces.length > 0 && manualIp === true">
+            <mat-label>Select an IP to connect with Storage Volume</mat-label>
+            <mat-select [(ngModel)]="selectedIface" (selectionChange)="checkIface()">
+              <mat-option *ngFor="let iface of foundIfaces" [value]="iface">
+                {{iface.address}} - {{iface['data-protocols']['data-protocol']}} - {{iface['interface-name']}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </ng-container>
+
         <mat-divider></mat-divider>
         <mat-form-field>
           <mat-label>Select a VM Folder</mat-label>
@@ -77,11 +116,9 @@
           </mat-form-field>
         </mat-form-field>
         <mat-divider></mat-divider>
-        <mat-form-field>
-          <mat-slide-toggle [checked]="powerVM">
-            Power ON restored VM
-          </mat-slide-toggle>
-        </mat-form-field>
+        <mat-slide-toggle [checked]="powerVM">
+          Power ON restored VM
+        </mat-slide-toggle>
         <div>
           <button mat-button matStepperPrevious>Back</button>
           <button mat-button matStepperNext>Next</button>
@@ -92,10 +129,10 @@
       <ng-template matStepLabel>Ready to apply</ng-template>
       <hr class="hr-text" data-content="Summary">
       <ul>
-        <li>VM: {{data.vm.name}} from <strong>{{data.snapshot.name}}</strong></li>
+        <li>VM: {{data.vm.name}} from <strong *ngIf="data.snapshot">{{data.snapshot.name}}</strong></li>
         <li>Original Datastore: {{data.volume['volume-id-attributes'].name}}</li>
         <li *ngIf="secondFormGroup.value.restoreType == 'new'">Host: {{selectedHost.host.name}}</li>
-        <li *ngIf="secondFormGroup.value.restoreType == 'original'">Host: {{data.vm.runtime.host.name}}</li>
+        <li *ngIf="secondFormGroup.value.restoreType == 'original'">Host: {{data.vm['runtime.host'].name}}</li>
         <li>New VM name: {{vmName}}</li>
         <li>Power ON VM: {{powerVM}}</li>
       </ul>

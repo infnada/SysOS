@@ -9,6 +9,8 @@ import {IMConnection, NetAppVserver, NetAppVolume} from '@sysos/app-infrastructu
 import {DatastoreExplorerConnection} from '../../types/datastore-explorer-connection';
 import {SysosAppDatastoreExplorerService} from '../../services/sysos-app-datastore-explorer.service';
 import {SysosAppDatastoreExplorerServerService} from '../../services/sysos-app-datastore-explorer-server.service';
+import {VMWareObject} from "../../../../../sysos-app-infrastructure-manager/src/lib/types/vmware-object";
+import {VMWareDatastore} from "../../../../../sysos-app-infrastructure-manager/src/lib/types/vmware-datastore";
 
 @Component({
   selector: 'sade-body-new-connection',
@@ -91,15 +93,15 @@ export class BodyNewConnectionComponent implements OnInit {
 
     if (type === 'vmware') {
       this.InfrastructureManager.getConnectionsByType('vmware').forEach((connection: IMConnection) => {
-        this.InfrastructureManagerVMWare.getObjectByType(connection.uuid, 'Datastore').forEach(datastore => {
+        this.InfrastructureManagerVMWare.getObjectByType(connection.uuid, 'Datastore').forEach((datastoreObj: VMWareObject & { data: VMWareDatastore }) => {
 
           this.datastores.push({
             credential: connection.credential,
             host: connection.host,
             port: connection.port,
             data: {
-              datastore,
-              datacenter: this.InfrastructureManagerVMWare.getParentObjectByType(connection.uuid, 'Datacenter', datastore.obj.name)
+              datastore: datastoreObj,
+              datacenter: this.InfrastructureManagerVMWare.getParentObjectByType(connection.uuid, 'Datacenter', datastoreObj.obj.name)
             },
             type: 'vmware'
           });

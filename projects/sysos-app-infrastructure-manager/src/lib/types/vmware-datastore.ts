@@ -33,6 +33,11 @@ export interface VMWareDatastore {
     name: string;
     timestamp: string;
     url: string;
+    nas: {
+      type: string;
+      remoteHost: string;
+      remotePath: string;
+    };
     vmfs: {
       blockSizeMb: number;
       capacity: number;

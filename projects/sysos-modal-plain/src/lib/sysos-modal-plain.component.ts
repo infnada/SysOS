@@ -10,6 +10,7 @@ import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 export class SysosModalPlainComponent {
   @Input() title: string;
   @Input() text: string;
+  @Input() type: boolean = null;
 
   constructor(public activeModal: NgbActiveModal) {
   }

@@ -154,14 +154,12 @@ export class SysosAppBackupsManagerService {
 
           // Open Datastore Brower application
           this.Applications.openApplication('datastore-explorer', {
-            data: {
-              uuid: res.uuid,
-              name: data.esxi_datastore_name,
               credential: data.virtual.credential,
               host: data.virtual.host,
               port: data.virtual.port,
+              type: 'vmware',
+              data: {},
               original_datastore: data.volume['volume-id-attributes'].name
-            }
           });
 
           this.Modal.closeModal('.window--backups-manager .window__main');
@@ -238,8 +236,7 @@ export class SysosAppBackupsManagerService {
   vmInstantRecovery(data: VmInstantRecovery) {
     data.uuid = uuidv4();
 
-    this.logger.debug('Backups Manager [%s] -> Received event vmInstantRecovery -> Initializing restore of VM [%s] from -> storage [%s], vserver [%s], datastore [%s], snapshot [%s]',
-      data.uuid, data.vm.name, data.storage.host, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name, data.snapshot);
+    this.logger.debug(`Backups Manager [${data.uuid}] -> Received event vmInstantRecovery -> Initializing restore of VM [${data.vm.name}] from -> virtual [${data.virtual.host}]`);
 
     this.BackupManagerHelpers.setRestore(data.uuid, {
       name: `VM instant recovery (${data.vm.name})`,
@@ -253,6 +250,7 @@ export class SysosAppBackupsManagerService {
 
     this.Modal.openRegisteredModal('recovery-wizard', '.window--backups-manager .window__main',
       {
+        type: 'vm_instant_recovery',
         title: `Select required data for Instant VM (${data.vm.name})`,
         data
       }
@@ -295,8 +293,7 @@ export class SysosAppBackupsManagerService {
   restoreVm(data: RestoreVm) {
     data.uuid = uuidv4();
 
-    this.logger.debug('Backups Manager [%s] -> Received event restoreVm -> Initializing restore of VM [%s] from -> storage [%s], vserver [%s], datastore [%s], snapshot [%s]',
-      data.uuid, data.vm.name, data.storage.host, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name, data.snapshot);
+    this.logger.debug(`Backups Manager [${data.uuid}] -> Received event restoreVm -> Initializing restore of VM [${data.vm.name}] from -> virtual [${data.virtual.host}]`);
 
     this.BackupManagerHelpers.setRestore(data.uuid, {
       name: `VM restore (${data.vm.name})`,
@@ -310,6 +307,7 @@ export class SysosAppBackupsManagerService {
 
     this.Modal.openRegisteredModal('recovery-wizard', '.window--backups-manager .window__main',
       {
+        type: 'restore_vm',
         title: `Select required data for Restore VM (${data.vm.name})`,
         data
       }

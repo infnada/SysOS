@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 
 import {Application} from '@sysos/lib-application';
-import {SysosAppInfrastructureManagerService} from "../services/sysos-app-infrastructure-manager.service";
+import {SysosAppInfrastructureManagerService} from '../services/sysos-app-infrastructure-manager.service';
 
 @Component({
   selector: 'saim-actions',

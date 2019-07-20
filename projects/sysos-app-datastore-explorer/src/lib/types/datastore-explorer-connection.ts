@@ -1,4 +1,4 @@
-import {NetAppVolume} from "@sysos/app-infrastructure-manager";
+import {NetAppVolume, VMWareObject, VMWareDatastore} from '@sysos/app-infrastructure-manager';
 
 export interface DatastoreExplorerConnection {
   uuid?: string;
@@ -7,12 +7,7 @@ export interface DatastoreExplorerConnection {
   port: number;
   type: string;
   data: {
-    datastore?:  {
-      name: string;
-      obj: {
-        name: string;
-      };
-    };
+    datastore?: VMWareObject & { data: VMWareDatastore };
     datacenter?: string;
     volume?: NetAppVolume
   };

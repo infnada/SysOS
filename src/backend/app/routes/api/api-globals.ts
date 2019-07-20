@@ -23,7 +23,7 @@ export class ApiGlobalsModule {
   serverError(err: any): void {
     console.log(err);
 
-    this.res.status(400);
+    this.res.status(200);
     this.res.json(
       {
         status: 'error',

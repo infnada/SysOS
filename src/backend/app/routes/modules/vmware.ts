@@ -28,6 +28,8 @@ export class VMWareModule {
           if (err) return reject(err);
           return resolve(result);
         });
+      }).catch(e => {
+        return reject(e);
       });
 
     });
@@ -45,7 +47,9 @@ export class VMWareModule {
     return fetch(`${proto}://${host}:${port}/rest/com/vmware/cis/session?~action=get`, {
       method: 'POST',
       headers: requestHeaders
-    }).then(res => res);
+    }).then(res => res).catch(e => {
+      return e;
+    });;
 
   }
 
@@ -62,7 +66,9 @@ export class VMWareModule {
     return fetch(`${proto}://${host}:${port}${path}`, {
       method: 'GET',
       headers: requestHeaders
-    }).then(res => res);
+    }).then(res => res).catch(e => {
+      return e;
+    });;
 
   }
 
@@ -89,7 +95,9 @@ export class VMWareModule {
       method: 'POST',
       body: xml,
       headers: requestHeaders
-    }).then(res => res);
+    }).then(res => res).catch(e => {
+      return e;
+    });
 
   }
 
@@ -115,6 +123,8 @@ export class VMWareModule {
           if (err) return reject(err);
           return resolve(result);
         });
+      }).catch(e => {
+        return reject(e);
       });
 
     });

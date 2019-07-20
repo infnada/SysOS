@@ -66,7 +66,7 @@ export class SysosLibVmwareService {
 
         // Is an array of 1 value as string
       } else if (Array.isArray(value) && value.length === 1 && value[0] !== Object(value[0])) {
-        newObj[key] = (value[0] === "true" ? true : value[0] === "false" ? false : value[0]);
+        newObj[key] = (value[0] === 'true' ? true : value[0] === 'false' ? false : value[0]);
 
         // Is an array of 1 value as object
       } else if (Array.isArray(value) && value.length === 1 && value[0] === Object(value[0])) {
@@ -81,7 +81,7 @@ export class SysosLibVmwareService {
 
           // Is an array of 1 value as string
           if (Array.isArray(v) && v.length === 1 && v[0] !== Object(v[0])) {
-            newObj[k] = (v[0] === "true" ? true : v[0] === "false" ? false : v[0]);
+            newObj[k] = (v[0] === 'true' ? true : v[0] === 'false' ? false : v[0]);
 
             // Is an array of 1 value as object
           } else if (Array.isArray(v) && v.length === 1 && v[0] === Object(v[0])) {
@@ -128,7 +128,7 @@ export class SysosLibVmwareService {
             // Is array of strings
           } else if (typeof v === 'string') {
             if (!newObj[key]) newObj[key] = [];
-            newObj[key][k] = newObj[k] = (v === "true" ? true : v === "false" ? false : v);;
+            newObj[key][k] = newObj[k] = (v === 'true' ? true : v === 'false' ? false : v);
 
           } else {
             newObj[k] = v;
@@ -140,7 +140,7 @@ export class SysosLibVmwareService {
         return newObj;
 
       } else if (typeof value === 'string') {
-        newObj[key] = (value === "true" ? true : value === "false" ? false : value);
+        newObj[key] = (value === 'true' ? true : value === 'false' ? false : value);
         return newObj;
       } else {
 
@@ -205,7 +205,10 @@ export class SysosLibVmwareService {
 
         // Something is wrong
         if (res.data['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault']) {
-          return this.errorHandler(res.data['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault'][0].detail[0]);
+          return this.errorHandler({
+            detail: res.data['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault'][0].detail[0],
+            faultstring: res.data['soapenv:Envelope']['soapenv:Body'][0]['soapenv:Fault'][0].faultstring
+          });
         }
 
         return res.data['soapenv:Envelope']['soapenv:Body'][0];

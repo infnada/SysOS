@@ -1,11 +1,13 @@
 import {Component, Input} from '@angular/core';
 
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+import {NGXLogger} from "ngx-logger";
+import {ToastrService} from "ngx-toastr";
 
 import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
 import {SysosLibModalService} from '@sysos/lib-modal';
 import {SysosLibVmwareService} from '@sysos/lib-vmware';
-import {SysosLibNetappService} from "@sysos/lib-netapp";
+import {SysosLibNetappService} from '@sysos/lib-netapp';
 import {IMConnection, IMESXiHost, NetAppIface, NetAppVserver, NetAppVolume, VMWareFirewallRule} from '@sysos/app-infrastructure-manager';
 
 @Component({
@@ -19,12 +21,12 @@ export class SysosModalEsxiSelectableComponent {
   @Input() volume: NetAppVolume;
 
   private InfrastructureManagerVMWare;
-  private hostData;
 
   selectedHost: IMESXiHost;
   selectedIface: NetAppIface;
   ESXIHosts: IMESXiHost[];
 
+  private hostData;
   finishLoading: boolean = false;
   foundIp: boolean = false;
   foundIfaces: NetAppIface[];
@@ -37,6 +39,8 @@ export class SysosModalEsxiSelectableComponent {
   };
 
   constructor(public activeModal: NgbActiveModal,
+              private logger: NGXLogger,
+              private Toastr: ToastrService,
               private serviceInjector: SysosLibServiceInjectorService,
               private Modal: SysosLibModalService,
               private VMWare: SysosLibVmwareService,
@@ -63,25 +67,33 @@ export class SysosModalEsxiSelectableComponent {
         iface['current-node'] === this.volume['volume-id-attributes'].node; // TODO: necessary this check?
     });
 
-    this.Modal.openLittleModal('PLEASE WAIT', 'Connecting to vCenter...', '.modal-esxi-selectable', 'plain');
+    this.Modal.openLittleModal('PLEASE WAIT', 'Connecting to vCenter...', '.modal-esxi-selectable', 'plain').then(() => {
 
-    this.VMWare.connectvCenterSoap(this.selectedHost.virtual.credential, this.selectedHost.virtual.host, this.selectedHost.virtual.port).then((connectionData) => {
-      if (connectionData.status === 'error') throw new Error('Failed to connect to vCenter');
+      return this.VMWare.connectvCenterSoap(this.selectedHost.virtual.credential, this.selectedHost.virtual.host, this.selectedHost.virtual.port);
+    }).then((connectSoapResult) => {
+      if (connectSoapResult.status === 'error') throw {error: connectSoapResult.error, description: 'Failed to connect to vCenter'};
 
       this.Modal.changeModalText('Getting data...', '.modal-esxi-selectable');
 
       return this.VMWare.getHost(this.selectedHost.virtual.credential, this.selectedHost.virtual.host, this.selectedHost.virtual.port, this.selectedHost.host.host);
-    }).then((hostData) => {
-      if (hostData.status === 'error') throw new Error('Failed to get Host from vCenter');
+    }).then((hostResult) => {
+      if (hostResult.status === 'error') throw {error: hostResult.error, description: 'Failed to get Host data from vCenter'};
 
-      console.log(hostData.data);
+      console.log(hostResult.data);
 
-      this.hostData = hostData.data;
+      this.hostData = hostResult.data;
+
+      // If it's an Object (only 1 managed datastore) convert to array
+      if (!Array.isArray(hostResult.data.datastore.ManagedObjectReference)) {
+        hostResult.data.datastore.ManagedObjectReference = [hostResult.data.datastore.ManagedObjectReference];
+      }
 
       // Check if some of the datastores IPs match foundIfaces IP
-      hostData.data.datastore.ManagedObjectReference.forEach((datastore) => {
-        this.VMWare.getDatastoreProps(this.selectedHost.virtual.credential, this.selectedHost.virtual.host, this.selectedHost.virtual.port, datastore.name).then((datastoreData) => {
-          console.log(datastoreData);
+      hostResult.data.datastore.ManagedObjectReference.forEach((datastoreObj) => {
+        this.VMWare.getDatastoreProps(this.selectedHost.virtual.credential, this.selectedHost.virtual.host, this.selectedHost.virtual.port, datastoreObj.name).then((datastoreResult) => {
+          if (datastoreResult.status === 'error') throw {error: datastoreResult.error, description: 'Failed to get Datastore data from vCenter'};
+
+          console.log(datastoreResult);
 
           /*data.summary.type === 'NFS41'
           data.info.nas.type
@@ -111,7 +123,7 @@ export class SysosModalEsxiSelectableComponent {
         this.foundIfaces.forEach((iface) => {
           // TODO: get correct ESXi address
           // TODO: choose the lowest netmask
-          if (ipInSameSubnet(hostData.data.config.network.vnic.spec.ip.ipAddress, iface.address, iface.netmask)) this.sameSubnetIp.push(iface);
+          if (ipInSameSubnet(hostResult.data.config.network.vnic.spec.ip.ipAddress, iface.address, iface.netmask)) this.sameSubnetIp.push(iface);
         });
 
         // Preselect 1st IP on same subnet
@@ -129,19 +141,42 @@ export class SysosModalEsxiSelectableComponent {
 
       // Get Host firewall rules data
       this.Modal.closeModal('.modal-esxi-selectable');
+    }).catch((e) => {
+      this.logger.error(`Infrastructure Manager [${this.hostData.uuid}] -> Error while getting VMWare data -> host [${this.hostData.host}] -> ${e.description}`);
+
+      if (this.Modal.isModalOpened('.modal-esxi-selectable')) {
+        this.Modal.changeModalType('danger', '.modal-esxi-selectable');
+        this.Modal.changeModalText(e.description, '.modal-esxi-selectable');
+      }
+
+      this.Toastr.error((e.description ? e.description : e.message), 'Error getting data from VMWare');
+
+      throw e;
     });
   }
 
   checkIface() {
 
     if (this.selectedIface['data-protocols']['data-protocol'] === 'nfs' && !this.ifaceServiceData) {
-      this.Modal.openLittleModal('PLEASE WAIT', 'Checking storage service status...', '.modal-esxi-selectable', 'plain');
+      this.Modal.openLittleModal('PLEASE WAIT', 'Checking storage service status...', '.modal-esxi-selectable', 'plain').then(() => {
 
-      this.NetApp.getNFSService(this.storage.credential, this.storage.host, this.storage.port, this.vserver["vserver-name"]).then((serviceData) => {
-        if (serviceData.status === 'error') throw new Error('Failed to get NFS service status from Storage');
+        return this.NetApp.getNFSService(this.storage.credential, this.storage.host, this.storage.port, this.vserver['vserver-name']);
+      }).then((nfsServiceResult) => {
+        if (nfsServiceResult.status === 'error') throw {error: nfsServiceResult.error, description: 'Failed to get NFS service status from Storage'};
 
-        this.ifaceServiceData = serviceData.data;
+        this.ifaceServiceData = nfsServiceResult.data;
         this.Modal.closeModal('.modal-esxi-selectable');
+      }).catch((e) => {
+        this.logger.error(`Infrastructure Manager [${this.storage.uuid}] -> Error while getting NetApp data -> host [${this.storage.host}] -> ${e.description}`);
+
+        if (this.Modal.isModalOpened('.modal-esxi-selectable')) {
+          this.Modal.changeModalType('danger', '.modal-esxi-selectable');
+          this.Modal.changeModalText(e.description, '.modal-esxi-selectable');
+        }
+
+        this.Toastr.error((e.description ? e.description : e.message), 'Error getting data from NetApp');
+
+        throw e;
       });
     }
 

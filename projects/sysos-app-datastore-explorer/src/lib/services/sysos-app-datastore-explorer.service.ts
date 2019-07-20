@@ -148,7 +148,11 @@ export class SysosAppDatastoreExplorerService {
 
     this.Modal.openRegisteredModal('question', '.window--datastore-explorer .window__main',
       {
-        title: `Delete connection ${this.getConnectionByUuid(uuid).type}` === 'vmware' ? this.getConnectionByUuid(uuid).data.datastore.obj.name : this.getConnectionByUuid(uuid).type === 'netapp' ? this.getConnectionByUuid(uuid).data.volume['volume-id-attributes'].name : null,
+        title: `Delete connection ${this.getConnectionByUuid(uuid).type}` === 'vmware' ?
+          this.getConnectionByUuid(uuid).data.datastore.obj.name :
+          this.getConnectionByUuid(uuid).type === 'netapp' ?
+            this.getConnectionByUuid(uuid).data.volume['volume-id-attributes'].name :
+            null,
         text: 'Remove the selected connection from the inventory?'
       }
     ).then((modalInstance) => {

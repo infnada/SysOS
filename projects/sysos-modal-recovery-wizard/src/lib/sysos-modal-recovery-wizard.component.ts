@@ -3,12 +3,15 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {NGXLogger} from 'ngx-logger';
+import {ToastrService} from "ngx-toastr";
 
 import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
 import {SysosLibModalService} from '@sysos/lib-modal';
 import {SysosLibVmwareService} from '@sysos/lib-vmware';
 import {SysosLibNetappService} from '@sysos/lib-netapp';
-import {IMConnection, IMESXiHost, NetAppVolume, NetAppVserver, NetAppSnapshot} from '@sysos/app-infrastructure-manager';
+import {IMConnection, IMESXiHost, IMDatastoreLink, NetAppVolume, NetAppVserver, NetAppSnapshot, NetAppIface, VMWareObject, VMWareVM, VMWareDatastore, VMWareFirewallRule} from '@sysos/app-infrastructure-manager';
+import {VmInstantRecovery, RestoreVm} from "@sysos/app-backups-manager";
+
 
 @Component({
   selector: 'smrw-sysos-modal-recovery-wizard',
@@ -16,37 +19,37 @@ import {IMConnection, IMESXiHost, NetAppVolume, NetAppVserver, NetAppSnapshot} f
   styleUrls: ['./sysos-modal-recovery-wizard.component.scss']
 })
 export class SysosModalRecoveryWizardComponent implements OnInit {
+  @Input() type: 'restore_vm' | 'vm_instant_recovery';
   @Input() title: string;
-  @Input() data: {
-    uuid: string;
-    storage: IMConnection;
-    volume: NetAppVolume & { Snapshots: NetAppSnapshot[] };
-    vserver: NetAppVserver;
-    snapshot: NetAppSnapshot & { disabled?: boolean; };
-    vm: {
-      name: string;
-      runtime: {
-        host: {
-          name: string;
-        }
-      };
-      summary: {
-        config: {
-          vmPathName: string;
-        }
-      };
-    };
-  };
+  @Input() data: VmInstantRecovery | RestoreVm;
 
+  private InfrastructureManager;
   private InfrastructureManagerVMWare;
 
+  mainLinkFound: boolean = true;
+
+  selectedHost: IMESXiHost;
+  selectedIface: NetAppIface;
   ESXIHosts: IMESXiHost[];
+
+  private hostData;
+  finishLoading: boolean = false;
+  foundIp: boolean = false;
+  foundIfaces: NetAppIface[];
+  sameSubnetIp: NetAppIface[] = [];
+  manualIp: boolean = false;
+  forceManualIp: boolean = false;
+  ifaceServiceData: {
+    'is-nfsv3-enabled': boolean;
+    'is-nfsv41-enabled': boolean;
+  };
+
   hostFolders: { name: string; }[];
   hostResourcePools: { name: string; }[];
-  selectedHost: IMESXiHost;
   selectedFolder: string;
   selectedResourcePool: string;
   powerVM: boolean;
+
 
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
@@ -54,12 +57,14 @@ export class SysosModalRecoveryWizardComponent implements OnInit {
 
   constructor(public activeModal: NgbActiveModal,
               private logger: NGXLogger,
+              private Toastr: ToastrService,
               private formBuilder: FormBuilder,
               private serviceInjector: SysosLibServiceInjectorService,
               private Modal: SysosLibModalService,
               private VMWare: SysosLibVmwareService,
               private NetApp: SysosLibNetappService) {
 
+    this.InfrastructureManager = this.serviceInjector.get('SysosAppInfrastructureManagerService');
     this.InfrastructureManagerVMWare = this.serviceInjector.get('SysosAppInfrastructureVmwareService');
     this.ESXIHosts = this.InfrastructureManagerVMWare.getESXihosts();
   }
@@ -73,7 +78,7 @@ export class SysosModalRecoveryWizardComponent implements OnInit {
       snapshotFormControl: ['', Validators.required]
     });
     this.secondFormGroup = this.formBuilder.group({
-      recoveryModeFormControl: ['', Validators.required]
+      recoveryModeFormControl: [(this.type === 'vm_instant_recovery' ? 'new' : 'original'), Validators.required]
     });
     this.thirdFormGroup = this.formBuilder.group({
       hostFormControl: ['', Validators.required],
@@ -83,46 +88,242 @@ export class SysosModalRecoveryWizardComponent implements OnInit {
     });
 
     /**
-     * Check if VM exists in storage snapshot "this.data.snapshots"
+     * Check if VM exists in any managed datastore
      */
-
-    this.Modal.openLittleModal('PLEASE WAIT', 'Searching VM in SnapShots...', '.modal-recovery-wizard', 'plain');
-
     const gspPromises = [];
+    return this.Modal.openLittleModal('PLEASE WAIT', 'Searching VM in SnapShots...', '.modal-recovery-wizard', 'plain').then(() => {
+      const regex = /\[*\]\s(.*)\/.*\.vmx/gi;
+      const vmPath: string = regex.exec(this.data.vm.data["summary.config.vmPathName"])[1];
+      let manageAllVmDatastores = true;
 
-    const regex = /\[*\]\s(.*)\/.*\.vmx/gi;
-    const str = this.data.vm.summary.config.vmPathName;
-    const vmPath = regex.exec(str)[1];
+      // Get VM main Datastore (where VM .vmx file is located)
+      const mainDatastoreName: string = this.data.vm.data['summary.config.vmPathName'].split(/\[(.*?)\]/)[1];
 
-    if (!vmPath) throw new Error('SAFETY STOP: VM cannot be on root folder');
+      // If it's an Object (only 1 managed datastore) convert to array
+      if (!Array.isArray(this.data.vm.data.datastore.ManagedObjectReference)) {
+        this.data.vm.data.datastore.ManagedObjectReference = [this.data.vm.data.datastore.ManagedObjectReference];
+      }
 
-    this.data.volume.Snapshots.forEach((snapshot, i) => {
+      // Get links for each VM datastore
+      return this.data.vm.data.datastore.ManagedObjectReference.forEach((datastoreObj: { type: string; name: string; }) => {
 
-      this.logger.debug(`Backups Manager [${this.data.uuid}] -> Check VM from storage snapshot -> storage [${this.data.storage.host}],
-       vserver [${this.data.vserver['vserver-name']}], volume [${this.data.volume['volume-id-attributes'].name}], snapshot [${snapshot.name}], path [/${vmPath}]`);
-      gspPromises.push(this.NetApp.getSnapshotFiles(
-        this.data.storage.credential,
-        this.data.storage.host,
-        this.data.storage.port,
-        this.data.vserver['vserver-name'],
-        this.data.volume['volume-id-attributes'].name,
-        snapshot.name,
-        '/' + vmPath
-      ).then((res) => {
-        if (res.status === 'error') {
-          this.logger.debug(`Backups Manager [${this.data.uuid}] -> No VM data at this storage snapshot -> storage [${this.data.storage.host}],
-           vserver [${this.data.vserver['vserver-name']}], volume [${this.data.volume['volume-id-attributes'].name}], snapshot [${snapshot.name}], path [/${vmPath}]`);
-          // TODO this.data.storageSnapshots[i].disabled = true;
+        const fullDatastoreObj: VMWareObject & { data: VMWareDatastore } = this.InfrastructureManagerVMWare.getObjectById(this.data.virtual.uuid, datastoreObj.name);
+        const datastoreLink: IMDatastoreLink[] = this.InfrastructureManager.checkDatastoreLinkWithManagedStorage(fullDatastoreObj);
+
+        if (datastoreLink.length > 1) throw new Error('Multiple links found for this storage');
+        if (fullDatastoreObj.name === mainDatastoreName && datastoreLink.length === 0) throw new Error('No main link found');
+        if (datastoreLink.length === 0) manageAllVmDatastores = false; // One or more VM datastores are not managed by SysOS (full recovery may not be possible)
+
+        // True work
+        if (fullDatastoreObj.name === mainDatastoreName) {
+
+          this.data.storage = datastoreLink[0].storage;
+          this.data.vserver = datastoreLink[0].vserver;
+          this.data.volume = datastoreLink[0].volume;
+
+          // Check in every storage snapshot if main VM .vmx file exists
+          this.data.volume.Snapshots.forEach((snapshotObj: NetAppSnapshot & { disabled?: boolean; }) => {
+            this.logger.debug(`Backups Manager [${this.data.uuid}] -> Check VM from storage snapshot -> storage [${this.data.storage.host}],
+              vserver [${this.data.vserver['vserver-name']}], volume [${this.data.volume['volume-id-attributes'].name}], snapshot [${snapshotObj.name}], path [/${vmPath}]`);
+
+            // NetApp call
+            gspPromises.push(this.NetApp.getSnapshotFiles(
+              this.data.storage.credential,
+              this.data.storage.host,
+              this.data.storage.port,
+              this.data.vserver['vserver-name'],
+              this.data.volume['volume-id-attributes'].name,
+              snapshotObj.name,
+              '/' + vmPath
+            ).then((res) => {
+              if (res.status === 'error') {
+                this.logger.debug(`Backups Manager [${this.data.uuid}] -> No VM data at this storage snapshot -> storage [${this.data.storage.host}],
+                  vserver [${this.data.vserver['vserver-name']}], volume [${this.data.volume['volume-id-attributes'].name}], snapshot [${snapshotObj.name}], path [/${vmPath}]`);
+
+                // Disable this storage snapshot on error (file does not exist)
+                snapshotObj.disabled = true;
+              }
+            }));
+
+          });
+
         }
-      }));
-    });
 
-    return Promise.all(gspPromises).then(() => {
+      });
+
+    }).then(() => {
+      console.log(this.data);
+      return Promise.all(gspPromises);
+    }).then(() => {
       this.Modal.closeModal('.modal-recovery-wizard');
     }).catch((e) => {
       console.log(e);
+
+      if (e.message === 'No main link found') this.mainLinkFound = false;
+
       this.Modal.closeModal('.modal-recovery-wizard');
     });
+
+    // TODO:
+    // Get VM datastoreS
+    //    Check if it's a managed datastore
+    //    Get storage, vserver, volume & volume snapshots for datastore
+    // Get location of each VM file
+    //    Check each snapshot if contains VM file
+    //        Disable snapshot that not con.modal-bodytains VM file
+    //          VM file or entire VM not exist on this snapshot timestamp? Read main .vmx file if found?
+    //
+
+  }
+
+  checkESXidata() {
+    this.ifaceServiceData = null;
+    this.foundIp = false;
+    this.manualIp = false;
+    this.forceManualIp = false;
+    this.finishLoading = false;
+    this.sameSubnetIp = [];
+
+    // Get Volume IP and Protocol
+    this.foundIfaces = this.data.storage.data.Ifaces.netifaces.filter((iface) => {
+      return iface.role === 'data' &&
+        iface.vserver === this.data.vserver['vserver-name'] &&
+        iface['operational-status'] === 'up' &&
+        iface['administrative-status'] === 'up' &&
+        iface['current-node'] === this.data.volume['volume-id-attributes'].node; // TODO: necessary this check?
+    });
+
+    this.Modal.openLittleModal('PLEASE WAIT', 'Connecting to vCenter...', '.modal-recovery-wizard', 'plain').then(() => {
+
+      return this.VMWare.connectvCenterSoap(this.selectedHost.virtual.credential, this.selectedHost.virtual.host, this.selectedHost.virtual.port);
+    }).then((connectSoapResult) => {
+      if (connectSoapResult.status === 'error') throw {error: connectSoapResult.error, description: 'Failed to connect to vCenter'};
+
+      this.Modal.changeModalText('Getting data...', '.modal-recovery-wizard');
+
+      return this.VMWare.getHost(this.selectedHost.virtual.credential, this.selectedHost.virtual.host, this.selectedHost.virtual.port, this.selectedHost.host.host);
+    }).then((hostResult) => {
+      if (hostResult.status === 'error') throw {error: hostResult.error, description: 'Failed to get Host data from vCenter'};
+
+      console.log(hostResult.data);
+
+      this.hostData = hostResult.data;
+
+      // If it's an Object (only 1 managed datastore) convert to array
+      if (!Array.isArray(hostResult.data.datastore.ManagedObjectReference)) {
+        hostResult.data.datastore.ManagedObjectReference = [hostResult.data.datastore.ManagedObjectReference];
+      }
+
+      // Check if some of the datastores IPs match foundIfaces IP
+      hostResult.data.datastore.ManagedObjectReference.forEach((datastoreObj) => {
+        this.VMWare.getDatastoreProps(this.selectedHost.virtual.credential, this.selectedHost.virtual.host, this.selectedHost.virtual.port, datastoreObj.name).then((datastoreResult) => {
+          if (datastoreResult.status === 'error') throw {error: datastoreResult.error, description: 'Failed to get Datastore data from vCenter'};
+
+          console.log(datastoreResult);
+
+          /*data.summary.type === 'NFS41'
+          data.info.nas.type
+          data.info.nas.remoteHost
+          data.info.nas.remoteHostNames*/
+
+          // TODO: foundIp true?
+        });
+      });
+
+      // Check if one of foundIfaces IP is within same subnet of host network
+      if (!this.foundIp) {
+        const ipInSameSubnet = (addr1: string, addr2: string, mask: string): boolean => {
+          const res1 = [];
+          const res2 = [];
+          const arr1 = addr1.split('.');
+          const arr2 = addr2.split('.');
+          const arrmask  = mask.split('.');
+
+          for (let i = 0; i < arr1.length; i++) {
+            res1.push(parseInt(arr1[i], 10) & parseInt(arrmask[i], 10));
+            res2.push(parseInt(arr2[i], 10) & parseInt(arrmask[i], 10));
+          }
+          return res1.join('.') === res2.join('.');
+        };
+
+        this.foundIfaces.forEach((iface) => {
+          // TODO: get correct ESXi address
+          // TODO: choose the lowest netmask
+          if (ipInSameSubnet(hostResult.data.config.network.vnic.spec.ip.ipAddress, iface.address, iface.netmask)) this.sameSubnetIp.push(iface);
+        });
+
+        // Preselect 1st IP on same subnet
+        if (this.sameSubnetIp.length > 0) {
+          this.selectedIface = this.sameSubnetIp[0];
+          this.checkIface();
+        } else {
+          // Ask user to select an IP
+          this.manualIp = true;
+          this.forceManualIp = true;
+        }
+      }
+
+      this.finishLoading = true;
+
+      // Get Host firewall rules data
+      this.Modal.closeModal('.modal-recovery-wizard');
+    }).catch((e) => {
+      this.logger.error(`Infrastructure Manager [${this.hostData.uuid}] -> Error while getting VMWare data -> host [${this.hostData.host}] -> ${e.description}`);
+
+      if (this.Modal.isModalOpened('.modal-recovery-wizard')) {
+        this.Modal.changeModalType('danger', '.modal-recovery-wizard');
+        this.Modal.changeModalText(e.description, '.modal-recovery-wizard');
+      }
+
+      this.Toastr.error((e.description ? e.description : e.message), 'Error getting data from VMWare');
+
+      throw e;
+    });
+  }
+
+  checkIface() {
+
+    if (this.selectedIface['data-protocols']['data-protocol'] === 'nfs' && !this.ifaceServiceData) {
+      this.Modal.openLittleModal('PLEASE WAIT', 'Checking storage service status...', '.modal-recovery-wizard', 'plain').then(() => {
+
+        return this.NetApp.getNFSService(this.data.storage.credential, this.data.storage.host, this.data.storage.port, this.data.vserver['vserver-name']);
+      }).then((nfsServiceResult) => {
+        if (nfsServiceResult.status === 'error') throw {error: nfsServiceResult.error, description: 'Failed to get NFS service status from Storage'};
+
+        this.ifaceServiceData = nfsServiceResult.data;
+        this.Modal.closeModal('.modal-recovery-wizard');
+      }).catch((e) => {
+        this.logger.error(`Infrastructure Manager [${this.data.storage.uuid}] -> Error while getting NetApp data -> host [${this.data.storage.host}] -> ${e.description}`);
+
+        if (this.Modal.isModalOpened('.modal-recovery-wizard')) {
+          this.Modal.changeModalType('danger', '.modal-recovery-wizard');
+          this.Modal.changeModalText(e.description, '.modal-recovery-wizard');
+        }
+
+        this.Toastr.error((e.description ? e.description : e.message), 'Error getting data from NetApp');
+
+        throw e;
+      });
+    }
+
+  }
+
+  checkFirewallNFS(nfsVersion) {
+    if (this.hostData.config.firewall.defaultPolicy.outgoingBlocked === false) return true;
+
+    const firewallRule = this.hostData.config.firewall.ruleset.find((rule: VMWareFirewallRule) => {
+      return rule.key === (nfsVersion === 3 ? 'nfsClient' : 'nfs41Client');
+    });
+
+    // No default rule found
+    if (!firewallRule) return false;
+
+    if (firewallRule.allowedHosts.allIp === true) return true;
+    if (firewallRule.allowedHosts.ipAddress && typeof firewallRule.allowedHosts.ipAddress === 'string' && firewallRule.allowedHosts.ipAddress === this.selectedIface.address) return true;
+    if (firewallRule.allowedHosts.ipAddress && Array.isArray(firewallRule.allowedHosts.ipAddress) && firewallRule.allowedHosts.ipAddress.includes(this.selectedIface.address)) return true;
+    // TODO check when is a network instead of an IP
+
+    return false;
   }
 
   /**

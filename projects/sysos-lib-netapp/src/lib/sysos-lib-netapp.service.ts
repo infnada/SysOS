@@ -24,7 +24,7 @@ export class SysosLibNetappService {
     Object.entries(data).forEach(([key, value]) => {
 
       if (Array.isArray(value) && value.length === 1 && value[0] !== Object(value[0])) {
-        parent[key] = (value[0] === "true" ? true : value[0] === "false" ? false : value[0]);
+        parent[key] = (value[0] === 'true' ? true : value[0] === 'false' ? false : value[0]);
       } else if (Array.isArray(value) && value.length === 1 && value[0] === Object(value[0])) {
         parent[key] = this.parseNetAppObject(value[0], parent[key]);
       } else if (Array.isArray(value) && value.length > 1 && value[0] === Object(value[0])) {
@@ -77,17 +77,17 @@ export class SysosLibNetappService {
       path,
       xml
     }).pipe(map((data: any) => {
-        if (data.status === 'error') return this.errorHandler(data.errno);
-        if (!data.data.netapp) return this.errorHandler(data.data.response);
-        if (data.data.netapp.results[0].$.status === 'failed') {
-          return this.errorHandler(data.data.netapp.results[0].$);
-        }
+      if (data.status === 'error') return this.errorHandler(data.errno ? data.errno : data.data);
+      if (!data.data.netapp) return this.errorHandler(data.data.response);
+      if (data.data.netapp.results[0].$.status === 'failed') {
+        return this.errorHandler(data.data.netapp.results[0].$);
+      }
 
-        return data.data.netapp.results[0];
-      },
-      error => {
-        this.logger.error('[NetApp] -> doCall -> Error while doing the call -> ', error);
-      }));
+      return data.data.netapp.results[0];
+    },
+    error => {
+      this.logger.error('[NetApp] -> doCall -> Error while doing the call -> ', error);
+    }));
 
   }
 

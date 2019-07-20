@@ -5,7 +5,7 @@ import {v4 as uuidv4} from 'uuid';
 
 import {SysosLibNetappService} from '@sysos/lib-netapp';
 import {SysosLibVmwareService} from '@sysos/lib-vmware';
-import {VMWareFirewallRule} from "@sysos/app-infrastructure-manager";
+import {VMWareFirewallRule} from '@sysos/app-infrastructure-manager';
 
 import {MountRestoreDatastore} from '../types/mount-restore-datastore';
 import {RestoreDatastoreFiles} from '../types/restore-datastore-files';
@@ -587,7 +587,7 @@ export class SysosAppBackupsManagerHelpersService {
       ipsRule = `${firewallRule.allowedHosts.ipAddress}, ${data.iface.address}`;
     }
     if (firewallRule.allowedHosts.ipAddress && Array.isArray(firewallRule.allowedHosts.ipAddress) && firewallRule.allowedHosts.ipAddress.includes(data.iface.address)) {
-      ipsRule = `${firewallRule.allowedHosts.ipAddress.join(", ")}, ${data.iface.address}`;
+      ipsRule = `${firewallRule.allowedHosts.ipAddress.join('', '')}, ${data.iface.address}`;
     }
 
     this.logger.debug('Backups Manager [%s] -> Updating firewall rules -> vCenter [%s], host [%s], rule [%s]', data.uuid, data.virtual.host, data.host.host, ruleName);
@@ -614,7 +614,7 @@ export class SysosAppBackupsManagerHelpersService {
 
       // Check if storage interface is NFS and which protocol versions are enabled
       if (data.iface['data-protocols']['data-protocol'] === 'nfs') {
-        return this.NetApp.getNFSService(data.storage.credential, data.storage.host, data.storage.port, data.vserver["vserver-name"]).then((serviceData) => {
+        return this.NetApp.getNFSService(data.storage.credential, data.storage.host, data.storage.port, data.vserver['vserver-name']).then((serviceData) => {
           if (serviceData.status === 'error') throw new Error('Failed to get NFS service status from Storage');
 
           // NFS v4.1
@@ -660,10 +660,10 @@ export class SysosAppBackupsManagerHelpersService {
 
         // TODO: check connectivity from NFS node
         this.logger.debug('Backups Manager [%s] -> Getting network system -> host [%s]', data.uuid, data.host.host);
-        return this.VMWare.getHostConfigManagerNetworkSystem(data.virtual.credential, data.virtual.host, data.virtual.port, data.host.host).then((res) => {
-          if (res.status === 'error') throw new Error('Failed to get networkSystem from vCenter');
+        return this.VMWare.getHostConfigManagerNetworkSystem(data.virtual.credential, data.virtual.host, data.virtual.port, data.host.host).then((networkSystemData) => {
+          if (networkSystemData.status === 'error') throw new Error('Failed to get networkSystem from vCenter');
 
-          const networkSystem = res.data;
+          const networkSystem = networkSystemData.data;
           return this.VMWare.getHostNetworkInfoConsoleVnic(data.virtual.credential, data.virtual.host, data.virtual.port, networkSystem);
 
         }).then((networkInfo) => {
@@ -689,8 +689,8 @@ export class SysosAppBackupsManagerHelpersService {
             );
           }
 
-        }).then((res) => {
-          if (res.status === 'error') throw new Error('Failed to create Volume Exports');
+        }).then((setExportRuleData) => {
+          if (setExportRuleData.status === 'error') throw new Error('Failed to create Volume Exports');
         });
 
       }
@@ -720,7 +720,7 @@ export class SysosAppBackupsManagerHelpersService {
 
       return Promise.all([
         this.VMWare.getHostConfigManagerDatastoreSystem(data.virtual.credential, data.virtual.host, data.virtual.port, data.host.host),
-        this.NetApp.getNFSService(data.storage.credential, data.storage.host, data.storage.port, data.vserver["vserver-name"])
+        this.NetApp.getNFSService(data.storage.credential, data.storage.host, data.storage.port, data.vserver['vserver-name'])
       ]);
     }).then((res) => {
       if (res[0].status === 'error') throw new Error('Failed to get datastoreSystem from vCenter');

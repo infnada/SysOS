@@ -15,11 +15,11 @@
         <ng-container *ngIf="node.type === 'vmware'"><i class="vs-icon vsphere-icon-vcenter"></i> </ng-container>
         <ng-container *ngIf="node.type === 'Datacenter'"><i class="vs-icon vsphere-icon-datacenter"></i> </ng-container>
         <ng-container *ngIf="node.type === 'ClusterComputeResource'"><i class="vs-icon vsphere-icon-cluster"></i> </ng-container>
-        <ng-container *ngIf="node.type === 'HostSystem'"><i class="vs-icon" [ngClass]="{'vsphere-icon-host-disconnected': node.data.runtime.powerState === 'poweredOff', 'vsphere-icon-host': node.data.runtime.powerState === 'poweredOn'}"></i> </ng-container>
+        <ng-container *ngIf="node.type === 'HostSystem'"><i class="vs-icon" [ngClass]="{'vsphere-icon-host-disconnected': node.data.data.runtime.powerState === 'poweredOff', 'vsphere-icon-host': node.data.data.runtime.powerState === 'poweredOn'}"></i> </ng-container>
         <ng-container *ngIf="node.type === 'Folder'"><i class="vs-icon vsphere-icon-folder"></i> </ng-container>
         <ng-container *ngIf="node.type === 'ResourcePool'"><i class="vs-icon vsphere-icon-resource-pool"></i> </ng-container>
-        <ng-container *ngIf="node.type === 'VirtualMachine'"><i class="vs-icon" [ngClass]="{'vsphere-icon-vm': node.data['runtime.powerState'] === 'poweredOff', 'vsphere-icon-vm-on': node.data['runtime.powerState'] === 'poweredOn', 'vsphere-icon-vm-suspended': node.data['runtime.powerState'] === 'suspended'}"></i> </ng-container>
-        <ng-container *ngIf="node.type === 'Datastore'"><i class="vs-icon" [ngClass]="{'vsphere-icon-datastore': node.data['summary.accessible'] === 'true', 'vsphere-icon-datastore-inaccessible': node.data['summary.accessible'] === 'false'}"></i> </ng-container>
+        <ng-container *ngIf="node.type === 'VirtualMachine'"><i class="vs-icon" [ngClass]="{'vsphere-icon-vm': node.data.data['runtime.powerState'] === 'poweredOff', 'vsphere-icon-vm-on': node.data.data['runtime.powerState'] === 'poweredOn', 'vsphere-icon-vm-suspended': node.data.data['runtime.powerState'] === 'suspended'}"></i> </ng-container>
+        <ng-container *ngIf="node.type === 'Datastore'"><i class="vs-icon" [ngClass]="{'vsphere-icon-datastore': node.data.data['summary.accessible'] === 'true', 'vsphere-icon-datastore-inaccessible': node.data.data['summary.accessible'] === 'false'}"></i> </ng-container>
         {{node.name}}
 
         <div style="position: fixed"
@@ -67,17 +67,17 @@
             <!-- Item has submenu -->
             <ng-container *ngIf="menuItem.subMenu">
               <mat-menu #contextSubMenuTree="matMenu">
-                <ng-template matMenuContent let-item="item" let-subMenu="subMenu">
-                  <ng-container *ngFor="let menuItem of subMenu()">
+                <ng-template matMenuContent let-subItem="subItem" let-subMenu="subMenu">
+                  <ng-container *ngFor="let menuItemSub of subMenu">
 
-                    <button mat-menu-item *ngIf="menuItem.text !== 'divider'" (click)="menuItem.action(item)" [disabled]="checkIfDisabled(menuItem)" [innerHTML]="contextToText(menuItem)"></button>
+                    <button mat-menu-item *ngIf="menuItemSub.text !== 'divider'" (click)="menuItemSub.action(subItem)" [disabled]="checkIfDisabled(menuItemSub)" [innerHTML]="contextToText(menuItemSub)"></button>
 
-                    <mat-divider *ngIf="menuItem.text === 'divider'"></mat-divider>
+                    <mat-divider *ngIf="menuItemSub.text === 'divider'"></mat-divider>
                   </ng-container>
                 </ng-template>
               </mat-menu>
 
-              <button mat-menu-item [matMenuTriggerFor]="contextSubMenuTree" [matMenuTriggerData]="{item: item, subMenu: menuItem.subMenu}" *ngIf="menuItem.text !== 'divider'" (click)="menuItem.action(item)" [disabled]="checkIfDisabled(menuItem)" [innerHTML]="contextToText(menuItem)"></button>
+              <button mat-menu-item [matMenuTriggerFor]="contextSubMenuTree" [matMenuTriggerData]="{subItem: item, subMenu: menuItem.subMenu}" *ngIf="menuItem.text !== 'divider'" (click)="menuItem.action(item)" [disabled]="checkIfDisabled(menuItem)" [innerHTML]="contextToText(menuItem)"></button>
             </ng-container>
             <!-- End submenu -->
 

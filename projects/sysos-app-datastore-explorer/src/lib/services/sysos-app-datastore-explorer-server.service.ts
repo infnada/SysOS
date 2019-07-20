@@ -8,7 +8,7 @@ import {SysOSFile} from '@sysos/lib-types';
 import {SysosLibFileSystemService} from '@sysos/lib-file-system';
 import {SysosLibModalService} from '@sysos/lib-modal';
 import {SysosLibVmwareService} from '@sysos/lib-vmware';
-import {SysosLibNetappService} from "@sysos/lib-netapp";
+import {SysosLibNetappService} from '@sysos/lib-netapp';
 
 import {SysosAppDatastoreExplorerService} from './sysos-app-datastore-explorer.service';
 
@@ -70,7 +70,7 @@ export class SysosAppDatastoreExplorerServerService {
           this.DatastoreExplorer.getConnectionByUuid(connectionUuid).data.datastore.obj.name,
           this.DatastoreExplorer.getConnectionByUuid(connectionUuid).data.datastore.name,
           (path ? path : this.dataStore.currentPath)
-        )
+        );
       }
       if (this.DatastoreExplorer.getConnectionByUuid(connectionUuid).type === 'netapp') {
         return this.NetApp.getVolumeFiles(
@@ -80,7 +80,7 @@ export class SysosAppDatastoreExplorerServerService {
           this.DatastoreExplorer.getConnectionByUuid(connectionUuid).data.volume['volume-id-attributes']['owning-vserver-name'],
           this.DatastoreExplorer.getConnectionByUuid(connectionUuid).data.volume['volume-id-attributes'].name,
           (path ? path : this.dataStore.currentPath)
-        )
+        );
       }
     }).then((data) => {
       if (data.status === 'error') throw new Error('Failed to get Datastore files');

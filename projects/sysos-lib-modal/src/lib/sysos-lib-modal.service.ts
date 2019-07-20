@@ -142,10 +142,25 @@ export class SysosLibModalService {
   }
 
   /**
+   * Change type of already created modal
+   */
+  changeModalType(type: 'primary'|'secondary'|'success'|'danger'|'warning'|'info'|'light'|'dark'|'white', selector: string) {
+    this.modalInstances[selector].componentInstance.type = type;
+  }
+
+  /**
    * Close already created modal
    */
   closeModal(selector: string) {
     if (this.modalInstances[selector]) this.modalInstances[selector].close('ok');
+  }
+
+  /**
+   * Check if modal is opened
+   */
+  isModalOpened(selector: string) {
+    if (this.modalInstances[selector]._contentRef) return true;
+    return false;
   }
 
 }

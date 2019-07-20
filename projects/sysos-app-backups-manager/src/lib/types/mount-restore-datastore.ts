@@ -8,7 +8,7 @@ export interface MountRestoreDatastore {
   uuid?: string;
   virtual?: IMESXiHost['virtual'];
   host?: IMESXiHost['host'];
-  iface?: NetAppIface
+  iface?: NetAppIface;
   volumeName?: string;
   datastorePath?: string;
 }

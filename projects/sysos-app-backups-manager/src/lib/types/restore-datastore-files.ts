@@ -8,7 +8,7 @@ export interface RestoreDatastoreFiles {
   uuid?: string;
   virtual?: IMESXiHost['virtual'];
   host?: IMESXiHost['host'];
-  iface?: NetAppIface
+  iface?: NetAppIface;
   esxi_datastore_name?: string;
   volumeName?: string;
   datastorePath?: string;
