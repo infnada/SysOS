@@ -34,6 +34,7 @@ import * as SysOSLibVMWare from '@sysos/lib-vmware';
 import * as NgxMonacoEditor from 'ngx-monaco-editor';
 import * as xterm from 'xterm';
 import * as xtermFit from 'xterm/lib/addons/fit/fit';
+import * as _ from 'lodash';
 
 SystemJS.set('@angular/core', SystemJS.newModule(angularCore));
 SystemJS.set('@angular/forms', SystemJS.newModule(angularForms));
@@ -53,6 +54,7 @@ SystemJS.set('ngx-socket-io', SystemJS.newModule(ngxSocketIo));
 SystemJS.set('ngx-socket-io/src/socket-io.service', SystemJS.newModule(NgxSocketIoService));
 SystemJS.set('angular-file', SystemJS.newModule(angularFile));
 SystemJS.set('uuid', SystemJS.newModule(uuid));
+SystemJS.set('lodash', SystemJS.newModule(_));
 SystemJS.set('@sysos/lib-application', SystemJS.newModule(SysOSLibApplications));
 SystemJS.set('@sysos/lib-file', SystemJS.newModule(SysOSLibFile));
 SystemJS.set('@sysos/lib-file-system', SystemJS.newModule(SysOSLibFileSystem));

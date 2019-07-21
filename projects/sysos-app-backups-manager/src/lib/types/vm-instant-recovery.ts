@@ -2,7 +2,7 @@ import {IMESXiHost, IMConnection, NetAppSnapshot, NetAppVolume, NetAppVserver, N
 
 export interface VmInstantRecovery {
   virtual: IMConnection;
-  vm: VMWareObject & { data: VMWareVM } & {
+  vm: VMWareObject & { info: { data: VMWareVM } } & {
     powerOn?: boolean;
   };
   uuid?: string;

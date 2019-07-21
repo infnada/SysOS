@@ -1,7 +1,7 @@
 <div class="modal-header">
   <div class="modal-title" id="modal-title">{{title}}</div>
   <div class="window__controls window__controls--right">
-    <a class="window__close" (click)="activeModal.close('Close click'); $event.stopPropagation();">
+    <a class="window__close" (click)="activeModal.dismiss(); $event.stopPropagation();">
       <i class="fa fa-close"></i>
     </a>
   </div>
@@ -45,9 +45,9 @@
       <form [formGroup]="thirdFormGroup">
         <ng-template matStepLabel>Destination</ng-template>
         <hr class="hr-text" data-content="Virtual Machine options">
-        <mat-form-field>
+        <mat-form-field class="w-100">
           <mat-label>Select a managed ESXi host</mat-label>
-          <mat-select [(ngModel)]="selectedHost" (selectionChange)="checkESXidata()" formControlName="hostFormControl">
+          <mat-select (selectionChange)="checkESXidata()" formControlName="hostFormControl">
             <mat-option *ngFor="let host of ESXIHosts" [value]="host">
               {{host.host.host}} - {{host.host.name}}
             </mat-option>
@@ -75,13 +75,13 @@
             </ul>
           </ng-container>
 
-          <mat-slide-toggle class="mb-3" [(ngModel)]="manualIp" *ngIf="foundIfaces.length > 1 && forceManualIp === false">
+          <mat-slide-toggle class="mb-3" [(ngModel)]="manualIp" [ngModelOptions]="{standalone: true}" *ngIf="foundIfaces.length > 1 && forceManualIp === false">
             Choose different IP
           </mat-slide-toggle>
 
           <mat-form-field class="w-100" *ngIf="foundIfaces.length > 0 && manualIp === true">
             <mat-label>Select an IP to connect with Storage Volume</mat-label>
-            <mat-select [(ngModel)]="selectedIface" (selectionChange)="checkIface()">
+            <mat-select [(ngModel)]="selectedIface" (selectionChange)="checkIface()" formControlName="ifaceFormControl">
               <mat-option *ngFor="let iface of foundIfaces" [value]="iface">
                 {{iface.address}} - {{iface['data-protocols']['data-protocol']}} - {{iface['interface-name']}}
               </mat-option>
@@ -90,33 +90,37 @@
         </ng-container>
 
         <mat-divider></mat-divider>
-        <mat-form-field>
+
+        <mat-form-field class="w-100">
           <mat-label>Select a VM Folder</mat-label>
-          <mat-select [(ngModel)]="selectedFolder" formControlName="folderFormControl">
+          <mat-select formControlName="folderFormControl">
             <mat-option *ngFor="let folder of hostFolders" [value]="folder">
               {{folder.name}}
             </mat-option>
           </mat-select>
         </mat-form-field>
+
         <mat-divider></mat-divider>
-        <mat-form-field>
+
+        <mat-form-field class="w-100">
           <mat-label>Select a Resource Pool</mat-label>
-          <mat-select [(ngModel)]="selectedResourcePool" formControlName="resourcePoolFormControl">
+          <mat-select formControlName="resourcePoolFormControl">
             <mat-option *ngFor="let resourcePool of hostResourcePools" [value]="resourcePool">
               {{resourcePool.name}}
             </mat-option>
           </mat-select>
-          <mat-divider></mat-divider>
-          <mat-form-field class="w-100">
-            <input matInput #vmName maxlength="256" placeholder="Type a VM name" formControlName="vmNameFormControl">
-            <mat-hint align="end">{{vmName.value.length}} / 256</mat-hint>
-            <mat-error *ngIf="f3.vmNameFormControl.errors.required">
-              Email is <strong>required</strong>
-            </mat-error>
-          </mat-form-field>
         </mat-form-field>
+
         <mat-divider></mat-divider>
-        <mat-slide-toggle [checked]="powerVM">
+
+        <mat-form-field class="w-100">
+          <input matInput #vmName maxlength="256" placeholder="Type a VM name" formControlName="vmNameFormControl">
+          <mat-hint align="end">{{vmName.value.length}} / 256</mat-hint>
+        </mat-form-field>
+
+        <mat-divider></mat-divider>
+
+        <mat-slide-toggle formControlName="powerVMFormControl">
           Power ON restored VM
         </mat-slide-toggle>
         <div>
@@ -128,13 +132,13 @@
     <mat-step>
       <ng-template matStepLabel>Ready to apply</ng-template>
       <hr class="hr-text" data-content="Summary">
-      <ul>
-        <li>VM: {{data.vm.name}} from <strong *ngIf="data.snapshot">{{data.snapshot.name}}</strong></li>
+      <ul *ngIf="thirdFormGroup.valid">
+        <li>VM: {{data.vm.name}} from <strong>{{data.snapshot.name}}</strong></li>
         <li>Original Datastore: {{data.volume['volume-id-attributes'].name}}</li>
-        <li *ngIf="secondFormGroup.value.restoreType == 'new'">Host: {{selectedHost.host.name}}</li>
-        <li *ngIf="secondFormGroup.value.restoreType == 'original'">Host: {{data.vm['runtime.host'].name}}</li>
-        <li>New VM name: {{vmName}}</li>
-        <li>Power ON VM: {{powerVM}}</li>
+        <li *ngIf="f2.recoveryModeFormControl.value === 'new'">Host: {{f3.hostFormControl.value.host.name}}</li>
+        <li *ngIf="f2.recoveryModeFormControl.value === 'original'">Host: {{data.vm['runtime.host'].name}}</li>
+        <li>New VM name: {{f3.vmNameFormControl.value}}</li>
+        <li>Power ON VM: {{f3.powerVMFormControl.value}}</li>
       </ul>
       <p>
         After you click Restore, the selected VM will be instantly recovered into your production environment. To finalize the recovery use Storage VMotion to move running VM to the production storage.<br/>

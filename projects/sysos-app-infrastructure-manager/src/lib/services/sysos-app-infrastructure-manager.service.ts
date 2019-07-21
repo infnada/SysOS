@@ -5,6 +5,8 @@ import {NGXLogger} from 'ngx-logger';
 import {ToastrService} from 'ngx-toastr';
 import {Socket} from 'ngx-socket-io';
 import {v4 as uuidv4} from 'uuid';
+import * as _ from 'lodash';
+
 
 import {SysosLibModalService} from '@sysos/lib-modal';
 import {SysosLibApplicationService} from '@sysos/lib-application';
@@ -14,11 +16,11 @@ import {IMConnection} from '../types/imconnection';
 import {IMLink} from '../types/imlink';
 import {IMNode} from '../types/imnode';
 import {VMWareDatastore} from '../types/vmware-datastore';
-import {VMWareObject} from "../types/vmware-object";
-import {NetAppIface} from "../types/netapp-iface";
-import {NetAppVserver} from "../types/netapp-vserver";
-import {NetAppVolume} from "../types/netapp-volume";
-import {IMDatastoreLink} from "../types/im-datastore-link";
+import {VMWareObject} from '../types/vmware-object';
+import {NetAppIface} from '../types/netapp-iface';
+import {NetAppVserver} from '../types/netapp-vserver';
+import {NetAppVolume} from '../types/netapp-volume';
+import {IMDatastoreLink} from '../types/im-datastore-link';
 
 @Injectable({
   providedIn: 'root'
@@ -60,16 +62,43 @@ export class SysosAppInfrastructureManagerService {
    * @description Extract all connections data and prepares an object usable by MatTreeFlatDataSource
    */
   getTreeData(): IMNode[] {
-    const treeData = [
+    const treeData: IMNode[] = [
       {
         name: 'Storage',
         type: 'storage',
+        info: null,
         children: []
       },
       {
         name: 'Virtual',
         type: 'virtual',
+        info: null,
         children: []
+      },
+      {
+        name: 'Standalone',
+        type: 'standalone',
+        info: null,
+        children: [
+          {
+            name: 'Linux',
+            type: 'linux',
+            info: null,
+            children: []
+          },
+          {
+            name: 'Windows',
+            type: 'windows',
+            info: null,
+            children: []
+          },
+          {
+            name: 'SNMP',
+            type: 'snmp',
+            info: null,
+            children: []
+          }
+        ]
       }
     ];
 
@@ -77,7 +106,7 @@ export class SysosAppInfrastructureManagerService {
     this.getConnectionsByType('netapp').forEach((storage, sti) => {
       const storageObject: IMNode = {
         name: (storage.data ? storage.data.Base.name : storage.host),
-        data: {
+        info: {
           uuid: storage.uuid
         },
         type: 'netapp'
@@ -87,7 +116,7 @@ export class SysosAppInfrastructureManagerService {
         storage.data.Vservers.forEach((vserver, vsi) => {
           const vserverObject: IMNode = {
             name: vserver['vserver-name'],
-            data: {
+            info: {
               uuid: storage.uuid,
               vserver
             },
@@ -102,7 +131,7 @@ export class SysosAppInfrastructureManagerService {
           vserver.Volumes.forEach((volume, voi) => {
             const volumeObject: IMNode = {
               name: volume['volume-id-attributes'].name,
-              data: {
+              info: {
                 uuid: storage.uuid,
                 vserver,
                 volume
@@ -118,7 +147,7 @@ export class SysosAppInfrastructureManagerService {
             volume.Snapshots.forEach((snapshot, sni) => {
               const snapshotObject: IMNode = {
                 name: snapshot.name,
-                data: {
+                info: {
                   uuid: storage.uuid,
                   vserver,
                   volume,
@@ -143,7 +172,7 @@ export class SysosAppInfrastructureManagerService {
       delete current.kind;
 
       current.type = current.obj.type;
-      current.data = {
+      current.info = {
         uuid: virtual.uuid,
         data: {}
       };
@@ -153,13 +182,23 @@ export class SysosAppInfrastructureManagerService {
 
       // Move all object data into data property
       Object.keys(current).forEach((key) => {
-        if (['children', 'data'].includes(key)) return;
+        if (['children', 'info'].includes(key)) return;
 
-        if (['name', 'parent', 'obj', 'type'].includes(key)) {
-          current.data[key] = JSON.parse(JSON.stringify(current[key]));
+        if (['name', 'type'].includes(key)) {
+          current.info[key] = JSON.parse(JSON.stringify(current[key]));
+        } else if (['parent', 'obj'].includes(key)) {
+          current.info[key] = JSON.parse(JSON.stringify(current[key]));
+          setTimeout(() => {
+            delete current[key];
+          }, 0);
         } else {
-          current.data.data[key] = JSON.parse(JSON.stringify(current[key]));
+          current.info.data[key] = JSON.parse(JSON.stringify(current[key]));
+          setTimeout(() => {
+            delete current[key];
+          }, 0);
+
         }
+
       });
 
       // Recursively get children
@@ -173,7 +212,7 @@ export class SysosAppInfrastructureManagerService {
     this.getConnectionsByType('vmware').forEach((virtual, vii) => {
       const virtualObject: IMNode = {
         name: virtual.host,
-        data: {
+        info: {
           uuid: virtual.uuid
         },
         type: 'vmware'
@@ -737,8 +776,8 @@ export class SysosAppInfrastructureManagerService {
   /**
    * Check if datastore is linked to any managed storage
    */
-  checkDatastoreLinkWithManagedStorage(datastoreObj: VMWareObject & { data: VMWareDatastore }): IMDatastoreLink[] {
-    let results = [];
+  checkDatastoreLinkWithManagedStorage(datastoreObj: VMWareObject & { info: { data: VMWareDatastore } }): IMDatastoreLink[] {
+    const results = [];
 
     this.getConnectionsByType('netapp').forEach((storageObj: IMConnection) => {
 
@@ -747,8 +786,12 @@ export class SysosAppInfrastructureManagerService {
 
         // check if storage have any interface that match the datastore.remoteHost and datastore.type
         const foundInterface = storageObj.data.Ifaces.netifaces.filter((ifaceObj: NetAppIface) => {
-          return ifaceObj.address ===  datastoreObj.data.info.nas.remoteHost &&
-            ifaceObj['data-protocols']['data-protocol'] === (datastoreObj.data.info.nas.type === 'NFS41' || datastoreObj.data.info.nas.type === 'NFS' ? 'nfs' : datastoreObj.data.info.nas.type);
+          return ifaceObj.address ===  datastoreObj.info.data.info.nas.remoteHost &&
+            ifaceObj['data-protocols']['data-protocol'] === (
+              datastoreObj.info.data.info.nas.type === 'NFS41' ||
+              datastoreObj.info.data.info.nas.type === 'NFS' ? 'nfs' :
+                datastoreObj.info.data.info.nas.type
+            );
         })[0];
 
         // If not found any storage interface matching, return
@@ -759,7 +802,7 @@ export class SysosAppInfrastructureManagerService {
           return vserverObj['vserver-type'] === 'data' &&
             vserverObj['vserver-name'] === foundInterface.vserver &&
             vserverObj['allowed-protocols'].protocol.includes(
-              (datastoreObj.data.info.nas.type === 'NFS41' || datastoreObj.data.info.nas.type === 'NFS' ? 'nfs' : datastoreObj.data.info.nas.type)
+              (datastoreObj.info.data.info.nas.type === 'NFS41' || datastoreObj.info.data.info.nas.type === 'NFS' ? 'nfs' : datastoreObj.info.data.info.nas.type)
             );
         })[0];
 
@@ -767,7 +810,7 @@ export class SysosAppInfrastructureManagerService {
 
         // Search for each Volume containing as a junction path the current datastore remotePath
         const foundVolume = foundVserver.Volumes.filter((volumeObj: NetAppVolume) => {
-          return volumeObj['volume-id-attributes']['junction-path'] === datastoreObj.data.info.nas.remotePath;
+          return volumeObj['volume-id-attributes']['junction-path'] === datastoreObj.info.data.info.nas.remotePath;
         })[0];
 
         if (!foundVolume) return;

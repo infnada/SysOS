@@ -1,4 +1,4 @@
-import {NetAppSnapshot} from "./netapp-snapshot";
+import {NetAppSnapshot} from './netapp-snapshot';
 
 export interface NetAppVolume {
   'volume-id-attributes': {
@@ -7,5 +7,5 @@ export interface NetAppVolume {
     uuid: string;
     'junction-path': string;
   };
-  Snapshots?: NetAppSnapshot[]
+  Snapshots?: NetAppSnapshot[];
 }

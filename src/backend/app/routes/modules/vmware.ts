@@ -49,7 +49,7 @@ export class VMWareModule {
       headers: requestHeaders
     }).then(res => res).catch(e => {
       return e;
-    });;
+    });
 
   }
 
@@ -68,7 +68,7 @@ export class VMWareModule {
       headers: requestHeaders
     }).then(res => res).catch(e => {
       return e;
-    });;
+    });
 
   }
 

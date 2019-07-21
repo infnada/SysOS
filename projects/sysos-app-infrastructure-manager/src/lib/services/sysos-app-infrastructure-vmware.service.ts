@@ -10,11 +10,8 @@ import {SysosLibVmwareService} from '@sysos/lib-vmware';
 import {SysosAppInfrastructureManagerService} from './sysos-app-infrastructure-manager.service';
 import {IMConnection} from '../types/imconnection';
 import {IMESXiHost} from '../types/imesxi-hosts';
-import {VMWareVM} from "../types/vmware-vm";
-import {VMWareObject} from "../types/vmware-object";
-import {NetAppVserver} from "../types/netapp-vserver";
-import {NetAppVolume} from "../types/netapp-volume";
-import {NetAppSnapshot} from "../types/netapp-snapshot";
+import {VMWareVM} from '../types/vmware-vm';
+import {VMWareObject} from '../types/vmware-object';
 
 @Injectable({
   providedIn: 'root'
@@ -124,7 +121,8 @@ export class SysosAppInfrastructureVmwareService {
         return obj.type === 'HostSystem';
       });
 
-      hosts.forEach(host => {
+      // TODO: create host type
+      hosts.forEach((host: VMWareObject & { info: { data: any } }) => {
 
         // Setup basic connection information required for "Backups Manager" application
         ESXihosts.push({
@@ -135,10 +133,10 @@ export class SysosAppInfrastructureVmwareService {
             port: vCenter.port,
           },
           host: {
-            connectionState: host.runtime.connectionState,
-            host: host.obj.name,
-            name: host.name,
-            powerState: host.runtime.powerState
+            connectionState: host.info.data.runtime.connectionState,
+            host: host.info.obj.name,
+            name: host.info.name,
+            powerState: host.info.data.runtime.powerState
           }
         });
 
@@ -148,51 +146,51 @@ export class SysosAppInfrastructureVmwareService {
     return ESXihosts;
   }
 
-  doWithVM(connectionUuid: string, vm: VMWareObject & { data: VMWareVM }, action: 'powerOn'|'powerOff'|'suspend'|'reset'|'powerOffGuestOS'|'restartGuestOS'|'refresh'): void {
+  doWithVM(connectionUuid: string, vm: VMWareObject & { info: { data: VMWareVM } }, action: 'powerOn'|'powerOff'|'suspend'|'reset'|'powerOffGuestOS'|'restartGuestOS'|'refresh'): void {
 
     const connection = this.InfrastructureManager.getConnectionByUuid(connectionUuid);
 
     this.VMWare.connectvCenterSoap(connection.credential, connection.host, connection.port).then((connectSoapResult) => {
       if (connectSoapResult.status === 'error') throw {error: connectSoapResult.error, description: 'Failed to connect to VMWare'};
 
-      return this.VMWare.getVMRuntime(connection.credential, connection.host, connection.port, vm.obj.name);
+      return this.VMWare.getVMRuntime(connection.credential, connection.host, connection.port, vm.info.obj.name);
     }).then((vmRuntimeResult) => {
       if (vmRuntimeResult.status === 'error') throw {error: vmRuntimeResult.error, description: 'Failed to get VM runtime'};
 
       // powerOn
       if (action === 'powerOn') {
         if (vmRuntimeResult.data.propSet.runtime.powerState === 'poweredOn') return vmRuntimeResult;
-        return this.VMWare.powerOnVM(connection.credential, connection.host, connection.port, vmRuntimeResult.data.propSet.runtime.host.name, vm.obj.name);
+        return this.VMWare.powerOnVM(connection.credential, connection.host, connection.port, vmRuntimeResult.data.propSet.runtime.host.name, vm.info.obj.name);
       }
 
       // powerOff
       if (action === 'powerOff') {
         if (vmRuntimeResult.data.propSet.runtime.powerState === 'poweredOff') return vmRuntimeResult;
-        return this.VMWare.powerOffVM(connection.credential, connection.host, connection.port, vm.obj.name);
+        return this.VMWare.powerOffVM(connection.credential, connection.host, connection.port, vm.info.obj.name);
       }
 
       // suspend
       if (action === 'suspend') {
         if (vmRuntimeResult.data.propSet.runtime.powerState !== 'poweredOn') return vmRuntimeResult;
-        return this.VMWare.suspendVM(connection.credential, connection.host, connection.port, vm.obj.name);
+        return this.VMWare.suspendVM(connection.credential, connection.host, connection.port, vm.info.obj.name);
       }
 
       // reset
       if (action === 'reset') {
         if (vmRuntimeResult.data.propSet.runtime.powerState !== 'poweredOn') return vmRuntimeResult;
-        return this.VMWare.resetVM(connection.credential, connection.host, connection.port, vm.obj.name);
+        return this.VMWare.resetVM(connection.credential, connection.host, connection.port, vm.info.obj.name);
       }
 
       // powerOffGuestOS
       if (action === 'powerOffGuestOS') {
         if (vmRuntimeResult.data.propSet.runtime.powerState !== 'poweredOn') return vmRuntimeResult;
-        return this.VMWare.shutdownGuest(connection.credential, connection.host, connection.port, vm.obj.name);
+        return this.VMWare.shutdownGuest(connection.credential, connection.host, connection.port, vm.info.obj.name);
       }
 
       // restartGuestOS
       if (action === 'restartGuestOS') {
         if (vmRuntimeResult.data.propSet.runtime.powerState !== 'poweredOn') return vmRuntimeResult;
-        return this.VMWare.rebootGuest(connection.credential, connection.host, connection.port, vm.obj.name);
+        return this.VMWare.rebootGuest(connection.credential, connection.host, connection.port, vm.info.obj.name);
       }
 
       // refresh
@@ -213,9 +211,9 @@ export class SysosAppInfrastructureVmwareService {
   /**
    * Get Parent object by object type
    */
-  getParentObjectByType(connectionUuid: string, type: string, ofParent: string) {
+  getParentObjectByType(connectionUuid: string, type: string, ofParent: string): string {
     const parentObject = this.InfrastructureManager.getConnectionByUuid(connectionUuid).data.Data.find((vmwareObj: VMWareObject) => {
-      return vmwareObj.obj.name === ofParent;
+      return vmwareObj.info.obj.name === ofParent;
     });
 
     if (parentObject.type === type) return parentObject.obj.name;
@@ -225,7 +223,7 @@ export class SysosAppInfrastructureVmwareService {
   /**
    * Returns all VMWare objects by specific type
    */
-  getObjectByType(connectionUuid: string, type: string): VMWareObject & { data: any }[] {
+  getObjectByType(connectionUuid: string, type: string): VMWareObject[] {
     return this.InfrastructureManager.getConnectionByUuid(connectionUuid).data.Data.filter((vmwareObj: VMWareObject) => {
       return vmwareObj.type === type;
     });
@@ -234,10 +232,10 @@ export class SysosAppInfrastructureVmwareService {
   /**
    * Returns VMWare object by specific id
    */
-  getObjectById(connectionUuid: string, objectId: string): VMWareObject & { data: any } {
-    return this.InfrastructureManager.getConnectionByUuid(connectionUuid).data.Data.find((vmwareObj: {} & { data: VMWareObject }) => {
-      return vmwareObj.data.obj.name === objectId;
-    }).data;
+  getObjectById(connectionUuid: string, objectId: string): VMWareObject {
+    return this.InfrastructureManager.getConnectionByUuid(connectionUuid).data.Data.find((vmwareObj: VMWareObject) => {
+      return vmwareObj.info.obj.name === objectId;
+    });
   }
 
   registerFileSystemUiHandlers(): void {
@@ -265,7 +263,7 @@ export class SysosAppInfrastructureVmwareService {
         this.Modal.changeModalType('danger', data.selector);
         this.Modal.changeModalText(e.description, data.selector);
 
-        throw e
+        throw e;
       });
     });
 
@@ -296,7 +294,7 @@ export class SysosAppInfrastructureVmwareService {
         this.Modal.changeModalType('danger', data.selector);
         this.Modal.changeModalText(e.description, data.selector);
 
-        throw e
+        throw e;
       });
     });
 
@@ -324,7 +322,7 @@ export class SysosAppInfrastructureVmwareService {
         this.Modal.changeModalType('danger', data.selector);
         this.Modal.changeModalText(e.description, data.selector);
 
-        throw e
+        throw e;
       });
     });
   }
@@ -332,8 +330,8 @@ export class SysosAppInfrastructureVmwareService {
   /**
    * VM Backup/Restore
    */
-  instantVM(virtualUuid: string, vm: VMWareObject & { data: VMWareVM }): void {
-    this.logger.debug(`Infrastructure Manager [${vm.obj.name}] -> Ask for Instant VM recovery -> vm [${vm.name}]`);
+  instantVM(virtualUuid: string, vm: VMWareObject & { info: { data: VMWareVM } }): void {
+    this.logger.debug(`Infrastructure Manager [${vm.info.obj.name}] -> Ask for Instant VM recovery -> vm [${vm.name}]`);
 
     this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
       {
@@ -344,7 +342,7 @@ export class SysosAppInfrastructureVmwareService {
       modalInstance.result.then((result: boolean) => {
         if (result === true) {
 
-          this.logger.debug(`Infrastructure Manager [${vm.obj.name}] -> Launching Backups Manager for Instant VM recovery -> vm [${vm.name}]`);
+          this.logger.debug(`Infrastructure Manager [${vm.info.obj.name}] -> Launching Backups Manager for Instant VM recovery -> vm [${vm.name}]`);
 
           this.InfrastructureManager.openBackupsManager(virtualUuid, 'vm_instant_recovery', {
             virtual: this.InfrastructureManager.getConnectionByUuid(virtualUuid),
@@ -356,8 +354,8 @@ export class SysosAppInfrastructureVmwareService {
     });
   }
 
-  restoreVM(virtualUuid: string, vm: VMWareObject & { data: VMWareVM }): void {
-    this.logger.debug(`Infrastructure Manager [${vm.obj.name}] -> Ask for restore entire VM -> vm [${vm.name}]`);
+  restoreVM(virtualUuid: string, vm: VMWareObject & { info: { data: VMWareVM } }): void {
+    this.logger.debug(`Infrastructure Manager [${vm.info.obj.name}] -> Ask for restore entire VM -> vm [${vm.name}]`);
 
     this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
       {
@@ -368,7 +366,7 @@ export class SysosAppInfrastructureVmwareService {
       modalInstance.result.then((result: boolean) => {
         if (result === true) {
 
-          this.logger.debug(`Infrastructure Manager [${vm.obj.name}] -> Launching Backups Manager for restore entire VM -> vm [${vm.name}]`);
+          this.logger.debug(`Infrastructure Manager [${vm.info.obj.name}] -> Launching Backups Manager for restore entire VM -> vm [${vm.name}]`);
 
           this.InfrastructureManager.openBackupsManager(virtualUuid, 'restore_vm', {
             virtual: this.InfrastructureManager.getConnectionByUuid(virtualUuid),

@@ -7,7 +7,7 @@ export interface DatastoreExplorerConnection {
   port: number;
   type: string;
   data: {
-    datastore?: VMWareObject & { data: VMWareDatastore };
+    datastore?: VMWareObject & { info: { data: VMWareDatastore } };
     datacenter?: string;
     volume?: NetAppVolume
   };

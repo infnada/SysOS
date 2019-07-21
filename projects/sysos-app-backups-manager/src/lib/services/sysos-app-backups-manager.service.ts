@@ -276,7 +276,7 @@ export class SysosAppBackupsManagerService {
         return this.BackupManagerHelpers.restoreSnapshotIntoInstantVM(data).then((res) => {
           if (res instanceof Error) throw new Error('Failed to restore snapshot into Instant VM');
 
-          this.logger.debug('Backups Manager [%s] -> Restore finished successfully -> instant_vm [%s]', data.uuid, data.vm.obj.name);
+          this.logger.debug('Backups Manager [%s] -> Restore finished successfully -> instant_vm [%s]', data.uuid, data.vm.info.obj.name);
 
           this.Modal.closeModal('.window--backups-manager .window__main');
           this.BackupManagerHelpers.setRestoreState(data.uuid, 'end');
@@ -330,7 +330,7 @@ export class SysosAppBackupsManagerService {
         return this.BackupManagerHelpers.restoreSnapshotIntoVM(data).then((res) => {
           if (res instanceof Error) throw new Error('Failed to restore snapshot into VM');
 
-          this.logger.debug('Backups Manager [%s] -> Restore finished successfully -> vm [%s]', data.uuid, data.vm.obj.name);
+          this.logger.debug('Backups Manager [%s] -> Restore finished successfully -> vm [%s]', data.uuid, data.vm.info.obj.name);
 
           this.Modal.closeModal('.window--backups-manager .window__main');
           this.BackupManagerHelpers.setRestoreState(data.uuid, 'end');

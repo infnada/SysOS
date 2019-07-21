@@ -1,12 +1,17 @@
 export interface VMWareObject {
   name: string;
-  obj: {
-    type: string;
+  info: {
     name: string;
+    type: string;
+    obj: {
+      type: string;
+      name: string;
+    };
+    parent: {
+      type: string;
+      name: string;
+    } | null;
+    data: any;
   };
-  parent: {
-    type: string;
-    name: string;
-  } | null;
   type: string;
 }

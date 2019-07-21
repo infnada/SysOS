@@ -5,7 +5,7 @@ export interface RestoreVmGuestFiles {
   vserver: NetAppVserver;
   volume: NetAppVolume;
   snapshot: NetAppSnapshot;
-  vm: VMWareObject & { data: VMWareVM };
+  vm: VMWareObject & { info: { data: VMWareVM } };
   uuid?: string;
   virtual?: IMESXiHost['virtual'];
   host?: IMESXiHost['host'] & {

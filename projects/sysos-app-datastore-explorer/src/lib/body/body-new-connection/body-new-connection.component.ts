@@ -4,13 +4,11 @@ import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
 import {SysosLibModalService} from '@sysos/lib-modal';
 import {Application} from '@sysos/lib-application';
-import {IMConnection, NetAppVserver, NetAppVolume} from '@sysos/app-infrastructure-manager';
+import {IMConnection, NetAppVserver, NetAppVolume, VMWareObject, VMWareDatastore} from '@sysos/app-infrastructure-manager';
 
 import {DatastoreExplorerConnection} from '../../types/datastore-explorer-connection';
 import {SysosAppDatastoreExplorerService} from '../../services/sysos-app-datastore-explorer.service';
 import {SysosAppDatastoreExplorerServerService} from '../../services/sysos-app-datastore-explorer-server.service';
-import {VMWareObject} from "../../../../../sysos-app-infrastructure-manager/src/lib/types/vmware-object";
-import {VMWareDatastore} from "../../../../../sysos-app-infrastructure-manager/src/lib/types/vmware-datastore";
 
 @Component({
   selector: 'sade-body-new-connection',
@@ -93,7 +91,7 @@ export class BodyNewConnectionComponent implements OnInit {
 
     if (type === 'vmware') {
       this.InfrastructureManager.getConnectionsByType('vmware').forEach((connection: IMConnection) => {
-        this.InfrastructureManagerVMWare.getObjectByType(connection.uuid, 'Datastore').forEach((datastoreObj: VMWareObject & { data: VMWareDatastore }) => {
+        this.InfrastructureManagerVMWare.getObjectByType(connection.uuid, 'Datastore').forEach((datastoreObj: VMWareObject & { info: { data: VMWareDatastore } }) => {
 
           this.datastores.push({
             credential: connection.credential,
@@ -101,7 +99,7 @@ export class BodyNewConnectionComponent implements OnInit {
             port: connection.port,
             data: {
               datastore: datastoreObj,
-              datacenter: this.InfrastructureManagerVMWare.getParentObjectByType(connection.uuid, 'Datacenter', datastoreObj.obj.name)
+              datacenter: this.InfrastructureManagerVMWare.getParentObjectByType(connection.uuid, 'Datacenter', datastoreObj.info.obj.name)
             },
             type: 'vmware'
           });

@@ -3,14 +3,14 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {NGXLogger} from 'ngx-logger';
-import {ToastrService} from "ngx-toastr";
+import {ToastrService} from 'ngx-toastr';
 
 import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
 import {SysosLibModalService} from '@sysos/lib-modal';
 import {SysosLibVmwareService} from '@sysos/lib-vmware';
 import {SysosLibNetappService} from '@sysos/lib-netapp';
-import {IMConnection, IMESXiHost, IMDatastoreLink, NetAppVolume, NetAppVserver, NetAppSnapshot, NetAppIface, VMWareObject, VMWareVM, VMWareDatastore, VMWareFirewallRule} from '@sysos/app-infrastructure-manager';
-import {VmInstantRecovery, RestoreVm} from "@sysos/app-backups-manager";
+import {IMESXiHost, IMDatastoreLink, NetAppSnapshot, NetAppIface, VMWareObject, VMWareDatastore, VMWareFirewallRule} from '@sysos/app-infrastructure-manager';
+import {VmInstantRecovery, RestoreVm} from '@sysos/app-backups-manager';
 
 
 @Component({
@@ -31,6 +31,8 @@ export class SysosModalRecoveryWizardComponent implements OnInit {
   selectedHost: IMESXiHost;
   selectedIface: NetAppIface;
   ESXIHosts: IMESXiHost[];
+  hostFolders: { name: string; }[];
+  hostResourcePools: { name: string; }[];
 
   private hostData;
   finishLoading: boolean = false;
@@ -43,13 +45,6 @@ export class SysosModalRecoveryWizardComponent implements OnInit {
     'is-nfsv3-enabled': boolean;
     'is-nfsv41-enabled': boolean;
   };
-
-  hostFolders: { name: string; }[];
-  hostResourcePools: { name: string; }[];
-  selectedFolder: string;
-  selectedResourcePool: string;
-  powerVM: boolean;
-
 
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
@@ -74,18 +69,24 @@ export class SysosModalRecoveryWizardComponent implements OnInit {
   get f3() { return this.thirdFormGroup.controls; }
 
   ngOnInit() {
-    this.firstFormGroup = this.formBuilder.group({
-      snapshotFormControl: ['', Validators.required]
-    });
-    this.secondFormGroup = this.formBuilder.group({
-      recoveryModeFormControl: [(this.type === 'vm_instant_recovery' ? 'new' : 'original'), Validators.required]
-    });
-    this.thirdFormGroup = this.formBuilder.group({
-      hostFormControl: ['', Validators.required],
-      folderFormControl: ['', Validators.required],
-      resourcePoolFormControl: ['', Validators.required],
-      vmNameFormControl: ['', Validators.required]
-    });
+
+    // Timeout is needed to make sure this.type is defined
+    setTimeout(() => {
+      this.firstFormGroup = this.formBuilder.group({
+        snapshotFormControl: ['', Validators.required]
+      });
+      this.secondFormGroup = this.formBuilder.group({
+        recoveryModeFormControl: [(this.type === 'vm_instant_recovery' ? 'new' : 'original'), Validators.required]
+      });
+      this.thirdFormGroup = this.formBuilder.group({
+        hostFormControl: ['', Validators.required],
+        ifaceFormControl: ['', Validators.required],
+        folderFormControl: ['', Validators.required],
+        resourcePoolFormControl: ['', Validators.required],
+        vmNameFormControl: ['', Validators.required],
+        powerVMFormControl: [false],
+      });
+    }, 0);
 
     /**
      * Check if VM exists in any managed datastore
@@ -93,21 +94,21 @@ export class SysosModalRecoveryWizardComponent implements OnInit {
     const gspPromises = [];
     return this.Modal.openLittleModal('PLEASE WAIT', 'Searching VM in SnapShots...', '.modal-recovery-wizard', 'plain').then(() => {
       const regex = /\[*\]\s(.*)\/.*\.vmx/gi;
-      const vmPath: string = regex.exec(this.data.vm.data["summary.config.vmPathName"])[1];
+      const vmPath: string = regex.exec(this.data.vm.info.data['summary.config.vmPathName'])[1];
       let manageAllVmDatastores = true;
 
       // Get VM main Datastore (where VM .vmx file is located)
-      const mainDatastoreName: string = this.data.vm.data['summary.config.vmPathName'].split(/\[(.*?)\]/)[1];
+      const mainDatastoreName: string = this.data.vm.info.data['summary.config.vmPathName'].split(/\[(.*?)\]/)[1];
 
       // If it's an Object (only 1 managed datastore) convert to array
-      if (!Array.isArray(this.data.vm.data.datastore.ManagedObjectReference)) {
-        this.data.vm.data.datastore.ManagedObjectReference = [this.data.vm.data.datastore.ManagedObjectReference];
+      if (!Array.isArray(this.data.vm.info.data.datastore.ManagedObjectReference)) {
+        this.data.vm.info.data.datastore.ManagedObjectReference = [this.data.vm.info.data.datastore.ManagedObjectReference];
       }
 
       // Get links for each VM datastore
-      return this.data.vm.data.datastore.ManagedObjectReference.forEach((datastoreObj: { type: string; name: string; }) => {
+      return this.data.vm.info.data.datastore.ManagedObjectReference.forEach((datastoreObj: { type: string; name: string; }) => {
 
-        const fullDatastoreObj: VMWareObject & { data: VMWareDatastore } = this.InfrastructureManagerVMWare.getObjectById(this.data.virtual.uuid, datastoreObj.name);
+        const fullDatastoreObj: VMWareObject & { info: { data: VMWareDatastore } } = this.InfrastructureManagerVMWare.getObjectById(this.data.virtual.uuid, datastoreObj.name);
         const datastoreLink: IMDatastoreLink[] = this.InfrastructureManager.checkDatastoreLinkWithManagedStorage(fullDatastoreObj);
 
         if (datastoreLink.length > 1) throw new Error('Multiple links found for this storage');
@@ -183,6 +184,7 @@ export class SysosModalRecoveryWizardComponent implements OnInit {
     this.forceManualIp = false;
     this.finishLoading = false;
     this.sameSubnetIp = [];
+    this.selectedHost = this.f3.hostFormControl.value;
 
     // Get Volume IP and Protocol
     this.foundIfaces = this.data.storage.data.Ifaces.netifaces.filter((iface) => {
@@ -193,6 +195,7 @@ export class SysosModalRecoveryWizardComponent implements OnInit {
         iface['current-node'] === this.data.volume['volume-id-attributes'].node; // TODO: necessary this check?
     });
 
+    // Get all required data to complete the form
     this.Modal.openLittleModal('PLEASE WAIT', 'Connecting to vCenter...', '.modal-recovery-wizard', 'plain').then(() => {
 
       return this.VMWare.connectvCenterSoap(this.selectedHost.virtual.credential, this.selectedHost.virtual.host, this.selectedHost.virtual.port);
@@ -201,21 +204,46 @@ export class SysosModalRecoveryWizardComponent implements OnInit {
 
       this.Modal.changeModalText('Getting data...', '.modal-recovery-wizard');
 
+      /**
+       * Get Host data
+       */
       return this.VMWare.getHost(this.selectedHost.virtual.credential, this.selectedHost.virtual.host, this.selectedHost.virtual.port, this.selectedHost.host.host);
     }).then((hostResult) => {
       if (hostResult.status === 'error') throw {error: hostResult.error, description: 'Failed to get Host data from vCenter'};
 
-      console.log(hostResult.data);
-
       this.hostData = hostResult.data;
 
+      /**
+       * Get Host/Cluster ComputeResource to Get Resource Pools
+       */
+      if (this.hostData.parent.type === 'ClusterComputeResource') {
+        return this.VMWare.getClusterComputeResource(this.selectedHost.virtual.credential, this.selectedHost.virtual.host, this.selectedHost.virtual.port, this.hostData.parent.name);
+      }
+
+      if (this.hostData.parent.type === 'ComputeResource') {
+        return this.VMWare.getComputeResource(this.selectedHost.virtual.credential, this.selectedHost.virtual.host, this.selectedHost.virtual.port, this.hostData.parent.name);
+      }
+
+    }).then((computeResourceResult) => {
+      if (computeResourceResult.status === 'error') throw new Error('Failed to get Host computeResource from vCenter');
+
+      // Get Host Resource Pools
+      return this.VMWare.getResourcePool(this.selectedHost.virtual.credential, this.selectedHost.virtual.host, this.selectedHost.virtual.port, computeResourceResult.data[0].resourcePool.name);
+    }).then((resourcePoolResult) => {
+      if (resourcePoolResult.status === 'error') throw new Error('Failed to get Host resourcePool from vCenter');
+
+      this.hostResourcePools = [resourcePoolResult.data];
+
+      /**
+       * Check Storage IPs
+       */
       // If it's an Object (only 1 managed datastore) convert to array
-      if (!Array.isArray(hostResult.data.datastore.ManagedObjectReference)) {
-        hostResult.data.datastore.ManagedObjectReference = [hostResult.data.datastore.ManagedObjectReference];
+      if (!Array.isArray(this.hostData.datastore.ManagedObjectReference)) {
+        this.hostData.datastore.ManagedObjectReference = [this.hostData.datastore.ManagedObjectReference];
       }
 
       // Check if some of the datastores IPs match foundIfaces IP
-      hostResult.data.datastore.ManagedObjectReference.forEach((datastoreObj) => {
+      this.hostData.datastore.ManagedObjectReference.forEach((datastoreObj) => {
         this.VMWare.getDatastoreProps(this.selectedHost.virtual.credential, this.selectedHost.virtual.host, this.selectedHost.virtual.port, datastoreObj.name).then((datastoreResult) => {
           if (datastoreResult.status === 'error') throw {error: datastoreResult.error, description: 'Failed to get Datastore data from vCenter'};
 
@@ -249,7 +277,7 @@ export class SysosModalRecoveryWizardComponent implements OnInit {
         this.foundIfaces.forEach((iface) => {
           // TODO: get correct ESXi address
           // TODO: choose the lowest netmask
-          if (ipInSameSubnet(hostResult.data.config.network.vnic.spec.ip.ipAddress, iface.address, iface.netmask)) this.sameSubnetIp.push(iface);
+          if (ipInSameSubnet(this.hostData.config.network.vnic.spec.ip.ipAddress, iface.address, iface.netmask)) this.sameSubnetIp.push(iface);
         });
 
         // Preselect 1st IP on same subnet

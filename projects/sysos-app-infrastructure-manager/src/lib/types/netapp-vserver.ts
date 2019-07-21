@@ -1,4 +1,4 @@
-import {NetAppVolume} from "./netapp-volume";
+import {NetAppVolume} from './netapp-volume';
 
 export interface NetAppVserver {
   'vserver-name': string;

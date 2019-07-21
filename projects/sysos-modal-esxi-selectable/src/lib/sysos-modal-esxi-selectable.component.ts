@@ -1,8 +1,8 @@
 import {Component, Input} from '@angular/core';
 
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-import {NGXLogger} from "ngx-logger";
-import {ToastrService} from "ngx-toastr";
+import {NGXLogger} from 'ngx-logger';
+import {ToastrService} from 'ngx-toastr';
 
 import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
 import {SysosLibModalService} from '@sysos/lib-modal';

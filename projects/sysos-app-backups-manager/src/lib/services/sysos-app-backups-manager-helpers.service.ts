@@ -145,8 +145,8 @@ export class SysosAppBackupsManagerHelpersService {
 
       if (data.vm.powerOn) {
         // Power On VM
-        this.logger.debug('Backups Manager [%s] -> Powering on vm -> host [%s], VM [%s], ', data.uuid, data.host.host, data.vm.obj.name);
-        return this.VMWare.powerOnVM(data.virtual.credential, data.virtual.host, data.virtual.port, data.host.host, data.vm.obj.name);
+        this.logger.debug('Backups Manager [%s] -> Powering on vm -> host [%s], VM [%s], ', data.uuid, data.host.host, data.vm.info.obj.name);
+        return this.VMWare.powerOnVM(data.virtual.credential, data.virtual.host, data.virtual.port, data.host.host, data.vm.info.obj.name);
       }
 
       return res;
@@ -173,8 +173,8 @@ export class SysosAppBackupsManagerHelpersService {
 
       if (data.vm.powerOn) {
         // Power On VM
-        this.logger.debug('Backups Manager [%s] -> Powering on vm -> host [%s], VM [%s], ', data.uuid, data.virtual.host, data.vm.obj.name);
-        return this.VMWare.powerOnVM(data.virtual.credential, data.virtual.host, data.virtual.port, data.host.host, data.vm.obj.name);
+        this.logger.debug('Backups Manager [%s] -> Powering on vm -> host [%s], VM [%s], ', data.uuid, data.virtual.host, data.vm.info.obj.name);
+        return this.VMWare.powerOnVM(data.virtual.credential, data.virtual.host, data.virtual.port, data.host.host, data.vm.info.obj.name);
       }
 
     }).then((res) => {
@@ -805,12 +805,12 @@ export class SysosAppBackupsManagerHelpersService {
 
       // TODO
       console.log(res);
-      data.vm.obj.name = res.data.result.name;
+      data.vm.info.obj.name = res.data.result.name;
 
       // Set new uuid to this VM to prevent duplicates
       const newVMUuid = uuidv4();
       this.logger.debug('Backups Manager [%s] -> Reconfigure VM uuid -> vm_name [%s], newVMUuid [%s]', data.vm.name, newVMUuid);
-      return this.VMWare.reconfigureVM(data.virtual.credential, data.virtual.host, data.virtual.port, data.vm.obj.name, '<uuid>' + newVMUuid + '</uuid>');
+      return this.VMWare.reconfigureVM(data.virtual.credential, data.virtual.host, data.virtual.port, data.vm.info.obj.name, '<uuid>' + newVMUuid + '</uuid>');
     }).then((res) => {
       if (res.status === 'error') throw new Error('Failed to change VM uuid');
 
@@ -838,8 +838,8 @@ export class SysosAppBackupsManagerHelpersService {
     return this.VMWare.connectvCenterSoap(data.virtual.credential, data.virtual.host, data.virtual.port).then((res) => {
       if (res.status === 'error') throw new Error('Failed to connect to vCenter');
 
-      this.logger.debug('Backups Manager [%s] -> Get VM path -> VM [%s]', data.uuid, data.vm.obj.name);
-      return this.VMWare.getVMPath(data.virtual.credential, data.virtual.host, data.virtual.port, data.vm.obj.name);
+      this.logger.debug('Backups Manager [%s] -> Get VM path -> VM [%s]', data.uuid, data.vm.info.obj.name);
+      return this.VMWare.getVMPath(data.virtual.credential, data.virtual.host, data.virtual.port, data.vm.info.obj.name);
     }).then((res) => {
       if (res && res.status === 'error') throw new Error('Failed to get VM path');
 
@@ -850,14 +850,14 @@ export class SysosAppBackupsManagerHelpersService {
 
       if (!vmPath) throw new Error('SAFETY STOP: VM cannot be on root folder');
 
-      this.logger.debug('Backups Manager [%s] -> Get VM runtime -> VM [%s]', data.uuid, data.vm.obj.name);
-      return this.VMWare.getVMRuntime(data.virtual.credential, data.virtual.host, data.virtual.port, data.vm.obj.name);
+      this.logger.debug('Backups Manager [%s] -> Get VM runtime -> VM [%s]', data.uuid, data.vm.info.obj.name);
+      return this.VMWare.getVMRuntime(data.virtual.credential, data.virtual.host, data.virtual.port, data.vm.info.obj.name);
     }).then((res) => {
       if (res && res.status === 'error') throw new Error('Failed to get VM runtime');
 
       if (res.data.propSet.runtime.powerState === 'poweredOn') {
-        this.logger.debug('Backups Manager [%s] -> Powering off VM -> VM [%s]', data.uuid, data.vm.obj.name);
-        return this.VMWare.powerOffVM(data.virtual.credential, data.virtual.host, data.virtual.port, data.vm.obj.name);
+        this.logger.debug('Backups Manager [%s] -> Powering off VM -> VM [%s]', data.uuid, data.vm.info.obj.name);
+        return this.VMWare.powerOffVM(data.virtual.credential, data.virtual.host, data.virtual.port, data.vm.info.obj.name);
       }
 
       return res;
@@ -903,8 +903,8 @@ export class SysosAppBackupsManagerHelpersService {
 
     }).then(() => {
 
-      this.logger.debug('Backups Manager [%s] -> Reloading VM -> VM [%s]', data.uuid, data.vm.obj.name);
-      return this.VMWare.reloadVM(data.virtual.credential, data.virtual.host, data.virtual.port, data.vm.obj.name);
+      this.logger.debug('Backups Manager [%s] -> Reloading VM -> VM [%s]', data.uuid, data.vm.info.obj.name);
+      return this.VMWare.reloadVM(data.virtual.credential, data.virtual.host, data.virtual.port, data.vm.info.obj.name);
 
     }).then((res) => {
       if (res.status === 'error') throw new Error('Failed to reload VM');
@@ -936,13 +936,13 @@ export class SysosAppBackupsManagerHelpersService {
       }
     };
 
-    this.logger.debug('Backups Manager [%s] -> Get all VM snapshots -> vm [%s]', data.uuid, data.vm.obj.name);
-    return this.VMWare.getVMSnapshots(data.virtual.credential, data.virtual.host, data.virtual.port, data.vm.obj.name).then((res) => {
+    this.logger.debug('Backups Manager [%s] -> Get all VM snapshots -> vm [%s]', data.uuid, data.vm.info.obj.name);
+    return this.VMWare.getVMSnapshots(data.virtual.credential, data.virtual.host, data.virtual.port, data.vm.info.obj.name).then((res) => {
       if (res.status === 'error') throw new Error('Failed to get VM Snapshots');
 
       // No snapshots found
       if (!res.data[0].propSet) {
-        this.logger.debug('Backups Manager [%s] -> No snapshots found -> vm [%s]', data.uuid, data.vm.obj.name);
+        this.logger.debug('Backups Manager [%s] -> No snapshots found -> vm [%s]', data.uuid, data.vm.info.obj.name);
         return res;
       }
 
