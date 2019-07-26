@@ -2,8 +2,8 @@ import * as path from 'path';
 import validator from 'validator';
 import readConfig from 'read-config';
 
-import {SshModule} from './ssh/ssh';
-import {SnmpModule} from './snmp/snmp';
+import {SshSocketModule} from './ssh/ssh';
+import {SnmpSocketModule} from './snmp/snmp';
 import {Connection} from '../../interfaces/connection';
 import {CredentialsModule} from '../../routes/modules/credentials';
 
@@ -11,9 +11,9 @@ const config =  readConfig(path.resolve(__dirname, '../../filesystem/etc/express
 
 export class ConnectionsModule {
 
-  SshModule: SshModule = new SshModule(this.socket);
-  SnmpModule: SnmpModule = new SnmpModule(this.socket);
-  CredentialsModule: CredentialsModule = new CredentialsModule();
+  private SshSocketModule: SshSocketModule = new SshSocketModule(this.socket);
+  private SnmpSocketModule: SnmpSocketModule = new SnmpSocketModule(this.socket);
+  private CredentialsModule: CredentialsModule = new CredentialsModule();
 
   constructor(private socket) {
 
@@ -27,7 +27,7 @@ export class ConnectionsModule {
     );
 
     // snmp connection
-    if (data.so === 'snmp') { return this.SnmpModule.newConnection(data.type, data.uuid, data.host, data.community); }
+    if (data.so === 'snmp') { return this.SnmpSocketModule.newConnection(data.type, data.uuid, data.host, data.community); }
 
     // get username and password from credential
     this.CredentialsModule.getCredential(data.credential).then((cred) => {
@@ -35,7 +35,7 @@ export class ConnectionsModule {
       // linux connection
       if (data.so === 'linux' || data.type === 'ssh' || data.type === 'sftp') {
         data.port = (validator.isInt(data.port + '', {min: 1, max: 65535}) && data.port) || config.ssh.port;
-        this.SshModule.newConnection(data.type, data.uuid, data.host, data.port, cred.username, cred.password);
+        this.SshSocketModule.newConnection(data.type, data.uuid, data.host, data.port, cred.username, cred.password);
       }
 
     }).catch((e) => {
@@ -46,7 +46,7 @@ export class ConnectionsModule {
   }
 
   closeConnection(type: string, uuid: string): void {
-    this.SshModule.closeConnection(type, uuid);
+    this.SshSocketModule.closeConnection(type, uuid);
   }
 
 }

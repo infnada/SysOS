@@ -7,7 +7,7 @@ const logger = getLogger('mainlog');
 
 export class SocketModule {
 
-  ConnectionsModule: ConnectionsModule = new ConnectionsModule(this.socket);
+  private ConnectionsModule: ConnectionsModule = new ConnectionsModule(this.socket);
 
   constructor(private socket: any) {
 

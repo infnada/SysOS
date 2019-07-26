@@ -7,7 +7,7 @@ import * as childProcess from 'child_process';
 
 import {ApiGlobalsModule} from './api-globals';
 import {CredentialsModule} from '../modules/credentials';
-import {VMWareModule} from '../modules/vmware';
+import {VMWareModule} from '../modules/node/vmware';
 
 const logger = getLogger('mainlog');
 const router = Router();

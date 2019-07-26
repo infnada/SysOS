@@ -1,10 +1,10 @@
 import {SnmpSessionsModule} from './snmp-sessions';
 import {SocketModule} from '../socket';
 
-export class SnmpModule {
+export class SnmpSocketModule {
 
-  SnmpSessionsModule: SnmpSessionsModule = new SnmpSessionsModule();
-  SocketModule: SocketModule = new SocketModule(this.socket);
+  private SnmpSessionsModule: SnmpSessionsModule = new SnmpSessionsModule();
+  private SocketModule: SocketModule = new SocketModule(this.socket);
 
   constructor(private socket) {
 

@@ -11,10 +11,10 @@ const term = config.ssh.term;
 const termCols = 80;
 const termRows = 24;
 
-export class SshModule {
+export class SshSocketModule {
 
-  SshSessionsModule: SshSessionsModule = new SshSessionsModule();
-  SocketModule: SocketModule = new SocketModule(this.socket);
+  private SshSessionsModule: SshSessionsModule = new SshSessionsModule();
+  private SocketModule: SocketModule = new SocketModule(this.socket);
 
   constructor(private socket?) {
 

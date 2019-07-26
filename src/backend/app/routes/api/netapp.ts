@@ -4,7 +4,7 @@ import * as express from 'express';
 
 import {ApiGlobalsModule} from './api-globals';
 import {CredentialsModule} from '../modules/credentials';
-import {NetAppModule} from '../modules/netapp';
+import {NetAppModule} from '../modules/node/netapp';
 
 const logger = getLogger('mainlog');
 const router = Router();
