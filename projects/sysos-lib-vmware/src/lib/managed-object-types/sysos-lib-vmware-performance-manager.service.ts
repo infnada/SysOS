@@ -58,11 +58,7 @@ export class SysosLibVmwarePerformanceManagerService {
   <soap:Body>
     <QueryPerf xmlns="urn:vim25">
       <_this type="PerformanceManager">PerfMgr</_this>
-      ${querySpec.forEach((spec) => {
-      return `<querySpec>${Object.entries(spec).forEach(([key, value]) => {
-        return `<${key}>${value}</${key}>`;
-      })}</querySpec>`;
-    })}
+      <querySpec>${this.SysosLibVmwareHelper.setDynamicProperties(querySpec)}</querySpec>
     </QueryPerf>
   </soap:Body>
 </soap:Envelope>`;

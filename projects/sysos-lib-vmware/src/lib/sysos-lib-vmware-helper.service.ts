@@ -217,4 +217,89 @@ export class SysosLibVmwareHelperService {
       }));
 
   }
+
+  setDynamicProperties(data: {}) {
+
+    return `${Object.entries(data).forEach(([key, value]) => {
+
+      if (Array.isArray(key)) return `<${key}>${this.setDynamicProperties(value)}</${key}>`;
+      if (typeof value === 'string') return `<${key}>${value}</${key}>`;
+      if (value === Object(value)) return `<${key}>${this.setDynamicProperties(value)}</${key}>`;
+      
+      return `<${key}>${value}</${key}>`;
+    })}`;
+
+  }
+
+  private getTaskResults(connectionData, taskId): Promise<any> {
+    const xml = `<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Body>
+    <RetrieveProperties xmlns="urn:vim25">
+      <_this type="PropertyCollector">propertyCollector</_this>
+      <specSet>
+        <propSet>
+          <type>Task</type>
+          <pathSet>info</pathSet>
+        </propSet>
+        <objectSet>
+          <obj type="Task">${taskId}</obj>
+        </objectSet>
+      </specSet>
+    </RetrieveProperties>
+  </soap:Body>
+</soap:Envelope>`;
+    return this.doCallSoap(connectionData, xml).pipe(map((data: any) => {
+      const res = [];
+
+      data.RetrievePropertiesResponse[0].returnval.forEach(value => {
+        res.push(this.parseVMwareObject(value));
+      });
+
+      return res;
+
+    })).toPromise();
+  }
+
+  getTaskStatus(connectionData: connectionData, taskId): Promise<any> {
+    const xml = `<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Body>
+    <RetrieveProperties xmlns="urn:vim25">
+      <_this type="PropertyCollector">propertyCollector</_this>
+      <specSet>
+        <propSet>
+          <type>Task</type>
+          <pathSet>info.progress</pathSet>
+          <pathSet>info.state</pathSet>
+          <pathSet>info.cancelable</pathSet>
+        </propSet>
+        <objectSet>
+          <obj type="Task">${taskId}</obj>
+        </objectSet>
+      </specSet>
+    </RetrieveProperties>
+  </soap:Body>
+</soap:Envelope>`;
+    return this.doCallSoap(connectionData, xml).pipe(map((data: any) => {
+
+      const taskInfo = this.parseVMwareObject(data.RetrievePropertiesResponse[0].returnval[0]);
+
+      if (taskInfo['info.state'] === 'running') {
+        console.log('running', taskInfo);
+
+        return new Observable(observer => {
+          setTimeout(() => {
+            observer.next(this.getTaskStatus(connectionData, taskId));
+          }, 2000);
+        }).toPromise();
+      }
+
+      console.log('finished', taskInfo);
+
+      return this.getTaskResults(connectionData, taskId).then((res) => {
+        return res;
+      });
+    })).toPromise();
+  }
 }

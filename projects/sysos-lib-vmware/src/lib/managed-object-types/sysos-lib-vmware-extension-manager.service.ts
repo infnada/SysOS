@@ -1,14 +1,36 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
+
+import {map} from "rxjs/operators";
+
+import {SysosLibVmwareHelperService} from "../sysos-lib-vmware-helper.service";
+import {connectionData} from "../types/connection-data";
+import {ManagedObjectReference} from "../types/managed-object-reference";
+import {Extension} from "../types/extension";
 
 @Injectable({
   providedIn: 'root'
 })
 export class SysosLibVmwareExtensionManagerService {
 
-  constructor() { }
+  constructor(private SysosLibVmwareHelper: SysosLibVmwareHelperService) {
+  }
 
-  FindExtension() {
-
+  FindExtension(
+    connectionData: connectionData,
+    extensionKey: string
+  ) {
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+  <soapenv:Body>
+    <FindExtension xmlns="urn:vim25">
+      <_this type="ExtensionManager">ExtensionManager</_this>
+      <extensionKey>${extensionKey}</extensionKey>
+    </FindExtension>
+  </soapenv:Body>
+</soapenv:Envelope>`;
+    return this.SysosLibVmwareHelper.doCallSoap(connectionData, xml).pipe(map((data: any) => {
+      return this.SysosLibVmwareHelper.validResponse(data.FindExtensionResponse[0]);
+    })).toPromise();
   }
 
   GetPublicKey() {
@@ -23,8 +45,22 @@ export class SysosLibVmwareExtensionManagerService {
 
   }
 
-  RegisterExtension() {
-
+  RegisterExtension(
+    connectionData: connectionData,
+    extension: Extension
+  ) {
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+  <soapenv:Body>
+    <RegisterExtension xmlns="urn:vim25">
+      <_this type="ExtensionManager">ExtensionManager</_this>
+      <extension>${this.SysosLibVmwareHelper.setDynamicProperties(extension)}</extension>
+    </RegisterExtension>
+  </soapenv:Body>
+</soapenv:Envelope>`;
+    return this.SysosLibVmwareHelper.doCallSoap(connectionData, xml).pipe(map((data: any) => {
+      return this.SysosLibVmwareHelper.validResponse(data.RetrievePropertiesResponse[0]);
+    })).toPromise();
   }
 
   SetExtensionCertificate() {

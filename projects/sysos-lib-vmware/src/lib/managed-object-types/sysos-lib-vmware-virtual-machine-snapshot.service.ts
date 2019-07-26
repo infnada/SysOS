@@ -54,7 +54,7 @@ export class SysosLibVmwareVirtualMachineSnapshotService {
 
   RevertToSnapshot_Task(
     connectionData: connectionData,
-    managedObject: ManagedObjectReference & { type: 'VirtualMachineSnapshot' },
+    managedVMSnapshot: ManagedObjectReference & { type: 'VirtualMachineSnapshot' },
     managedHost?: ManagedObjectReference & { type: 'HostSystem' },
     suppressPowerOn: boolean = false,
     returnOnTaskFinish: boolean = true
@@ -63,7 +63,7 @@ export class SysosLibVmwareVirtualMachineSnapshotService {
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
     <RevertToSnapshot_Task xmlns="urn:vim25">
-      <_this type="VirtualMachineSnapshot">${managedObject.value}</_this>
+      <_this type="VirtualMachineSnapshot">${managedVMSnapshot.value}</_this>
       ${(managedHost ? `<host type="HostSystem">${managedHost.value}</host>` : '')}
       <suppressPowerOn>${suppressPowerOn}</suppressPowerOn>
     </RevertToSnapshot_Task>

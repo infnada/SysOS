@@ -1,7 +1,8 @@
 import {Injectable} from '@angular/core';
 
-import {SysosLibVmwareHelperService} from "../sysos-lib-vmware-helper.service";
 import {map} from "rxjs/operators";
+
+import {SysosLibVmwareHelperService} from "../sysos-lib-vmware-helper.service";
 import {connectionData} from "../types/connection-data";
 import {ManagedObjectReference} from "../types/managed-object-reference";
 
@@ -46,7 +47,7 @@ export class SysosLibVmwareSearchIndexService {
     uuid: string,
     vmSearch: boolean,
     instanceUuid?: boolean,
-    managedDatacenter?: ManagedObjectReference & { type: 'Datacenter' },
+    managedDatacenter?: ManagedObjectReference & { type: 'Datacenter' }
   ) {
     if (vmSearch === true && !instanceUuid) instanceUuid = false;
 

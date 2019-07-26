@@ -19,13 +19,29 @@ export class SysosLibVmwareVirtualMachineService {
 
   }
 
-  AcquireTicket() {
-
+  AcquireTicket(
+    connectionData: connectionData,
+    managedVM: ManagedObjectReference & { type: 'VirtualMachine' },
+    ticketType: string
+  ) {
+    const xml = `<?xml version="1.0" encoding="utf-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <soap:Body>
+    <AcquireTicket xmlns="urn:vim25">
+      <_this type="VirtualMachine">${managedVM.value}</_this>
+      <ticketType>${ticketType}</ticketType>
+    </AcquireTicket>
+  </soap:Body>
+</soap:Envelope>`;
+    return this.SysosLibVmwareHelper.doCallSoap(connectionData, xml).pipe(map((data: any) => {
+      return this.SysosLibVmwareHelper.validResponse(data.AcquireTicketResponse[0]);
+    })).toPromise();
   }
 
   AnswerVM(
     connectionData: connectionData,
-    managedObject: ManagedObjectReference & { type: 'VirtualMachine' },
+    managedVM: ManagedObjectReference & { type: 'VirtualMachine' },
     questionId: string,
     answerChoice: string
   ) {
@@ -33,7 +49,7 @@ export class SysosLibVmwareVirtualMachineService {
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
     <AnswerVM xmlns="urn:vim25">
-      <_this type="VirtualMachine">${managedObject.value}</_this>
+      <_this type="VirtualMachine">${managedVM.value}</_this>
       <questionId>${questionId}</questionId>
       <answerChoice>${answerChoice}</answerChoice>
     </AnswerVM>
@@ -58,20 +74,20 @@ export class SysosLibVmwareVirtualMachineService {
 
   CloneVM_Task(
     connectionData: connectionData,
-    managedObject: ManagedObjectReference & { type: 'VirtualMachine' },
+    managedVM: ManagedObjectReference & { type: 'VirtualMachine' },
     managedFolder: ManagedObjectReference & { type: 'Folder' },
     name: string,
-    VirtualMachineCloneSpec: VirtualMachineCloneSpec, // TODO
+    spec: VirtualMachineCloneSpec,
     returnOnTaskFinish: boolean = true
   ) {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
 <soap:Body>
   <CloneVM_Task xmlns="urn:vim25">
-    <_this type="VirtualMachine">${managedObject.value}</_this>
+    <_this type="VirtualMachine">${managedVM.value}</_this>
     <folder type="Folder">${managedFolder.value}</folder>
     <name>${name}</name>
-    <spec>${VirtualMachineCloneSpec}</spec>
+    <spec>${this.SysosLibVmwareHelper.setDynamicProperties(spec)}</spec>
   </CloneVM_Task>
 </soap:Body>
 </soap:Envelope>`;
@@ -106,7 +122,7 @@ export class SysosLibVmwareVirtualMachineService {
 
   CreateSnapshot_Task(
     connectionData: connectionData,
-    managedObject: ManagedObjectReference & { type: 'VirtualMachine' },
+    managedVM: ManagedObjectReference & { type: 'VirtualMachine' },
     name: string,
     memory: boolean,
     quiesce: boolean,
@@ -117,7 +133,7 @@ export class SysosLibVmwareVirtualMachineService {
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
     <CreateSnapshot_Task xmlns="urn:vim25">
-      <_this type="VirtualMachine">${managedObject.value}</_this>
+      <_this type="VirtualMachine">${managedVM.value}</_this>
       <name>${name}</name>
       ${(description ? `<description>${description}</description>` : '')}
       <memory>${memory}</memory>
@@ -204,14 +220,14 @@ export class SysosLibVmwareVirtualMachineService {
 
   PowerOffVM_Task(
     connectionData: connectionData,
-    managedObject: ManagedObjectReference & { type: 'VirtualMachine' },
+    managedVM: ManagedObjectReference & { type: 'VirtualMachine' },
     returnOnTaskFinish: boolean = true
   ) {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
 <soap:Body>
   <PowerOffVM_Task xmlns="urn:vim25">
-    <_this type="VirtualMachine">${managedObject.value}</_this>
+    <_this type="VirtualMachine">${managedVM.value}</_this>
   </PowerOffVM_Task>
 </soap:Body>
 </soap:Envelope>`;
@@ -230,7 +246,7 @@ export class SysosLibVmwareVirtualMachineService {
 
   PowerOnVM_Task(
     connectionData: connectionData,
-    managedObject: ManagedObjectReference & { type: 'VirtualMachine' },
+    managedVM: ManagedObjectReference & { type: 'VirtualMachine' },
     managedHost?: ManagedObjectReference & { type: 'HostSystem' },
     returnOnTaskFinish: boolean = true
   ) {
@@ -238,7 +254,7 @@ export class SysosLibVmwareVirtualMachineService {
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
 <soap:Body>
   <PowerOnVM_Task xmlns="urn:vim25">
-    <_this type="VirtualMachine">${managedObject.value}</_this>
+    <_this type="VirtualMachine">${managedVM.value}</_this>
     ${(managedHost ? `<host type="HostSystem">${managedHost.value}</host>` : '')}
   </PowerOnVM_Task>
 </soap:Body>
@@ -282,13 +298,13 @@ export class SysosLibVmwareVirtualMachineService {
 
   RebootGuest(
     connectionData: connectionData,
-    managedObject: ManagedObjectReference & { type: 'VirtualMachine' }
+    managedVM: ManagedObjectReference & { type: 'VirtualMachine' }
   ) {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
     <RebootGuest xmlns="urn:vim25">
-      <_this type="VirtualMachine">${managedObject.value}</_this>
+      <_this type="VirtualMachine">${managedVM.value}</_this>
     </RebootGuest>
   </soap:Body>
 </soap:Envelope>`;
@@ -299,16 +315,16 @@ export class SysosLibVmwareVirtualMachineService {
 
   ReconfigVM_Task(
     connectionData: connectionData,
-    managedObject: ManagedObjectReference & { type: 'VirtualMachine' },
-    VirtualMachineCloneSpec: VirtualMachineCloneSpec, // TODO
+    managedVM: ManagedObjectReference & { type: 'VirtualMachine' },
+    spec: VirtualMachineCloneSpec,
     returnOnTaskFinish: boolean = true
   ) {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
 <soap:Body>
   <ReconfigVM_Task xmlns="urn:vim25">
-    <_this type="VirtualMachine">${managedObject.value}</_this>
-    <spec>${VirtualMachineCloneSpec}</spec>
+    <_this type="VirtualMachine">${managedVM.value}</_this>
+    <spec>${this.SysosLibVmwareHelper.setDynamicProperties(spec)}</spec>
   </ReconfigVM_Task>
 </soap:Body>
 </soap:Envelope>`;
@@ -347,14 +363,14 @@ export class SysosLibVmwareVirtualMachineService {
 
   ResetVM_Task(
     connectionData: connectionData,
-    managedObject: ManagedObjectReference & { type: 'VirtualMachine' },
+    managedVM: ManagedObjectReference & { type: 'VirtualMachine' },
     returnOnTaskFinish: boolean = true
   ) {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
     <ResetVM_Task xmlns="urn:vim25">
-      <_this type="VirtualMachine">${managedObject.value}</_this>
+      <_this type="VirtualMachine">${managedVM.value}</_this>
     </ResetVM_Task>
   </soap:Body>
 </soap:Envelope>`;
@@ -389,13 +405,13 @@ export class SysosLibVmwareVirtualMachineService {
 
   ShutdownGuest(
     connectionData: connectionData,
-    managedObject: ManagedObjectReference & { type: 'VirtualMachine' }
+    managedVM: ManagedObjectReference & { type: 'VirtualMachine' }
   ) {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
     <ShutdownGuest xmlns="urn:vim25">
-      <_this type="VirtualMachine">${managedObject.value}</_this>
+      <_this type="VirtualMachine">${managedVM.value}</_this>
     </ShutdownGuest>
   </soap:Body>
 </soap:Envelope>`;
@@ -426,14 +442,14 @@ export class SysosLibVmwareVirtualMachineService {
 
   SuspendVM_Task(
     connectionData: connectionData,
-    managedObject: ManagedObjectReference & { type: 'VirtualMachine' },
+    managedVM: ManagedObjectReference & { type: 'VirtualMachine' },
     returnOnTaskFinish: boolean = true
   ) {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
 <soap:Body>
   <SuspendVM_Task xmlns="urn:vim25">
-    <_this type="VirtualMachine">${managedObject.value}</_this>
+    <_this type="VirtualMachine">${managedVM.value}</_this>
   </SuspendVM_Task>
 </soap:Body>
 </soap:Envelope>`;
@@ -468,13 +484,13 @@ export class SysosLibVmwareVirtualMachineService {
 
   UnregisterVM(
     connectionData: connectionData,
-    managedObject: ManagedObjectReference & { type: 'VirtualMachine' }
+    managedVM: ManagedObjectReference & { type: 'VirtualMachine' }
   ) {
     const xml = `<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
   <soap:Body>
     <UnregisterVM xmlns="urn:vim25">
-      <_this type="VirtualMachine">${managedObject.value}</_this>
+      <_this type="VirtualMachine">${managedVM.value}</_this>
     </UnregisterVM>
   </soap:Body>
 </soap:Envelope>`;
