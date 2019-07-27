@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
 
-import {map} from "rxjs/operators";
+import {map} from 'rxjs/operators';
 
-import {SysosLibVmwareHelperService} from "../sysos-lib-vmware-helper.service";
-import {connectionData} from "../types/connection-data";
-import {ManagedObjectReference} from "../types/managed-object-reference";
+import {SysosLibVmwareHelperService} from '../sysos-lib-vmware-helper.service';
+import {ConnectionData} from '../types/connection-data';
+import {ManagedObjectReference} from '../types/managed-object-reference';
 
 @Injectable({
   providedIn: 'root'
@@ -51,7 +51,7 @@ export class SysosLibVmwareFolderService {
   }
 
   RegisterVM_Task(
-    connectionData: connectionData,
+    connectionData: ConnectionData,
     managedFolder: ManagedObjectReference & { type: 'Folder' },
     path: string,
     name?: string,
@@ -60,16 +60,16 @@ export class SysosLibVmwareFolderService {
     managedHost?: ManagedObjectReference & { type: 'HostSystem' },
     returnOnTaskFinish: boolean = true
   ) {
-    const xml = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+    const xml = `<?xml version='1.0' encoding='utf-8'?>
+<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
   <soap:Body>
-    <RegisterVM_Task xmlns="urn:vim25">
-      <_this type="Folder">${managedFolder.value}</_this>
+    <RegisterVM_Task xmlns='urn:vim25'>
+      <_this type='Folder'>${managedFolder.value}</_this>
       <path>${path}</path>
       ${(name ? `<name>${name}</name>` : '')}
       <asTemplate>${asTemplate}</asTemplate>
-      <pool type="ResourcePool">${managedPool.value}</pool>
-      <host type="HostSystem">${managedHost.value}</host>
+      <pool type='ResourcePool'>${managedPool.value}</pool>
+      <host type='HostSystem'>${managedHost.value}</host>
     </RegisterVM_Task>
   </soap:Body>
 </soap:Envelope>`;

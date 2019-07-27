@@ -30,12 +30,12 @@ export class SysosAppInfrastructureVmwareService {
     this.Modal.openLittleModal('PLEASE WAIT', 'Connecting to vCenter/ESXi...', '.window--infrastructure-manager .window__main', 'plain').then(() => {
 
       // Login to SOAP vmware
-      return this.VMWare.connectvCenterSoap(connection.credential, connection.host, connection.port);
+      return this.VMWare.connectvCenterSoap(connection);
     }).then((connectSoapResult) => {
       if (connectSoapResult.status === 'error') throw {error: connectSoapResult.error, description: 'Failed to connect to VMWare'};
 
       // Get client version
-      return this.VMWare.getClientVersion(connection.host, connection.port);
+      return this.VMWare.getClientVersion(connection);
     }).then((clientVersionResult) => {
       if (clientVersionResult.status === 'error') throw {error: clientVersionResult.error, description: 'Failed to connect to VMWare'};
 
@@ -55,22 +55,29 @@ export class SysosAppInfrastructureVmwareService {
       this.Modal.changeModalText('Checking SysOS extension...', '.window--infrastructure-manager .window__main');
 
       // Get SysOS management extension
-      return this.VMWare.findSysOSExtension(connection.credential, connection.host, connection.port);
-    }).then((findExtensionResult) => {
+      return this.VMWare.FindExtension(
+        connection,
+        'com.sysos.management'
+      );
+    }).then((findExtensionResult: any) => {
       if (findExtensionResult.status === 'error') throw {error: findExtensionResult.error, description: 'Failed to get SysOS extension to VMWare'};
 
       // SysOS extension if not registered
-      if (!findExtensionResult.data.returnval) return this.VMWare.registerExtension(connection.credential, connection.host, connection.port);
+      if (!findExtensionResult.data.returnval) return this.VMWare.registerSysOSExtension(connection);
 
     }).then(() => {
 
       this.Modal.changeModalText('Getting data...', '.window--infrastructure-manager .window__main');
 
-      return this.VMWare.createAllBasicDataFilter(connection.credential, connection.host, connection.port);
+      return this.VMWare.createAllBasicDataFilter(connection);
     }).then((dataFilterResult) => {
       if (dataFilterResult.status === 'error') throw {error: dataFilterResult.error, description: 'Failed to set data filter to VMWare'};
 
-      return this.VMWare.getWaitForUpdatesEx(connection.credential, connection.host, connection.port);
+      return this.VMWare.WaitForUpdatesEx(
+        connection,
+        { maxWaitSeconds: 0 },
+        '0'
+      );
     }).then((getWaitForUpdateResult) => {
       if (getWaitForUpdateResult.status === 'error') throw {error: getWaitForUpdateResult.error, description: 'Failed to set data filter to VMWare'};
 
@@ -150,47 +157,73 @@ export class SysosAppInfrastructureVmwareService {
 
     const connection = this.InfrastructureManager.getConnectionByUuid(connectionUuid);
 
-    this.VMWare.connectvCenterSoap(connection.credential, connection.host, connection.port).then((connectSoapResult) => {
+    this.VMWare.connectvCenterSoap(connection).then((connectSoapResult) => {
       if (connectSoapResult.status === 'error') throw {error: connectSoapResult.error, description: 'Failed to connect to VMWare'};
 
-      return this.VMWare.getVMRuntime(connection.credential, connection.host, connection.port, vm.info.obj.name);
+      return this.VMWare.getVMRuntime(
+        connection,
+        vm.info.obj.name
+      );
     }).then((vmRuntimeResult) => {
       if (vmRuntimeResult.status === 'error') throw {error: vmRuntimeResult.error, description: 'Failed to get VM runtime'};
 
       // powerOn
       if (action === 'powerOn') {
         if (vmRuntimeResult.data.propSet.runtime.powerState === 'poweredOn') return vmRuntimeResult;
-        return this.VMWare.powerOnVM(connection.credential, connection.host, connection.port, vmRuntimeResult.data.propSet.runtime.host.name, vm.info.obj.name);
+        return this.VMWare.PowerOnVM_Task(
+          connection,
+          {type: 'VirtualMachine', value: vm.info.obj.name},
+          {type: 'HostSystem', value: vmRuntimeResult.data.propSet.runtime.host.name},
+          true
+        );
       }
 
       // powerOff
       if (action === 'powerOff') {
         if (vmRuntimeResult.data.propSet.runtime.powerState === 'poweredOff') return vmRuntimeResult;
-        return this.VMWare.powerOffVM(connection.credential, connection.host, connection.port, vm.info.obj.name);
+        return this.VMWare.PowerOffVM_Task(
+          connection,
+          {type: 'VirtualMachine', value: vm.info.obj.name},
+          true
+        );
       }
 
       // suspend
       if (action === 'suspend') {
         if (vmRuntimeResult.data.propSet.runtime.powerState !== 'poweredOn') return vmRuntimeResult;
-        return this.VMWare.suspendVM(connection.credential, connection.host, connection.port, vm.info.obj.name);
+        return this.VMWare.SuspendVM_Task(
+          connection,
+          {type: 'VirtualMachine', value: vm.info.obj.name},
+          true
+        );
       }
 
       // reset
       if (action === 'reset') {
         if (vmRuntimeResult.data.propSet.runtime.powerState !== 'poweredOn') return vmRuntimeResult;
-        return this.VMWare.resetVM(connection.credential, connection.host, connection.port, vm.info.obj.name);
+        return this.VMWare.ResetVM_Task(
+          connection,
+          {type: 'VirtualMachine', value: vm.info.obj.name},
+          true
+        );
       }
 
       // powerOffGuestOS
       if (action === 'powerOffGuestOS') {
         if (vmRuntimeResult.data.propSet.runtime.powerState !== 'poweredOn') return vmRuntimeResult;
-        return this.VMWare.shutdownGuest(connection.credential, connection.host, connection.port, vm.info.obj.name);
+        return this.VMWare.ShutdownGuest(
+          connection,
+          {type: 'VirtualMachine', value: vm.info.obj.name}
+        );
       }
 
       // restartGuestOS
       if (action === 'restartGuestOS') {
         if (vmRuntimeResult.data.propSet.runtime.powerState !== 'poweredOn') return vmRuntimeResult;
-        return this.VMWare.rebootGuest(connection.credential, connection.host, connection.port, vm.info.obj.name);
+        return this.VMWare.RebootGuest(
+          connection,
+          {type: 'VirtualMachine', value: vm.info.obj.name}
+        );
       }
 
       // refresh
@@ -242,13 +275,12 @@ export class SysosAppInfrastructureVmwareService {
     this.FileSystemUi.createHandler('folder', 'vmware', (data) => {
       this.Modal.openLittleModal('PLEASE WAIT', 'Creating folder...', data.selector, 'plain').then(() => {
 
-        return this.VMWare.createFolderToDatastore(
-          data.connection.credential,
-          data.connection.host,
-          data.connection.port,
+        return this.VMWare.MakeDirectory(
+          data.connection,
           data.connection.name,
           data.currentPath + data.name,
-          data.connection.datacenter
+          {type: 'Datacenter', value: data.connection.datacenter},
+          true
         );
 
       }).then((createFolderResult) => {
@@ -270,16 +302,16 @@ export class SysosAppInfrastructureVmwareService {
     this.FileSystemUi.createHandler('rename', 'vmware', (data) => {
       this.Modal.openLittleModal('PLEASE WAIT', 'Moving file...', data.selector, 'plain').then(() => {
 
-        return this.VMWare.moveFileFromDatastore(
-          data.connection.credential,
-          data.connection.host,
-          data.connection.port,
+        return this.VMWare.MoveDatastoreFile_Task(
+          data.connection,
           data.connection.name,
           data.currentPath + data.file.filename, // original file name
-          data.connection.datacenter,
+          {type: 'Datacenter', value: data.connection.datacenter},
           data.connection.name,
           data.currentPath + data.name, // new file name
-          data.connection.datacenter
+          {type: 'Datacenter', value: data.connection.datacenter},
+          false,
+          true
         );
 
       }).then((renameFileResult) => {
@@ -301,13 +333,12 @@ export class SysosAppInfrastructureVmwareService {
     this.FileSystemUi.createHandler('delete', 'vmware', (data) => {
       this.Modal.openLittleModal('PLEASE WAIT', 'Deleting file...', data.selector, 'plain').then(() => {
 
-        return this.VMWare.deleteFileFromDatastore(
-          data.connection.credential,
-          data.connection.host,
-          data.connection.port,
+        return this.VMWare.DeleteDatastoreFile_Task(
+          data.connection,
           data.connection.name,
           data.currentPath + data.file.filename,
-          data.connection.datacenter
+          {type: 'Datacenter', value: data.connection.datacenter},
+          true
         );
 
       }).then((deleteFileResult) => {

@@ -1,4 +1,4 @@
-import {ReplicationInfoDiskSettings} from "./replication-info-disk-settings";
+import {ReplicationInfoDiskSettings} from './replication-info-disk-settings';
 
 export interface ReplicationConfigSpec {
   destination: string;

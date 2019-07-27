@@ -1,4 +1,4 @@
-import {SelectionSpec} from "./selection-spec";
+import {SelectionSpec} from './selection-spec';
 
 export interface TraversalSpec extends SelectionSpec {
   path: string;

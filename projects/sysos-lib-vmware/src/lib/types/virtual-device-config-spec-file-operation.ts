@@ -1,3 +1,1 @@
-export interface VirtualDeviceConfigSpecFileOperation {
-  any: 'create' | 'destroy' | 'replace'
-}
+export type VirtualDeviceConfigSpecFileOperation = 'create' | 'destroy' | 'replace';

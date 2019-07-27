@@ -1,3 +1,1 @@
-export interface VirtualMachineRelocateTransformation {
-  any: 'flat' | 'sparse';
-}
+export type VirtualMachineRelocateTransformation = 'flat' | 'sparse';

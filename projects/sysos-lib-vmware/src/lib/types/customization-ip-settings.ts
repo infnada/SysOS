@@ -1,6 +1,6 @@
-import {CustomizationIpGenerator} from "./customization-ip-generator";
-import {CustomizationIPSettingsIpV6AddressSpec} from "./customization-ip-settings-ipv6-address-spec";
-import {CustomizationNetBIOSMode} from "./customization-netbios-mode";
+import {CustomizationIpGenerator} from './customization-ip-generator';
+import {CustomizationIPSettingsIpV6AddressSpec} from './customization-ip-settings-ipv6-address-spec';
+import {CustomizationNetBIOSMode} from './customization-netbios-mode';
 
 export interface CustomizationIPSettings {
   dnsDomain?: string;

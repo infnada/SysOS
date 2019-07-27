@@ -624,12 +624,10 @@ export class SysosAppInfrastructureNetappService {
   instantVM(storageUuid: string, virtualUuid: string, vserver: NetAppVserver, volume: NetAppVolume, snapshot: NetAppSnapshot, vm: VMWareObject & { info: { data: VMWareVM } }): void {
     if (storageUuid === null) {
       console.log(vm);
-      this.VMWare.getVMState(
-        this.InfrastructureManager.getConnectionByUuid(virtualUuid).credential,
-        this.InfrastructureManager.getConnectionByUuid(virtualUuid).host,
-        this.InfrastructureManager.getConnectionByUuid(virtualUuid).port,
-        vm.info.obj.name,
-        true).then((vmData) => {
+      this.VMWare.getVM(
+        this.InfrastructureManager.getConnectionByUuid(virtualUuid),
+        vm.info.obj.name
+      ).then((vmData) => {
           console.log(vmData);
       });
       return;

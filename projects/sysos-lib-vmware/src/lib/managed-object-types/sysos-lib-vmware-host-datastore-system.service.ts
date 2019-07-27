@@ -1,12 +1,12 @@
 import {Injectable} from '@angular/core';
 
-import {map} from "rxjs/operators";
+import {map} from 'rxjs/operators';
 
-import {SysosLibVmwareHelperService} from "../sysos-lib-vmware-helper.service";
-import {connectionData} from "../types/connection-data";
-import {EventFilterSpec} from "../types/event-filter-spec";
-import {ManagedObjectReference} from "../types/managed-object-reference";
-import {HostNasVolumeSpec} from "../types/host-nas-volume-spec";
+import {SysosLibVmwareHelperService} from '../sysos-lib-vmware-helper.service';
+import {ConnectionData} from '../types/connection-data';
+import {EventFilterSpec} from '../types/event-filter-spec';
+import {ManagedObjectReference} from '../types/managed-object-reference';
+import {HostNasVolumeSpec} from '../types/host-nas-volume-spec';
 
 @Injectable({
   providedIn: 'root'
@@ -25,15 +25,15 @@ export class SysosLibVmwareHostDatastoreSystemService {
   }
 
   CreateNasDatastore(
-    connectionData: connectionData,
+    connectionData: ConnectionData,
     managedDatstoreSystem: ManagedObjectReference & { type: 'HostDatastoreSystem' },
     spec: HostNasVolumeSpec
   ) {
-    const xml = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+    const xml = `<?xml version='1.0' encoding='utf-8'?>
+<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
   <soap:Body>
-    <CreateNasDatastore xmlns="urn:vim25">
-      <_this type="HostDatastoreSystem">${managedDatstoreSystem.value}</_this>
+    <CreateNasDatastore xmlns='urn:vim25'>
+      <_this type='HostDatastoreSystem'>${managedDatstoreSystem.value}</_this>
       <spec>${this.SysosLibVmwareHelper.setDynamicProperties(spec)}</spec>
     </CreateNasDatastore>
   </soap:Body>
@@ -80,16 +80,16 @@ export class SysosLibVmwareHostDatastoreSystemService {
   }
 
   RemoveDatastore(
-    connectionData: connectionData,
+    connectionData: ConnectionData,
     managedDatastoreSystem: ManagedObjectReference & { type: 'HostDatastoreSystem' },
     managedDatastore: ManagedObjectReference & { type: 'Datastore' }
   ) {
-    const xml = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+    const xml = `<?xml version='1.0' encoding='utf-8'?>
+<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
   <soap:Body>
-    <RemoveDatastore xmlns="urn:vim25">
-      <_this type="HostDatastoreSystem">${managedDatastoreSystem.value}</_this>
-      <datastore type="Datastore">${managedDatastore.value}</datastore>
+    <RemoveDatastore xmlns='urn:vim25'>
+      <_this type='HostDatastoreSystem'>${managedDatastoreSystem.value}</_this>
+      <datastore type='Datastore'>${managedDatastore.value}</datastore>
     </RemoveDatastore>
   </soap:Body>
 </soap:Envelope>`;

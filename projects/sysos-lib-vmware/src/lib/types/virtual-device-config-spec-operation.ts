@@ -1,3 +1,1 @@
-export interface VirtualDeviceConfigSpecOperation {
-  any: 'add' | 'edit' | 'remove'
-}
+export type VirtualDeviceConfigSpecOperation = 'add' | 'edit' | 'remove';

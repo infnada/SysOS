@@ -73,7 +73,7 @@ export class SysosAppDatastoreExplorerService {
 
     if (this.getConnectionByUuid(uuid).type === 'vmware') {
       this.Modal.openLittleModal('PLEASE WAIT', 'Connecting to Datastore...', '.window--datastore-explorer .window__main', 'plain');
-      return this.VMWare.connectvCenterSoap(this.getConnectionByUuid(uuid).credential, this.getConnectionByUuid(uuid).host, this.getConnectionByUuid(uuid).port).then((data) => {
+      return this.VMWare.connectvCenterSoap(this.getConnectionByUuid(uuid)).then((data) => {
         if (data.status === 'error') throw new Error('Failed to connect to vCenter');
 
         this.getActiveConnection().state = 'connected';

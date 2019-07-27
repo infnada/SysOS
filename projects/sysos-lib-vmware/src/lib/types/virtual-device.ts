@@ -1,7 +1,7 @@
-import {VirtualDeviceBackingInfo} from "./virtual-device-backing-info";
-import {VirtualDeviceConnectInfo} from "./virtual-device-connect-info";
-import {Description} from "./description";
-import {VirtualDeviceBusSlotInfo} from "./virtual-device-bus-slot-info";
+import {VirtualDeviceBackingInfo} from './virtual-device-backing-info';
+import {VirtualDeviceConnectInfo} from './virtual-device-connect-info';
+import {Description} from './description';
+import {VirtualDeviceBusSlotInfo} from './virtual-device-bus-slot-info';
 
 export interface VirtualDevice {
   backing?: VirtualDeviceBackingInfo;

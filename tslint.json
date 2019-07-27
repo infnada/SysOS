@@ -41,6 +41,7 @@
       "timeEnd",
       "trace"
     ],
+    "no-empty-interface": false,
     "no-empty": false,
     "no-non-null-assertion": true,
     "no-redundant-jsdoc": true,

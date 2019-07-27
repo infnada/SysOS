@@ -1,3 +1,2 @@
-export interface TaskInfoState {
-  any: 'error' | 'queued' | 'running' | 'success';
-}
+export type TaskInfoState = 'error' | 'queued' | 'running' | 'success';
+

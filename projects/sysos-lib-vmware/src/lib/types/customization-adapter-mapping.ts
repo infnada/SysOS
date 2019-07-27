@@ -1,4 +1,4 @@
-import {CustomizationIPSettings} from "./customization-ip-settings";
+import {CustomizationIPSettings} from './customization-ip-settings';
 
 export interface CustomizationAdapterMapping {
   adapter: CustomizationIPSettings;

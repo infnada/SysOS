@@ -1,11 +1,11 @@
 import {Injectable} from '@angular/core';
 
-import {map} from "rxjs/operators";
+import {map} from 'rxjs/operators';
 
-import {SysosLibVmwareHelperService} from "../sysos-lib-vmware-helper.service";
-import {connectionData} from "../types/connection-data";
-import {ManagedObjectReference} from "../types/managed-object-reference";
-import {HostNasVolumeSpec} from "../types/host-nas-volume-spec";
+import {SysosLibVmwareHelperService} from '../sysos-lib-vmware-helper.service';
+import {ConnectionData} from '../types/connection-data';
+import {ManagedObjectReference} from '../types/managed-object-reference';
+import {HostNasVolumeSpec} from '../types/host-nas-volume-spec';
 
 @Injectable({
   providedIn: 'root'
@@ -20,7 +20,7 @@ export class SysosLibVmwareFileManagerService {
   }
 
   CopyDatastoreFile_Task(
-    connectionData: connectionData,
+    connectionData: ConnectionData,
     srcDatastoreName: string,
     srcPath: string,
     srcDatacenter: ManagedObjectReference & { type: 'Datacenter' },
@@ -30,15 +30,15 @@ export class SysosLibVmwareFileManagerService {
     force: boolean = false,
     returnOnTaskFinish: boolean = true
   ) {
-    const xml = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+    const xml = `<?xml version='1.0' encoding='utf-8'?>
+<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
   <soap:Body>
-    <CopyDatastoreFile_Task xmlns="urn:vim25">
-      <_this type="FileManager">FileManager</_this>
+    <CopyDatastoreFile_Task xmlns='urn:vim25'>
+      <_this type='FileManager'>FileManager</_this>
       <sourceName>[${srcDatastoreName}] ${srcPath}</sourceName>
-      <sourceDatacenter type="Datacenter">${srcDatacenter.value}</sourceDatacenter>
+      <sourceDatacenter type='Datacenter'>${srcDatacenter.value}</sourceDatacenter>
       <destinationName>[${dstDatastoreName}] ${dstPath}</destinationName>
-      <destinationDatacenter type="Datacenter">${dstDatacenter.value}</destinationDatacenter>
+      <destinationDatacenter type='Datacenter'>${dstDatacenter.value}</destinationDatacenter>
       <force>${force}</force>
     </CopyDatastoreFile_Task>
   </soap:Body>
@@ -57,19 +57,19 @@ export class SysosLibVmwareFileManagerService {
   }
 
   DeleteDatastoreFile_Task(
-    connectionData: connectionData,
+    connectionData: ConnectionData,
     datastoreName: string,
     path: string,
     managedDatacenter: ManagedObjectReference & { type: 'Datacenter' },
     returnOnTaskFinish: boolean = true
   ) {
-    const xml = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+    const xml = `<?xml version='1.0' encoding='utf-8'?>
+<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
   <soap:Body>
-    <DeleteDatastoreFile_Task xmlns="urn:vim25">
-      <_this type="FileManager">FileManager</_this>
+    <DeleteDatastoreFile_Task xmlns='urn:vim25'>
+      <_this type='FileManager'>FileManager</_this>
       <name>[${datastoreName}] ${path}</name>
-      <datacenter type="Datacenter">${managedDatacenter.value}</datacenter>
+      <datacenter type='Datacenter'>${managedDatacenter.value}</datacenter>
     </DeleteDatastoreFile_Task>
   </soap:Body>
 </soap:Envelope>`;
@@ -87,19 +87,19 @@ export class SysosLibVmwareFileManagerService {
   }
 
   MakeDirectory(
-    connectionData: connectionData,
+    connectionData: ConnectionData,
     datastoreName: string,
     path: string,
     managedDatacenter: ManagedObjectReference & { type: 'Datacenter' },
     createParentDirectories: boolean = false
   ) {
-    const xml = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+    const xml = `<?xml version='1.0' encoding='utf-8'?>
+<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
   <soap:Body>
-    <MakeDirectory xmlns="urn:vim25">
-      <_this type="FileManager">FileManager</_this>
+    <MakeDirectory xmlns='urn:vim25'>
+      <_this type='FileManager'>FileManager</_this>
       <name>[${datastoreName}] ${path}</name>
-      <datacenter type="Datacenter">${managedDatacenter.value}</datacenter>
+      <datacenter type='Datacenter'>${managedDatacenter.value}</datacenter>
       <createParentDirectories>${createParentDirectories}</createParentDirectories>
     </MakeDirectory>
   </soap:Body>
@@ -110,7 +110,7 @@ export class SysosLibVmwareFileManagerService {
   }
 
   MoveDatastoreFile_Task(
-    connectionData: connectionData,
+    connectionData: ConnectionData,
     srcDatastoreName: string,
     srcPath: string,
     srcDatacenter: ManagedObjectReference & { type: 'Datacenter' },
@@ -120,15 +120,15 @@ export class SysosLibVmwareFileManagerService {
     force: boolean = false,
     returnOnTaskFinish: boolean = true
   ) {
-    const xml = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+    const xml = `<?xml version='1.0' encoding='utf-8'?>
+<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
   <soap:Body>
-    <MoveDatastoreFile_Task xmlns="urn:vim25">
-      <_this type="FileManager">FileManager</_this>
+    <MoveDatastoreFile_Task xmlns='urn:vim25'>
+      <_this type='FileManager'>FileManager</_this>
       <sourceName>[${srcDatastoreName}] ${srcPath}</sourceName>
-      <sourceDatacenter type="Datacenter">${srcDatacenter}</sourceDatacenter>
+      <sourceDatacenter type='Datacenter'>${srcDatacenter}</sourceDatacenter>
       <destinationName>[${dstDatastoreName}] ${dstPath}</destinationName>
-      <destinationDatacenter type="Datacenter">${dstDatacenter}</destinationDatacenter>
+      <destinationDatacenter type='Datacenter'>${dstDatacenter}</destinationDatacenter>
       <force>${force}</force>
     </MoveDatastoreFile_Task>
   </soap:Body>

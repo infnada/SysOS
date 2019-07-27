@@ -1,3 +1,1 @@
-export interface SharesLevel {
-  any: 'custom' | 'high' | 'low' | 'normal'
-}
+export type SharesLevel = 'custom' | 'high' | 'low' | 'normal';

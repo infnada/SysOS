@@ -1,4 +1,4 @@
-import {SharesInfo} from "./shares-info";
+import {SharesInfo} from './shares-info';
 
 export interface ResourceAllocationInfo {
   expandableReservation?: boolean;

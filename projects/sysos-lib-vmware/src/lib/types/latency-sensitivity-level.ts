@@ -1,3 +1,1 @@
-export interface LatencySensitivitySensitivityLevel {
-  any: 'custom' | 'high' | 'low' | 'medium' | 'normal';
-}
+export type LatencySensitivitySensitivityLevel = 'custom' | 'high' | 'low' | 'medium' | 'normal';

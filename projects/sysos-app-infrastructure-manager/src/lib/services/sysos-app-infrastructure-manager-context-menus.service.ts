@@ -116,7 +116,7 @@ export class SysosAppInfrastructureManagerContextMenusService {
               this.InfrastructureManagerVMWare.doWithVM(node.info.uuid, node, 'powerOn');
             },
             disabled: (node: IMNode) => {
-              return node.info.data['runtime.powerState'] === 'poweredOn'
+              return node.info.data['runtime.powerState'] === 'poweredOn';
             }
           },
           {
@@ -126,7 +126,7 @@ export class SysosAppInfrastructureManagerContextMenusService {
               this.InfrastructureManagerVMWare.doWithVM(node.info.uuid, node, 'powerOff');
             },
             disabled: (node: IMNode) => {
-              return node.info.data['runtime.powerState'] === 'poweredOff'
+              return node.info.data['runtime.powerState'] === 'poweredOff';
             }
           },
           {
@@ -136,7 +136,7 @@ export class SysosAppInfrastructureManagerContextMenusService {
               this.InfrastructureManagerVMWare.doWithVM(node.info.uuid, node, 'suspend');
             },
             disabled: (node: IMNode) => {
-              return node.info.data['runtime.powerState'] === 'suspended'
+              return node.info.data['runtime.powerState'] === 'suspended';
             }
           },
           {
@@ -146,7 +146,7 @@ export class SysosAppInfrastructureManagerContextMenusService {
               this.InfrastructureManagerVMWare.doWithVM(node.info.uuid, node, 'reset');
             },
             disabled: (node: IMNode) => {
-              return node.info.data['runtime.powerState'] === 'poweredOff'
+              return node.info.data['runtime.powerState'] === 'poweredOff';
             }
           },
           {id: 5, text: 'divider'},
@@ -157,7 +157,7 @@ export class SysosAppInfrastructureManagerContextMenusService {
               this.InfrastructureManagerVMWare.doWithVM(node.info.uuid, node, 'powerOffGuestOS');
             },
             disabled: (node: IMNode) => {
-              return node.info.data['runtime.powerState'] === 'poweredOff'
+              return node.info.data['runtime.powerState'] === 'poweredOff';
             }
           },
           {
@@ -167,7 +167,7 @@ export class SysosAppInfrastructureManagerContextMenusService {
               this.InfrastructureManagerVMWare.doWithVM(node.info.uuid, node, 'restartGuestOS');
             },
             disabled: (node: IMNode) => {
-              return node.info.data['runtime.powerState'] === 'poweredOff'
+              return node.info.data['runtime.powerState'] === 'poweredOff';
             }
           }
         ]

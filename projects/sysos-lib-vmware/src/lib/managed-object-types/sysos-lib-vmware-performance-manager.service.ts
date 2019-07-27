@@ -1,11 +1,11 @@
 import {Injectable} from '@angular/core';
 
-import {map} from "rxjs/operators";
+import {map} from 'rxjs/operators';
 
-import {SysosLibVmwareHelperService} from "../sysos-lib-vmware-helper.service";
-import {connectionData} from "../types/connection-data";
-import {PerfQuerySpec} from "../types/perf-query-spec";
-import {ManagedObjectReference} from "../types/managed-object-reference";
+import {SysosLibVmwareHelperService} from '../sysos-lib-vmware-helper.service';
+import {ConnectionData} from '../types/connection-data';
+import {PerfQuerySpec} from '../types/perf-query-spec';
+import {ManagedObjectReference} from '../types/managed-object-reference';
 
 @Injectable({
   providedIn: 'root'
@@ -20,18 +20,18 @@ export class SysosLibVmwarePerformanceManagerService {
   }
 
   QueryAvailablePerfMetric(
-    connectionData: connectionData,
+    connectionData: ConnectionData,
     managedObject: ManagedObjectReference,
     beginTime?: Date,
     endTime?: Date,
     intervalId?: number
   ) {
-    const xml = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+    const xml = `<?xml version='1.0' encoding='utf-8'?>
+<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
   <soap:Body>
-    <QueryAvailablePerfMetric xmlns="urn:vim25">
-      <_this type="PerformanceManager">PerfMgr</_this>
-      <entity type="${managedObject.type}">${managedObject.value}</entity>
+    <QueryAvailablePerfMetric xmlns='urn:vim25'>
+      <_this type='PerformanceManager'>PerfMgr</_this>
+      <entity type='${managedObject.type}'>${managedObject.value}</entity>
       <beginTime>${beginTime}</beginTime>
       <endTime>${endTime}</endTime>
       <intervalId>${intervalId}</intervalId>
@@ -50,14 +50,14 @@ export class SysosLibVmwarePerformanceManagerService {
   }
 
   QueryPerf(
-    connectionData: connectionData,
+    connectionData: ConnectionData,
     querySpec: PerfQuerySpec[]
   ) {
-    const xml = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+    const xml = `<?xml version='1.0' encoding='utf-8'?>
+<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
   <soap:Body>
-    <QueryPerf xmlns="urn:vim25">
-      <_this type="PerformanceManager">PerfMgr</_this>
+    <QueryPerf xmlns='urn:vim25'>
+      <_this type='PerformanceManager'>PerfMgr</_this>
       <querySpec>${this.SysosLibVmwareHelper.setDynamicProperties(querySpec)}</querySpec>
     </QueryPerf>
   </soap:Body>
@@ -72,14 +72,14 @@ export class SysosLibVmwarePerformanceManagerService {
   }
 
   QueryPerfCounter(
-    connectionData: connectionData,
+    connectionData: ConnectionData,
     counterId: number[]
   ) {
-    const xml = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+    const xml = `<?xml version='1.0' encoding='utf-8'?>
+<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
   <soap:Body>
-    <QueryPerfCounter xmlns="urn:vim25">
-      <_this type="PerformanceManager">PerfMgr</_this>
+    <QueryPerfCounter xmlns='urn:vim25'>
+      <_this type='PerformanceManager'>PerfMgr</_this>
       ${counterId.forEach((counter) => {
       return `<counterId>${counter}</counterId>`;
     })}
@@ -92,14 +92,14 @@ export class SysosLibVmwarePerformanceManagerService {
   }
 
   QueryPerfCounterByLevel(
-    connectionData: connectionData,
+    connectionData: ConnectionData,
     level: number
   ) {
-    const xml = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+    const xml = `<?xml version='1.0' encoding='utf-8'?>
+<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
   <soap:Body>
-    <QueryPerfCounterByLevel xmlns="urn:vim25">
-      <_this type="PerformanceManager">PerfMgr</_this>
+    <QueryPerfCounterByLevel xmlns='urn:vim25'>
+      <_this type='PerformanceManager'>PerfMgr</_this>
       <level>${level}</level>
     </QueryPerfCounterByLevel>
   </soap:Body>
@@ -116,15 +116,15 @@ export class SysosLibVmwarePerformanceManagerService {
   }
 
   QueryPerfProviderSummary(
-    connectionData: connectionData,
+    connectionData: ConnectionData,
     managedObject: ManagedObjectReference
   ) {
-    const xml = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+    const xml = `<?xml version='1.0' encoding='utf-8'?>
+<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
   <soap:Body>
-    <QueryPerfProviderSummary xmlns="urn:vim25">
-      <_this type="PerformanceManager">PerfMgr</_this>
-      <entity type="${managedObject.type}">${managedObject}</entity>
+    <QueryPerfProviderSummary xmlns='urn:vim25'>
+      <_this type='PerformanceManager'>PerfMgr</_this>
+      <entity type='${managedObject.type}'>${managedObject}</entity>
     </QueryPerfProviderSummary>
   </soap:Body>
 </soap:Envelope>`;

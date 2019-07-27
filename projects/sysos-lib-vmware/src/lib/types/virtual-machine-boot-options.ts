@@ -1,4 +1,4 @@
-import {VirtualMachineBootOptionsBootableDevice} from "./virtual-machine-boot-options-bootable-device";
+import {VirtualMachineBootOptionsBootableDevice} from './virtual-machine-boot-options-bootable-device';
 
 export interface VirtualMachineBootOptions {
   bootDelay?: number;

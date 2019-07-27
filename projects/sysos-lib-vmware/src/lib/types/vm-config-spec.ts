@@ -1,7 +1,7 @@
-import {VAppIPAssignmentInfo} from "./vapp-ip-assignment-info";
-import {VAppOvfSectionSpec} from "./vapp-ovf-section-spec";
-import {VAppProductSpec} from "./vapp-product-spec";
-import {VAppPropertySpec} from "./vapp-property-spec";
+import {VAppIPAssignmentInfo} from './vapp-ip-assignment-info';
+import {VAppOvfSectionSpec} from './vapp-ovf-section-spec';
+import {VAppProductSpec} from './vapp-product-spec';
+import {VAppPropertySpec} from './vapp-property-spec';
 
 export interface VmConfigSpec {
   eula?: string[];

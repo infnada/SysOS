@@ -69,13 +69,13 @@ export class SysosModalEsxiSelectableComponent {
 
     this.Modal.openLittleModal('PLEASE WAIT', 'Connecting to vCenter...', '.modal-esxi-selectable', 'plain').then(() => {
 
-      return this.VMWare.connectvCenterSoap(this.selectedHost.virtual.credential, this.selectedHost.virtual.host, this.selectedHost.virtual.port);
+      return this.VMWare.connectvCenterSoap(this.selectedHost.virtual);
     }).then((connectSoapResult) => {
       if (connectSoapResult.status === 'error') throw {error: connectSoapResult.error, description: 'Failed to connect to vCenter'};
 
       this.Modal.changeModalText('Getting data...', '.modal-esxi-selectable');
 
-      return this.VMWare.getHost(this.selectedHost.virtual.credential, this.selectedHost.virtual.host, this.selectedHost.virtual.port, this.selectedHost.host.host);
+      return this.VMWare.getHost(this.selectedHost.virtual, this.selectedHost.host.host);
     }).then((hostResult) => {
       if (hostResult.status === 'error') throw {error: hostResult.error, description: 'Failed to get Host data from vCenter'};
 
@@ -90,7 +90,7 @@ export class SysosModalEsxiSelectableComponent {
 
       // Check if some of the datastores IPs match foundIfaces IP
       hostResult.data.datastore.ManagedObjectReference.forEach((datastoreObj) => {
-        this.VMWare.getDatastoreProps(this.selectedHost.virtual.credential, this.selectedHost.virtual.host, this.selectedHost.virtual.port, datastoreObj.name).then((datastoreResult) => {
+        this.VMWare.getDatastoreProps(this.selectedHost.virtual, datastoreObj.name).then((datastoreResult) => {
           if (datastoreResult.status === 'error') throw {error: datastoreResult.error, description: 'Failed to get Datastore data from vCenter'};
 
           console.log(datastoreResult);

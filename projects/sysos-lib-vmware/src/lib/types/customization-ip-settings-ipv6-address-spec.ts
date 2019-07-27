@@ -1,4 +1,4 @@
-import {CustomizationIpV6Generator} from "./customization-ipv6-generator";
+import {CustomizationIpV6Generator} from './customization-ipv6-generator';
 
 export interface CustomizationIPSettingsIpV6AddressSpec {
   gateway?: string[];

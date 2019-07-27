@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
 
-import {map} from "rxjs/operators";
+import {map} from 'rxjs/operators';
 
-import {SysosLibVmwareHelperService} from "../sysos-lib-vmware-helper.service";
-import {connectionData} from "../types/connection-data";
-import {ManagedObjectReference} from "../types/managed-object-reference";
+import {SysosLibVmwareHelperService} from '../sysos-lib-vmware-helper.service';
+import {ConnectionData} from '../types/connection-data';
+import {ManagedObjectReference} from '../types/managed-object-reference';
 
 @Injectable({
   providedIn: 'root'
@@ -43,7 +43,7 @@ export class SysosLibVmwareSearchIndexService {
   }
 
   FindByUuid(
-    connectionData: connectionData,
+    connectionData: ConnectionData,
     uuid: string,
     vmSearch: boolean,
     instanceUuid?: boolean,
@@ -51,12 +51,12 @@ export class SysosLibVmwareSearchIndexService {
   ) {
     if (vmSearch === true && !instanceUuid) instanceUuid = false;
 
-    const xml = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+    const xml = `<?xml version='1.0' encoding='utf-8'?>
+<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
   <soap:Body>
-    <FindByUuid xmlns="urn:vim25">
-      <_this type="SearchIndex">SearchIndex</_this>
-      ${(managedDatacenter ? `<datacenter type="Datacenter">${managedDatacenter.value}</datacenter>` : '')}
+    <FindByUuid xmlns='urn:vim25'>
+      <_this type='SearchIndex'>SearchIndex</_this>
+      ${(managedDatacenter ? `<datacenter type='Datacenter'>${managedDatacenter.value}</datacenter>` : '')}
       <uuid>${uuid}</uuid>
       <vmSearch>${vmSearch}</vmSearch>
       ${(instanceUuid && vmSearch === true ? `<instanceUuid>${instanceUuid}</instanceUuid>` : '')}

@@ -1,4 +1,4 @@
-import {KeyProviderId} from "./key-provider-id";
+import {KeyProviderId} from './key-provider-id';
 
 export interface CryptoKeyId {
   keyId: string;

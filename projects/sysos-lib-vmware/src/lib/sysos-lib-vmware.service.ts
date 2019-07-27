@@ -1,159 +1,159 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 
-import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 import {NGXLogger} from 'ngx-logger';
 
-import {SysosLibVmwareHelperService} from "./sysos-lib-vmware-helper.service";
-import {SysosLibVmwareAlarmService} from "./managed-object-types/sysos-lib-vmware-alarm.service";
-import {SysosLibVmwareAlarmManagerService} from "./managed-object-types/sysos-lib-vmware-alarm-manager.service";
-import {SysosLibVmwareAuthorizationManagerService} from "./managed-object-types/sysos-lib-vmware-authorization-manager.service";
-import {SysosLibVmwareCertificateManagerService} from "./managed-object-types/sysos-lib-vmware-certificate-manager.service";
-import {SysosLibVmwareClusterComputeResourceService} from "./managed-object-types/sysos-lib-vmware-cluster-compute-resource.service";
-import {SysosLibVmwareClusterEVCManagerService} from "./managed-object-types/sysos-lib-vmware-cluster-evc-manager.service";
-import {SysosLibVmwareClusterProfileService} from "./managed-object-types/sysos-lib-vmware-cluster-profile.service";
-import {SysosLibVmwareClusterProfileManagerService} from "./managed-object-types/sysos-lib-vmware-cluster-profile-manager.service";
-import {SysosLibVmwareComputeResourceService} from "./managed-object-types/sysos-lib-vmware-compute-resource.service";
-import {SysosLibVmwareContainerViewService} from "./managed-object-types/sysos-lib-vmware-container-view.service";
-import {SysosLibVmwareCryptoManagerService} from "./managed-object-types/sysos-lib-vmware-crypto-manager.service";
-import {SysosLibVmwareCryptoManagerHostService} from "./managed-object-types/sysos-lib-vmware-crypto-manager-host.service";
-import {SysosLibVmwareCryptoManagerHostKMSService} from "./managed-object-types/sysos-lib-vmware-crypto-manager-host-kms.service";
-import {SysosLibVmwareCryptoManagerKmipService} from "./managed-object-types/sysos-lib-vmware-crypto-manager-kmip.service";
-import {SysosLibVmwareCustomFieldsManagerService} from "./managed-object-types/sysos-lib-vmware-custom-fields-manager.service";
-import {SysosLibVmwareCustomizationSpecManagerService} from "./managed-object-types/sysos-lib-vmware-customization-spec-manager.service";
-import {SysosLibVmwareDatacenterService} from "./managed-object-types/sysos-lib-vmware-datacenter.service";
-import {SysosLibVmwareDatastoreService} from "./managed-object-types/sysos-lib-vmware-datastore.service";
-import {SysosLibVmwareDatastoreNamespaceManagerService} from "./managed-object-types/sysos-lib-vmware-datastore-namespace-manager.service";
-import {SysosLibVmwareDiagnosticManagerService} from "./managed-object-types/sysos-lib-vmware-diagnostic-manager.service";
-import {SysosLibVmwareDistributedVirtualPortgroupService} from "./managed-object-types/sysos-lib-vmware-distributed-virtual-portgroup.service";
-import {SysosLibVmwareDistributedVirtualSwitchService} from "./managed-object-types/sysos-lib-vmware-distributed-virtual-switch.service";
-import {SysosLibVmwareDistributedVirtualSwitchManagerService} from "./managed-object-types/sysos-lib-vmware-distributed-virtual-switch-manager.service";
-import {SysosLibVmwareEnvironmentBrowserService} from "./managed-object-types/sysos-lib-vmware-environment-browser.service";
-import {SysosLibVmwareEventHistoryCollectorService} from "./managed-object-types/sysos-lib-vmware-event-history-collector.service";
-import {SysosLibVmwareEventManagerService} from "./managed-object-types/sysos-lib-vmware-event-manager.service";
-import {SysosLibVmwareExtensibleManagedObjectService} from "./managed-object-types/sysos-lib-vmware-extensible-managed-object.service";
-import {SysosLibVmwareExtensionManagerService} from "./managed-object-types/sysos-lib-vmware-extension-manager.service";
-import {SysosLibVmwareFailoverClusterConfiguratorService} from "./managed-object-types/sysos-lib-vmware-failover-cluster-configurator.service";
-import {SysosLibVmwareFailoverClusterManagerService} from "./managed-object-types/sysos-lib-vmware-failover-cluster-manager.service";
-import {SysosLibVmwareFileManagerService} from "./managed-object-types/sysos-lib-vmware-file-manager.service";
-import {SysosLibVmwareFolderService} from "./managed-object-types/sysos-lib-vmware-folder.service";
-import {SysosLibVmwareGuestAliasManagerService} from "./managed-object-types/sysos-lib-vmware-guest-alias-manager.service";
-import {SysosLibVmwareGuestAuthManagerService} from "./managed-object-types/sysos-lib-vmware-guest-auth-manager.service";
-import {SysosLibVmwareGuestFileManagerService} from "./managed-object-types/sysos-lib-vmware-guest-file-manager.service";
-import {SysosLibVmwareGuestOperationsManagerService} from "./managed-object-types/sysos-lib-vmware-guest-operations-manager.service";
-import {SysosLibVmwareGuestProcessManagerService} from "./managed-object-types/sysos-lib-vmware-guest-process-manager.service";
-import {SysosLibVmwareGuestWindowsRegistryManagerService} from "./managed-object-types/sysos-lib-vmware-guest-windows-registry-manager.service";
-import {SysosLibVmwareHealthUpdateManagerService} from "./managed-object-types/sysos-lib-vmware-health-update-manager.service";
-import {SysosLibVmwareHistoryCollectorService} from "./managed-object-types/sysos-lib-vmware-history-collector.service";
-import {SysosLibVmwareHostAccessManagerService} from "./managed-object-types/sysos-lib-vmware-host-access-manager.service";
-import {SysosLibVmwareHostActiveDirectoryAuthenticationService} from "./managed-object-types/sysos-lib-vmware-host-active-directory-authentication.service";
-import {SysosLibVmwareHostAuthenticationManagerService} from "./managed-object-types/sysos-lib-vmware-host-authentication-manager.service";
-import {SysosLibVmwareHostAuthenticationStoreService} from "./managed-object-types/sysos-lib-vmware-host-authentication-store.service";
-import {SysosLibVmwareHostAutoStartManagerService} from "./managed-object-types/sysos-lib-vmware-host-auto-start-manager.service";
-import {SysosLibVmwareHostBootDeviceSystemService} from "./managed-object-types/sysos-lib-vmware-host-boot-device-system.service";
-import {SysosLibVmwareHostCacheConfigurationManagerService} from "./managed-object-types/sysos-lib-vmware-host-cache-configuration-manager.service";
-import {SysosLibVmwareHostCertificateManagerService} from "./managed-object-types/sysos-lib-vmware-host-certificate-manager.service";
-import {SysosLibVmwareHostCpuSchedulerSystemService} from "./managed-object-types/sysos-lib-vmware-host-cpu-scheduler-system.service";
-import {SysosLibVmwareHostDatastoreBrowserService} from "./managed-object-types/sysos-lib-vmware-host-datastore-browser.service";
-import {SysosLibVmwareHostDatastoreSystemService} from "./managed-object-types/sysos-lib-vmware-host-datastore-system.service";
-import {SysosLibVmwareHostDateTimeSystemService} from "./managed-object-types/sysos-lib-vmware-host-date-time-system.service";
-import {SysosLibVmwareHostDiagnosticSystemService} from "./managed-object-types/sysos-lib-vmware-host-diagnostic-system.service";
-import {SysosLibVmwareHostDirectoryStoreService} from "./managed-object-types/sysos-lib-vmware-host-directory-store.service";
-import {SysosLibVmwareHostEsxAgentHostManagerService} from "./managed-object-types/sysos-lib-vmware-host-esx-agent-host-manager.service";
-import {SysosLibVmwareHostFirewallSystemService} from "./managed-object-types/sysos-lib-vmware-host-firewall-system.service";
-import {SysosLibVmwareHostFirmwareSystemService} from "./managed-object-types/sysos-lib-vmware-host-firmware-system.service";
-import {SysosLibVmwareHostGraphicsManagerService} from "./managed-object-types/sysos-lib-vmware-host-graphics-manager.service";
-import {SysosLibVmwareHostHealthStatusSystemService} from "./managed-object-types/sysos-lib-vmware-host-health-status-system.service";
-import {SysosLibVmwareHostImageConfigManagerService} from "./managed-object-types/sysos-lib-vmware-host-image-config-manager.service";
-import {SysosLibVmwareHostKernelModuleSystemService} from "./managed-object-types/sysos-lib-vmware-host-kernel-module-system.service";
-import {SysosLibVmwareHostLocalAccountManagerService} from "./managed-object-types/sysos-lib-vmware-host-local-account-manager.service";
-import {SysosLibVmwareHostLocalAuthenticationService} from "./managed-object-types/sysos-lib-vmware-host-local-authentication.service";
-import {SysosLibVmwareHostMemorySystemService} from "./managed-object-types/sysos-lib-vmware-host-memory-system.service";
-import {SysosLibVmwareHostNetworkSystemService} from "./managed-object-types/sysos-lib-vmware-host-network-system.service";
-import {SysosLibVmwareHostNvdimmSystemService} from "./managed-object-types/sysos-lib-vmware-host-nvdimm-system.service";
-import {SysosLibVmwareHostPatchManagerService} from "./managed-object-types/sysos-lib-vmware-host-patch-manager.service";
-import {SysosLibVmwareHostPciPassthruSystemService} from "./managed-object-types/sysos-lib-vmware-host-pci-passthru-system.service";
-import {SysosLibVmwareHostPowerSystemService} from "./managed-object-types/sysos-lib-vmware-host-power-system.service";
-import {SysosLibVmwareHostProfileService} from "./managed-object-types/sysos-lib-vmware-host-profile.service";
-import {SysosLibVmwareHostProfileManagerService} from "./managed-object-types/sysos-lib-vmware-host-profile-manager.service";
-import {SysosLibVmwareHostServiceSystemService} from "./managed-object-types/sysos-lib-vmware-host-service-system.service";
-import {SysosLibVmwareHostSnmpSystemService} from "./managed-object-types/sysos-lib-vmware-host-snmp-system.service";
-import {SysosLibVmwareHostSpecificationManagerService} from "./managed-object-types/sysos-lib-vmware-host-specification-manager.service";
-import {SysosLibVmwareHostStorageSystemService} from "./managed-object-types/sysos-lib-vmware-host-storage-system.service";
-import {SysosLibVmwareHostSystemService} from "./managed-object-types/sysos-lib-vmware-host-system.service";
-import {SysosLibVmwareHostVflashManagerService} from "./managed-object-types/sysos-lib-vmware-host-vflash-manager.service";
-import {SysosLibVmwareHostVirtualNicManagerService} from "./managed-object-types/sysos-lib-vmware-host-virtual-nic-manager.service";
-import {SysosLibVmwareHostVmotionSystemService} from "./managed-object-types/sysos-lib-vmware-host-vmotion-system.service";
-import {SysosLibVmwareHostVsanInternalSystemService} from "./managed-object-types/sysos-lib-vmware-host-vsan-internal-system.service";
-import {SysosLibVmwareHostVsanSystemService} from "./managed-object-types/sysos-lib-vmware-host-vsan-system.service";
-import {SysosLibVmwareHostVstorageObjectManagerService} from "./managed-object-types/sysos-lib-vmware-host-vstorage-object-manager.service";
-import {SysosLibVmwareHttpNfcLeaseService} from "./managed-object-types/sysos-lib-vmware-http-nfc-lease.service";
-import {SysosLibVmwareIoFilterManagerService} from "./managed-object-types/sysos-lib-vmware-io-filter-manager.service";
-import {SysosLibVmwareIpPoolManagerService} from "./managed-object-types/sysos-lib-vmware-ip-pool-manager.service";
-import {SysosLibVmwareIscsiManagerService} from "./managed-object-types/sysos-lib-vmware-iscsi-manager.service";
-import {SysosLibVmwareLicenseAssignmentManagerService} from "./managed-object-types/sysos-lib-vmware-license-assignment-manager.service";
-import {SysosLibVmwareLicenseManagerService} from "./managed-object-types/sysos-lib-vmware-license-manager.service";
-import {SysosLibVmwareListViewService} from "./managed-object-types/sysos-lib-vmware-list-view.service";
-import {SysosLibVmwareLocalizationManagerService} from "./managed-object-types/sysos-lib-vmware-localization-manager.service";
-import {SysosLibVmwareManagedEntityService} from "./managed-object-types/sysos-lib-vmware-managed-entity.service";
-import {SysosLibVmwareManagedObjectViewService} from "./managed-object-types/sysos-lib-vmware-managed-object-view.service";
-import {SysosLibVmwareMessageBusProxyService} from "./managed-object-types/sysos-lib-vmware-message-bus-proxy.service";
-import {SysosLibVmwareNetworkService} from "./managed-object-types/sysos-lib-vmware-network.service";
-import {SysosLibVmwareOpaqueNetworkService} from "./managed-object-types/sysos-lib-vmware-opaque-network.service";
-import {SysosLibVmwareOptionManagerService} from "./managed-object-types/sysos-lib-vmware-option-manager.service";
-import {SysosLibVmwareOverheadMemoryManagerService} from "./managed-object-types/sysos-lib-vmware-overhead-memory-manager.service";
-import {SysosLibVmwareOvfManagerService} from "./managed-object-types/sysos-lib-vmware-ovf-manager.service";
-import {SysosLibVmwarePerformanceManagerService} from "./managed-object-types/sysos-lib-vmware-performance-manager.service";
-import {SysosLibVmwareProfileService} from "./managed-object-types/sysos-lib-vmware-profile.service";
-import {SysosLibVmwareProfileComplianceManagerService} from "./managed-object-types/sysos-lib-vmware-profile-compliance-manager.service";
-import {SysosLibVmwareProfileManagerService} from "./managed-object-types/sysos-lib-vmware-profile-manager.service";
-import {SysosLibVmwarePropertyCollectorService} from "./managed-object-types/sysos-lib-vmware-property-collector.service";
-import {SysosLibVmwarePropertyFilterService} from "./managed-object-types/sysos-lib-vmware-property-filter.service";
-import {SysosLibVmwareResourcePlanningManagerService} from "./managed-object-types/sysos-lib-vmware-resource-planning-manager.service";
-import {SysosLibVmwareResourcePoolService} from "./managed-object-types/sysos-lib-vmware-resource-pool.service";
-import {SysosLibVmwareScheduledTaskService} from "./managed-object-types/sysos-lib-vmware-scheduled-task.service";
-import {SysosLibVmwareScheduledTaskManagerService} from "./managed-object-types/sysos-lib-vmware-scheduled-task-manager.service";
-import {SysosLibVmwareSearchIndexService} from "./managed-object-types/sysos-lib-vmware-search-index.service";
-import {SysosLibVmwareServiceInstanceService} from "./managed-object-types/sysos-lib-vmware-service-instance.service";
-import {SysosLibVmwareServiceManagerService} from "./managed-object-types/sysos-lib-vmware-service-manager.service";
-import {SysosLibVmwareSessionManagerService} from "./managed-object-types/sysos-lib-vmware-session-manager.service";
-import {SysosLibVmwareSimpleCommandService} from "./managed-object-types/sysos-lib-vmware-simple-command.service";
-import {SysosLibVmwareStoragePodService} from "./managed-object-types/sysos-lib-vmware-storage-pod.service";
-import {SysosLibVmwareStorageResourceManagerService} from "./managed-object-types/sysos-lib-vmware-storage-resource-manager.service";
-import {SysosLibVmwareTaskService} from "./managed-object-types/sysos-lib-vmware-task.service";
-import {SysosLibVmwareTaskHistoryCollectorService} from "./managed-object-types/sysos-lib-vmware-task-history-collector.service";
-import {SysosLibVmwareTaskManagerService} from "./managed-object-types/sysos-lib-vmware-task-manager.service";
-import {SysosLibVmwareUserDirectoryService} from "./managed-object-types/sysos-lib-vmware-user-directory.service";
-import {SysosLibVmwareVcenterVstorageObjectManagerService} from "./managed-object-types/sysos-lib-vmware-vcenter-vstorage-object-manager.service";
-import {SysosLibVmwareViewService} from "./managed-object-types/sysos-lib-vmware-view.service";
-import {SysosLibVmwareViewManagerService} from "./managed-object-types/sysos-lib-vmware-view-manager.service";
-import {SysosLibVmwareVirtualAppService} from "./managed-object-types/sysos-lib-vmware-virtual-app.service";
-import {SysosLibVmwareVirtualDiskManagerService} from "./managed-object-types/sysos-lib-vmware-virtual-disk-manager.service";
-import {SysosLibVmwareVirtualizationManagerService} from "./managed-object-types/sysos-lib-vmware-virtualization-manager.service";
-import {SysosLibVmwareVirtualMachineService} from "./managed-object-types/sysos-lib-vmware-virtual-machine.service";
-import {SysosLibVmwareVirtualMachineCompatibilityCheckerService} from "./managed-object-types/sysos-lib-vmware-virtual-machine-compatibility-checker.service";
-import {SysosLibVmwareVirtualMachineProvisioningCheckerService} from "./managed-object-types/sysos-lib-vmware-virtual-machine-provisioning-checker.service";
-import {SysosLibVmwareVirtualMachineSnapshotService} from "./managed-object-types/sysos-lib-vmware-virtual-machine-snapshot.service";
-import {SysosLibVmwareVmwareDistributedVirtualSwitchService} from "./managed-object-types/sysos-lib-vmware-vmware-distributed-virtual-switch.service";
-import {SysosLibVmwareVsanUpgradeSystemService} from "./managed-object-types/sysos-lib-vmware-vsan-upgrade-system.service";
-import {SysosLibVmwareVstorageObjectManagerBaseService} from "./managed-object-types/sysos-lib-vmware-vstorage-object-manager-base.service";
-import {connectionData} from "./types/connection-data";
-import {ManagedObjectReference} from "./types/managed-object-reference";
-import {VirtualMachineCloneSpec} from "./types/virtual-machine-clone-spec";
-import {HostNasVolumeSpec} from "./types/host-nas-volume-spec";
-import {EventFilterSpec} from "./types/event-filter-spec";
-import {PerfQuerySpec} from "./types/perf-query-spec";
-import {Extension} from "./types/extension";
-import {PropertyFilterSpec} from "./types/property-filter-spec";
-import {HostDatastoreBrowserSearchSpec} from "./types/host-datastore-browser-search-spec";
-import {TaskInfoState} from "./types/task-info-state";
-import {MethodFault} from "./types/method-fault";
-import {HostFirewallRulesetRulesetSpec} from "./types/host-firewall-ruleset-ruleset-spec";
-import {WaitOptions} from "./types/wait-options";
-import {TraversalSpec} from "./types/traversal-spec";
-
+import {SysosLibVmwareHelperService} from './sysos-lib-vmware-helper.service';
+import {SysosLibVmwareAlarmService} from './managed-object-types/sysos-lib-vmware-alarm.service';
+import {SysosLibVmwareAlarmManagerService} from './managed-object-types/sysos-lib-vmware-alarm-manager.service';
+import {SysosLibVmwareAuthorizationManagerService} from './managed-object-types/sysos-lib-vmware-authorization-manager.service';
+import {SysosLibVmwareCertificateManagerService} from './managed-object-types/sysos-lib-vmware-certificate-manager.service';
+import {SysosLibVmwareClusterComputeResourceService} from './managed-object-types/sysos-lib-vmware-cluster-compute-resource.service';
+import {SysosLibVmwareClusterEVCManagerService} from './managed-object-types/sysos-lib-vmware-cluster-evc-manager.service';
+import {SysosLibVmwareClusterProfileService} from './managed-object-types/sysos-lib-vmware-cluster-profile.service';
+import {SysosLibVmwareClusterProfileManagerService} from './managed-object-types/sysos-lib-vmware-cluster-profile-manager.service';
+import {SysosLibVmwareComputeResourceService} from './managed-object-types/sysos-lib-vmware-compute-resource.service';
+import {SysosLibVmwareContainerViewService} from './managed-object-types/sysos-lib-vmware-container-view.service';
+import {SysosLibVmwareCryptoManagerService} from './managed-object-types/sysos-lib-vmware-crypto-manager.service';
+import {SysosLibVmwareCryptoManagerHostService} from './managed-object-types/sysos-lib-vmware-crypto-manager-host.service';
+import {SysosLibVmwareCryptoManagerHostKMSService} from './managed-object-types/sysos-lib-vmware-crypto-manager-host-kms.service';
+import {SysosLibVmwareCryptoManagerKmipService} from './managed-object-types/sysos-lib-vmware-crypto-manager-kmip.service';
+import {SysosLibVmwareCustomFieldsManagerService} from './managed-object-types/sysos-lib-vmware-custom-fields-manager.service';
+import {SysosLibVmwareCustomizationSpecManagerService} from './managed-object-types/sysos-lib-vmware-customization-spec-manager.service';
+import {SysosLibVmwareDatacenterService} from './managed-object-types/sysos-lib-vmware-datacenter.service';
+import {SysosLibVmwareDatastoreService} from './managed-object-types/sysos-lib-vmware-datastore.service';
+import {SysosLibVmwareDatastoreNamespaceManagerService} from './managed-object-types/sysos-lib-vmware-datastore-namespace-manager.service';
+import {SysosLibVmwareDiagnosticManagerService} from './managed-object-types/sysos-lib-vmware-diagnostic-manager.service';
+import {SysosLibVmwareDistributedVirtualPortgroupService} from './managed-object-types/sysos-lib-vmware-distributed-virtual-portgroup.service';
+import {SysosLibVmwareDistributedVirtualSwitchService} from './managed-object-types/sysos-lib-vmware-distributed-virtual-switch.service';
+import {SysosLibVmwareDistributedVirtualSwitchManagerService} from './managed-object-types/sysos-lib-vmware-distributed-virtual-switch-manager.service';
+import {SysosLibVmwareEnvironmentBrowserService} from './managed-object-types/sysos-lib-vmware-environment-browser.service';
+import {SysosLibVmwareEventHistoryCollectorService} from './managed-object-types/sysos-lib-vmware-event-history-collector.service';
+import {SysosLibVmwareEventManagerService} from './managed-object-types/sysos-lib-vmware-event-manager.service';
+import {SysosLibVmwareExtensibleManagedObjectService} from './managed-object-types/sysos-lib-vmware-extensible-managed-object.service';
+import {SysosLibVmwareExtensionManagerService} from './managed-object-types/sysos-lib-vmware-extension-manager.service';
+import {SysosLibVmwareFailoverClusterConfiguratorService} from './managed-object-types/sysos-lib-vmware-failover-cluster-configurator.service';
+import {SysosLibVmwareFailoverClusterManagerService} from './managed-object-types/sysos-lib-vmware-failover-cluster-manager.service';
+import {SysosLibVmwareFileManagerService} from './managed-object-types/sysos-lib-vmware-file-manager.service';
+import {SysosLibVmwareFolderService} from './managed-object-types/sysos-lib-vmware-folder.service';
+import {SysosLibVmwareGuestAliasManagerService} from './managed-object-types/sysos-lib-vmware-guest-alias-manager.service';
+import {SysosLibVmwareGuestAuthManagerService} from './managed-object-types/sysos-lib-vmware-guest-auth-manager.service';
+import {SysosLibVmwareGuestFileManagerService} from './managed-object-types/sysos-lib-vmware-guest-file-manager.service';
+import {SysosLibVmwareGuestOperationsManagerService} from './managed-object-types/sysos-lib-vmware-guest-operations-manager.service';
+import {SysosLibVmwareGuestProcessManagerService} from './managed-object-types/sysos-lib-vmware-guest-process-manager.service';
+import {SysosLibVmwareGuestWindowsRegistryManagerService} from './managed-object-types/sysos-lib-vmware-guest-windows-registry-manager.service';
+import {SysosLibVmwareHealthUpdateManagerService} from './managed-object-types/sysos-lib-vmware-health-update-manager.service';
+import {SysosLibVmwareHistoryCollectorService} from './managed-object-types/sysos-lib-vmware-history-collector.service';
+import {SysosLibVmwareHostAccessManagerService} from './managed-object-types/sysos-lib-vmware-host-access-manager.service';
+import {SysosLibVmwareHostActiveDirectoryAuthenticationService} from './managed-object-types/sysos-lib-vmware-host-active-directory-authentication.service';
+import {SysosLibVmwareHostAuthenticationManagerService} from './managed-object-types/sysos-lib-vmware-host-authentication-manager.service';
+import {SysosLibVmwareHostAuthenticationStoreService} from './managed-object-types/sysos-lib-vmware-host-authentication-store.service';
+import {SysosLibVmwareHostAutoStartManagerService} from './managed-object-types/sysos-lib-vmware-host-auto-start-manager.service';
+import {SysosLibVmwareHostBootDeviceSystemService} from './managed-object-types/sysos-lib-vmware-host-boot-device-system.service';
+import {SysosLibVmwareHostCacheConfigurationManagerService} from './managed-object-types/sysos-lib-vmware-host-cache-configuration-manager.service';
+import {SysosLibVmwareHostCertificateManagerService} from './managed-object-types/sysos-lib-vmware-host-certificate-manager.service';
+import {SysosLibVmwareHostCpuSchedulerSystemService} from './managed-object-types/sysos-lib-vmware-host-cpu-scheduler-system.service';
+import {SysosLibVmwareHostDatastoreBrowserService} from './managed-object-types/sysos-lib-vmware-host-datastore-browser.service';
+import {SysosLibVmwareHostDatastoreSystemService} from './managed-object-types/sysos-lib-vmware-host-datastore-system.service';
+import {SysosLibVmwareHostDateTimeSystemService} from './managed-object-types/sysos-lib-vmware-host-date-time-system.service';
+import {SysosLibVmwareHostDiagnosticSystemService} from './managed-object-types/sysos-lib-vmware-host-diagnostic-system.service';
+import {SysosLibVmwareHostDirectoryStoreService} from './managed-object-types/sysos-lib-vmware-host-directory-store.service';
+import {SysosLibVmwareHostEsxAgentHostManagerService} from './managed-object-types/sysos-lib-vmware-host-esx-agent-host-manager.service';
+import {SysosLibVmwareHostFirewallSystemService} from './managed-object-types/sysos-lib-vmware-host-firewall-system.service';
+import {SysosLibVmwareHostFirmwareSystemService} from './managed-object-types/sysos-lib-vmware-host-firmware-system.service';
+import {SysosLibVmwareHostGraphicsManagerService} from './managed-object-types/sysos-lib-vmware-host-graphics-manager.service';
+import {SysosLibVmwareHostHealthStatusSystemService} from './managed-object-types/sysos-lib-vmware-host-health-status-system.service';
+import {SysosLibVmwareHostImageConfigManagerService} from './managed-object-types/sysos-lib-vmware-host-image-config-manager.service';
+import {SysosLibVmwareHostKernelModuleSystemService} from './managed-object-types/sysos-lib-vmware-host-kernel-module-system.service';
+import {SysosLibVmwareHostLocalAccountManagerService} from './managed-object-types/sysos-lib-vmware-host-local-account-manager.service';
+import {SysosLibVmwareHostLocalAuthenticationService} from './managed-object-types/sysos-lib-vmware-host-local-authentication.service';
+import {SysosLibVmwareHostMemorySystemService} from './managed-object-types/sysos-lib-vmware-host-memory-system.service';
+import {SysosLibVmwareHostNetworkSystemService} from './managed-object-types/sysos-lib-vmware-host-network-system.service';
+import {SysosLibVmwareHostNvdimmSystemService} from './managed-object-types/sysos-lib-vmware-host-nvdimm-system.service';
+import {SysosLibVmwareHostPatchManagerService} from './managed-object-types/sysos-lib-vmware-host-patch-manager.service';
+import {SysosLibVmwareHostPciPassthruSystemService} from './managed-object-types/sysos-lib-vmware-host-pci-passthru-system.service';
+import {SysosLibVmwareHostPowerSystemService} from './managed-object-types/sysos-lib-vmware-host-power-system.service';
+import {SysosLibVmwareHostProfileService} from './managed-object-types/sysos-lib-vmware-host-profile.service';
+import {SysosLibVmwareHostProfileManagerService} from './managed-object-types/sysos-lib-vmware-host-profile-manager.service';
+import {SysosLibVmwareHostServiceSystemService} from './managed-object-types/sysos-lib-vmware-host-service-system.service';
+import {SysosLibVmwareHostSnmpSystemService} from './managed-object-types/sysos-lib-vmware-host-snmp-system.service';
+import {SysosLibVmwareHostSpecificationManagerService} from './managed-object-types/sysos-lib-vmware-host-specification-manager.service';
+import {SysosLibVmwareHostStorageSystemService} from './managed-object-types/sysos-lib-vmware-host-storage-system.service';
+import {SysosLibVmwareHostSystemService} from './managed-object-types/sysos-lib-vmware-host-system.service';
+import {SysosLibVmwareHostVflashManagerService} from './managed-object-types/sysos-lib-vmware-host-vflash-manager.service';
+import {SysosLibVmwareHostVirtualNicManagerService} from './managed-object-types/sysos-lib-vmware-host-virtual-nic-manager.service';
+import {SysosLibVmwareHostVmotionSystemService} from './managed-object-types/sysos-lib-vmware-host-vmotion-system.service';
+import {SysosLibVmwareHostVsanInternalSystemService} from './managed-object-types/sysos-lib-vmware-host-vsan-internal-system.service';
+import {SysosLibVmwareHostVsanSystemService} from './managed-object-types/sysos-lib-vmware-host-vsan-system.service';
+import {SysosLibVmwareHostVstorageObjectManagerService} from './managed-object-types/sysos-lib-vmware-host-vstorage-object-manager.service';
+import {SysosLibVmwareHttpNfcLeaseService} from './managed-object-types/sysos-lib-vmware-http-nfc-lease.service';
+import {SysosLibVmwareInventoryViewService} from './managed-object-types/sysos-lib-vmware-inventory-view.service';
+import {SysosLibVmwareIoFilterManagerService} from './managed-object-types/sysos-lib-vmware-io-filter-manager.service';
+import {SysosLibVmwareIpPoolManagerService} from './managed-object-types/sysos-lib-vmware-ip-pool-manager.service';
+import {SysosLibVmwareIscsiManagerService} from './managed-object-types/sysos-lib-vmware-iscsi-manager.service';
+import {SysosLibVmwareLicenseAssignmentManagerService} from './managed-object-types/sysos-lib-vmware-license-assignment-manager.service';
+import {SysosLibVmwareLicenseManagerService} from './managed-object-types/sysos-lib-vmware-license-manager.service';
+import {SysosLibVmwareListViewService} from './managed-object-types/sysos-lib-vmware-list-view.service';
+import {SysosLibVmwareLocalizationManagerService} from './managed-object-types/sysos-lib-vmware-localization-manager.service';
+import {SysosLibVmwareManagedEntityService} from './managed-object-types/sysos-lib-vmware-managed-entity.service';
+import {SysosLibVmwareManagedObjectViewService} from './managed-object-types/sysos-lib-vmware-managed-object-view.service';
+import {SysosLibVmwareMessageBusProxyService} from './managed-object-types/sysos-lib-vmware-message-bus-proxy.service';
+import {SysosLibVmwareNetworkService} from './managed-object-types/sysos-lib-vmware-network.service';
+import {SysosLibVmwareOpaqueNetworkService} from './managed-object-types/sysos-lib-vmware-opaque-network.service';
+import {SysosLibVmwareOptionManagerService} from './managed-object-types/sysos-lib-vmware-option-manager.service';
+import {SysosLibVmwareOverheadMemoryManagerService} from './managed-object-types/sysos-lib-vmware-overhead-memory-manager.service';
+import {SysosLibVmwareOvfManagerService} from './managed-object-types/sysos-lib-vmware-ovf-manager.service';
+import {SysosLibVmwarePerformanceManagerService} from './managed-object-types/sysos-lib-vmware-performance-manager.service';
+import {SysosLibVmwareProfileService} from './managed-object-types/sysos-lib-vmware-profile.service';
+import {SysosLibVmwareProfileComplianceManagerService} from './managed-object-types/sysos-lib-vmware-profile-compliance-manager.service';
+import {SysosLibVmwareProfileManagerService} from './managed-object-types/sysos-lib-vmware-profile-manager.service';
+import {SysosLibVmwarePropertyCollectorService} from './managed-object-types/sysos-lib-vmware-property-collector.service';
+import {SysosLibVmwarePropertyFilterService} from './managed-object-types/sysos-lib-vmware-property-filter.service';
+import {SysosLibVmwareResourcePlanningManagerService} from './managed-object-types/sysos-lib-vmware-resource-planning-manager.service';
+import {SysosLibVmwareResourcePoolService} from './managed-object-types/sysos-lib-vmware-resource-pool.service';
+import {SysosLibVmwareScheduledTaskService} from './managed-object-types/sysos-lib-vmware-scheduled-task.service';
+import {SysosLibVmwareScheduledTaskManagerService} from './managed-object-types/sysos-lib-vmware-scheduled-task-manager.service';
+import {SysosLibVmwareSearchIndexService} from './managed-object-types/sysos-lib-vmware-search-index.service';
+import {SysosLibVmwareServiceInstanceService} from './managed-object-types/sysos-lib-vmware-service-instance.service';
+import {SysosLibVmwareServiceManagerService} from './managed-object-types/sysos-lib-vmware-service-manager.service';
+import {SysosLibVmwareSessionManagerService} from './managed-object-types/sysos-lib-vmware-session-manager.service';
+import {SysosLibVmwareSimpleCommandService} from './managed-object-types/sysos-lib-vmware-simple-command.service';
+import {SysosLibVmwareStoragePodService} from './managed-object-types/sysos-lib-vmware-storage-pod.service';
+import {SysosLibVmwareStorageResourceManagerService} from './managed-object-types/sysos-lib-vmware-storage-resource-manager.service';
+import {SysosLibVmwareTaskService} from './managed-object-types/sysos-lib-vmware-task.service';
+import {SysosLibVmwareTaskHistoryCollectorService} from './managed-object-types/sysos-lib-vmware-task-history-collector.service';
+import {SysosLibVmwareTaskManagerService} from './managed-object-types/sysos-lib-vmware-task-manager.service';
+import {SysosLibVmwareUserDirectoryService} from './managed-object-types/sysos-lib-vmware-user-directory.service';
+import {SysosLibVmwareVcenterVstorageObjectManagerService} from './managed-object-types/sysos-lib-vmware-vcenter-vstorage-object-manager.service';
+import {SysosLibVmwareViewService} from './managed-object-types/sysos-lib-vmware-view.service';
+import {SysosLibVmwareViewManagerService} from './managed-object-types/sysos-lib-vmware-view-manager.service';
+import {SysosLibVmwareVirtualAppService} from './managed-object-types/sysos-lib-vmware-virtual-app.service';
+import {SysosLibVmwareVirtualDiskManagerService} from './managed-object-types/sysos-lib-vmware-virtual-disk-manager.service';
+import {SysosLibVmwareVirtualizationManagerService} from './managed-object-types/sysos-lib-vmware-virtualization-manager.service';
+import {SysosLibVmwareVirtualMachineService} from './managed-object-types/sysos-lib-vmware-virtual-machine.service';
+import {SysosLibVmwareVirtualMachineCompatibilityCheckerService} from './managed-object-types/sysos-lib-vmware-virtual-machine-compatibility-checker.service';
+import {SysosLibVmwareVirtualMachineProvisioningCheckerService} from './managed-object-types/sysos-lib-vmware-virtual-machine-provisioning-checker.service';
+import {SysosLibVmwareVirtualMachineSnapshotService} from './managed-object-types/sysos-lib-vmware-virtual-machine-snapshot.service';
+import {SysosLibVmwareVmwareDistributedVirtualSwitchService} from './managed-object-types/sysos-lib-vmware-vmware-distributed-virtual-switch.service';
+import {SysosLibVmwareVsanUpgradeSystemService} from './managed-object-types/sysos-lib-vmware-vsan-upgrade-system.service';
+import {SysosLibVmwareVstorageObjectManagerBaseService} from './managed-object-types/sysos-lib-vmware-vstorage-object-manager-base.service';
+import {ConnectionData} from './types/connection-data';
+import {ManagedObjectReference} from './types/managed-object-reference';
+import {VirtualMachineCloneSpec} from './types/virtual-machine-clone-spec';
+import {HostNasVolumeSpec} from './types/host-nas-volume-spec';
+import {EventFilterSpec} from './types/event-filter-spec';
+import {PerfQuerySpec} from './types/perf-query-spec';
+import {Extension} from './types/extension';
+import {PropertyFilterSpec} from './types/property-filter-spec';
+import {HostDatastoreBrowserSearchSpec} from './types/host-datastore-browser-search-spec';
+import {TaskInfoState} from './types/task-info-state';
+import {MethodFault} from './types/method-fault';
+import {HostFirewallRulesetRulesetSpec} from './types/host-firewall-ruleset-ruleset-spec';
+import {WaitOptions} from './types/wait-options';
+import {TraversalSpec} from './types/traversal-spec';
+import {VirtualMachineConfigSpec} from "./types/virtual-machine-config-spec";
 
 @Injectable({
   providedIn: 'root'
@@ -313,7 +313,7 @@ export class SysosLibVmwareService {
   AcquireGenericServiceTicket() { return this.SessionManager.AcquireGenericServiceTicket.apply( this, arguments ); }
   AcquireLocalTicket() { return this.SessionManager.AcquireLocalTicket.apply( this, arguments ); }
   AcquireMksTicket() { return this.VirtualMachine.AcquireMksTicket.apply( this, arguments ); }
-  AcquireTicket(connectionData: connectionData,
+  AcquireTicket(connectionData: ConnectionData,
                 managedVM: ManagedObjectReference & { type: 'VirtualMachine' },
                 ticketType: string) { return this.VirtualMachine.AcquireTicket.apply( this, arguments ); }
   AddAuthorizationRole() { return this.AuthorizationManager.AddAuthorizationRole.apply( this, arguments ); }
@@ -338,7 +338,7 @@ export class SysosLibVmwareService {
   AddVirtualSwitch() { return this.HostNetworkSystem.AddVirtualSwitch.apply( this, arguments ); }
   AllocateIpv4Address() { return this.IpPoolManager.AllocateIpv4Address.apply( this, arguments ); }
   AllocateIpv6Address() { return this.IpPoolManager.AllocateIpv6Address.apply( this, arguments ); }
-  AnswerVM(connectionData: connectionData,
+  AnswerVM(connectionData: ConnectionData,
            managedVM: ManagedObjectReference & { type: 'VirtualMachine' },
            questionId: string,
            answerChoice: string) { return this.VirtualMachine.AnswerVM.apply( this, arguments ); }
@@ -400,7 +400,7 @@ export class SysosLibVmwareService {
   ClearVStorageObjectControlFlags() { return this.VcenterVStorageObjectManager.ClearVStorageObjectControlFlags.apply( this, arguments ); }
   CloneSession() { return this.SessionManager.CloneSession.apply( this, arguments ); }
   CloneVApp_Task() { return this.VirtualApp.CloneVApp_Task.apply( this, arguments ); }
-  CloneVM_Task(connectionData: connectionData,
+  CloneVM_Task(connectionData: ConnectionData,
                managedVM: ManagedObjectReference & { type: 'VirtualMachine' },
                managedFolder: ManagedObjectReference & { type: 'Folder' },
                name: string,
@@ -425,7 +425,7 @@ export class SysosLibVmwareService {
   ConsolidateVMDisks_Task() { return this.VirtualMachine.ConsolidateVMDisks_Task.apply( this, arguments ); }
   ContinueRetrievePropertiesEx() { return this.PropertyCollector.ContinueRetrievePropertiesEx.apply( this, arguments ); }
   ConvertNamespacePathToUuidPath() { return this.DatastoreNamespaceManager.ConvertNamespacePathToUuidPath.apply( this, arguments ); }
-  CopyDatastoreFile_Task(connectionData: connectionData,
+  CopyDatastoreFile_Task(connectionData: ConnectionData,
                          srcDatastoreName: string,
                          srcPath: string,
                          srcDatacenter: ManagedObjectReference & { type: 'Datacenter' },
@@ -452,7 +452,9 @@ export class SysosLibVmwareService {
   CreateDiskFromSnapshot_Task() { return this.VcenterVStorageObjectManager.CreateDiskFromSnapshot_Task.apply( this, arguments ); }
   CreateDVPortgroup_Task() { return this.DistributedVirtualSwitch.CreateDVPortgroup_Task.apply( this, arguments ); }
   CreateDVS_Task() { return this.Folder.CreateDVS_Task.apply( this, arguments ); }
-  CreateFilter() { return this.PropertyCollector.CreateFilter.apply( this, arguments ); }
+  CreateFilter(connectionData: ConnectionData,
+               spec: PropertyFilterSpec,
+               partialUpdates: boolean) { return this.PropertyCollector.CreateFilter.apply( this, arguments ); }
   CreateFolder() { return this.Folder.CreateFolder.apply( this, arguments ); }
   CreateGroup() { return this.HostLocalAccountManager.CreateGroup.apply( this, arguments ); }
   CreateImportSpec() { return this.OvfManager.CreateImportSpec.apply( this, arguments ); }
@@ -461,7 +463,7 @@ export class SysosLibVmwareService {
   CreateListView() { return this.ViewManager.CreateListView.apply( this, arguments ); }
   CreateListViewFromView() { return this.ViewManager.CreateListViewFromView.apply( this, arguments ); }
   CreateLocalDatastore() { return this.HostDatastoreSystem.CreateLocalDatastore.apply( this, arguments ); }
-  CreateNasDatastore(connectionData: connectionData,
+  CreateNasDatastore(connectionData: ConnectionData,
                      managedDatstoreSystem: ManagedObjectReference & { type: 'HostDatastoreSystem' },
                      spec: HostNasVolumeSpec) { return this.HostDatastoreSystem.CreateNasDatastore.apply( this, arguments ); }
   CreateNvdimmNamespace_Task() { return this.HostNvdimmSystem.CreateNvdimmNamespace_Task.apply( this, arguments ); }
@@ -476,7 +478,7 @@ export class SysosLibVmwareService {
   CreateScreenshot_Task() { return this.VirtualMachine.CreateScreenshot_Task.apply( this, arguments ); }
   CreateSecondaryVM_Task() { return this.VirtualMachine.CreateSecondaryVM_Task.apply( this, arguments ); }
   CreateSecondaryVMEx_Task() { return this.VirtualMachine.CreateSecondaryVMEx_Task.apply( this, arguments ); }
-  CreateSnapshot_Task(connectionData: connectionData,
+  CreateSnapshot_Task(connectionData: ConnectionData,
                       managedVM: ManagedObjectReference & { type: 'VirtualMachine' },
                       name: string,
                       memory: boolean,
@@ -485,7 +487,7 @@ export class SysosLibVmwareService {
                       returnOnTaskFinish: boolean = true) { return this.VirtualMachine.CreateSnapshot_Task.apply( this, arguments ); }
   CreateSnapshotEx_Task() { return this.VirtualMachine.CreateSnapshotEx_Task.apply( this, arguments ); }
   CreateStoragePod() { return this.Folder.CreateStoragePod.apply( this, arguments ); }
-  CreateTask(connectionData: connectionData,
+  CreateTask(connectionData: ConnectionData,
              managedTask: ManagedObjectReference & { type: 'Task' },
              taskTypeId: string,
              initiatedBy: string = 'SysOS Administrator',
@@ -513,7 +515,7 @@ export class SysosLibVmwareService {
   DefragmentAllDisks() { return this.VirtualMachine.DefragmentAllDisks.apply( this, arguments ); }
   DefragmentVirtualDisk_Task() { return this.VirtualDiskManager.DefragmentVirtualDisk_Task.apply( this, arguments ); }
   DeleteCustomizationSpec() { return this.CustomizationSpecManager.DeleteCustomizationSpec.apply( this, arguments ); }
-  DeleteDatastoreFile_Task(connectionData: connectionData,
+  DeleteDatastoreFile_Task(connectionData: ConnectionData,
                            datastoreName: string,
                            path: string,
                            managedDatacenter: ManagedObjectReference & { type: 'Datacenter' },
@@ -618,13 +620,13 @@ export class SysosLibVmwareService {
   FindByDnsName() { return this.SearchIndex.FindByDnsName.apply( this, arguments ); }
   FindByInventoryPath() { return this.SearchIndex.FindByInventoryPath.apply( this, arguments ); }
   FindByIp() { return this.SearchIndex.FindByIp.apply( this, arguments ); }
-  FindByUuid(connectionData: connectionData,
+  FindByUuid(connectionData: ConnectionData,
              uuid: string,
              vmSearch: boolean,
              instanceUuid?: boolean,
              managedDatacenter?: ManagedObjectReference & { type: 'Datacenter' }) { return this.SearchIndex.FindByUuid.apply( this, arguments ); }
   FindChild() { return this.SearchIndex.FindChild.apply( this, arguments ); }
-  FindExtension(connectionData: connectionData,
+  FindExtension(connectionData: ConnectionData,
                 extensionKey: string) { return this.ExtensionManager.FindExtension(connectionData, extensionKey); }
   FindRulesForVm() { return this.ClusterComputeResource.FindRulesForVm.apply( this, arguments ); }
   FormatVffs() { return this.HostStorageSystem.FormatVffs.apply( this, arguments ); }
@@ -731,7 +733,7 @@ export class SysosLibVmwareService {
   LogUserEvent() { return this.EventManager.LogUserEvent.apply( this, arguments ); }
   LookupDvPortGroup() { return this.DistributedVirtualSwitch.LookupDvPortGroup.apply( this, arguments ); }
   LookupVmOverheadMemory() { return this.OverheadMemoryManager.LookupVmOverheadMemory.apply( this, arguments ); }
-  MakeDirectory(connectionData: connectionData,
+  MakeDirectory(connectionData: ConnectionData,
                 datastoreName: string,
                 path: string,
                 managedDatacenter: ManagedObjectReference & { type: 'Datacenter' },
@@ -754,7 +756,7 @@ export class SysosLibVmwareService {
   MountVffsVolume() { return this.HostStorageSystem.MountVffsVolume.apply( this, arguments ); }
   MountVmfsVolume() { return this.HostStorageSystem.MountVmfsVolume.apply( this, arguments ); }
   MountVmfsVolumeEx_Task() { return this.HostStorageSystem.MountVmfsVolumeEx_Task.apply( this, arguments ); }
-  MoveDatastoreFile_Task(connectionData: connectionData,
+  MoveDatastoreFile_Task(connectionData: ConnectionData,
                          srcDatastoreName: string,
                          srcPath: string,
                          srcDatacenter: ManagedObjectReference & { type: 'Datacenter' },
@@ -782,12 +784,12 @@ export class SysosLibVmwareService {
   PostHealthUpdates() { return this.HealthUpdateManager.PostHealthUpdates.apply( this, arguments ); }
   PowerDownHostToStandBy_Task() { return this.HostSystem.PowerDownHostToStandBy_Task.apply( this, arguments ); }
   PowerOffVApp_Task() { return this.VirtualApp.PowerOffVApp_Task.apply( this, arguments ); }
-  PowerOffVM_Task(connectionData: connectionData,
+  PowerOffVM_Task(connectionData: ConnectionData,
                   managedVM: ManagedObjectReference & { type: 'VirtualMachine' },
                   returnOnTaskFinish: boolean = true) { return this.VirtualMachine.PowerOffVM_Task.apply( this, arguments ); }
   PowerOnMultiVM_Task() { return this.Datacenter.PowerOnMultiVM_Task.apply( this, arguments ); }
   PowerOnVApp_Task() { return this.VirtualApp.PowerOnVApp_Task.apply( this, arguments ); }
-  PowerOnVM_Task(connectionData: connectionData,
+  PowerOnVM_Task(connectionData: ConnectionData,
                  managedVM: ManagedObjectReference & { type: 'VirtualMachine' },
                  managedHost?: ManagedObjectReference & { type: 'HostSystem' },
                  returnOnTaskFinish: boolean = true) { return this.VirtualMachine.PowerOnVM_Task.apply( this, arguments ); }
@@ -801,7 +803,7 @@ export class SysosLibVmwareService {
   QueryAvailableDisksForVmfs() { return this.HostDatastoreSystem.QueryAvailableDisksForVmfs.apply( this, arguments ); }
   QueryAvailableDvsSpec() { return this.DistributedVirtualSwitchManager.QueryAvailableDvsSpec.apply( this, arguments ); }
   QueryAvailablePartition() { return this.HostDiagnosticSystem.QueryAvailablePartition.apply( this, arguments ); }
-  QueryAvailablePerfMetric(connectionData: connectionData,
+  QueryAvailablePerfMetric(connectionData: ConnectionData,
                            managedObject: ManagedObjectReference,
                            beginTime?: Date,
                            endTime?: Date,
@@ -834,7 +836,7 @@ export class SysosLibVmwareService {
   QueryDvsCompatibleHostSpec() { return this.DistributedVirtualSwitchManager.QueryDvsCompatibleHostSpec.apply( this, arguments ); }
   QueryDvsConfigTarget() { return this.DistributedVirtualSwitchManager.QueryDvsConfigTarget.apply( this, arguments ); }
   QueryDvsFeatureCapability() { return this.DistributedVirtualSwitchManager.QueryDvsFeatureCapability.apply( this, arguments ); }
-  QueryEvents(connectionData: connectionData,
+  QueryEvents(connectionData: ConnectionData,
               filter: EventFilterSpec) { return this.EventManager.QueryEvents.apply( this, arguments ); }
   QueryExpressionMetadata() { return this.ProfileComplianceManager.QueryExpressionMetadata.apply( this, arguments ); }
   QueryExtensionIpAllocationUsage() { return this.ExtensionManager.QueryExtensionIpAllocationUsage.apply( this, arguments ); }
@@ -873,14 +875,14 @@ export class SysosLibVmwareService {
   QueryPartitionCreateDesc() { return this.HostDiagnosticSystem.QueryPartitionCreateDesc.apply( this, arguments ); }
   QueryPartitionCreateOptions() { return this.HostDiagnosticSystem.QueryPartitionCreateOptions.apply( this, arguments ); }
   QueryPathSelectionPolicyOptions() { return this.HostStorageSystem.QueryPathSelectionPolicyOptions.apply( this, arguments ); }
-  QueryPerf(connectionData: connectionData,
+  QueryPerf(connectionData: ConnectionData,
             querySpec: PerfQuerySpec[]) { return this.PerformanceManager.QueryPerf.apply( this, arguments ); }
   QueryPerfComposite() { return this.PerformanceManager.QueryPerfComposite.apply( this, arguments ); }
-  QueryPerfCounter(connectionData: connectionData,
+  QueryPerfCounter(connectionData: ConnectionData,
                    counterId: number[]) { return this.PerformanceManager.QueryPerfCounter.apply( this, arguments ); }
-  QueryPerfCounterByLevel(connectionData: connectionData,
+  QueryPerfCounterByLevel(connectionData: ConnectionData,
                           level: number) { return this.PerformanceManager.QueryPerfCounterByLevel.apply( this, arguments ); }
-  QueryPerfProviderSummary(connectionData: connectionData,
+  QueryPerfProviderSummary(connectionData: ConnectionData,
                            managedObject: ManagedObjectReference) { return this.PerformanceManager.QueryPerfProviderSummary.apply( this, arguments ); }
   QueryPhysicalVsanDisks() { return this.HostVsanInternalSystem.QueryPhysicalVsanDisks.apply( this, arguments ); }
   QueryPnicStatus() { return this.IscsiManager.QueryPnicStatus.apply( this, arguments ); }
@@ -920,7 +922,7 @@ export class SysosLibVmwareService {
   ReadNextTasks() { return this.TaskHistoryCollector.ReadNextTasks.apply( this, arguments ); }
   ReadPreviousEvents() { return this.EventHistoryCollector.ReadPreviousEvents.apply( this, arguments ); }
   ReadPreviousTasks() { return this.TaskHistoryCollector.ReadPreviousTasks.apply( this, arguments ); }
-  RebootGuest(connectionData: connectionData,
+  RebootGuest(connectionData: ConnectionData,
               managedVM: ManagedObjectReference & { type: 'VirtualMachine' }) { return this.VirtualMachine.RebootGuest.apply( this, arguments ); }
   RebootHost_Task() { return this.HostSystem.RebootHost_Task.apply( this, arguments ); }
   RecommendDatastores() { return this.StorageResourceManager.RecommendDatastores.apply( this, arguments ); }
@@ -942,9 +944,9 @@ export class SysosLibVmwareService {
   ReconfigureServiceConsoleReservation() { return this.HostMemorySystem.ReconfigureServiceConsoleReservation.apply( this, arguments ); }
   ReconfigureSnmpAgent() { return this.HostSnmpSystem.ReconfigureSnmpAgent.apply( this, arguments ); }
   ReconfigureVirtualMachineReservation() { return this.HostMemorySystem.ReconfigureVirtualMachineReservation.apply( this, arguments ); }
-  ReconfigVM_Task(connectionData: connectionData,
+  ReconfigVM_Task(connectionData: ConnectionData,
                   managedVM: ManagedObjectReference & { type: 'VirtualMachine' },
-                  spec: VirtualMachineCloneSpec,
+                  spec: VirtualMachineConfigSpec,
                   returnOnTaskFinish: boolean = true) { return this.VirtualMachine.ReconfigVM_Task.apply( this, arguments ); }
   ReconnectHost_Task() { return this.HostSystem.ReconnectHost_Task.apply( this, arguments ); }
   RectifyDvsHost_Task() { return this.DistributedVirtualSwitch.RectifyDvsHost_Task.apply( this, arguments ); }
@@ -967,11 +969,11 @@ export class SysosLibVmwareService {
   RefreshStorageSystem() { return this.HostStorageSystem.RefreshStorageSystem.apply( this, arguments ); }
   RegisterChildVM_Task() { return this.ResourcePool.RegisterChildVM_Task.apply( this, arguments ); }
   RegisterDisk() { return this.VcenterVStorageObjectManager.RegisterDisk.apply( this, arguments ); }
-  RegisterExtension(connectionData: connectionData,
+  RegisterExtension(connectionData: ConnectionData,
                     extension: Extension) { return this.ExtensionManager.RegisterExtension.apply( this, arguments ); }
   RegisterHealthUpdateProvider() { return this.HealthUpdateManager.RegisterHealthUpdateProvider.apply( this, arguments ); }
   RegisterKmipServer() { return this.CryptoManagerKmip.RegisterKmipServer.apply( this, arguments ); }
-  RegisterVM_Task(connectionData: connectionData,
+  RegisterVM_Task(connectionData: ConnectionData,
                   managedFolder: ManagedObjectReference & { type: 'Folder' },
                   path: string,
                   name?: string,
@@ -982,7 +984,7 @@ export class SysosLibVmwareService {
   ReleaseCredentialsInGuest() { return this.GuestAuthManager.ReleaseCredentialsInGuest.apply( this, arguments ); }
   ReleaseIpAllocation() { return this.IpPoolManager.ReleaseIpAllocation.apply( this, arguments ); }
   ReleaseManagedSnapshot() { return this.VirtualDiskManager.ReleaseManagedSnapshot.apply( this, arguments ); }
-  Reload(connectionData: connectionData,
+  Reload(connectionData: ConnectionData,
          managedObject: ManagedObjectReference) { return this.ManagedEntity.Reload.apply( this, arguments ); }
   reloadVirtualMachineFromPath_Task() { return this.VirtualMachine.reloadVirtualMachineFromPath_Task.apply( this, arguments ); }
   RelocateVM_Task() { return this.VirtualMachine.RelocateVM_Task.apply( this, arguments ); }
@@ -992,7 +994,7 @@ export class SysosLibVmwareService {
   RemoveAssignedLicense() { return this.LicenseAssignmentManager.RemoveAssignedLicense.apply( this, arguments ); }
   RemoveAuthorizationRole() { return this.AuthorizationManager.RemoveAuthorizationRole.apply( this, arguments ); }
   RemoveCustomFieldDef() { return this.CustomFieldsManager.RemoveCustomFieldDef.apply( this, arguments ); }
-  RemoveDatastore(connectionData: connectionData,
+  RemoveDatastore(connectionData: ConnectionData,
                   managedDatastoreSystem: ManagedObjectReference & { type: 'HostDatastoreSystem' },
                   managedDatastore: ManagedObjectReference & { type: 'Datastore' }) { return this.HostDatastoreSystem.RemoveDatastore.apply( this, arguments ); }
   RemoveDatastoreEx_Task() { return this.HostDatastoreSystem.RemoveDatastoreEx_Task.apply( this, arguments ); }
@@ -1019,7 +1021,7 @@ export class SysosLibVmwareService {
   RemoveServiceConsoleVirtualNic() { return this.HostNetworkSystem.RemoveServiceConsoleVirtualNic.apply( this, arguments ); }
   RemoveSmartCardTrustAnchor() { return this.HostActiveDirectoryAuthentication.RemoveSmartCardTrustAnchor.apply( this, arguments ); }
   RemoveSmartCardTrustAnchorByFingerprint() { return this.HostActiveDirectoryAuthentication.RemoveSmartCardTrustAnchorByFingerprint.apply( this, arguments ); }
-  RemoveSnapshot_Task(connectionData: connectionData,
+  RemoveSnapshot_Task(connectionData: ConnectionData,
                       managedVMSnapshot: ManagedObjectReference & { type: 'VirtualMachineSnapshot' },
                       removeChildren: boolean,
                       consolidate: boolean = true,
@@ -1047,7 +1049,7 @@ export class SysosLibVmwareService {
   ResetListView() { return this.ListView.ResetListView.apply( this, arguments ); }
   ResetListViewFromView() { return this.ListView.ResetListViewFromView.apply( this, arguments ); }
   ResetSystemHealthInfo() { return this.HostHealthStatusSystem.ResetSystemHealthInfo.apply( this, arguments ); }
-  ResetVM_Task(connectionData: connectionData,
+  ResetVM_Task(connectionData: ConnectionData,
                managedVM: ManagedObjectReference & { type: 'VirtualMachine' },
                returnOnTaskFinish: boolean = true) { return this.VirtualMachine.ResetVM_Task.apply( this, arguments ); }
   ResignatureUnresolvedVmfsVolume_Task() { return this.HostDatastoreSystem.ResignatureUnresolvedVmfsVolume_Task.apply( this, arguments ); }
@@ -1078,8 +1080,8 @@ export class SysosLibVmwareService {
   RetrieveKmipServersStatus_Task() { return this.CryptoManagerKmip.RetrieveKmipServersStatus_Task.apply( this, arguments ); }
   RetrieveObjectScheduledTask() { return this.ScheduledTaskManager.RetrieveObjectScheduledTask.apply( this, arguments ); }
   RetrieveProductComponents() { return this.ServiceInstance.RetrieveProductComponents.apply( this, arguments ); }
-  RetrieveProperties(connectionData: connectionData,
-                     specSet: PropertyFilterSpec[],) { return this.PropertyCollector.RetrieveProperties.apply( this, arguments ); }
+  RetrieveProperties(connectionData: ConnectionData,
+                     specSet: PropertyFilterSpec[]) { return this.PropertyCollector.RetrieveProperties.apply( this, arguments ); }
   RetrievePropertiesEx() { return this.PropertyCollector.RetrievePropertiesEx.apply( this, arguments ); }
   RetrieveRolePermissions() { return this.AuthorizationManager.RetrieveRolePermissions.apply( this, arguments ); }
   RetrieveSelfSignedClientCert() { return this.CryptoManagerKmip.RetrieveSelfSignedClientCert.apply( this, arguments ); }
@@ -1091,7 +1093,7 @@ export class SysosLibVmwareService {
   RetrieveVStorageObjectAssociations() { return this.VcenterVStorageObjectManager.RetrieveVStorageObjectAssociations.apply( this, arguments ); }
   RetrieveVStorageObjectState() { return this.VcenterVStorageObjectManager.RetrieveVStorageObjectState.apply( this, arguments ); }
   RevertToCurrentSnapshot_Task() { return this.VirtualMachine.RevertToCurrentSnapshot_Task.apply( this, arguments ); }
-  RevertToSnapshot_Task(connectionData: connectionData,
+  RevertToSnapshot_Task(connectionData: ConnectionData,
                         managedVMSnapshot: ManagedObjectReference & { type: 'VirtualMachineSnapshot' },
                         managedHost?: ManagedObjectReference & { type: 'HostSystem' },
                         suppressPowerOn: boolean = false,
@@ -1103,7 +1105,7 @@ export class SysosLibVmwareService {
   ScanHostPatch_Task() { return this.HostPatchManager.ScanHostPatch_Task.apply( this, arguments ); }
   ScanHostPatchV2_Task() { return this.HostPatchManager.ScanHostPatchV2_Task.apply( this, arguments ); }
   ScheduleReconcileDatastoreInventory() { return this.VcenterVStorageObjectManager.ScheduleReconcileDatastoreInventory.apply( this, arguments ); }
-  SearchDatastore_Task(connectionData: connectionData,
+  SearchDatastore_Task(connectionData: ConnectionData,
                        managedDatastoreBrowser: ManagedObjectReference & { type: 'HostDatastoreBrowser' },
                        datastoreName: string,
                        path: string,
@@ -1131,7 +1133,7 @@ export class SysosLibVmwareService {
   SetRegistryValueInGuest() { return this.GuestWindowsRegistryManager.SetRegistryValueInGuest.apply( this, arguments ); }
   SetScreenResolution() { return this.VirtualMachine.SetScreenResolution.apply( this, arguments ); }
   SetTaskDescription() { return this.Task.SetTaskDescription.apply( this, arguments ); }
-  SetTaskState(connectionData: connectionData,
+  SetTaskState(connectionData: ConnectionData,
                managedTask: ManagedObjectReference & { type: 'Task' },
                state: TaskInfoState,
                result?: any,
@@ -1139,7 +1141,7 @@ export class SysosLibVmwareService {
   SetVirtualDiskUuid() { return this.VirtualDiskManager.SetVirtualDiskUuid.apply( this, arguments ); }
   SetVStorageObjectControlFlags() { return this.VcenterVStorageObjectManager.SetVStorageObjectControlFlags.apply( this, arguments ); }
   ShrinkVirtualDisk_Task() { return this.VirtualDiskManager.ShrinkVirtualDisk_Task.apply( this, arguments ); }
-  ShutdownGuest(connectionData: connectionData,
+  ShutdownGuest(connectionData: ConnectionData,
                 managedVM: ManagedObjectReference & { type: 'VirtualMachine' }) { return this.VirtualMachine.ShutdownGuest.apply( this, arguments ); }
   ShutdownHost_Task() { return this.HostSystem.ShutdownHost_Task.apply( this, arguments ); }
   StageHostPatch_Task() { return this.HostPatchManager.StageHostPatch_Task.apply( this, arguments ); }
@@ -1153,7 +1155,7 @@ export class SysosLibVmwareService {
   StopReplaying_Task() { return this.VirtualMachine.StopReplaying_Task.apply( this, arguments ); }
   StopService() { return this.HostServiceSystem.StopService.apply( this, arguments ); }
   SuspendVApp_Task() { return this.VirtualApp.SuspendVApp_Task.apply( this, arguments ); }
-  SuspendVM_Task(connectionData: connectionData,
+  SuspendVM_Task(connectionData: ConnectionData,
                  managedVM: ManagedObjectReference & { type: 'VirtualMachine' },
                  returnOnTaskFinish: boolean = true) { return this.VirtualMachine.SuspendVM_Task.apply( this, arguments ); }
   TerminateFaultTolerantVM_Task() { return this.VirtualMachine.TerminateFaultTolerantVM_Task.apply( this, arguments ); }
@@ -1179,7 +1181,7 @@ export class SysosLibVmwareService {
   UnregisterExtension() { return this.ExtensionManager.UnregisterExtension.apply( this, arguments ); }
   UnregisterHealthUpdateProvider() { return this.HealthUpdateManager.UnregisterHealthUpdateProvider.apply( this, arguments ); }
   unregisterVApp_Task() { return this.VirtualApp.unregisterVApp_Task.apply( this, arguments ); }
-  UnregisterVM(connectionData: connectionData,
+  UnregisterVM(connectionData: ConnectionData,
                managedVM: ManagedObjectReference & { type: 'VirtualMachine' }) { return this.VirtualMachine.UnregisterVM.apply( this, arguments ); }
   UpdateAnswerFile_Task() { return this.HostProfileManager.UpdateAnswerFile_Task.apply( this, arguments ); }
   UpdateAssignedLicense() { return this.LicenseAssignmentManager.UpdateAssignedLicense.apply( this, arguments ); }
@@ -1233,11 +1235,11 @@ export class SysosLibVmwareService {
   UpdatePerfInterval() { return this.PerformanceManager.UpdatePerfInterval.apply( this, arguments ); }
   UpdatePhysicalNicLinkSpeed() { return this.HostNetworkSystem.UpdatePhysicalNicLinkSpeed.apply( this, arguments ); }
   UpdatePortGroup() { return this.HostNetworkSystem.UpdatePortGroup.apply( this, arguments ); }
-  UpdateProgress(connectionData: connectionData,
+  UpdateProgress(connectionData: ConnectionData,
                  managedTask: ManagedObjectReference & { type: 'Task' },
                  percentDone: number) { return this.Task.UpdateProgress.apply( this, arguments ); }
   UpdateReferenceHost() { return this.HostProfile.UpdateReferenceHost.apply( this, arguments ); }
-  UpdateRuleset(connectionData: connectionData,
+  UpdateRuleset(connectionData: ConnectionData,
                 managedFirewallSystem: ManagedObjectReference & { type: 'HostFirewallSystem' },
                 id: string,
                 spec: HostFirewallRulesetRulesetSpec) { return this.HostFirewallSystem.UpdateRuleset.apply( this, arguments ); }
@@ -1276,7 +1278,7 @@ export class SysosLibVmwareService {
   ValidateStoragePodConfig() { return this.StorageResourceManager.ValidateStoragePodConfig.apply( this, arguments ); }
   VStorageObjectCreateSnapshot_Task() { return this.VcenterVStorageObjectManager.VStorageObjectCreateSnapshot_Task.apply( this, arguments ); }
   WaitForUpdates() { return this.PropertyCollector.WaitForUpdates.apply( this, arguments ); }
-  WaitForUpdatesEx(connectionData: connectionData,
+  WaitForUpdatesEx(connectionData: ConnectionData,
                    options?: WaitOptions,
                    version?: string) { return this.PropertyCollector.WaitForUpdatesEx.apply( this, arguments ); }
   XmlToCustomizationSpecItem() { return this.CustomizationSpecManager.XmlToCustomizationSpecItem.apply( this, arguments ); }
@@ -1285,7 +1287,7 @@ export class SysosLibVmwareService {
   /**
    * BASIC
    */
-  getClientVersion(connectionData: connectionData): Promise<any> {
+  getClientVersion(connectionData: ConnectionData): Promise<any> {
     return this.http.post('/api/vmware/getClientVersion', {
       host: connectionData.host,
       port: connectionData.port,
@@ -1297,7 +1299,7 @@ export class SysosLibVmwareService {
       })).toPromise.apply( this, arguments );
   }
 
-  connectvCenter(connectionData: connectionData): Promise<any> {
+  connectvCenter(connectionData: ConnectionData): Promise<any> {
     return this.http.post('/api/vmware/connect', {
       host: connectionData.host,
       port: connectionData.port,
@@ -1310,7 +1312,7 @@ export class SysosLibVmwareService {
       })).toPromise.apply( this, arguments );
   }
 
-  connectvCenterSoap(connectionData: connectionData): Promise<any> {
+  connectvCenterSoap(connectionData: ConnectionData): Promise<any> {
     return this.http.post('/api/vmware/connectSoap', {
       host: connectionData.host,
       port: connectionData.port,
@@ -1330,7 +1332,7 @@ export class SysosLibVmwareService {
   /**
    * Host
    */
-  getComputeResource(connectionData: connectionData, computeResource: string): Promise<any> {
+  getComputeResource(connectionData: ConnectionData, computeResource: string): Promise<any> {
 
     return this.RetrieveProperties(connectionData, [{
       propSet: [{
@@ -1356,7 +1358,7 @@ export class SysosLibVmwareService {
 
   }
 
-  getClusterComputeResource(connectionData: connectionData, clusterComputeResource: string): Promise<any> {
+  getClusterComputeResource(connectionData: ConnectionData, clusterComputeResource: string): Promise<any> {
 
     return this.RetrieveProperties(connectionData, [{
       propSet: [{
@@ -1382,7 +1384,7 @@ export class SysosLibVmwareService {
 
   }
 
-  getResourcePool(connectionData: connectionData, resourcePool: string): Promise<any> {
+  getResourcePool(connectionData: ConnectionData, resourcePool: string): Promise<any> {
 
     return this.RetrieveProperties(connectionData, [{
       propSet: [{
@@ -1403,7 +1405,7 @@ export class SysosLibVmwareService {
 
   }
 
-  getHosts(connectionData: connectionData, datacenterFolder: string): Promise<any> {
+  getHosts(connectionData: ConnectionData, datacenterFolder: string): Promise<any> {
     return this.RetrieveProperties(connectionData, [{
       propSet: [{
         type: 'HostSystem',
@@ -1416,7 +1418,7 @@ export class SysosLibVmwareService {
         },
         skip: false,
         selectSet: [
-          <TraversalSpec> {
+          ({
             name: 'folderTraversalSpec',
             type: 'Folder',
             path: 'childEntity',
@@ -1450,8 +1452,8 @@ export class SysosLibVmwareService {
                 name: 'resourcePoolVmTraversalSpec'
               }
             ]
-          },
-          <TraversalSpec> {
+          } as TraversalSpec),
+          ({
             name: 'datacenterDatastoreTraversalSpec',
             type: 'Datacenter',
             path: 'datastoreFolder',
@@ -1461,8 +1463,8 @@ export class SysosLibVmwareService {
                 name: 'folderTraversalSpec'
               }
             ]
-          },
-          <TraversalSpec> {
+          } as TraversalSpec),
+          ({
             name: 'datacenterNetworkTraversalSpec',
             type: 'Datacenter',
             path: 'networkFolder',
@@ -1472,8 +1474,8 @@ export class SysosLibVmwareService {
                 name: 'folderTraversalSpec'
               }
             ]
-          },
-          <TraversalSpec> {
+          } as TraversalSpec),
+          ({
             name: 'datacenterVmTraversalSpec',
             type: 'Datacenter',
             path: 'vmFolder',
@@ -1483,8 +1485,8 @@ export class SysosLibVmwareService {
                 name: 'folderTraversalSpec'
               }
             ]
-          },
-          <TraversalSpec> {
+          } as TraversalSpec),
+          ({
             name: 'datacenterHostTraversalSpec',
             type: 'Datacenter',
             path: 'hostFolder',
@@ -1494,14 +1496,14 @@ export class SysosLibVmwareService {
                 name: 'folderTraversalSpec'
               }
             ]
-          },
-          <TraversalSpec> {
+          } as TraversalSpec),
+          ({
             name: 'computeResourceHostTraversalSpec',
             type: 'ComputeResource',
             path: 'host',
             skip: false
-          },
-          <TraversalSpec> {
+          } as TraversalSpec),
+          ({
             name: 'computeResourceRpTraversalSpec',
             type: 'ComputeResource',
             path: 'resourcePool',
@@ -1514,8 +1516,8 @@ export class SysosLibVmwareService {
                 name: 'resourcePoolVmTraversalSpec'
               }
             ]
-          },
-          <TraversalSpec> {
+          }as TraversalSpec),
+          ({
             name: 'resourcePoolTraversalSpec',
             type: 'ResourcePool',
             path: 'resourcePool',
@@ -1528,8 +1530,8 @@ export class SysosLibVmwareService {
                 name: 'resourcePoolVmTraversalSpec'
               }
             ]
-          },
-          <TraversalSpec> {
+          } as TraversalSpec),
+          ({
             name: 'hostVmTraversalSpec',
             type: 'HostSystem',
             path: 'vm',
@@ -1539,13 +1541,13 @@ export class SysosLibVmwareService {
                 name: 'folderTraversalSpec'
               }
             ]
-          },
-          <TraversalSpec> {
+          } as TraversalSpec),
+          ({
             name: 'resourcePoolVmTraversalSpec',
             type: 'ResourcePool',
             path: 'vm',
             skip: false
-          }
+          }as TraversalSpec)
         ]
       }]
     }]).then((RetrievePropertiesResponse) => {
@@ -1560,7 +1562,7 @@ export class SysosLibVmwareService {
 
   }
 
-  getHost(connectionData: connectionData, esxiHost): Promise<any> {
+  getHost(connectionData: ConnectionData, esxiHost: string): Promise<any> {
     return this.RetrieveProperties(connectionData, [{
       propSet: [{
         type: 'HostSystem',
@@ -1573,7 +1575,7 @@ export class SysosLibVmwareService {
         },
         skip: false,
         selectSet: [
-          <TraversalSpec> {
+          ({
             name: 'folderTraversalSpec',
             type: 'Folder',
             path: 'childEntity',
@@ -1607,8 +1609,8 @@ export class SysosLibVmwareService {
                 name: 'resourcePoolVmTraversalSpec'
               }
             ]
-          },
-          <TraversalSpec> {
+          } as TraversalSpec),
+          ({
             name: 'datacenterDatastoreTraversalSpec',
             type: 'Datacenter',
             path: 'datastoreFolder',
@@ -1618,8 +1620,8 @@ export class SysosLibVmwareService {
                 name: 'folderTraversalSpec'
               }
             ]
-          },
-          <TraversalSpec> {
+          } as TraversalSpec),
+          ({
             name: 'datacenterNetworkTraversalSpec',
             type: 'Datacenter',
             path: 'networkFolder',
@@ -1629,8 +1631,8 @@ export class SysosLibVmwareService {
                 name: 'folderTraversalSpec'
               }
             ]
-          },
-          <TraversalSpec> {
+          } as TraversalSpec),
+          ({
             name: 'datacenterVmTraversalSpec',
             type: 'Datacenter',
             path: 'vmFolder',
@@ -1640,8 +1642,8 @@ export class SysosLibVmwareService {
                 name: 'folderTraversalSpec'
               }
             ]
-          },
-          <TraversalSpec> {
+          } as TraversalSpec),
+          ({
             name: 'datacenterHostTraversalSpec',
             type: 'Datacenter',
             path: 'hostFolder',
@@ -1651,14 +1653,14 @@ export class SysosLibVmwareService {
                 name: 'folderTraversalSpec'
               }
             ]
-          },
-          <TraversalSpec> {
+          } as TraversalSpec),
+          ({
             name: 'computeResourceHostTraversalSpec',
             type: 'ComputeResource',
             path: 'host',
             skip: false
-          },
-          <TraversalSpec> {
+          } as TraversalSpec),
+          ({
             name: 'computeResourceRpTraversalSpec',
             type: 'ComputeResource',
             path: 'resourcePool',
@@ -1671,8 +1673,8 @@ export class SysosLibVmwareService {
                 name: 'resourcePoolVmTraversalSpec'
               }
             ]
-          },
-          <TraversalSpec> {
+          } as TraversalSpec),
+          ({
             name: 'resourcePoolTraversalSpec',
             type: 'ResourcePool',
             path: 'resourcePool',
@@ -1685,8 +1687,8 @@ export class SysosLibVmwareService {
                 name: 'resourcePoolVmTraversalSpec'
               }
             ]
-          },
-          <TraversalSpec> {
+          } as TraversalSpec),
+          ({
             name: 'hostVmTraversalSpec',
             type: 'HostSystem',
             path: 'vm',
@@ -1696,13 +1698,13 @@ export class SysosLibVmwareService {
                 name: 'folderTraversalSpec'
               }
             ]
-          },
-          <TraversalSpec> {
+          } as TraversalSpec),
+          ({
             name: 'resourcePoolVmTraversalSpec',
             type: 'ResourcePool',
             path: 'vm',
             skip: false
-          }
+          } as TraversalSpec)
         ]
       }]
     }]).then((RetrievePropertiesResponse) => {
@@ -1711,1932 +1713,2231 @@ export class SysosLibVmwareService {
     });
   }
 
+  getHostStorageSystem(connectionData: ConnectionData, esxiHost: string): Promise<any> {
+    return this.RetrieveProperties(connectionData, [{
+      propSet: [{
+        type: 'HostSystem',
+        all: false,
+        pathSet: [
+          'configManager.storageSystem'
+        ]
+      }],
+      objectSet: [{
+        obj: {
+          type: 'HostSystem',
+          value: esxiHost
+        }
+      }]
+    }]).then((RetrievePropertiesResponse) => {
 
+      return this.SysosLibVmwareHelper.validResponse(this.SysosLibVmwareHelper.parseVMwareObject(RetrievePropertiesResponse.returnval[0].propSet[0].val[0]._));
+    });
 
+  }
 
+  getHostFirewallSystem(connectionData: ConnectionData, esxiHost: string): Promise<any> {
+    return this.RetrieveProperties(connectionData, [{
+      propSet: [{
+        type: 'HostSystem',
+        all: false,
+        pathSet: [
+          'configManager.firewallSystem'
+        ]
+      }],
+      objectSet: [{
+        obj: {
+          type: 'HostSystem',
+          value: esxiHost
+        }
+      }]
+    }]).then((RetrievePropertiesResponse) => {
 
+      return this.SysosLibVmwareHelper.validResponse(this.SysosLibVmwareHelper.parseVMwareObject(RetrievePropertiesResponse.returnval[0].propSet[0].val[0]._));
+    });
+  }
 
+  getHostFirewallRules(connectionData: ConnectionData, esxiHost: string): Promise<any> {
+    return this.RetrieveProperties(connectionData, [{
+      propSet: [{
+        type: 'HostSystem',
+        all: false,
+        pathSet: [
+          'config.firewall'
+        ]
+      }],
+      objectSet: [{
+        obj: {
+          type: 'HostSystem',
+          value: esxiHost
+        }
+      }]
+    }]).then((RetrievePropertiesResponse) => {
 
+      return this.SysosLibVmwareHelper.validResponse(this.SysosLibVmwareHelper.parseVMwareObject(RetrievePropertiesResponse.returnval[0].propSet[0].val[0]._));
+    });
 
-  createAllBasicDataFilter(credential, host, port): Promise<any> {
-    const xml = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <soap:Body>
-    <CreateFilter xmlns="urn:vim25">
-      <_this type="PropertyCollector">propertyCollector</_this>
-      <spec>
-        <propSet>
-          <type>ManagedEntity</type>
-          <all>false</all>
-          <pathSet>name</pathSet>
-          <pathSet>parent</pathSet>
-        </propSet>
-        <propSet>
-          <type>VirtualMachine</type>
-          <all>false</all>
-          <pathSet>name</pathSet>
-          <pathSet>parent</pathSet>
-          <pathSet>guest</pathSet>
-          <pathSet>runtime.powerState</pathSet>
-          <pathSet>runtime.connectionState</pathSet>
-          <pathSet>runtime.faultToleranceState</pathSet>
-          <pathSet>config.uuid</pathSet>
-          <pathSet>summary.config.vmPathName</pathSet>
-          <pathSet>summary.config.template</pathSet>
-          <pathSet>datastore</pathSet>
-          <pathSet>layout</pathSet>
-          <pathSet>config.files.logDirectory</pathSet>
-          <pathSet>config.hardware.device</pathSet>
-          <pathSet>resourcePool</pathSet>
-          <pathSet>runtime.host</pathSet>
-          <pathSet>config.version</pathSet>
-          <pathSet>config.changeTrackingEnabled</pathSet>
-          <pathSet>config.ftInfo</pathSet>
-          <pathSet>config.hardware.numCPU</pathSet>
-          <pathSet>config.hardware.memoryMB</pathSet>
-          <pathSet>config.files.snapshotDirectory</pathSet>
-          <pathSet>config.extraConfig</pathSet>
-          <pathSet>storage.perDatastoreUsage</pathSet>
-          <pathSet>snapshot</pathSet>
-          <pathSet>layoutEx</pathSet>
-          <pathSet>config.guestId</pathSet>
-          <pathSet>config.annotation</pathSet>
-          <pathSet>customValue</pathSet>
-          <pathSet>parentVApp</pathSet>
-          <pathSet>runtime.consolidationNeeded</pathSet>
-          <pathSet>config.flags.faultToleranceType</pathSet>
-          <pathSet>config.forkConfigInfo</pathSet>
-          <pathSet>config.files.vmPathName</pathSet>
-        </propSet>
-        <propSet>
-          <type>Datacenter</type>
-          <all>false</all>
-          <pathSet>datastore</pathSet>
-          <pathSet>vmFolder</pathSet>
-        </propSet>
-        <propSet>
-          <type>HostSystem</type>
-          <all>false</all>
-          <pathSet>vm</pathSet>
-          <pathSet>datastore</pathSet>
-          <pathSet>hardware.cpuInfo.numCpuPackages</pathSet>
-          <pathSet>hardware.cpuFeature</pathSet>
-          <pathSet>hardware.cpuInfo.hz</pathSet>
-          <pathSet>hardware.systemInfo.uuid</pathSet>
-          <pathSet>config.product.productLineId</pathSet>
-          <pathSet>summary.config.product.fullName</pathSet>
-          <pathSet>summary.config.product.version</pathSet>
-          <pathSet>summary.config.product.apiVersion</pathSet>
-          <pathSet>configManager.storageSystem</pathSet>
-          <pathSet>hardware.cpuInfo.numCpuCores</pathSet>
-          <pathSet>hardware.cpuInfo.numCpuThreads</pathSet>
-          <pathSet>runtime</pathSet>
-          <pathSet>config.vsanHostConfig.clusterInfo</pathSet>
-        </propSet>
-        <propSet>
-          <type>HostStorageSystem</type>
-          <all>false</all>
-          <pathSet>storageDeviceInfo</pathSet>
-          <pathSet>fileSystemVolumeInfo</pathSet>
-        </propSet>
-        <propSet>
-          <type>Datastore</type>
-          <all>false</all>
-          <pathSet>info</pathSet>
-          <pathSet>host</pathSet>
-          <pathSet>summary.accessible</pathSet>
-          <pathSet>summary.capacity</pathSet>
-          <pathSet>summary.multipleHostAccess</pathSet>
-          <pathSet>vm</pathSet>
-          <pathSet>capability</pathSet>
-          <pathSet>summary.type</pathSet>
-        </propSet>
-        <propSet>
-          <type>ResourcePool</type>
-          <all>false</all>
-          <pathSet>vm</pathSet>
-          <pathSet>name</pathSet>
-          <pathSet>parent</pathSet>
-          <pathSet>resourcePool</pathSet>
-        </propSet>
-        <propSet>
-          <type>ClusterComputeResource</type>
-          <all>false</all>
-          <pathSet>configuration.drsConfig</pathSet>
-          <pathSet>summary</pathSet>
-          <pathSet>configurationEx.spbmEnabled</pathSet>
-        </propSet>
-        <propSet>
-          <type>ComputeResource</type>
-          <all>false</all>
-          <pathSet>summary</pathSet>
-          <pathSet>configurationEx.spbmEnabled</pathSet>
-        </propSet>
-        <propSet>
-          <type>VirtualApp</type>
-          <all>false</all>
-          <pathSet>vm</pathSet>
-          <pathSet>name</pathSet>
-          <pathSet>parent</pathSet>
-          <pathSet>parentFolder</pathSet>
-          <pathSet>resourcePool</pathSet>
-        </propSet>
-        <propSet>
-          <type>StoragePod</type>
-          <all>false</all>
-          <pathSet>name</pathSet>
-          <pathSet>parent</pathSet>
-          <pathSet>summary.capacity</pathSet>
-          <pathSet>summary.freeSpace</pathSet>
-          <pathSet>podStorageDrsEntry.storageDrsConfig.podConfig.enabled</pathSet>
-          <pathSet>podStorageDrsEntry.storageDrsConfig.podConfig.defaultVmBehavior</pathSet>
-        </propSet>
-        <objectSet>
-          <obj type="Folder">group-d1</obj>
-          <skip>false</skip>
-          <selectSet xsi:type="TraversalSpec">
-            <name>resourcepool</name>
-            <type>ResourcePool</type>
-            <path>resourcePool</path>
-            <skip>false</skip>
-            <selectSet>
-              <name>resourcepool</name>
-            </selectSet>
-            <selectSet xsi:type="TraversalSpec">
-              <type>ResourcePool</type>
-              <path>vm</path>
-              <skip>false</skip>
-              <selectSet xsi:type="TraversalSpec">
-                <type>VirtualMachine</type>
-                <path>runtime.host</path>
-                <skip>false</skip>
-                <selectSet xsi:type="TraversalSpec">
-                  <type>HostSystem</type>
-                  <path>parent</path>
-                  <skip>false</skip>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>ClusterComputeResource</type>
-                    <path>parent</path>
-                    <skip>false</skip>
-                    <selectSet>
-                      <name>folder_to_parent</name>
-                    </selectSet>
-                  </selectSet>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>ComputeResource</type>
-                    <path>parent</path>
-                    <skip>false</skip>
-                    <selectSet>
-                      <name>folder_to_parent</name>
-                    </selectSet>
-                  </selectSet>
-                </selectSet>
-                <selectSet xsi:type="TraversalSpec">
-                  <type>HostSystem</type>
-                  <path>datastore</path>
-                  <skip>false</skip>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>Datastore</type>
-                    <path>parent</path>
-                    <skip>false</skip>
-                    <selectSet>
-                      <name>folder_to_parent</name>
-                    </selectSet>
-                    <selectSet xsi:type="TraversalSpec">
-                      <type>StoragePod</type>
-                      <path>childEntity</path>
-                      <skip>false</skip>
-                    </selectSet>
-                    <selectSet xsi:type="TraversalSpec">
-                      <type>StoragePod</type>
-                      <path>childEntity</path>
-                      <skip>false</skip>
-                      <selectSet>
-                        <name>folder_to_parent</name>
-                      </selectSet>
-                    </selectSet>
-                  </selectSet>
-                </selectSet>
-              </selectSet>
-              <selectSet xsi:type="TraversalSpec">
-                <type>VirtualMachine</type>
-                <path>datastore</path>
-                <skip>false</skip>
-                <selectSet xsi:type="TraversalSpec">
-                  <type>Datastore</type>
-                  <path>parent</path>
-                  <skip>false</skip>
-                  <selectSet>
-                    <name>folder_to_parent</name>
-                  </selectSet>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>StoragePod</type>
-                    <path>childEntity</path>
-                    <skip>false</skip>
-                  </selectSet>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>StoragePod</type>
-                    <path>childEntity</path>
-                    <skip>false</skip>
-                    <selectSet>
-                      <name>folder_to_parent</name>
-                    </selectSet>
-                  </selectSet>
-                </selectSet>
-              </selectSet>
-            </selectSet>
-            <selectSet xsi:type="TraversalSpec">
-              <type>VirtualApp</type>
-              <path>vm</path>
-              <skip>false</skip>
-              <selectSet xsi:type="TraversalSpec">
-                <type>VirtualMachine</type>
-                <path>runtime.host</path>
-                <skip>false</skip>
-                <selectSet xsi:type="TraversalSpec">
-                  <type>HostSystem</type>
-                  <path>parent</path>
-                  <skip>false</skip>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>ClusterComputeResource</type>
-                    <path>parent</path>
-                    <skip>false</skip>
-                    <selectSet>
-                      <name>folder_to_parent</name>
-                    </selectSet>
-                  </selectSet>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>ComputeResource</type>
-                    <path>parent</path>
-                    <skip>false</skip>
-                    <selectSet>
-                      <name>folder_to_parent</name>
-                    </selectSet>
-                  </selectSet>
-                </selectSet>
-                <selectSet xsi:type="TraversalSpec">
-                  <type>HostSystem</type>
-                  <path>datastore</path>
-                  <skip>false</skip>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>Datastore</type>
-                    <path>parent</path>
-                    <skip>false</skip>
-                    <selectSet>
-                      <name>folder_to_parent</name>
-                    </selectSet>
-                    <selectSet xsi:type="TraversalSpec">
-                      <type>StoragePod</type>
-                      <path>childEntity</path>
-                      <skip>false</skip>
-                    </selectSet>
-                    <selectSet xsi:type="TraversalSpec">
-                      <type>StoragePod</type>
-                      <path>childEntity</path>
-                      <skip>false</skip>
-                      <selectSet>
-                        <name>folder_to_parent</name>
-                      </selectSet>
-                    </selectSet>
-                  </selectSet>
-                </selectSet>
-              </selectSet>
-              <selectSet xsi:type="TraversalSpec">
-                <type>VirtualMachine</type>
-                <path>datastore</path>
-                <skip>false</skip>
-                <selectSet xsi:type="TraversalSpec">
-                  <type>Datastore</type>
-                  <path>parent</path>
-                  <skip>false</skip>
-                  <selectSet>
-                    <name>folder_to_parent</name>
-                  </selectSet>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>StoragePod</type>
-                    <path>childEntity</path>
-                    <skip>false</skip>
-                  </selectSet>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>StoragePod</type>
-                    <path>childEntity</path>
-                    <skip>false</skip>
-                    <selectSet>
-                      <name>folder_to_parent</name>
-                    </selectSet>
-                  </selectSet>
-                </selectSet>
-              </selectSet>
-              <selectSet>
-                <name>vm_to_respool</name>
-              </selectSet>
-            </selectSet>
-          </selectSet>
-          <selectSet xsi:type="TraversalSpec">
-            <type>ComputeResource</type>
-            <path>resourcePool</path>
-            <skip>false</skip>
-            <selectSet>
-              <name>resourcepool</name>
-            </selectSet>
-          </selectSet>
-          <selectSet xsi:type="TraversalSpec">
-            <name>folder_to_parent</name>
-            <type>Folder</type>
-            <path>parent</path>
-            <skip>false</skip>
-            <selectSet xsi:type="TraversalSpec">
-              <type>Datacenter</type>
-              <path>parent</path>
-              <skip>false</skip>
-              <selectSet>
-                <name>folder_to_parent</name>
-              </selectSet>
-            </selectSet>
-            <selectSet>
-              <name>folder_to_parent</name>
-            </selectSet>
-          </selectSet>
-          <selectSet xsi:type="TraversalSpec">
-            <type>Datacenter</type>
-            <path>parent</path>
-            <skip>false</skip>
-            <selectSet>
-              <name>folder_to_parent</name>
-            </selectSet>
-          </selectSet>
-          <selectSet xsi:type="TraversalSpec">
-            <type>Datastore</type>
-            <path>parent</path>
-            <skip>false</skip>
-            <selectSet>
-              <name>folder_to_parent</name>
-            </selectSet>
-            <selectSet xsi:type="TraversalSpec">
-              <type>StoragePod</type>
-              <path>childEntity</path>
-              <skip>false</skip>
-            </selectSet>
-            <selectSet xsi:type="TraversalSpec">
-              <type>StoragePod</type>
-              <path>childEntity</path>
-              <skip>false</skip>
-              <selectSet>
-                <name>folder_to_parent</name>
-              </selectSet>
-            </selectSet>
-          </selectSet>
-          <selectSet xsi:type="TraversalSpec">
-            <name>folder_to_content</name>
-            <type>Folder</type>
-            <path>childEntity</path>
-            <skip>false</skip>
-            <selectSet>
-              <name>folder_to_content</name>
-            </selectSet>
-            <selectSet xsi:type="TraversalSpec">
-              <type>ClusterComputeResource</type>
-              <path>host</path>
-              <skip>false</skip>
-              <selectSet xsi:type="TraversalSpec">
-                <type>HostSystem</type>
-                <path>vm</path>
-                <skip>false</skip>
-              </selectSet>
-              <selectSet xsi:type="TraversalSpec">
-                <type>HostSystem</type>
-                <path>datastore</path>
-                <skip>false</skip>
-                <selectSet xsi:type="TraversalSpec">
-                  <type>Datastore</type>
-                  <path>parent</path>
-                  <skip>false</skip>
-                  <selectSet>
-                    <name>folder_to_parent</name>
-                  </selectSet>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>StoragePod</type>
-                    <path>childEntity</path>
-                    <skip>false</skip>
-                  </selectSet>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>StoragePod</type>
-                    <path>childEntity</path>
-                    <skip>false</skip>
-                    <selectSet>
-                      <name>folder_to_parent</name>
-                    </selectSet>
-                  </selectSet>
-                </selectSet>
-              </selectSet>
-            </selectSet>
-            <selectSet xsi:type="TraversalSpec">
-              <type>ComputeResource</type>
-              <path>host</path>
-              <skip>false</skip>
-              <selectSet xsi:type="TraversalSpec">
-                <type>HostSystem</type>
-                <path>vm</path>
-                <skip>false</skip>
-              </selectSet>
-              <selectSet xsi:type="TraversalSpec">
-                <type>HostSystem</type>
-                <path>datastore</path>
-                <skip>false</skip>
-                <selectSet xsi:type="TraversalSpec">
-                  <type>Datastore</type>
-                  <path>parent</path>
-                  <skip>false</skip>
-                  <selectSet>
-                    <name>folder_to_parent</name>
-                  </selectSet>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>StoragePod</type>
-                    <path>childEntity</path>
-                    <skip>false</skip>
-                  </selectSet>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>StoragePod</type>
-                    <path>childEntity</path>
-                    <skip>false</skip>
-                    <selectSet>
-                      <name>folder_to_parent</name>
-                    </selectSet>
-                  </selectSet>
-                </selectSet>
-              </selectSet>
-              <selectSet xsi:type="TraversalSpec">
-                <type>HostSystem</type>
-                <path>configManager.storageSystem</path>
-                <skip>false</skip>
-              </selectSet>
-            </selectSet>
-            <selectSet>
-              <name>folder_to_parent</name>
-            </selectSet>
-            <selectSet xsi:type="TraversalSpec">
-              <type>ComputeResource</type>
-              <path>resourcePool</path>
-              <skip>false</skip>
-              <selectSet>
-                <name>resourcepool</name>
-              </selectSet>
-            </selectSet>
-            <selectSet xsi:type="TraversalSpec">
-              <type>Datacenter</type>
-              <path>hostFolder</path>
-              <skip>false</skip>
-              <selectSet>
-                <name>folder_to_content</name>
-              </selectSet>
-            </selectSet>
-            <selectSet xsi:type="TraversalSpec">
-              <type>Datacenter</type>
-              <path>vmFolder</path>
-              <skip>false</skip>
-              <selectSet>
-                <name>folder_to_content</name>
-              </selectSet>
-            </selectSet>
-            <selectSet xsi:type="TraversalSpec">
-              <type>VirtualApp</type>
-              <path>resourcePool</path>
-              <skip>false</skip>
-              <selectSet>
-                <name>resourcepool</name>
-              </selectSet>
-              <selectSet xsi:type="TraversalSpec">
-                <type>ResourcePool</type>
-                <path>vm</path>
-                <skip>false</skip>
-                <selectSet xsi:type="TraversalSpec">
-                  <type>VirtualMachine</type>
-                  <path>runtime.host</path>
-                  <skip>false</skip>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>HostSystem</type>
-                    <path>parent</path>
-                    <skip>false</skip>
-                    <selectSet xsi:type="TraversalSpec">
-                      <type>ClusterComputeResource</type>
-                      <path>parent</path>
-                      <skip>false</skip>
-                      <selectSet>
-                        <name>folder_to_parent</name>
-                      </selectSet>
-                    </selectSet>
-                    <selectSet xsi:type="TraversalSpec">
-                      <type>ComputeResource</type>
-                      <path>parent</path>
-                      <skip>false</skip>
-                      <selectSet>
-                        <name>folder_to_parent</name>
-                      </selectSet>
-                    </selectSet>
-                  </selectSet>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>HostSystem</type>
-                    <path>datastore</path>
-                    <skip>false</skip>
-                    <selectSet xsi:type="TraversalSpec">
-                      <type>Datastore</type>
-                      <path>parent</path>
-                      <skip>false</skip>
-                      <selectSet>
-                        <name>folder_to_parent</name>
-                      </selectSet>
-                      <selectSet xsi:type="TraversalSpec">
-                        <type>StoragePod</type>
-                        <path>childEntity</path>
-                        <skip>false</skip>
-                      </selectSet>
-                      <selectSet xsi:type="TraversalSpec">
-                        <type>StoragePod</type>
-                        <path>childEntity</path>
-                        <skip>false</skip>
-                        <selectSet>
-                          <name>folder_to_parent</name>
-                        </selectSet>
-                      </selectSet>
-                    </selectSet>
-                  </selectSet>
-                </selectSet>
-                <selectSet xsi:type="TraversalSpec">
-                  <type>VirtualMachine</type>
-                  <path>datastore</path>
-                  <skip>false</skip>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>Datastore</type>
-                    <path>parent</path>
-                    <skip>false</skip>
-                    <selectSet>
-                      <name>folder_to_parent</name>
-                    </selectSet>
-                    <selectSet xsi:type="TraversalSpec">
-                      <type>StoragePod</type>
-                      <path>childEntity</path>
-                      <skip>false</skip>
-                    </selectSet>
-                    <selectSet xsi:type="TraversalSpec">
-                      <type>StoragePod</type>
-                      <path>childEntity</path>
-                      <skip>false</skip>
-                      <selectSet>
-                        <name>folder_to_parent</name>
-                      </selectSet>
-                    </selectSet>
-                  </selectSet>
-                </selectSet>
-              </selectSet>
-              <selectSet xsi:type="TraversalSpec">
-                <type>VirtualApp</type>
-                <path>vm</path>
-                <skip>false</skip>
-                <selectSet xsi:type="TraversalSpec">
-                  <type>VirtualMachine</type>
-                  <path>runtime.host</path>
-                  <skip>false</skip>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>HostSystem</type>
-                    <path>parent</path>
-                    <skip>false</skip>
-                    <selectSet xsi:type="TraversalSpec">
-                      <type>ClusterComputeResource</type>
-                      <path>parent</path>
-                      <skip>false</skip>
-                      <selectSet>
-                        <name>folder_to_parent</name>
-                      </selectSet>
-                    </selectSet>
-                    <selectSet xsi:type="TraversalSpec">
-                      <type>ComputeResource</type>
-                      <path>parent</path>
-                      <skip>false</skip>
-                      <selectSet>
-                        <name>folder_to_parent</name>
-                      </selectSet>
-                    </selectSet>
-                  </selectSet>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>HostSystem</type>
-                    <path>datastore</path>
-                    <skip>false</skip>
-                    <selectSet xsi:type="TraversalSpec">
-                      <type>Datastore</type>
-                      <path>parent</path>
-                      <skip>false</skip>
-                      <selectSet>
-                        <name>folder_to_parent</name>
-                      </selectSet>
-                      <selectSet xsi:type="TraversalSpec">
-                        <type>StoragePod</type>
-                        <path>childEntity</path>
-                        <skip>false</skip>
-                      </selectSet>
-                      <selectSet xsi:type="TraversalSpec">
-                        <type>StoragePod</type>
-                        <path>childEntity</path>
-                        <skip>false</skip>
-                        <selectSet>
-                          <name>folder_to_parent</name>
-                        </selectSet>
-                      </selectSet>
-                    </selectSet>
-                  </selectSet>
-                </selectSet>
-                <selectSet xsi:type="TraversalSpec">
-                  <type>VirtualMachine</type>
-                  <path>datastore</path>
-                  <skip>false</skip>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>Datastore</type>
-                    <path>parent</path>
-                    <skip>false</skip>
-                    <selectSet>
-                      <name>folder_to_parent</name>
-                    </selectSet>
-                    <selectSet xsi:type="TraversalSpec">
-                      <type>StoragePod</type>
-                      <path>childEntity</path>
-                      <skip>false</skip>
-                    </selectSet>
-                    <selectSet xsi:type="TraversalSpec">
-                      <type>StoragePod</type>
-                      <path>childEntity</path>
-                      <skip>false</skip>
-                      <selectSet>
-                        <name>folder_to_parent</name>
-                      </selectSet>
-                    </selectSet>
-                  </selectSet>
-                </selectSet>
-                <selectSet>
-                  <name>vm_to_respool</name>
-                </selectSet>
-              </selectSet>
-            </selectSet>
-            <selectSet xsi:type="TraversalSpec">
-              <type>VirtualApp</type>
-              <path>vm</path>
-              <skip>false</skip>
-              <selectSet xsi:type="TraversalSpec">
-                <type>VirtualMachine</type>
-                <path>runtime.host</path>
-                <skip>false</skip>
-                <selectSet xsi:type="TraversalSpec">
-                  <type>HostSystem</type>
-                  <path>parent</path>
-                  <skip>false</skip>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>ClusterComputeResource</type>
-                    <path>parent</path>
-                    <skip>false</skip>
-                    <selectSet>
-                      <name>folder_to_parent</name>
-                    </selectSet>
-                  </selectSet>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>ComputeResource</type>
-                    <path>parent</path>
-                    <skip>false</skip>
-                    <selectSet>
-                      <name>folder_to_parent</name>
-                    </selectSet>
-                  </selectSet>
-                </selectSet>
-                <selectSet xsi:type="TraversalSpec">
-                  <type>HostSystem</type>
-                  <path>datastore</path>
-                  <skip>false</skip>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>Datastore</type>
-                    <path>parent</path>
-                    <skip>false</skip>
-                    <selectSet>
-                      <name>folder_to_parent</name>
-                    </selectSet>
-                    <selectSet xsi:type="TraversalSpec">
-                      <type>StoragePod</type>
-                      <path>childEntity</path>
-                      <skip>false</skip>
-                    </selectSet>
-                    <selectSet xsi:type="TraversalSpec">
-                      <type>StoragePod</type>
-                      <path>childEntity</path>
-                      <skip>false</skip>
-                      <selectSet>
-                        <name>folder_to_parent</name>
-                      </selectSet>
-                    </selectSet>
-                  </selectSet>
-                </selectSet>
-              </selectSet>
-              <selectSet xsi:type="TraversalSpec">
-                <type>VirtualMachine</type>
-                <path>datastore</path>
-                <skip>false</skip>
-                <selectSet xsi:type="TraversalSpec">
-                  <type>Datastore</type>
-                  <path>parent</path>
-                  <skip>false</skip>
-                  <selectSet>
-                    <name>folder_to_parent</name>
-                  </selectSet>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>StoragePod</type>
-                    <path>childEntity</path>
-                    <skip>false</skip>
-                  </selectSet>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>StoragePod</type>
-                    <path>childEntity</path>
-                    <skip>false</skip>
-                    <selectSet>
-                      <name>folder_to_parent</name>
-                    </selectSet>
-                  </selectSet>
-                </selectSet>
-              </selectSet>
-              <selectSet>
-                <name>vm_to_respool</name>
-              </selectSet>
-            </selectSet>
-            <selectSet xsi:type="TraversalSpec">
-              <type>Datacenter</type>
-              <path>datastoreFolder</path>
-              <skip>false</skip>
-              <selectSet>
-                <name>folder_to_content</name>
-              </selectSet>
-            </selectSet>
-            <selectSet xsi:type="TraversalSpec">
-              <type>VirtualMachine</type>
-              <path>runtime.host</path>
-              <skip>false</skip>
-              <selectSet xsi:type="TraversalSpec">
-                <type>HostSystem</type>
-                <path>parent</path>
-                <skip>false</skip>
-                <selectSet xsi:type="TraversalSpec">
-                  <type>ClusterComputeResource</type>
-                  <path>parent</path>
-                  <skip>false</skip>
-                  <selectSet>
-                    <name>folder_to_parent</name>
-                  </selectSet>
-                </selectSet>
-                <selectSet xsi:type="TraversalSpec">
-                  <type>ComputeResource</type>
-                  <path>parent</path>
-                  <skip>false</skip>
-                  <selectSet>
-                    <name>folder_to_parent</name>
-                  </selectSet>
-                </selectSet>
-              </selectSet>
-              <selectSet xsi:type="TraversalSpec">
-                <type>HostSystem</type>
-                <path>datastore</path>
-                <skip>false</skip>
-                <selectSet xsi:type="TraversalSpec">
-                  <type>Datastore</type>
-                  <path>parent</path>
-                  <skip>false</skip>
-                  <selectSet>
-                    <name>folder_to_parent</name>
-                  </selectSet>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>StoragePod</type>
-                    <path>childEntity</path>
-                    <skip>false</skip>
-                  </selectSet>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>StoragePod</type>
-                    <path>childEntity</path>
-                    <skip>false</skip>
-                    <selectSet>
-                      <name>folder_to_parent</name>
-                    </selectSet>
-                  </selectSet>
-                </selectSet>
-              </selectSet>
-            </selectSet>
-            <selectSet>
-              <name>vm_to_respool</name>
-            </selectSet>
-            <selectSet xsi:type="TraversalSpec">
-              <type>Datastore</type>
-              <path>vm</path>
-              <skip>false</skip>
-              <selectSet xsi:type="TraversalSpec">
-                <type>VirtualMachine</type>
-                <path>runtime.host</path>
-                <skip>false</skip>
-                <selectSet xsi:type="TraversalSpec">
-                  <type>HostSystem</type>
-                  <path>parent</path>
-                  <skip>false</skip>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>ClusterComputeResource</type>
-                    <path>parent</path>
-                    <skip>false</skip>
-                    <selectSet>
-                      <name>folder_to_parent</name>
-                    </selectSet>
-                  </selectSet>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>ComputeResource</type>
-                    <path>parent</path>
-                    <skip>false</skip>
-                    <selectSet>
-                      <name>folder_to_parent</name>
-                    </selectSet>
-                  </selectSet>
-                </selectSet>
-                <selectSet xsi:type="TraversalSpec">
-                  <type>HostSystem</type>
-                  <path>datastore</path>
-                  <skip>false</skip>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>Datastore</type>
-                    <path>parent</path>
-                    <skip>false</skip>
-                    <selectSet>
-                      <name>folder_to_parent</name>
-                    </selectSet>
-                    <selectSet xsi:type="TraversalSpec">
-                      <type>StoragePod</type>
-                      <path>childEntity</path>
-                      <skip>false</skip>
-                    </selectSet>
-                    <selectSet xsi:type="TraversalSpec">
-                      <type>StoragePod</type>
-                      <path>childEntity</path>
-                      <skip>false</skip>
-                      <selectSet>
-                        <name>folder_to_parent</name>
-                      </selectSet>
-                    </selectSet>
-                  </selectSet>
-                </selectSet>
-              </selectSet>
-              <selectSet>
-                <name>vm_to_respool</name>
-              </selectSet>
-            </selectSet>
-            <selectSet xsi:type="TraversalSpec">
-              <type>StoragePod</type>
-              <path>childEntity</path>
-              <skip>false</skip>
-              <selectSet xsi:type="TraversalSpec">
-                <type>Datastore</type>
-                <path>vm</path>
-                <skip>false</skip>
-                <selectSet xsi:type="TraversalSpec">
-                  <type>VirtualMachine</type>
-                  <path>runtime.host</path>
-                  <skip>false</skip>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>HostSystem</type>
-                    <path>parent</path>
-                    <skip>false</skip>
-                    <selectSet xsi:type="TraversalSpec">
-                      <type>ClusterComputeResource</type>
-                      <path>parent</path>
-                      <skip>false</skip>
-                      <selectSet>
-                        <name>folder_to_parent</name>
-                      </selectSet>
-                    </selectSet>
-                    <selectSet xsi:type="TraversalSpec">
-                      <type>ComputeResource</type>
-                      <path>parent</path>
-                      <skip>false</skip>
-                      <selectSet>
-                        <name>folder_to_parent</name>
-                      </selectSet>
-                    </selectSet>
-                  </selectSet>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>HostSystem</type>
-                    <path>datastore</path>
-                    <skip>false</skip>
-                    <selectSet xsi:type="TraversalSpec">
-                      <type>Datastore</type>
-                      <path>parent</path>
-                      <skip>false</skip>
-                      <selectSet>
-                        <name>folder_to_parent</name>
-                      </selectSet>
-                      <selectSet xsi:type="TraversalSpec">
-                        <type>StoragePod</type>
-                        <path>childEntity</path>
-                        <skip>false</skip>
-                      </selectSet>
-                      <selectSet xsi:type="TraversalSpec">
-                        <type>StoragePod</type>
-                        <path>childEntity</path>
-                        <skip>false</skip>
-                        <selectSet>
-                          <name>folder_to_parent</name>
-                        </selectSet>
-                      </selectSet>
-                    </selectSet>
-                  </selectSet>
-                </selectSet>
-                <selectSet>
-                  <name>vm_to_respool</name>
-                </selectSet>
-              </selectSet>
-            </selectSet>
-          </selectSet>
-          <selectSet xsi:type="TraversalSpec">
-            <type>Datacenter</type>
-            <path>hostFolder</path>
-            <skip>false</skip>
-            <selectSet>
-              <name>folder_to_content</name>
-            </selectSet>
-          </selectSet>
-          <selectSet xsi:type="TraversalSpec">
-            <type>ClusterComputeResource</type>
-            <path>host</path>
-            <skip>false</skip>
-            <selectSet xsi:type="TraversalSpec">
-              <type>HostSystem</type>
-              <path>vm</path>
-              <skip>false</skip>
-            </selectSet>
-            <selectSet xsi:type="TraversalSpec">
-              <type>HostSystem</type>
-              <path>datastore</path>
-              <skip>false</skip>
-              <selectSet xsi:type="TraversalSpec">
-                <type>Datastore</type>
-                <path>parent</path>
-                <skip>false</skip>
-                <selectSet>
-                  <name>folder_to_parent</name>
-                </selectSet>
-                <selectSet xsi:type="TraversalSpec">
-                  <type>StoragePod</type>
-                  <path>childEntity</path>
-                  <skip>false</skip>
-                </selectSet>
-                <selectSet xsi:type="TraversalSpec">
-                  <type>StoragePod</type>
-                  <path>childEntity</path>
-                  <skip>false</skip>
-                  <selectSet>
-                    <name>folder_to_parent</name>
-                  </selectSet>
-                </selectSet>
-              </selectSet>
-            </selectSet>
-          </selectSet>
-          <selectSet xsi:type="TraversalSpec">
-            <type>ComputeResource</type>
-            <path>host</path>
-            <skip>false</skip>
-            <selectSet xsi:type="TraversalSpec">
-              <type>HostSystem</type>
-              <path>vm</path>
-              <skip>false</skip>
-            </selectSet>
-            <selectSet xsi:type="TraversalSpec">
-              <type>HostSystem</type>
-              <path>datastore</path>
-              <skip>false</skip>
-              <selectSet xsi:type="TraversalSpec">
-                <type>Datastore</type>
-                <path>parent</path>
-                <skip>false</skip>
-                <selectSet>
-                  <name>folder_to_parent</name>
-                </selectSet>
-                <selectSet xsi:type="TraversalSpec">
-                  <type>StoragePod</type>
-                  <path>childEntity</path>
-                  <skip>false</skip>
-                </selectSet>
-                <selectSet xsi:type="TraversalSpec">
-                  <type>StoragePod</type>
-                  <path>childEntity</path>
-                  <skip>false</skip>
-                  <selectSet>
-                    <name>folder_to_parent</name>
-                  </selectSet>
-                </selectSet>
-              </selectSet>
-            </selectSet>
-            <selectSet xsi:type="TraversalSpec">
-              <type>HostSystem</type>
-              <path>configManager.storageSystem</path>
-              <skip>false</skip>
-            </selectSet>
-          </selectSet>
-          <selectSet xsi:type="TraversalSpec">
-            <type>VirtualMachine</type>
-            <path>runtime.host</path>
-            <skip>false</skip>
-            <selectSet xsi:type="TraversalSpec">
-              <type>HostSystem</type>
-              <path>parent</path>
-              <skip>false</skip>
-              <selectSet xsi:type="TraversalSpec">
-                <type>ClusterComputeResource</type>
-                <path>parent</path>
-                <skip>false</skip>
-                <selectSet>
-                  <name>folder_to_parent</name>
-                </selectSet>
-              </selectSet>
-              <selectSet xsi:type="TraversalSpec">
-                <type>ComputeResource</type>
-                <path>parent</path>
-                <skip>false</skip>
-                <selectSet>
-                  <name>folder_to_parent</name>
-                </selectSet>
-              </selectSet>
-            </selectSet>
-            <selectSet xsi:type="TraversalSpec">
-              <type>HostSystem</type>
-              <path>datastore</path>
-              <skip>false</skip>
-              <selectSet xsi:type="TraversalSpec">
-                <type>Datastore</type>
-                <path>parent</path>
-                <skip>false</skip>
-                <selectSet>
-                  <name>folder_to_parent</name>
-                </selectSet>
-                <selectSet xsi:type="TraversalSpec">
-                  <type>StoragePod</type>
-                  <path>childEntity</path>
-                  <skip>false</skip>
-                </selectSet>
-                <selectSet xsi:type="TraversalSpec">
-                  <type>StoragePod</type>
-                  <path>childEntity</path>
-                  <skip>false</skip>
-                  <selectSet>
-                    <name>folder_to_parent</name>
-                  </selectSet>
-                </selectSet>
-              </selectSet>
-            </selectSet>
-          </selectSet>
-          <selectSet xsi:type="TraversalSpec">
-            <type>VirtualMachine</type>
-            <path>datastore</path>
-            <skip>false</skip>
-            <selectSet xsi:type="TraversalSpec">
-              <type>Datastore</type>
-              <path>parent</path>
-              <skip>false</skip>
-              <selectSet>
-                <name>folder_to_parent</name>
-              </selectSet>
-              <selectSet xsi:type="TraversalSpec">
-                <type>StoragePod</type>
-                <path>childEntity</path>
-                <skip>false</skip>
-              </selectSet>
-              <selectSet xsi:type="TraversalSpec">
-                <type>StoragePod</type>
-                <path>childEntity</path>
-                <skip>false</skip>
-                <selectSet>
-                  <name>folder_to_parent</name>
-                </selectSet>
-              </selectSet>
-            </selectSet>
-          </selectSet>
-          <selectSet xsi:type="TraversalSpec">
-            <name>vm_to_respool</name>
-            <type>VirtualMachine</type>
-            <path>resourcePool</path>
-            <skip>false</skip>
-            <selectSet xsi:type="TraversalSpec">
-              <name>respool_parent</name>
-              <type>ResourcePool</type>
-              <path>parent</path>
-              <skip>false</skip>
-              <selectSet>
-                <name>respool_parent</name>
-              </selectSet>
-              <selectSet xsi:type="TraversalSpec">
-                <type>ComputeResource</type>
-                <path>parent</path>
-                <skip>false</skip>
-                <selectSet>
-                  <name>folder_to_parent</name>
-                </selectSet>
-              </selectSet>
-            </selectSet>
-          </selectSet>
-          <selectSet xsi:type="TraversalSpec">
-            <type>VirtualMachine</type>
-            <path>parent</path>
-            <skip>false</skip>
-            <selectSet>
-              <name>folder_to_parent</name>
-            </selectSet>
-          </selectSet>
-          <selectSet xsi:type="TraversalSpec">
-            <type>VirtualApp</type>
-            <path>resourcePool</path>
-            <skip>false</skip>
-            <selectSet>
-              <name>resourcepool</name>
-            </selectSet>
-            <selectSet xsi:type="TraversalSpec">
-              <type>ResourcePool</type>
-              <path>vm</path>
-              <skip>false</skip>
-              <selectSet xsi:type="TraversalSpec">
-                <type>VirtualMachine</type>
-                <path>runtime.host</path>
-                <skip>false</skip>
-                <selectSet xsi:type="TraversalSpec">
-                  <type>HostSystem</type>
-                  <path>parent</path>
-                  <skip>false</skip>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>ClusterComputeResource</type>
-                    <path>parent</path>
-                    <skip>false</skip>
-                    <selectSet>
-                      <name>folder_to_parent</name>
-                    </selectSet>
-                  </selectSet>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>ComputeResource</type>
-                    <path>parent</path>
-                    <skip>false</skip>
-                    <selectSet>
-                      <name>folder_to_parent</name>
-                    </selectSet>
-                  </selectSet>
-                </selectSet>
-                <selectSet xsi:type="TraversalSpec">
-                  <type>HostSystem</type>
-                  <path>datastore</path>
-                  <skip>false</skip>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>Datastore</type>
-                    <path>parent</path>
-                    <skip>false</skip>
-                    <selectSet>
-                      <name>folder_to_parent</name>
-                    </selectSet>
-                    <selectSet xsi:type="TraversalSpec">
-                      <type>StoragePod</type>
-                      <path>childEntity</path>
-                      <skip>false</skip>
-                    </selectSet>
-                    <selectSet xsi:type="TraversalSpec">
-                      <type>StoragePod</type>
-                      <path>childEntity</path>
-                      <skip>false</skip>
-                      <selectSet>
-                        <name>folder_to_parent</name>
-                      </selectSet>
-                    </selectSet>
-                  </selectSet>
-                </selectSet>
-              </selectSet>
-              <selectSet xsi:type="TraversalSpec">
-                <type>VirtualMachine</type>
-                <path>datastore</path>
-                <skip>false</skip>
-                <selectSet xsi:type="TraversalSpec">
-                  <type>Datastore</type>
-                  <path>parent</path>
-                  <skip>false</skip>
-                  <selectSet>
-                    <name>folder_to_parent</name>
-                  </selectSet>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>StoragePod</type>
-                    <path>childEntity</path>
-                    <skip>false</skip>
-                  </selectSet>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>StoragePod</type>
-                    <path>childEntity</path>
-                    <skip>false</skip>
-                    <selectSet>
-                      <name>folder_to_parent</name>
-                    </selectSet>
-                  </selectSet>
-                </selectSet>
-              </selectSet>
-            </selectSet>
-            <selectSet xsi:type="TraversalSpec">
-              <type>VirtualApp</type>
-              <path>vm</path>
-              <skip>false</skip>
-              <selectSet xsi:type="TraversalSpec">
-                <type>VirtualMachine</type>
-                <path>runtime.host</path>
-                <skip>false</skip>
-                <selectSet xsi:type="TraversalSpec">
-                  <type>HostSystem</type>
-                  <path>parent</path>
-                  <skip>false</skip>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>ClusterComputeResource</type>
-                    <path>parent</path>
-                    <skip>false</skip>
-                    <selectSet>
-                      <name>folder_to_parent</name>
-                    </selectSet>
-                  </selectSet>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>ComputeResource</type>
-                    <path>parent</path>
-                    <skip>false</skip>
-                    <selectSet>
-                      <name>folder_to_parent</name>
-                    </selectSet>
-                  </selectSet>
-                </selectSet>
-                <selectSet xsi:type="TraversalSpec">
-                  <type>HostSystem</type>
-                  <path>datastore</path>
-                  <skip>false</skip>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>Datastore</type>
-                    <path>parent</path>
-                    <skip>false</skip>
-                    <selectSet>
-                      <name>folder_to_parent</name>
-                    </selectSet>
-                    <selectSet xsi:type="TraversalSpec">
-                      <type>StoragePod</type>
-                      <path>childEntity</path>
-                      <skip>false</skip>
-                    </selectSet>
-                    <selectSet xsi:type="TraversalSpec">
-                      <type>StoragePod</type>
-                      <path>childEntity</path>
-                      <skip>false</skip>
-                      <selectSet>
-                        <name>folder_to_parent</name>
-                      </selectSet>
-                    </selectSet>
-                  </selectSet>
-                </selectSet>
-              </selectSet>
-              <selectSet xsi:type="TraversalSpec">
-                <type>VirtualMachine</type>
-                <path>datastore</path>
-                <skip>false</skip>
-                <selectSet xsi:type="TraversalSpec">
-                  <type>Datastore</type>
-                  <path>parent</path>
-                  <skip>false</skip>
-                  <selectSet>
-                    <name>folder_to_parent</name>
-                  </selectSet>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>StoragePod</type>
-                    <path>childEntity</path>
-                    <skip>false</skip>
-                  </selectSet>
-                  <selectSet xsi:type="TraversalSpec">
-                    <type>StoragePod</type>
-                    <path>childEntity</path>
-                    <skip>false</skip>
-                    <selectSet>
-                      <name>folder_to_parent</name>
-                    </selectSet>
-                  </selectSet>
-                </selectSet>
-              </selectSet>
-              <selectSet>
-                <name>vm_to_respool</name>
-              </selectSet>
-            </selectSet>
-          </selectSet>
-        </objectSet>
-      </spec>
-      <partialUpdates>false</partialUpdates>
-    </CreateFilter>
-  </soap:Body>
-</soap:Envelope>`;
+  }
 
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
-      return this.validResponse(data.CreateFilterResponse[0].returnval[0]._);
-    })).toPromise.apply( this, arguments );
+  getHostStorageSystemData(connectionData: ConnectionData, storageSystem: string): Promise<any> {
+    return this.RetrieveProperties(connectionData, [{
+      propSet: [{
+        type: 'HostStorageSystem',
+        all: false,
+        pathSet: [
+          'storageDeviceInfo',
+          'fileSystemVolumeInfo'
+        ]
+      }],
+      objectSet: [{
+        obj: {
+          type: 'HostStorageSystem',
+          value: storageSystem
+        },
+        skip: false
+      }]
+    }]).then((RetrievePropertiesResponse) => {
+      const res = [];
+
+      RetrievePropertiesResponse.returnval.forEach(value => {
+        res.push(this.SysosLibVmwareHelper.parseVMwareObject(value));
+      });
+
+      return this.SysosLibVmwareHelper.validResponse(res);
+    });
+
+  }
+
+  getHostConnectionState(connectionData: ConnectionData, esxiHost: string): Promise<any> {
+    return this.RetrieveProperties(connectionData, [{
+      propSet: [{
+        type: 'HostSystem',
+        all: false,
+        pathSet: [
+          'runtime.connectionState'
+        ]
+      }],
+      objectSet: [{
+        obj: {
+          type: 'HostSystem',
+          value: esxiHost
+        }
+      }]
+    }]).then((RetrievePropertiesResponse) => {
+
+      return this.SysosLibVmwareHelper.validResponse(this.SysosLibVmwareHelper.parseVMwareObject(RetrievePropertiesResponse.returnval[0].propSet[0].val[0]._));
+    });
+
+  }
+
+  getHostConfigManagerNetworkSystem(connectionData: ConnectionData, esxiHost: string): Promise<any> {
+    return this.RetrieveProperties(connectionData, [{
+      propSet: [{
+        type: 'HostSystem',
+        all: false,
+        pathSet: [
+          'configManager.networkSystem'
+        ]
+      }],
+      objectSet: [{
+        obj: {
+          type: 'HostSystem',
+          value: esxiHost
+        }
+      }]
+    }]).then((RetrievePropertiesResponse) => {
+
+      return this.SysosLibVmwareHelper.validResponse(this.SysosLibVmwareHelper.parseVMwareObject(RetrievePropertiesResponse.returnval[0].propSet[0].val[0]._));
+    });
+
+  }
+
+  getHostConfigManagerDatastoreSystem(connectionData: ConnectionData, esxiHost: string): Promise<any> {
+    return this.RetrieveProperties(connectionData, [{
+      propSet: [{
+        type: 'HostSystem',
+        all: false,
+        pathSet: [
+          'configManager.datastoreSystem'
+        ]
+      }],
+      objectSet: [{
+        obj: {
+          type: 'HostSystem',
+          value: esxiHost
+        }
+      }]
+    }]).then((RetrievePropertiesResponse) => {
+
+      return this.SysosLibVmwareHelper.validResponse(this.SysosLibVmwareHelper.parseVMwareObject(RetrievePropertiesResponse.returnval[0].propSet[0].val[0]._));
+    });
+
+  }
+
+  getHostNetworkInfoVnic(connectionData: ConnectionData, networkSystem: string): Promise<any> {
+    return this.RetrieveProperties(connectionData, [{
+      propSet: [{
+        type: 'HostNetworkSystem',
+        all: false,
+        pathSet: [
+          'networkInfo.vnic'
+        ]
+      }],
+      objectSet: [{
+        obj: {
+          type: 'HostNetworkSystem',
+          value: networkSystem
+        }
+      }]
+    }]).then((RetrievePropertiesResponse) => {
+      const res = [];
+
+      RetrievePropertiesResponse.returnval.forEach(value => {
+        res.push(this.SysosLibVmwareHelper.parseVMwareObject(value));
+      });
+
+      return this.SysosLibVmwareHelper.validResponse(res);
+    });
+
+  }
+
+  getHostNetworkInfoConsoleVnic(connectionData: ConnectionData, networkSystem: string): Promise<any> {
+    return this.RetrieveProperties(connectionData, [{
+      propSet: [{
+        type: 'HostNetworkSystem',
+        all: false,
+        pathSet: [
+          'networkInfo.consoleVnic'
+        ]
+      }],
+      objectSet: [{
+        obj: {
+          type: 'HostNetworkSystem',
+          value: networkSystem
+        }
+      }]
+    }]).then((RetrievePropertiesResponse) => {
+      const res = [];
+
+      RetrievePropertiesResponse.returnval.forEach(value => {
+        res.push(this.SysosLibVmwareHelper.parseVMwareObject(value));
+      });
+
+      return this.SysosLibVmwareHelper.validResponse(res);
+    });
+
+  }
+
+  /**
+   * Datastore
+   */
+  getDatastores(connectionData: ConnectionData, datacenterFolder: string): Promise<any> {
+    return this.RetrieveProperties(connectionData, [{
+      propSet: [{
+        type: 'Datastore',
+        all: true
+      }],
+      objectSet: [{
+        obj: {
+          type: 'Folder',
+          value: datacenterFolder
+        },
+        skip: true,
+        selectSet: [
+          ({
+            type: 'Folder',
+            path: 'childEntity',
+            skip: true,
+            selectSet: [
+              ({
+                type: 'Datacenter',
+                path: 'datastore',
+                skip: false
+              } as TraversalSpec)
+            ]
+          } as TraversalSpec)
+        ]
+      }]
+    }]).then((RetrievePropertiesResponse) => {
+      const res = [];
+
+      RetrievePropertiesResponse.returnval.forEach(value => {
+        res.push(this.SysosLibVmwareHelper.parseVMwareObject(value));
+      });
+
+      return this.SysosLibVmwareHelper.validResponse(res);
+    });
+
+  }
+
+  getDatastoreProps(connectionData: ConnectionData, datastore: string): Promise<any> {
+    return this.RetrieveProperties(connectionData, [{
+      propSet: [{
+        type: 'Datastore',
+        all: true
+      }],
+      objectSet: [{
+        obj: {
+          type: 'Datastore',
+          value: datastore
+        },
+        skip: false
+      }]
+    }]).then((RetrievePropertiesResponse) => {
+
+      return this.SysosLibVmwareHelper.validResponse(this.SysosLibVmwareHelper.parseVMwareObject(RetrievePropertiesResponse.returnval[0]));
+    });
+
+  }
+
+  getDatastoresWithVMsData(connectionData: ConnectionData, datacenterFolder: string): Promise<any> {
+    return this.RetrieveProperties(connectionData, [{
+      propSet: [
+        {
+          type: 'Datastore',
+          all: false,
+          pathSet: ['info', 'host', 'vm']
+        },
+        {
+          type: 'VirtualMachine',
+          all: false,
+          pathSet: ['config', 'layout', 'runtime']
+        }
+      ],
+      objectSet: [{
+        obj: {
+          type: 'Folder',
+          value: datacenterFolder
+        },
+        skip: true,
+        selectSet: [
+          ({
+            name: 'visitFolders',
+            type: 'Folder',
+            path: 'childEntity',
+            skip: true,
+            selectSet: [
+              {
+                name: 'visitFolders'
+              },
+              {
+                type: 'Datacenter',
+                path: 'datastore',
+                skip: false,
+                selectSet: [
+                  {
+                    type: 'Datacenter',
+                    path: 'vm',
+                    skip: false
+                  }
+                ]
+              },
+              {
+                type: 'Datastore',
+                path: 'vm',
+                skip: false
+              }
+            ]
+          } as TraversalSpec)
+        ]
+      }]
+    }]).then((RetrievePropertiesResponse) => {
+      const res = [];
+
+      RetrievePropertiesResponse.returnval.forEach(value => {
+        res.push(this.SysosLibVmwareHelper.parseVMwareObject(value));
+      });
+
+      return this.SysosLibVmwareHelper.validResponse(res);
+    });
+
+  }
+
+  getVMFileDataFromDatastore(connectionData: ConnectionData, datastore: string, datastoreName: string, path: string, vmxFile: string): Promise<any> {
+    return this.SearchDatastore_Task(
+      connectionData,
+      {
+        type: 'HostDatastoreBrowser', value: datastore
+      },
+      datastoreName,
+      path,
+      {
+        details: {
+          fileType: true,
+          fileSize: true,
+          modification: true,
+          fileOwner: false
+        },
+        matchPattern: [vmxFile]
+      },
+      true
+    ).then((SearchDatastoreTaskResponse) => {
+      return this.SysosLibVmwareHelper.validResponse(SearchDatastoreTaskResponse);
+    });
+  }
+
+  getFilesDataFromDatastore(connectionData: ConnectionData, datastore: string, datastoreName: string, path: string): Promise<any> {
+    return this.SearchDatastore_Task(
+      connectionData,
+      {
+        type: 'HostDatastoreBrowser', value: datastore
+      },
+      datastoreName,
+      path,
+      {
+        details: {
+          fileType: true,
+          fileSize: true,
+          modification: true,
+          fileOwner: false
+        }
+      },
+      true
+    ).then((SearchDatastoreTaskResponse) => {
+      return this.SysosLibVmwareHelper.validResponse(SearchDatastoreTaskResponse);
+    });
+  }
+
+  /**
+   * VM
+   */
+  getVMs(connectionData: ConnectionData, datacenterFolder: string): Promise<any> {
+    return this.RetrieveProperties(connectionData, [{
+      propSet: [
+        {
+          type: 'VirtualMachine',
+          all: true
+        }
+      ],
+      objectSet: [{
+        obj: {
+          type: 'Folder',
+          value: datacenterFolder
+        },
+        skip: true,
+        selectSet: [
+          ({
+            name: 'visitFolders',
+            type: 'Folder',
+            path: 'childEntity',
+            skip: true,
+            selectSet: [
+              {
+                name: 'visitFolders'
+              },
+              {
+                type: 'Datacenter',
+                path: 'datastore',
+                skip: false,
+                selectSet: [
+                  {
+                    type: 'Datacenter',
+                    path: 'vm',
+                    skip: false
+                  }
+                ]
+              },
+              {
+                type: 'Datastore',
+                path: 'vm',
+                skip: false
+              }
+            ]
+          } as TraversalSpec)
+        ]
+      }]
+    }]).then((RetrievePropertiesResponse) => {
+      const res = [];
+
+      RetrievePropertiesResponse.returnval.forEach(value => {
+        res.push(this.SysosLibVmwareHelper.parseVMwareObject(value));
+      });
+
+      return this.SysosLibVmwareHelper.validResponse(res);
+    });
+
+  }
+
+  getVM(connectionData: ConnectionData, vm: string): Promise<any> {
+    return this.RetrieveProperties(connectionData, [{
+      propSet: [{
+        type: 'VirtualMachine',
+        all: true
+      }],
+      objectSet: [{
+        obj: {
+          type: 'VirtualMachine',
+          value: vm
+        },
+        skip: false
+      }]
+    }]).then((RetrievePropertiesResponse) => {
+
+      return this.SysosLibVmwareHelper.validResponse(this.SysosLibVmwareHelper.parseVMwareObject(RetrievePropertiesResponse.returnval[0]));
+    });
+
+  }
+
+  getVMPath(connectionData: ConnectionData, vm: string): Promise<any> {
+    return this.RetrieveProperties(connectionData, [{
+      propSet: [{
+        type: 'VirtualMachine',
+        all: false,
+        pathSet: ['config.files.vmPathName']
+      }],
+      objectSet: [{
+        obj: {
+          type: 'VirtualMachine',
+          value: vm
+        },
+        skip: false
+      }]
+    }]).then((RetrievePropertiesResponse) => {
+
+      return this.SysosLibVmwareHelper.validResponse(this.SysosLibVmwareHelper.parseVMwareObject(RetrievePropertiesResponse.returnval[0]));
+    });
+
+  }
+
+  getVMRuntime(connectionData: ConnectionData, vm: string): Promise<any> {
+    return this.RetrieveProperties(connectionData, [{
+      propSet: [{
+        type: 'VirtualMachine',
+        all: false,
+        pathSet: ['runtime']
+      }],
+      objectSet: [{
+        obj: {
+          type: 'VirtualMachine',
+          value: vm
+        },
+        skip: false
+      }]
+    }]).then((RetrievePropertiesResponse) => {
+
+      return this.SysosLibVmwareHelper.validResponse(this.SysosLibVmwareHelper.parseVMwareObject(RetrievePropertiesResponse.returnval[0]));
+    });
+
+  }
+
+  getVMSnapshots(connectionData: ConnectionData, vm: string): Promise<any> {
+    return this.RetrieveProperties(connectionData, [{
+      propSet: [
+        {
+          type: 'VirtualMachine',
+          all: false,
+          pathSet: ['snapshot']
+        }
+      ],
+      objectSet: [{
+        obj: {
+          type: 'VirtualMachine',
+          value: vm
+        },
+        skip: false
+      }]
+    }]).then((RetrievePropertiesResponse) => {
+      const res = [];
+
+      RetrievePropertiesResponse.returnval.forEach(value => {
+        res.push(this.SysosLibVmwareHelper.parseVMwareObject(value));
+      });
+
+      return this.SysosLibVmwareHelper.validResponse(res);
+    });
+
+  }
+
+  searchIndexVM(connectionData: ConnectionData, vmUuid: string): Promise<any> {
+    return this.FindByUuid(connectionData, vmUuid, true, false).then((FindByUuidResponse) => {
+      const res = [];
+
+      FindByUuidResponse.returnval.forEach(value => {
+        res.push(this.SysosLibVmwareHelper.parseVMwareObject(value));
+      });
+
+      return this.SysosLibVmwareHelper.validResponse(res);
+    });
+
+  }
+
+  queryVMEvents(connectionData: ConnectionData, vm: string): Promise<any> {
+    return this.QueryEvents(connectionData, {
+      entity: {
+        entity: {
+          type: 'VirtualMachine',
+          value: vm
+        },
+        recursion: 'all'
+      }
+    }).then((RetrievePropertiesResponse) => {
+      const res = [];
+
+      RetrievePropertiesResponse.returnval.forEach(value => {
+        res.push(this.SysosLibVmwareHelper.parseVMwareObject(value));
+      });
+
+      return this.SysosLibVmwareHelper.validResponse(res);
+    });
+
+  }
+
+  /**
+   * Other
+   */
+  registerSysOSExtension(connectionData: ConnectionData): Promise<any> {
+    return this.RegisterExtension(connectionData, {
+      description: {
+        label: 'SysOS Management',
+        summary: 'SysOS management extension for VMware vSphere'
+      },
+      key: 'com.sysos.management',
+      company: 'SysOS',
+      version: '1.0',
+      subjectName: 'SysOS Management',
+      client: [{
+        version: '1.0',
+        description: {
+          label: 'SysOS Management',
+          summary: 'SysOS management extension for VMware vSphere'
+        },
+        company: 'SysOS',
+        type: 'com.vmware.vim.viClientScripts',
+        url: 'https://github.com/infnada/SysOS'
+      }],
+      taskList: [
+        {
+          taskID: 'com.sysos.management.backup'
+        }
+      ],
+      resourceList: [
+        {
+          locale: 'en',
+          module: 'task',
+          data: [
+            {
+              key: 'com.sysos.management.backup.label',
+              value: 'SysOS Create Backup'
+            }
+          ]
+        },
+        {
+          locale: 'en_US',
+          module: 'task',
+          data: [
+            {
+              key: 'com.sysos.management.backup.label',
+              value: 'SysOS Create Backup'
+            }
+          ]
+        }
+      ],
+      lastHeartbeatTime: new Date()
+    }).then((RegisterExtensionResponse) => {
+
+      return this.SysosLibVmwareHelper.validResponse(this.SysosLibVmwareHelper.parseVMwareObject(RegisterExtensionResponse.returnval[0]));
+    });
+
+  }
+
+  createAllBasicDataFilter(connectionData: ConnectionData): Promise<any> {
+    return this.CreateFilter(connectionData, {
+      propSet: [
+        {
+          type: 'ManagedEntity',
+          all: false,
+          pathSet: ['name', 'parent']
+        },
+        {
+          type: 'VirtualMachine',
+          all: false,
+          pathSet: ['name', 'parent', 'guest', 'runtime.powerState', 'runtime.connectionState', 'runtime.faultToleranceState',
+            'config.uuid', 'summary.config.vmPathName', 'summary.config.template', 'datastore', 'layout', 'config.files.logDirectory',
+            'config.hardware.device', 'resourcePool', 'runtime.host', 'config.version', 'config.changeTrackingEnabled', 'config.ftInfo',
+            'config.hardware.numCPU', 'config.hardware.memoryMB', 'config.files.snapshotDirectory', 'config.extraConfig', 'storage.perDatastoreUsage',
+            'snapshot', 'layoutEx', 'config.guestId', 'config.annotation', 'customValue', 'parentVApp', 'runtime.consolidationNeeded',
+            'config.flags.faultToleranceType', 'config.forkConfigInfo', 'config.files.vmPathName'
+          ]
+        },
+        {
+          type: 'Datacenter',
+          all: false,
+          pathSet: ['datastore', 'vmFolder']
+        },
+        {
+          type: 'HostSystem',
+          all: false,
+          pathSet: ['vm', 'datastore', 'hardware.cpuInfo.numCpuPackages', 'hardware.cpuFeature', 'hardware.cpuInfo.hz', 'hardware.systemInfo.uuid',
+            'config.product.productLineId', 'summary.config.product.fullName', 'summary.config.product.version', 'summary.config.product.apiVersion',
+            'configManager.storageSystem', 'hardware.cpuInfo.numCpuCores', 'hardware.cpuInfo.numCpuThreads', 'runtime', 'config.vsanHostConfig.clusterInfo'
+          ]
+        },
+        {
+          type: 'HostStorageSystem',
+          all: false,
+          pathSet: ['storageDeviceInfo', 'fileSystemVolumeInfo']
+        },
+        {
+          type: 'Datastore',
+          all: false,
+          pathSet: ['info', 'host', 'summary.accessible', 'summary.capacity', 'summary.multipleHostAccess', 'vm', 'capability', 'summary.type']
+        },
+        {
+          type: 'ResourcePool',
+          all: false,
+          pathSet: ['vm', 'name', 'parent', 'resourcePool']
+        },
+        {
+          type: 'ClusterComputeResource',
+          all: false,
+          pathSet: ['configuration.drsConfig', 'summary', 'configurationEx.spbmEnabled']
+        },
+        {
+          type: 'ComputeResource',
+          all: false,
+          pathSet: ['summary', 'configurationEx.spbmEnabled']
+        },
+        {
+          type: 'VirtualApp',
+          all: false,
+          pathSet: ['vm', 'name', 'parent', 'parentFolder', 'resourcePool']
+        },
+        {
+          type: 'StoragePod',
+          all: false,
+          pathSet: ['name', 'parent', 'summary.capacity', 'summary.freeSpace', 'podStorageDrsEntry.storageDrsConfig.podConfig.enabled',
+            'podStorageDrsEntry.storageDrsConfig.podConfig.defaultVmBehavior'
+          ]
+        }
+      ],
+      objectSet: [
+        {
+          obj: {
+            type: 'Folder',
+            value: 'group-d1'
+          },
+          skip: false,
+          selectSet: [
+            ({
+              name: 'resourcepool',
+              type: 'ResourcePool',
+              path: 'resourcePool',
+              skip: false,
+              selectSet: [
+                {
+                  name: 'resourcepool'
+                },
+                {
+                  type: 'ResourcePool',
+                  path: 'vm',
+                  skip: false,
+                  selectSet: [
+                    {
+                      type: 'VirtualMachine',
+                      path: 'runtime.host',
+                      skip: false,
+                      selectSet: [
+                        {
+                          type: 'HostSystem',
+                          path: 'parent',
+                          skip: false,
+                          selectSet: [
+                            {
+                              type: 'ClusterComputeResource',
+                              path: 'parent',
+                              skip: false,
+                              selectSet: [
+                                {
+                                  name: 'folder_to_parent'
+                                }
+                              ]
+                            },
+                            {
+                              type: 'ComputeResource',
+                              path: 'parent',
+                              skip: false,
+                              selectSet: [
+                                {
+                                  name: 'folder_to_parent'
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          type: 'HostSystem',
+                          path: 'datastore',
+                          skip: false,
+                          selectSet: [
+                            {
+                              type: 'Datastore',
+                              path: 'parent',
+                              skip: false,
+                              selectSet: [
+                                {
+                                  name: 'folder_to_parent'
+                                },
+                                {
+                                  type: 'StoragePod',
+                                  path: 'childEntity',
+                                  skip: false
+                                },
+                                {
+                                  type: 'StoragePod',
+                                  path: 'childEntity',
+                                  skip: false,
+                                  selectSet: [
+                                    {
+                                      name: 'folder_to_parent'
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      type: 'VirtualMachine',
+                      path: 'datastore',
+                      skip: false,
+                      selectSet: [
+                        {
+                          type: 'Datastore',
+                          path: 'parent',
+                          skip: false,
+                          selectSet: [
+                            {
+                              name: 'folder_to_parent'
+                            },
+                            {
+                              type: 'StoragePod',
+                              path: 'childEntity',
+                              skip: false
+                            },
+                            {
+                              type: 'StoragePod',
+                              path: 'childEntity',
+                              skip: false,
+                              selectSet: [
+                                {
+                                  name: 'folder_to_parent'
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  type: 'VirtualApp',
+                  path: 'vm',
+                  skip: false,
+                  selectSet: [
+                    {
+                      type: 'VirtualMachine',
+                      path: 'runtime.host',
+                      skip: false,
+                      selectSet: [
+                        {
+                          type: 'HostSystem',
+                          path: 'parent',
+                          skip: false,
+                          selectSet: [
+                            {
+                              type: 'ClusterComputeResource',
+                              path: 'parent',
+                              skip: false,
+                              selectSet: [
+                                {
+                                  name: 'folder_to_parent'
+                                }
+                              ]
+                            },
+                            {
+                              type: 'ComputeResource',
+                              path: 'parent',
+                              skip: false,
+                              selectSet: [
+                                {
+                                  name: 'folder_to_parent'
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          type: 'HostSystem',
+                          path: 'datastore',
+                          skip: false,
+                          selectSet: [
+                            {
+                              type: 'Datastore',
+                              path: 'parent',
+                              skip: false,
+                              selectSet: [
+                                {
+                                  name: 'folder_to_parent'
+                                },
+                                {
+                                  type: 'StoragePod',
+                                  path: 'childEntity',
+                                  skip: false
+                                },
+                                {
+                                  type: 'StoragePod',
+                                  path: 'childEntity',
+                                  skip: false,
+                                  selectSet: [
+                                    {
+                                      name: 'folder_to_parent'
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      type: 'VirtualMachine',
+                      path: 'datastore',
+                      skip: false,
+                      selectSet: [
+                        {
+                          type: 'Datastore',
+                          path: 'parent',
+                          skip: false,
+                          selectSet: [
+                            {
+                              name: 'folder_to_parent'
+                            },
+                            {
+                              type: 'StoragePod',
+                              path: 'childEntity',
+                              skip: false
+                            },
+                            {
+                              type: 'StoragePod',
+                              path: 'childEntity',
+                              skip: false,
+                              selectSet: [
+                                {
+                                  name: 'folder_to_parent'
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      name: 'vm_to_respool'
+                    }
+                  ]
+                },
+              ]
+            } as TraversalSpec),
+            ({
+              type: 'ComputeResource',
+              path: 'resourcePool',
+              skip: false,
+              selectSet: [
+                {
+                  name: 'resourcepool'
+                }
+              ]
+            } as TraversalSpec),
+            ({
+              name: 'folder_to_parent',
+              type: 'Folder',
+              path: 'parent',
+              skip: false,
+              selectSet: [
+                {
+                  type: 'Datacenter',
+                  path: 'parent',
+                  skip: false,
+                  selectSet: [
+                    {
+                      name: 'folder_to_parent'
+                    }
+                  ]
+                },
+                {
+                  name: 'folder_to_parent'
+                }
+              ]
+            } as TraversalSpec),
+            ({
+              type: 'Datacenter',
+              path: 'parent',
+              skip: false,
+              selectSet: [
+                {
+                  name: 'folder_to_parent'
+                }
+              ]
+            } as TraversalSpec),
+            ({
+              type: 'Datastore',
+              path: 'parent',
+              skip: false,
+              selectSet: [
+                {
+                  name: 'folder_to_parent'
+                },
+                {
+                  type: 'StoragePod',
+                  path: 'childEntity',
+                  skip: false
+                },
+                {
+                  type: 'StoragePod',
+                  path: 'childEntity',
+                  skip: false,
+                  selectSet: [
+                    {
+                      name: 'folder_to_parent'
+                    }
+                  ]
+                }
+              ]
+            } as TraversalSpec),
+            ({
+              name: 'folder_to_content',
+              type: 'Folder',
+              path: 'childEntity',
+              skip: false,
+              selectSet: [
+                {
+                  name: 'folder_to_content',
+                },
+                {
+                  type: 'ClusterComputeResource',
+                  path: 'host',
+                  skip: false,
+                  selectSet: [
+                    {
+                      type: 'HostSystem',
+                      path: 'vm',
+                      skip: false
+                    },
+                    {
+                      type: 'HostSystem',
+                      path: 'Datastore',
+                      skip: false,
+                      selectSet: [
+                        {
+                          type: 'Datastore',
+                          path: 'parent',
+                          skip: false,
+                          selectSet: [
+                            {
+                              name: 'folder_to_parent'
+                            },
+                            {
+                              type: 'StoragePod',
+                              path: 'childEntity',
+                              skip: false,
+                            },
+                            {
+                              type: 'StoragePod',
+                              path: 'childEntity',
+                              skip: false,
+                              selectSet: [
+                                {
+                                  name: 'folder_to_parent'
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  type: 'ComputeResource',
+                  path: 'host',
+                  skip: false,
+                  selectSet: [
+                    {
+                      type: 'HostSystem',
+                      path: 'vm',
+                      skip: false
+                    },
+                    {
+                      type: 'HostSystem',
+                      path: 'datastore',
+                      skip: false,
+                      selectSet: [
+                        {
+                          type: 'Datastore',
+                          path: 'parent',
+                          skip: false,
+                          selectSet: [
+                            {
+                              name: 'folder_to_parent'
+                            },
+                            {
+                              type: 'StoragePod',
+                              path: 'childEntity',
+                              skip: false,
+                            },
+                            {
+                              type: 'StoragePod',
+                              path: 'childEntity',
+                              skip: false,
+                              selectSet: [
+                                {
+                                  name: 'folder_to_parent'
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      type: 'HostSystem',
+                      path: 'configManager.storageSystem',
+                      skip: false
+                    }
+                  ]
+                },
+                {
+                  name: 'folder_to_parent'
+                },
+                {
+                  type: 'ComputeResource',
+                  path: 'resourcePool',
+                  skip: false,
+                  selectSet: [
+                    {
+                      name: 'resourcepool'
+                    }
+                  ]
+                },
+                {
+                  type: 'Datacenter',
+                  path: 'hostFolder',
+                  skip: false,
+                  selectSet: [
+                    {
+                      name: 'folder_to_content'
+                    }
+                  ]
+                },
+                {
+                  type: 'Datacenter',
+                  path: 'vmFolder',
+                  skip: false,
+                  selectSet: [
+                    {
+                      name: 'folder_to_content'
+                    }
+                  ]
+                },
+                {
+                  type: 'VirtualApp',
+                  path: 'resourcePool',
+                  skip: false,
+                  selectSet: [
+                    {
+                      name: 'resourcepool'
+                    },
+                    {
+                      type: 'ResourcePool',
+                      path: 'vm',
+                      skip: false,
+                      selectSet: [
+                        {
+                          type: 'VirtualMachine',
+                          path: 'runtime.host',
+                          skip: false,
+                          selectSet: [
+                            {
+                              type: 'HostSystem',
+                              path: 'parent',
+                              skip: false,
+                              selectSet: [
+                                {
+                                  type: 'ClusterComputeResource',
+                                  path: 'parent',
+                                  skip: false,
+                                  selectSet: [
+                                    {
+                                      name: 'folder_to_parent'
+                                    }
+                                  ]
+                                },
+                                {
+                                  type: 'ComputeResource',
+                                  path: 'parent',
+                                  skip: false,
+                                  selectSet: [
+                                    {
+                                      name: 'folder_to_parent'
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              type: 'HostSystem',
+                              path: 'datastore',
+                              skip: false,
+                              selectSet: [
+                                {
+                                  type: 'Datastore',
+                                  path: 'parent',
+                                  skip: false,
+                                  selectSet: [
+                                    {
+                                      name: 'folder_to_parent'
+                                    },
+                                    {
+                                      type: 'StoragePod',
+                                      path: 'childEntity',
+                                      skip: false,
+                                    },
+                                    {
+                                      type: 'StoragePod',
+                                      path: 'childEntity',
+                                      skip: false,
+                                      selectSet: [
+                                        {
+                                          name: 'folder_to_parent'
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          type: 'VirtualMachine',
+                          path: 'datastore',
+                          skip: false,
+                          selectSet: [
+                            {
+                              type: 'Datastore',
+                              path: 'parent',
+                              skip: false,
+                              selectSet: [
+                                {
+                                  name: 'folder_to_parent'
+                                },
+                                {
+                                  type: 'StoragePod',
+                                  path: 'childEntity',
+                                  skip: false,
+                                },
+                                {
+                                  type: 'StoragePod',
+                                  path: 'childEntity',
+                                  skip: false,
+                                  selectSet: [
+                                    {
+                                      name: 'folder_to_parent'
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      type: 'VirtualApp',
+                      path: 'vm',
+                      skip: false,
+                      selectSet: [
+                        {
+                          type: 'VirtualMachine',
+                          path: 'runtime.host',
+                          skip: false,
+                          selectSet: [
+                            {
+                              type: 'HostSystem',
+                              path: 'parent',
+                              skip: false,
+                              selectSet: [
+                                {
+                                  type: 'ClusterComputeResource',
+                                  path: 'parent',
+                                  skip: false,
+                                  selectSet: [
+                                    {
+                                      name: 'folder_to_parent'
+                                    }
+                                  ]
+                                },
+                                {
+                                  type: 'ComputeResource',
+                                  path: 'parent',
+                                  skip: false,
+                                  selectSet: [
+                                    {
+                                      name: 'folder_to_parent'
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              type: 'HostSystem',
+                              path: 'datastore',
+                              skip: false,
+                              selectSet: [
+                                {
+                                  type: 'Datastore',
+                                  path: 'parent',
+                                  skip: false,
+                                  selectSet: [
+                                    {
+                                      name: 'folder_to_parent'
+                                    },
+                                    {
+                                      type: 'StoragePod',
+                                      path: 'childEntity',
+                                      skip: false,
+                                    },
+                                    {
+                                      type: 'StoragePod',
+                                      path: 'childEntity',
+                                      skip: false,
+                                      selectSet: [
+                                        {
+                                          name: 'folder_to_parent'
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          type: 'VirtualMachine',
+                          path: 'datastore',
+                          skip: false,
+                          selectSet: [
+                            {
+                              type: 'Datastore',
+                              path: 'parent',
+                              skip: false,
+                              selectSet: [
+                                {
+                                  name: 'folder_to_parent'
+                                },
+                                {
+                                  type: 'StoragePod',
+                                  path: 'childEntity',
+                                  skip: false,
+                                },
+                                {
+                                  type: 'StoragePod',
+                                  path: 'childEntity',
+                                  skip: false,
+                                  selectSet: [
+                                    {
+                                      name: 'folder_to_parent'
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          name: 'vm_to_respool'
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  type: 'VirtualApp',
+                  path: 'vm',
+                  skip: false,
+                  selectSet: [
+                    {
+                      type: 'VirtualMachine',
+                      path: 'runtime.host',
+                      skip: false,
+                      selectSet: [
+                        {
+                          type: 'HostSystem',
+                          path: 'parent',
+                          skip: false,
+                          selectSet: [
+                            {
+                              type: 'ClusterComputeResource',
+                              path: 'parent',
+                              skip: false,
+                              selectSet: [
+                                {
+                                  name: 'folder_to_parent'
+                                }
+                              ]
+                            },
+                            {
+                              type: 'ComputeResource',
+                              path: 'parent',
+                              skip: false,
+                              selectSet: [
+                                {
+                                  name: 'folder_to_parent'
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          type: 'HostSystem',
+                          path: 'datastore',
+                          skip: false,
+                          selectSet: [
+                            {
+                              type: 'Datastore',
+                              path: 'parent',
+                              skip: false,
+                              selectSet: [
+                                {
+                                  name: 'folder_to_parent'
+                                },
+                                {
+                                  type: 'StoragePod',
+                                  path: 'childEntity',
+                                  skip: false,
+                                },
+                                {
+                                  type: 'StoragePod',
+                                  path: 'childEntity',
+                                  skip: false,
+                                  selectSet: [
+                                    {
+                                      name: 'folder_to_parent'
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      type: 'VirtualMachine',
+                      path: 'datastore',
+                      skip: false,
+                      selectSet: [
+                        {
+                          type: 'Datastore',
+                          path: 'parent',
+                          skip: false,
+                          selectSet: [
+                            {
+                              name: 'folder_to_parent'
+                            },
+                            {
+                              type: 'StoragePod',
+                              path: 'childEntity',
+                              skip: false,
+                            },
+                            {
+                              type: 'StoragePod',
+                              path: 'childEntity',
+                              skip: false,
+                              selectSet: [
+                                {
+                                  name: 'folder_to_parent'
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      name: 'vm_to_respool'
+                    }
+                  ]
+                },
+                {
+                  type: 'Datacenter',
+                  path: 'datastoreFolder',
+                  skip: false,
+                  selectSet: [
+                    {
+                      name: 'folder_to_content'
+                    }
+                  ]
+                },
+                {
+                  type: 'VirtualMachine',
+                  path: 'runtime.host',
+                  skip: false,
+                  selectSet: [
+                    {
+                      type: 'HostSystem',
+                      path: 'parent',
+                      skip: false,
+                      selectSet: [
+                        {
+                          type: 'ClusterComputeResource',
+                          path: 'parent',
+                          skip: false,
+                          selectSet: [
+                            {
+                              name: 'folder_to_parent'
+                            }
+                          ]
+                        },
+                        {
+                          type: 'ComputeResource',
+                          path: 'parent',
+                          skip: false,
+                          selectSet: [
+                            {
+                              name: 'folder_to_parent'
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      type: 'HostSystem',
+                      path: 'datastore',
+                      skip: false,
+                      selectSet: [
+                        {
+                          type: 'Datastore',
+                          path: 'parent',
+                          skip: false,
+                          selectSet: [
+                            {
+                              name: 'folder_to_parent'
+                            },
+                            {
+                              type: 'StoragePod',
+                              path: 'childEntity',
+                              skip: false,
+                            },
+                            {
+                              type: 'StoragePod',
+                              path: 'childEntity',
+                              skip: false,
+                              selectSet: [
+                                {
+                                  name: 'folder_to_parent'
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  name: 'vm_to_respool'
+                },
+                {
+                  type: 'Datastore',
+                  path: 'vm',
+                  skip: false,
+                  selectSet: [
+                    {
+                      type: 'VirtualMachine',
+                      path: 'runtime.host',
+                      skip: false,
+                      selectSet: [
+                        {
+                          type: 'HostSystem',
+                          path: 'parent',
+                          skip: false,
+                          selectSet: [
+                            {
+                              type: 'ClusterComputeResource',
+                              path: 'parent',
+                              skip: false,
+                              selectSet: [
+                                {
+                                  name: 'folder_to_parent'
+                                }
+                              ]
+                            },
+                            {
+                              type: 'ComputeResource',
+                              path: 'parent',
+                              skip: false,
+                              selectSet: [
+                                {
+                                  name: 'folder_to_parent'
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          type: 'HostSystem',
+                          path: 'datastore',
+                          skip: false,
+                          selectSet: [
+                            {
+                              type: 'Datastore',
+                              path: 'parent',
+                              skip: false,
+                              selectSet: [
+                                {
+                                  name: 'folder_to_parent'
+                                },
+                                {
+                                  type: 'StoragePod',
+                                  path: 'childEntity',
+                                  skip: false
+                                },
+                                {
+                                  type: 'StoragePod',
+                                  path: 'childEntity',
+                                  skip: false,
+                                  selectSet: [
+                                    {
+                                      name: 'folder_to_parent'
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      name: 'vm_to_respool'
+                    }
+                  ]
+                },
+                {
+                  type: 'StoragePod',
+                  path: 'childEntity',
+                  skip: false,
+                  selectSet: [
+                    {
+                      type: 'Datastore',
+                      path: 'vm',
+                      skip: false,
+                      selectSet: [
+                        {
+                          type: 'VirtualMachine',
+                          path: 'runtime.host',
+                          skip: false,
+                          selectSet: [
+                            {
+                              type: 'HostSystem',
+                              path: 'parent',
+                              skip: false,
+                              selectSet: [
+                                {
+                                  type: 'ClusterComputeResource',
+                                  path: 'parent',
+                                  skip: false,
+                                  selectSet: [
+                                    {
+                                      name: 'folder_to_parent'
+                                    }
+                                  ]
+                                },
+                                {
+                                  type: 'ComputeResource',
+                                  path: 'parent',
+                                  skip: false,
+                                  selectSet: [
+                                    {
+                                      name: 'folder_to_parent'
+                                    }
+                                  ]
+                                }
+                              ]
+                            },
+                            {
+                              type: 'HostSystem',
+                              path: 'datastore',
+                              skip: false,
+                              selectSet: [
+                                {
+                                  type: 'Datastore',
+                                  path: 'parent',
+                                  skip: false,
+                                  selectSet: [
+                                    {
+                                      name: 'folder_to_parent'
+                                    },
+                                    {
+                                      type: 'StoragePod',
+                                      path: 'childEntity',
+                                      skip: false,
+                                    },
+                                    {
+                                      type: 'StoragePod',
+                                      path: 'childEntity',
+                                      skip: false,
+                                      selectSet: [
+                                        {
+                                          name: 'folder_to_parent'
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          type: 'VirtualMachine',
+                          path: 'datastore',
+                          skip: false,
+                          selectSet: [
+                            {
+                              type: 'Datastore',
+                              path: 'parent',
+                              skip: false,
+                              selectSet: [
+                                {
+                                  name: 'folder_to_parent'
+                                },
+                                {
+                                  type: 'StoragePod',
+                                  path: 'childEntity',
+                                  skip: false,
+                                },
+                                {
+                                  type: 'StoragePod',
+                                  path: 'childEntity',
+                                  skip: false,
+                                  selectSet: [
+                                    {
+                                      name: 'folder_to_parent'
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          name: 'vm_to_respool'
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            } as TraversalSpec),
+            ({
+              type: 'Datacenter',
+              path: 'hostFolder',
+              skip: false,
+              selectSet: [
+                {
+                  name: 'folder_to_content'
+                }
+              ]
+            } as TraversalSpec),
+            ({
+              type: 'ClusterComputeResource',
+              path: 'host',
+              skip: false,
+              selectSet: [
+                {
+                  type: 'HostSystem',
+                  path: 'vm',
+                  skip: false
+                },
+                ({
+                  type: 'HostSystem',
+                  path: 'Datastore',
+                  skip: false,
+                  selectSet: [
+                    ({
+                      type: 'Datastore',
+                      path: 'parent',
+                      skip: false,
+                      selectSet: [
+                        {
+                          name: 'folder_to_parent'
+                        },
+                        {
+                          type: 'StoragePod',
+                          path: 'childEntity',
+                          skip: false,
+                        },
+                        {
+                          type: 'StoragePod',
+                          path: 'childEntity',
+                          skip: false,
+                          selectSet: [
+                            {
+                              name: 'folder_to_parent'
+                            }
+                          ]
+                        }
+                      ]
+                    } as TraversalSpec)
+                  ]
+                } as TraversalSpec)
+              ]
+            } as TraversalSpec),
+            ({
+              type: 'ComputeResource',
+              path: 'host',
+              skip: false,
+              selectSet: [
+                {
+                  type: 'HostSystem',
+                  path: 'vm',
+                  skip: false
+                },
+                ({
+                  type: 'HostSystem',
+                  path: 'datastore',
+                  skip: false,
+                  selectSet: [
+                    ({
+                      type: 'Datastore',
+                      path: 'parent',
+                      skip: false,
+                      selectSet: [
+                        {
+                          name: 'folder_to_parent'
+                        },
+                        {
+                          type: 'StoragePod',
+                          path: 'childEntity',
+                          skip: false,
+                        },
+                        {
+                          type: 'StoragePod',
+                          path: 'childEntity',
+                          skip: false,
+                          selectSet: [
+                            {
+                              name: 'folder_to_parent'
+                            }
+                          ]
+                        }
+                      ]
+                    } as TraversalSpec)
+                  ]
+                } as TraversalSpec),
+                {
+                  type: 'HostSystem',
+                  path: 'configManager.storageSystem',
+                  skip: false
+                }
+              ]
+            } as TraversalSpec),
+            ({
+              type: 'VirtualMachine',
+              path: 'runtime.host',
+              skip: false,
+              selectSet: [
+                {
+                  type: 'HostSystem',
+                  path: 'parent',
+                  skip: false,
+                  selectSet: [
+                    {
+                      type: 'ClusterComputeResource',
+                      path: 'parent',
+                      skip: false,
+                      selectSet: [
+                        {
+                          name: 'folder_to_parent'
+                        }
+                      ]
+                    },
+                    {
+                      type: 'ComputeResource',
+                      path: 'parent',
+                      skip: false,
+                      selectSet: [
+                        {
+                          name: 'folder_to_parent'
+                        }
+                      ]
+                    }
+                  ]
+                },
+                ({
+                  type: 'HostSystem',
+                  path: 'datastore',
+                  skip: false,
+                  selectSet: [
+                    ({
+                      type: 'Datastore',
+                      path: 'parent',
+                      skip: false,
+                      selectSet: [
+                        {
+                          name: 'folder_to_parent'
+                        },
+                        {
+                          type: 'StoragePod',
+                          path: 'childEntity',
+                          skip: false
+                        },
+                        {
+                          type: 'StoragePod',
+                          path: 'childEntity',
+                          skip: false,
+                          selectSet: [
+                            {
+                              name: 'folder_to_parent'
+                            }
+                          ]
+                        }
+                      ]
+                    } as TraversalSpec)
+                  ]
+                } as TraversalSpec)
+              ]
+            } as TraversalSpec),
+            ({
+              type: 'VirtualMachine',
+              path: 'datastore',
+              skip: false,
+              selectSet: [
+                ({
+                  type: 'Datastore',
+                  path: 'parent',
+                  skip: false,
+                  selectSet: [
+                    {
+                      name: 'folder_to_parent'
+                    },
+                    {
+                      type: 'StoragePod',
+                      path: 'childEntity',
+                      skip: false
+                    },
+                    {
+                      type: 'StoragePod',
+                      path: 'childEntity',
+                      skip: false,
+                      selectSet: [
+                        {
+                          name: 'folder_to_parent'
+                        }
+                      ]
+                    }
+                  ]
+                } as TraversalSpec)
+              ]
+            } as TraversalSpec),
+            ({
+              name: 'vm_to_respool',
+              type: 'VirtualMachine',
+              path: 'resourcePool',
+              skip: false,
+              selectSet: [
+                ({
+                  name: 'respool_parent',
+                  type: 'ResourcePool',
+                  path: 'parent',
+                  skip: false,
+                  selectSet: [
+                    {
+                      name: 'respool_parent'
+                    },
+                    {
+                      type: 'ComputeResource',
+                      path: 'parent',
+                      skip: false,
+                      selectSet: [
+                        {
+                          name: 'folder_to_parent'
+                        }
+                      ]
+                    }
+                  ]
+                } as TraversalSpec)
+              ]
+            } as TraversalSpec),
+            ({
+              type: 'VirtualMachine',
+              path: 'parent',
+              skip: false,
+              selectSet: [
+                {
+                  name: 'folder_to_parent'
+                }
+              ]
+            } as TraversalSpec),
+            ({
+              type: 'VirtualApp',
+              path: 'resourcePool',
+              skip: false,
+              selectSet: [
+                {
+                  name: 'resourcepool'
+                },
+                {
+                  type: 'ResourcePool',
+                  path: 'vm',
+                  skip: false,
+                  selectSet: [
+                    {
+                      type: 'VirtualMachine',
+                      path: 'runtime.host',
+                      skip: false,
+                      selectSet: [
+                        {
+                          type: 'HostSystem',
+                          path: 'parent',
+                          skip: false,
+                          selectSet: [
+                            {
+                              type: 'ClusterComputeResource',
+                              path: 'parent',
+                              skip: false,
+                              selectSet: [
+                                {
+                                  name: 'folder_to_parent'
+                                }
+                              ]
+                            },
+                            {
+                              type: 'ComputeResource',
+                              path: 'parent',
+                              skip: false,
+                              selectSet: [
+                                {
+                                  name: 'folder_to_parent'
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          type: 'HostSystem',
+                          path: 'datastore',
+                          skip: false,
+                          selectSet: [
+                            {
+                              type: 'Datastore',
+                              path: 'parent',
+                              skip: false,
+                              selectSet: [
+                                {
+                                  name: 'folder_to_parent'
+                                },
+                                {
+                                  type: 'StoragePod',
+                                  path: 'childEntity',
+                                  skip: false,
+                                },
+                                {
+                                  type: 'StoragePod',
+                                  path: 'childEntity',
+                                  skip: false,
+                                  selectSet: [
+                                    {
+                                      name: 'folder_to_parent'
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      type: 'VirtualMachine',
+                      path: 'datastore',
+                      skip: false,
+                      selectSet: [
+                        {
+                          type: 'Datastore',
+                          path: 'parent',
+                          skip: false,
+                          selectSet: [
+                            {
+                              name: 'folder_to_parent'
+                            },
+                            {
+                              type: 'StoragePod',
+                              path: 'childEntity',
+                              skip: false,
+                            },
+                            {
+                              type: 'StoragePod',
+                              path: 'childEntity',
+                              skip: false,
+                              selectSet: [
+                                {
+                                  name: 'folder_to_parent'
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  type: 'VirtualApp',
+                  path: 'vm',
+                  skip: false,
+                  selectSet: [
+                    {
+                      type: 'VirtualMachine',
+                      path: 'runtime.host',
+                      skip: false,
+                      selectSet: [
+                        {
+                          type: 'HostSystem',
+                          path: 'parent',
+                          skip: false,
+                          selectSet: [
+                            {
+                              type: 'ClusterComputeResource',
+                              path: 'parent',
+                              skip: false,
+                              selectSet: [
+                                {
+                                  name: 'folder_to_parent'
+                                }
+                              ]
+                            },
+                            {
+                              type: 'ComputeResource',
+                              path: 'parent',
+                              skip: false,
+                              selectSet: [
+                                {
+                                  name: 'folder_to_parent'
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          type: 'HostSystem',
+                          path: 'datastore',
+                          skip: false,
+                          selectSet: [
+                            {
+                              type: 'Datastore',
+                              path: 'parent',
+                              skip: false,
+                              selectSet: [
+                                {
+                                  name: 'folder_to_parent'
+                                },
+                                {
+                                  type: 'StoragePod',
+                                  path: 'childEntity',
+                                  skip: false,
+                                },
+                                {
+                                  type: 'StoragePod',
+                                  path: 'childEntity',
+                                  skip: false,
+                                  selectSet: [
+                                    {
+                                      name: 'folder_to_parent'
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      type: 'VirtualMachine',
+                      path: 'datastore',
+                      skip: false,
+                      selectSet: [
+                        {
+                          type: 'Datastore',
+                          path: 'parent',
+                          skip: false,
+                          selectSet: [
+                            {
+                              name: 'folder_to_parent'
+                            },
+                            {
+                              type: 'StoragePod',
+                              path: 'childEntity',
+                              skip: false,
+                            },
+                            {
+                              type: 'StoragePod',
+                              path: 'childEntity',
+                              skip: false,
+                              selectSet: [
+                                {
+                                  name: 'folder_to_parent'
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      name: 'vm_to_respool'
+                    }
+                  ]
+                }
+              ]
+            } as TraversalSpec)
+          ]
+        }
+      ]
+    }, false).then((CreateFilterResponse) => {
+
+      return this.SysosLibVmwareHelper.validResponse(this.SysosLibVmwareHelper.parseVMwareObject(CreateFilterResponse.returnval[0]._));
+    });
+
   }
 
 
   /**
    * Ticket
    */
-
-  acquireNFCTicket(credential, host, port, esxiHost, datastore): Promise<any> {
-    const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
-                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:vim="urn:internalvim25">
+  acquireNFCTicket(connectionData: ConnectionData, esxiHost, datastore): Promise<any> {
+    const xml = `<?xml version='1.0' encoding='UTF-8'?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/'
+                   xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:vim='urn:internalvim25'>
   <SOAP-ENV:Body>
-    <vim:NfcFileManagement xsi:type="vim:NfcFileManagementRequestType">
-      <vim:_this xsi:type="vim:ManagedObjectReference" type="NfcService">nfcService</vim:_this>
-      <vim:ds xsi:type="vim:ManagedObjectReference" type="Datastore">${datastore}</vim:ds>
-      <vim:hostForAccess xsi:type="vim:ManagedObjectReference" type="HostSystem">${esxiHost}</vim:hostForAccess>
+    <vim:NfcFileManagement xsi:type='vim:NfcFileManagementRequestType'>
+      <vim:_this xsi:type='vim:ManagedObjectReference' type='NfcService'>nfcService</vim:_this>
+      <vim:ds xsi:type='vim:ManagedObjectReference' type='Datastore'>${datastore}</vim:ds>
+      <vim:hostForAccess xsi:type='vim:ManagedObjectReference' type='HostSystem'>${esxiHost}</vim:hostForAccess>
     </vim:NfcFileManagement>
   </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
-      return this.validResponse(data.NfcFileManagementResponse[0].returnval[0]);
+    return this.SysosLibVmwareHelper.doCallSoap(connectionData, xml).pipe(map((data: any) => {
+      return this.SysosLibVmwareHelper.validResponse(data.NfcFileManagementResponse[0].returnval[0]);
     })).toPromise.apply( this, arguments );
   }
-
-  /**
-   * Host
-   */
-
-
-
-  getHostStorageSystem(credential, host, port, esxiHost): Promise<any> {
-    const xml = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-  <soap:Body>
-    <RetrieveProperties xmlns="urn:vim25">
-      <_this type="PropertyCollector">propertyCollector</_this>
-      <specSet>
-        <propSet>
-          <type>HostSystem</type>
-          <all>false</all>
-          <pathSet>configManager.storageSystem</pathSet>
-        </propSet>
-        <objectSet>
-          <obj type="HostSystem">${esxiHost}</obj>
-        </objectSet>
-      </specSet>
-    </RetrieveProperties>
-  </soap:Body>
-</soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
-      return this.validResponse(data.RetrievePropertiesResponse[0].returnval[0].propSet[0].val[0]._);
-    })).toPromise.apply( this, arguments );
-  }
-
-  getHostFirewallSystem(credential, host, port, esxiHost): Promise<any> {
-    const xml = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-  <soap:Body>
-    <RetrieveProperties xmlns="urn:vim25">
-      <_this type="PropertyCollector">propertyCollector</_this>
-      <specSet>
-        <propSet>
-          <type>HostSystem</type>
-          <all>false</all>
-          <pathSet>configManager.firewallSystem</pathSet>
-        </propSet>
-        <objectSet>
-          <obj type="HostSystem">${esxiHost}</obj>
-        </objectSet>
-      </specSet>
-    </RetrieveProperties>
-  </soap:Body>
-</soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
-      return this.validResponse(data.RetrievePropertiesResponse[0].returnval[0].propSet[0].val[0]._);
-    })).toPromise.apply( this, arguments );
-  }
-
-  getHostFirewallRules(credential, host, port, esxiHost): Promise<any> {
-    const xml = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-  <soap:Body>
-    <RetrieveProperties xmlns="urn:vim25">
-      <_this type="PropertyCollector">propertyCollector</_this>
-      <specSet>
-        <propSet>
-          <type>HostSystem</type>
-          <all>false</all>
-          <pathSet>config.firewall</pathSet>
-        </propSet>
-        <objectSet>
-          <obj type="HostSystem">${esxiHost}</obj>
-        </objectSet>
-      </specSet>
-    </RetrieveProperties>
-  </soap:Body>
-</soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
-      return this.validResponse(this.parseVMwareObject(data.RetrievePropertiesResponse[0].returnval[0].propSet[0].val[0]));
-    })).toPromise.apply( this, arguments );
-  }
-
-  getHostStorageSystemData(credential, host, port, storageSystem): Promise<any> {
-    const xml = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-  <soap:Body>
-    <RetrieveProperties xmlns="urn:vim25">
-      <_this type="PropertyCollector">propertyCollector</_this>
-      <specSet>
-        <propSet>
-          <type>HostStorageSystem</type>
-          <all>false</all>
-          <pathSet>storageDeviceInfo</pathSet>
-          <pathSet>fileSystemVolumeInfo</pathSet>
-        </propSet>
-        <objectSet>
-          <obj type="HostStorageSystem">${storageSystem}</obj>
-          <skip>false</skip>
-        </objectSet>
-      </specSet>
-    </RetrieveProperties>
-  </soap:Body>
-</soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
-      const res = [];
-
-      data.RetrievePropertiesResponse[0].returnval.forEach(value => {
-        res.push(this.parseVMwareObject(value));
-      });
-
-      return this.validResponse(res);
-    })).toPromise.apply( this, arguments );
-  }
-
-  getHostConnectionState(credential, host, port, esxiHost): Promise<any> {
-    const xml = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-  <soap:Body>
-    <RetrieveProperties xmlns="urn:vim25">
-      <_this type="PropertyCollector">propertyCollector</_this>
-      <specSet>
-        <propSet>
-          <type>HostSystem</type>
-          <all>false</all>
-          <pathSet>runtime.connectionState</pathSet>
-        </propSet>
-        <objectSet>
-          <obj type="HostSystem">${esxiHost}</obj>
-        </objectSet>
-      </specSet>
-    </RetrieveProperties>
-  </soap:Body>
-</soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
-      return this.validResponse(data.RetrievePropertiesResponse[0].returnval[0].propSet[0].val[0]._);
-    })).toPromise.apply( this, arguments );
-  }
-
-  // Gets networkSystem from ESXi host
-  // return vmwareFactory.getHostConfigManagerNetworkSystem('adee0997-62ec-470e-aa81-045a446ceec5', 'mvcenter01',
-  // '443', 'host-10');
-  getHostConfigManagerNetworkSystem(credential, host, port, esxiHost): Promise<any> {
-    const xml = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-  <soap:Body>
-    <RetrieveProperties xmlns="urn:vim25">
-      <_this type="PropertyCollector">propertyCollector</_this>
-      <specSet>
-        <propSet>
-          <type>HostSystem</type>
-          <all>false</all>
-          <pathSet>configManager.networkSystem</pathSet>
-        </propSet>
-        <objectSet>
-          <obj type="HostSystem">${esxiHost}</obj>
-        </objectSet>
-      </specSet>
-    </RetrieveProperties>
-  </soap:Body>
-</soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
-      return this.validResponse(data.RetrievePropertiesResponse[0].returnval[0].propSet[0].val[0]._);
-    })).toPromise.apply( this, arguments );
-  }
-
-  // Gets datastoreSystem from ESXi host
-  // return vmwareFactory.getHostConfigManagerDatastoreSystem('adee0997-62ec-470e-aa81-045a446ceec5',
-  // 'mvcenter01', '443', 'host-10');
-  getHostConfigManagerDatastoreSystem(credential, host, port, esxiHost): Promise<any> {
-    const xml = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-  <soap:Body>
-    <RetrieveProperties xmlns="urn:vim25">
-      <_this type="PropertyCollector">propertyCollector</_this>
-      <specSet>
-        <propSet>
-          <type>HostSystem</type>
-          <all>false</all>
-          <pathSet>configManager.datastoreSystem</pathSet>
-        </propSet>
-        <objectSet>
-          <obj type="HostSystem">${esxiHost}</obj>
-        </objectSet>
-      </specSet>
-    </RetrieveProperties>
-  </soap:Body>
-</soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
-      return this.validResponse(data.RetrievePropertiesResponse[0].returnval[0].propSet[0].val[0]._);
-    })).toPromise.apply( this, arguments );
-  }
-
-  // Gets networkSystem Virtual NICS
-  // vmwareFactory.getHostNetworkInfoVnic('adee0997-62ec-470e-aa81-045a446ceec5', 'mvcenter01', '443',
-  // 'networkSystem-10');
-  getHostNetworkInfoVnic(credential, host, port, networkSystem): Promise<any> {
-    const xml = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-  <soap:Body>
-    <RetrieveProperties xmlns="urn:vim25">
-      <_this type="PropertyCollector">propertyCollector</_this>
-      <specSet>
-        <propSet>
-          <type>HostNetworkSystem</type>
-          <pathSet>networkInfo.vnic</pathSet>
-        </propSet>
-        <objectSet>
-          <obj type="HostNetworkSystem">${networkSystem}</obj>
-        </objectSet>
-      </specSet>
-    </RetrieveProperties>
-  </soap:Body>
-</soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
-      const res = [];
-
-      data.RetrievePropertiesResponse[0].returnval.forEach(value => {
-        res.push(this.parseVMwareObject(value));
-      });
-
-      return this.validResponse(res);
-    })).toPromise.apply( this, arguments );
-  }
-
-  // Gets networkSystem Console Virtual NICS
-  // vmwareFactory.getHostNetworkInfoConsoleVnic('adee0997-62ec-470e-aa81-045a446ceec5', 'mvcenter01', '443',
-  // 'networkSystem-10');
-  getHostNetworkInfoConsoleVnic(credential, host, port, networkSystem): Promise<any> {
-    const xml = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-  <soap:Body>
-    <RetrieveProperties xmlns="urn:vim25">
-      <_this type="PropertyCollector">propertyCollector</_this>
-      <specSet>
-        <propSet>
-          <type>HostNetworkSystem</type>
-          <pathSet>networkInfo.consoleVnic</pathSet>
-        </propSet>
-        <objectSet>
-          <obj type="HostNetworkSystem">${networkSystem}</obj>
-        </objectSet>
-      </specSet>
-    </RetrieveProperties>
-  </soap:Body>
-</soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
-      const res = [];
-
-      data.RetrievePropertiesResponse[0].returnval.forEach(value => {
-        res.push(this.parseVMwareObject(value));
-      });
-
-      return this.validResponse(res);
-    })).toPromise.apply( this, arguments );
-  }
-
-  /**
-   * Datastore
-   */
-  getDatastores(credential, host, port, datacenterFolder): Promise<any> {
-    const xml = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
-               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <soap:Body>
-    <RetrieveProperties xmlns="urn:vim25">
-      <_this type="PropertyCollector">propertyCollector</_this>
-      <specSet xsi:type="PropertyFilterSpec">
-        <propSet xsi:type="PropertySpec">
-          <type xsi:type="xsd:string">Datastore</type>
-          <all xsi:type="xsd:boolean">true</all>
-        </propSet>
-        <objectSet xsi:type="ObjectSpec">
-          <obj type="Folder" xsi:type="ManagedObjectReference">${datacenterFolder}</obj>
-          <skip xsi:type="xsd:boolean">true</skip>
-          <selectSet xsi:type="TraversalSpec">
-            <type xsi:type="xsd:string">Folder</type>
-            <path xsi:type="xsd:string">childEntity</path>
-            <skip xsi:type="xsd:boolean">true</skip>
-            <selectSet xsi:type="TraversalSpec">
-              <type xsi:type="xsd:string">Datacenter</type>
-              <path xsi:type="xsd:string">datastore</path>
-              <skip xsi:type="xsd:boolean">false</skip>
-            </selectSet>
-          </selectSet>
-        </objectSet>
-      </specSet>
-    </RetrieveProperties>
-  </soap:Body>
-</soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
-      const res = [];
-
-      data.RetrievePropertiesResponse[0].returnval.forEach(value => {
-        res.push(this.parseVMwareObject(value));
-      });
-
-      return this.validResponse(res);
-    })).toPromise.apply( this, arguments );
-  }
-
-  getDatastoresWithVMsData(credential, host, port, datacenterFolder): Promise<any> {
-    const xml = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <soap:Body>
-    <RetrieveProperties xmlns="urn:vim25">
-      <_this type="PropertyCollector">propertyCollector</_this>
-      <specSet>
-        <propSet>
-          <type>Datastore</type>
-          <all>false</all>
-          <pathSet>info</pathSet>
-          <pathSet>host</pathSet>
-          <pathSet>vm</pathSet>
-        </propSet>
-        <propSet>
-          <type>VirtualMachine</type>
-          <all>false</all>
-          <pathSet>config</pathSet>
-          <pathSet>layout</pathSet>
-          <pathSet>runtime</pathSet>
-        </propSet>
-        <objectSet>
-          <obj type="Folder">${datacenterFolder}</obj>
-          <skip>true</skip>
-          <selectSet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="TraversalSpec">
-            <name>visitFolders</name>
-            <type>Folder</type>
-            <path>childEntity</path>
-            <skip>true</skip>
-            <selectSet>
-              <name>visitFolders</name>
-            </selectSet>
-            <selectSet xsi:type="TraversalSpec">
-              <type>Datacenter</type>
-              <path>datastore</path>
-              <skip>false</skip>
-              <selectSet xsi:type="TraversalSpec">
-                <type>Datastore</type>
-                <path>vm</path>
-                <skip>false</skip>
-              </selectSet>
-            </selectSet>
-            <selectSet xsi:type="TraversalSpec">
-              <type>Datastore</type>
-              <path>vm</path>
-              <skip>false</skip>
-            </selectSet>
-          </selectSet>
-        </objectSet>
-      </specSet>
-    </RetrieveProperties>
-  </soap:Body>
-</soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
-      const res = [];
-
-      data.RetrievePropertiesResponse[0].returnval.forEach(value => {
-        res.push(this.parseVMwareObject(value));
-      });
-
-      return this.validResponse(res);
-    })).toPromise.apply( this, arguments );
-  }
-
-  getDatastoreProps(credential, host, port, datastore): Promise<any> {
-    const xml = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-  <soap:Body>
-    <RetrieveProperties xmlns="urn:vim25">
-      <_this type="PropertyCollector">propertyCollector</_this>
-      <specSet>
-        <propSet>
-          <type>Datastore</type>
-          <all>true</all>
-        </propSet>
-        <objectSet>
-          <obj type="Datastore">${datastore}</obj>
-          <skip>false</skip>
-        </objectSet>
-      </specSet>
-    </RetrieveProperties>
-  </soap:Body>
-</soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
-      return this.validResponse(this.parseVMwareObject(data.RetrievePropertiesResponse[0].returnval[0]));
-    })).toPromise.apply( this, arguments );
-  }
-
-  /**
-   *  VM
-   */
-  getVMs(credential, host, port, datacenterFolder): Promise<any> {
-    const xml = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <soap:Body>
-    <RetrieveProperties xmlns="urn:vim25">
-      <_this type="PropertyCollector">propertyCollector</_this>
-      <specSet>
-        <propSet>
-          <type>VirtualMachine</type>
-          <all>true</all>
-        </propSet>
-        <objectSet>
-          <obj type="Folder">${datacenterFolder}</obj>
-          <skip>true</skip>
-          <selectSet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="TraversalSpec">
-            <name>visitFolders</name>
-            <type>Folder</type>
-            <path>childEntity</path>
-            <skip>true</skip>
-            <selectSet>
-              <name>visitFolders</name>
-            </selectSet>
-            <selectSet xsi:type="TraversalSpec">
-              <type>Datacenter</type>
-              <path>datastore</path>
-              <skip>false</skip>
-              <selectSet xsi:type="TraversalSpec">
-                <type>Datastore</type>
-                <path>vm</path>
-                <skip>false</skip>
-              </selectSet>
-            </selectSet>
-            <selectSet xsi:type="TraversalSpec">
-              <type>Datastore</type>
-              <path>vm</path>
-              <skip>false</skip>
-            </selectSet>
-          </selectSet>
-        </objectSet>
-      </specSet>
-    </RetrieveProperties>
-  </soap:Body>
-</soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
-      const res = [];
-
-      data.RetrievePropertiesResponse[0].returnval.forEach(value => {
-        res.push(this.parseVMwareObject(value));
-      });
-
-      return this.validResponse(res);
-    })).toPromise.apply( this, arguments );
-  }
-
-  getVMState(credential, host, port, vm, getAll): Promise<any> {
-    let xml;
-
-    if (getAll) {
-      xml = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-  <soap:Body>
-    <RetrieveProperties xmlns="urn:vim25">
-      <_this type="PropertyCollector">propertyCollector</_this>
-      <specSet>
-        <propSet>
-          <type>VirtualMachine</type>
-          <all>true</all>
-        </propSet>
-        <objectSet>
-          <obj type="VirtualMachine">${vm}</obj>
-          <skip>false</skip>
-        </objectSet>
-      </specSet>
-    </RetrieveProperties>
-  </soap:Body>
-</soap:Envelope>`;
-    } else {
-      xml = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-  <soap:Body>
-    <RetrieveProperties xmlns="urn:vim25">
-      <_this type="PropertyCollector">propertyCollector</_this>
-      <specSet>
-        <propSet>
-          <type>VirtualMachine</type>
-          <all>false</all>
-          <pathSet>name</pathSet>
-          <pathSet>guest</pathSet>
-          <pathSet>runtime.powerState</pathSet>
-          <pathSet>summary.config</pathSet>
-          <pathSet>summary.quickStats</pathSet>
-          <pathSet>guestHeartbeatStatus</pathSet>
-        </propSet>
-        <objectSet>
-          <obj type="VirtualMachine">${vm}</obj>
-        </objectSet>
-      </specSet>
-    </RetrieveProperties>
-  </soap:Body>
-</soap:Envelope>`;
-    }
-
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
-      return this.validResponse(this.parseVMwareObject(data.RetrievePropertiesResponse[0].returnval[0]));
-    })).toPromise.apply( this, arguments );
-  }
-
-  getVMPath(credential, host, port, vm): Promise<any> {
-    const xml = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-  <soap:Body>
-    <RetrieveProperties xmlns="urn:vim25">
-      <_this type="PropertyCollector">propertyCollector</_this>
-      <specSet>
-        <propSet>
-          <type>VirtualMachine</type>
-          <all>false</all>
-          <pathSet>config.files.vmPathName</pathSet>
-        </propSet>
-        <objectSet>
-          <obj type="VirtualMachine">${vm}</obj>
-          <skip>false</skip>
-        </objectSet>
-      </specSet>
-    </RetrieveProperties>
-  </soap:Body>
-</soap:Envelope>`;
-
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
-      return this.validResponse(this.parseVMwareObject(data.RetrievePropertiesResponse[0].returnval[0]));
-    })).toPromise.apply( this, arguments );
-  }
-
-  getVMRuntime(credential, host, port, vm): Promise<any> {
-    const xml = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-  <soap:Body>
-    <RetrieveProperties xmlns="urn:vim25">
-      <_this type="PropertyCollector">propertyCollector</_this>
-      <specSet>
-        <propSet>
-          <type>VirtualMachine</type>
-          <all>false</all>
-          <pathSet>runtime</pathSet>
-        </propSet>
-        <objectSet>
-          <obj type="VirtualMachine">${vm}</obj>
-          <skip>false</skip>
-        </objectSet>
-      </specSet>
-    </RetrieveProperties>
-  </soap:Body>
-</soap:Envelope>`;
-
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
-      return this.validResponse(this.parseVMwareObject(data.RetrievePropertiesResponse[0].returnval[0]));
-    })).toPromise.apply( this, arguments );
-  }
-
-  /**
-   * Snapshot
-   */
-
-  getVMSnapshots(credential, host, port, vm): Promise<any> {
-    const xml = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-  <soap:Body>
-    <RetrieveProperties xmlns="urn:vim25">
-      <_this type="PropertyCollector">propertyCollector</_this>
-      <specSet>
-        <propSet>
-          <type>VirtualMachine</type>
-          <all>false</all>
-          <pathSet>snapshot</pathSet>
-        </propSet>
-        <objectSet>
-          <obj type="VirtualMachine">${vm}</obj>
-          <skip>false</skip>
-        </objectSet>
-      </specSet>
-    </RetrieveProperties>
-  </soap:Body>
-</soap:Envelope>`;
-    return this.doCallSoap(credential, host, port, 'urn:vim25/6.0', xml).pipe(map((data: any) => {
-      const res = [];
-
-      data.RetrievePropertiesResponse[0].returnval.forEach(value => {
-        res.push(this.parseVMwareObject(value));
-      });
-
-      return this.validResponse(res);
-    })).toPromise.apply( this, arguments );
-  }
-
-
 
   /**
    * Datastore Upload

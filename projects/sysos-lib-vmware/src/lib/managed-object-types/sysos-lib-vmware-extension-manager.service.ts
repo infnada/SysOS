@@ -1,11 +1,10 @@
 import {Injectable} from '@angular/core';
 
-import {map} from "rxjs/operators";
+import {map} from 'rxjs/operators';
 
-import {SysosLibVmwareHelperService} from "../sysos-lib-vmware-helper.service";
-import {connectionData} from "../types/connection-data";
-import {ManagedObjectReference} from "../types/managed-object-reference";
-import {Extension} from "../types/extension";
+import {SysosLibVmwareHelperService} from '../sysos-lib-vmware-helper.service';
+import {ConnectionData} from '../types/connection-data';
+import {Extension} from '../types/extension';
 
 @Injectable({
   providedIn: 'root'
@@ -16,14 +15,14 @@ export class SysosLibVmwareExtensionManagerService {
   }
 
   FindExtension(
-    connectionData: connectionData,
+    connectionData: ConnectionData,
     extensionKey: string
   ) {
-    const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+    const xml = `<?xml version='1.0' encoding='UTF-8'?>
+<soapenv:Envelope xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/'>
   <soapenv:Body>
-    <FindExtension xmlns="urn:vim25">
-      <_this type="ExtensionManager">ExtensionManager</_this>
+    <FindExtension xmlns='urn:vim25'>
+      <_this type='ExtensionManager'>ExtensionManager</_this>
       <extensionKey>${extensionKey}</extensionKey>
     </FindExtension>
   </soapenv:Body>
@@ -46,14 +45,14 @@ export class SysosLibVmwareExtensionManagerService {
   }
 
   RegisterExtension(
-    connectionData: connectionData,
+    connectionData: ConnectionData,
     extension: Extension
   ) {
-    const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/">
+    const xml = `<?xml version='1.0' encoding='UTF-8'?>
+<soapenv:Envelope xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/'>
   <soapenv:Body>
-    <RegisterExtension xmlns="urn:vim25">
-      <_this type="ExtensionManager">ExtensionManager</_this>
+    <RegisterExtension xmlns='urn:vim25'>
+      <_this type='ExtensionManager'>ExtensionManager</_this>
       <extension>${this.SysosLibVmwareHelper.setDynamicProperties(extension)}</extension>
     </RegisterExtension>
   </soapenv:Body>

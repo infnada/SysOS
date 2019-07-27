@@ -1,4 +1,4 @@
-import {MethodFault} from "./method-fault";
+import {MethodFault} from './method-fault';
 
 export interface LocalizedMethodFault {
   fault: MethodFault;

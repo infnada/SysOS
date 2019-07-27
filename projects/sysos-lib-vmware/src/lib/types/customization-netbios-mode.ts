@@ -1,3 +1,1 @@
-export interface CustomizationNetBIOSMode {
-  any: 'disableNetBIOS' | 'enableNetBIOS' | 'enableNetBIOSViaDhcp';
-}
+export type CustomizationNetBIOSMode = 'disableNetBIOS' | 'enableNetBIOS' | 'enableNetBIOSViaDhcp';

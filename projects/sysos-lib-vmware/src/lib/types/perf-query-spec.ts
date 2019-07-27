@@ -1,5 +1,5 @@
-import {PerfMetricId} from "./perf-metric-id";
-import {ManagedObjectReference} from "./managed-object-reference";
+import {PerfMetricId} from './perf-metric-id';
+import {ManagedObjectReference} from './managed-object-reference';
 
 export interface PerfQuerySpec {
   endTime?: Date;

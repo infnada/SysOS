@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
 
-import {map} from "rxjs/operators";
+import {map} from 'rxjs/operators';
 
-import {SysosLibVmwareHelperService} from "../sysos-lib-vmware-helper.service";
-import {connectionData} from "../types/connection-data";
-import {ManagedObjectReference} from "../types/managed-object-reference";
+import {SysosLibVmwareHelperService} from '../sysos-lib-vmware-helper.service';
+import {ConnectionData} from '../types/connection-data';
+import {ManagedObjectReference} from '../types/managed-object-reference';
 
 
 @Injectable({
@@ -20,14 +20,14 @@ export class SysosLibVmwareManagedEntityService {
   }
 
   Reload(
-    connectionData: connectionData,
+    connectionData: ConnectionData,
     managedObject: ManagedObjectReference
   ) {
-    const xml = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+    const xml = `<?xml version='1.0' encoding='utf-8'?>
+<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
   <soap:Body>
-    <Reload xmlns="urn:vim25">
-      <_this type="${managedObject.type}">${managedObject.value}</_this>
+    <Reload xmlns='urn:vim25'>
+      <_this type='${managedObject.type}'>${managedObject.value}</_this>
     </Reload>
   </soap:Body>
 </soap:Envelope>`;

@@ -1,5 +1,5 @@
-import {FileQueryFlags} from "./file-query-flags";
-import {FileQuery} from "./file-query";
+import {FileQueryFlags} from './file-query-flags';
+import {FileQuery} from './file-query';
 
 export interface HostDatastoreBrowserSearchSpec {
   details?: FileQueryFlags;

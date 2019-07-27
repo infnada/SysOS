@@ -198,7 +198,7 @@ export class SysosModalRecoveryWizardComponent implements OnInit {
     // Get all required data to complete the form
     this.Modal.openLittleModal('PLEASE WAIT', 'Connecting to vCenter...', '.modal-recovery-wizard', 'plain').then(() => {
 
-      return this.VMWare.connectvCenterSoap(this.selectedHost.virtual.credential, this.selectedHost.virtual.host, this.selectedHost.virtual.port);
+      return this.VMWare.connectvCenterSoap(this.selectedHost.virtual);
     }).then((connectSoapResult) => {
       if (connectSoapResult.status === 'error') throw {error: connectSoapResult.error, description: 'Failed to connect to vCenter'};
 
@@ -207,7 +207,7 @@ export class SysosModalRecoveryWizardComponent implements OnInit {
       /**
        * Get Host data
        */
-      return this.VMWare.getHost(this.selectedHost.virtual.credential, this.selectedHost.virtual.host, this.selectedHost.virtual.port, this.selectedHost.host.host);
+      return this.VMWare.getHost(this.selectedHost.virtual, this.selectedHost.host.host);
     }).then((hostResult) => {
       if (hostResult.status === 'error') throw {error: hostResult.error, description: 'Failed to get Host data from vCenter'};
 
@@ -217,18 +217,18 @@ export class SysosModalRecoveryWizardComponent implements OnInit {
        * Get Host/Cluster ComputeResource to Get Resource Pools
        */
       if (this.hostData.parent.type === 'ClusterComputeResource') {
-        return this.VMWare.getClusterComputeResource(this.selectedHost.virtual.credential, this.selectedHost.virtual.host, this.selectedHost.virtual.port, this.hostData.parent.name);
+        return this.VMWare.getClusterComputeResource(this.selectedHost.virtual, this.hostData.parent.name);
       }
 
       if (this.hostData.parent.type === 'ComputeResource') {
-        return this.VMWare.getComputeResource(this.selectedHost.virtual.credential, this.selectedHost.virtual.host, this.selectedHost.virtual.port, this.hostData.parent.name);
+        return this.VMWare.getComputeResource(this.selectedHost.virtual, this.hostData.parent.name);
       }
 
     }).then((computeResourceResult) => {
       if (computeResourceResult.status === 'error') throw new Error('Failed to get Host computeResource from vCenter');
 
       // Get Host Resource Pools
-      return this.VMWare.getResourcePool(this.selectedHost.virtual.credential, this.selectedHost.virtual.host, this.selectedHost.virtual.port, computeResourceResult.data[0].resourcePool.name);
+      return this.VMWare.getResourcePool(this.selectedHost.virtual, computeResourceResult.data[0].resourcePool.name);
     }).then((resourcePoolResult) => {
       if (resourcePoolResult.status === 'error') throw new Error('Failed to get Host resourcePool from vCenter');
 
@@ -244,7 +244,7 @@ export class SysosModalRecoveryWizardComponent implements OnInit {
 
       // Check if some of the datastores IPs match foundIfaces IP
       this.hostData.datastore.ManagedObjectReference.forEach((datastoreObj) => {
-        this.VMWare.getDatastoreProps(this.selectedHost.virtual.credential, this.selectedHost.virtual.host, this.selectedHost.virtual.port, datastoreObj.name).then((datastoreResult) => {
+        this.VMWare.getDatastoreProps(this.selectedHost.virtual, datastoreObj.name).then((datastoreResult) => {
           if (datastoreResult.status === 'error') throw {error: datastoreResult.error, description: 'Failed to get Datastore data from vCenter'};
 
           console.log(datastoreResult);
@@ -360,46 +360,46 @@ export class SysosModalRecoveryWizardComponent implements OnInit {
   loadESXidata($event): void {
     this.Modal.openLittleModal('PLEASE WAIT', 'Connecting to vCenter...', '.modal-recovery-wizard', 'plain');
 
-    this.VMWare.connectvCenter(this.selectedHost.virtual.credential, this.selectedHost.virtual.host, this.selectedHost.virtual.port).then((con) => {
+    this.VMWare.connectvCenter(this.selectedHost.virtual).then((con) => {
       if (con.data.status === 'error') throw new Error(con.data.data);
 
       this.Modal.changeModalText('Getting data...', '.modal-recovery-wizard');
 
-      return this.VMWare.connectvCenterSoap(this.selectedHost.virtual.credential, this.selectedHost.virtual.host, this.selectedHost.virtual.port);
+      return this.VMWare.connectvCenterSoap(this.selectedHost.virtual);
 
     }).then((res) => {
       if (res.status === 'error') throw new Error('Failed to connect to vCenter');
 
       // Get Host data
-      return this.VMWare.getHost(this.selectedHost.virtual.credential, this.selectedHost.virtual.host, this.selectedHost.virtual.port, this.selectedHost.host.host);
+      return this.VMWare.getHost(this.selectedHost.virtual, this.selectedHost.host.host);
     }).then((res) => {
       if (res.status === 'error') throw new Error('Failed to get Host from vCenter');
 
       // Get Resource Pools
       if (res.data.parent.type === 'ClusterComputeResource') {
-        return this.VMWare.getClusterComputeResource(this.selectedHost.virtual.credential, this.selectedHost.virtual.host, this.selectedHost.virtual.port, res.data.parent.name);
+        return this.VMWare.getClusterComputeResource(this.selectedHost.virtual, res.data.parent.name);
       }
 
       if (res.data.parent.type === 'ComputeResource') {
-        return this.VMWare.getComputeResource(this.selectedHost.virtual.credential, this.selectedHost.virtual.host, this.selectedHost.virtual.port, res.data.parent.name);
+        return this.VMWare.getComputeResource(this.selectedHost.virtual, res.data.parent.name);
       }
 
     }).then((res) => {
       if (res.status === 'error') throw new Error('Failed to get Host computeResource from vCenter');
 
-      return this.VMWare.getResourcePool(this.selectedHost.virtual.credential, this.selectedHost.virtual.host, this.selectedHost.virtual.port, res.data[0].resourcePool.name);
+      return this.VMWare.getResourcePool(this.selectedHost.virtual, res.data[0].resourcePool.name);
     }).then((res) => {
       if (res.status === 'error') throw new Error('Failed to get Host resourcePool from vCenter');
 
       this.hostResourcePools = [res.data];
 
       // Get VM folders in selected vCenter
-      return this.VMWare.doCall(this.selectedHost.virtual.host, this.selectedHost.virtual.port, '/rest/vcenter/folder?filter.type=VIRTUAL_MACHINE').then((dataFolder) => {
-        if (dataFolder.data.status === 'error') throw new Error(dataFolder.data.data);
-        this.hostFolders = dataFolder.data.data.response.value;
+      // return this.VMWare.doCall(this.selectedHost.virtual.host, this.selectedHost.virtual.port, '/rest/vcenter/folder?filter.type=VIRTUAL_MACHINE').then((dataFolder) => {
+      //  if (dataFolder.data.status === 'error') throw new Error(dataFolder.data.data);
+      //  this.hostFolders = dataFolder.data.data.response.value;
 
         this.Modal.closeModal('.modal-recovery-wizard');
-      });
+      // });
     });
   }
 

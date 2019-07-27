@@ -1,4 +1,4 @@
-import {LocalizedMethodFault} from "./localized-method-fault";
+import {LocalizedMethodFault} from './localized-method-fault';
 
 export interface ScheduledHardwareUpgradeInfo {
   fault?: LocalizedMethodFault;

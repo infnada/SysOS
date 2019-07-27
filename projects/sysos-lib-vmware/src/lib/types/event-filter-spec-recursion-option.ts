@@ -1,3 +1,1 @@
-export interface EventFilterSpecRecursionOption {
-  any: 'all' | 'children' | 'self';
-}
+export type EventFilterSpecRecursionOption = 'all' | 'children' | 'self';

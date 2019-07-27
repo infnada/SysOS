@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
 
-import {map} from "rxjs/operators";
+import {map} from 'rxjs/operators';
 
-import {SysosLibVmwareHelperService} from "../sysos-lib-vmware-helper.service";
-import {connectionData} from "../types/connection-data";
-import {ManagedObjectReference} from "../types/managed-object-reference";
+import {SysosLibVmwareHelperService} from '../sysos-lib-vmware-helper.service';
+import {ConnectionData} from '../types/connection-data';
+import {ManagedObjectReference} from '../types/managed-object-reference';
 
 @Injectable({
   providedIn: 'root'
@@ -18,17 +18,17 @@ export class SysosLibVmwareVirtualMachineSnapshotService {
 
   }
 
-  RemoveSnapshot_Task(connectionData: connectionData,
+  RemoveSnapshot_Task(connectionData: ConnectionData,
                       managedObject: ManagedObjectReference & { type: 'VirtualMachineSnapshot' },
                       removeChildren: boolean,
                       consolidate: boolean = true,
                       returnOnTaskFinish: boolean = true
   ) {
-    const xml = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+    const xml = `<?xml version='1.0' encoding='utf-8'?>
+<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
   <soap:Body>
-    <RemoveSnapshot_Task xmlns="urn:vim25">
-      <_this type="VirtualMachineSnapshot">${managedObject.value}</_this>
+    <RemoveSnapshot_Task xmlns='urn:vim25'>
+      <_this type='VirtualMachineSnapshot'>${managedObject.value}</_this>
       <removeChildren>${removeChildren}</removeChildren>
       <consolidate>${consolidate}</consolidate>
     </RemoveSnapshot_Task>
@@ -53,18 +53,18 @@ export class SysosLibVmwareVirtualMachineSnapshotService {
   }
 
   RevertToSnapshot_Task(
-    connectionData: connectionData,
+    connectionData: ConnectionData,
     managedVMSnapshot: ManagedObjectReference & { type: 'VirtualMachineSnapshot' },
     managedHost?: ManagedObjectReference & { type: 'HostSystem' },
     suppressPowerOn: boolean = false,
     returnOnTaskFinish: boolean = true
   ) {
-    const xml = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+    const xml = `<?xml version='1.0' encoding='utf-8'?>
+<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
   <soap:Body>
-    <RevertToSnapshot_Task xmlns="urn:vim25">
-      <_this type="VirtualMachineSnapshot">${managedVMSnapshot.value}</_this>
-      ${(managedHost ? `<host type="HostSystem">${managedHost.value}</host>` : '')}
+    <RevertToSnapshot_Task xmlns='urn:vim25'>
+      <_this type='VirtualMachineSnapshot'>${managedVMSnapshot.value}</_this>
+      ${(managedHost ? `<host type='HostSystem'>${managedHost.value}</host>` : '')}
       <suppressPowerOn>${suppressPowerOn}</suppressPowerOn>
     </RevertToSnapshot_Task>
   </soap:Body>

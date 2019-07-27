@@ -1,7 +1,7 @@
-import {ManagedObjectReference} from "./managed-object-reference";
-import {EventFilterSpecByEntity} from "./event-filter-spec-by-entity";
-import {EventFilterSpecByTime} from "./event-filter-spec-by-time";
-import {EventFilterSpecByUsername} from "./event-filter-spec-by-username";
+import {ManagedObjectReference} from './managed-object-reference';
+import {EventFilterSpecByEntity} from './event-filter-spec-by-entity';
+import {EventFilterSpecByTime} from './event-filter-spec-by-time';
+import {EventFilterSpecByUsername} from './event-filter-spec-by-username';
 
 export interface EventFilterSpec {
   alarm?: ManagedObjectReference & { type: 'Alarm' };

@@ -1,4 +1,4 @@
-import {HostFirewallRulesetIpNetwork} from "./host-firewall-ruleset-ip-network";
+import {HostFirewallRulesetIpNetwork} from './host-firewall-ruleset-ip-network';
 
 export interface HostFirewallRulesetIpList {
   allIp: boolean;

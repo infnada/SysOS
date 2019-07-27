@@ -1,5 +1,5 @@
-export interface connectionData {
+export interface ConnectionData {
   credential: string;
   host: string;
-  port: string;
+  port: number;
 }

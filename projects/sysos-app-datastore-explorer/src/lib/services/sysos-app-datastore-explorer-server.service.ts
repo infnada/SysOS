@@ -64,9 +64,7 @@ export class SysosAppDatastoreExplorerServerService {
     Promise.resolve().then(() => {
       if (this.DatastoreExplorer.getConnectionByUuid(connectionUuid).type === 'vmware') {
         return this.VMWare.getFilesDataFromDatastore(
-          this.DatastoreExplorer.getConnectionByUuid(connectionUuid).credential,
-          this.DatastoreExplorer.getConnectionByUuid(connectionUuid).host,
-          this.DatastoreExplorer.getConnectionByUuid(connectionUuid).port,
+          this.DatastoreExplorer.getConnectionByUuid(connectionUuid),
           this.DatastoreExplorer.getConnectionByUuid(connectionUuid).data.datastore.info.obj.name,
           this.DatastoreExplorer.getConnectionByUuid(connectionUuid).data.datastore.name,
           (path ? path : this.dataStore.currentPath)

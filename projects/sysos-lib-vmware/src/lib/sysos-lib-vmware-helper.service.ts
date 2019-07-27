@@ -1,11 +1,11 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import {HttpClient} from '@angular/common/http';
 
-import {map} from "rxjs/operators";
-import {Observable} from "rxjs";
+import {map} from 'rxjs/operators';
+import {Observable} from 'rxjs';
 
-import {NGXLogger} from "ngx-logger";
-import {connectionData} from "./types/connection-data";
+import {NGXLogger} from 'ngx-logger';
+import {ConnectionData} from './types/connection-data';
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +22,7 @@ export class SysosLibVmwareHelperService {
 
     // Is an object
     // Have 2 props
-    // Has prop "name" and has prop "val"
+    // Has prop 'name' and has prop 'val'
     if (data === Object(data) && Object.keys(data).length === 2 && data.hasOwnProperty('name') && data.hasOwnProperty('val')) {
 
       if (data[data.name[0]] === undefined) {
@@ -35,7 +35,7 @@ export class SysosLibVmwareHelperService {
 
       // Is an object
       // Have 2 props
-      // Has prop "obj" and has prop "propSet"
+      // Has prop 'obj' and has prop 'propSet'
     } else if (data === Object(data) && Object.keys(data).length === 2 && data.hasOwnProperty('$') && data.hasOwnProperty('_')) {
 
       if (data.$.type) {
@@ -52,7 +52,7 @@ export class SysosLibVmwareHelperService {
 
       // Is an object
       // Have 2 props
-      // Has prop "$" and has prop "_"
+      // Has prop '$' and has prop '_'
       if (value === Object(value) && Object.keys(value).length === 2 && value.hasOwnProperty('$') && value.hasOwnProperty('_')) {
         if (value.$.type) {
           newObj.type = value.$.type;
@@ -92,19 +92,19 @@ export class SysosLibVmwareHelperService {
 
             // Is an object
             // Have 2 props
-            // Has prop "name" and has prop "val"
+            // Has prop 'name' and has prop 'val'
           } else if (v === Object(v) && Object.keys(v).length === 2 && v.hasOwnProperty('name') && v.hasOwnProperty('val')) {
             newObj[v.name[0]] = this.parseVMwareObject(v.val[0]);
 
             // Is an object
             // Have 3 props
-            // Has prop "name" and has prop "val" and has prop "op"
+            // Has prop 'name' and has prop 'val' and has prop 'op'
           } else if (v === Object(v) && Object.keys(v).length === 3 && v.hasOwnProperty('name') && v.hasOwnProperty('val') && v.hasOwnProperty('op')) {
             newObj[v.name[0]] = this.parseVMwareObject(v.val[0]);
 
             // Is an object
             // Have 2 props
-            // Has prop "name" and has prop "op"
+            // Has prop 'name' and has prop 'op'
           } else if (v === Object(v) && Object.keys(v).length === 2 && v.hasOwnProperty('name') && v.hasOwnProperty('op')) {
             newObj[v.name[0]] = null;
 
@@ -191,7 +191,7 @@ export class SysosLibVmwareHelperService {
 
   }
 
-  doCallSoap(connectionData: connectionData, xml: string, action: string = 'urn:vim25/6.0'): Observable<any> {
+  doCallSoap(connectionData: ConnectionData, xml: string, action: string = 'urn:vim25/6.0'): Observable<any> {
 
     return this.http.post('/api/vmware/callSoap', {
       credential: connectionData.credential,
@@ -225,25 +225,25 @@ export class SysosLibVmwareHelperService {
       if (Array.isArray(key)) return `<${key}>${this.setDynamicProperties(value)}</${key}>`;
       if (typeof value === 'string') return `<${key}>${value}</${key}>`;
       if (value === Object(value)) return `<${key}>${this.setDynamicProperties(value)}</${key}>`;
-      
+
       return `<${key}>${value}</${key}>`;
     })}`;
 
   }
 
   private getTaskResults(connectionData, taskId): Promise<any> {
-    const xml = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+    const xml = `<?xml version='1.0' encoding='utf-8'?>
+<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
   <soap:Body>
-    <RetrieveProperties xmlns="urn:vim25">
-      <_this type="PropertyCollector">propertyCollector</_this>
+    <RetrieveProperties xmlns='urn:vim25'>
+      <_this type='PropertyCollector'>propertyCollector</_this>
       <specSet>
         <propSet>
           <type>Task</type>
           <pathSet>info</pathSet>
         </propSet>
         <objectSet>
-          <obj type="Task">${taskId}</obj>
+          <obj type='Task'>${taskId}</obj>
         </objectSet>
       </specSet>
     </RetrieveProperties>
@@ -261,12 +261,12 @@ export class SysosLibVmwareHelperService {
     })).toPromise();
   }
 
-  getTaskStatus(connectionData: connectionData, taskId): Promise<any> {
-    const xml = `<?xml version="1.0" encoding="utf-8"?>
-<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  getTaskStatus(connectionData: ConnectionData, taskId): Promise<any> {
+    const xml = `<?xml version='1.0' encoding='utf-8'?>
+<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
   <soap:Body>
-    <RetrieveProperties xmlns="urn:vim25">
-      <_this type="PropertyCollector">propertyCollector</_this>
+    <RetrieveProperties xmlns='urn:vim25'>
+      <_this type='PropertyCollector'>propertyCollector</_this>
       <specSet>
         <propSet>
           <type>Task</type>
@@ -275,7 +275,7 @@ export class SysosLibVmwareHelperService {
           <pathSet>info.cancelable</pathSet>
         </propSet>
         <objectSet>
-          <obj type="Task">${taskId}</obj>
+          <obj type='Task'>${taskId}</obj>
         </objectSet>
       </specSet>
     </RetrieveProperties>

@@ -1,5 +1,5 @@
-import {CryptoKeyId} from "./crypto-key-id";
-import {ToolsConfigInfoToolsLastInstallInfo} from "./tools-config-info-tools-last-install-info";
+import {CryptoKeyId} from './crypto-key-id';
+import {ToolsConfigInfoToolsLastInstallInfo} from './tools-config-info-tools-last-install-info';
 
 export interface ToolsConfigInfo {
   afterPowerOn?: boolean;
