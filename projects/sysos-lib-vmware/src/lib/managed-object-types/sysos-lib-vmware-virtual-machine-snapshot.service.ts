@@ -19,21 +19,16 @@ export class SysosLibVmwareVirtualMachineSnapshotService {
   }
 
   RemoveSnapshot_Task(connectionData: ConnectionData,
-                      managedObject: ManagedObjectReference & { type: 'VirtualMachineSnapshot' },
+                      managedVirtualMachineSnapshot: ManagedObjectReference & { $type: 'VirtualMachineSnapshot' },
                       removeChildren: boolean,
                       consolidate: boolean = true,
                       returnOnTaskFinish: boolean = true
   ) {
-    const xml = `<?xml version='1.0' encoding='utf-8'?>
-<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
-  <soap:Body>
-    <RemoveSnapshot_Task xmlns='urn:vim25'>
-      <_this type='VirtualMachineSnapshot'>${managedObject.value}</_this>
+    const xml = `<RemoveSnapshot_Task xmlns='urn:vim25'>
+      <_this type='VirtualMachineSnapshot'>${managedVirtualMachineSnapshot._value}</_this>
       <removeChildren>${removeChildren}</removeChildren>
       <consolidate>${consolidate}</consolidate>
-    </RemoveSnapshot_Task>
-  </soap:Body>
-</soap:Envelope>`;
+    </RemoveSnapshot_Task>`;
     return this.SysosLibVmwareHelper.doCallSoap(connectionData, xml).pipe(map((data: any) => {
 
       if (returnOnTaskFinish) {
@@ -54,21 +49,16 @@ export class SysosLibVmwareVirtualMachineSnapshotService {
 
   RevertToSnapshot_Task(
     connectionData: ConnectionData,
-    managedVMSnapshot: ManagedObjectReference & { type: 'VirtualMachineSnapshot' },
-    managedHost?: ManagedObjectReference & { type: 'HostSystem' },
+    managedVMSnapshot: ManagedObjectReference & { $type: 'VirtualMachineSnapshot' },
+    managedHost?: ManagedObjectReference & { $type: 'HostSystem' },
     suppressPowerOn: boolean = false,
     returnOnTaskFinish: boolean = true
   ) {
-    const xml = `<?xml version='1.0' encoding='utf-8'?>
-<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
-  <soap:Body>
-    <RevertToSnapshot_Task xmlns='urn:vim25'>
-      <_this type='VirtualMachineSnapshot'>${managedVMSnapshot.value}</_this>
-      ${(managedHost ? `<host type='HostSystem'>${managedHost.value}</host>` : '')}
+    const xml = `<RevertToSnapshot_Task xmlns='urn:vim25'>
+      <_this type='VirtualMachineSnapshot'>${managedVMSnapshot._value}</_this>
+      ${(managedHost ? `<host type='HostSystem'>${managedHost._value}</host>` : '')}
       <suppressPowerOn>${suppressPowerOn}</suppressPowerOn>
-    </RevertToSnapshot_Task>
-  </soap:Body>
-</soap:Envelope>`;
+    </RevertToSnapshot_Task>`;
     return this.SysosLibVmwareHelper.doCallSoap(connectionData, xml).pipe(map((data: any) => {
 
       if (returnOnTaskFinish) {

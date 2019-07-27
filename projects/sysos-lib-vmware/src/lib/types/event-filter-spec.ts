@@ -4,14 +4,14 @@ import {EventFilterSpecByTime} from './event-filter-spec-by-time';
 import {EventFilterSpecByUsername} from './event-filter-spec-by-username';
 
 export interface EventFilterSpec {
-  alarm?: ManagedObjectReference & { type: 'Alarm' };
+  alarm?: ManagedObjectReference & { $type: 'Alarm' };
   category?: string[];
   disableFullMessage?: boolean;
   entity?: EventFilterSpecByEntity;
   eventChainId?: number;
   eventTypeId?: string[];
   maxCount?: number;
-  scheduledTask?: ManagedObjectReference & { type: 'ScheduledTask' };
+  scheduledTask?: ManagedObjectReference & { $type: 'ScheduledTask' };
   tag?: string[];
   time?: EventFilterSpecByTime;
   type?: string[];

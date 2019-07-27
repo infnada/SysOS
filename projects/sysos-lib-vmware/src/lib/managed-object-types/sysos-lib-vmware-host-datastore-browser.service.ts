@@ -21,22 +21,17 @@ export class SysosLibVmwareHostDatastoreBrowserService {
 
   SearchDatastore_Task(
     connectionData: ConnectionData,
-    managedDatastoreBrowser: ManagedObjectReference & { type: 'HostDatastoreBrowser' },
+    managedDatastoreBrowser: ManagedObjectReference & { $type: 'HostDatastoreBrowser' },
     datastoreName: string,
     path: string,
     searchSpec?: HostDatastoreBrowserSearchSpec,
     returnOnTaskFinish: boolean = true
   ) {
-    const xml = `<?xml version='1.0' encoding='utf-8'?>
-<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>
-  <soap:Body>
-    <SearchDatastore_Task xmlns='urn:vim25'>
-      <_this type='HostDatastoreBrowser'>${managedDatastoreBrowser.value}</_this>
+    const xml = `<SearchDatastore_Task xmlns='urn:vim25'>
+      <_this type='HostDatastoreBrowser'>${managedDatastoreBrowser._value}</_this>
       <datastorePath>[${datastoreName}] ${path}</datastorePath>
       <searchSpec>${this.SysosLibVmwareHelper.setDynamicProperties(searchSpec)}</searchSpec>
-    </SearchDatastore_Task>
-  </soap:Body>
-</soap:Envelope>`;
+    </SearchDatastore_Task>`;
     return this.SysosLibVmwareHelper.doCallSoap(connectionData, xml).pipe(map((data: any) => {
 
       if (returnOnTaskFinish) {

@@ -23,14 +23,9 @@ export class SysosLibVmwareManagedEntityService {
     connectionData: ConnectionData,
     managedObject: ManagedObjectReference
   ) {
-    const xml = `<?xml version='1.0' encoding='utf-8'?>
-<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
-  <soap:Body>
-    <Reload xmlns='urn:vim25'>
-      <_this type='${managedObject.type}'>${managedObject.value}</_this>
-    </Reload>
-  </soap:Body>
-</soap:Envelope>`;
+    const xml = `<Reload xmlns='urn:vim25'>
+      <_this type='${managedObject.$type}'>${managedObject._value}</_this>
+    </Reload>`;
     return this.SysosLibVmwareHelper.doCallSoap(connectionData, xml).pipe(map((data: any) => {
       return this.SysosLibVmwareHelper.validResponse(data.ReloadResponse[0]);
     })).toPromise();

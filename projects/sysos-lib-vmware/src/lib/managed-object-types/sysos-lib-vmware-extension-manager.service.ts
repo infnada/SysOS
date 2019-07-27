@@ -18,15 +18,10 @@ export class SysosLibVmwareExtensionManagerService {
     connectionData: ConnectionData,
     extensionKey: string
   ) {
-    const xml = `<?xml version='1.0' encoding='UTF-8'?>
-<soapenv:Envelope xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/'>
-  <soapenv:Body>
-    <FindExtension xmlns='urn:vim25'>
+    const xml = `<FindExtension xmlns='urn:vim25'>
       <_this type='ExtensionManager'>ExtensionManager</_this>
       <extensionKey>${extensionKey}</extensionKey>
-    </FindExtension>
-  </soapenv:Body>
-</soapenv:Envelope>`;
+    </FindExtension>`;
     return this.SysosLibVmwareHelper.doCallSoap(connectionData, xml).pipe(map((data: any) => {
       return this.SysosLibVmwareHelper.validResponse(data.FindExtensionResponse[0]);
     })).toPromise();
@@ -48,15 +43,10 @@ export class SysosLibVmwareExtensionManagerService {
     connectionData: ConnectionData,
     extension: Extension
   ) {
-    const xml = `<?xml version='1.0' encoding='UTF-8'?>
-<soapenv:Envelope xmlns:soapenv='http://schemas.xmlsoap.org/soap/envelope/'>
-  <soapenv:Body>
-    <RegisterExtension xmlns='urn:vim25'>
+    const xml = `<RegisterExtension xmlns='urn:vim25'>
       <_this type='ExtensionManager'>ExtensionManager</_this>
       <extension>${this.SysosLibVmwareHelper.setDynamicProperties(extension)}</extension>
-    </RegisterExtension>
-  </soapenv:Body>
-</soapenv:Envelope>`;
+    </RegisterExtension>`;
     return this.SysosLibVmwareHelper.doCallSoap(connectionData, xml).pipe(map((data: any) => {
       return this.SysosLibVmwareHelper.validResponse(data.RetrievePropertiesResponse[0]);
     })).toPromise();

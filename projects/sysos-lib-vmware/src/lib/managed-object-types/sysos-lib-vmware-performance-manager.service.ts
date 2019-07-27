@@ -26,18 +26,13 @@ export class SysosLibVmwarePerformanceManagerService {
     endTime?: Date,
     intervalId?: number
   ) {
-    const xml = `<?xml version='1.0' encoding='utf-8'?>
-<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
-  <soap:Body>
-    <QueryAvailablePerfMetric xmlns='urn:vim25'>
+    const xml = `<QueryAvailablePerfMetric xmlns='urn:vim25'>
       <_this type='PerformanceManager'>PerfMgr</_this>
-      <entity type='${managedObject.type}'>${managedObject.value}</entity>
+      <entity type='${managedObject.$type}'>${managedObject._value}</entity>
       <beginTime>${beginTime}</beginTime>
       <endTime>${endTime}</endTime>
       <intervalId>${intervalId}</intervalId>
-    </QueryAvailablePerfMetric>
-  </soap:Body>
-</soap:Envelope>`;
+    </QueryAvailablePerfMetric>`;
     return this.SysosLibVmwareHelper.doCallSoap(connectionData, xml).pipe(map((data: any) => {
       const res = [];
 
@@ -53,15 +48,10 @@ export class SysosLibVmwarePerformanceManagerService {
     connectionData: ConnectionData,
     querySpec: PerfQuerySpec[]
   ) {
-    const xml = `<?xml version='1.0' encoding='utf-8'?>
-<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
-  <soap:Body>
-    <QueryPerf xmlns='urn:vim25'>
+    const xml = `<QueryPerf xmlns='urn:vim25'>
       <_this type='PerformanceManager'>PerfMgr</_this>
       <querySpec>${this.SysosLibVmwareHelper.setDynamicProperties(querySpec)}</querySpec>
-    </QueryPerf>
-  </soap:Body>
-</soap:Envelope>`;
+    </QueryPerf>`;
     return this.SysosLibVmwareHelper.doCallSoap(connectionData, xml).pipe(map((data: any) => {
       return this.SysosLibVmwareHelper.validResponse(data.QueryPerfResponse[0].returnval[0]);
     })).toPromise();
@@ -75,17 +65,12 @@ export class SysosLibVmwarePerformanceManagerService {
     connectionData: ConnectionData,
     counterId: number[]
   ) {
-    const xml = `<?xml version='1.0' encoding='utf-8'?>
-<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
-  <soap:Body>
-    <QueryPerfCounter xmlns='urn:vim25'>
+    const xml = `<QueryPerfCounter xmlns='urn:vim25'>
       <_this type='PerformanceManager'>PerfMgr</_this>
       ${counterId.forEach((counter) => {
       return `<counterId>${counter}</counterId>`;
     })}
-    </QueryPerfCounter>
-  </soap:Body>
-</soap:Envelope>`;
+    </QueryPerfCounter>`;
     return this.SysosLibVmwareHelper.doCallSoap(connectionData, xml).pipe(map((data: any) => {
       return this.SysosLibVmwareHelper.validResponse(data.QueryPerfCounterResponse[0].returnval[0]);
     })).toPromise();
@@ -95,15 +80,10 @@ export class SysosLibVmwarePerformanceManagerService {
     connectionData: ConnectionData,
     level: number
   ) {
-    const xml = `<?xml version='1.0' encoding='utf-8'?>
-<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
-  <soap:Body>
-    <QueryPerfCounterByLevel xmlns='urn:vim25'>
+    const xml = `<QueryPerfCounterByLevel xmlns='urn:vim25'>
       <_this type='PerformanceManager'>PerfMgr</_this>
       <level>${level}</level>
-    </QueryPerfCounterByLevel>
-  </soap:Body>
-</soap:Envelope>`;
+    </QueryPerfCounterByLevel>`;
     return this.SysosLibVmwareHelper.doCallSoap(connectionData, xml).pipe(map((data: any) => {
       const res = [];
 
@@ -119,15 +99,10 @@ export class SysosLibVmwarePerformanceManagerService {
     connectionData: ConnectionData,
     managedObject: ManagedObjectReference
   ) {
-    const xml = `<?xml version='1.0' encoding='utf-8'?>
-<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
-  <soap:Body>
-    <QueryPerfProviderSummary xmlns='urn:vim25'>
+    const xml = `<QueryPerfProviderSummary xmlns='urn:vim25'>
       <_this type='PerformanceManager'>PerfMgr</_this>
-      <entity type='${managedObject.type}'>${managedObject}</entity>
-    </QueryPerfProviderSummary>
-  </soap:Body>
-</soap:Envelope>`;
+      <entity type='${managedObject.$type}'>${managedObject._value}</entity>
+    </QueryPerfProviderSummary>`;
     return this.SysosLibVmwareHelper.doCallSoap(connectionData, xml).pipe(map((data: any) => {
       return this.SysosLibVmwareHelper.validResponse(data.QueryPerfProviderSummaryResponse[0].returnval[0]);
     })).toPromise();

@@ -22,29 +22,24 @@ export class SysosLibVmwareTaskManagerService {
 
   CreateTask(
     connectionData: ConnectionData,
-    managedTask: ManagedObjectReference & { type: 'Task' },
+    managedTask: ManagedObjectReference & { $type: 'Task' },
     taskTypeId: string,
     initiatedBy: string = 'SysOS Administrator',
     cancelable: boolean = false,
     parentTaskKey?: string,
     activationId?: string
   ) {
-    const xml = `<?xml version='1.0' encoding='utf-8'?>
-<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
-  <soap:Body>
-    <CreateTask xmlns='urn:vim25'>
+    const xml = `<CreateTask xmlns='urn:vim25'>
       <_this type='TaskManager'>TaskManager</_this>
-      <obj type='Task'>${managedTask.value}</obj>
+      <obj type='Task'>${managedTask._value}</obj>
       <taskTypeId>${taskTypeId}</taskTypeId>
       <initiatedBy>${initiatedBy}</initiatedBy>
       <cancelable>${cancelable}</cancelable>
       ${parentTaskKey ? `<parentTaskKey>${parentTaskKey}</parentTaskKey>` : ''}
       ${activationId ? `<activationId>${activationId}</activationId>` : ''}
-    </CreateTask>
-  </soap:Body>
-</soap:Envelope>`;
+    </CreateTask>`;
     return this.SysosLibVmwareHelper.doCallSoap(connectionData, xml).pipe(map((data: any) => {
-      return this.SysosLibVmwareHelper.validResponse(data.CreateTaskResponse[0]);
+      return this.SysosLibVmwareHelper.validResponse(this.SysosLibVmwareHelper.parseVMwareObject(data.CreateTaskResponse[0].returnval[0]));
     })).toPromise();
   }
 }

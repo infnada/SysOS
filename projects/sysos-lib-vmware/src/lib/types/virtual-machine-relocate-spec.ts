@@ -6,13 +6,13 @@ import {ServiceLocator} from './service-locator';
 import {VirtualMachineRelocateTransformation} from './virtual-machine-relocate-transformation';
 
 export interface VirtualMachineRelocateSpec {
-  datastore?: ManagedObjectReference & { type: 'Datastore' };
+  datastore?: ManagedObjectReference & { $type: 'Datastore' };
   deviceChange?: VirtualDeviceConfigSpec[];
   disk?: VirtualMachineRelocateSpecDiskLocator[];
   diskMoveType?: string;
-  folder?: ManagedObjectReference & { type: 'Folder' };
-  host?: ManagedObjectReference & { type: 'HostSystem' };
-  pool?: ManagedObjectReference & { type: 'ResourcePool' };
+  folder?: ManagedObjectReference & { $type: 'Folder' };
+  host?: ManagedObjectReference & { $type: 'HostSystem' };
+  pool?: ManagedObjectReference & { $type: 'ResourcePool' };
   profile?: VirtualMachineProfileSpec[];
   service?: ServiceLocator;
   transform?: VirtualMachineRelocateTransformation;

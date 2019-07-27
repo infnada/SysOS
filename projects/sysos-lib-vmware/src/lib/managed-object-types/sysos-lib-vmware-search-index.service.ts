@@ -47,22 +47,17 @@ export class SysosLibVmwareSearchIndexService {
     uuid: string,
     vmSearch: boolean,
     instanceUuid?: boolean,
-    managedDatacenter?: ManagedObjectReference & { type: 'Datacenter' }
+    managedDatacenter?: ManagedObjectReference & { $type: 'Datacenter' }
   ) {
     if (vmSearch === true && !instanceUuid) instanceUuid = false;
 
-    const xml = `<?xml version='1.0' encoding='utf-8'?>
-<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
-  <soap:Body>
-    <FindByUuid xmlns='urn:vim25'>
+    const xml = `<FindByUuid xmlns='urn:vim25'>
       <_this type='SearchIndex'>SearchIndex</_this>
-      ${(managedDatacenter ? `<datacenter type='Datacenter'>${managedDatacenter.value}</datacenter>` : '')}
+      ${(managedDatacenter ? `<datacenter type='Datacenter'>${managedDatacenter._value}</datacenter>` : '')}
       <uuid>${uuid}</uuid>
       <vmSearch>${vmSearch}</vmSearch>
       ${(instanceUuid && vmSearch === true ? `<instanceUuid>${instanceUuid}</instanceUuid>` : '')}
-    </FindByUuid>
-  </soap:Body>
-</soap:Envelope>`;
+    </FindByUuid>`;
     return this.SysosLibVmwareHelper.doCallSoap(connectionData, xml).pipe(map((data: any) => {
       const res = [];
 

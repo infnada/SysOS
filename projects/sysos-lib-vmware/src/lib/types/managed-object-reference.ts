@@ -1,5 +1,5 @@
 export interface ManagedObjectReference {
-  type: 'Alarm' |
+  $type: 'Alarm' |
     'AlarmManager' |
     'AuthorizationManager' |
     'CertificateManager' |
@@ -132,7 +132,7 @@ export interface ManagedObjectReference {
     'VmwareDistributedVirtualSwitch' |
     'VsanUpgradeSystem' |
     'VStorageObjectManagerBase';
-  value: string;
+  _value: string;
 }
 
 

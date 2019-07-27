@@ -197,7 +197,10 @@ export class SysosLibVmwareHelperService {
       credential: connectionData.credential,
       host: connectionData.host,
       port: connectionData.port,
-      xml,
+      xml: `<?xml version='1.0' encoding='utf-8'?>
+<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xsd='http://www.w3.org/2001/XMLSchema'>
+  <soap:Body>${xml}</soap:Body>
+</soap:Envelope>`,
       action
     }).pipe(map((res: any) => {
         if (res.status === 'error') return this.errorHandler(res.data);
@@ -220,22 +223,55 @@ export class SysosLibVmwareHelperService {
 
   setDynamicProperties(data: {}) {
 
-    return `${Object.entries(data).forEach(([key, value]) => {
+    // On second iteration, data can be:
+    if (typeof data === 'string' || typeof data === 'boolean' || typeof data === 'number') return data;
 
-      if (Array.isArray(key)) return `<${key}>${this.setDynamicProperties(value)}</${key}>`;
-      if (typeof value === 'string') return `<${key}>${value}</${key}>`;
-      if (value === Object(value)) return `<${key}>${this.setDynamicProperties(value)}</${key}>`;
+    return `${Object.entries(data).map(([key, value]) => {
+      
+      if (key.charAt(0) === '$') return;
 
+      // If value is an array we don't want the 'childKey' only the 'childValues'
+      if (Array.isArray(value)) {
+        
+        return `${value.map(
+          (childVal) => `<${key}${Object.entries(childVal).map(([k, v]) => {
+
+            // If has a key that starts with '$' means that is a property
+            if (k.charAt(0) === '$') return ` ${k.substr(1)}="${v}"`;
+
+          }).join('')}>${this.setDynamicProperties(childVal)}</${key}>`
+        ).join('')}`;
+      }
+
+      if (typeof value === 'string' || typeof value === 'boolean' || typeof value === 'number') return `<${key}>${value}</${key}>`;
+      
+      if (value === Object(value)) {
+        return `<${key}${Object.entries(value).map(([k, v]) => {
+
+          // If has a key that starts with '$' means that is a property
+          if (k.charAt(0) === '$') return ` ${k.substr(1)}="${v}"`;
+
+        }).join('')}>${
+          
+          // If has a key that starts with '_' it's a single value
+          (Object.keys(value).some((k) => { return k.charAt(0) === '_'; }) ?
+            value[Object.keys(value).find((k) => {
+              return k.charAt(0) === '_';
+            })] :
+            this.setDynamicProperties(value)
+          )
+          
+        }</${key}>`;
+      }
+
+      console.log('err parsing setDynamicProperties');
       return `<${key}>${value}</${key}>`;
-    })}`;
+    }).join('')}`;
 
   }
 
   private getTaskResults(connectionData, taskId): Promise<any> {
-    const xml = `<?xml version='1.0' encoding='utf-8'?>
-<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
-  <soap:Body>
-    <RetrieveProperties xmlns='urn:vim25'>
+    const xml = `<RetrieveProperties xmlns='urn:vim25'>
       <_this type='PropertyCollector'>propertyCollector</_this>
       <specSet>
         <propSet>
@@ -246,9 +282,7 @@ export class SysosLibVmwareHelperService {
           <obj type='Task'>${taskId}</obj>
         </objectSet>
       </specSet>
-    </RetrieveProperties>
-  </soap:Body>
-</soap:Envelope>`;
+    </RetrieveProperties>`;
     return this.doCallSoap(connectionData, xml).pipe(map((data: any) => {
       const res = [];
 
@@ -262,10 +296,7 @@ export class SysosLibVmwareHelperService {
   }
 
   getTaskStatus(connectionData: ConnectionData, taskId): Promise<any> {
-    const xml = `<?xml version='1.0' encoding='utf-8'?>
-<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
-  <soap:Body>
-    <RetrieveProperties xmlns='urn:vim25'>
+    const xml = `<RetrieveProperties xmlns='urn:vim25'>
       <_this type='PropertyCollector'>propertyCollector</_this>
       <specSet>
         <propSet>
@@ -278,9 +309,7 @@ export class SysosLibVmwareHelperService {
           <obj type='Task'>${taskId}</obj>
         </objectSet>
       </specSet>
-    </RetrieveProperties>
-  </soap:Body>
-</soap:Envelope>`;
+    </RetrieveProperties>`;
     return this.doCallSoap(connectionData, xml).pipe(map((data: any) => {
 
       const taskInfo = this.parseVMwareObject(data.RetrievePropertiesResponse[0].returnval[0]);

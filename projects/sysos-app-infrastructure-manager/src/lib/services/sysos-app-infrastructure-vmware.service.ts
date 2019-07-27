@@ -75,12 +75,12 @@ export class SysosAppInfrastructureVmwareService {
 
       return this.VMWare.WaitForUpdatesEx(
         connection,
-        { maxWaitSeconds: 0 },
-        '0'
+        { maxWaitSeconds: 0 }
       );
     }).then((getWaitForUpdateResult) => {
-      if (getWaitForUpdateResult.status === 'error') throw {error: getWaitForUpdateResult.error, description: 'Failed to set data filter to VMWare'};
+      if (getWaitForUpdateResult.status === 'error') throw {error: getWaitForUpdateResult.error, description: 'Failed to get data from VMWare'};
 
+      console.log(getWaitForUpdateResult);
       this.InfrastructureManager.getConnectionByUuid(connection.uuid).data.Data = getWaitForUpdateResult.data.returnval.filterSet.objectSet;
 
       // Check if any datastore is from a managed storage system and link it.
@@ -172,8 +172,8 @@ export class SysosAppInfrastructureVmwareService {
         if (vmRuntimeResult.data.propSet.runtime.powerState === 'poweredOn') return vmRuntimeResult;
         return this.VMWare.PowerOnVM_Task(
           connection,
-          {type: 'VirtualMachine', value: vm.info.obj.name},
-          {type: 'HostSystem', value: vmRuntimeResult.data.propSet.runtime.host.name},
+          {$type: 'VirtualMachine', _value: vm.info.obj.name},
+          {$type: 'HostSystem', _value: vmRuntimeResult.data.propSet.runtime.host.name},
           true
         );
       }
@@ -183,7 +183,7 @@ export class SysosAppInfrastructureVmwareService {
         if (vmRuntimeResult.data.propSet.runtime.powerState === 'poweredOff') return vmRuntimeResult;
         return this.VMWare.PowerOffVM_Task(
           connection,
-          {type: 'VirtualMachine', value: vm.info.obj.name},
+          {$type: 'VirtualMachine', _value: vm.info.obj.name},
           true
         );
       }
@@ -193,7 +193,7 @@ export class SysosAppInfrastructureVmwareService {
         if (vmRuntimeResult.data.propSet.runtime.powerState !== 'poweredOn') return vmRuntimeResult;
         return this.VMWare.SuspendVM_Task(
           connection,
-          {type: 'VirtualMachine', value: vm.info.obj.name},
+          {$type: 'VirtualMachine', _value: vm.info.obj.name},
           true
         );
       }
@@ -203,7 +203,7 @@ export class SysosAppInfrastructureVmwareService {
         if (vmRuntimeResult.data.propSet.runtime.powerState !== 'poweredOn') return vmRuntimeResult;
         return this.VMWare.ResetVM_Task(
           connection,
-          {type: 'VirtualMachine', value: vm.info.obj.name},
+          {$type: 'VirtualMachine', _value: vm.info.obj.name},
           true
         );
       }
@@ -213,7 +213,7 @@ export class SysosAppInfrastructureVmwareService {
         if (vmRuntimeResult.data.propSet.runtime.powerState !== 'poweredOn') return vmRuntimeResult;
         return this.VMWare.ShutdownGuest(
           connection,
-          {type: 'VirtualMachine', value: vm.info.obj.name}
+          {$type: 'VirtualMachine', _value: vm.info.obj.name}
         );
       }
 
@@ -222,7 +222,7 @@ export class SysosAppInfrastructureVmwareService {
         if (vmRuntimeResult.data.propSet.runtime.powerState !== 'poweredOn') return vmRuntimeResult;
         return this.VMWare.RebootGuest(
           connection,
-          {type: 'VirtualMachine', value: vm.info.obj.name}
+          {$type: 'VirtualMachine', _value: vm.info.obj.name}
         );
       }
 
@@ -279,7 +279,7 @@ export class SysosAppInfrastructureVmwareService {
           data.connection,
           data.connection.name,
           data.currentPath + data.name,
-          {type: 'Datacenter', value: data.connection.datacenter},
+          {$type: 'Datacenter', _value: data.connection.datacenter},
           true
         );
 
@@ -306,10 +306,10 @@ export class SysosAppInfrastructureVmwareService {
           data.connection,
           data.connection.name,
           data.currentPath + data.file.filename, // original file name
-          {type: 'Datacenter', value: data.connection.datacenter},
+          {$type: 'Datacenter', _value: data.connection.datacenter},
           data.connection.name,
           data.currentPath + data.name, // new file name
-          {type: 'Datacenter', value: data.connection.datacenter},
+          {$type: 'Datacenter', _value: data.connection.datacenter},
           false,
           true
         );
@@ -337,7 +337,7 @@ export class SysosAppInfrastructureVmwareService {
           data.connection,
           data.connection.name,
           data.currentPath + data.file.filename,
-          {type: 'Datacenter', value: data.connection.datacenter},
+          {$type: 'Datacenter', _value: data.connection.datacenter},
           true
         );
 

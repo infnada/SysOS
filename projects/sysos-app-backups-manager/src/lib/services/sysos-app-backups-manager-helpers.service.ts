@@ -148,8 +148,8 @@ export class SysosAppBackupsManagerHelpersService {
         this.logger.debug('Backups Manager [%s] -> Powering on vm -> host [%s], VM [%s], ', data.uuid, data.host.host, data.vm.info.obj.name);
         return this.VMWare.PowerOnVM_Task(
           data.virtual,
-          {type: 'VirtualMachine', value: data.vm.info.obj.name},
-          {type: 'HostSystem', value: data.host.host},
+          {$type: 'VirtualMachine', _value: data.vm.info.obj.name},
+          {$type: 'HostSystem', _value: data.host.host},
           true
         );
       }
@@ -181,8 +181,8 @@ export class SysosAppBackupsManagerHelpersService {
         this.logger.debug('Backups Manager [%s] -> Powering on vm -> host [%s], VM [%s], ', data.uuid, data.virtual.host, data.vm.info.obj.name);
         return this.VMWare.PowerOnVM_Task(
           data.virtual,
-          {type: 'VirtualMachine', value: data.vm.info.obj.name},
-          {type: 'HostSystem', value: data.host.host},
+          {$type: 'VirtualMachine', _value: data.vm.info.obj.name},
+          {$type: 'HostSystem', _value: data.host.host},
           true
         );
       }
@@ -606,7 +606,7 @@ export class SysosAppBackupsManagerHelpersService {
 
       return this.VMWare.UpdateRuleset(
         data.virtual,
-        {type: 'HostFirewallSystem', value: firewallSystem.data},
+        {$type: 'HostFirewallSystem', _value: firewallSystem.data},
         ruleName,
         {
           allowedHosts: ipsRule
@@ -750,7 +750,7 @@ export class SysosAppBackupsManagerHelpersService {
 
       return this.VMWare.CreateNasDatastore(
         data.virtual,
-        {type: 'HostDatastoreSystem', value: datastoreSystem},
+        {$type: 'HostDatastoreSystem', _value: datastoreSystem},
         {
           accessMode: 'readWrite',
           remoteHost: data.iface.address,
@@ -805,12 +805,12 @@ export class SysosAppBackupsManagerHelpersService {
         data.uuid, data.host.host, '[' + data.datastorePath + '] ' + data.vm['summary.config.vmPathName'].split(']').pop(), data.vm.name, data.host.folder, data.host.resource_pool);
       return this.VMWare.RegisterVM_Task(
         data.virtual,
-        {type: 'Folder', value: data.host.folder},
+        {$type: 'Folder', _value: data.host.folder},
         '[' + data.datastorePath + '] ' + data.vm['summary.config.vmPathName'].split(']').pop().substr(1),
         data.vm.name,
         false,
-        {type: 'ResourcePool', value: data.host.resource_pool},
-        {type: 'HostSystem', value: data.host.host},
+        {$type: 'ResourcePool', _value: data.host.resource_pool},
+        {$type: 'HostSystem', _value: data.host.host},
         true
 
       );
@@ -830,7 +830,7 @@ export class SysosAppBackupsManagerHelpersService {
       // TODO
       return this.VMWare.ReconfigVM_Task(
         data.virtual,
-        {type: 'VirtualMachine', value: data.vm.info.obj.name},
+        {$type: 'VirtualMachine', _value: data.vm.info.obj.name},
         {uuid: newVMUuid},
         true
       );
@@ -882,7 +882,7 @@ export class SysosAppBackupsManagerHelpersService {
         this.logger.debug('Backups Manager [%s] -> Powering off VM -> VM [%s]', data.uuid, data.vm.info.obj.name);
         return this.VMWare.PowerOffVM_Task(
           data.virtual,
-          {type: 'VirtualMachine', value: data.vm.info.obj.name},
+          {$type: 'VirtualMachine', _value: data.vm.info.obj.name},
           true
         );
       }
@@ -933,7 +933,7 @@ export class SysosAppBackupsManagerHelpersService {
       this.logger.debug('Backups Manager [%s] -> Reloading VM -> VM [%s]', data.uuid, data.vm.info.obj.name);
       return this.VMWare.Reload(
         data.virtual,
-        {type: 'VirtualMachine', value: data.vm.info.obj.name}
+        {$type: 'VirtualMachine', _value: data.vm.info.obj.name}
       );
 
     }).then((res) => {
@@ -982,7 +982,7 @@ export class SysosAppBackupsManagerHelpersService {
         this.logger.debug('Backups Manager [%s] -> Reverting VM to snapshot -> snapshot [%s]', data.uuid, lastSnapshot.snapshot.name);
         return this.VMWare.RevertToSnapshot_Task(
           data.virtual,
-          {type: 'VirtualMachineSnapshot', value: lastSnapshot.snapshot.name},
+          {$type: 'VirtualMachineSnapshot', _value: lastSnapshot.snapshot.name},
           null,
           null,
           true
@@ -1002,7 +1002,7 @@ export class SysosAppBackupsManagerHelpersService {
         this.logger.debug('Backups Manager [%s] -> Deleting VM snapshot -> snapshot [%s]', data.uuid, lastSnapshot.snapshot.name);
         return this.VMWare.RemoveSnapshot_Task(
           data.virtual,
-          {type: 'VirtualMachineSnapshot', value: lastSnapshot.snapshot.name},
+          {$type: 'VirtualMachineSnapshot', _value: lastSnapshot.snapshot.name},
           true,
           true,
           true

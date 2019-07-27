@@ -9,6 +9,6 @@ export interface VirtualMachineCloneSpec {
   location: VirtualMachineRelocateSpec;
   memory?: boolean;
   powerOn: boolean;
-  snapshot?: ManagedObjectReference & { type: 'VirtualMachineSnapshot' };
+  snapshot?: ManagedObjectReference & { $type: 'VirtualMachineSnapshot' };
   template: boolean;
 }

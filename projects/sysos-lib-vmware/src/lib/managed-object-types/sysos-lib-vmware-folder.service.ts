@@ -52,27 +52,22 @@ export class SysosLibVmwareFolderService {
 
   RegisterVM_Task(
     connectionData: ConnectionData,
-    managedFolder: ManagedObjectReference & { type: 'Folder' },
+    managedFolder: ManagedObjectReference & { $type: 'Folder' },
     path: string,
     name?: string,
     asTemplate: boolean = false,
-    managedPool?: ManagedObjectReference & { type: 'ResourcePool' },
-    managedHost?: ManagedObjectReference & { type: 'HostSystem' },
+    managedPool?: ManagedObjectReference & { $type: 'ResourcePool' },
+    managedHost?: ManagedObjectReference & { $type: 'HostSystem' },
     returnOnTaskFinish: boolean = true
   ) {
-    const xml = `<?xml version='1.0' encoding='utf-8'?>
-<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
-  <soap:Body>
-    <RegisterVM_Task xmlns='urn:vim25'>
-      <_this type='Folder'>${managedFolder.value}</_this>
+    const xml = `<RegisterVM_Task xmlns='urn:vim25'>
+      <_this type='Folder'>${managedFolder._value}</_this>
       <path>${path}</path>
       ${(name ? `<name>${name}</name>` : '')}
       <asTemplate>${asTemplate}</asTemplate>
-      <pool type='ResourcePool'>${managedPool.value}</pool>
-      <host type='HostSystem'>${managedHost.value}</host>
-    </RegisterVM_Task>
-  </soap:Body>
-</soap:Envelope>`;
+      <pool type='ResourcePool'>${managedPool._value}</pool>
+      <host type='HostSystem'>${managedHost._value}</host>
+    </RegisterVM_Task>`;
     return this.SysosLibVmwareHelper.doCallSoap(connectionData, xml).pipe(map((data: any) => {
 
       if (returnOnTaskFinish) {

@@ -36,16 +36,11 @@ export class SysosLibVmwarePropertyCollectorService {
     spec: PropertyFilterSpec,
     partialUpdates: boolean
   ) {
-    const xml = `<?xml version='1.0' encoding='utf-8'?>
-<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
-  <soap:Body>
-    <CreateFilter xmlns='urn:vim25'>
+    const xml = `<CreateFilter xmlns='urn:vim25'>
       <_this type='PropertyCollector'>propertyCollector</_this>
       <spec>${this.SysosLibVmwareHelper.setDynamicProperties(spec)}</spec>
       <partialUpdates>${partialUpdates}</partialUpdates>
-    </CreateFilter>
-  </soap:Body>
-</soap:Envelope>`;
+    </CreateFilter>`;
     return this.SysosLibVmwareHelper.doCallSoap(connectionData, xml).pipe(map((data: any) => {
       return this.SysosLibVmwareHelper.validResponse(data.CreateFilterResponse[0]);
     })).toPromise();
@@ -63,19 +58,14 @@ export class SysosLibVmwarePropertyCollectorService {
     connectionData: ConnectionData,
     specSet: PropertyFilterSpec[],
   ) {
-    const xml = `<?xml version='1.0' encoding='utf-8'?>
-<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
-  <soap:Body>
-    <RetrieveProperties xmlns='urn:vim25'>
+    const xml = `<RetrieveProperties xmlns='urn:vim25'>
       <_this type='PropertyCollector'>propertyCollector</_this>
       ${specSet.forEach((spec: PropertyFilterSpec) => {
         return `<specSet>${this.SysosLibVmwareHelper.setDynamicProperties(spec)}</specSet>`;
       })}
-    </RetrieveProperties>
-  </soap:Body>
-</soap:Envelope>`;
+    </RetrieveProperties>`;
     return this.SysosLibVmwareHelper.doCallSoap(connectionData, xml).pipe(map((data: any) => {
-      return this.SysosLibVmwareHelper.validResponse(data.WaitForUpdatesExResponse[0]);
+      return this.SysosLibVmwareHelper.validResponse(data.RetrievePropertiesResponse[0]);
     })).toPromise();
   }
 
@@ -92,18 +82,13 @@ export class SysosLibVmwarePropertyCollectorService {
     options?: WaitOptions,
     version?: string
   ) {
-    const xml = `<?xml version='1.0' encoding='utf-8'?>
-<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
-  <soap:Body>
-    <WaitForUpdatesEx xmlns='urn:vim25'>
+    const xml = `<WaitForUpdatesEx xmlns='urn:vim25'>
       <_this type='PropertyCollector'>propertyCollector</_this>
       ${version ? `<version>${version}</version>` : ''}
       ${options ? `<options>${this.SysosLibVmwareHelper.setDynamicProperties(options)}</options>` : ''}
-    </WaitForUpdatesEx>
-  </soap:Body>
-</soap:Envelope>`;
+    </WaitForUpdatesEx>`;
     return this.SysosLibVmwareHelper.doCallSoap(connectionData, xml).pipe(map((data: any) => {
-      return this.SysosLibVmwareHelper.validResponse(data.WaitForUpdatesExResponse[0]);
+      return this.SysosLibVmwareHelper.validResponse(this.SysosLibVmwareHelper.parseVMwareObject(data.WaitForUpdatesExResponse[0]));
     })).toPromise();
   }
 }

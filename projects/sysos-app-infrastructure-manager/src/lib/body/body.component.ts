@@ -77,6 +77,7 @@ export class BodyComponent implements OnInit {
   ngOnInit() {
     this.InfrastructureManager.activeConnection.subscribe(activeConnection => this.activeConnection = activeConnection);
     this.InfrastructureManager.treeData.subscribe(data => {
+      console.log(data);
       this.dataSource.data = data;
       this.treeControl.expandAll();
     });

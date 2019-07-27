@@ -30,15 +30,10 @@ export class SysosLibVmwareEventManagerService {
     connectionData: ConnectionData,
     filter: EventFilterSpec
   ) {
-    const xml = `<?xml version='1.0' encoding='utf-8'?>
-<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
-  <soap:Body>
-    <QueryEvents xmlns='urn:vim25'>
+    const xml = `<QueryEvents xmlns='urn:vim25'>
       <_this type='EventManager'>EventManager</_this>
       <filter>${this.SysosLibVmwareHelper.setDynamicProperties(filter)}</filter>
-    </QueryEvents>
-  </soap:Body>
-</soap:Envelope>`;
+    </QueryEvents>`;
     return this.SysosLibVmwareHelper.doCallSoap(connectionData, xml).pipe(map((data: any) => {
 
       const res = [];

@@ -26,20 +26,15 @@ export class SysosLibVmwareHostDatastoreSystemService {
 
   CreateNasDatastore(
     connectionData: ConnectionData,
-    managedDatstoreSystem: ManagedObjectReference & { type: 'HostDatastoreSystem' },
+    managedDatstoreSystem: ManagedObjectReference & { $type: 'HostDatastoreSystem' },
     spec: HostNasVolumeSpec
   ) {
-    const xml = `<?xml version='1.0' encoding='utf-8'?>
-<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
-  <soap:Body>
-    <CreateNasDatastore xmlns='urn:vim25'>
-      <_this type='HostDatastoreSystem'>${managedDatstoreSystem.value}</_this>
+    const xml = `<CreateNasDatastore xmlns='urn:vim25'>
+      <_this type='HostDatastoreSystem'>${managedDatstoreSystem._value}</_this>
       <spec>${this.SysosLibVmwareHelper.setDynamicProperties(spec)}</spec>
-    </CreateNasDatastore>
-  </soap:Body>
-</soap:Envelope>`;
+    </CreateNasDatastore>`;
     return this.SysosLibVmwareHelper.doCallSoap(connectionData, xml).pipe(map((data: any) => {
-      return this.SysosLibVmwareHelper.validResponse(data.CreateNasDatastoreResponse[0]);
+      return this.SysosLibVmwareHelper.validResponse(data.CreateNasDatastoreResponse[0]._);
     })).toPromise();
   }
 
@@ -81,18 +76,13 @@ export class SysosLibVmwareHostDatastoreSystemService {
 
   RemoveDatastore(
     connectionData: ConnectionData,
-    managedDatastoreSystem: ManagedObjectReference & { type: 'HostDatastoreSystem' },
-    managedDatastore: ManagedObjectReference & { type: 'Datastore' }
+    managedDatastoreSystem: ManagedObjectReference & { $type: 'HostDatastoreSystem' },
+    managedDatastore: ManagedObjectReference & { $type: 'Datastore' }
   ) {
-    const xml = `<?xml version='1.0' encoding='utf-8'?>
-<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
-  <soap:Body>
-    <RemoveDatastore xmlns='urn:vim25'>
-      <_this type='HostDatastoreSystem'>${managedDatastoreSystem.value}</_this>
-      <datastore type='Datastore'>${managedDatastore.value}</datastore>
-    </RemoveDatastore>
-  </soap:Body>
-</soap:Envelope>`;
+    const xml = `<RemoveDatastore xmlns='urn:vim25'>
+      <_this type='HostDatastoreSystem'>${managedDatastoreSystem._value}</_this>
+      <datastore type='Datastore'>${managedDatastore._value}</datastore>
+    </RemoveDatastore>`;
     return this.SysosLibVmwareHelper.doCallSoap(connectionData, xml).pipe(map((data: any) => {
       return this.SysosLibVmwareHelper.validResponse(data.RemoveDatastoreResponse[0]);
     })).toPromise();

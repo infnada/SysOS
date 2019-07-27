@@ -33,20 +33,15 @@ export class SysosLibVmwareHostFirewallSystemService {
 
   UpdateRuleset(
     connectionData: ConnectionData,
-    managedFirewallSystem: ManagedObjectReference & { type: 'HostFirewallSystem' },
+    managedFirewallSystem: ManagedObjectReference & { $type: 'HostFirewallSystem' },
     id: string,
     spec: HostFirewallRulesetRulesetSpec
   ) {
-    const xml = `<?xml version='1.0' encoding='utf-8'?>
-<soap:Envelope xmlns:soap='http://schemas.xmlsoap.org/soap/envelope/'>
-  <soap:Body>
-    <UpdateRuleset xmlns='urn:vim25'>
-      <_this type='HostFirewallSystem'>${managedFirewallSystem.value}</_this>
+    const xml = `<UpdateRuleset xmlns='urn:vim25'>
+      <_this type='HostFirewallSystem'>${managedFirewallSystem._value}</_this>
       <id>${id}</id>
       <spec>${this.SysosLibVmwareHelper.setDynamicProperties(spec)}</spec>
-    </UpdateRuleset>
-  </soap:Body>
-</soap:Envelope>`;
+    </UpdateRuleset>`;
     return this.SysosLibVmwareHelper.doCallSoap(connectionData, xml).pipe(map((data: any) => {
       return this.SysosLibVmwareHelper.validResponse(data.UpdateRulesetResponse[0]);
     })).toPromise();
