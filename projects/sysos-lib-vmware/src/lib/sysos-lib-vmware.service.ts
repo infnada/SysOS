@@ -154,6 +154,7 @@ import {HostFirewallRulesetRulesetSpec} from './types/host-firewall-ruleset-rule
 import {WaitOptions} from './types/wait-options';
 import {TraversalSpec} from './types/traversal-spec';
 import {VirtualMachineConfigSpec} from "./types/virtual-machine-config-spec";
+import {TaskFilterSpec} from "./types/task-filter-spec";
 
 @Injectable({
   providedIn: 'root'
@@ -440,7 +441,8 @@ export class SysosLibVmwareService {
   CreateCluster() { return this.Folder.CreateCluster.apply( this, arguments ).catch(e => e); }
   CreateClusterEx() { return this.Folder.CreateClusterEx.apply( this, arguments ).catch(e => e); }
   CreateCollectorForEvents() { return this.EventManager.CreateCollectorForEvents.apply( this, arguments ).catch(e => e); }
-  CreateCollectorForTasks() { return this.TaskManager.CreateCollectorForTasks.apply( this, arguments ).catch(e => e); }
+  CreateCollectorForTasks(connectionData: ConnectionData,
+                          filter: TaskFilterSpec) { return this.TaskManager.CreateCollectorForTasks.apply( this, arguments ).catch(e => e); }
   CreateContainerView() { return this.ViewManager.CreateContainerView.apply( this, arguments ).catch(e => e); }
   CreateCustomizationSpec() { return this.CustomizationSpecManager.CreateCustomizationSpec.apply( this, arguments ).catch(e => e); }
   CreateDatacenter() { return this.Folder.CreateDatacenter.apply( this, arguments ).catch(e => e); }
@@ -919,9 +921,13 @@ export class SysosLibVmwareService {
   QueryVsanUpgradeStatus() { return this.VsanUpgradeSystem.QueryVsanUpgradeStatus.apply( this, arguments ).catch(e => e); }
   ReadEnvironmentVariableInGuest() { return this.GuestProcessManager.ReadEnvironmentVariableInGuest.apply( this, arguments ).catch(e => e); }
   ReadNextEvents() { return this.EventHistoryCollector.ReadNextEvents.apply( this, arguments ).catch(e => e); }
-  ReadNextTasks() { return this.TaskHistoryCollector.ReadNextTasks.apply( this, arguments ).catch(e => e); }
+  ReadNextTasks(connectionData: ConnectionData,
+                managedTaskCollector: ManagedObjectReference & { $type: 'TaskHistoryCollector' },
+                maxCount: number) { return this.TaskHistoryCollector.ReadNextTasks.apply( this, arguments ).catch(e => e); }
   ReadPreviousEvents() { return this.EventHistoryCollector.ReadPreviousEvents.apply( this, arguments ).catch(e => e); }
-  ReadPreviousTasks() { return this.TaskHistoryCollector.ReadPreviousTasks.apply( this, arguments ).catch(e => e); }
+  ReadPreviousTasks(connectionData: ConnectionData,
+                    managedTaskCollector: ManagedObjectReference & { $type: 'TaskHistoryCollector' },
+                    maxCount: number) { return this.TaskHistoryCollector.ReadPreviousTasks.apply( this, arguments ).catch(e => e); }
   RebootGuest(connectionData: ConnectionData,
               managedVM: ManagedObjectReference & { $type: 'VirtualMachine' }) { return this.VirtualMachine.RebootGuest.apply( this, arguments ).catch(e => e); }
   RebootHost_Task() { return this.HostSystem.RebootHost_Task.apply( this, arguments ).catch(e => e); }
@@ -2345,6 +2351,27 @@ export class SysosLibVmwareService {
           pathSet: ['name', 'parent']
         },
         {
+          type: 'Folder',
+          all: false,
+          pathSet: ['name', 'parent', 'childType']
+        },
+        {
+          type: 'Network',
+          all: true
+        },
+        {
+          type: 'VmwareDistributedVirtualSwitch',
+          all: true
+        },
+        {
+          type: 'DistributedVirtualSwitch',
+          all: true
+        },
+        {
+          type: 'DistributedVirtualPortgroup',
+          all: true
+        },
+        {
           type: 'VirtualMachine',
           all: false,
           pathSet: ['name', 'parent', 'guest', 'runtime.powerState', 'runtime.connectionState', 'runtime.faultToleranceState',
@@ -2872,6 +2899,17 @@ export class SysosLibVmwareService {
                   '$xsi:type': 'TraversalSpec',
                   type: 'Datacenter',
                   path: 'hostFolder',
+                  skip: false,
+                  selectSet: [
+                    {
+                      name: 'folder_to_content'
+                    }
+                  ]
+                },
+                {
+                  '$xsi:type': 'TraversalSpec',
+                  type: 'Datacenter',
+                  path: 'networkFolder',
                   skip: false,
                   selectSet: [
                     {

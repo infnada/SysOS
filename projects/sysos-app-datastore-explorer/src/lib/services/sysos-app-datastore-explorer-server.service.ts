@@ -65,7 +65,7 @@ export class SysosAppDatastoreExplorerServerService {
       if (this.DatastoreExplorer.getConnectionByUuid(connectionUuid).type === 'vmware') {
         return this.VMWare.getFilesDataFromDatastore(
           this.DatastoreExplorer.getConnectionByUuid(connectionUuid),
-          this.DatastoreExplorer.getConnectionByUuid(connectionUuid).data.datastore.info.obj.name,
+          `datastoreBrowser-${this.DatastoreExplorer.getConnectionByUuid(connectionUuid).data.datastore.info.obj.name}`,
           this.DatastoreExplorer.getConnectionByUuid(connectionUuid).data.datastore.name,
           (path ? path : this.dataStore.currentPath)
         );
@@ -80,20 +80,20 @@ export class SysosAppDatastoreExplorerServerService {
           (path ? path : this.dataStore.currentPath)
         );
       }
-    }).then((data) => {
-      if (data.status === 'error') throw new Error('Failed to get Datastore files');
+    }).then((FilesDataFromDatastoreResult) => {
+      if (FilesDataFromDatastoreResult.status === 'error') throw new Error('Failed to get Datastore files');
 
       let obj;
+      let returnData;
 
       if (this.DatastoreExplorer.getConnectionByUuid(connectionUuid).type === 'vmware') {
-        obj = data.data[0].propSet.info.result.file;
+        obj = FilesDataFromDatastoreResult.data.data[0].propSet.info.result.file;
 
         delete obj.datastore;
         delete obj.folderPath;
         delete obj.xsi_type;
 
-        data = Object.keys(obj).map((key) => {
-          console.log(obj, key, obj[key]);
+        returnData = Object.keys(obj).map((key) => {
           const toReturn = obj[key];
 
           toReturn.filename = toReturn.path;
@@ -112,8 +112,8 @@ export class SysosAppDatastoreExplorerServerService {
       }
 
       if (this.DatastoreExplorer.getConnectionByUuid(connectionUuid).type === 'netapp') {
-        obj = data.data;
-        data = Object.keys(obj).map((key) => {
+        obj = FilesDataFromDatastoreResult.data;
+        returnData = Object.keys(obj).map((key) => {
           console.log(obj, key, obj[key]);
           const toReturn = obj[key];
 
@@ -129,7 +129,7 @@ export class SysosAppDatastoreExplorerServerService {
         });
       }
 
-      this.dataStore.currentData = data;
+      this.dataStore.currentData = returnData;
 
       // broadcast data to subscribers
       this.$currentData.next(Object.assign({}, this.dataStore).currentData);

@@ -49,8 +49,18 @@ export class BodyComponent implements OnInit {
   volumeContextMenu: ContextMenuItem[];
   volumeSnapshotContextMenu: ContextMenuItem[];
   volumeVMSnapshotContextMenu: ContextMenuItem[];
+  vmwareContextMenu: ContextMenuItem[];
+  folderDatacenterContextMenu: ContextMenuItem[];
+  folderDatastoreContextMenu: ContextMenuItem[];
+  folderVMContextMenu: ContextMenuItem[];
+  folderNetworkContextMenu: ContextMenuItem[];
+  datacenterContextMenu: ContextMenuItem[];
   VMContextMenu: ContextMenuItem[];
   datastoreContextMenu: ContextMenuItem[];
+  datastoreClusterContextMenu: ContextMenuItem[];
+  clusterComputeResourceContextMenu: ContextMenuItem[];
+  hostSystemContextMenu: ContextMenuItem[];
+  resourcePoolContextMenu: ContextMenuItem[];
 
   treeControl = new FlatTreeControl<InfrastructureManagerFlatNode>(node => node.level, node => node.expandable);
   treeFlattener = new MatTreeFlattener(this.transformer, node => node.level, node => node.expandable, node => node.children);
@@ -87,8 +97,18 @@ export class BodyComponent implements OnInit {
     this.volumeContextMenu = this.InfrastructureContextMenus.volumeContextMenu;
     this.volumeSnapshotContextMenu = this.InfrastructureContextMenus.volumeSnapshotContextMenu;
     this.volumeVMSnapshotContextMenu = this.InfrastructureContextMenus.volumeVMSnapshotContextMenu;
+    this.vmwareContextMenu = this.InfrastructureContextMenus.vmwareContextMenu;
+    this.folderDatacenterContextMenu = this.InfrastructureContextMenus.folderDatacenterContextMenu;
+    this.folderDatastoreContextMenu = this.InfrastructureContextMenus.folderDatastoreContextMenu;
+    this.folderVMContextMenu = this.InfrastructureContextMenus.folderVMContextMenu;
+    this.folderNetworkContextMenu = this.InfrastructureContextMenus.folderNetworkContextMenu;
+    this.datacenterContextMenu = this.InfrastructureContextMenus.datacenterContextMenu;
     this.VMContextMenu = this.InfrastructureContextMenus.VMContextMenu;
     this.datastoreContextMenu = this.InfrastructureContextMenus.datastoreContextMenu;
+    this.datastoreClusterContextMenu = this.InfrastructureContextMenus.datastoreClusterContextMenu;
+    this.clusterComputeResourceContextMenu = this.InfrastructureContextMenus.clusterComputeResourceContextMenu;
+    this.hostSystemContextMenu = this.InfrastructureContextMenus.hostSystemContextMenu;
+    this.resourcePoolContextMenu = this.InfrastructureContextMenus.resourcePoolContextMenu;
   }
 
   private transformer(node: IMNode, level: number)  {
@@ -105,11 +125,21 @@ export class BodyComponent implements OnInit {
    * ContextMenu
    */
   treeContextMenuItems(item: IMNode) {
-    if (item.type === 'netapp' || item.type === 'vmware') return this.svContextMenu;
+    if (item.type === 'netapp') return this.svContextMenu;
     if (item.type === 'volume') return this.volumeContextMenu;
     if (item.type === 'snapshot') return this.volumeSnapshotContextMenu;
+    if (item.type === 'vmware') return this.vmwareContextMenu;
+    if (item.type === 'Folder' && item.info.data.childType.string.includes('Datacenter')) return this.folderDatacenterContextMenu;
+    if (item.type === 'Folder' && (item.info.data.childType.string.includes('Datastore') || item.info.data.childType.string.includes('StoragePod'))) return this.folderDatastoreContextMenu;
+    if (item.type === 'Folder' && (item.info.data.childType.string.includes('VirtualMachine') || item.info.data.childType.string.includes('VirtualApp'))) return this.folderVMContextMenu;
+    if (item.type === 'Folder' && (item.info.data.childType.string.includes('Network') || item.info.data.childType.string.includes('DistributedVirtualSwitch'))) return this.folderNetworkContextMenu;
+    if (item.type === 'Datacenter') return this.datacenterContextMenu;
     if (item.type === 'VirtualMachine') return this.VMContextMenu;
     if (item.type === 'Datastore') return this.datastoreContextMenu;
+    if (item.type === 'StoragePod') return this.datastoreClusterContextMenu;
+    if (item.type === 'ClusterComputeResource') return this.clusterComputeResourceContextMenu;
+    if (item.type === 'HostSystem') return this.hostSystemContextMenu;
+    if (item.type === 'ResourcePool') return this.resourcePoolContextMenu;
   }
 
   onTreeContextMenu(event: MouseEvent, node: IMNode): void {
@@ -121,8 +151,8 @@ export class BodyComponent implements OnInit {
     this.contextMenuTree.openMenu();
   }
 
-  checkIfDisabled(item: ContextMenuItem): boolean {
-    if (item.disabled) return item.disabled();
+  checkIfDisabled(item: ContextMenuItem, node: IMNode): boolean {
+    if (item.disabled) return item.disabled(node);
     return false;
   }
 
@@ -136,7 +166,8 @@ export class BodyComponent implements OnInit {
     this.viewSide = !this.viewSide;
   }
 
-  setActiveConnection(connection: IMConnection): void {
+  setActiveConnection(connection: IMConnection | string): void {
+    if (typeof connection === 'string') return this.InfrastructureManager.setActiveConnection(connection);
     this.InfrastructureManager.setActiveConnection(connection.uuid);
   }
 
@@ -144,8 +175,8 @@ export class BodyComponent implements OnInit {
     return this.InfrastructureManager.getActiveConnection();
   }
 
-  setActiveView(type: string, data: {}): void {
-    console.log('set');
+  setActiveView(type: string, data: any): void {
+    this.setActiveConnection(data.info.uuid);
     this.activeView = {
       type,
       data

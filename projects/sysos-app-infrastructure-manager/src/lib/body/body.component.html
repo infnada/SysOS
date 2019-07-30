@@ -28,6 +28,9 @@
         <ng-container *ngIf="node.type === 'VirtualMachine'"><span (click)="setActiveView('vmware-virtual-machine', node);"><i class="vs-icon" [ngClass]="{'vsphere-icon-vm': node.info.data['runtime.powerState'] === 'poweredOff', 'vsphere-icon-vm-on': node.info.data['runtime.powerState'] === 'poweredOn', 'vsphere-icon-vm-suspended': node.info.data['runtime.powerState'] === 'suspended', 'vsphere-icon-vm-error': node.info.data['runtime.connectionState'] === 'inaccessible'}"></i> {{node.name}}</span></ng-container>
         <ng-container *ngIf="node.type === 'StoragePod'"><span (click)="setActiveView('vmware-storage-pod', node);"><i class="vs-icon vsphere-icon-datastore-cluster"></i> {{node.name}}</span></ng-container>
         <ng-container *ngIf="node.type === 'Datastore'"><span (click)="setActiveView('vmware-datastore', node);"><i class="vs-icon" [ngClass]="{'vsphere-icon-datastore': node.info.data['summary.accessible'] === 'true', 'vsphere-icon-datastore-inaccessible': node.info.data['summary.accessible'] === 'false'}"></i> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'Network'"><span (click)="setActiveView('vmware-network', node);"><i class="vs-icon vsphere-icon-network"></i> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'VmwareDistributedVirtualSwitch'"><span (click)="setActiveView('vmware-distributed-virtual-switch', node);"><i class="vs-icon vsphere-icon-dv-switch"></i> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'DistributedVirtualPortgroup'"><span (click)="setActiveView('vmware-distributed-virtual-portgroup', node);"><i class="vs-icon vsphere-icon-virtual-port-group"></i> {{node.name}}</span></ng-container>
 
         <div style="position: fixed"
              [style.left]="contextMenuPosition.x"
@@ -65,6 +68,9 @@
         <ng-container *ngIf="node.type === 'VirtualMachine'"><span (click)="setActiveView('vmware-virtual-machine', node);"><i class="vs-icon" [ngClass]="{'vsphere-icon-vm': node.info.data['runtime.powerState'] === 'poweredOff', 'vsphere-icon-vm-on': node.info.data['runtime.powerState'] === 'poweredOn', 'vsphere-icon-vm-suspended': node.info.data['runtime.powerState'] === 'suspended', 'vsphere-icon-vm-error': node.info.data['runtime.connectionState'] === 'inaccessible'}"></i> {{node.name}}</span></ng-container>
         <ng-container *ngIf="node.type === 'StoragePod'"><span (click)="setActiveView('vmware-storage-pod', node);"><i class="vs-icon vsphere-icon-datastore-cluster"></i> {{node.name}}</span></ng-container>
         <ng-container *ngIf="node.type === 'Datastore'"><span (click)="setActiveView('vmware-datastore', node);"><i class="vs-icon" [ngClass]="{'vsphere-icon-datastore': node.info.data['summary.accessible'] === 'true', 'vsphere-icon-datastore-inaccessible': node.info.data['summary.accessible'] === 'false'}"></i> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'Network'"><span (click)="setActiveView('vmware-network', node);"><i class="vs-icon vsphere-icon-network"></i> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'VmwareDistributedVirtualSwitch'"><span (click)="setActiveView('vmware-distributed-virtual-switch', node);"><i class="vs-icon vsphere-icon-dv-switch"></i> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'DistributedVirtualPortgroup'"><span (click)="setActiveView('vmware-distributed-virtual-portgroup', node);"><i class="vs-icon vsphere-icon-virtual-port-group"></i> {{node.name}}</span></ng-container>
 
         <div style="position: fixed"
              [style.left]="contextMenuPosition.x"
@@ -84,19 +90,19 @@
                 <ng-template matMenuContent let-subItem="subItem" let-subMenu="subMenu">
                   <ng-container *ngFor="let menuItemSub of subMenu">
 
-                    <button mat-menu-item *ngIf="menuItemSub.text !== 'divider'" (click)="menuItemSub.action(subItem)" [disabled]="checkIfDisabled(menuItemSub)" [innerHTML]="contextToText(menuItemSub)"></button>
+                    <button mat-menu-item *ngIf="menuItemSub.text !== 'divider'" (click)="menuItemSub.action(subItem)" [disabled]="checkIfDisabled(menuItemSub, subItem)" [innerHTML]="contextToText(menuItemSub)"></button>
 
                     <mat-divider *ngIf="menuItemSub.text === 'divider'"></mat-divider>
                   </ng-container>
                 </ng-template>
               </mat-menu>
 
-              <button mat-menu-item [matMenuTriggerFor]="contextSubMenuTree" [matMenuTriggerData]="{subItem: item, subMenu: menuItem.subMenu}" *ngIf="menuItem.text !== 'divider'" (click)="menuItem.action(item)" [disabled]="checkIfDisabled(menuItem)" [innerHTML]="contextToText(menuItem)"></button>
+              <button mat-menu-item [matMenuTriggerFor]="contextSubMenuTree" [matMenuTriggerData]="{subItem: item, subMenu: menuItem.subMenu}" *ngIf="menuItem.text !== 'divider'" (click)="menuItem.action(item)" [disabled]="checkIfDisabled(menuItem, item)" [innerHTML]="contextToText(menuItem)"></button>
             </ng-container>
             <!-- End submenu -->
 
             <ng-container *ngIf="!menuItem.subMenu">
-              <button mat-menu-item *ngIf="menuItem.text !== 'divider'" (click)="menuItem.action(item)" [disabled]="checkIfDisabled(menuItem)" [innerHTML]="contextToText(menuItem)"></button>
+              <button mat-menu-item *ngIf="menuItem.text !== 'divider'" (click)="menuItem.action(item)" [disabled]="checkIfDisabled(menuItem, item)" [innerHTML]="contextToText(menuItem)"></button>
             </ng-container>
 
             <mat-divider *ngIf="menuItem.text === 'divider'"></mat-divider>
@@ -115,7 +121,7 @@
   <div class="secondary-content__new__box__toggle toggle_left pointer visible-lg" *ngIf="!viewSide" (click)="toggleSide()">
     <i class="fa fa-arrow-right sidebar-open-font open-sidebar"></i>
   </div>
-  <div class="window__main">
+  <div class="window__main no_padding">
     <div class="col">
       <saim-body-new-connection [application]="application" *ngIf="activeConnection === null || getActiveConnection().state === 'disconnected'"></saim-body-new-connection>
 
@@ -135,6 +141,7 @@
       <saim-body-netapp-volume *ngIf="activeView.type === 'netapp-volume'"></saim-body-netapp-volume>
       <saim-body-netapp-snapshot *ngIf="activeView.type === 'netapp-snapshot'"></saim-body-netapp-snapshot>
     </div>
+    <saim-vmware-recent-tasks [application]="application" *ngIf="activeView.type !== null && activeView.type.startsWith('vmware')"></saim-vmware-recent-tasks>
 
     <!--<div ng-if="smB.showvCenter == true">
 	  <div ng-include="'templates/applications/vcenter-type-smanager.html'" include-replace></div>

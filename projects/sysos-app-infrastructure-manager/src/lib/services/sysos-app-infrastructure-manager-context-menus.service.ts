@@ -105,6 +105,638 @@ export class SysosAppInfrastructureManagerContextMenusService {
     ];
   }
 
+  get vmwareContextMenu() {
+    return [
+      {
+        id: 0, text: '<i class="fa fa-pencil"></i> Edit Connection', action: (node: IMNode) => {
+          this.InfrastructureManager.editConnection(node.info.uuid);
+        }
+      },
+      {
+        id: 1, text: '<i class="fa fa-refresh"></i> Rescan', action: (node: IMNode) => {
+          this.InfrastructureManager.refreshConnection(node.info.uuid);
+        }
+      },
+      {
+        id: 2, text: '<i class="fa fa-trash text-danger"></i> Delete Connection', action: (node: IMNode) => {
+          this.InfrastructureManager.deleteConnection(node.info.uuid);
+        }
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 1, text: '<i class="vs-icon vsphere-icon-datacenter"></i> New Datacenter...', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 1, text: '<i class="vs-icon vsphere-icon-folder"></i> New Folder', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: 'Distributed Switch', subMenu: [
+          {
+            id: 0,
+            text: '<i class="vs-icon network-lib-ui-icon-dvPortGroupNew"></i> New Distributed Port Group...',
+            action: (node: IMNode) => {
+            }
+          }
+        ]
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 1, text: 'Export System Logs...', action: (node: IMNode) => {
+        }
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 1, text: '<i class="vs-icon vsphere-icon-assign_license"></i> Assign License...', action: (node: IMNode) => {
+        }
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Tags & Custom Attributes', subMenu: [
+          {
+            id: 0,
+            text: '<i class="vs-icon vx-icon-tag_assign"></i> Assign Tag...',
+            action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0,
+            text: '<i class="vs-icon vx-icon-tag_remove"></i> Remove Tag',
+            action: (node: IMNode) => {
+            }
+          },
+          {id: 1, text: 'divider'},
+          {
+            id: 0,
+            text: 'Edit Custom Attributes...',
+            action: (node: IMNode) => {
+            }
+          }
+        ]
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 1, text: 'Add Permission...', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: 'Alarms', subMenu: [
+          {
+            id: 0,
+            text: 'New Alarm Definition...',
+            action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0,
+            text: 'Enable Alarm Actions',
+            action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0,
+            text: 'Disable Alarm Actions',
+            action: (node: IMNode) => {
+            }
+          }
+        ]
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Update Manager', subMenu: [
+          {
+            id: 0,
+            text: 'Check Compliance',
+            action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0,
+            text: 'Pre-check Remediation',
+            action: (node: IMNode) => {
+            }
+          }
+        ]
+      }
+    ];
+  }
+
+  get folderDatacenterContextMenu() {
+    return [
+      {
+        id: 0, text: '<i class="vs-icon vsphere-icon-datacenter"></i> New Datacenter...', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: '<i class="vs-icon vsphere-icon-folder"></i> New Folder', action: (node: IMNode) => {
+        }
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Move To...', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: '<i class="vs-icon vsphere-icon-folder"></i> Rename', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: 'Tags & Custom Attributes', subMenu: [
+          {
+            id: 0,
+            text: '<i class="vs-icon vx-icon-tag_assign"></i> Assign Tag...',
+            action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0,
+            text: '<i class="vs-icon vx-icon-tag_remove"></i> Remove Tag',
+            action: (node: IMNode) => {
+            }
+          },
+          {id: 1, text: 'divider'},
+          {
+            id: 0,
+            text: 'Edit Custom Attributes...',
+            action: (node: IMNode) => {
+            }
+          }
+        ]
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Alarms', subMenu: [
+          {
+            id: 0,
+            text: 'New Alarm Definition...',
+            action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0,
+            text: 'Enable Alarm Actions',
+            action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0,
+            text: 'Disable Alarm Actions',
+            action: (node: IMNode) => {
+            }
+          }
+        ]
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Remove from Inventory', action: (node: IMNode) => {
+        }
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Update Manager', subMenu: [
+          {
+            id: 0,
+            text: 'Check Compliance',
+            action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0,
+            text: 'Pre-check Remediation',
+            action: (node: IMNode) => {
+            }
+          }
+        ]
+      }
+    ];
+  }
+
+  get folderDatastoreContextMenu() {
+    return [
+      {
+        id: 0, text: '<i class="vs-icon vx-icon-new-ds-cluster"></i> New Datastore Cluster...', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: '<i class="vs-icon storage-ui-icon-create-datastore"></i> New Datastore...', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: '<i class="vs-icon vsphere-icon-folder"></i> New Folder', action: (node: IMNode) => {
+        }
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Move To...', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: '<i class="vs-icon vsphere-icon-folder"></i> ', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: 'Tags & Custom Attributes', subMenu: [
+          {
+            id: 0,
+            text: '<i class="vs-icon vx-icon-tag_assign"></i> Assign Tag...',
+            action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0,
+            text: '<i class="vs-icon vx-icon-tag_remove"></i> Remove Tag',
+            action: (node: IMNode) => {
+            }
+          },
+          {id: 1, text: 'divider'},
+          {
+            id: 0,
+            text: 'Edit Custom Attributes...',
+            action: (node: IMNode) => {
+            }
+          }
+        ]
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Add Permission...', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: 'Alarms', subMenu: [
+          {
+            id: 0,
+            text: 'New Alarm Definition...',
+            action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0,
+            text: 'Enable Alarm Actions',
+            action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0,
+            text: 'Disable Alarm Actions',
+            action: (node: IMNode) => {
+            }
+          }
+        ]
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Remove from Inventory', action: (node: IMNode) => {
+        }
+      }
+    ];
+  }
+
+  get folderVMContextMenu() {
+    return [
+      {
+        id: 0, text: '<i class="vs-icon vsphere-icon-vm-add"></i> New Virtual Machine...', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: '<i class="vs-icon vsphere-icon-ovf-deploy"></i> Deploy OVF Template...', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: '<i class="vs-icon vsphere-icon-folder"></i> New Folder', action: (node: IMNode) => {
+        }
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Move To...', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: '<i class="vs-icon vsphere-icon-folder"></i> Rename', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: 'Tags & Custom Attributes', subMenu: [
+          {
+            id: 0,
+            text: '<i class="vs-icon vx-icon-tag_assign"></i> Assign Tag...',
+            action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0,
+            text: '<i class="vs-icon vx-icon-tag_remove"></i> Remove Tag',
+            action: (node: IMNode) => {
+            }
+          },
+          {id: 1, text: 'divider'},
+          {
+            id: 0,
+            text: 'Edit Custom Attributes...',
+            action: (node: IMNode) => {
+            }
+          }
+        ]
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Add Permission...', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: 'Alarms', subMenu: [
+          {
+            id: 0,
+            text: 'New Alarm Definition...',
+            action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0,
+            text: 'Enable Alarm Actions',
+            action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0,
+            text: 'Disable Alarm Actions',
+            action: (node: IMNode) => {
+            }
+          }
+        ]
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Remove from Inventory', action: (node: IMNode) => {
+        }
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Update Manager', subMenu: [
+          {
+            id: 0,
+            text: 'Upgrade VMware Tools to Match Host',
+            action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0,
+            text: 'Upgrade VM Hardware to Match Host',
+            action: (node: IMNode) => {
+            }
+          }
+        ]
+      },
+    ];
+  }
+
+  get folderNetworkContextMenu() {
+    return [
+      {
+        id: 0, text: '<i class="vs-icon network-lib-ui-icon-dvsNew"></i> New Distributed Switch...', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: 'Import Distributed Switch...', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: '<i class="vs-icon vsphere-icon-folder"></i> New Folder', action: (node: IMNode) => {
+        }
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Move To...', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: '<i class="vs-icon vsphere-icon-folder"></i> Rename', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: 'Tags & Custom Attributes', subMenu: [
+          {
+            id: 0,
+            text: '<i class="vs-icon vx-icon-tag_assign"></i> Assign Tag...',
+            action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0,
+            text: '<i class="vs-icon vx-icon-tag_remove"></i> Remove Tag',
+            action: (node: IMNode) => {
+            }
+          },
+          {id: 1, text: 'divider'},
+          {
+            id: 0,
+            text: 'Edit Custom Attributes...',
+            action: (node: IMNode) => {
+            }
+          }
+        ]
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Add Permission...', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: 'Alarms', subMenu: [
+          {
+            id: 0,
+            text: 'New Alarm Definition...',
+            action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0,
+            text: 'Enable Alarm Actions',
+            action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0,
+            text: 'Disable Alarm Actions',
+            action: (node: IMNode) => {
+            }
+          }
+        ]
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Remove from Inventory', action: (node: IMNode) => {
+        }
+      }
+    ];
+  }
+
+  get datacenterContextMenu() {
+    return [
+      {
+        id: 0, text: '<i class="vs-icon vsphere-icon-Add_Host"></i> Add Host...', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: '<i class="vs-icon vx-icon-new-cluster"></i> New Cluster...', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: '<i class="vs-icon vsphere-icon-folder"></i> New Folder', subMenu: [
+          {
+            id: 0, text: '<i class="vs-icon vsphere-icon-folder-add"></i> New Host and Cluster Folder...', action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0, text: '<i class="vs-icon vsphere-icon-folder-add"></i> New Network Folder...', action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0, text: '<i class="vs-icon vsphere-icon-folder-add"></i> New Storage Folder...', action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0, text: '<i class="vs-icon vsphere-icon-folder-add"></i> New VM and Template Folder...', action: (node: IMNode) => {
+            }
+          }
+        ]
+      },
+      {
+        id: 0, text: 'Distributed Switch', subMenu: [
+          {
+            id: 0, text: '<i class="vs-icon network-lib-ui-icon-dvsNew"></i> New Distributed Switch...', action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0, text: '<i class="vs-icon network-lib-ui-icon-dvPortGroupNew"></i> New Distributed Port Group...', action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0, text: 'Import Distributed Switch...', action: (node: IMNode) => {
+            }
+          },
+        ]
+      },
+      {
+        id: 0, text: '<i class="vs-icon vsphere-icon-vm-add"></i> New Virtual Machine', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: '<i class="vs-icon vsphere-icon-ovf-deploy"></i> Deploy OVF Template...', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: 'Storage', subMenu: [
+          {
+            id: 0, text: '<i class="vs-icon storage-ui-icon-create-datastore"></i> New Datastore', action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0, text: '<i class="vs-icon vx-icon-new-ds-cluster"></i> New Datastore Cluster...', action: (node: IMNode) => {
+            }
+          },
+          {id: 1, text: 'divider'},
+          {
+            id: 0, text: '<i class="vs-icon vsphere-icon-rescan-storage"></i> Rescan Storage...', action: (node: IMNode) => {
+            }
+          },
+        ]
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Edit Default VM Compatibility...', action: (node: IMNode) => {
+        }
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: '<i class="vs-icon network-lib-ui-icon-vmMigrate"></i> Migrate VMs to Another Network...', action: (node: IMNode) => {
+        }
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Move To...', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: 'Rename...', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: 'Tags & Custom Attributes', subMenu: [
+          {
+            id: 0,
+            text: '<i class="vs-icon vx-icon-tag_assign"></i> Assign Tag...',
+            action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0,
+            text: '<i class="vs-icon vx-icon-tag_remove"></i> Remove Tag',
+            action: (node: IMNode) => {
+            }
+          },
+          {id: 1, text: 'divider'},
+          {
+            id: 0,
+            text: 'Edit Custom Attributes...',
+            action: (node: IMNode) => {
+            }
+          }
+        ]
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Add Permission...', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: 'Alarms', subMenu: [
+          {
+            id: 0,
+            text: 'New Alarm Definition...',
+            action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0,
+            text: 'Enable Alarm Actions',
+            action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0,
+            text: 'Disable Alarm Actions',
+            action: (node: IMNode) => {
+            }
+          }
+        ]
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: '<i class="vs-icon vx-icon-removeIcon"></i> Delete', action: (node: IMNode) => {
+        }
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Update Manager', subMenu: [
+          {
+            id: 0,
+            text: 'Check Compliance',
+            action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0,
+            text: 'Pre-check Remediation',
+            action: (node: IMNode) => {
+            }
+          }
+        ]
+      }
+    ];
+  }
+
   get VMContextMenu() {
     return [
       {
@@ -421,13 +1053,13 @@ export class SysosAppInfrastructureManagerContextMenusService {
         id: 0, text: 'Tags & Custom Attributes', subMenu: [
           {
             id: 0,
-            text: 'Assign Tag...',
+            text: '<i class="vs-icon vx-icon-tag_assign"></i> Assign Tag...',
             action: (node: IMNode) => {
             }
           },
           {
             id: 0,
-            text: 'Remove Tag',
+            text: '<i class="vs-icon vx-icon-tag_remove"></i> Remove Tag',
             action: (node: IMNode) => {
             }
           },
@@ -546,21 +1178,22 @@ export class SysosAppInfrastructureManagerContextMenusService {
   get datastoreContextMenu() {
     return [
       {
-        id: 0, text: 'New Virtual Machine...', action: (node: IMNode) => {
+        id: 0, text: '<i class="vs-icon vsphere-icon-vm-add"></i> New Virtual Machine...', action: (node: IMNode) => {
         }
       },
       {id: 1, text: 'divider'},
       {
         id: 0, text: '<i class="fa fa-file"></i> Browse Files', action: (node: IMNode) => {
+          console.log(node);
           this.openDatastoreExplorer(node.info.uuid, 'vmware', {
-            datastore: node.info.datastore
+            datastore: node
           });
         }
       },
       {
         id: 0, text: 'Register VM...', action: (node: IMNode) => {
           this.openDatastoreExplorer(node.info.uuid, 'vmware', {
-            datastore: node.info.datastore
+            datastore: node
           });
         }
       },
@@ -613,13 +1246,13 @@ export class SysosAppInfrastructureManagerContextMenusService {
         id: 0, text: 'Tags & Custom Attributes', subMenu: [
           {
             id: 0,
-            text: 'Assign Tag...',
+            text: '<i class="vs-icon vx-icon-tag_assign"></i> Assign Tag...',
             action: (node: IMNode) => {
             }
           },
           {
             id: 0,
-            text: 'Remove Tag',
+            text: '<i class="vs-icon vx-icon-tag_remove"></i> Remove Tag',
             action: (node: IMNode) => {
             }
           },
@@ -662,10 +1295,592 @@ export class SysosAppInfrastructureManagerContextMenusService {
     ];
   }
 
-  private openRemoteConsole(connectionUuid, vm): void {
+  get datastoreClusterContextMenu() {
+    return [
+      {
+        id: 0, text: '<i class="vs-icon vsphere-icon-vm-add"></i> New Virtual Machine...', action: (node: IMNode) => {
+        }
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: '<i class="fa fa-file"></i> Browse Files', action: (node: IMNode) => {
+          console.log(node);
+          this.openDatastoreExplorer(node.info.uuid, 'vmware', {
+            datastore: node
+          });
+        }
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Rename...', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: 'Tags & Custom Attributes', subMenu: [
+          {
+            id: 0,
+            text: '<i class="vs-icon vx-icon-tag_assign"></i> Assign Tag...',
+            action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0,
+            text: '<i class="vs-icon vx-icon-tag_remove"></i> Remove Tag',
+            action: (node: IMNode) => {
+            }
+          },
+          {id: 1, text: 'divider'},
+          {
+            id: 0,
+            text: 'Edit Custom Attributes...',
+            action: (node: IMNode) => {
+            }
+          }
+        ]
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Add Permissions...', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: 'Alarms', subMenu: [
+          {
+            id: 0,
+            text: 'New Alarm Definition...',
+            action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0,
+            text: 'Enable Alarm Actions',
+            action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0,
+            text: 'Disable Alarm Actions',
+            action: (node: IMNode) => {
+            }
+          }
+        ]
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: '<i class="vs-icon vx-icon-removeIcon"></i> Delete', action: (node: IMNode) => {
+        }
+      },
+    ];
+  }
+
+  get clusterComputeResourceContextMenu() {
+    return [
+      {
+        id: 0, text: '<i class="vs-icon vsphere-icon-Add_Host"></i> Add Hosts...', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: '<i class="vs-icon vsphere-icon-vm-add"></i> New Virtual Machine...', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: '<i class="vs-icon vx-icon-rpNew"></i> New Resource Pool...', action: (node: IMNode) => {
+        }
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: '<i class="vs-icon vsphere-icon-ovf-deploy"></i> Deploy OVF Template....', action: (node: IMNode) => {
+        }
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: '<i class="vs-icon vsphere-icon-vapp-add"></i> New vApp...', action: (node: IMNode) => {
+        }
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Storage', subMenu: [
+          {
+            id: 0, text: '<i class="vs-icon storage-ui-icon-create-datastore"></i> New Datastore...', action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0, text: '<i class="vs-icon vsphere-icon-rescan-storage"></i> Rescan Storage...', action: (node: IMNode) => {
+            }
+          },
+        ]
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Host Profiles', subMenu: [
+          {
+            id: 0, text: '<i class="vs-icon vx-icon-host_profile_association"></i> Attach Host Profile...', action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0, text: '<i class="vs-icon vx-icon-host_profile_association"></i> Change Host Profile...', action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0, text: '<i class="vs-icon hostprofile-ui-icon-remediate"></i> Remediate...', action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0, text: '<i class="vs-icon vx-icon-detach_host_profile"></i> Detach', action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0, text: '<i class="vs-icon hostprofile-ui-icon-hostCompliance"></i> Check Host Profile Compliance', action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0, text: '<i class="vs-icon hostprofile-ui-icon-export_host_customizations"></i> Export Host Customizations...', action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0, text: '<i class="vs-icon vx-icon-edit_host_customizations"></i> Edit Host Customizations...', action: (node: IMNode) => {
+            }
+          },
+        ]
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Edit Default VM Compatibility...', action: (node: IMNode) => {
+        }
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: '<i class="vs-icon vsphere-icon-assign_license"></i> Assign License...', action: (node: IMNode) => {
+        }
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Settings', action: (node: IMNode) => {
+        }
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Move To...', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: 'Rename...', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: 'Tags & Custom Attributes', subMenu: [
+          {
+            id: 0,
+            text: '<i class="vs-icon vx-icon-tag_assign"></i> Assign Tag...',
+            action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0,
+            text: '<i class="vs-icon vx-icon-tag_remove"></i> Remove Tag',
+            action: (node: IMNode) => {
+            }
+          },
+          {id: 1, text: 'divider'},
+          {
+            id: 0,
+            text: 'Edit Custom Attributes...',
+            action: (node: IMNode) => {
+            }
+          }
+        ]
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Add Permissions...', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: 'Alarms', subMenu: [
+          {
+            id: 0,
+            text: 'New Alarm Definition...',
+            action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0,
+            text: 'Enable Alarm Actions',
+            action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0,
+            text: 'Disable Alarm Actions',
+            action: (node: IMNode) => {
+            }
+          }
+        ]
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: '<i class="vs-icon vx-icon-removeIcon"></i> Delete', action: (node: IMNode) => {
+        }
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Update Manager', subMenu: [
+          {
+            id: 0,
+            text: 'Check Compliance',
+            action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0,
+            text: 'Pre-check Remediation',
+            action: (node: IMNode) => {
+            }
+          }
+        ]
+      },
+      {
+        id: 0, text: 'vSAN', subMenu: [
+          {
+            id: 0,
+            text: 'Configure...',
+            action: (node: IMNode) => {
+            }
+          }
+        ]
+      }
+    ];
+  }
+
+  get hostSystemContextMenu() {
+    return [
+      {
+        id: 0, text: '<i class="vs-icon vsphere-icon-vm-add"></i> New Virtual Machine...', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: '<i class="vs-icon vsphere-icon-ovf-deploy"></i> Deploy OVF Template...', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: '<i class="vs-icon vx-icon-rpNew"></i> New Resource Pool...', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: '<i class="vs-icon vsphere-icon-vapp-add"></i> New vApp...', action: (node: IMNode) => {
+        }
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Maintenance Mode', subMenu: [
+          {
+            id: 0, text: '<i class="vs-icon vsphere-icon-Host_Maintenance_Mode_Enter"></i> Enter Maintenance Mode', action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0, text: '<i class="vs-icon vsphere-icon-Host_Maintenance_Mode_Exit"></i> Exit Maintenance Mode', action: (node: IMNode) => {
+            }
+          },
+        ]
+      },
+      {
+        id: 0, text: 'Connection', subMenu: [
+          {
+            id: 0, text: '<i class="vs-icon vsphere-icon-Host_Connect"></i> Connect', action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0, text: '<i class="vs-icon vsphere-icon-Host_Disconnect"></i> Disconnect', action: (node: IMNode) => {
+            }
+          },
+        ]
+      },
+      {
+        id: 0, text: 'Power', subMenu: [
+          {
+            id: 0, text: '<i class="vs-icon host-ui-icon-poweron"></i> Power On', action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0, text: '<i class="vs-icon host-ui-icon-standby"></i> Enter Standby Mode', action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0, text: '<i class="vs-icon host-ui-icon-shutdown"></i> Shut Down', action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0, text: '<i class="vs-icon vsphere-icon-Host_Reboot"></i> Reboot', action: (node: IMNode) => {
+            }
+          },
+        ]
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Certificates', subMenu: [
+          {
+            id: 0, text: '<i class="vs-icon host-ui-icon-renewCertificate"></i> Renew Certificate', action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0, text: 'Refresh CA Certificates', action: (node: IMNode) => {
+            }
+          },
+        ]
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Storage', subMenu: [
+          {
+            id: 0, text: '<i class="vs-icon storage-ui-icon-create-datastore"></i> New Datastore...', action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0, text: '<i class="vs-icon vsphere-icon-rescan-storage"></i> Rescan Storage...', action: (node: IMNode) => {
+            }
+          },
+        ]
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: '<i class="vs-icon network-lib-ui-icon-networkAdd"></i> Add Networking...', action: (node: IMNode) => {
+        }
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Host Profiles', subMenu: [
+          {
+            id: 0, text: '<i class="vs-icon vx-icon-host_profile"></i> Extract Host Profile...', action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0, text: '<i class="vs-icon vx-icon-host_profile_association"></i> Attach Host Profile...', action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0, text: '<i class="vs-icon vx-icon-host_profile_association"></i> Change Host Profile...', action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0, text: '<i class="vs-icon hostprofile-ui-icon-remediate"></i> Remediate...', action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0, text: '<i class="vs-icon vx-icon-detach_host_profile"></i> Detach Host Profile', action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0, text: '<i class="vs-icon hostprofile-ui-icon-hostCompliance"></i> Check Host Profile Compliance', action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0, text: 'Reset Host Customizations', action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0, text: '<i class="vs-icon hostprofile-ui-icon-export_host_customizations"></i> Export Host Customizations...', action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0, text: '<i class="vs-icon vx-icon-edit_host_customizations"></i> Edit Host Customizations...', action: (node: IMNode) => {
+            }
+          },
+        ]
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Export System Logs...', action: (node: IMNode) => {
+        }
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Reconfigure for vSphere HA', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: '<i class="vs-icon vsphere-icon-assign_license"></i> Assign License...', action: (node: IMNode) => {
+        }
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Settings', action: (node: IMNode) => {
+        }
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Move To...', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: 'Tags & Custom Attributes', subMenu: [
+          {
+            id: 0,
+            text: '<i class="vs-icon vx-icon-tag_assign"></i> Assign Tag...',
+            action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0,
+            text: '<i class="vs-icon vx-icon-tag_remove"></i> Remove Tag',
+            action: (node: IMNode) => {
+            }
+          },
+          {id: 1, text: 'divider'},
+          {
+            id: 0,
+            text: 'Edit Custom Attributes...',
+            action: (node: IMNode) => {
+            }
+          }
+        ]
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Remove from Inventory', action: (node: IMNode) => {
+        }
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Add Permissions...', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: 'Alarms', subMenu: [
+          {
+            id: 0,
+            text: 'New Alarm Definition...',
+            action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0,
+            text: 'Enable Alarm Actions',
+            action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0,
+            text: 'Disable Alarm Actions',
+            action: (node: IMNode) => {
+            }
+          }
+        ]
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Update Manager', subMenu: [
+          {
+            id: 0,
+            text: 'Check Compliance',
+            action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0,
+            text: 'Pre-check Remediation',
+            action: (node: IMNode) => {
+            }
+          }
+        ]
+      }
+    ];
+  }
+
+  get resourcePoolContextMenu() {
+    return [
+      {
+        id: 0, text: '<i class="vs-icon vsphere-icon-vm-add"></i> New Virtual Machine...', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: '<i class="vs-icon vsphere-icon-ovf-deploy"></i> Deploy OVF Template...', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: '<i class="vs-icon vx-icon-rpNew"></i> New Resource Pool...', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: '<i class="vs-icon vsphere-icon-vapp-add"></i> New vApp...', action: (node: IMNode) => {
+        }
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Edit Resource Settings...', action: (node: IMNode) => {
+        }
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Move To...', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: 'Rename', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: 'Tags & Custom Attributes', subMenu: [
+          {
+            id: 0,
+            text: '<i class="vs-icon vx-icon-tag_assign"></i> Assign Tag...',
+            action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0,
+            text: '<i class="vs-icon vx-icon-tag_remove"></i> Remove Tag',
+            action: (node: IMNode) => {
+            }
+          },
+          {id: 1, text: 'divider'},
+          {
+            id: 0,
+            text: 'Edit Custom Attributes...',
+            action: (node: IMNode) => {
+            }
+          }
+        ]
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: 'Add Permissions...', action: (node: IMNode) => {
+        }
+      },
+      {
+        id: 0, text: 'Alarms', subMenu: [
+          {
+            id: 0,
+            text: 'New Alarm Definition...',
+            action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0,
+            text: 'Enable Alarm Actions',
+            action: (node: IMNode) => {
+            }
+          },
+          {
+            id: 0,
+            text: 'Disable Alarm Actions',
+            action: (node: IMNode) => {
+            }
+          }
+        ]
+      },
+      {id: 1, text: 'divider'},
+      {
+        id: 0, text: '<i class="vs-icon vx-icon-removeIcon"></i> Delete', action: (node: IMNode) => {
+        }
+      }
+    ];
+  }
+
+  private openRemoteConsole(connectionUuid: string, vm: any): void {
     this.logger.debug('Infrastructure Manager [%s] -> Opening Remote Console APP -> vm [%s]', vm.vm, vm.name);
 
     this.Applications.openApplication('wmks', {
+      connectionUuid: connectionUuid,
       vm: vm.vm,
       credential: this.InfrastructureManager.getConnectionByUuid(connectionUuid).credential,
       host: this.InfrastructureManager.getConnectionByUuid(connectionUuid).host,
@@ -673,13 +1888,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
     });
   }
 
-  private openDatastoreExplorer(connectionUuid, type, data) {
+  private openDatastoreExplorer(connectionUuid: string, type: 'vmware' | 'netapp', data: any): void {
     this.logger.debug('Infrastructure Manager [%s] -> Opening Datastore Explorer APP -> datastore [%s]', connectionUuid, type);
 
     this.Applications.openApplication('datastore-explorer', {
-      credential: this.InfrastructureManager.getConnectionByUuid(connectionUuid).credential,
-      host: this.InfrastructureManager.getConnectionByUuid(connectionUuid).host,
-      port: this.InfrastructureManager.getConnectionByUuid(connectionUuid).port,
+      connectionUuid: connectionUuid,
       data,
       type
     });

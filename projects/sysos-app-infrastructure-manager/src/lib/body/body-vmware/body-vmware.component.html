@@ -1,3 +1,112 @@
-<p>
-  body-vmware works!
-</p>
+<h2 class="page-title">Home</h2>
+<div class="row">
+  <div class="col-12">
+    <mat-card>
+      <mat-card-content>
+        <div class="row">
+
+          <div class="col">
+            <mat-card>
+              <mat-card-header>
+                <mat-card-title>CPU</mat-card-title>
+              </mat-card-header>
+              <mat-card-content class="w-75 mx-auto text-center">
+                <h3>43.4 GHz free</h3>
+                <mat-progress-bar mode="determinate" value="40"></mat-progress-bar>
+                <div>1 GHz used | 44.4 GHz total</div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+
+          <mat-divider [vertical]="true"></mat-divider>
+
+          <div class="col">
+            <mat-card>
+              <mat-card-header>
+                <mat-card-title>Memory</mat-card-title>
+              </mat-card-header>
+              <mat-card-content class="w-75 mx-auto text-center">
+                <h3>1.82 GB free</h3>
+                <mat-progress-bar mode="determinate" value="70"></mat-progress-bar>
+                <div>7.95 GB used | 9.76 GB total</div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+
+          <mat-divider [vertical]="true"></mat-divider>
+
+          <div class="col">
+            <mat-card>
+              <mat-card-header>
+                <mat-card-title>Storage</mat-card-title>
+              </mat-card-header>
+              <mat-card-content class="w-75 mx-auto text-center">
+                <h3>963.17 GB free</h3>
+                <mat-progress-bar mode="determinate" value="20"></mat-progress-bar>
+                <div>473.08 GB used | 1.4 TB total</div>
+              </mat-card-content>
+            </mat-card>
+          </div>
+
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+<div class="row mt-3">
+  <div class="col-12">
+    <div class="row">
+
+      <div class="col">
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title>
+              <i class="vs-icon vsphere-icon-vm"></i>VMs
+              <div class="float-right">12</div>
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content class="d-flex justify-content-around py-4">
+            <div class="text-center">
+              <h3>1</h3>
+              <div>Powered On</div>
+            </div>
+            <div class="text-center">
+              <h3>11</h3>
+              <div>Powered Off</div>
+            </div>
+            <div class="text-center">
+              <h3>0</h3>
+              <div>Suspended</div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+      <div class="col">
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title>
+              <i class="vs-icon vsphere-icon-host"></i>Hosts
+              <div class="float-right">1</div>
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content class="d-flex justify-content-around py-4">
+            <div class="text-center">
+              <h3>1</h3>
+              <div>Connected</div>
+            </div>
+            <div class="text-center">
+              <h3>0</h3>
+              <div>Disconnected</div>
+            </div>
+            <div class="text-center">
+              <h3>0</h3>
+              <div>Maintenance</div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+    </div>
+  </div>
+</div>

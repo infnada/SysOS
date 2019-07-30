@@ -27,6 +27,8 @@ export class SysosAppInfrastructureVmwareService {
 
   getVMWareData(connection: IMConnection): void {
 
+    console.log('getVMWareData');
+
     this.Modal.openLittleModal('PLEASE WAIT', 'Connecting to vCenter/ESXi...', '.window--infrastructure-manager .window__main', 'plain').then(() => {
 
       // Login to SOAP vmware
@@ -80,12 +82,14 @@ export class SysosAppInfrastructureVmwareService {
     }).then((getWaitForUpdateResult) => {
       if (getWaitForUpdateResult.status === 'error') throw {error: getWaitForUpdateResult.error, description: 'Failed to get data from VMWare'};
 
-      console.log(getWaitForUpdateResult);
       this.InfrastructureManager.getConnectionByUuid(connection.uuid).data.Data = getWaitForUpdateResult.data.returnval.filterSet.objectSet;
 
       // Check if any datastore is from a managed storage system and link it.
       return this.InfrastructureManager.checkLinkBetweenManagedNodes('vmware', connection.uuid);
     }).then(() => {
+
+      // Set connection as Good
+      this.InfrastructureManager.getConnectionByUuid(connection.uuid).state = 'connected';
 
       this.Modal.changeModalText('Saving connection to file', '.window--infrastructure-manager .window__main');
 
@@ -245,12 +249,12 @@ export class SysosAppInfrastructureVmwareService {
    * Get Parent object by object type
    */
   getParentObjectByType(connectionUuid: string, type: string, ofParent: string): string {
-    const parentObject = this.InfrastructureManager.getConnectionByUuid(connectionUuid).data.Data.find((vmwareObj: VMWareObject) => {
+    const parentObject: VMWareObject = this.InfrastructureManager.getConnectionByUuid(connectionUuid).data.Data.find((vmwareObj: VMWareObject) => {
       return vmwareObj.info.obj.name === ofParent;
     });
 
-    if (parentObject.type === type) return parentObject.obj.name;
-    return this.getParentObjectByType(connectionUuid, type, parentObject.parent.name);
+    if (parentObject.type === type) return parentObject.info.obj.name;
+    return this.getParentObjectByType(connectionUuid, type, parentObject.info.parent.name);
   }
 
   /**

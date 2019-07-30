@@ -24,7 +24,7 @@
         <select class="form-control" formControlName="datastore" [ngClass]="{ 'is-invalid': submitted && f.datastore.errors }">
           <option value="">-- Select Datastore --</option>
           <option *ngFor="let datastore of datastores; index as $index" [value]="$index">
-            {{datastore.host}} - {{datastore.type === 'vmware' ? datastore.data.datastore.obj.name : datastore.type === 'netapp' ? datastore.data.volume['volume-id-attributes'].name : null}}
+            {{datastore.host}} - {{datastore.type === 'vmware' ? datastore.data.datastore.info.obj.name : datastore.type === 'netapp' ? datastore.data.volume['volume-id-attributes'].name : null}}
           </option>
         </select>
       </div>

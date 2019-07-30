@@ -5,8 +5,6 @@ import {NGXLogger} from 'ngx-logger';
 import {ToastrService} from 'ngx-toastr';
 import {Socket} from 'ngx-socket-io';
 import {v4 as uuidv4} from 'uuid';
-import * as _ from 'lodash';
-
 
 import {SysosLibModalService} from '@sysos/lib-modal';
 import {SysosLibApplicationService} from '@sysos/lib-application';
@@ -273,7 +271,7 @@ export class SysosAppInfrastructureManagerService {
         this.logger.info('Infrastructure Manager Factory -> Get connections successfully');
 
         res.forEach((connection) => {
-          connection.state = 'disconnected';
+          if (connection.type !== 'vmware' && connection.type !== 'netapp')connection.state = 'disconnected';
 
           this.setConnectionByType(connection, true);
 

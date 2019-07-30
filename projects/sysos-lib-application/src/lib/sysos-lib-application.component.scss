@@ -278,7 +278,7 @@
   padding: 10px;
   margin: 0;
   width: 100%;
-  background-color: white;
+  background-color: #eaeaea;
   position: relative;
 }
 
@@ -497,6 +497,7 @@ li li .list__toggle:before {
   padding: 40px;
   height: 100%;
   overflow-y: scroll;
+  background: white;
 }
 
 .window__side .menu__item {

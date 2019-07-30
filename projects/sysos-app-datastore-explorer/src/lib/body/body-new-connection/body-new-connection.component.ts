@@ -55,12 +55,12 @@ export class BodyNewConnectionComponent implements OnInit {
     if (this.application.initData && this.application.initData.type) {
       if (this.application.initData.type === 'vmware') {
         this.DatastoreExplorer.connect({
-          credential: this.application.initData.credential,
-          host: this.application.initData.host,
-          port: this.application.initData.port,
+          credential: this.InfrastructureManager.getConnectionByUuid(this.application.initData.connectionUuid).credential,
+          host: this.InfrastructureManager.getConnectionByUuid(this.application.initData.connectionUuid).host,
+          port: this.InfrastructureManager.getConnectionByUuid(this.application.initData.connectionUuid).port,
           data: {
             datastore: this.application.initData.data.datastore,
-            datacenter: this.InfrastructureManagerVMWare.getParentObjectByType(this.application.initData.uuid, 'Datacenter', this.application.initData.data.datastore.obj.name)
+            datacenter: this.InfrastructureManagerVMWare.getParentObjectByType(this.application.initData.connectionUuid, 'Datacenter', this.application.initData.data.datastore.info.obj.name)
           },
           type: 'vmware'
         }).then(() => {
@@ -70,9 +70,9 @@ export class BodyNewConnectionComponent implements OnInit {
 
       if (this.application.initData.type === 'netapp') {
         this.DatastoreExplorer.connect({
-          credential: this.application.initData.credential,
-          host: this.application.initData.host,
-          port: this.application.initData.port,
+          credential: this.InfrastructureManager.getConnectionByUuid(this.application.initData.connectionUuid).credential,
+          host: this.InfrastructureManager.getConnectionByUuid(this.application.initData.connectionUuid).host,
+          port: this.InfrastructureManager.getConnectionByUuid(this.application.initData.connectionUuid).port,
           data: {
             volume: this.application.initData.data.volume
           },

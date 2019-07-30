@@ -1,0 +1,27 @@
+<table class="table table-hover table-elipsis" *ngIf="viewRecentTasks === true">
+  <thead>
+  <tr>
+    <th>Task Name</th>
+    <th>Target</th>
+    <th>Status</th>
+    <th>Initiator</th>
+    <th>Queued For</th>
+    <th>Start Time</th>
+    <th>Completion Time</th>
+    <th>Server</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngIf="!recentTasks"><td colspan="7" class="center">No recent Tasks.</td></tr>
+  <tr *ngFor="let task of recentTasks">
+    <td>{{task.name}}</td>
+    <td>{{task.target.name}}</td>
+    <td>{{task.status.detail}}</td>
+    <td>{{task.initiator}}</td>
+    <td>{{task.queuedFor}}</td>
+    <td>{{task.startTime}}</td>
+    <td>{{task.completionTime}}</td>
+    <td>{{task.server.name}}</td>
+  </tr>
+  </tbody>
+</table>

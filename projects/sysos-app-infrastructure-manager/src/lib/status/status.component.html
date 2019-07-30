@@ -1,3 +1,5 @@
-<p>
-  status works!
-</p>
+<div class="window__status">
+  <span class="pull-left text-muted" *ngIf="activeConnection">{{getActiveConnection().host}} - {{getActiveConnection().description}}</span>
+  <span class="pull-right text-success" *ngIf="activeConnection && !getActiveConnection().error">{{getActiveConnection().state}}</span>
+  <span class="pull-right text-danger" *ngIf="activeConnection && getActiveConnection().error">{{getActiveConnection().error}}</span>
+</div>
