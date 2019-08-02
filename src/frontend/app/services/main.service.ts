@@ -1,15 +1,26 @@
 import {Injectable} from '@angular/core';
 
+import {BehaviorSubject} from 'rxjs';
 import {Socket} from 'ngx-socket-io';
 import {NGXLogger} from 'ngx-logger';
 
 import {SysosLibModalService} from '@sysos/lib-modal';
 import {SysosLibApplicationService} from '@sysos/lib-application';
 
+
 @Injectable({
   providedIn: 'root'
 })
 export class MainService {
+
+  private bootstrapSource = new BehaviorSubject({
+    appBootstrapped: false,
+  });
+  currentBootstrapState = this.bootstrapSource.asObservable();
+
+  setBootstrapState(data: any): void {
+    this.bootstrapSource.next(data);
+  }
 
   constructor(private logger: NGXLogger,
               private Applications: SysosLibApplicationService,
@@ -41,8 +52,14 @@ export class MainService {
     });
 
     this.Applications.getInstalledApplications().then(() => {
-      this.Applications.getTaskBarApplications();
-      this.Modal.getInstalledModals();
+      return Promise.all([
+        this.Applications.getTaskBarApplications(),
+        this.Modal.getInstalledModals()
+      ]).then(() => {
+        this.setBootstrapState({
+          appBootstrapped: true
+        });
+      });
     });
 
   }

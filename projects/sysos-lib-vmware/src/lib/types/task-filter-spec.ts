@@ -1,8 +1,8 @@
-import {ManagedObjectReference} from "./managed-object-reference";
-import {TaskFilterSpecByEntity} from "./task-filter-spec-by-entity";
-import {TaskInfoState} from "./task-info-state";
-import {TaskFilterSpecByTime} from "./task-filter-spec-by-time";
-import {TaskFilterSpecByUsername} from "./task-filter-spec-by-username";
+import {ManagedObjectReference} from './managed-object-reference';
+import {TaskFilterSpecByEntity} from './task-filter-spec-by-entity';
+import {TaskInfoState} from './task-info-state';
+import {TaskFilterSpecByTime} from './task-filter-spec-by-time';
+import {TaskFilterSpecByUsername} from './task-filter-spec-by-username';
 
 export interface TaskFilterSpec {
   activationId?: string[];

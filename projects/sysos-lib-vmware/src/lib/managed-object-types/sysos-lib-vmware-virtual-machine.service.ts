@@ -6,7 +6,7 @@ import {SysosLibVmwareHelperService} from '../sysos-lib-vmware-helper.service';
 import {ConnectionData} from '../types/connection-data';
 import {ManagedObjectReference} from '../types/managed-object-reference';
 import {VirtualMachineCloneSpec} from '../types/virtual-machine-clone-spec';
-import {VirtualMachineConfigSpec} from "../types/virtual-machine-config-spec";
+import {VirtualMachineConfigSpec} from '../types/virtual-machine-config-spec';
 
 @Injectable({
   providedIn: 'root'

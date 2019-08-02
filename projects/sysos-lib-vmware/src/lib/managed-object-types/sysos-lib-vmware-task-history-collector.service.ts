@@ -3,8 +3,8 @@ import {Injectable} from '@angular/core';
 import {map} from 'rxjs/operators';
 
 import {SysosLibVmwareHelperService} from '../sysos-lib-vmware-helper.service';
-import {ConnectionData} from "../types/connection-data";
-import {ManagedObjectReference} from "../types/managed-object-reference";
+import {ConnectionData} from '../types/connection-data';
+import {ManagedObjectReference} from '../types/managed-object-reference';
 
 @Injectable({
   providedIn: 'root'
@@ -23,14 +23,18 @@ export class SysosLibVmwareTaskHistoryCollectorService {
       <_this type='TaskHistoryCollector'>${managedTaskCollector._value}</_this>
       <maxCount>${maxCount}</maxCount>
     </ReadNextTasks>`;
-    return this.SysosLibVmwareHelper.doCallSoap(connectionData, xml).pipe(map((ReadNextTasksResponse: any) => {
+    return this.SysosLibVmwareHelper.doCallSoap(connectionData, xml).pipe(map((data: any) => {
       const res = [];
 
-      ReadNextTasksResponse.data.returnval.forEach(value => {
-        res.push(this.SysosLibVmwareHelper.parseVMwareObject(value));
-      });
+      if (data.ReadNextTasksResponse[0].returnval) {
+        data.ReadNextTasksResponse[0].returnval.forEach(value => {
+          res.push(this.SysosLibVmwareHelper.parseVMwareObject(value));
+        });
 
-      return this.SysosLibVmwareHelper.validResponse(res);
+        return this.SysosLibVmwareHelper.validResponse(res);
+      }
+
+      return this.SysosLibVmwareHelper.validResponse(null);
     })).toPromise();
   }
 
@@ -43,14 +47,18 @@ export class SysosLibVmwareTaskHistoryCollectorService {
       <_this type='TaskHistoryCollector'>${managedTaskCollector._value}</_this>
       <maxCount>${maxCount}</maxCount>
     </ReadPreviousTasks>`;
-    return this.SysosLibVmwareHelper.doCallSoap(connectionData, xml).pipe(map((ReadPreviousTasksResponse: any) => {
+    return this.SysosLibVmwareHelper.doCallSoap(connectionData, xml).pipe(map((data: any) => {
       const res = [];
 
-      ReadPreviousTasksResponse.data.returnval.forEach(value => {
-        res.push(this.SysosLibVmwareHelper.parseVMwareObject(value));
-      });
+      if (data.ReadPreviousTasksResponse[0].returnval) {
+        data.ReadPreviousTasksResponse[0].returnval.forEach(value => {
+          res.push(this.SysosLibVmwareHelper.parseVMwareObject(value));
+        });
 
-      return this.SysosLibVmwareHelper.validResponse(res);
+        return this.SysosLibVmwareHelper.validResponse(res);
+      }
+
+      return this.SysosLibVmwareHelper.validResponse(null);
     })).toPromise();
   }
 }

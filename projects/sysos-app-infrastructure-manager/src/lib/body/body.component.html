@@ -125,16 +125,7 @@
     <div class="col">
       <saim-body-new-connection [application]="application" *ngIf="activeConnection === null || getActiveConnection().state === 'disconnected'"></saim-body-new-connection>
 
-      <saim-body-vmware *ngIf="activeView.type === 'vmware'"></saim-body-vmware>
-      <saim-body-vmware-datacenter *ngIf="activeView.type === 'vmware-datacenter'"></saim-body-vmware-datacenter>
-      <saim-body-vmware-cluster *ngIf="activeView.type === 'vmware-cluster'"></saim-body-vmware-cluster>
-      <saim-body-vmware-host *ngIf="activeView.type === 'vmware-host'"></saim-body-vmware-host>
-      <saim-body-vmware-folder *ngIf="activeView.type === 'vmware-folder'"></saim-body-vmware-folder>
-      <saim-body-vmware-resource-pool *ngIf="activeView.type === 'vmware-resource-pool'"></saim-body-vmware-resource-pool>
-      <saim-body-vmware-virtual-app *ngIf="activeView.type === 'vmware-virtual-app'"></saim-body-vmware-virtual-app>
-      <saim-body-vmware-virtual-machine *ngIf="activeView.type === 'vmware-virtual-machine'"></saim-body-vmware-virtual-machine>
-      <saim-body-vmware-storage-pod *ngIf="activeView.type === 'vmware-storage-pod'"></saim-body-vmware-storage-pod>
-      <saim-body-vmware-datastore *ngIf="activeView.type === 'vmware-datastore'"></saim-body-vmware-datastore>
+      <saim-body-vmware [application]="application" [vmwareObject]="activeView.data" *ngIf="activeView.type !== null && activeView.type.startsWith('vmware')"></saim-body-vmware>
 
       <saim-body-netapp *ngIf="activeView.type === 'netapp'"></saim-body-netapp>
       <saim-body-netapp-vserver *ngIf="activeView.type === 'netapp-vserver'"></saim-body-netapp-vserver>

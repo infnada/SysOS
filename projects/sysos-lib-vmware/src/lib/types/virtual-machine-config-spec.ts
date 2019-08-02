@@ -18,6 +18,7 @@ import {ScheduledHardwareUpgradeInfo} from './scheduled-hardware-upgrade-info';
 import {ToolsConfigInfo} from './tools-config-info';
 import {VirtualMachineProfileSpec} from './virtual-machine-profile-spec';
 import {VmConfigSpec} from './vm-config-spec';
+import {DateTime} from './date-time';
 
 export interface VirtualMachineConfigSpec {
   alternateGuestName?: string;
@@ -31,7 +32,7 @@ export interface VirtualMachineConfigSpec {
   cpuFeatureMask?: VirtualMachineCpuIdInfoSpec[];
   cpuHotAddEnabled?: boolean;
   cpuHotRemoveEnabled?: boolean;
-  createDate?: Date;
+  createDate?: DateTime;
   crypto?: CryptoSpec;
   deviceChange?: VirtualDeviceConfigSpec[];
   extraConfig?: OptionValue[];

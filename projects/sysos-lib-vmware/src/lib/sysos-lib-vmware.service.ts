@@ -153,8 +153,8 @@ import {MethodFault} from './types/method-fault';
 import {HostFirewallRulesetRulesetSpec} from './types/host-firewall-ruleset-ruleset-spec';
 import {WaitOptions} from './types/wait-options';
 import {TraversalSpec} from './types/traversal-spec';
-import {VirtualMachineConfigSpec} from "./types/virtual-machine-config-spec";
-import {TaskFilterSpec} from "./types/task-filter-spec";
+import {VirtualMachineConfigSpec} from './types/virtual-machine-config-spec';
+import {TaskFilterSpec} from './types/task-filter-spec';
 
 @Injectable({
   providedIn: 'root'
@@ -2334,7 +2334,7 @@ export class SysosLibVmwareService {
           ]
         }
       ],
-      lastHeartbeatTime: new Date()
+      lastHeartbeatTime: new Date().toISOString()
     }).then((RegisterExtensionResponse) => {
 
       return this.SysosLibVmwareHelper.validResponse(this.SysosLibVmwareHelper.parseVMwareObject(RegisterExtensionResponse.data.returnval[0]));

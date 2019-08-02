@@ -1,9 +1,9 @@
 import {Component, Input, OnInit} from '@angular/core';
 
-import {Application} from "@sysos/lib-application";
+import {Application} from '@sysos/lib-application';
 
-import {SysosAppInfrastructureManagerService} from "../services/sysos-app-infrastructure-manager.service";
-import {IMConnection} from "../types/imconnection";
+import {SysosAppInfrastructureManagerService} from '../services/sysos-app-infrastructure-manager.service';
+import {IMConnection} from '../types/imconnection';
 
 @Component({
   selector: 'saim-status',

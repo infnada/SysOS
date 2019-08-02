@@ -17,6 +17,7 @@ import {MainService} from './services/main.service';
 export class AppComponent implements OnInit {
   openedApplications: Application[];
   userLoggedIn: boolean;
+  appBootstrapped: boolean;
 
   constructor(private viewContainerRef: ViewContainerRef,
               private cookieService: CookieService,
@@ -30,6 +31,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.logger.info('[SysOS] Initializing APP');
+    this.Main.currentBootstrapState.subscribe(state => this.appBootstrapped = state.appBootstrapped);
     this.UserState.currentState.subscribe(state => this.userLoggedIn = state.userLoggedIn);
 
     if (this.cookieService.check('uniqueId')) {

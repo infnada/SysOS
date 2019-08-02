@@ -1,7 +1,7 @@
-import {ManagedObjectReference} from "./managed-object-reference";
-import {TaskFilterSpecRecursionOption} from "./task-filter-spec-recursion-option";
+import {ManagedObjectReference} from './managed-object-reference';
+import {TaskFilterSpecRecursionOption} from './task-filter-spec-recursion-option';
 
 export interface TaskFilterSpecByEntity {
-  entity: ManagedObjectReference & { $type: 'ManagedEntity' },
+  entity: ManagedObjectReference & { $type: 'ManagedEntity' };
   recursion: TaskFilterSpecRecursionOption;
 }

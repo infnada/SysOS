@@ -11,6 +11,7 @@ import {ExtensionResourceInfo} from './extension-resource-info';
 import {ExtensionServerInfo} from './extension-server-info';
 import {ExtSolutionManagerInfo} from './ext-solution-manager-info';
 import {ExtensionTaskTypeInfo} from './extension-task-type-info';
+import {DateTime} from './date-time';
 
 export interface Extension {
   client?: ExtensionClientInfo[];
@@ -21,7 +22,7 @@ export interface Extension {
   faultList?: ExtensionFaultTypeInfo[];
   healthInfo?: ExtensionHealthInfo;
   key: string;
-  lastHeartbeatTime: Date;
+  lastHeartbeatTime: DateTime;
   managedEntityInfo?: ExtManagedEntityInfo[];
   ovfConsumerInfo?: ExtensionOvfConsumerInfo;
   privilegeList?: ExtensionPrivilegeInfo[];

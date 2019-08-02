@@ -1,4 +1,6 @@
+import {DateTime} from './date-time';
+
 export interface EventFilterSpecByTime {
-  beginTime?: Date;
-  endTime?: Date;
+  beginTime?: DateTime;
+  endTime?: DateTime;
 }

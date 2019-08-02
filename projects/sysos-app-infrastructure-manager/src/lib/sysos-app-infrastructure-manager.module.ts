@@ -9,7 +9,11 @@ import {
   MatTreeModule,
   MatIconModule,
   MatCardModule,
-  MatProgressBarModule
+  MatProgressBarModule,
+  MatTabsModule,
+  MatExpansionModule,
+  MatSortModule,
+  MatTableModule
 } from '@angular/material';
 
 import {ToastrModule} from 'ngx-toastr';
@@ -26,20 +30,17 @@ import {StatusComponent} from './status/status.component';
 import {SysosAppInfrastructureManagerService} from './services/sysos-app-infrastructure-manager.service';
 import {SysosAppInfrastructureVmwareService} from './services/sysos-app-infrastructure-vmware.service';
 import {BodyVmwareComponent} from './body/body-vmware/body-vmware.component';
-import {BodyVmwareDatacenterComponent} from './body/body-vmware-datacenter/body-vmware-datacenter.component';
-import {BodyVmwareClusterComponent} from './body/body-vmware-cluster/body-vmware-cluster.component';
-import {BodyVmwareHostComponent} from './body/body-vmware-host/body-vmware-host.component';
-import {BodyVmwareFolderComponent} from './body/body-vmware-folder/body-vmware-folder.component';
-import {BodyVmwareResourcePoolComponent} from './body/body-vmware-resource-pool/body-vmware-resource-pool.component';
-import {BodyVmwareVirtualMachineComponent} from './body/body-vmware-virtual-machine/body-vmware-virtual-machine.component';
-import {BodyVmwareDatastoreComponent} from './body/body-vmware-datastore/body-vmware-datastore.component';
-import {BodyVmwareStoragePodComponent} from './body/body-vmware-storage-pod/body-vmware-storage-pod.component';
-import {BodyVmwareVirtualAppComponent} from './body/body-vmware-virtual-app/body-vmware-virtual-app.component';
 import {BodyNetappComponent} from './body/body-netapp/body-netapp.component';
 import {BodyNetappVserverComponent} from './body/body-netapp-vserver/body-netapp-vserver.component';
 import {BodyNetappVolumeComponent} from './body/body-netapp-volume/body-netapp-volume.component';
 import {BodyNetappSnapshotComponent} from './body/body-netapp-snapshot/body-netapp-snapshot.component';
-import { VmwareRecentTasksComponent } from './body/vmware-recent-tasks/vmware-recent-tasks.component';
+import {VmwareRecentTasksComponent} from './body/vmware-recent-tasks/vmware-recent-tasks.component';
+import {TagsComponent} from './body/body-vmware/tags/tags.component';
+import {VmHardwareComponent} from './body/body-vmware/vm-hardware/vm-hardware.component';
+import {NotesComponent} from './body/body-vmware/notes/notes.component';
+import {RelatedObjectsComponent} from './body/body-vmware/related-objects/related-objects.component';
+import {CustomAttributesComponent} from './body/body-vmware/custom-attributes/custom-attributes.component';
+import {VmStoragePoliciesComponent} from './body/body-vmware/vm-storage-policies/vm-storage-policies.component';
 
 @NgModule({
   declarations: [
@@ -49,20 +50,17 @@ import { VmwareRecentTasksComponent } from './body/vmware-recent-tasks/vmware-re
     MenuComponent,
     StatusComponent,
     BodyVmwareComponent,
-    BodyVmwareDatacenterComponent,
-    BodyVmwareClusterComponent,
-    BodyVmwareHostComponent,
-    BodyVmwareFolderComponent,
-    BodyVmwareResourcePoolComponent,
-    BodyVmwareVirtualMachineComponent,
-    BodyVmwareDatastoreComponent,
-    BodyVmwareStoragePodComponent,
-    BodyVmwareVirtualAppComponent,
     BodyNetappComponent,
     BodyNetappVserverComponent,
     BodyNetappVolumeComponent,
     BodyNetappSnapshotComponent,
-    VmwareRecentTasksComponent
+    VmwareRecentTasksComponent,
+    TagsComponent,
+    VmHardwareComponent,
+    NotesComponent,
+    RelatedObjectsComponent,
+    CustomAttributesComponent,
+    VmStoragePoliciesComponent
   ],
   imports: [
     CommonModule,
@@ -76,6 +74,10 @@ import { VmwareRecentTasksComponent } from './body/vmware-recent-tasks/vmware-re
     MatIconModule,
     MatCardModule,
     MatProgressBarModule,
+    MatTabsModule,
+    MatExpansionModule,
+    MatSortModule,
+    MatTableModule,
     ToastrModule.forRoot()
   ],
   exports: []

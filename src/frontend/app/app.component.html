@@ -1,2 +1,3 @@
 <app-login *ngIf="!userLoggedIn"></app-login>
-<app-desktop *ngIf="userLoggedIn"></app-desktop>
+<app-bootstrap *ngIf="userLoggedIn && !appBootstrapped"></app-bootstrap>
+<app-desktop *ngIf="userLoggedIn && appBootstrapped"></app-desktop>

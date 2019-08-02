@@ -1,0 +1,66 @@
+<mat-expansion-panel [expanded]="true">
+  <mat-expansion-panel-header>
+    <mat-panel-title>Related Objects</mat-panel-title>
+  </mat-expansion-panel-header>
+
+  <mat-accordion>
+
+    <mat-expansion-panel [disabled]=true>
+      <mat-expansion-panel-header>
+        <mat-panel-title>Cluster</mat-panel-title>
+        <mat-panel-description>
+          <div class="object-link">
+            <span class="vs-icon vsphere-icon-cluster"></span>
+            <a title="LabCluster01">
+              LabCluster01
+            </a>
+          </div>
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel [disabled]=true>
+      <mat-expansion-panel-header>
+        <mat-panel-title>Host</mat-panel-title>
+        <mat-panel-description>
+          <div class="object-link">
+            <span class="vs-icon vsphere-icon-host"></span>
+            <a title="192.168.1.2">
+              192.168.1.2
+            </a>
+          </div>
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel [disabled]=true>
+      <mat-expansion-panel-header>
+        <mat-panel-title>Networks</mat-panel-title>
+        <mat-panel-description>
+          <div class="object-link">
+            <span class="vs-icon vsphere-icon-network"></span>
+            <a title="VM Network">
+              VM Network
+            </a>
+          </div>
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel [disabled]=true>
+      <mat-expansion-panel-header>
+        <mat-panel-title>Storage</mat-panel-title>
+        <mat-panel-description>
+          <div class="object-link">
+            <span class="vs-icon vsphere-icon-datastore-inaccessible"></span>
+            <a title="NFS9501_data04">
+              NFS9501_data04
+            </a>
+          </div>
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+    </mat-expansion-panel>
+
+  </mat-accordion>
+
+</mat-expansion-panel>

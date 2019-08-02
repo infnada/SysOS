@@ -1,7 +1,8 @@
-import {TaskFilterSpecTimeOption} from "./task-filter-spec-time-option";
+import {TaskFilterSpecTimeOption} from './task-filter-spec-time-option';
+import {DateTime} from './date-time';
 
 export interface TaskFilterSpecByTime {
-  beginTime?: Date;
-  endTime?: Date;
+  beginTime?: DateTime;
+  endTime?: DateTime;
   timeType: TaskFilterSpecTimeOption;
 }

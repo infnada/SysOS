@@ -1880,7 +1880,7 @@ export class SysosAppInfrastructureManagerContextMenusService {
     this.logger.debug('Infrastructure Manager [%s] -> Opening Remote Console APP -> vm [%s]', vm.vm, vm.name);
 
     this.Applications.openApplication('wmks', {
-      connectionUuid: connectionUuid,
+      connectionUuid,
       vm: vm.vm,
       credential: this.InfrastructureManager.getConnectionByUuid(connectionUuid).credential,
       host: this.InfrastructureManager.getConnectionByUuid(connectionUuid).host,
@@ -1892,7 +1892,7 @@ export class SysosAppInfrastructureManagerContextMenusService {
     this.logger.debug('Infrastructure Manager [%s] -> Opening Datastore Explorer APP -> datastore [%s]', connectionUuid, type);
 
     this.Applications.openApplication('datastore-explorer', {
-      connectionUuid: connectionUuid,
+      connectionUuid,
       data,
       type
     });

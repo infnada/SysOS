@@ -5,7 +5,7 @@ import {map} from 'rxjs/operators';
 import {SysosLibVmwareHelperService} from '../sysos-lib-vmware-helper.service';
 import {ConnectionData} from '../types/connection-data';
 import {ManagedObjectReference} from '../types/managed-object-reference';
-import {TaskFilterSpec} from "../types/task-filter-spec";
+import {TaskFilterSpec} from '../types/task-filter-spec';
 
 @Injectable({
   providedIn: 'root'

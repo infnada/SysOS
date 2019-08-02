@@ -1,0 +1,37 @@
+#bootstrap {
+  background: linear-gradient(233deg, #fd4545, #6b88ff, #58fd57, #f6ff76, #e657fd);
+  background-size: 1000% 1000%;
+
+  -webkit-animation: BG 32s ease infinite;
+  -moz-animation: BG 32s ease infinite;
+  animation: BG 32s ease infinite;
+  position: absolute;
+  overflow: hidden;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transform: translate3d(0, 0, 0);
+  z-index: 1;
+  font-size: 100%;
+  line-height: 1.5;
+  height: 100%;
+  margin: 0;
+  font-family: 'Work Sans', Arial, Helvetica, sans-serif;
+  min-height: 100%;
+  color: #777;
+
+  span {
+    letter-spacing: 3px;
+    color: #ffffff;
+    text-transform: uppercase;
+    position: absolute;
+    font-size: 30px;
+    text-shadow: -1px -1px 0 #8c8c8c, 1px -1px 0 #848484, -1px 1px 0 #252525, 1px 1px 0 #252525;
+    left: 50%;
+    top: 50%;
+    margin-left: -250px;
+    margin-top: -250px;
+
+  }
+}

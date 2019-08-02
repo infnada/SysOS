@@ -1,0 +1,78 @@
+<mat-expansion-panel [expanded]=true>
+  <mat-expansion-panel-header>
+    <mat-panel-title>VM Hardware</mat-panel-title>
+  </mat-expansion-panel-header>
+
+  <mat-accordion [multi]=true>
+
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>CPU</mat-panel-title>
+        <mat-panel-description>1 CPU(s)</mat-panel-description>
+      </mat-expansion-panel-header>
+      <p>CPU Pannel</p>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>Memory</mat-panel-title>
+        <mat-panel-description>0,5 GB, 0 GB memory active</mat-panel-description>
+      </mat-expansion-panel-header>
+      <p>Memory</p>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>Hard disk 1</mat-panel-title>
+        <mat-panel-description>16 GB</mat-panel-description>
+      </mat-expansion-panel-header>
+      <p>HD1</p>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>Network adapter 1</mat-panel-title>
+        <mat-panel-description>VM Network (disconnected)</mat-panel-description>
+      </mat-expansion-panel-header>
+      <p>net</p>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel [disabled]=true>
+      <mat-expansion-panel-header>
+        <mat-panel-title>CD/DVD drive 1</mat-panel-title>
+        <mat-panel-description>Disconnected</mat-panel-description>
+      </mat-expansion-panel-header>
+      <p>cd</p>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel [disabled]=true>
+      <mat-expansion-panel-header>
+        <mat-panel-title>VMCI device</mat-panel-title>
+        <mat-panel-description>Device on the virtual machine PCI bus that provides support for the virtual machine communication interface</mat-panel-description>
+      </mat-expansion-panel-header>
+      <p>vmci</p>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>Other</mat-panel-title>
+        <mat-panel-description>Additional Hardware</mat-panel-description>
+      </mat-expansion-panel-header>
+      <p>Other</p>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel [disabled]=true>
+      <mat-expansion-panel-header>
+        <mat-panel-title>Compatibility</mat-panel-title>
+        <mat-panel-description>ESXi 6.7 and later (VM version 14)</mat-panel-description>
+      </mat-expansion-panel-header>
+      <p>comp</p>
+    </mat-expansion-panel>
+
+  </mat-accordion>
+
+  <mat-action-row>
+    <button mat-button>Edit Settings...</button>
+  </mat-action-row>
+
+</mat-expansion-panel>

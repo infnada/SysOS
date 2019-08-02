@@ -398,7 +398,7 @@ export class SysosModalRecoveryWizardComponent implements OnInit {
       //  if (dataFolder.data.status === 'error') throw new Error(dataFolder.data.data);
       //  this.hostFolders = dataFolder.data.data.response.value;
 
-        this.Modal.closeModal('.modal-recovery-wizard');
+      this.Modal.closeModal('.modal-recovery-wizard');
       // });
     });
   }
