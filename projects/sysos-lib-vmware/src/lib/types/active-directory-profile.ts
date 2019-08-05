@@ -1,4 +1,4 @@
-import {ApplyProfile} from "./apply-profile";
+import {ApplyProfile} from './apply-profile';
 
 export interface ActiveDirectoryProfile extends ApplyProfile {
 

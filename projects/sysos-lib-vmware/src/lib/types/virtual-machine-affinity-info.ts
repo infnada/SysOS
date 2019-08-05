@@ -1,3 +1,6 @@
-export interface VirtualMachineAffinityInfo {
-  affinitySet: number[];
+import {DynamicData} from './dynamic-data';
+import {Int} from './int';
+
+export interface VirtualMachineAffinityInfo extends DynamicData {
+  affinitySet?: Int[];
 }

@@ -1,7 +1,8 @@
-import {LocalizableMessage} from "./localizable-message";
-import {ProfilePropertyPath} from "./profile-property-path";
+import {DynamicData} from './dynamic-data';
 
-export interface AnswerFileUpdateFailure {
+import {LocalizableMessage} from './localizable-message';
+import {ProfilePropertyPath} from './profile-property-path';
+export interface AnswerFileUpdateFailure extends DynamicData {
   errMsg: LocalizableMessage;
   userInputPath: ProfilePropertyPath;
 }

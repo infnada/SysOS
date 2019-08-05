@@ -1,5 +1,6 @@
-import {HostCpuIdInfo} from './host-cpu-info';
+import {ArrayUpdateSpec} from './array-update-spec';
 
-export interface VirtualMachineCpuIdInfoSpec {
+import {HostCpuIdInfo} from './host-cpu-id-info';
+export interface VirtualMachineCpuIdInfoSpec extends ArrayUpdateSpec {
   info?: HostCpuIdInfo;
 }

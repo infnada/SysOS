@@ -80,6 +80,12 @@
       "@sysos/app-datastore-explorer/*": [
         "dist/applications/sysos-app-datastore-explorer/*"
       ],
+      "@sysos/app-drawer": [
+        "dist/applications/sysos-app-drawer"
+      ],
+      "@sysos/app-drawer/*": [
+        "dist/applications/sysos-app-drawer/*"
+      ],
       "@sysos/app-file-explorer": [
         "dist/applications/sysos-app-file-explorer"
       ],

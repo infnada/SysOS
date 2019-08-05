@@ -1,4 +1,6 @@
-export interface HostNasVolumeSpec {
+import {DynamicData} from './dynamic-data';
+
+export interface HostNasVolumeSpec extends DynamicData {
   accessMode: string;
   localPath: string;
   password?: string;

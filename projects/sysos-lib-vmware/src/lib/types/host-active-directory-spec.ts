@@ -1,4 +1,6 @@
-export interface HostActiveDirectorySpec {
+import {DynamicData} from './dynamic-data';
+
+export interface HostActiveDirectorySpec extends DynamicData {
   camServer?: string;
   domainName?: string;
   password?: string;

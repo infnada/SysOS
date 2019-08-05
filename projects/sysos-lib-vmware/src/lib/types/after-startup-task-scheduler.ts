@@ -1,3 +1,6 @@
-export interface AfterStartupTaskScheduler {
-  minute: number;
+import {TaskScheduler} from './task-scheduler';
+import {Int} from './int';
+
+export interface AfterStartupTaskScheduler extends TaskScheduler {
+  minute: Int;
 }

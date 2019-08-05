@@ -1,7 +1,8 @@
-import {ManagedObjectReference} from './managed-object-reference';
-import {EventFilterSpecRecursionOption} from './event-filter-spec-recursion-option';
+import {DynamicData} from './dynamic-data';
 
-export interface EventFilterSpecByEntity {
+import {EventFilterSpecRecursionOption} from './event-filter-spec-recursion-option';
+import {ManagedObjectReference} from './managed-object-reference';
+export interface EventFilterSpecByEntity extends DynamicData {
   entity: ManagedObjectReference;
   recursion: EventFilterSpecRecursionOption;
 }

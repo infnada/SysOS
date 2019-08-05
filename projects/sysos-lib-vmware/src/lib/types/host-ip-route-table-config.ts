@@ -1,6 +1,6 @@
-import {HostIpRouteOp} from "./host-ip-route-op";
+import {DynamicData} from './dynamic-data';
 
-export interface HostIpRouteTableConfig {
+import {HostIpRouteOp} from './host-ip-route-op';
+export interface HostIpRouteTableConfig extends DynamicData {
   ipRoute?: HostIpRouteOp[];
-  ipv6Route?: HostIpRouteOp[];
 }

@@ -1,4 +1,6 @@
-export interface VirtualDeviceConnectInfo {
+import {DynamicData} from './dynamic-data';
+
+export interface VirtualDeviceConnectInfo extends DynamicData {
   allowGuestControl: boolean;
   connected: boolean;
   migrateConnect?: string;

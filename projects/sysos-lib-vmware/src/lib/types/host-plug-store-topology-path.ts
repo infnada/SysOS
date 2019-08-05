@@ -1,10 +1,13 @@
-export interface HostPlugStoreTopologyPath {
+import {DynamicData} from './dynamic-data';
+import {Int} from './int';
+
+export interface HostPlugStoreTopologyPath extends DynamicData {
   adapter?: string;
-  channelNumber?: number;
+  channelNumber?: Int;
   device?: string;
   key: string;
-  lunNumber?: number;
+  lunNumber?: Int;
   name: string;
   target?: string;
-  targetNumber?: number;
+  targetNumber?: Int;
 }

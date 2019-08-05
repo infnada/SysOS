@@ -1,7 +1,9 @@
+import {DynamicData} from './dynamic-data';
+
 import {CryptoKeyId} from './crypto-key-id';
 import {ToolsConfigInfoToolsLastInstallInfo} from './tools-config-info-tools-last-install-info';
-
-export interface ToolsConfigInfo {
+import {Int} from './int';
+export interface ToolsConfigInfo extends DynamicData {
   afterPowerOn?: boolean;
   afterResume?: boolean;
   beforeGuestReboot?: boolean;
@@ -13,5 +15,5 @@ export interface ToolsConfigInfo {
   syncTimeWithHost?: boolean;
   toolsInstallType?: string;
   toolsUpgradePolicy?: string;
-  toolsVersion?: number;
+  toolsVersion?: Int;
 }

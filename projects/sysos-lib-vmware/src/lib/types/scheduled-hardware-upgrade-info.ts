@@ -1,6 +1,7 @@
-import {LocalizedMethodFault} from './localized-method-fault';
+import {DynamicData} from './dynamic-data';
 
-export interface ScheduledHardwareUpgradeInfo {
+import {LocalizedMethodFault} from './localized-method-fault';
+export interface ScheduledHardwareUpgradeInfo extends DynamicData {
   fault?: LocalizedMethodFault;
   scheduledHardwareUpgradeStatus?: string;
   upgradePolicy?: string;

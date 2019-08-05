@@ -1,15 +1,13 @@
-import {DateTime} from './date-time';
+import {DynamicData} from './dynamic-data';
+
 import {LocalizableMessage} from './localizable-message';
 import {ManagedObjectReference} from './managed-object-reference';
 import {LocalizedMethodFault} from './localized-method-fault';
 import {TaskReason} from './task-reason';
 import {TaskInfoState} from './task-info-state';
-import {TaskReasonAlarm} from './task-reason-alarm';
-import {TaskReasonSchedule} from './task-reason-schedule';
-import {TaskReasonSystem} from './task-reason-system';
-import {TaskReasonUser} from './task-reason-user';
-
-export interface TaskInfo {
+import {Int} from './int';
+import {DateTime} from './date-time';
+export interface TaskInfo extends DynamicData {
   activationId?: string;
   cancelable: boolean;
   cancelled: boolean;
@@ -20,14 +18,14 @@ export interface TaskInfo {
   entity?: ManagedObjectReference & { $type: 'ManagedEntity' };
   entityName?: string;
   error?: LocalizedMethodFault;
-  eventChainId: number;
+  eventChainId: Int;
   key: string;
   locked?: ManagedObjectReference[] & { $type: 'ManagedEntity' };
   name?: string;
   parentTaskKey?: string;
-  progress?: number;
+  progress?: Int;
   queueTime: DateTime;
-  reason: TaskReason & (TaskReasonAlarm | TaskReasonSchedule | TaskReasonSystem | TaskReasonUser);
+  reason: TaskReason;
   result?: any;
   rootTaskKey?: string;
   startTime?: DateTime;

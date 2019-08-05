@@ -1,4 +1,7 @@
-export interface PhysicalNicLinkInfo {
+import {DynamicData} from './dynamic-data';
+import {Int} from './int';
+
+export interface PhysicalNicLinkInfo extends DynamicData {
   duplex: boolean;
-  speedMb: number;
+  speedMb: Int;
 }

@@ -1,6 +1,7 @@
-import {HostTargetTransport} from "./host-target-transport";
+import {DynamicData} from './dynamic-data';
 
-export interface HostMultipathInfoPath {
+import {HostTargetTransport} from './host-target-transport';
+export interface HostMultipathInfoPath extends DynamicData {
   adapter: string;
   isWorkingPath?: boolean;
   key: string;

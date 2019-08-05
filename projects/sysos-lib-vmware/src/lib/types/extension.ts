@@ -1,3 +1,5 @@
+import {DynamicData} from './dynamic-data';
+
 import {ExtensionClientInfo} from './extension-client-info';
 import {Description} from './description';
 import {ExtensionEventTypeInfo} from './extension-event-type-info';
@@ -12,10 +14,9 @@ import {ExtensionServerInfo} from './extension-server-info';
 import {ExtSolutionManagerInfo} from './ext-solution-manager-info';
 import {ExtensionTaskTypeInfo} from './extension-task-type-info';
 import {DateTime} from './date-time';
-
-export interface Extension {
+export interface Extension extends DynamicData {
   client?: ExtensionClientInfo[];
-  company: string;
+  company?: string;
   description: Description;
   eventList?: ExtensionEventTypeInfo[];
   extendedProductInfo?: ExtExtendedProductInfo;

@@ -1,6 +1,7 @@
-import {HostIpRouteEntry} from "./host-ip-route-entry";
+import {DynamicData} from './dynamic-data';
 
-export interface HostIpRouteOp {
+import {HostIpRouteEntry} from './host-ip-route-entry';
+export interface HostIpRouteOp extends DynamicData {
   changeOperation: string;
   route: HostIpRouteEntry;
 }

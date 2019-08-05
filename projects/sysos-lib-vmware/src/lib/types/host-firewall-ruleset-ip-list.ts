@@ -1,7 +1,8 @@
-import {HostFirewallRulesetIpNetwork} from './host-firewall-ruleset-ip-network';
+import {DynamicData} from './dynamic-data';
 
-export interface HostFirewallRulesetIpList {
+import {HostFirewallRulesetIpNetwork} from './host-firewall-ruleset-ip-network';
+export interface HostFirewallRulesetIpList extends DynamicData {
   allIp: boolean;
-  ipAddress: string[];
-  ipNetwork: HostFirewallRulesetIpNetwork[];
+  ipAddress?: string[];
+  ipNetwork?: HostFirewallRulesetIpNetwork[];
 }

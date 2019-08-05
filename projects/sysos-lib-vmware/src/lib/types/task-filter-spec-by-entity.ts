@@ -1,7 +1,6 @@
-import {ManagedObjectReference} from './managed-object-reference';
-import {TaskFilterSpecRecursionOption} from './task-filter-spec-recursion-option';
+import {DynamicData} from './dynamic-data';
 
-export interface TaskFilterSpecByEntity {
-  entity: ManagedObjectReference & { $type: 'ManagedEntity' };
+import {TaskFilterSpecRecursionOption} from './task-filter-spec-recursion-option';
+export interface TaskFilterSpecByEntity extends DynamicData {
   recursion: TaskFilterSpecRecursionOption;
 }

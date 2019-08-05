@@ -1,5 +1,6 @@
-import {HostIpRouteConfig} from "./host-ip-route-config";
+import {DynamicData} from './dynamic-data';
 
-export interface HostVirtualNicIpRouteSpec {
+import {HostIpRouteConfig} from './host-ip-route-config';
+export interface HostVirtualNicIpRouteSpec extends DynamicData {
   ipRouteConfig?: HostIpRouteConfig;
 }

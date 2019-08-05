@@ -1,6 +1,7 @@
-import {HostPortGroupSpec} from "./host-port-group-spec";
+import {DynamicData} from './dynamic-data';
 
-export interface HostPortGroupConfig {
+import {HostPortGroupSpec} from './host-port-group-spec';
+export interface HostPortGroupConfig extends DynamicData {
   changeOperation?: string;
   spec?: HostPortGroupSpec;
 }

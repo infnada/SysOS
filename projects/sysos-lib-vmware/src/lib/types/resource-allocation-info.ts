@@ -1,9 +1,11 @@
-import {SharesInfo} from './shares-info';
+import {DynamicData} from './dynamic-data';
 
-export interface ResourceAllocationInfo {
+import {SharesInfo} from './shares-info';
+import {Long} from './long';
+export interface ResourceAllocationInfo extends DynamicData {
   expandableReservation?: boolean;
-  limit?: number;
-  overheadLimit?: number;
-  reservation?: number;
+  limit?: Long;
+  overheadLimit?: Long;
+  reservation?: Long;
   shares?: SharesInfo;
 }

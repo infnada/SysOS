@@ -1,7 +1,7 @@
-import {Permission} from "./permission";
+import {DynamicData} from './dynamic-data';
 
-export interface HostSecuritySpec {
+import {Permission} from './permission';
+export interface HostSecuritySpec extends DynamicData {
   addPermission?: Permission[];
-  adminPassword?: string;
-  removePermission?: Permission[];
+  adminPassword?: Permission[];
 }

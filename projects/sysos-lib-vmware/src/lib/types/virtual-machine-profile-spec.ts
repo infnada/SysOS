@@ -1,3 +1,5 @@
-export interface VirtualMachineProfileSpec {
+import {DynamicData} from './dynamic-data';
+
+export interface VirtualMachineProfileSpec extends DynamicData {
 
 }

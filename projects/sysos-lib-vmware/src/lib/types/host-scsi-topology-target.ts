@@ -1,9 +1,10 @@
-import {HostScsiTopologyLun} from "./host-scsi-topology-lun";
-import {HostTargetTransport} from "./host-target-transport";
+import {DynamicData} from './dynamic-data';
 
-export interface HostScsiTopologyTarget {
-  key: string;
-  lun?: HostScsiTopologyLun[];
-  target: number;
+import {HostScsiTopologyLun} from './host-scsi-topology-lun';
+import {HostTargetTransport} from './host-target-transport';
+import {Int} from './int';
+export interface HostScsiTopologyTarget extends DynamicData {
+  key?: HostScsiTopologyLun[];
+  target: Int;
   transport?: HostTargetTransport;
 }

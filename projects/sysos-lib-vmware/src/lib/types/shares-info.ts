@@ -1,6 +1,8 @@
-import {SharesLevel} from './shares-level';
+import {DynamicData} from './dynamic-data';
 
-export interface SharesInfo {
+import {SharesLevel} from './shares-level';
+import {Int} from './int';
+export interface SharesInfo extends DynamicData {
   level: SharesLevel;
-  shares: number;
+  shares: Int;
 }

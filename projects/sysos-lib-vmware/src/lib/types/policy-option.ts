@@ -1,6 +1,7 @@
-import {KeyAnyValue} from "./key-any-value";
+import {DynamicData} from './dynamic-data';
 
-export interface PolicyOption {
+import {KeyAnyValue} from './key-any-value';
+export interface PolicyOption extends DynamicData {
   id: string;
   parameter?: KeyAnyValue[];
 }

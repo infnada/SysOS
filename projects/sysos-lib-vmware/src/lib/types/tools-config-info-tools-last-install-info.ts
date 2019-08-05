@@ -1,6 +1,8 @@
-import {LocalizedMethodFault} from './localized-method-fault';
+import {DynamicData} from './dynamic-data';
 
-export interface ToolsConfigInfoToolsLastInstallInfo {
-  counter: number;
+import {LocalizedMethodFault} from './localized-method-fault';
+import {Int} from './int';
+export interface ToolsConfigInfoToolsLastInstallInfo extends DynamicData {
+  counter: Int;
   fault?: LocalizedMethodFault;
 }

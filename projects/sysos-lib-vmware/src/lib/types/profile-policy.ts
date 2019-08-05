@@ -1,6 +1,7 @@
-import {PolicyOption} from "./policy-option";
+import {DynamicData} from './dynamic-data';
 
-export interface ProfilePolicy {
+import {PolicyOption} from './policy-option';
+export interface ProfilePolicy extends DynamicData {
   id: string;
   policyOption: PolicyOption;
 }

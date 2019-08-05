@@ -1,8 +1,8 @@
-import {AlarmEvent} from "./alarm-event";
-import {ManagedEntityEventArgument} from "./managed-entity-event-argument";
-import {ChangesInfoEventArgument} from "./changes-info-event-argument";
+import {AlarmEvent} from './alarm-event';
 
+import {ChangesInfoEventArgument} from './changes-info-event-argument';
+import {ManagedEntityEventArgument} from './managed-entity-event-argument';
 export interface AlarmReconfiguredEvent extends AlarmEvent {
   configChanges?: ChangesInfoEventArgument;
-  entity: ManagedEntityEventArgument
+  entity: ManagedEntityEventArgument;
 }

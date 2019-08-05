@@ -1,3 +1,5 @@
-export interface ScsiLunCapabilities {
+import {DynamicData} from './dynamic-data';
+
+export interface ScsiLunCapabilities extends DynamicData {
   updateDisplayNameSupported: boolean;
 }

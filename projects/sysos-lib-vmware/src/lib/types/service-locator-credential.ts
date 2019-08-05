@@ -1,3 +1,5 @@
-export interface ServiceLocatorCredential {
+import {DynamicData} from './dynamic-data';
+
+export interface ServiceLocatorCredential extends DynamicData {
 
 }

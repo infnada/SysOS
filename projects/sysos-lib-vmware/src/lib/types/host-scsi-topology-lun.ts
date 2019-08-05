@@ -1,5 +1,8 @@
-export interface HostScsiTopologyLun {
+import {DynamicData} from './dynamic-data';
+import {Int} from './int';
+
+export interface HostScsiTopologyLun extends DynamicData {
   key: string;
-  lun: number;
+  lun: Int;
   scsiLun: string;
 }

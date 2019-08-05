@@ -139,6 +139,7 @@ import {SysosLibVmwareVirtualMachineSnapshotService} from './managed-object-type
 import {SysosLibVmwareVmwareDistributedVirtualSwitchService} from './managed-object-types/sysos-lib-vmware-vmware-distributed-virtual-switch.service';
 import {SysosLibVmwareVsanUpgradeSystemService} from './managed-object-types/sysos-lib-vmware-vsan-upgrade-system.service';
 import {SysosLibVmwareVstorageObjectManagerBaseService} from './managed-object-types/sysos-lib-vmware-vstorage-object-manager-base.service';
+
 import {ConnectionData} from './types/connection-data';
 import {ManagedObjectReference} from './types/managed-object-reference';
 import {VirtualMachineCloneSpec} from './types/virtual-machine-clone-spec';
@@ -155,6 +156,7 @@ import {WaitOptions} from './types/wait-options';
 import {TraversalSpec} from './types/traversal-spec';
 import {VirtualMachineConfigSpec} from './types/virtual-machine-config-spec';
 import {TaskFilterSpec} from './types/task-filter-spec';
+import {DateTime} from './types/date-time';
 
 @Injectable({
   providedIn: 'root'
@@ -807,8 +809,8 @@ export class SysosLibVmwareService {
   QueryAvailablePartition() { return this.HostDiagnosticSystem.QueryAvailablePartition.apply( this, arguments ).catch(e => e); }
   QueryAvailablePerfMetric(connectionData: ConnectionData,
                            managedObject: ManagedObjectReference,
-                           beginTime?: Date,
-                           endTime?: Date,
+                           beginTime?: DateTime,
+                           endTime?: DateTime,
                            intervalId?: number) { return this.PerformanceManager.QueryAvailablePerfMetric.apply( this, arguments ).catch(e => e); }
   QueryAvailableSsds() { return this.HostStorageSystem.QueryAvailableSsds.apply( this, arguments ).catch(e => e); }
   QueryAvailableTimeZones() { return this.HostDateTimeSystem.QueryAvailableTimeZones.apply( this, arguments ).catch(e => e); }

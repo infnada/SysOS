@@ -1,8 +1,10 @@
-import {HostNetworkPolicy} from "./host-network-policy";
+import {DynamicData} from './dynamic-data';
 
-export interface HostPortGroupSpec {
+import {HostNetworkPolicy} from './host-network-policy';
+import {Int} from './int';
+export interface HostPortGroupSpec extends DynamicData {
   name: string;
   policy: HostNetworkPolicy;
-  vlanId: number;
+  vlanId: Int;
   vswitchName: string;
 }

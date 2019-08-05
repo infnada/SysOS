@@ -1,6 +1,7 @@
-import {KeyValue} from './key-value';
+import {DynamicData} from './dynamic-data';
 
-export interface ExtensionResourceInfo {
+import {KeyValue} from './key-value';
+export interface ExtensionResourceInfo extends DynamicData {
   data: KeyValue[];
   locale: string;
   module: string;

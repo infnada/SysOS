@@ -1,6 +1,7 @@
-import {HostNatServiceSpec} from "./host-nat-service-spec";
+import {DynamicData} from './dynamic-data';
 
-export interface HostNatServiceConfig {
+import {HostNatServiceSpec} from './host-nat-service-spec';
+export interface HostNatServiceConfig extends DynamicData {
   changeOperation?: string;
   key: string;
   spec: HostNatServiceSpec;

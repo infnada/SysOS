@@ -1,6 +1,7 @@
-import {ManagedEntityStatus} from "./managed-entity-status";
+import {DynamicData} from './dynamic-data';
 
-export interface AlarmFilterSpec {
+import {ManagedEntityStatus} from './managed-entity-status';
+export interface AlarmFilterSpec extends DynamicData {
   status?: ManagedEntityStatus[];
   typeEntity?: string;
   typeTrigger?: string;

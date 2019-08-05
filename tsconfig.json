@@ -97,6 +97,12 @@
       "@sysos/app-datastore-explorer/*": [
         "projects/sysos-app-datastore-explorer/*"
       ],
+      "@sysos/app-drawer": [
+        "projects/sysos-app-drawer/src/public-api"
+      ],
+      "@sysos/app-drawer/*": [
+        "projects/sysos-app-drawer/*"
+      ],
       "@sysos/app-file-explorer": [
         "projects/sysos-app-file-explorer/src/public-api"
       ],

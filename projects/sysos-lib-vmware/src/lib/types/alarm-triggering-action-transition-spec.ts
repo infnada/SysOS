@@ -1,6 +1,7 @@
-import {ManagedEntityStatus} from "./managed-entity-status";
+import {DynamicData} from './dynamic-data';
 
-export interface AlarmTriggeringActionTransitionSpec {
+import {ManagedEntityStatus} from './managed-entity-status';
+export interface AlarmTriggeringActionTransitionSpec extends DynamicData {
   finalState: ManagedEntityStatus;
   repeats: boolean;
   startState: ManagedEntityStatus;

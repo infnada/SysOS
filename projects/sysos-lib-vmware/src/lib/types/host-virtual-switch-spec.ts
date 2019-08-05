@@ -1,9 +1,11 @@
-import {HostVirtualSwitchBridge} from "./host-cirtual-switch-bridge";
-import {HostNetworkPolicy} from "./host-network-policy";
+import {DynamicData} from './dynamic-data';
 
-export interface HostVirtualSwitchSpec {
+import {HostVirtualSwitchBridge} from './host-virtual-switch-bridge';
+import {HostNetworkPolicy} from './host-network-policy';
+import {Int} from './int';
+export interface HostVirtualSwitchSpec extends DynamicData {
   bridge?: HostVirtualSwitchBridge;
-  mtu?: number;
-  numPorts: number;
+  mtu?: Int;
+  numPorts: Int;
   policy?: HostNetworkPolicy;
 }

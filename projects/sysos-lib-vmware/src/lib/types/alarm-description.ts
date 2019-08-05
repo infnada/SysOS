@@ -1,7 +1,8 @@
-import {TypeDescription} from "./type-description";
-import {ElementDescription} from "./element-description";
+import {DynamicData} from './dynamic-data';
 
-export interface AlarmDescription {
+import {TypeDescription} from './type-description';
+import {ElementDescription} from './element-description';
+export interface AlarmDescription extends DynamicData {
   action: TypeDescription[];
   datastoreConnectionState: ElementDescription[];
   entityStatus: ElementDescription[];
@@ -11,5 +12,5 @@ export interface AlarmDescription {
   metricOperator: ElementDescription[];
   stateOperator: ElementDescription[];
   virtualMachineGuestHeartbeatStatus: ElementDescription[];
-  virtualMachinePowerState:ElementDescription[];
+  virtualMachinePowerState: ElementDescription[];
 }

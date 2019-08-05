@@ -1,7 +1,8 @@
-import {HostNicFailureCriteria} from "./host-nic-failure-criteria";
-import {HostNicOrderPolicy} from "./host-nic-order-policy";
+import {DynamicData} from './dynamic-data';
 
-export interface HostNicTeamingPolicy {
+import {HostNicFailureCriteria} from './host-nic-failure-criteria';
+import {HostNicOrderPolicy} from './host-nic-order-policy';
+export interface HostNicTeamingPolicy extends DynamicData {
   failureCriteria?: HostNicFailureCriteria;
   nicOrder?: HostNicOrderPolicy;
   notifySwitches?: boolean;

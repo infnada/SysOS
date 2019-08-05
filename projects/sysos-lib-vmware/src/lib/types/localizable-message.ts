@@ -1,6 +1,7 @@
-import {KeyAnyValue} from './key-any-value';
+import {DynamicData} from './dynamic-data';
 
-export interface LocalizableMessage {
+import {KeyAnyValue} from './key-any-value';
+export interface LocalizableMessage extends DynamicData {
   arg?: KeyAnyValue[];
   key: string;
   message?: string;

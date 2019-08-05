@@ -1,6 +1,7 @@
-import {HostNtpConfig} from "./host-ntp-config";
+import {DynamicData} from './dynamic-data';
 
-export interface HostDateTimeConfig {
+import {HostNtpConfig} from './host-ntp-config';
+export interface HostDateTimeConfig extends DynamicData {
   ntpConfig?: HostNtpConfig;
   timeZone?: string;
 }

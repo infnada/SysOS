@@ -1,8 +1,8 @@
-import {LicenseSource} from "./license-source";
+import {DynamicData} from './dynamic-data';
 
-export interface HostLicenseSpec {
+import {LicenseSource} from './license-source';
+export interface HostLicenseSpec extends DynamicData {
   disabledFeatureKey?: string[];
-  editionKey?: string;
-  enabledFeatureKey?: string[];
+  editionKey?: string[];
   source?: LicenseSource;
 }

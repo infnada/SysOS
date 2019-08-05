@@ -1,3 +1,5 @@
-export interface DistributedVirtualSwitchHostMemberBacking {
+import {DynamicData} from './dynamic-data';
+
+export interface DistributedVirtualSwitchHostMemberBacking extends DynamicData {
 
 }

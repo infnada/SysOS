@@ -1,4 +1,6 @@
-export interface ExtensionEventTypeInfo {
+import {DynamicData} from './dynamic-data';
+
+export interface ExtensionEventTypeInfo extends DynamicData {
   eventID: string;
-  eventTypeSchema: string;
+  eventTypeSchema?: string;
 }

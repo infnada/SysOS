@@ -1,8 +1,8 @@
-import {ServiceLocatorCredential} from './service-locator-credential';
+import {DynamicData} from './dynamic-data';
 
-export interface ServiceLocator {
+import {ServiceLocatorCredential} from './service-locator-credential';
+export interface ServiceLocator extends DynamicData {
   credential: ServiceLocatorCredential;
   instanceUuid: string;
   sslThumbprint?: string;
-  url: string;
 }

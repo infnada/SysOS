@@ -1,3 +1,5 @@
-export interface TaskReason {
+import {DynamicData} from './dynamic-data';
+
+export interface TaskReason extends DynamicData {
 
 }

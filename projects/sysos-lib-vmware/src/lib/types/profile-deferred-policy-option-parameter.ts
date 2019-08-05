@@ -1,7 +1,8 @@
-import {KeyAnyValue} from "./key-any-value";
-import {ProfilePropertyPath} from "./profile-property-path";
+import {DynamicData} from './dynamic-data';
 
-export interface ProfileDeferredPolicyOptionParameter {
+import {ProfilePropertyPath} from './profile-property-path';
+import {KeyAnyValue} from './key-any-value';
+export interface ProfileDeferredPolicyOptionParameter extends DynamicData {
   inputPath: ProfilePropertyPath;
   parameter?: KeyAnyValue[];
 }

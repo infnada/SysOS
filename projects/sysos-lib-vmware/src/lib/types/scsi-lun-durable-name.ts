@@ -1,5 +1,8 @@
-export interface ScsiLunDurableName {
-  data?: number[];
+import {DynamicData} from './dynamic-data';
+import {Byte} from './byte';
+
+export interface ScsiLunDurableName extends DynamicData {
+  data?: Byte[];
   namespace: string;
-  namespaceId: number;
+  namespaceId: Byte;
 }

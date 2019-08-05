@@ -1,8 +1,9 @@
-import {DateTime} from "./date-time";
-import {LocalizedMethodFault} from "./localized-method-fault";
-import {ManagedObjectReference} from "./managed-object-reference";
+import {DynamicData} from './dynamic-data';
 
-export interface ApplyHostProfileConfigurationResult {
+import {LocalizedMethodFault} from './localized-method-fault';
+import {ManagedObjectReference} from './managed-object-reference';
+import {DateTime} from './date-time';
+export interface ApplyHostProfileConfigurationResult extends DynamicData {
   completeTime: DateTime;
   errors?: LocalizedMethodFault[];
   host: ManagedObjectReference & { $type: 'HostSystem' };

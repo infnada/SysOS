@@ -6,6 +6,7 @@ import {SysosLibVmwareHelperService} from '../sysos-lib-vmware-helper.service';
 import {ConnectionData} from '../types/connection-data';
 import {PerfQuerySpec} from '../types/perf-query-spec';
 import {ManagedObjectReference} from '../types/managed-object-reference';
+import {DateTime} from '../types/date-time';
 
 @Injectable({
   providedIn: 'root'
@@ -22,8 +23,8 @@ export class SysosLibVmwarePerformanceManagerService {
   QueryAvailablePerfMetric(
     connectionData: ConnectionData,
     managedObject: ManagedObjectReference,
-    beginTime?: Date,
-    endTime?: Date,
+    beginTime?: DateTime,
+    endTime?: DateTime,
     intervalId?: number
   ) {
     const xml = `<QueryAvailablePerfMetric xmlns='urn:vim25'>

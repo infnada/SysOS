@@ -1,6 +1,7 @@
-import {Description} from './description';
+import {DynamicData} from './dynamic-data';
 
-export interface ExtensionClientInfo {
+import {Description} from './description';
+export interface ExtensionClientInfo extends DynamicData {
   company: string;
   description: Description;
   type: string;

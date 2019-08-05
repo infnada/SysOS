@@ -1,6 +1,7 @@
-import {HostTargetTransport} from "./host-target-transport";
+import {DynamicData} from './dynamic-data';
 
-export interface HostPlugStoreTopologyTarget {
+import {HostTargetTransport} from './host-target-transport';
+export interface HostPlugStoreTopologyTarget extends DynamicData {
   key: string;
   transport?: HostTargetTransport;
 }

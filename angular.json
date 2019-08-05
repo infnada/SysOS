@@ -29,6 +29,11 @@
                 "glob": "**/*",
                 "input": "node_modules/ngx-monaco-editor/assets/monaco",
                 "output": "./assets/monaco/"
+              },
+              {
+                "glob": "**/*",
+                "input": "./node_modules/mxgraph/javascript/src",
+                "output": "/assets/mxgraph"
               }
             ],
             "styles": [
@@ -36,7 +41,8 @@
             ],
             "scripts": [
               "node_modules/systemjs/dist/system.js",
-              "node_modules/lodash/lodash.js"
+              "node_modules/lodash/lodash.js",
+              "node_modules/mxgraph/javascript/mxClient.js"
             ],
             "es5BrowserSupport": true
           },
@@ -770,6 +776,46 @@
             "tsConfig": [
               "projects/sysos-app-credentials-manager/tsconfig.lib.json",
               "projects/sysos-app-credentials-manager/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-app-drawer": {
+      "root": "projects/sysos-app-drawer",
+      "sourceRoot": "projects/sysos-app-drawer/src",
+      "projectType": "library",
+      "prefix": "sadrw",
+      "schematics": {
+        "@schematics/angular:component": {
+          "styleext": "scss"
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-app-drawer/tsconfig.lib.json",
+            "project": "projects/sysos-app-drawer/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-app-drawer/src/test.ts",
+            "tsConfig": "projects/sysos-app-drawer/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-app-drawer/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-app-drawer/tsconfig.lib.json",
+              "projects/sysos-app-drawer/tsconfig.spec.json"
             ],
             "exclude": [
               "**/node_modules/**"

@@ -1,6 +1,7 @@
-import {HostVirtualNicSpec} from "./host-virtual-nic-spec";
+import {DynamicData} from './dynamic-data';
 
-export interface HostVirtualNicConfig {
+import {HostVirtualNicSpec} from './host-virtual-nic-spec';
+export interface HostVirtualNicConfig extends DynamicData {
   changeOperation?: string;
   device?: string;
   portgroup: string;

@@ -1,6 +1,7 @@
-import {ExtSolutionManagerInfoTabInfo} from './ext-solution-manager-info-tab-info';
+import {DynamicData} from './dynamic-data';
 
-export interface ExtSolutionManagerInfo {
+import {ExtSolutionManagerInfoTabInfo} from './ext-solution-manager-info-tab-info';
+export interface ExtSolutionManagerInfo extends DynamicData {
   smallIconUrl?: string;
   tab?: ExtSolutionManagerInfoTabInfo[];
 }

@@ -1,8 +1,9 @@
-import {ManagedObjectReference} from './managed-object-reference';
+import {DynamicData} from './dynamic-data';
 
-export interface ExtExtendedProductInfo {
+import {ManagedObjectReference} from './managed-object-reference';
+export interface ExtExtendedProductInfo extends DynamicData {
   companyUrl?: string;
   managementUrl?: string;
   productUrl?: string;
-  self?: ManagedObjectReference;
+  self?: ManagedObjectReference & { $type: 'ManagedEntity' };
 }

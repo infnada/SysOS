@@ -1,7 +1,8 @@
-import {LocalizableMessage} from "./localizable-message";
-import {ProfilePropertyPath} from "./profile-property-path";
+import {DynamicData} from './dynamic-data';
 
-export interface ProfileExecuteError {
+import {LocalizableMessage} from './localizable-message';
+import {ProfilePropertyPath} from './profile-property-path';
+export interface ProfileExecuteError extends DynamicData {
   message: LocalizableMessage;
   path?: ProfilePropertyPath;
 }

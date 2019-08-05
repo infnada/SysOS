@@ -1,4 +1,6 @@
-export interface AboutInfo {
+import {DynamicData} from './dynamic-data';
+
+export interface AboutInfo extends DynamicData {
   apiType: string;
   apiVersion: string;
   build: string;

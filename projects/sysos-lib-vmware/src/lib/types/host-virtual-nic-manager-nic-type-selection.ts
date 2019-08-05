@@ -1,6 +1,7 @@
-import {HostVirtualNicConnection} from "./host-virtual-nic-connection";
+import {DynamicData} from './dynamic-data';
 
-export interface HostVirtualNicManagerNicTypeSelection {
+import {HostVirtualNicConnection} from './host-virtual-nic-connection';
+export interface HostVirtualNicManagerNicTypeSelection extends DynamicData {
   nicType?: string[];
   vnic: HostVirtualNicConnection;
 }

@@ -1,6 +1,7 @@
-import {MethodFault} from './method-fault';
+import {DynamicData} from './dynamic-data';
 
-export interface LocalizedMethodFault {
+import {MethodFault} from './method-fault';
+export interface LocalizedMethodFault extends DynamicData {
   fault: MethodFault;
-  localizedMessage: string;
+  localizedMessage?: string;
 }

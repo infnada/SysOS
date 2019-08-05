@@ -1,6 +1,7 @@
-import {CustomizationIPSettings} from './customization-ip-settings';
+import {DynamicData} from './dynamic-data';
 
-export interface CustomizationAdapterMapping {
+import {CustomizationIPSettings} from './customization-i-p-settings';
+export interface CustomizationAdapterMapping extends DynamicData {
   adapter: CustomizationIPSettings;
   macAddress?: string;
 }

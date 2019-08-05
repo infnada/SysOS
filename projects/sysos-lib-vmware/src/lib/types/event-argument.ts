@@ -1,3 +1,5 @@
-export interface EventArgument {
+import {DynamicData} from './dynamic-data';
+
+export interface EventArgument extends DynamicData {
 
 }

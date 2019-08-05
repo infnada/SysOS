@@ -1,9 +1,11 @@
-import {VirtualMachineBootOptionsBootableDevice} from './virtual-machine-boot-options-bootable-device';
+import {DynamicData} from './dynamic-data';
 
-export interface VirtualMachineBootOptions {
-  bootDelay?: number;
+import {VirtualMachineBootOptionsBootableDevice} from './virtual-machine-boot-options-bootable-device';
+import {Long} from './long';
+export interface VirtualMachineBootOptions extends DynamicData {
+  bootDelay?: Long;
   bootOrder?: VirtualMachineBootOptionsBootableDevice[];
-  bootRetryDelay?: number;
+  bootRetryDelay?: Long;
   bootRetryEnabled?: boolean;
   efiSecureBootEnabled?: boolean;
   enterBIOSSetup?: boolean;

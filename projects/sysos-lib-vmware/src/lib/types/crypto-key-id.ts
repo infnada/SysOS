@@ -1,6 +1,7 @@
-import {KeyProviderId} from './key-provider-id';
+import {DynamicData} from './dynamic-data';
 
-export interface CryptoKeyId {
+import {KeyProviderId} from './key-provider-id';
+export interface CryptoKeyId extends DynamicData {
   keyId: string;
   providerId?: KeyProviderId;
 }

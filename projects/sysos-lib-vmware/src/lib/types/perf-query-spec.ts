@@ -1,13 +1,15 @@
-import {PerfMetricId} from './perf-metric-id';
-import {ManagedObjectReference} from './managed-object-reference';
-import {DateTime} from './date-time';
+import {DynamicData} from './dynamic-data';
 
-export interface PerfQuerySpec {
+import {ManagedObjectReference} from './managed-object-reference';
+import {PerfMetricId} from './perf-metric-id';
+import {Int} from './int';
+import {DateTime} from './date-time';
+export interface PerfQuerySpec extends DynamicData {
   endTime?: DateTime;
   entity: ManagedObjectReference;
   format?: string;
-  intervalId?: number;
-  maxSample?: number;
+  intervalId?: Int;
+  maxSample?: Int;
   metricId?: PerfMetricId[];
-  startTime: DateTime;
+  startTime?: DateTime;
 }

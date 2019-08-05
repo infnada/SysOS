@@ -1,6 +1,7 @@
-import {HostActiveDirectorySpec} from "./host-active-directory-spec";
+import {DynamicData} from './dynamic-data';
 
-export interface HostActiveDirectory {
+import {HostActiveDirectorySpec} from './host-active-directory-spec';
+export interface HostActiveDirectory extends DynamicData {
   changeOperation: string;
   spec?: HostActiveDirectorySpec;
 }

@@ -1,3 +1,5 @@
+import {DynamicData} from './dynamic-data';
+
 import {VirtualMachineBootOptions} from './virtual-machine-boot-options';
 import {VirtualMachineConsolePreferences} from './virtual-machine-console-preferences';
 import {VirtualMachineAffinityInfo} from './virtual-machine-affinity-info';
@@ -16,11 +18,13 @@ import {VirtualMachineDefaultPowerOpInfo} from './virtual-machine-default-power-
 import {ReplicationConfigSpec} from './replication-config-spec';
 import {ScheduledHardwareUpgradeInfo} from './scheduled-hardware-upgrade-info';
 import {ToolsConfigInfo} from './tools-config-info';
-import {VirtualMachineProfileSpec} from './virtual-machine-profile-spec';
 import {VmConfigSpec} from './vm-config-spec';
+import {VirtualMachineProfileSpec} from './virtual-machine-profile-spec';
+import {Int} from './int';
 import {DateTime} from './date-time';
-
-export interface VirtualMachineConfigSpec {
+import {Short} from './short';
+import {Long} from './long';
+export interface VirtualMachineConfigSpec extends DynamicData {
   alternateGuestName?: string;
   annotation?: string;
   bootOptions?: VirtualMachineBootOptions;
@@ -46,27 +50,27 @@ export interface VirtualMachineConfigSpec {
   latencySensitivity?: LatencySensitivity;
   locationId?: string;
   managedBy?: ManagedByInfo;
-  maxMksConnections?: number;
+  maxMksConnections?: Int;
   memoryAffinity?: VirtualMachineAffinityInfo;
   memoryAllocation?: ResourceAllocationInfo;
   memoryHotAddEnabled?: boolean;
-  memoryMB?: number;
+  memoryMB?: Long;
   memoryReservationLockedToMax?: boolean;
   messageBusTunnelEnabled?: boolean;
   migrateEncryption?: string;
   name?: string;
   nestedHVEnabled?: boolean;
   networkShaper?: VirtualMachineNetworkShaperInfo;
-  npivDesiredNodeWwns?: number;
-  npivDesiredPortWwns?: number;
-  npivNodeWorldWideName?: number[];
+  npivDesiredNodeWwns?: Short;
+  npivDesiredPortWwns?: Short;
+  npivNodeWorldWideName?: Long[];
   npivOnNonRdmDisks?: boolean;
-  npivPortWorldWideName?: number[];
+  npivPortWorldWideName?: Long[];
   npivTemporaryDisabled?: boolean;
   npivWorldWideNameOp?: string;
   npivWorldWideNameType?: string;
-  numCoresPerSocket?: number;
-  numCPUs?: number;
+  numCoresPerSocket?: Int;
+  numCPUs?: Int;
   powerOpInfo?: VirtualMachineDefaultPowerOpInfo;
   repConfig?: ReplicationConfigSpec;
   scheduledHardwareUpgradeInfo?: ScheduledHardwareUpgradeInfo;
@@ -77,7 +81,6 @@ export interface VirtualMachineConfigSpec {
   vAppConfigRemoved?: boolean;
   vAssertsEnabled?: boolean;
   version?: string;
-  virtualICH7MPresent?: boolean;
   virtualSMCPresent?: boolean;
   vmProfile?: VirtualMachineProfileSpec[];
   vPMCEnabled?: boolean;

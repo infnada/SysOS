@@ -1,7 +1,8 @@
-import {ManagedObjectReference} from './managed-object-reference';
-import {SelectionSpec} from './selection-spec';
+import {DynamicData} from './dynamic-data';
 
-export interface ObjectSpec {
+import {SelectionSpec} from './selection-spec';
+import {ManagedObjectReference} from './managed-object-reference';
+export interface ObjectSpec extends DynamicData {
   obj: ManagedObjectReference;
   selectSet?: SelectionSpec[];
   skip?: boolean;

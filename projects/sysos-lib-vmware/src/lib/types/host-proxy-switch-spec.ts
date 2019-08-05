@@ -1,5 +1,6 @@
-import {DistributedVirtualSwitchHostMemberBacking} from "./distributed-virtual-switch-host-member-backing";
+import {DynamicData} from './dynamic-data';
 
-export interface HostProxySwitchSpec {
+import {DistributedVirtualSwitchHostMemberBacking} from './distributed-virtual-switch-host-member-backing';
+export interface HostProxySwitchSpec extends DynamicData {
   backing?: DistributedVirtualSwitchHostMemberBacking;
 }

@@ -1,14 +1,16 @@
-import {DateTime} from "./date-time";
-import {ManagedObjectReference} from "./managed-object-reference";
-import {ManagedEntityStatus} from "./managed-entity-status";
+import {DynamicData} from './dynamic-data';
 
-export interface AlarmState {
+import {ManagedObjectReference} from './managed-object-reference';
+import {ManagedEntityStatus} from './managed-entity-status';
+import {Int} from './int';
+import {DateTime} from './date-time';
+export interface AlarmState extends DynamicData {
   acknowledged?: boolean;
   acknowledgedByUser?: string;
   acknowledgedTime?: DateTime;
   alarm: ManagedObjectReference & { $type: 'Alarm' };
   entity: ManagedObjectReference & { $type: 'ManagedEntity' };
-  eventKey?: number;
+  eventKey?: Int;
   key: string;
   overallStatus: ManagedEntityStatus;
   time: DateTime;

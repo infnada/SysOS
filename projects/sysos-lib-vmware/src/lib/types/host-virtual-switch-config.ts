@@ -1,6 +1,7 @@
-import {HostVirtualSwitchSpec} from "./host-virtual-switch-spec";
+import {DynamicData} from './dynamic-data';
 
-export interface HostVirtualSwitchConfig {
+import {HostVirtualSwitchSpec} from './host-virtual-switch-spec';
+export interface HostVirtualSwitchConfig extends DynamicData {
   changeOperation?: string;
   name: string;
   spec?: HostVirtualSwitchSpec;

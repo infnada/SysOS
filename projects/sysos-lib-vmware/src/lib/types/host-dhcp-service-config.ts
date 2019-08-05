@@ -1,6 +1,7 @@
-import {HostDhcpServiceSpec} from "./host-dhcp-service-spec";
+import {DynamicData} from './dynamic-data';
 
-export interface HostDhcpServiceConfig {
+import {HostDhcpServiceSpec} from './host-dhcp-service-spec';
+export interface HostDhcpServiceConfig extends DynamicData {
   changeOperation?: string;
   key: string;
   spec: HostDhcpServiceSpec;

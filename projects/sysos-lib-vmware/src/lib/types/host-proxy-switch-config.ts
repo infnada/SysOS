@@ -1,6 +1,7 @@
-import {HostProxySwitchSpec} from "./host-proxy-switch-spec";
+import {DynamicData} from './dynamic-data';
 
-export interface HostProxySwitchConfig {
+import {HostProxySwitchSpec} from './host-proxy-switch-spec';
+export interface HostProxySwitchConfig extends DynamicData {
   changeOperation?: string;
   spec?: HostProxySwitchSpec;
   uuid: string;

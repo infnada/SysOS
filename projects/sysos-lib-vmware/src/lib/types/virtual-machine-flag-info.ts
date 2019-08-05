@@ -1,4 +1,6 @@
-export interface VirtualMachineFlagInfo {
+import {DynamicData} from './dynamic-data';
+
+export interface VirtualMachineFlagInfo extends DynamicData {
   cbrcCacheEnabled?: boolean;
   disableAcceleration?: boolean;
   diskUuidEnabled?: boolean;

@@ -1,18 +1,21 @@
-import {ReplicationInfoDiskSettings} from './replication-info-disk-settings';
+import {DynamicData} from './dynamic-data';
 
-export interface ReplicationConfigSpec {
+import {ReplicationInfoDiskSettings} from './replication-info-disk-settings';
+import {Int} from './int';
+import {Long} from './long';
+export interface ReplicationConfigSpec extends DynamicData {
   destination: string;
   disk?: ReplicationInfoDiskSettings[];
   encryptionDestination?: string;
-  encryptionPort?: number;
-  generation: number;
+  encryptionPort?: Int;
+  generation: Long;
   netCompressionEnabled?: boolean;
   netEncryptionEnabled?: boolean;
   oppUpdatesEnabled: boolean;
   paused: boolean;
-  port: number;
+  port: Int;
   quiesceGuestEnabled: boolean;
   remoteCertificateThumbprint?: string;
-  rpo: number;
+  rpo: Long;
   vmReplicationId: string;
 }

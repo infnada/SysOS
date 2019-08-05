@@ -1,6 +1,7 @@
-import {PhysicalNicSpec} from "./physical-nic-spec";
+import {DynamicData} from './dynamic-data';
 
-export interface PhysicalNicConfig {
+import {PhysicalNicSpec} from './physical-nic-spec';
+export interface PhysicalNicConfig extends DynamicData {
   device: string;
   spec: PhysicalNicSpec;
 }

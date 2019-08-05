@@ -1,8 +1,9 @@
-import {HostIpConfig} from "./host-ip-config";
-import {PhysicalNicLinkInfo} from "./physical-nic-link-info";
+import {DynamicData} from './dynamic-data';
 
-export interface PhysicalNicSpec {
+import {HostIpConfig} from './host-ip-config';
+import {PhysicalNicLinkInfo} from './physical-nic-link-info';
+export interface PhysicalNicSpec extends DynamicData {
   enableEnhancedNetworkingStack?: boolean;
-  ip?: 	HostIpConfig;
+  ip?: HostIpConfig;
   linkSpeed?: PhysicalNicLinkInfo;
 }

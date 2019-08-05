@@ -1,4 +1,7 @@
-export interface HostFirewallRulesetIpNetwork {
+import {DynamicData} from './dynamic-data';
+import {Int} from './int';
+
+export interface HostFirewallRulesetIpNetwork extends DynamicData {
   network: string;
-  prefixLength: number;
+  prefixLength: Int;
 }

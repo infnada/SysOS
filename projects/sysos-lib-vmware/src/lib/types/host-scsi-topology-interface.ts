@@ -1,7 +1,7 @@
-import {HostScsiTopologyTarget} from "./host-scsi-topology-target";
+import {DynamicData} from './dynamic-data';
 
-export interface HostScsiTopologyInterface {
+import {HostScsiTopologyTarget} from './host-scsi-topology-target';
+export interface HostScsiTopologyInterface extends DynamicData {
   adapter: string;
-  key: string;
-  target?: HostScsiTopologyTarget[];
+  key?: HostScsiTopologyTarget[];
 }

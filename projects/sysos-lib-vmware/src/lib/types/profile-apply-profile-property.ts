@@ -1,6 +1,7 @@
-import {ApplyProfile} from "./apply-profile";
+import {DynamicData} from './dynamic-data';
 
-export interface ProfileApplyProfileProperty {
+import {ApplyProfile} from './apply-profile';
+export interface ProfileApplyProfileProperty extends DynamicData {
   array: boolean;
   profile?: ApplyProfile[];
   propertyName: string;
