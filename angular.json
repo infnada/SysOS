@@ -33,7 +33,7 @@
               {
                 "glob": "**/*",
                 "input": "./node_modules/mxgraph/javascript/src",
-                "output": "/assets/mxgraph"
+                "output": "/assets/mxgraph/"
               }
             ],
             "styles": [
@@ -42,6 +42,7 @@
             "scripts": [
               "node_modules/systemjs/dist/system.js",
               "node_modules/lodash/lodash.js",
+              "src/frontend/assets/js/mxgraph.conf.js",
               "node_modules/mxgraph/javascript/mxClient.js"
             ],
             "es5BrowserSupport": true

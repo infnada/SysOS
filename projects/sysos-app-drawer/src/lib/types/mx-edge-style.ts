@@ -1,0 +1,32 @@
+export interface mxEdgeStyle {
+  EntityRelation(state: any, source: any, target: any, points: any, result: any): void;
+  Loop(state: any, source: any, target: any, points: any, result: any): void;
+  ElbowConnector(state: any, source: any, target: any, points: any, result: any): void;
+  SideToSide(state: any, source: any, target: any, points: any, result: any): void;
+  TopToBottom(state: any, source: any, target: any, points: any, result: any): void;
+  SegmentConnector(state: any, source: any, target: any, hints: any, result: any): void;
+  orthBuffer: number;
+  orthPointsFallback: boolean;
+  dirVectors: number[][];
+  wayPoints1: number[][];
+  routePatterns: number[][][];
+  inlineRoutePatterns: number[][][];
+  vertexSeperations: any[];
+  limits: number[][];
+  LEFT_MASK: number;
+  TOP_MASK: number;
+  RIGHT_MASK: number;
+  BOTTOM_MASK: number;
+  LEFT: number;
+  TOP: number;
+  RIGHT: number;
+  BOTTOM: number;
+  SIDE_MASK: number;
+  CENTER_MASK: number;
+  SOURCE_MASK: number;
+  TARGET_MASK: number;
+  VERTEX_MASK: number;
+  getJettySize(state: any, source: any, target: any, points: any, isSource: any): any;
+  OrthConnector(state: any, source: any, target: any, points: any, result: any): void;
+  getRoutePattern(dir: any, quad: any, dx: any, dy: any): any;
+}

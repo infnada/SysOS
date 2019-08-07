@@ -78,7 +78,13 @@ import {COMPILER_OPTIONS, CompilerFactory, Compiler, NgModule} from '@angular/co
 import {JitCompilerFactory} from '@angular/platform-browser-dynamic';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {DragDropModule} from '@angular/cdk/drag-drop';
-import {MatMenuModule, MatDividerModule, MatButtonModule, MatProgressBarModule, MAT_EXPANSION_PANEL_DEFAULT_OPTIONS} from '@angular/material';
+import {
+  MatMenuModule,
+  MatDividerModule,
+  MatButtonModule,
+  MatProgressBarModule,
+  MAT_EXPANSION_PANEL_DEFAULT_OPTIONS
+} from '@angular/material';
 
 import {CookieService} from 'ngx-cookie-service';
 import {SocketIoModule, SocketIoConfig} from 'ngx-socket-io';
@@ -100,7 +106,7 @@ import {TaskBarItemsComponent} from './task-bar-items/task-bar-items.component';
 import {DesktopComponent} from './desktop/desktop.component';
 
 import {CapsLockDirective} from './directives/caps-lock.directive';
-import { BootstrapComponent } from './bootstrap/bootstrap.component';
+import {BootstrapComponent} from './bootstrap/bootstrap.component';
 
 const config: SocketIoConfig = {
   url: window.location.host,

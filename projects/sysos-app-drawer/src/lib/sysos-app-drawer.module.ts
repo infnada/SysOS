@@ -13,9 +13,9 @@ import {MenuComponent} from './menu/menu.component';
 export class SysosAppDrawerModule {
   constructor(private Applications: SysosLibApplicationService) {
     Applications.registerApplication({
-      id: 'notepad',
-      ico: 'pencil',
-      name: 'Notepad',
+      id: 'drawer',
+      ico: 'paint-brush',
+      name: 'Drawer',
       menu: true,
       style: {width: '600px', height: '300px', top: '10%', left: '30%'}
     });
