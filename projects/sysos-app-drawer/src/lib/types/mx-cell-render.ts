@@ -26,8 +26,8 @@
  * arrow, rectangle, ellipse, rhombus, image, line, label, cylinder,
  * swimlane, connector, actor and cloud.
  */
-import {mxRectangle} from "./mx-rectangle";
-import {mxCellState} from "./mx-cell-state";
+import {mxRectangle} from './mx-rectangle';
+import {mxCellState} from './mx-cell-state';
 
 export interface mxCellRenderer {
   /**

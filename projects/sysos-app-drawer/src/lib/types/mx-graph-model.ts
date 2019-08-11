@@ -187,12 +187,12 @@
  *
  * root - <mxCell> that represents the root cell.
  */
-import {mxEventSource} from "./mx-event-source";
-import {mxCell} from "./mx-cell";
-import {mxPoint} from "./mx-point";
-import {Value} from "./value";
-import {mxGeometry} from "./mx-geometry";
-import {mxUndoableEdit} from "./mx-undoable-edit";
+import {mxEventSource} from './mx-event-source';
+import {mxCell} from './mx-cell';
+import {mxPoint} from './mx-point';
+import {Value} from './value';
+import {mxGeometry} from './mx-geometry';
+import {mxUndoableEdit} from './mx-undoable-edit';
 
 export interface mxGraphModel extends mxEventSource {
   /**
@@ -249,7 +249,7 @@ export interface mxGraphModel extends mxEventSource {
    * True if the program flow is currently inside endUpdate.
    */
   endingUpdate: boolean;
-  constructor(root?: any);
+  (root?: any): void;
   /**
    * Sets a new root using <createRoot>.
    */

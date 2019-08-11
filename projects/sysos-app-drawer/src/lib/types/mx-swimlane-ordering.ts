@@ -6,10 +6,10 @@
  *
  * Creates a cycle remover for the given internal model.
  */
-import {mxHierarchicalLayoutStage} from "./mx-hierarchical-layout-stage";
+import {mxHierarchicalLayoutStage} from './mx-hierarchical-layout-stage';
 
 export interface mxSwimlaneOrdering extends mxHierarchicalLayoutStage {
-  constructor(layout: any);
+  (layout: any): void;
   /**
    * Takes the graph detail and configuration information within the facade
    * and creates the resulting laid out graph within that facade for further

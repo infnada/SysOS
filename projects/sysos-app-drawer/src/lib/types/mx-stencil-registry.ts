@@ -21,4 +21,4 @@ export interface mxStencilRegistry {
   stencils: {};
   addStencil(name: any, stencil: any): void;
   getStencil(name: any): any;
-};
+}

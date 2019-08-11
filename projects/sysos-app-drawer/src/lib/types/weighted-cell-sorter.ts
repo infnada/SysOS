@@ -8,7 +8,7 @@
  * Constructs a new weighted cell sorted for the given cell and weight.
  */
 export interface WeightedCellSorter {
-  constructor(cell: any, weightedValue: any);
+  (cell: any, weightedValue: any): void;
   /**
    * Compares two WeightedCellSorters.
    */

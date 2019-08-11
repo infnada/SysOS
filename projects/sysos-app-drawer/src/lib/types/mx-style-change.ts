@@ -11,7 +11,7 @@ export interface mxStyleChange {
   cell: any;
   style: any;
   previous: any;
-  constructor(model: any, cell: any, style: any);
+  (model: any, cell: any, style: any): void;
   /**
    * Changes the style of <cell> to <previous> using
    * <mxGraphModel.styleForCellChanged>.

@@ -1,4 +1,4 @@
-import {mxRectangle} from "./mx-rectangle";
+import {mxRectangle} from './mx-rectangle';
 
 export interface mxConstants {
   DEFAULT_HOTSPOT: number;

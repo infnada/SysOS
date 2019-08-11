@@ -11,7 +11,7 @@ export interface mxVisibleChange {
   cell: any;
   visible: any;
   previous: any;
-  constructor(model: any, cell: any, visible: any);
+  (model: any, cell: any, visible: any): void;
   /**
    * Changes the visible state of <cell> to <previous> using
    * <mxGraphModel.visibleStateForCellChanged>.

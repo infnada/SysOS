@@ -2,9 +2,9 @@
  * Extends <mxShape> to implement an image shape. This shape is registered
  * under <mxConstants.SHAPE_IMAGE> in <mxCellRenderer>.
  */
-import {mxRectangleShape} from "./mx-rectangle-shape";
-import {mxRectangle} from "./mx-rectangle";
-import {mxCellState} from "./mx-cell-state";
+import {mxRectangleShape} from './mx-rectangle-shape';
+import {mxRectangle} from './mx-rectangle';
+import {mxCellState} from './mx-cell-state';
 
 export interface mxImageShape {
   /**
@@ -26,7 +26,7 @@ export interface mxImageShape {
    * @param strokewidth - Optional integer that defines the stroke width. Default is
    * 0. This is stored in <strokewidth>.
    */
-  constructor(bounds: mxRectangle, image: string, fill: string, stroke: string, strokewidth: number);
+  (bounds: mxRectangle, image: string, fill: string, stroke: string, strokewidth: number): void;
   /**
    * Disables offset in IE9 for crisper image output.
    */

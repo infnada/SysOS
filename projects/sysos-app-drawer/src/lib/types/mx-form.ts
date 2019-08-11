@@ -6,7 +6,7 @@
  * Creates a HTML table using the specified classname.
  */
 export interface mxForm {
-  constructor(className: any);
+  (className: any): void;
   /**
    * Returns the table that contains this form.
    */

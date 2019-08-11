@@ -11,12 +11,12 @@
  *
  * state - <mxCellState> of the cell to be resized.
  */
-import {mxRectangle} from "./mx-rectangle";
-import {mxRectangleShape} from "./mx-rectangle-shape";
-import {mxPoint} from "./mx-point";
+import {mxRectangle} from './mx-rectangle';
+import {mxRectangleShape} from './mx-rectangle-shape';
+import {mxPoint} from './mx-point';
 
 export interface mxVertexHandler {
-  constructor(state: any);
+  (state: any): void;
   /**
    * Initializes the shapes required for this vertex handler.
    */

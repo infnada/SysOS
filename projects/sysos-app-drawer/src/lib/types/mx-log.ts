@@ -10,7 +10,9 @@ export interface mxLog {
   isVisible(): any;
   show(): void;
   setVisible(visible: any): void;
+  // tslint:disable-next-line
   enter(string: any): number;
+  // tslint:disable-next-line
   leave(string: any, t0: any): void;
   debug(): void;
   warn(): void;

@@ -21,7 +21,7 @@
  * delay - Optional delay in milliseconds.
  */
 export interface mxTooltipHandler {
-  constructor(graph: any, delay?: number);
+  (graph: any, delay?: number): void;
   /**
    * Returns true if events are handled. This implementation
    * returns <enabled>.

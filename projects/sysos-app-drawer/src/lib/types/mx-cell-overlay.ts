@@ -35,10 +35,10 @@
  * contains the cell. For touch devices this is fired if the element receives
  * a touchend event.
  */
-import {mxEventSource} from "./mx-event-source";
-import {mxImage} from "./mx-image";
-import {mxPoint} from "./mx-point";
-import {mxRectangle} from "./mx-rectangle";
+import {mxEventSource} from './mx-event-source';
+import {mxImage} from './mx-image';
+import {mxPoint} from './mx-point';
+import {mxRectangle} from './mx-rectangle';
 
 export interface mxCellOverlay extends mxEventSource {
   /**

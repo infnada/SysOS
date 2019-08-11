@@ -48,12 +48,12 @@
  * source - <mxGraph> to create the outline for.
  * container - DOM node that will contain the outline.
  */
-import {mxGraph} from "./mx-graph";
-import {mxRectangle} from "./mx-rectangle";
-import {mxPoint} from "./mx-point";
+import {mxGraph} from './mx-graph';
+import {mxRectangle} from './mx-rectangle';
+import {mxPoint} from './mx-point';
 
 export interface mxOutline {
-  constructor(source: any, container: any);
+  (source: any, container: any): void;
   /**
    * Creates the <mxGraph> used in the outline.
    */

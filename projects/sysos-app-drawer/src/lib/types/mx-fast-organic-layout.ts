@@ -7,7 +7,7 @@
  * var layout = new mxFastOrganicLayout(graph);
  * layout.execute(graph.getDefaultParent());
  */
-import {mxGraphLayout} from "./mx-graph-layout";
+import {mxGraphLayout} from './mx-graph-layout';
 
 export interface mxFastOrganicLayout extends mxGraphLayout {
   /**
@@ -130,7 +130,7 @@ export interface mxFastOrganicLayout extends mxGraphLayout {
   /**
    * Constructs a new fast organic layout for the specified graph.
    */
-  constructor(graph: any);
+  (graph: any): void;
   /**
    * Returns a boolean indicating if the given <mxCell> should be ignored as a
    * vertex. This returns true if the cell has no connections.

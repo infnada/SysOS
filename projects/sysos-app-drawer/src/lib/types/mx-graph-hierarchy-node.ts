@@ -9,10 +9,10 @@
  *
  * cell - the real graph cell this node represents
  */
-import {mxGraphAbstractHierarchyCell} from "./mx-graph-abstract-hierarchy-cell";
+import {mxGraphAbstractHierarchyCell} from './mx-graph-abstract-hierarchy-cell';
 
 export interface mxGraphHierarchyNode extends mxGraphAbstractHierarchyCell {
-  constructor(cell?: any);
+  (cell?: any): void;
   /**
    * Returns the integer value of the layer that this node resides in
    */

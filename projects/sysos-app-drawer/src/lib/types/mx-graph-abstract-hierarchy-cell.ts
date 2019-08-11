@@ -12,7 +12,7 @@
  * deterministic. Default is true.
  */
 export interface mxGraphAbstractHierarchyCell {
-  constructor();
+  (): void;
   /**
    * Returns the cells this cell connects to on the next layer up
    */

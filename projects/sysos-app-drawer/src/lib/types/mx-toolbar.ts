@@ -15,10 +15,10 @@
  *
  * container - DOM node that contains the toolbar.
  */
-import {mxEventSource} from "./mx-event-source";
+import {mxEventSource} from './mx-event-source';
 
 export interface mxToolbar extends mxEventSource {
-  constructor(container: any);
+  (container: any): void;
   /**
    * Adds the given function as an image with the specified title and icon
    * and returns the new image node.

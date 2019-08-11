@@ -13,10 +13,10 @@
  * deterministic - Optional boolean that specifies if this layout should be
  * deterministic. Default is true.
  */
-import {mxGraphLayout} from "./mx-graph-layout";
+import {mxGraphLayout} from './mx-graph-layout';
 
 export interface mxSwimlaneLayout extends mxGraphLayout {
-  constructor(graph: any, orientation?: any, deterministic?: any);
+  (graph: any, orientation?: any, deterministic?: any): void;
   /**
    * Returns the internal <mxSwimlaneModel> for this layout algorithm.
    */
@@ -78,7 +78,7 @@ export interface mxSwimlaneLayout extends mxGraphLayout {
    */
   filterDescendants(cell: any, result: any): void;
   /**
-   * Returns true if the given cell is a "port", that is, when connecting to
+   * Returns true if the given cell is a 'port', that is, when connecting to
    * it, its parent is the connecting vertex in terms of graph traversal
    *
    * Parameters:

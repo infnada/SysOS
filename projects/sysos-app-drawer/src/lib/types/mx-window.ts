@@ -179,11 +179,11 @@
  * style - Optional base classname for the window elements. Default is
  * mxWindow.
  */
-import {mxEventSource} from "./mx-event-source";
-import {mxRectangle} from "./mx-rectangle";
+import {mxEventSource} from './mx-event-source';
+import {mxRectangle} from './mx-rectangle';
 
 export interface mxWindow extends mxEventSource {
-  constructor(title?: any, content?: any, x?: any, y?: any, width?: any, height?: any, minimizable?: any, movable?: any, replaceNode?: any, style?: any);
+  (title?: any, content?: any, x?: any, y?: any, width?: any, height?: any, minimizable?: any, movable?: any, replaceNode?: any, style?: any): void;
   /**
    * Initializes the DOM tree that represents the window.
    */

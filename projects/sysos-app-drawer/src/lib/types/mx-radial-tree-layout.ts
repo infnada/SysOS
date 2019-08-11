@@ -14,10 +14,10 @@
  *
  * Constructs a new radial tree layout for the specified graph
  */
-import {mxCompactTreeLayout} from "./mx-compact-tree-layout";
+import {mxCompactTreeLayout} from './mx-compact-tree-layout';
 
 export interface mxRadialTreeLayout extends mxCompactTreeLayout {
-  constructor(graph: any);
+  (graph: any): void;
   /**
    * Returns a boolean indicating if the given <mxCell> should be ignored as a
    * vertex. This returns true if the cell has no connections.

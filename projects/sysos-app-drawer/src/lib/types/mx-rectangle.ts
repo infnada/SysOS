@@ -2,17 +2,9 @@
  * Extends <mxPoint> to implement a 2-dimensional rectangle with double
  * precision coordinates.
  */
-import {mxPoint} from "./mx-point";
+import {mxPoint} from './mx-point';
 
 export interface mxRectangle extends mxPoint {
-  /**
-   * Holds the width of the rectangle. Default is 0.
-   */
-  width: number;
-  /**
-   * Holds the height of the rectangle. Default is 0.
-   */
-  height: number;
   /**
    * Constructs a new rectangle for the optional parameters. If no parameters
    * are given then the respective default values are used.
@@ -22,7 +14,15 @@ export interface mxRectangle extends mxPoint {
    * @param width Width of the rectangle
    * @param height Height of the rectangle
    */
-  constructor(x?: number, y?: number, width?: number, height?: number);
+  (x?: number, y?: number, width?: number, height?: number): void;
+  /**
+   * Holds the width of the rectangle. Default is 0.
+   */
+  width: number;
+  /**
+   * Holds the height of the rectangle. Default is 0.
+   */
+  height: number;
   /**
    * Sets this rectangle to the specified values
    *
@@ -43,14 +43,10 @@ export interface mxRectangle extends mxPoint {
   /**
    * Adds the given rectangle to this rectangle, i.e. such that it just
    * about contains the supplied rectangle.
-   *
-   * @param rect
    */
   add(rect: mxRectangle): void;
   /**
    * Changes this rectangle to where it overlaps with the given rectangle.
-   *
-   * @param rect
    */
   intersect(rect: mxRectangle): void;
   /**

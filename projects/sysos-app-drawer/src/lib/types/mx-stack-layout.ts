@@ -15,10 +15,10 @@
  * Constructs a new stack layout layout for the specified graph,
  * spacing, orientation and offset.
  */
-import {mxGraphLayout} from "./mx-graph-layout";
+import {mxGraphLayout} from './mx-graph-layout';
 
 export interface mxStackLayout extends mxGraphLayout {
-  constructor(graph: any, horizontal?: any, spacing?: any, x0?: any, y0?: any, border?: any);
+  (graph: any, horizontal?: any, spacing?: any, x0?: any, y0?: any, border?: any): void;
   /**
    * Returns <horizontal>.
    */

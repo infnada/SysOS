@@ -20,8 +20,8 @@
  * Fires when the panning handler changes its <active> state to false. The
  * <code>event</code> property contains the corresponding <mxMouseEvent>.
  */
-import {mxEventSource} from "./mx-event-source";
-import {mxGraph} from "./mx-graph";
+import {mxEventSource} from './mx-event-source';
+import {mxGraph} from './mx-graph';
 
 export interface mxPanningHandler extends mxEventSource {
   /**
@@ -99,7 +99,7 @@ export interface mxPanningHandler extends mxEventSource {
    * Constructs an event handler that creates a <mxPopupMenu>
    * and pans the graph.
    */
-  constructor(graph: mxGraph);
+  (graph: mxGraph): void;
   /**
    * Returns true if the handler is currently active.
    */

@@ -1,7 +1,7 @@
-import {mxElbowEdgeHandler} from "./mx-elbow-edge-handler";
+import {mxElbowEdgeHandler} from './mx-elbow-edge-handler';
 
 export interface mxEdgeSegmentHandler extends mxElbowEdgeHandler {
-  constructor(state: any);
+  (state: any): void;
   /**
    * Returns the current absolute points.
    */

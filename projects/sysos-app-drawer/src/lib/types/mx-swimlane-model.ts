@@ -21,7 +21,7 @@
  * usage
  */
 export interface mxSwimlaneModel {
-  constructor(layout: any, vertices: any, roots: any, parent: any, tightenToSource: any);
+  (layout: any, vertices: any, roots: any, parent: any, tightenToSource: any): void;
   /**
    * Creates all edges in the internal model
    *

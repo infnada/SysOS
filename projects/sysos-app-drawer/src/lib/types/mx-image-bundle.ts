@@ -1,7 +1,7 @@
 /**
  * Maps from keys to base64 encoded images or file locations. All values must
  * be URLs or use the format data:image/format followed by a comma and the base64
- * encoded image data, eg. "data:image/gif,XYZ", where XYZ is the base64 encoded
+ * encoded image data, eg. 'data:image/gif,XYZ', where XYZ is the base64 encoded
  * image data.
  *
  * To add a new image bundle to an existing graph, the following code is used:
@@ -13,10 +13,10 @@
  *   'EAAQAAADTXi63AowynnAMDfjPUDlnAAJhmeBFxAEloliKltWmiYCQvfVr6lBPB1ggxN1hi' +
  *   'laSSASFQpIV5HJBDyHpqK2ejVRm2AAgZCdmCGO9CIBADs=', fallback);
  * bundle.putImage('mySvgImage', 'data:image/svg+xml,' + encodeURIComponent(
- *   '<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">' +
- *   '<linearGradient id="gradient"><stop offset="10%" stop-color="#F00"/>' +
- *   '<stop offset="90%" stop-color="#fcc"/></linearGradient>' +
- *   '<rect fill="url(#gradient)" width="100%" height="100%"/></svg>'), fallback);
+ *   '<svg xmlns='http://www.w3.org/2000/svg' width='100%' height='100%'>' +
+ *   '<linearGradient id='gradient'><stop offset='10%' stop-color='#F00'/>' +
+ *   '<stop offset='90%' stop-color='#fcc'/></linearGradient>' +
+ *   '<rect fill='url(#gradient)' width='100%' height='100%'/></svg>'), fallback);
  * graph.addImageBundle(bundle);
  * (end);
  *
@@ -42,7 +42,7 @@
  * all data URIs should be limited to 32 KB.
  */
 export interface mxImageBundle {
-  constructor(alt: any);
+  (alt: any): void;
   /**
    * Adds the specified entry to the map. The entry is an object with a value and
    * fallback property as specified in the arguments.

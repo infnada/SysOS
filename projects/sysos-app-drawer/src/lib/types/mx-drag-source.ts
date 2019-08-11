@@ -10,7 +10,7 @@
  * Constructs a new drag source for the given element.
  */
 export interface mxDragSource {
-  constructor(element: any, dropHandler: any);
+  (element: any, dropHandler: any): void;
   /**
    * Returns <enabled>.
    */

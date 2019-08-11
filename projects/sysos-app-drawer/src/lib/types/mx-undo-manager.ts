@@ -64,10 +64,10 @@
  * Constructs a new undo manager with the given history size. If no history
  * size is given, then a default size of 100 steps is used.
  */
-import {mxEventSource} from "./mx-event-source";
+import {mxEventSource} from './mx-event-source';
 
 export interface mxUndoManager extends mxEventSource {
-  constructor(size: any);
+  (size: any): void;
   /**
    * Returns true if the history is empty.
    */

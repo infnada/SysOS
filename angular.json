@@ -25,11 +25,13 @@
             "assets": [
               "src/frontend/favicon.ico",
               "src/frontend/assets",
+
               {
                 "glob": "**/*",
                 "input": "node_modules/ngx-monaco-editor/assets/monaco",
                 "output": "./assets/monaco/"
               },
+
               {
                 "glob": "**/*",
                 "input": "./node_modules/mxgraph/javascript/src",
@@ -42,8 +44,19 @@
             "scripts": [
               "node_modules/systemjs/dist/system.js",
               "node_modules/lodash/lodash.js",
-              "src/frontend/assets/js/mxgraph.conf.js",
-              "node_modules/mxgraph/javascript/mxClient.js"
+
+              "src/frontend/assets/js/drawer/mxgraph.conf.js",
+              "node_modules/mxgraph/javascript/mxClient.js",
+              "src/frontend/assets/js/drawer/EditorUi.js",
+              "src/frontend/assets/js/drawer/Editor.js",
+              "src/frontend/assets/js/drawer/Sidebar.js",
+              "src/frontend/assets/js/drawer/Graph.js",
+              "src/frontend/assets/js/drawer/Format.js",
+              "src/frontend/assets/js/drawer/Shapes.js",
+              "src/frontend/assets/js/drawer/Actions.js",
+              "src/frontend/assets/js/drawer/Menus.js",
+              "src/frontend/assets/js/drawer/Toolbar.js",
+              "src/frontend/assets/js/drawer/Dialogs.js"
             ],
             "es5BrowserSupport": true
           },

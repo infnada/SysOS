@@ -117,7 +117,7 @@
  * using the following entry:
  *
  * (code)
- * <add as="getTooltipForCell"><![CDATA[
+ * <add as='getTooltipForCell'><![CDATA[
  *   function(cell)
  *   {
  *     var label = this.convertValueToString(cell);
@@ -126,7 +126,7 @@
  * ]]></add>
  * (end)
  *
- * "this" refers to the graph in the implementation, so for example to check if
+ * 'this' refers to the graph in the implementation, so for example to check if
  * a cell is an edge, you use this.getModel().isEdge(cell)
  *
  * For replacing the default implementation of <getTooltipForCell> (rather than
@@ -625,34 +625,34 @@
  * performance. Default is mxConstants.DIALECT_MIXEDHTML (for IE).
  * stylesheet - Optional <mxStylesheet> to be used in the graph.
  */
-import {mxEventSource} from "./mx-event-source";
-import {mxGraphModel} from "./mx-graph-model";
-import {mxGraphView} from "./mx-graph-view";
-import {mxStylesheet} from "./mx-stylessheet";
-import {mxGraphSelectionModel} from "./mx-graph-selection-model";
-import {mxCellEditor} from "./mx-cell-editor";
-import {mxCellRenderer} from "./mx-cell-render";
-import {mxMultiplicity} from "./mx-multiplicity";
-import {mxImage} from "./mx-image";
-import {mxRectangle} from "./mx-rectangle";
-import {mxTooltipHandler} from "./mx-tooltip-handler";
-import {mxSelectionCellsHandler} from "./mx-selection-cells-handler";
-import {mxConnectionHandler} from "./mx-connection-handler";
-import {mxGraphHandler} from "./mx-graph-handler";
-import {mxPanningHandler} from "./mx-panning-handler";
-import {mxPopupMenuHandler} from "./mx-popup-menu-handler";
-import {renderingHint} from "./rendering-hint";
-import {mxRootChange} from "./mx-root-change";
-import {mxChildChange} from "./mx-child-change";
-import {mxCell} from "./mx-cell";
-import {mxCellOverlay} from "./mx-cell-overlay";
-import {mxGeometry} from "./mx-geometry";
-import {mxConnectionConstraint} from "./mx-connection-constraint";
-import {mxCellState} from "./mx-cell-state";
-import {mxPoint} from "./mx-point";
-import {mxElbowEdgeHandler} from "./mx-elbow-edge-handler";
-import {mxEdgeSegmentHandler} from "./mx-edge-segment-handler";
-import {mxVertexHandler} from "./mx-vertex-handler";
+import {mxEventSource} from './mx-event-source';
+import {mxGraphModel} from './mx-graph-model';
+import {mxGraphView} from './mx-graph-view';
+import {mxStylesheet} from './mx-stylessheet';
+import {mxGraphSelectionModel} from './mx-graph-selection-model';
+import {mxCellEditor} from './mx-cell-editor';
+import {mxCellRenderer} from './mx-cell-render';
+import {mxMultiplicity} from './mx-multiplicity';
+import {mxImage} from './mx-image';
+import {mxRectangle} from './mx-rectangle';
+import {mxTooltipHandler} from './mx-tooltip-handler';
+import {mxSelectionCellsHandler} from './mx-selection-cells-handler';
+import {mxConnectionHandler} from './mx-connection-handler';
+import {mxGraphHandler} from './mx-graph-handler';
+import {mxPanningHandler} from './mx-panning-handler';
+import {mxPopupMenuHandler} from './mx-popup-menu-handler';
+import {renderingHint} from './rendering-hint';
+import {mxRootChange} from './mx-root-change';
+import {mxChildChange} from './mx-child-change';
+import {mxCell} from './mx-cell';
+import {mxCellOverlay} from './mx-cell-overlay';
+import {mxGeometry} from './mx-geometry';
+import {mxConnectionConstraint} from './mx-connection-constraint';
+import {mxCellState} from './mx-cell-state';
+import {mxPoint} from './mx-point';
+import {mxElbowEdgeHandler} from './mx-elbow-edge-handler';
+import {mxEdgeSegmentHandler} from './mx-edge-segment-handler';
+import {mxVertexHandler} from './mx-vertex-handler';
 
 export interface mxGraph {
   /**
@@ -1954,8 +1954,7 @@ export interface mxGraph {
    * (code)
    * var pt = graph.getPointForEvent(evt);
    * var parent = graph.getDefaultParent();
-   * graph.insertVertex(parent, null,
-   * 			'Hello, World!', x, y, 220, 30);
+   * graph.insertVertex(parent, null, 'Hello, World!', x, y, 220, 30);
    * (end)
    *
    * For adding image cells, the style parameter can be assigned as
@@ -1966,16 +1965,15 @@ export interface mxGraph {
    *
    * See {@link mxGraph} for more information on using images.
    *
-   * @param {mxCell} parent Specifies the parent of the new vertex.
-   * @param {?string} id Optional string that defines the Id of the new vertex.
-   * @param {Object} value User defined data object.
-   * @param {number} x Integer that defines the x coordinate of the vertex.
-   * @param {number} y Integer that defines the y coordinate of the vertex.
-   * @param {number} width Integer that defines the width of the vertex.
-   * @param {number} height Integer that defines the height of the vertex.
-   * @param {string} [style] Optional string that defines the cell style.
-   * @param {boolean} [relative] Optional boolean that specifies if the geometry is relative.
-   * Default is false.
+   * @param parent Specifies the parent of the new vertex.
+   * @param id Optional string that defines the Id of the new vertex.
+   * @param value User defined data object.
+   * @param x Integer that defines the x coordinate of the vertex.
+   * @param y Integer that defines the y coordinate of the vertex.
+   * @param width Integer that defines the width of the vertex.
+   * @param height Integer that defines the height of the vertex.
+   * @param [style] Optional string that defines the cell style.
+   * @param [relative] Optional boolean that specifies if the geometry is relative. Default is false.
    */
   insertVertex(parent: mxCell, id: string | null, value: object, x: number, y: number, width: number, height: number, style?: string, relative?: boolean): mxCell;
   /**
@@ -1984,12 +1982,12 @@ export interface mxGraph {
    * The id and style are used for the respective properties of the new
    * {@link mxCell}, which is returned.
    *
-   * @param {mxCell} parent specifies the parent of the new edge.
-   * @param {?string} id Optional string that defines the Id of the new edge.
-   * @param {Object} value User defined data object.
-   * @param {mxCell} source Source of the edge.
-   * @param {mxCell} target Target of the edge.
-   * @param {string} [style] Optional string that defines the cell style.
+   * @param parent specifies the parent of the new edge.
+   * @param id Optional string that defines the Id of the new edge.
+   * @param value User defined data object.
+   * @param source Source of the edge.
+   * @param target Target of the edge.
+   * @param [style] Optional string that defines the cell style.
    */
   insertEdge(parent: mxCell, id: string | null, value: object, source: mxCell, target: mxCell, style?: string): mxCell;
   /**
@@ -2482,7 +2480,7 @@ export interface mxGraph {
    */
   getTranslateForRoot(cell: mxCell): any;
   /**
-   * Returns true if the given cell is a "port", that is, when connecting to
+   * Returns true if the given cell is a 'port', that is, when connecting to
    * it, the cell returned by getTerminalForPort should be used as the
    * terminal and the port should be referenced by the ID in either the
    * mxConstants.STYLE_SOURCE_PORT or the or the
@@ -2814,7 +2812,7 @@ export interface mxGraph {
    *     }
    *   }
    *
-   *   // "Supercall"
+   *   // 'Supercall'
    *   return mxGraph.prototype.getEdgeValidationError.apply(this, arguments);
    * }
    * (end)
@@ -2985,11 +2983,11 @@ export interface mxGraph {
    * (code)
    * graph.getLabel = function(cell)
    * {
-   *   var tmp = mxGraph.prototype.getLabel.apply(this, arguments); // "supercall"
+   *   var tmp = mxGraph.prototype.getLabel.apply(this, arguments); // 'supercall'
    *
    *   if (this.model.isEdge(cell))
    *   {
-   *     tmp = '<div style="width: 150px; white-space:normal;">'+tmp+'</div>';
+   *     tmp = '<div style='width: 150px; white-space:normal;'>'+tmp+'</div>';
    *   }
    *
    *   return tmp;

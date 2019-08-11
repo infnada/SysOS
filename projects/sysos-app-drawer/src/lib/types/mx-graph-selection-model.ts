@@ -27,9 +27,9 @@
  * cells that have been added to or removed from the selection, respectively.
  * The names are inverted due to historic reasons. This cannot be changed.
  */
-import {mxEventSource} from "./mx-event-source";
-import {mxGraph} from "./mx-graph";
-import {mxCell} from "./mx-cell";
+import {mxEventSource} from './mx-event-source';
+import {mxGraph} from './mx-graph';
+import {mxCell} from './mx-cell';
 
 export interface mxGraphSelectionModel extends mxEventSource {
   /**
@@ -62,7 +62,7 @@ export interface mxGraphSelectionModel extends mxEventSource {
    *
    * @param graph - Reference to the enclosing <mxGraph>.
    */
-  constructor(graph: mxGraph);
+  (graph: mxGraph): void;
   /**
    * Returns <singleSelection> as a boolean.
    */

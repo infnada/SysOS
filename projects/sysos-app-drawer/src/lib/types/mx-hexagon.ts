@@ -5,10 +5,10 @@
  *
  * Constructs a new hexagon shape.
  */
-import {mxActor} from "./mx-actor";
+import {mxActor} from './mx-actor';
 
 export interface mxHexagon extends mxActor {
-  constructor();
+  (): void;
   /**
    * Draws the path for this shape.
    */

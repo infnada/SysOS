@@ -32,7 +32,7 @@
  * window.
  */
 export interface mxDivResizer {
-  constructor(div: any, container: any);
+  (div: any, container: any): void;
   /**
    * Updates the style of the DIV after the window has been resized.
    */

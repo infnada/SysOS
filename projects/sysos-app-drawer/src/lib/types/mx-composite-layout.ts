@@ -24,10 +24,10 @@
  * master - Optional layout that handles moves. If no layout is given then
  * the first layout of the above array is used to handle moves.
  */
-import {mxGraphLayout} from "./mx-graph-layout";
+import {mxGraphLayout} from './mx-graph-layout';
 
 export interface mxCompositeLayout extends mxGraphLayout {
-  constructor(graph: any, layouts?: any, master?: any);
+  (graph: any, layouts?: any, master?: any): void;
   /**
    * Implements <mxGraphLayout.moveCell> by calling move on <master> or the first
    * layout in <layouts>.

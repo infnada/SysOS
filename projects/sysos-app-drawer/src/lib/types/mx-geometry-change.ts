@@ -11,7 +11,7 @@ export interface mxGeometryChange {
   cell: any;
   geometry: any;
   previous: any;
-  constructor(model: any, cell: any, geometry: any);
+  (model: any, cell: any, geometry: any): void;
   /**
    * Changes the geometry of <cell> ro <previous> using
    * <mxGraphModel.geometryForCellChanged>.

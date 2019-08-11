@@ -33,7 +33,7 @@
  * {
  *   return [this.renderPage(w, h, 0, 0, mxUtils.bind(this, function(div)
  *   {
- *     div.innerHTML = '<div style="position:relative;margin:4px;">Cover Page</p>'
+ *     div.innerHTML = '<div style='position:relative;margin:4px;'>Cover Page</p>'
  *   }))];
  * };
  *
@@ -41,7 +41,7 @@
  * {
  *   return [this.renderPage(w, h, 0, 0, mxUtils.bind(this, function(div)
  *   {
- *     div.innerHTML = '<div style="position:relative;margin:4px;">Appendix</p>'
+ *     div.innerHTML = '<div style='position:relative;margin:4px;'>Appendix</p>'
  *   }))];
  * };
  *
@@ -59,7 +59,7 @@
  * preview.writeHead = function(doc, css)
  * {
  *   writeHead.apply(this, arguments);
- *   doc.writeln('<link rel="stylesheet" type="text/css" href="style.css">');
+ *   doc.writeln('<link rel='stylesheet' type='text/css' href='style.css'>');
  * };
  * (end)
  *
@@ -73,7 +73,7 @@
  * {
  *   writeHead.apply(this, arguments);
  *
- *   doc.writeln('<style type="text/css">');
+ *   doc.writeln('<style type='text/css'>');
  *   doc.writeln('@media screen {');
  *   doc.writeln('  body > div { padding-top:30px;padding-left:40px;box-sizing:content-box; }');
  *   doc.writeln('}');
@@ -137,7 +137,7 @@
  * var preview = new mxPrintPreview(graph);
  * preview.getDoctype = function()
  * {
- *   return '<!--[if IE]><meta http-equiv="X-UA-Compatible" content="IE=5,IE=8" ><![endif]-->';
+ *   return '<!--[if IE]><meta http-equiv='X-UA-Compatible' content='IE=5,IE=8' ><![endif]-->';
  * };
  * preview.open();
  * (end)
@@ -167,7 +167,7 @@
  * should appear in the window with the print preview. Default is true.
  */
 export interface mxPrintPreview {
-  constructor(graph: any, scale: any, pageFormat: any, border: any, x0: any, y0: any, borderColor: any, title: any, pageSelector: any);
+  (graph: any, scale: any, pageFormat: any, border: any, x0: any, y0: any, borderColor: any, title: any, pageSelector: any): void;
   /**
    * Returns <wnd>.
    */

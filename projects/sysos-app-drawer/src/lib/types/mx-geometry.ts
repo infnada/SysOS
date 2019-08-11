@@ -46,7 +46,7 @@
  *
  * Ports:
  *
- * The term "port" refers to a relatively positioned, connectable child cell,
+ * The term 'port' refers to a relatively positioned, connectable child cell,
  * which is used to specify the connection between the parent and another cell
  * in the graph. Ports are typically modeled as vertices with relative
  * geometries.
@@ -59,9 +59,14 @@
  * for the origin (top, left corner) of the vertex, otherwise the offset
  * defines the absolute offset for the label inside the vertex or group.
  */
-import {mxRectangle} from "./mx-rectangle";
+import {mxRectangle} from './mx-rectangle';
 
 export interface mxGeometry extends mxRectangle {
+  /**
+   * Constructs a new object to describe the size and location of a vertex or
+   * the control points of an edge.
+   */
+  (x?: number, y?: number, width?: number, height?: number): void;
   /**
    * Global switch to translate the points in translate. Default is true.
    */
@@ -112,15 +117,6 @@ export interface mxGeometry extends mxRectangle {
    * Default is false.
    */
   relative: boolean;
-  /**
-   * Constructs a new object to describe the size and location of a vertex or
-   * the control points of an edge.
-   * @param x
-   * @param y
-   * @param width
-   * @param height
-   */
-  constructor(x?: number, y?: number, width?: number, height?: number);
   /**
    * Swaps the x, y, width and height with the values stored in
    * <alternateBounds> and puts the previous values into <alternateBounds> as

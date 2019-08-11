@@ -11,7 +11,7 @@
  * graph - Reference to the enclosing <mxGraph>.
  */
 export interface mxCellStatePreview {
-  constructor(graph: any);
+  (graph: any): void;
   /**
    * Returns true if this contains no entries.
    */

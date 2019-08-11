@@ -6,7 +6,7 @@
  * Constructs a change of the current root in the given view.
  */
 export interface mxCurrentRootChange {
-  constructor(view: any, root: any);
+  (view: any, root: any): void;
   /**
    * Changes the current root of the view.
    */

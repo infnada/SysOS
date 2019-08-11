@@ -5,10 +5,10 @@
  *
  * Constructs an event handler that creates a <mxPopupMenu>.
  */
-import {mxPopupMenu} from "./mx-popup-menu";
+import {mxPopupMenu} from './mx-popup-menu';
 
 export interface mxPopupMenuHandler extends mxPopupMenu {
-  constructor(graph?: any, factoryMethod?: any);
+  (graph?: any, factoryMethod?: any): void;
   /**
    * Initializes the shapes required for this vertex handler.
    */

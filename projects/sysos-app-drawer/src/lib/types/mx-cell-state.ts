@@ -9,12 +9,12 @@
  * @example
  * var bbox = (state.text != null) ? state.text.boundingBox : null;
  */
-import {mxRectangle} from "./mx-rectangle";
-import {mxGraphView} from "./mx-graph-view";
-import {mxCell} from "./mx-cell";
-import {mxPoint} from "./mx-point";
-import {mxShape} from "./mx-shape";
-import {mxText} from "./mx-text";
+import {mxRectangle} from './mx-rectangle';
+import {mxGraphView} from './mx-graph-view';
+import {mxCell} from './mx-cell';
+import {mxPoint} from './mx-point';
+import {mxShape} from './mx-shape';
+import {mxText} from './mx-text';
 
 export interface mxCellState {
   /**
@@ -97,7 +97,7 @@ export interface mxCellState {
    * @param cell - <mxCell> that this state represents.
    * @param style - Array of key, value pairs that constitute the style.
    */
-  constructor(view: mxGraphView, cell: mxCell, style: any[]);
+  (view: mxGraphView, cell: mxCell, style: any[]): void;
   /**
    * Returns the <mxRectangle> that should be used as the perimeter of the
    * cell.

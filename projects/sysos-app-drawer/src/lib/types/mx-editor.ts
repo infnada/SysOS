@@ -40,14 +40,14 @@
  *
  * Here are some examples of processing a post request in various languages.
  *
- * - Java: URLDecoder.decode(request.getParameter("xml"), "UTF-8").replace("\n", "&#xa;")
+ * - Java: URLDecoder.decode(request.getParameter('xml'), 'UTF-8').replace('\n', '&#xa;')
  *
  * Note that the linefeeds should only be replaced if the XML is
  * processed in Java, for example when creating an image, but not
  * if the XML is passed back to the client-side.
  *
- * - .NET: HttpUtility.UrlDecode(context.Request.Params["xml"])
- * - PHP: urldecode($_POST["xml"])
+ * - .NET: HttpUtility.UrlDecode(context.Request.Params['xml'])
+ * - PHP: urldecode($_POST['xml'])
  *
  * Creating images:
  *
@@ -67,7 +67,7 @@
  * - &lt; (<)
  * - &gt; (>)
  * - &amp; (&)
- * - &quot; (")
+ * - &quot; (')
  * - &apos; (')
  *
  * Although it is part of the XML language, &apos; is not defined in HTML.
@@ -112,8 +112,8 @@
  * For example, in PHP the code that does this looks as follows.
  *
  * (code)
- * $xml = stripslashes($_POST["xml"]);
- * header("Content-Disposition: attachment; filename=\"diagram.xml\"");
+ * $xml = stripslashes($_POST['xml']);
+ * header('Content-Disposition: attachment; filename=\'diagram.xml\'');
  * echo($xml);
  * (end)
  *
@@ -135,9 +135,9 @@
  * mxCell node and its mxGeometry child contain graph information:
  *
  * (code)
- * <Task label="Task" description="">
- *   <mxCell vertex="true">
- *     <mxGeometry as="geometry" width="72" height="32"/>
+ * <Task label='Task' description=''>
+ *   <mxCell vertex='true'>
+ *     <mxGeometry as='geometry' width='72' height='32'/>
  *   </mxCell>
  * </Task>
  * (end)
@@ -148,13 +148,13 @@
  * children for the above example:
  *
  * (code)
- * <Task label="Task" description=""/>
+ * <Task label='Task' description=''/>
  * (end)
  *
  * The Task node can have any tag name, attributes and child nodes. The
  * <mxCodec> will use the XML hierarchy as the user object, while removing the
- * "known annotations", such as the mxCell node. At save-time the cell data
- * will be "merged" back into the user object. The user object is only modified
+ * 'known annotations', such as the mxCell node. At save-time the cell data
+ * will be 'merged' back into the user object. The user object is only modified
  * via the properties dialog during the lifecycle of the cell.
  *
  * In the default implementation of <createProperties>, the user object's
@@ -178,8 +178,8 @@
  *
  * (code)
  * <mxEditor>
- *   <mxDefaultPopupMenu as="popupHandler">
- * 		<add as="cut" action="cut" icon="images/cut.gif"/>
+ *   <mxDefaultPopupMenu as='popupHandler'>
+ * 		<add as='cut' action='cut' icon='images/cut.gif'/>
  *      ...
  * (end)
  *
@@ -195,8 +195,8 @@
  * (code)
  * <mxEditor>
  *   <mxDefaultToolbar>
- *     <add as="save" action="save" icon="images/save.gif"/>
- *     <add as="Swimlane" template="swimlane" icon="images/swimlane.gif"/>
+ *     <add as='save' action='save' icon='images/save.gif'/>
+ *     <add as='Swimlane' template='swimlane' icon='images/swimlane.gif'/>
  *     ...
  * (end)
  *
@@ -254,7 +254,7 @@
  * Callback: onInit
  *
  * Called from within the constructor. In the callback,
- * "this" refers to the editor instance.
+ * 'this' refers to the editor instance.
  *
  * Cookie: mxgraph=seen
  *
@@ -339,12 +339,12 @@
  *
  * config - Optional XML node that contains the configuration.
  */
-import {mxEventSource} from "./mx-event-source";
-import {mxLayoutManager} from "./mx-layout-manager";
-import {mxDefaultToolbar} from "./mx-default-toolbar";
+import {mxEventSource} from './mx-event-source';
+import {mxLayoutManager} from './mx-layout-manager';
+import {mxDefaultToolbar} from './mx-default-toolbar';
 
 export interface mxEditor extends mxEventSource {
-  constructor(config: any);
+  (config: any): void;
   /**
    * Returns <modified>.
    */
@@ -450,7 +450,7 @@ export interface mxEditor extends mxEventSource {
    * (code)
    * editor.addAction('test', function(editor, cell)
    * {
-   * 		mxUtils.alert("test "+cell);
+   * 		mxUtils.alert('test '+cell);
    * });
    * (end)
    */
@@ -466,7 +466,7 @@ export interface mxEditor extends mxEventSource {
    * Example:
    *
    * (code)
-   * editor.execute("showProperties", cell);
+   * editor.execute('showProperties', cell);
    * (end)
    */
   execute(actionname: any, cell: any, evt: any): void;
@@ -744,7 +744,7 @@ export interface mxEditor extends mxEventSource {
    * var oldShowTasks = mxEditor.prototype.showTasks;
    * mxEditor.prototype.showTasks = function()
    * {
-   *   oldShowTasks.apply(this, arguments); // "supercall"
+   *   oldShowTasks.apply(this, arguments); // 'supercall'
    *
    *   if (this.tasks != null)
    *   {

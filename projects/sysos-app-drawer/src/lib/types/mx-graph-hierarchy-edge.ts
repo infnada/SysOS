@@ -9,10 +9,10 @@
  *
  * edges - a list of real graph edges this abstraction represents
  */
-import {mxGraphAbstractHierarchyCell} from "./mx-graph-abstract-hierarchy-cell";
+import {mxGraphAbstractHierarchyCell} from './mx-graph-abstract-hierarchy-cell';
 
 export interface mxGraphHierarchyEdge extends mxGraphAbstractHierarchyCell {
-  constructor(edges?: any);
+  (edges?: any): void;
   /**
    * Inverts the direction of this internal edge(s)
    */

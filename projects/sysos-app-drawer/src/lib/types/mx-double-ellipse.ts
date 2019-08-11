@@ -37,11 +37,11 @@
  * strokewidth - Optional integer that defines the stroke width. Default is
  * 1. This is stored in <strokewidth>.
  */
-import {mxShape} from "./mx-shape";
-import {mxRectangle} from "./mx-rectangle";
+import {mxShape} from './mx-shape';
+import {mxRectangle} from './mx-rectangle';
 
 export interface mxDoubleEllipse extends mxShape {
-  constructor(bounds?: any, fill?: any, stroke?: any, strokewidth?: any);
+  (bounds?: any, fill?: any, stroke?: any, strokewidth?: any): void;
   /**
    * Paints the background.
    */

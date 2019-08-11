@@ -24,10 +24,10 @@
  * endSize - Optional integer that defines the size of the arrowhead. Default
  * is <mxConstants.ARROW_SIZE>. This is stored in <endSize>.
  */
-import {mxShape} from "./mx-shape";
+import {mxShape} from './mx-shape';
 
 export interface mxArrowConnector extends mxShape {
-  constructor(points?: any, fill?: any, stroke?: any, strokewidth?: any, arrowWidth?: any, spacing?: any, endSize?: any);
+  (points?: any, fill?: any, stroke?: any, strokewidth?: any, arrowWidth?: any, spacing?: any, endSize?: any): void;
   /**
    * Overrides mxShape to reset spacing.
    */

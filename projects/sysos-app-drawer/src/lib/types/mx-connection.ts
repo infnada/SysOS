@@ -18,10 +18,10 @@
  * strokewidth - Optional integer that defines the stroke width. Default is
  * 1. This is stored in <strokewidth>.
  */
-import {mxPolyline} from "./mx-polyline";
+import {mxPolyline} from './mx-polyline';
 
 export interface mxConnector extends mxPolyline {
-  constructor(points: any, stroke: any, strokewidth: any);
+  (points: any, stroke: any, strokewidth: any): void;
   /**
    * Updates the <boundingBox> for this shape using <createBoundingBox> and
    * <augmentBoundingBox> and stores the result in <boundingBox>.

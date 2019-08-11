@@ -3,8 +3,8 @@
  * This shape is registered under <mxConstants.SHAPE_RECTANGLE>
  * in <mxCellRenderer>.
  */
-import {mxShape} from "./mx-shape";
-import {mxRectangle} from "./mx-rectangle";
+import {mxShape} from './mx-shape';
+import {mxRectangle} from './mx-rectangle';
 
 export interface mxRectangleShape extends mxShape {
   /**
@@ -17,7 +17,7 @@ export interface mxRectangleShape extends mxShape {
    * @param strokewidth - Optional integer that defines the stroke width. Default is
    * 1. This is stored in <strokewidth>.
    */
-  constructor(bounds?: mxRectangle, fill?: string, stroke?: string, strokewidth?: number);
+  (bounds?: mxRectangle, fill?: string, stroke?: string, strokewidth?: number): void;
   /**
    * Returns true for non-rounded, non-rotated shapes with no glass gradient.
    */

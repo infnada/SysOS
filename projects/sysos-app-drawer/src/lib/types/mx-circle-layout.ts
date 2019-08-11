@@ -19,10 +19,10 @@
  * graph - <mxGraph> that contains the cells.
  * radius - Optional radius as an int. Default is 100.
  */
-import {mxGraphLayout} from "./mx-graph-layout";
+import {mxGraphLayout} from './mx-graph-layout';
 
 export interface mxCircleLayout extends mxGraphLayout {
-  constructor(graph: any, radius?: any);
+  (graph: any, radius?: any): void;
   /**
    * Implements <mxGraphLayout.execute>.
    */

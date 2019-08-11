@@ -36,10 +36,10 @@
  * given coordinate pair. A value of 0 means always highlight. Default is
  * <mxConstants.DEFAULT_HOTSPOT>.
  */
-import {mxEventSource} from "./mx-event-source";
+import {mxEventSource} from './mx-event-source';
 
 export interface mxCellMarker extends mxEventSource {
-  constructor(graph?: any, validColor?: any, invalidColor?: any, hotspot?: any);
+  (graph?: any, validColor?: any, invalidColor?: any, hotspot?: any): void;
   /**
    * Enables or disables event handling. This implementation
    * updates <enabled>.

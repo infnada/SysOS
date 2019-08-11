@@ -18,10 +18,10 @@
  * strokewidth - Optional integer that defines the stroke width. Default is
  * 1. This is stored in <strokewidth>.
  */
-import {mxShape} from "./mx-shape";
+import {mxShape} from './mx-shape';
 
 export interface mxCylinder extends mxShape {
-  constructor(bounds?: any, fill?: any, stroke?: any, strokewidth?: any);
+  (bounds?: any, fill?: any, stroke?: any, strokewidth?: any): void;
   /**
    * Redirects to redrawPath for subclasses to work.
    */

@@ -17,10 +17,10 @@
  * strokewidth - Optional integer that defines the stroke width. Default is
  * 1. This is stored in <strokewidth>.
  */
-import {mxActor} from "./mx-actor";
+import {mxActor} from './mx-actor';
 
 export interface mxCloud extends mxActor {
-  constructor(bounds: any, fill: any, stroke: any, strokewidth: any);
+  (bounds: any, fill: any, stroke: any, strokewidth: any): void;
   /**
    * Draws the path for this shape.
    */

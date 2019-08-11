@@ -5,15 +5,15 @@
  *
  * The outer element is *shape*, that has attributes:
  *
- * - "name", string, required. The stencil name that uniquely identifies the shape.
- * - "w" and "h" are optional decimal view bounds. This defines your co-ordinate
+ * - 'name', string, required. The stencil name that uniquely identifies the shape.
+ * - 'w' and 'h' are optional decimal view bounds. This defines your co-ordinate
  * system for the graphics operations in the shape. The default is 100,100.
- * - "aspect", optional string. Either "variable", the default, or "fixed". Fixed
+ * - 'aspect', optional string. Either 'variable', the default, or 'fixed'. Fixed
  * means always render the shape with the aspect ratio defined by the ratio w/h.
  * Variable causes the ratio to match that of the geometry of the current vertex.
- * - "strokewidth", optional string. Either an integer or the string "inherit".
- * "inherit" indicates that the strokeWidth of the cell is only changed on scaling,
- * not on resizing. Default is "1".
+ * - 'strokewidth', optional string. Either an integer or the string 'inherit'.
+ * 'inherit' indicates that the strokeWidth of the cell is only changed on scaling,
+ * not on resizing. Default is '1'.
  * If numeric values are used, the strokeWidth of the cell is changed on both
  * scaling and resizing and the value defines the multiple that is applied to
  * the width.
@@ -24,16 +24,16 @@
  * *connections* element. Each *constraint* element within connections defines
  * a fixed connection point on the shape. Constraints have attributes:
  *
- * - "perimeter", required. 1 or 0. 0 sets the connection point where specified
+ * - 'perimeter', required. 1 or 0. 0 sets the connection point where specified
  * by x,y. 1 Causes the position of the connection point to be extrapolated from
  * the center of the shape, through x,y to the point of intersection with the
  * perimeter of the shape.
- * - "x" and "y" are the position of the fixed point relative to the bounds of
+ * - 'x' and 'y' are the position of the fixed point relative to the bounds of
  * the shape. They can be automatically adjusted if perimeter=1. So, (0,0) is top
  * left, (0.5,0.5) the center, (1,0.5) the center of the right hand edge of the
  * bounds, etc. Values may be less than 0 or greater than 1 to be positioned
  * outside of the shape.
- * - "name", optional string. A unique identifier for the port on the shape.
+ * - 'name', optional string. A unique identifier for the port on the shape.
  *
  * background and foreground:
  *
@@ -66,7 +66,7 @@
  * Styling:
  *
  * The elements that change colors within the current state all take a hash
- * prefixed hex color code ("#FFEA80").
+ * prefixed hex color code ('#FFEA80').
  *
  * - *strokecolor*, this sets the color that drawing paths will be rendered in
  * when a stroke or fillstroke command is issued.
@@ -78,26 +78,26 @@
  * and 0.0 for fully transparent.
  *
  * *strokewidth* defines the integer thickness of drawing elements rendered by
- * stroking. Use fixed="1" to apply the value as-is, without scaling.
+ * stroking. Use fixed='1' to apply the value as-is, without scaling.
  *
- * *dashed* is "1" for dashing enabled and "0" for disabled.
+ * *dashed* is '1' for dashing enabled and '0' for disabled.
  *
  * When *dashed* is enabled the current dash pattern, defined by *dashpattern*,
- * is used on strokes. dashpattern is a sequence of space separated "on, off"
+ * is used on strokes. dashpattern is a sequence of space separated 'on, off'
  * lengths that define what distance to paint the stroke for, then what distance
- * to paint nothing for, repeat... The default is "3 3". You could define a more
- * complex pattern with "5 3 2 6", for example. Generally, it makes sense to have
+ * to paint nothing for, repeat... The default is '3 3'. You could define a more
+ * complex pattern with '5 3 2 6', for example. Generally, it makes sense to have
  * an even number of elements in the dashpattern, but that's not required.
  *
  * *linejoin*, *linecap* and *miterlimit* are best explained by the Mozilla page
  * on Canvas styling (about halfway down). The values are all the same except we
- * use "flat" for linecap, instead of Canvas' "butt".
+ * use 'flat' for linecap, instead of Canvas' 'butt'.
  *
  * For font styling there are.
  *
  * - *fontsize*, an integer,
  * - *fontstyle*, an ORed bit pattern of bold (1), italic (2) and underline (4),
- * i.e bold underline is "5".
+ * i.e bold underline is '5'.
  * - *fontfamily*, is a string defining the typeface to be used.
  *
  * Drawing:
@@ -123,11 +123,11 @@
  * In addition to the graphics primitive operations there are non-primitive
  * operations. These provide an easy method to draw some basic shapes.
  *
- * - *rect*, attributes "x", "y", "w", "h", all required decimals
- * - *roundrect*, attributes "x", "y", "w", "h", all required decimals. Also
- * "arcsize" an optional decimal attribute defining how large, the corner curves
+ * - *rect*, attributes 'x', 'y', 'w', 'h', all required decimals
+ * - *roundrect*, attributes 'x', 'y', 'w', 'h', all required decimals. Also
+ * 'arcsize' an optional decimal attribute defining how large, the corner curves
  * are.
- * - *ellipse*, attributes "x", "y", "w", "h", all required decimals.
+ * - *ellipse*, attributes 'x', 'y', 'w', 'h', all required decimals.
  *
  * Note that these 3 shapes and all paths must be followed by either a fill,
  * stroke, or fillstroke.
@@ -136,20 +136,20 @@
  *
  * *text* elements have the following attributes.
  *
- * - "str", the text string to display, required.
- * - "x" and "y", the decimal location (x,y) of the text element, required.
- * - "align", the horizontal alignment of the text element, either "left",
- * "center" or "right". Optional, default is "left".
- * - "valign", the vertical alignment of the text element, either "top", "middle"
- * or "bottom". Optional, default is "top".
- * - "localized", 0 or 1, if 1 then the "str" actually contains a key to use to
+ * - 'str', the text string to display, required.
+ * - 'x' and 'y', the decimal location (x,y) of the text element, required.
+ * - 'align', the horizontal alignment of the text element, either 'left',
+ * 'center' or 'right'. Optional, default is 'left'.
+ * - 'valign', the vertical alignment of the text element, either 'top', 'middle'
+ * or 'bottom'. Optional, default is 'top'.
+ * - 'localized', 0 or 1, if 1 then the 'str' actually contains a key to use to
  * fetch the value out of mxResources. Optional, default is
  * <mxStencil.defaultLocalized>.
- * - "vertical", 0 or 1, if 1 the label is rendered vertically (rotated by 90
+ * - 'vertical', 0 or 1, if 1 the label is rendered vertically (rotated by 90
  * degrees). Optional, default is 0.
- * - "rotation", angle in degrees (0 to 360). The angle to rotate the text by.
+ * - 'rotation', angle in degrees (0 to 360). The angle to rotate the text by.
  * Optional, default is 0.
- * - "align-shape", 0 or 1, if 0 ignore the rotation of the shape when setting
+ * - 'align-shape', 0 or 1, if 0 ignore the rotation of the shape when setting
  * the text rotation. Optional, default is 1.
  *
  * If <allowEval> is true, then the text content of the this element can define
@@ -161,10 +161,10 @@
  * *image* elements can either be external URLs, or data URIs, where supported
  * (not in IE 7-). Attributes are:
  *
- * - "src", required string. Either a data URI or URL.
- * - "x", "y", required decimals. The (x,y) position of the image.
- * - "w", "h", required decimals. The width and height of the image.
- * - "flipH" and "flipV", optional 0 or 1. Whether to flip the image along the
+ * - 'src', required string. Either a data URI or URL.
+ * - 'x', 'y', required decimals. The (x,y) position of the image.
+ * - 'w', 'h', required decimals. The width and height of the image.
+ * - 'flipH' and 'flipV', optional 0 or 1. Whether to flip the image along the
  * horizontal/vertical axis. Default is 0 for both.
  *
  * If <allowEval> is true, then the text content of the this element can define
@@ -176,14 +176,21 @@
  * *include-shape* allow stencils to be rendered within the current stencil by
  * referencing the sub-stencil by name. Attributes are:
  *
- * - "name", required string. The unique shape name of the stencil.
- * - "x", "y", "w", "h", required decimals. The (x,y) position of the sub-shape
+ * - 'name', required string. The unique shape name of the stencil.
+ * - 'x', 'y', 'w', 'h', required decimals. The (x,y) position of the sub-shape
  * and its width and height.
  */
-import {mxConnectionConstraint} from "./mx-connection-constraint";
-import {mxRectangle} from "./mx-rectangle";
+import {mxConnectionConstraint} from './mx-connection-constraint';
+import {mxRectangle} from './mx-rectangle';
 
 export interface mxStencil {
+  /**
+   * Constructs a new generic shape by setting <desc> to the given XML node and
+   * invoking <parseDescription> and <parseConstraints>.
+   *
+   * @param desc XML node that contains the stencil description.
+   */
+  (desc: Element): void;
   /**
    * Static global variable that specifies the default value for the localized
    * attribute of the text element. Default is false.
@@ -227,13 +234,6 @@ export interface mxStencil {
    * Holds the strokewidth direction from the description.
    */
   strokewidth: number | string;
-  /**
-   * Constructs a new generic shape by setting <desc> to the given XML node and
-   * invoking <parseDescription> and <parseConstraints>.
-   *
-   * @param desc XML node that contains the stencil description.
-   */
-  constructor(desc: Element);
   /**
    * Reads <w0>, <h0>, <aspect>, <bgNodes> and <fgNodes> from <desc>.
    */

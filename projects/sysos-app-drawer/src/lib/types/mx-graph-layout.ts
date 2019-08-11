@@ -17,11 +17,11 @@
  *
  * graph - Enclosing
  */
-import {mxPoint} from "./mx-point";
-import {mxRectangle} from "./mx-rectangle";
+import {mxPoint} from './mx-point';
+import {mxRectangle} from './mx-rectangle';
 
 export interface mxGraphLayout {
-  constructor(graph: any);
+  (graph: any): void;
   /**
    * Notified when a cell is being moved in a parent that has automatic
    * layout to update the cell state (eg. index) so that the outcome of the

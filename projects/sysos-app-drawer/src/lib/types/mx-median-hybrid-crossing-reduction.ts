@@ -14,10 +14,10 @@
  * orientation - the position of the root node(s) relative to the graph
  * initialX - the leftmost coordinate node placement starts at
  */
-import {mxHierarchicalLayoutStage} from "./mx-hierarchical-layout-stage";
+import {mxHierarchicalLayoutStage} from './mx-hierarchical-layout-stage';
 
 export interface mxMedianHybridCrossingReduction extends mxHierarchicalLayoutStage {
-  constructor(layout: any);
+  (layout: any): void;
   /**
    * Performs a vertex ordering within ranks as described by Gansner et al
    * 1993

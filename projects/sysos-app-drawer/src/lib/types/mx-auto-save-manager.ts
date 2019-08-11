@@ -21,10 +21,10 @@
  *
  * graph - Reference to the enclosing graph.
  */
-import {mxEventSource} from "./mx-event-source";
+import {mxEventSource} from './mx-event-source';
 
 export interface mxAutoSaveManager extends mxEventSource {
-  constructor(graph: any);
+  (graph: any): void;
   /**
    * Returns true if events are handled. This implementation
    * returns <enabled>.

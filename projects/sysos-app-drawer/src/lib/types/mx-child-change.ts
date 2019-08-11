@@ -6,7 +6,7 @@
  * Constructs a change of a child in the
  * specified model.
  */
-import {mxCell} from "./mx-cell";
+import {mxCell} from './mx-cell';
 
 export interface mxChildChange {
   parent: any;
@@ -14,7 +14,7 @@ export interface mxChildChange {
   child: mxCell;
   index: any;
   previousIndex: any;
-  constructor(model: any, parent: any, child: mxCell, index?: number);
+  (model: any, parent: any, child: mxCell, index?: number): void;
   /**
    * Changes the parent of <child> using
    * <mxGraphModel.parentForCellChanged> and

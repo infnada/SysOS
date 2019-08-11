@@ -37,7 +37,7 @@
  * created using <createEdge> which in turn uses <factoryMethod> or creates a
  * new default edge.
  *
- * The handler uses a "highlight-paradigm" for indicating if a cell is being
+ * The handler uses a 'highlight-paradigm' for indicating if a cell is being
  * used as a source or target terminal, as seen in other diagramming products.
  * In order to allow both, moving and connecting cells at the same time,
  * <mxConstants.DEFAULT_HOTSPOT> is used in the handler to determine the hotspot
@@ -64,7 +64,7 @@
  * <mxImageShape> for creating new connections, but the default implementation
  * supports one image and is used as follows:
  *
- * In order to display the "connect image" whenever the mouse is over the cell,
+ * In order to display the 'connect image' whenever the mouse is over the cell,
  * an DEFAULT_HOTSPOT of 1 should be used:
  *
  * (code)
@@ -136,8 +136,8 @@
  *
  * Fires when the <reset> method is invoked.
  */
-import {mxEventSource} from "./mx-event-source";
-import {mxPoint} from "./mx-point";
+import {mxEventSource} from './mx-event-source';
+import {mxPoint} from './mx-point';
 
 export interface mxConnectionHandler extends mxEventSource {
   /**
@@ -288,7 +288,7 @@ export interface mxConnectionHandler extends mxEventSource {
    * optional cell style from the preview as the third argument. It returns
    * the <mxCell> that represents the new edge.
    */
-  constructor(graph?: any, factoryMethod?: any);
+  (graph?: any, factoryMethod?: any): void;
   /**
    * Returns true if events are handled. This implementation
    * returns <enabled>.

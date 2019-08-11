@@ -12,10 +12,10 @@
  *
  * state - <mxCellState> of the cell to be modified.
  */
-import {mxEdgeHandler} from "./mx-edge-handler";
+import {mxEdgeHandler} from './mx-edge-handler';
 
 export interface mxElbowEdgeHandler extends mxEdgeHandler {
-  constructor(state: any);
+  (state: any): void;
   /**
    * Overrides <mxEdgeHandler.createBends> to create custom bends.
    */

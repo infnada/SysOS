@@ -14,10 +14,10 @@
  * the source and target <mxCell> as the first and second argument and
  * returns the <mxCell> that represents the new edge.
  */
-import {mxRectangleShape} from "./mx-rectangle-shape";
+import {mxRectangleShape} from './mx-rectangle-shape';
 
 export interface mxConstraintHandler {
-  constructor(graph: any);
+  (graph: any): void;
   /**
    * Returns true if events are handled. This implementation
    * returns <enabled>.

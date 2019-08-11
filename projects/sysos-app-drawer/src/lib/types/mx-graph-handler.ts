@@ -16,11 +16,11 @@
  *
  * graph - Reference to the enclosing <mxGraph>.
  */
-import {mxRectangleShape} from "./mx-rectangle-shape";
-import {mxPoint} from "./mx-point";
+import {mxRectangleShape} from './mx-rectangle-shape';
+import {mxPoint} from './mx-point';
 
 export interface mxGraphHandler {
-  constructor(graph: any);
+  (graph: any): void;
   /**
    * Returns <enabled>.
    */

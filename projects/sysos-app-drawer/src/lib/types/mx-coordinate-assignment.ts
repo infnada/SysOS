@@ -14,10 +14,10 @@
  * orientation - the position of the root node(s) relative to the graph
  * initialX - the leftmost coordinate node placement starts at
  */
-import {mxHierarchicalLayoutStage} from "./mx-hierarchical-layout-stage";
+import {mxHierarchicalLayoutStage} from './mx-hierarchical-layout-stage';
 
 export interface mxCoordinateAssignment extends mxHierarchicalLayoutStage {
-  constructor(layout: any, intraCellSpacing: any, interRankCellSpacing: any, orientation: any, initialX: any, parallelEdgeSpacing: any);
+  (layout: any, intraCellSpacing: any, interRankCellSpacing: any, orientation: any, initialX: any, parallelEdgeSpacing: any): void;
   /**
    * Utility method to display current positions
    */

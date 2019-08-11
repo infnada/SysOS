@@ -7,7 +7,7 @@
  * Constructs a new dictionary which allows object to be used as keys.
  */
 export interface mxDictionary {
-  constructor();
+  (): void;
   /**
    * Clears the dictionary.
    */

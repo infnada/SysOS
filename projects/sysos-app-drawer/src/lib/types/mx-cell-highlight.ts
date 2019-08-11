@@ -11,7 +11,7 @@
  * Constructs a cell highlight.
  */
 export interface mxCellHighlight {
-  constructor(graph: any, highlightColor: any, strokeWidth: any, dashed: any);
+  (graph: any, highlightColor: any, strokeWidth: any, dashed: any): void;
   /**
    * Sets the color of the rectangle used to highlight drop targets.
    *

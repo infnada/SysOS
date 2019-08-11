@@ -102,10 +102,10 @@
  *
  * graph - Reference to the enclosing <mxGraph>.
  */
-import {mxRectangle} from "./mx-rectangle";
+import {mxRectangle} from './mx-rectangle';
 
 export interface mxCellEditor {
-  constructor(graph: any);
+  (graph: any): void;
   /**
    * Creates the <textarea> and installs the event listeners. The key handler
    * updates the <modified> state.

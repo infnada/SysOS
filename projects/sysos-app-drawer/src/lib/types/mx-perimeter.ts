@@ -1,4 +1,4 @@
-import {mxPoint} from "./mx-point";
+import {mxPoint} from './mx-point';
 
 export interface mxPerimeter {
   RectanglePerimeter(bounds: any, vertex: any, next: any, orthogonal: any): mxPoint;

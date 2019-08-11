@@ -37,7 +37,7 @@
  *
  * Or set the respective attribute in the SVG element directly.
  */
-import {mxAbstractCanvas2D} from "./mx-abstract-canvas-2d";
+import {mxAbstractCanvas2D} from './mx-abstract-canvas-2d';
 
 export interface mxSvgCanvas2D extends mxAbstractCanvas2D {
   /**
@@ -129,7 +129,7 @@ export interface mxSvgCanvas2D extends mxAbstractCanvas2D {
    * added. The style section sets the default font-size, font-family and
    * stroke-miterlimit globally. Default is false.
    */
-  constructor(root?: any, styleEnabled?: any);
+  (root?: any, styleEnabled?: any): void;
   /**
    * Rounds all numbers to 2 decimal points.
    */

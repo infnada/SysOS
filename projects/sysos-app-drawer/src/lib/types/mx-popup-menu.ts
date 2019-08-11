@@ -22,10 +22,10 @@
  *
  * Fires after the menu has been shown in <popup>.
  */
-import {mxEventSource} from "./mx-event-source";
+import {mxEventSource} from './mx-event-source';
 
 export interface mxPopupMenu extends mxEventSource {
-  constructor(factoryMethod?: any);
+  (factoryMethod?: any): void;
   /**
    * Initializes the shapes required for this vertex handler.
    */

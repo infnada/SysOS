@@ -6,10 +6,10 @@
  *
  * Constructs a new abstract canvas.
  */
-import {mxUrlConverter} from "./mx-url-converter";
+import {mxUrlConverter} from './mx-url-converter';
 
 export interface mxAbstractCanvas2D {
-  constructor();
+  (): void;
   /**
    * Create a new <mxUrlConverter> and returns it.
    */

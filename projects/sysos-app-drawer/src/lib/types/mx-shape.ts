@@ -50,12 +50,12 @@
  * style[mxConstants.STYLE_SHAPE] = 'customShape';
  * (end)
  */
-import {mxStencil} from "./mx-stencil";
-import {mxRectangle} from "./mx-rectangle";
-import {mxPoint} from "./mx-point";
-import {mxCellState} from "./mx-cell-state";
-import {mxSvgCanvas2D} from "./mx-svg-canvas-2d";
-import {mxVmlCanvas2D} from "./mx-vml-canvas-2d";
+import {mxStencil} from './mx-stencil';
+import {mxRectangle} from './mx-rectangle';
+import {mxPoint} from './mx-point';
+import {mxCellState} from './mx-cell-state';
+import {mxSvgCanvas2D} from './mx-svg-canvas-2d';
+import {mxVmlCanvas2D} from './mx-vml-canvas-2d';
 
 export interface mxShape {
   /**
@@ -168,7 +168,7 @@ export interface mxShape {
   isRounded: any;
   glass: any;
   cursor: string;
-  constructor(stencil?: any);
+  (stencil?: any): void;
   /**
    * Initializes the shape by creaing the DOM node using <create>
    * and adding it into the given container.

@@ -10,7 +10,7 @@
  * <mxEditor.escapePostData> switch can be set to true (default). The encoding
  * will be carried out using the conte type of the page. That is, the page
  * containting the editor should contain a meta tag in the header, eg.
- * <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+ * <meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
  *
  * Example:
  *
@@ -52,13 +52,13 @@
  * parameter name. The parameter can then be retrieved in C# as follows:
  *
  * (code)
- * string xml = HttpUtility.UrlDecode(context.Request.Params["xml"]);
+ * string xml = HttpUtility.UrlDecode(context.Request.Params['xml']);
  * (end)
  *
  * Or in Java as follows:
  *
  * (code)
- * String xml = URLDecoder.decode(request.getParameter("xml"), "UTF-8").replace("\n", "&#xa;");
+ * String xml = URLDecoder.decode(request.getParameter('xml'), 'UTF-8').replace('\n', '&#xa;');
  * (end)
  *
  * Note that the linefeeds should only be replaced if the XML is
@@ -80,7 +80,7 @@
  * password - String specifying the password to be used for the request.
  */
 export interface mxXmlRequest {
-  constructor(url: any, params: any, method: any, async: any, username: any, password: any);
+  (url: any, params: any, method: any, async: any, username: any, password: any): void;
   /**
    * Returns <binary>.
    */
@@ -107,7 +107,7 @@ export interface mxXmlRequest {
    */
   getText(): any;
   /**
-   * Returns the status as a number, eg. 404 for "Not found" or 200 for "OK".
+   * Returns the status as a number, eg. 404 for 'Not found' or 200 for 'OK'.
    * Note: The NS_ERROR_NOT_AVAILABLE for invalid responses cannot be cought.
    */
   getStatus(): any;

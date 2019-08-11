@@ -10,10 +10,10 @@
  *
  * graph - Reference to the enclosing <mxGraph>.
  */
-import {mxEventSource} from "./mx-event-source";
+import {mxEventSource} from './mx-event-source';
 
 export interface mxAnimation extends mxEventSource {
-  constructor(delay: any);
+  (delay: any): void;
   /**
    * Returns true if the animation is running.
    */

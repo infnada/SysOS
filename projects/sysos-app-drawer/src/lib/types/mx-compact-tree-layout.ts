@@ -15,10 +15,10 @@
  * Constructs a new compact tree layout for the specified graph
  * and orientation.
  */
-import {mxGraphLayout} from "./mx-graph-layout";
+import {mxGraphLayout} from './mx-graph-layout';
 
 export interface mxCompactTreeLayout extends mxGraphLayout {
-  constructor(graph: any, horizontal?: any, invert?: any);
+  (graph: any, horizontal?: any, invert?: any): void;
   /**
    * Returns a boolean indicating if the given <mxCell> should be ignored as a
    * vertex. This returns true if the cell has no connections.

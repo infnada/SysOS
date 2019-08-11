@@ -13,7 +13,7 @@
  * deterministic - Optional boolean that specifies if this layout should be
  * deterministic. Default is true.
  */
-import {mxGraphLayout} from "./mx-graph-layout";
+import {mxGraphLayout} from './mx-graph-layout';
 
 export interface mxHierarchicalLayout extends mxGraphLayout {
   (graph: any, orientation?: string, deterministic?: boolean): void;
@@ -72,7 +72,7 @@ export interface mxHierarchicalLayout extends mxGraphLayout {
    */
   filterDescendants(cell: any, result: any): void;
   /**
-   * Returns true if the given cell is a "port", that is, when connecting to
+   * Returns true if the given cell is a 'port', that is, when connecting to
    * it, its parent is the connecting vertex in terms of graph traversal
    *
    * Parameters:

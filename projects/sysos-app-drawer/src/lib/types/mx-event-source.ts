@@ -14,7 +14,7 @@
  * <mxGraphModel>, <mxGraph>, <mxGraphView>, <mxEditor>, <mxCellOverlay>,
  * <mxToolbar>, <mxWindow>
  */
-import {mxEventObject} from "./mx-event-object";
+import {mxEventObject} from './mx-event-object';
 
 export interface mxEventSource {
   /**
@@ -34,7 +34,7 @@ export interface mxEventSource {
   /**
    * Constructs a new event source.
    */
-  constructor(eventSource?: any);
+  (eventSource?: any): void;
   /**
    * Returns <eventsEnabled>.
    */
@@ -65,12 +65,12 @@ export interface mxEventSource {
   /**
    * Dispatches the given event to the listeners which are registered for
    * the event. The sender argument is optional. The current execution scope
-   * ("this") is used for the listener invocation (see <mxUtils.bind>).
+   * ('this') is used for the listener invocation (see <mxUtils.bind>).
    *
    * Example:
    *
    * (code)
-   * fireEvent(new mxEventObject("eventName", key1, val1, .., keyN, valN))
+   * fireEvent(new mxEventObject('eventName', key1, val1, .., keyN, valN))
    * (end)
    *
    * Parameters:

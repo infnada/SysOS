@@ -12,10 +12,10 @@
  *
  * graph - Reference to the enclosing graph.
  */
-import {mxEventSource} from "./mx-event-source";
+import {mxEventSource} from './mx-event-source';
 
 export interface mxSwimlaneManager extends mxEventSource {
-  constructor(graph?: any, horizontal?: any, addEnabled?: any, resizeEnabled?: any);
+  (graph?: any, horizontal?: any, addEnabled?: any, resizeEnabled?: any): void;
   /**
    * Returns true if events are handled. This implementation
    * returns <enabled>.

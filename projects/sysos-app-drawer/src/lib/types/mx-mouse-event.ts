@@ -31,7 +31,7 @@
  *
  */
 export interface mxMouseEvent {
-  constructor(evt: any, state: any);
+  (evt: any, state: any): void;
   /**
    * Returns <evt>.
    */

@@ -22,10 +22,10 @@
  *
  * Constructs a new abstract canvas.
  */
-import {mxAbstractCanvas2D} from "./mx-abstract-canvas-2d";
+import {mxAbstractCanvas2D} from './mx-abstract-canvas-2d';
 
 export interface mxXmlCanvas2D extends mxAbstractCanvas2D {
-  constructor(root?: any);
+  (root?: any): void;
   /**
    * Writes the rendering defaults to <root>:
    */

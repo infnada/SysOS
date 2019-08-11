@@ -33,11 +33,11 @@
  * ease - Optional easing constant for the animation. Default is 1.5.
  * delay - Optional delay between the animation steps. Passed to <mxAnimation>.
  */
-import {mxAnimation} from "./mx-animation";
-import {mxPoint} from "./mx-point";
+import {mxAnimation} from './mx-animation';
+import {mxPoint} from './mx-point';
 
 export interface mxMorphing extends mxAnimation {
-  constructor(graph?: any, steps?: any, ease?: any, delay?: any);
+  (graph?: any, steps?: any, ease?: any, delay?: any): void;
   /**
    * Animation step.
    */

@@ -16,11 +16,11 @@
  * strokewidth - Optional integer that defines the stroke width. Default is
  * 1. This is stored in <strokewidth>.
  */
-import {mxShape} from "./mx-shape";
-import {mxPoint} from "./mx-point";
+import {mxShape} from './mx-shape';
+import {mxPoint} from './mx-point';
 
 export interface mxPolyline extends mxShape {
-  constructor(points?: mxPoint[], stroke?: string, strokewidth?: number);
+  (points?: mxPoint[], stroke?: string, strokewidth?: number): void;
   /**
    * Returns 0.
    */

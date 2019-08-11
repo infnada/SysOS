@@ -91,7 +91,7 @@ export interface mxMultiplicity {
    * @param validNeighborsAllowed - Optional boolean indicating if the array of
    * opposite types should be valid or invalid.
    */
-  constructor(source: boolean, type: any, attr: any, value: any, min: number, max: number | 'n', validNeighbors: any, countError: string, typeError: string, validNeighborsAllowed?: boolean);
+  (source: boolean, type: any, attr: any, value: any, min: number, max: number | 'n', validNeighbors: any, countError: string, typeError: string, validNeighborsAllowed?: boolean): void;
   /**
    * Checks the multiplicity for the given arguments and returns the error
    * for the given connection or null if the multiplicity does not apply.

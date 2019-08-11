@@ -12,6 +12,7 @@
       "element",
       "sadrw",
       "kebab-case"
-    ]
+    ],
+    "class-name": false
   }
 }

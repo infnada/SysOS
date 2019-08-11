@@ -11,7 +11,7 @@ export interface mxCollapseChange {
   cell: any;
   collapsed: any;
   previous: any;
-  constructor(model: any, cell: any, collapsed: any);
+  (model: any, cell: any, collapsed: any): void;
   /**
    * Changes the collapsed state of <cell> to <previous> using
    * <mxGraphModel.collapsedStateForCellChanged>.

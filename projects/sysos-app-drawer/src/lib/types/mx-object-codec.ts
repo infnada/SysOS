@@ -9,8 +9,8 @@
  *
  * (code)
  * var obj = new Object();
- * obj.foo = "Foo";
- * obj.bar = "Bar";
+ * obj.foo = 'Foo';
+ * obj.bar = 'Bar';
  * (end)
  *
  * This object is encoded into an XML node using the following.
@@ -30,7 +30,7 @@
  * Finally, the result of the encoding looks as follows.
  *
  * (code)
- * <Object foo="Foo" bar="Bar"/>
+ * <Object foo='Foo' bar='Bar'/>
  * (end)
  *
  * In the above output, the foo and bar fields have been mapped to attributes
@@ -48,21 +48,21 @@
  * The above scheme is applied to all atomic fields, that is, to all non-object
  * fields of an object. For object fields, a child node is created with a
  * special attribute that contains the fieldname. This special attribute is
- * called "as" and hence, as is a reserved word that should not be used for a
+ * called 'as' and hence, as is a reserved word that should not be used for a
  * fieldname.
  *
  * Consider the following example where foo is an object and bar is an atomic
  * property of foo.
  *
  * (code)
- * var obj = {foo: {bar: "Bar"}};
+ * var obj = {foo: {bar: 'Bar'}};
  * (end)
  *
  * This will be mapped to the following XML structure by mxObjectCodec.
  *
  * (code)
  * <Object>
- *   <Object bar="Bar" as="foo"/>
+ *   <Object bar='Bar' as='foo'/>
  * </Object>
  * (end)
  *
@@ -85,18 +85,18 @@
  * called bar with an atomic value, and foo with an object value.
  *
  * (code)
- * var obj = ["Bar", {bar: "Bar"}];
- * obj["bar"] = "Bar";
- * obj["foo"] = {bar: "Bar"};
+ * var obj = ['Bar', {bar: 'Bar'}];
+ * obj['bar'] = 'Bar';
+ * obj['foo'] = {bar: 'Bar'};
  * (end)
  *
  * This array is represented by the following XML nodes.
  *
  * (code)
- * <Array bar="Bar">
- *   <add value="Bar"/>
- *   <Object bar="Bar"/>
- *   <Object bar="Bar" as="foo"/>
+ * <Array bar='Bar'>
+ *   <add value='Bar'/>
+ *   <Object bar='Bar'/>
+ *   <Object bar='Bar' as='foo'/>
  * </Array>
  * (end)
  *
@@ -150,15 +150,15 @@
  *
  * (code)
  * <Object>
- *   <add as="foo">mxConstants.ALIGN_LEFT</add>
+ *   <add as='foo'>mxConstants.ALIGN_LEFT</add>
  * </Object>
  * (end)
  *
- * The resulting object has a field called foo with the value "left". Its XML
+ * The resulting object has a field called foo with the value 'left'. Its XML
  * representation looks as follows.
  *
  * (code)
- * <Object foo="left"/>
+ * <Object foo='left'/>
  * (end)
  *
  * This means the expression is evaluated at decoding time and the result of
@@ -192,7 +192,7 @@
  * mapping - Optional mapping from field- to attributenames.
  */
 export interface mxObjectCodec {
-  constructor(template: any, exclude: any, idrefs: any, mapping: any);
+  (template: any, exclude: any, idrefs: any, mapping: any): void;
   /**
    * Returns the name used for the nodenames and lookup of the codec when
    * classes are encoded and nodes are decoded. For classes to work with
@@ -267,7 +267,7 @@ export interface mxObjectCodec {
    * (ie. an index) then it is not encoded.
    * - If the value is an object, then the codec is used to
    * create a child node with the variable name encoded into
-   * the "as" attribute.
+   * the 'as' attribute.
    * - Else, if <encodeDefaults> is true or the value differs
    * from the template value, then ...
    * - ... if obj is not an array, then the value is mapped to
@@ -327,7 +327,7 @@ export interface mxObjectCodec {
    */
   writeComplexAttribute(enc: any, obj: any, name: any, value: any, node: any): void;
   /**
-   * Converts true to "1" and false to "0" is <isBooleanAttribute> returns true.
+   * Converts true to '1' and false to '0' is <isBooleanAttribute> returns true.
    * All other values are not converted.
    *
    * Parameters:
@@ -411,13 +411,13 @@ export interface mxObjectCodec {
    * This implementation decodes all attributes and childs of a node
    * according to the following rules:
    *
-   * - If the variable name is in <exclude> or if the attribute name is "id"
-   * or "as" then it is ignored.
+   * - If the variable name is in <exclude> or if the attribute name is 'id'
+   * or 'as' then it is ignored.
    * - If the variable name is in <idrefs> then <mxCodec.getObject> is used
    * to replace the reference with an object.
    * - The variable name is mapped using a reverse <mapping>.
    * - If the value has a child node, then the codec is used to create a
-   * child object with the variable name taken from the "as" attribute.
+   * child object with the variable name taken from the 'as' attribute.
    * - If the object is an array and the variable name is empty then the
    * value or child object is appended to the array.
    * - If an add child has no value or the object is not an array then
@@ -429,7 +429,7 @@ export interface mxObjectCodec {
    *
    * (code)
    * <Object>
-   *   <add as="hello"><![CDATA[
+   *   <add as='hello'><![CDATA[
    *     function(arg1) {
    *       mxUtils.alert('Hello '+arg1);
    *     }
@@ -472,7 +472,7 @@ export interface mxObjectCodec {
   decodeAttributes(dec: any, node: any, obj: any): void;
   /**
    * Returns true if the given attribute should be ignored. This implementation
-   * returns true if the attribute name is "as" or "id".
+   * returns true if the attribute name is 'as' or 'id'.
    *
    * Parameters:
    *

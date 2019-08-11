@@ -38,7 +38,7 @@
  * editor - Reference to the enclosing <mxEditor>.
  */
 export interface mxDefaultKeyHandler {
-  constructor(editor: any);
+  (editor: any): void;
   /**
    * Binds the specified keycode to the given action in <editor>. The
    * optional control flag specifies if the control key must be pressed

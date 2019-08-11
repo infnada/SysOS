@@ -34,7 +34,7 @@
  * editor - Reference to the enclosing <mxEditor>.
  */
 export interface mxDefaultToolbar {
-  constructor(container: any, editor: any);
+  (container: any, editor: any): void;
   /**
    * Constructs the <toolbar> for the given container and installs a listener
    * that updates the <mxEditor.insertFunction> on <editor> if an item is

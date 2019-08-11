@@ -28,10 +28,7 @@
  *   }
  * };
  *
- * va    invalidating: any;    invalidating: any;    [x: string]: any;
-
-
- r cellLabelChanged = graph.cellLabelChanged;
+ * var cellLabelChanged = graph.cellLabelChanged;   invalidating: any;    invalidating: any;    [x: string]: any;
  * graph.cellLabelChanged = function(cell, newValue, autoSize)
  * {
  *   if (mxUtils.isNode(cell.value))
@@ -46,11 +43,20 @@
  * };
  * (end)
  */
-import {Value} from "./value";
-import {mxGeometry} from "./mx-geometry";
-import {mxCellOverlay} from "./mx-cell-overlay";
+import {Value} from './value';
+import {mxGeometry} from './mx-geometry';
+import {mxCellOverlay} from './mx-cell-overlay';
 
 export interface mxCell {
+  /**
+   * Constructs a new cell to be used in a graph model.
+   * This method invokes <onInit> upon completion.
+   *
+   * @param value - Optional object that represents the cell value.
+   * @param geometry - Optional <mxGeometry> that specifies the geometry.
+   * @param style - Optional formatted string that defines the style.
+   */
+  (value?: any, geometry?: mxGeometry, style?: string): void;
   /**
    * Holds the Id. Default is null.
    */
@@ -120,15 +126,6 @@ export interface mxCell {
    * Implicit variable declarations
    */
   overlays: mxCellOverlay[];
-  /**
-   * Constructs a new cell to be used in a graph model.
-   * This method invokes <onInit> upon completion.
-   *
-   * @param value - Optional object that represents the cell value.
-   * @param geometry - Optional <mxGeometry> that specifies the geometry.
-   * @param style - Optional formatted string that defines the style.
-   */
-  constructor(value?: any, geometry?: mxGeometry, style?: string);
   /**
    * Returns the Id of the cell as a string.
    */

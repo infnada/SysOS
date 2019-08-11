@@ -21,11 +21,11 @@
  *
  * state - <mxCellState> of the cell to be handled.
  */
-import {mxRectangleShape} from "./mx-rectangle-shape";
-import {mxPoint} from "./mx-point";
+import {mxRectangleShape} from './mx-rectangle-shape';
+import {mxPoint} from './mx-point';
 
 export interface mxEdgeHandler {
-  constructor(state: any);
+  (state: any): void;
   /**
    * Initializes the shapes required for this edge handler.
    */

@@ -46,7 +46,7 @@
  * Constructs a new stylesheet and assigns default styles.
  */
 export interface mxStylesheet {
-  constructor();
+  (): void;
   /**
    * Creates and returns the default vertex style.
    */

@@ -39,9 +39,9 @@
  * be added anywhere in the cell hierarchy after parsing.
  *
  * (code)
- * var xml = '<root><mxCell id="2" value="Hello," vertex="1"><mxGeometry x="20" y="20" width="80" height="30" as="geometry"/></mxCell>
- * <mxCell id="3" value="World!" vertex="1"><mxGeometry x="200" y="150" width="80" height="30" as="geometry"/></mxCell>
- * <mxCell id="4" value="" edge="1" source="2" target="3"><mxGeometry relative="1" as="geometry"/></mxCell></root>';
+ * var xml = '<root><mxCell id='2' value='Hello,' vertex='1'><mxGeometry x='20' y='20' width='80' height='30' as='geometry'/></mxCell>
+ * <mxCell id='3' value='World!' vertex='1'><mxGeometry x='200' y='150' width='80' height='30' as='geometry'/></mxCell>
+ * <mxCell id='4' value='' edge='1' source='2' target='3'><mxGeometry relative='1' as='geometry'/></mxCell></root>';
  * var doc = mxUtils.parseXml(xml);
  * var codec = new mxCodec(doc);
  * var elt = doc.documentElement.firstChild;
@@ -108,7 +108,7 @@
  * using <mxUtils.createXmlDocument>.
  */
 export interface mxCodec {
-  constructor(document: any);
+  (document: any): void;
   /**
    * Assoiates the given object with the given ID and returns the given object.
    *
@@ -198,7 +198,7 @@ export interface mxCodec {
    */
   encode(obj: any): any;
   /**
-   * Decodes the given XML node. The optional "into"
+   * Decodes the given XML node. The optional 'into'
    * argument specifies an existing object to be
    * used. If no object is given, then a new instance
    * is created using the constructor from the codec.

@@ -25,13 +25,13 @@ export interface mxClient {
   IS_TOUCH: boolean;
   IS_POINTER: boolean;
   IS_LOCAL: boolean;
-  isBrowserSupported(): boolean;
-  link(rel: any, href: any, doc?: any): void;
-  include(src: any): void;
-  dispose(): void;
   basePath: any;
   imageBasePath: any;
   language: any;
   languages: any;
   defaultLanguage: any;
+  isBrowserSupported(): boolean;
+  link(rel: any, href: any, doc?: any): void;
+  include(src: any): void;
+  dispose(): void;
 }

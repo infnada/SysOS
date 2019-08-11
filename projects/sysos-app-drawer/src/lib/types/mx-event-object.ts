@@ -9,6 +9,14 @@
  */
 export interface mxEventObject {
   /**
+   * Constructs a new event object with the specified name. An optional
+   * sequence of key, value pairs can be appended to define properties.
+   *
+   * @example
+   * new mxEventObject('eventName', key1, val1, .., keyN, valN)
+   */
+  (name?: any, ...args: any[]): void;
+  /**
    * Holds the name.
    */
   name: string;
@@ -20,14 +28,6 @@ export interface mxEventObject {
    * Holds the consumed state. Default is false.
    */
   consumed: boolean;
-  /**
-   * Constructs a new event object with the specified name. An optional
-   * sequence of key, value pairs can be appended to define properties.
-   *
-   * @example
-   * new mxEventObject("eventName", key1, val1, .., keyN, valN)
-   */
-  constructor(name?: any, ...args: any[]);
   /**
    * Returns <name>.
    */

@@ -25,7 +25,7 @@
  * config - XML node that contains the configuration data.
  */
 export interface mxDefaultPopupMenu {
-  constructor(config: any);
+  (config: any): void;
   /**
    * This function is called from <mxEditor> to add items to the
    * given menu based on <config>. The config is a sequence of
@@ -68,20 +68,19 @@ export interface mxDefaultPopupMenu {
    * To add a new item for a given action to the popupmenu:
    *
    * (code)
-   * <mxDefaultPopupMenu as="popupHandler">
-   *   <add as="delete" action="delete" icon="images/delete.gif" if="cell"/>
+   * <mxDefaultPopupMenu as='popupHandler'>
+   *   <add as='delete' action='delete' icon='images/delete.gif' if='cell'/>
    * </mxDefaultPopupMenu>
    * (end)
    *
    * To add a new item for a custom function:
    *
    * (code)
-   * <mxDefaultPopupMenu as="popupHandler">
-   *   <add as="action1"><![CDATA[
-   *		function (editor, cell, evt)
-   *		{
-   *			editor.execute('action1', cell, 'myArg');
-   *		}
+   * <mxDefaultPopupMenu as='popupHandler'>
+   *   <add as='action1'><![CDATA[
+   *    function (editor, cell, evt) {
+   *      editor.execute('action1', cell, 'myArg');
+   *    }
    *   ]]></add>
    * </mxDefaultPopupMenu>
    * (end)
@@ -100,7 +99,7 @@ export interface mxDefaultPopupMenu {
    * To add a new condition for popupmenu items:
    *
    * (code)
-   * <condition name="condition1"><![CDATA[
+   * <condition name='condition1'><![CDATA[
    *   function (editor, cell, evt)
    *   {
    *     return cell != null;
@@ -111,7 +110,7 @@ export interface mxDefaultPopupMenu {
    * The new condition can then be used in any item as follows:
    *
    * (code)
-   * <add as="action1" action="action1" icon="action1.gif" if="condition1"/>
+   * <add as='action1' action='action1' icon='action1.gif' if='condition1'/>
    * (end)
    *
    * The order in which the items and conditions appear is not significant as

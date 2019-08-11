@@ -39,10 +39,10 @@
  *
  * Constructs a new fast organic layout for the specified graph.
  */
-import {mxGraphLayout} from "./mx-graph-layout";
+import {mxGraphLayout} from './mx-graph-layout';
 
 export interface mxParallelEdgeLayout extends mxGraphLayout {
-  constructor(graph: any);
+  (graph: any): void;
   /**
    * Implements <mxGraphLayout.execute>.
    */

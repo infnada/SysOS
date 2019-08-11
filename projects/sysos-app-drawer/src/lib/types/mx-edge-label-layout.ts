@@ -19,10 +19,10 @@
  *
  * graph - <mxGraph> that contains the cells.
  */
-import {mxGraphLayout} from "./mx-graph-layout";
+import {mxGraphLayout} from './mx-graph-layout';
 
 export interface mxEdgeLabelLayout extends mxGraphLayout {
-  constructor(graph: any, radius?: any);
+  (graph: any, radius?: any): void;
   /**
    * Implements <mxGraphLayout.execute>.
    */

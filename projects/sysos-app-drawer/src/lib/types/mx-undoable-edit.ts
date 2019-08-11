@@ -62,10 +62,8 @@ export interface mxUndoableEdit {
   redone: boolean;
   /**
    * Constructs a new undoable edit for the given source.
-   * @param source
-   * @param significant
    */
-  constructor(source: any, significant?: boolean);
+  (source: any, significant?: boolean): void;
   /**
    * Returns true if the this edit contains no changes.
    */

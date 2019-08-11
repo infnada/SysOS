@@ -27,10 +27,10 @@
  * bounding box of rotated shapes, not the actual bounds of the shape. See
  * also <text> for plain text label restrictions in shapes for VML.
  */
-import {mxAbstractCanvas2D} from "./mx-abstract-canvas-2d";
+import {mxAbstractCanvas2D} from './mx-abstract-canvas-2d';
 
 export interface mxVmlCanvas2D extends mxAbstractCanvas2D {
-  constructor(root?: any);
+  (root?: any): void;
   /**
    * Creates the given element using the document.
    */

@@ -58,7 +58,7 @@
  * event listener is installed.
  */
 export interface mxKeyHandler {
-  constructor(graph: any, target?: any);
+  (graph: any, target?: any): void;
   /**
    * Returns true if events are handled. This implementation returns
    * <enabled>.

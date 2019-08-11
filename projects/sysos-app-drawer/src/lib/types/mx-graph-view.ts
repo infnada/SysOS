@@ -38,14 +38,14 @@
  * <code>previous</code> properties contain the new and previous root,
  * respectively.
  */
-import {mxEventSource} from "./mx-event-source";
-import {mxPoint} from "./mx-point";
-import {mxGraph} from "./mx-graph";
-import {mxCell} from "./mx-cell";
-import {mxRectangle} from "./mx-rectangle";
-import {mxDictionary} from "./mx-dictionary";
-import {mxCellState} from "./mx-cell-state";
-import {mxRectangleShape} from "./mx-rectangle-shape";
+import {mxEventSource} from './mx-event-source';
+import {mxPoint} from './mx-point';
+import {mxGraph} from './mx-graph';
+import {mxCell} from './mx-cell';
+import {mxRectangle} from './mx-rectangle';
+import {mxDictionary} from './mx-dictionary';
+import {mxCellState} from './mx-cell-state';
+import {mxRectangleShape} from './mx-rectangle-shape';
 
 export interface mxGraphView extends mxEventSource {
   /**
@@ -149,7 +149,7 @@ export interface mxGraphView extends mxEventSource {
    *
    * @param graph - Reference to the enclosing <mxGraph>.
    */
-  constructor(graph: mxGraph);
+  (graph: mxGraph): void;
   /**
    * Returns <graphBounds>.
    */
@@ -220,7 +220,6 @@ export interface mxGraphView extends mxEventSource {
    * is the root of the model.
    * @param force - Boolean indicating if the current root should be ignored for
    * recursion.
-   * @param recurse
    */
   clear(cell?: mxCell, force?: boolean, recurse?: boolean): void;
   /**
@@ -229,8 +228,6 @@ export interface mxGraphView extends mxEventSource {
    *
    * @param cell - Optional <mxCell> to be invalidated. Default is the root of the
    * model.
-   * @param recurse
-   * @param includeEdges
    */
   invalidate(cell?: mxCell, recurse?: boolean, includeEdges?: boolean): void;
   /**
@@ -330,22 +327,14 @@ export interface mxGraphView extends mxEventSource {
    * Returns true if the children of the given cell should not be visible in the
    * view. This implementation uses <mxGraph.isCellVisible> but it can be
    * overidden to use a separate condition.
-   *
-   * @param cell
    */
   isCellCollapsed(cell: any): boolean;
   /**
    * Validates the given cell state.
-   *
-   * @param state
-   * @param geo
    */
   updateVertexState(state: any, geo: any): void;
   /**
    * Validates the given cell state.
-   *
-   * @param state
-   * @param geo
    */
   updateEdgeState(state: any, geo: any): void;
   /**
@@ -413,29 +402,16 @@ export interface mxGraphView extends mxEventSource {
   updatePoints(edge: any, points: any, source: any, target: any): void;
   /**
    * Transforms the given control point to an absolute point.
-   *
-   * @param state
-   * @param pt
    */
   transformControlPoint(state: any, pt: any): mxPoint;
   /**
    * Returns true if the given edge should be routed with <mxGraph.defaultLoopStyle>
    * or the <mxConstants.STYLE_LOOP> defined for the given edge. This implementation
    * returns true if the given edge is a loop and does not
-   *
-   * @param edge
-   * @param points
-   * @param source
-   * @param target
    */
   isLoopStyleEnabled(edge: mxCellState, points: any, source: any, target: any): boolean;
   /**
    * Returns the edge style function to be used to render the given edge state.
-   *
-   * @param edge
-   * @param points
-   * @param source
-   * @param target
    */
   getEdgeStyle(edge: any, points?: any, source?: any, target?: any): any;
   /**
@@ -452,7 +428,7 @@ export interface mxGraphView extends mxEventSource {
    * start and end state, where start is the source if source is true.
    *
    * @param edge - <mxCellState> whose terminal point should be updated.
-   * @param start - <mxCellState> for the terminal on "this" side of the edge.
+   * @param start - <mxCellState> for the terminal on 'this' side of the edge.
    * @param end - <mxCellState> for the terminal on the other side of the edge.
    * @param source - Boolean indicating if start is the source terminal state.
    */
@@ -462,7 +438,7 @@ export interface mxGraphView extends mxEventSource {
    * state, where start is the source if source is true.
    *
    * @param edge - <mxCellState> whose terminal point should be returned.
-   * @param start - <mxCellState> for the terminal on "this" side of the edge.
+   * @param start - <mxCellState> for the terminal on 'this' side of the edge.
    * @param end - <mxCellState> for the terminal on the other side of the edge.
    * @param source - Boolean indicating if start is the source terminal state.
    */
@@ -539,8 +515,6 @@ export interface mxGraphView extends mxEventSource {
   getPerimeterBounds(terminal: mxCellState, border?: number): mxRectangle;
   /**
    * Returns the perimeter function for the given state.
-   *
-   * @param state
    */
   getPerimeterFunction(state: mxCellState): any;
   /**
@@ -615,8 +589,6 @@ export interface mxGraphView extends mxEventSource {
   isRendering(): boolean;
   /**
    * Sets <rendering>.
-   *
-   * @param value
    */
   setRendering(value: boolean): void;
   /**
@@ -625,8 +597,6 @@ export interface mxGraphView extends mxEventSource {
   isAllowEval(): boolean;
   /**
    * Sets <allowEval>.
-   *
-   * @param value
    */
   setAllowEval(value: boolean): void;
   /**
@@ -635,8 +605,6 @@ export interface mxGraphView extends mxEventSource {
   getStates(): mxDictionary;
   /**
    * Sets <states>.
-   *
-   * @param value
    */
   setStates(value: mxDictionary): void;
   /**
@@ -644,8 +612,6 @@ export interface mxGraphView extends mxEventSource {
    * contains all states that are not null, that is, the returned array may
    * have less elements than the given array. If no argument is given, then
    * this returns <states>.
-   *
-   * @param cells
    */
   getCellStates(cells: mxCell[]): any[] | mxDictionary;
   /**

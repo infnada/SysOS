@@ -5,10 +5,10 @@
  *
  * Constructs a new guide object.
  */
-import {mxPolyline} from "./mx-polyline";
+import {mxPolyline} from './mx-polyline';
 
 export interface mxGuide {
-  constructor(graph: any, states: any);
+  (graph: any, states: any): void;
   /**
    * Sets the <mxCellStates> that should be used for alignment.
    */

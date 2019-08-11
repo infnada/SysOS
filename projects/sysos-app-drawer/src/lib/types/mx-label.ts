@@ -16,11 +16,11 @@
  * strokewidth - Optional integer that defines the stroke width. Default is
  * 1. This is stored in <strokewidth>.
  */
-import {mxRectangleShape} from "./mx-rectangle-shape";
-import {mxRectangle} from "./mx-rectangle";
+import {mxRectangleShape} from './mx-rectangle-shape';
+import {mxRectangle} from './mx-rectangle';
 
 export interface mxLabel extends mxRectangleShape {
-  constructor(bounds: any, fill: any, stroke: any, strokewidth: any);
+  (bounds: any, fill: any, stroke: any, strokewidth: any): void;
   /**
    * Initializes the shape and the <indicator>.
    */

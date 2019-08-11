@@ -33,7 +33,7 @@ export interface mxCellAttributeChange {
   attribute: any;
   value: any;
   previous: any;
-  constructor(cell: any, attribute: any, value: any);
+  (cell: any, attribute: any, value: any): void;
   /**
    * Changes the attribute of the cell's user object by
    * using <mxCell.setAttribute>.

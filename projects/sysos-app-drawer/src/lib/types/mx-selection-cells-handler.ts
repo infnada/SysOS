@@ -18,10 +18,10 @@
  *
  * graph - Reference to the enclosing <mxGraph>.
  */
-import {mxEventSource} from "./mx-event-source";
+import {mxEventSource} from './mx-event-source';
 
 export interface mxSelectionCellsHandler extends mxEventSource {
-  constructor(graph: any);
+  (graph: any): void;
   /**
    * Returns <enabled>.
    */

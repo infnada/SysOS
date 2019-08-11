@@ -9,10 +9,10 @@
  *
  * state - <mxCellState> of the cell to be handled.
  */
-import {mxRectangleShape} from "./mx-rectangle-shape";
+import {mxRectangleShape} from './mx-rectangle-shape';
 
 export interface mxHandle {
-  constructor(state: any, cursor: any, image: any);
+  (state: any, cursor: any, image: any): void;
   /**
    * Hook for subclassers to return the current position of the handle.
    */
