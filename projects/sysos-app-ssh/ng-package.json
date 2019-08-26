@@ -3,11 +3,7 @@
   "dest": "../../dist/applications/sysos-app-ssh",
   "lib": {
     "entryFile": "src/public-api.ts",
-    "externals": {
-      "xterm": "xterm"
-    },
     "umdModuleIds": {
-      "ngx-logger": "ngx-logger",
       "ngx-socket-io": "ngx-socket-io",
       "ngx-socket-io/src/socket-io.service": "ngx-socket-io",
       "ngx-toastr": "ngx-toastr",
@@ -16,8 +12,12 @@
       "xterm/lib/addons/fit/fit": "xterm.lib.addons.fit.fit",
       "@sysos/lib-application": "sysos.lib-application",
       "@sysos/lib-file-system": "sysos.lib-file-system",
+      "@sysos/lib-logger": "sysos.lib-logger",
       "@sysos/lib-modal": "sysos.lib-modal",
       "@sysos/lib-service-injector": "sysos.lib-service-injector"
     }
-  }
+  },
+  "whitelistedNonPeerDependencies": [
+    "xterm"
+  ]
 }

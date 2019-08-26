@@ -6,11 +6,11 @@
     "umdModuleIds": {
       "angular-file": "angular-file",
       "ngx-filter-pipe": "ngx-filter-pipe",
-      "ngx-logger": "ngx-logger",
       "@sysos/lib-application": "sysos.lib-application",
       "@sysos/lib-file": "sysos.lib-file",
       "@sysos/lib-file-system": "sysos.lib-file-system",
       "@sysos/lib-file-system-ui": "sysos.lib-file-system-ui",
+      "@sysos/lib-logger": "sysos.lib-logger",
       "@sysos/lib-selectable": "sysos.lib-selectable",
       "@sysos/lib-types": "sysos.lib-types"
     }

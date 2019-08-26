@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {ToastrService} from 'ngx-toastr';
-import {NGXLogger} from 'ngx-logger';
+import {SysosLibLoggerService} from '@sysos/lib-logger';
 
 import {SysOSFile} from '@sysos/lib-types';
 import {SysosLibFileSystemService} from '@sysos/lib-file-system';
@@ -34,7 +34,7 @@ export class SysosAppDatastoreExplorerServerService {
   viewAsList: Observable<any>;
   search: Observable<any>;
 
-  constructor(private logger: NGXLogger,
+  constructor(private logger: SysosLibLoggerService,
               private Toastr: ToastrService,
               private FileSystem: SysosLibFileSystemService,
               private Modal: SysosLibModalService,
@@ -54,7 +54,7 @@ export class SysosAppDatastoreExplorerServerService {
   }
 
   downloadFileToSysOS(src: string, dst: string, connectionUuid: string): void {
-    this.logger.debug('DatastoreExplorer -> datastore-explorer_session__file_download -> src [], dst [], connectionUuid []', src, dst, connectionUuid);
+    this.logger.debug('Datastore Explorer', 'datastore-explorer_session__file_download', arguments);
     // TODO
   }
 

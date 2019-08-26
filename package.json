@@ -14,8 +14,8 @@
     "dev:start": "npm-run-all build dev:proxy",
     "dev:proxy": "ng serve --proxy-config proxy.conf.json",
     "build": "npm-run-all clean lint-backend lint-frontend build-backend build-libs build-modals build-apps build-frontend copy-extra",
-    "build-libs": "ng build sysos-lib-file-system && ng build sysos-lib-application && ng build sysos-lib-modal && ng build sysos-lib-netapp && ng build sysos-lib-selectable && ng build sysos-lib-types && ng build sysos-lib-user && ng build sysos-lib-vmware && ng build sysos-lib-file-system-ui && ng build sysos-lib-file",
-    "build-apps": "ng build sysos-app-credentials-manager && ng build sysos-app-file-explorer && ng build sysos-app-infrastructure-manager && ng build sysos-app-backups-manager && ng build sysos-app-datastore-explorer && ng build sysos-app-drawer && ng build sysos-app-notepad && ng build sysos-app-sftp && ng build sysos-app-ssh && ng build sysos-app-wmks",
+    "build-libs": "ng build sysos-lib-logger && ng build sysos-lib-file-system && ng build sysos-lib-application && ng build sysos-lib-modal && ng build sysos-lib-netapp && ng build sysos-lib-selectable && ng build sysos-lib-types && ng build sysos-lib-user && ng build sysos-lib-vmware && ng build sysos-lib-file-system-ui && ng build sysos-lib-file && ng build sysos-lib-service-injector",
+    "build-apps": "ng build sysos-app-credentials-manager && ng build sysos-app-file-explorer && ng build sysos-app-drawer && ng build sysos-app-infrastructure-manager && ng build sysos-app-backups-manager && ng build sysos-app-datastore-explorer && ng build sysos-app-notepad && ng build sysos-app-sftp && ng build sysos-app-ssh && ng build sysos-app-wmks",
     "build-modals": "ng build sysos-modal-input && ng build sysos-modal-plain && ng build sysos-modal-question && ng build sysos-modal-esxi-selectable && ng build sysos-modal-recovery-wizard && ng build sysos-modal-backup-wizard",
     "build-frontend": "ng build",
     "build-backend": "tsc --build src/backend/tsconfig.json",
@@ -26,7 +26,8 @@
     "e2e": "ng e2e",
     "clean": "rm -rf dist/SysOS/*",
     "copy-extra": "cp -rf src/backend/app/ssl dist/SysOS/ && cp -rf src/backend/app/filesystem dist/SysOS/ && cp dist/applications/*/bundles/* dist/SysOS/filesystem/bin/applications/ && cp dist/modals/*/bundles/* dist/SysOS/filesystem/bin/modals/ && cp -rf node_modules/draw.io/drawio/src/main/webapp/stencils/* dist/SysOS/filesystem/etc/applications/drawer/stencils/",
-    "copy-apps": " cp dist/applications/*/bundles/* dist/SysOS/filesystem/bin/applications/ && cp dist/modals/*/bundles/* dist/SysOS/filesystem/bin/modals/"
+    "copy-apps": "cp dist/applications/*/bundles/* dist/SysOS/filesystem/bin/applications/ && cp dist/modals/*/bundles/* dist/SysOS/filesystem/bin/modals/ && cp dist/libs/sysos-lib-mxgraph/bundles/* dist/SysOS/filesystem/bin/libs/ && npm run postscript",
+    "postscript": "sed -i '1i// Addeded with package.json postscript\\nmxBasePath = \"assets/mxgraph\";\\nmxLoadResources = true;\\nmxForceIncludes = false;\\nmxResourceExtension = \".txt\";\\nmxLoadStylesheets = true;\\n' dist/SysOS/filesystem/bin/libs/sysos-lib-mxgraph.umd.js && sed -i -e 's=((.*(window))).==g' dist/SysOS/filesystem/bin/libs/sysos-lib-mxgraph.umd.js"
   },
   "private": false,
   "dependencies": {
@@ -99,6 +100,7 @@
     "@types/jasmine": "~2.8.8",
     "@types/jasminewd2": "~2.0.3",
     "@types/lodash": "^4.14.136",
+    "@types/mxgraph": "github:lgleim/mxgraph-typings",
     "@types/node": "^8.9.5",
     "@types/node-fetch": "^2.3.7",
     "@types/socket.io": "^2.1.2",
@@ -111,7 +113,7 @@
     "karma-coverage-istanbul-reporter": "~2.0.1",
     "karma-jasmine": "~1.1.2",
     "karma-jasmine-html-reporter": "^0.2.2",
-    "ng-packagr": "^4.2.0",
+    "ng-packagr": "^5.4.3",
     "npm-run-all": "^4.1.5",
     "protractor": "~5.4.0",
     "ts-node": "~7.0.0",

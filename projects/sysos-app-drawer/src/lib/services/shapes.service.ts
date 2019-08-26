@@ -1,19 +1,16 @@
 import {Injectable} from '@angular/core';
 
-import {mxgraph, mx} from '../types/mxgraph';
-
-declare let mxStencilRegistry: any;
-declare let mxRectangleShape: any;
-declare let mxConstants: any;
-declare let mxUtils: any;
+import {SysosLibMxgraphService} from "@sysos/lib-mxgraph";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ShapesService {
-  private mx: mxgraph = mx;
 
-  constructor() {
+  private mx;
+
+  constructor(private MxgraphService: SysosLibMxgraphService) {
+    this.mx = this.MxgraphService.mx;
   }
 
   registerShapes() {
@@ -48,7 +45,7 @@ export class ShapesService {
       c.fillAndStroke();
     };
     this.mx.mxCellRenderer.registerShape(mxShapeGCP2DoubleRect.prototype.cst.SHAPE_DOUBLE_RECT, mxShapeGCP2DoubleRect);
-    mxShapeGCP2DoubleRect.prototype.constraints = mxRectangleShape.prototype.constraints;
+    mxShapeGCP2DoubleRect.prototype.constraints = this.mx.mxRectangleShape.prototype.constraints;
 
     const mxShapeGCP2HexIcon = function(bounds, fill, stroke, strokewidth) {
       ($this.mx.mxShape as any).call(this);
@@ -173,13 +170,13 @@ export class ShapesService {
     mxShapeGCP2HexIcon.prototype.paintVertexShape = function(c, x, y, w, h) {
       c.translate(x, y);
 
-      const prIcon = mxUtils.getValue(this.state.style, 'prIcon', 'compute_engine');
-      const prType = mxUtils.getValue(this.state.style, 'prType', '');
-      const instNum = parseInt(mxUtils.getValue(this.state.style, 'instNum', 0), 10);
-      const fillColor = mxUtils.getValue(this.state.style, 'fillColor', '#ffffff');
-      const opacity = mxUtils.getValue(this.state.style, 'opacity', '100');
-      const strokeColor = mxUtils.getValue(this.state.style, 'strokeColor', 'none');
-      const strokeWidth = mxUtils.getValue(this.state.style, 'strokeWidth', 1);
+      const prIcon = $this.mx.mxUtils.getValue(this.state.style, 'prIcon', 'compute_engine');
+      const prType = $this.mx.mxUtils.getValue(this.state.style, 'prType', '');
+      const instNum = parseInt($this.mx.mxUtils.getValue(this.state.style, 'instNum', 0), 10);
+      const fillColor = $this.mx.mxUtils.getValue(this.state.style, 'fillColor', '#ffffff');
+      const opacity = $this.mx.mxUtils.getValue(this.state.style, 'opacity', '100');
+      const strokeColor = $this.mx.mxUtils.getValue(this.state.style, 'strokeColor', 'none');
+      const strokeWidth = $this.mx.mxUtils.getValue(this.state.style, 'strokeWidth', 1);
       const iconSize = Math.min(w, h);
 
       let bgSt1;
@@ -187,39 +184,39 @@ export class ShapesService {
 
       switch (prType) {
         case 'dynamic':
-          bgSt1 = mxStencilRegistry.getStencil('mxgraph.gcp2.outline_blank_2');
+          bgSt1 = $this.mx.mxStencilRegistry.getStencil('mxgraph.gcp2.outline_blank_2');
           c.setAlpha(opacity * 0.5 / 100);
           c.setStrokeColor('none');
           bgSt1.drawShape(c, this, w * 0.21, h * 0.12, w * 0.58, h * 0.76);
           break;
         case 'multiple':
-          bgSt1 = mxStencilRegistry.getStencil('mxgraph.gcp2.outline_blank_2');
+          bgSt1 = $this.mx.mxStencilRegistry.getStencil('mxgraph.gcp2.outline_blank_2');
           c.setAlpha(opacity * 0.5 / 100);
           c.setStrokeColor('none');
           bgSt1.drawShape(c, this, w * 0.21, h * 0.12, w * 0.58, h * 0.76);
-          bgSt2 = mxStencilRegistry.getStencil('mxgraph.gcp2.outline_blank_3');
+          bgSt2 = $this.mx.mxStencilRegistry.getStencil('mxgraph.gcp2.outline_blank_3');
           c.setAlpha(opacity * 0.7 / 100);
           c.setStrokeColor('none');
           bgSt2.drawShape(c, this, w * 0.17, h * 0.13, w * 0.66, h * 0.74);
           break;
         case 'shared':
-          bgSt1 = mxStencilRegistry.getStencil('mxgraph.gcp2.outline_blank_1');
-          this.style[mxConstants.STYLE_STROKEWIDTH] = iconSize * 0.038;
+          bgSt1 = $this.mx.mxStencilRegistry.getStencil('mxgraph.gcp2.outline_blank_1');
+          this.style[$this.mx.mxConstants.STYLE_STROKEWIDTH] = iconSize * 0.038;
           c.setAlpha(opacity * 0.4 / 100);
           c.setStrokeColor(fillColor);
           c.setFillColor('none');
           bgSt1.drawShape(c, this, w * 0.02, h * 0, w * 0.96, h);
-          bgSt2 = mxStencilRegistry.getStencil('mxgraph.gcp2.outline_blank_2');
+          bgSt2 = $this.mx.mxStencilRegistry.getStencil('mxgraph.gcp2.outline_blank_2');
           c.setAlpha(opacity * 0.7 / 100);
           bgSt2.drawShape(c, this, w * 0.14, h * 0.01, w * 0.72, h * 0.98);
           c.setAlpha(opacity / 100);
           c.setFillColor('#ffffff');
           bgSt1.drawShape(c, this, w * 0.13, h * 0.12, w * 0.74, h * 0.76);
-          this.style[mxConstants.STYLE_STROKEWIDTH] = strokeWidth;
+          this.style[$this.mx.mxConstants.STYLE_STROKEWIDTH] = strokeWidth;
           break;
         case 'replica':
-          bgSt1 = mxStencilRegistry.getStencil('mxgraph.gcp2.outline_blank_1');
-          this.style[mxConstants.STYLE_STROKEWIDTH] = iconSize * 0.038;
+          bgSt1 = $this.mx.mxStencilRegistry.getStencil('mxgraph.gcp2.outline_blank_1');
+          this.style[$this.mx.mxConstants.STYLE_STROKEWIDTH] = iconSize * 0.038;
           c.setAlpha(opacity * 0.4 / 100);
           c.setStrokeColor(fillColor);
           c.setFillColor('none');
@@ -229,52 +226,52 @@ export class ShapesService {
           c.setAlpha(opacity / 100);
           c.setFillColor('#ffffff');
           bgSt1.drawShape(c, this, w * 0.13, h * 0.12, w * 0.74, h * 0.76);
-          this.style[mxConstants.STYLE_STROKEWIDTH] = strokeWidth;
+          this.style[$this.mx.mxConstants.STYLE_STROKEWIDTH] = strokeWidth;
           break;
         case 'dynamic2':
-          bgSt1 = mxStencilRegistry.getStencil('mxgraph.gcp2.outline_blank_2');
+          bgSt1 = $this.mx.mxStencilRegistry.getStencil('mxgraph.gcp2.outline_blank_2');
           c.setAlpha(opacity * 0.5 / 100);
           c.setStrokeColor('none');
           bgSt1.drawShape(c, this, w * 0.14, h * 0.01, w * 0.72, h * 0.98);
-          bgSt2 = mxStencilRegistry.getStencil('mxgraph.gcp2.outline_blank_1');
-          this.style[mxConstants.STYLE_STROKEWIDTH] = iconSize * 0.01;
+          bgSt2 = $this.mx.mxStencilRegistry.getStencil('mxgraph.gcp2.outline_blank_1');
+          this.style[$this.mx.mxConstants.STYLE_STROKEWIDTH] = iconSize * 0.01;
           c.setStrokeColor(fillColor);
           c.setAlpha(opacity / 100);
           c.setFillColor('#ffffff');
           bgSt2.drawShape(c, this, w * 0.13, h * 0.12, w * 0.74, h * 0.76);
-          this.style[mxConstants.STYLE_STROKEWIDTH] = strokeWidth;
+          this.style[$this.mx.mxConstants.STYLE_STROKEWIDTH] = strokeWidth;
           break;
         case 'dynamic3':
-          bgSt1 = mxStencilRegistry.getStencil('mxgraph.gcp2.outline_blank_2');
+          bgSt1 = $this.mx.mxStencilRegistry.getStencil('mxgraph.gcp2.outline_blank_2');
           c.setStrokeColor('none');
           bgSt1.drawShape(c, this, w * 0.14, h * 0.01, w * 0.72, h * 0.98);
-          bgSt2 = mxStencilRegistry.getStencil('mxgraph.gcp2.outline_blank_1');
-          this.style[mxConstants.STYLE_STROKEWIDTH] = iconSize * 0.01;
+          bgSt2 = $this.mx.mxStencilRegistry.getStencil('mxgraph.gcp2.outline_blank_1');
+          this.style[$this.mx.mxConstants.STYLE_STROKEWIDTH] = iconSize * 0.01;
           c.setStrokeColor(fillColor);
           c.setAlpha(opacity / 100);
           c.setFillColor('#ffffff');
           bgSt2.drawShape(c, this, w * 0.13, h * 0.12, w * 0.74, h * 0.76);
-          this.style[mxConstants.STYLE_STROKEWIDTH] = strokeWidth;
+          this.style[$this.mx.mxConstants.STYLE_STROKEWIDTH] = strokeWidth;
           break;
         case 'highmem':
-          bgSt1 = mxStencilRegistry.getStencil('mxgraph.gcp2.outline_highmem');
+          bgSt1 = $this.mx.mxStencilRegistry.getStencil('mxgraph.gcp2.outline_highmem');
           c.setAlpha(opacity * 0.5 / 100);
           c.setStrokeColor('none');
           bgSt1.drawShape(c, this, 0, h * 0.56, w, h * 0.28);
           break;
         case 'highcomp':
-          bgSt1 = mxStencilRegistry.getStencil('mxgraph.gcp2.outline_highcomp');
+          bgSt1 = $this.mx.mxStencilRegistry.getStencil('mxgraph.gcp2.outline_highcomp');
           c.setAlpha(opacity * 0.5 / 100);
           c.setStrokeColor('none');
           bgSt1.drawShape(c, this, 0, h * 0.16, w, h * 0.28);
           break;
         case 'backend':
-          bgSt1 = mxStencilRegistry.getStencil('mxgraph.gcp2.outline_blank_1');
+          bgSt1 = $this.mx.mxStencilRegistry.getStencil('mxgraph.gcp2.outline_blank_1');
           c.setFillColor('#FCC64D');
           bgSt1.drawShape(c, this, w * 0.12, h * 0.11, w * 0.76, h * 0.78);
           break;
         case 'input':
-          bgSt1 = mxStencilRegistry.getStencil('mxgraph.gcp2.outline_blank_1');
+          bgSt1 = $this.mx.mxStencilRegistry.getStencil('mxgraph.gcp2.outline_blank_1');
           c.setFillColor('#A5DA40');
           bgSt1.drawShape(c, this, w * 0.12, h * 0.11, w * 0.76, h * 0.78);
           break;
@@ -284,7 +281,7 @@ export class ShapesService {
       }
 
       c.setAlpha(opacity / 100);
-      const stencil = mxStencilRegistry.getStencil('mxgraph.gcp2.' + prIcon);
+      const stencil = $this.mx.mxStencilRegistry.getStencil('mxgraph.gcp2.' + prIcon);
       console.log(stencil);
 
       if (stencil != null) {
@@ -310,7 +307,7 @@ export class ShapesService {
         c.setFontStyle(1);
         c.setFontSize(Math.min(w, h) * 0.1);
 
-        c.text(w * 0.29, h * 0.11 + 1, 0, 0, instNum.toString(), mxConstants.ALIGN_CENTER, mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 0);
+        c.text(w * 0.29, h * 0.11 + 1, 0, 0, instNum.toString(), $this.mx.mxConstants.ALIGN_CENTER, $this.mx.mxConstants.ALIGN_MIDDLE, 0, null, 0, 0, 0);
       }
     };
     this.mx.mxCellRenderer.registerShape(mxShapeGCP2HexIcon.prototype.cst.HEX_ICON, mxShapeGCP2HexIcon);
@@ -353,7 +350,7 @@ export class ShapesService {
 
   loadStencil(filename, fn) {
     if (fn != null) {
-      this.mx.mxUtils.get(filename, mxUtils.bind(this, (req) => {
+      this.mx.mxUtils.get(filename, this.mx.mxUtils.bind(this, (req) => {
         fn((req.getStatus() >= 200 && req.getStatus() <= 299) ? req.getXml() : null);
       }));
     } else {

@@ -6,7 +6,6 @@
     "umdModuleIds": {
       "angular-file": "angular-file",
       "ngx-filter-pipe": "ngx-filter-pipe",
-      "ngx-logger": "ngx-logger",
       "ngx-socket-io": "ngx-socket-io",
       "ngx-socket-io/src/socket-io.service": "ngx-socket-io",
       "ngx-toastr": "ngx-toastr",
@@ -16,6 +15,7 @@
       "@sysos/lib-file-system": "sysos.lib-file-system",
       "@sysos/lib-file-system-ui": "sysos.lib-file-system-ui",
       "@sysos/app-infrastructure-manager": "sysos.app-infrastructure-manager",
+      "@sysos/lib-logger": "sysos.lib-logger",
       "@sysos/lib-modal": "sysos.lib-modal",
       "@sysos/lib-selectable": "sysos.lib-selectable",
       "@sysos/lib-service-injector": "sysos.lib-service-injector",

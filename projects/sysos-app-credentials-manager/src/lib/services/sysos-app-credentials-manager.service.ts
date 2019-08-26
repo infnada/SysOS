@@ -3,7 +3,7 @@ import {HttpClient} from '@angular/common/http';
 
 import {BehaviorSubject, Observable} from 'rxjs';
 import {ToastrService} from 'ngx-toastr';
-import {NGXLogger} from 'ngx-logger';
+import {SysosLibLoggerService} from '@sysos/lib-logger';
 
 import {Credential} from '../types/credential';
 
@@ -21,7 +21,7 @@ export class SysosAppCredentialsManagerService {
   activeCredential: Observable<any>;
 
   constructor(private http: HttpClient,
-              private logger: NGXLogger,
+              private logger: SysosLibLoggerService,
               private Toastr: ToastrService) {
 
     this.dataStore = { credentials: [], activeCredential: null };
@@ -41,7 +41,7 @@ export class SysosAppCredentialsManagerService {
   initCredentials(): void {
     this.http.get('/api/credential/').subscribe(
       (res: { data: Credential[] }) => {
-        this.logger.info('Credentials Factory -> Get credentials successfully');
+        this.logger.info('Credentials Manager', 'Got credentials successfully');
 
         this.dataStore.credentials = res.data;
 
@@ -49,12 +49,14 @@ export class SysosAppCredentialsManagerService {
         this.$credentials.next(Object.assign({}, this.dataStore).credentials);
       },
       error => {
-        this.logger.error('Credentials Factory -> Error while getting credentials -> ', error);
+        this.logger.error('Credentials Manager', 'Error while getting credentials', null, error);
         return this.Toastr.error('Error getting credentials.', 'Credential Manager');
       });
   }
 
   deleteCredential(uuid: string): void {
+    const loggerArgs = arguments;
+
     this.http.delete(`/api/credential/${uuid}`).subscribe(
       () => {
         this.dataStore.activeCredential = null;
@@ -67,11 +69,11 @@ export class SysosAppCredentialsManagerService {
         this.$credentials.next(Object.assign({}, this.dataStore).credentials);
         this.$activeCredential.next(Object.assign({}, this.dataStore).activeCredential);
 
-        this.logger.debug('Credentials Factory -> Deleted credential successfully');
+        this.logger.debug('Credentials Manager', 'Deleted credential successfully', loggerArgs);
         return this.Toastr.success('Credential deleted.', 'Credential Manager');
       },
       error => {
-        this.logger.error('Credentials Factory -> Error while deleting credentials -> ', error);
+        this.logger.error('Credentials Manager', 'Error while deleting credentials', loggerArgs, error);
         return this.Toastr.error('Error deleting credential.', 'Credential Manager');
       });
   }
@@ -105,12 +107,12 @@ export class SysosAppCredentialsManagerService {
           this.$credentials.next(Object.assign({}, this.dataStore).credentials);
           this.$activeCredential.next(Object.assign({}, this.dataStore).activeCredential);
 
-          this.logger.debug('Credentials Factory -> Saved credential successfully');
+          this.logger.debug('Credentials Manager', 'Saved credential successfully');
           this.Toastr.success('Credential saved.', 'Credential Manager');
           return resolve();
         },
         error => {
-          this.logger.error('Credentials Factory -> Error while saving credentials -> ', error);
+          this.logger.error('Credentials Manager', 'Error while saving credentials', null, error);
           this.Toastr.error('Error saving credential.', 'Credential Manager');
           return reject();
         });

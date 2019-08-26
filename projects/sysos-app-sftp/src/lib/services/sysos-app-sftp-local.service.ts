@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {Socket} from 'ngx-socket-io';
-import {NGXLogger} from 'ngx-logger';
+import {SysosLibLoggerService} from '@sysos/lib-logger';
 
 import {SysOSFile} from '@sysos/lib-types';
 import {SysosLibFileSystemService} from '@sysos/lib-file-system';
@@ -30,7 +30,7 @@ export class SysosAppSftpLocalService {
 
 
 
-  constructor(private logger: NGXLogger,
+  constructor(private logger: SysosLibLoggerService,
               private socket: Socket,
               private FileSystem: SysosLibFileSystemService) {
     this.dataStore = {currentPath: '/', currentData: [], viewAsList: false, search: null};
@@ -45,12 +45,12 @@ export class SysosAppSftpLocalService {
   }
 
   uploadFileToSysOS(dst: string, file: File): Observable<any> {
-    this.logger.debug('Sftp -> uploadFileToSysOS -> dst []', dst);
+    this.logger.debug('Sftp', 'uploadFileToSysOS', arguments);
     return this.FileSystem.uploadFile(dst, file);
   }
 
   uploadFileToRemote(src: string, dst: string, connectionUuid: string): void {
-    this.logger.debug('Sftp -> sftp_session__file_upload -> src [], dst [], connectionUuid []', src, dst, connectionUuid);
+    this.logger.debug('Sftp', 'ftp_session__file_upload', arguments);
     this.socket.emit('sftp_session__file_upload', {
       src,
       dst,

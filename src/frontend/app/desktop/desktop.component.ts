@@ -2,7 +2,7 @@ import {Component, OnInit, ViewChild, ElementRef, AfterViewInit} from '@angular/
 import {MatMenuTrigger} from '@angular/material';
 
 import {Subscription} from 'rxjs';
-import {NGXLogger} from 'ngx-logger';
+import {SysosLibLoggerService} from '@sysos/lib-logger';
 
 import {SysosLibSelectableService} from '@sysos/lib-selectable';
 import {SysosLibFileSystemService} from '@sysos/lib-file-system';
@@ -69,7 +69,7 @@ export class DesktopComponent implements OnInit, AfterViewInit {
     }
   ];
 
-  constructor(private logger: NGXLogger,
+  constructor(private logger: SysosLibLoggerService,
               public Selectable: SysosLibSelectableService,
               private FileSystem: SysosLibFileSystemService,
               private FileSystemUi: SysosLibFileSystemUiService,
@@ -120,7 +120,7 @@ export class DesktopComponent implements OnInit, AfterViewInit {
         this.resetActive();
       },
       error => {
-        this.logger.error('Desktop -> Error while getting fileSystemPath -> ', error);
+        this.logger.error('Desktop', 'Error while getting fileSystemPath', null, error);
       });
   }
 

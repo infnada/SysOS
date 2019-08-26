@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpRequest} from '@angular/common/http';
 
 import {Observable} from 'rxjs';
-import {NGXLogger} from 'ngx-logger';
+import {SysosLibLoggerService} from '@sysos/lib-logger';
 
 @Injectable({
   providedIn: 'root'
@@ -10,11 +10,11 @@ import {NGXLogger} from 'ngx-logger';
 export class SysosLibFileSystemService {
 
   constructor(private http: HttpClient,
-              private logger: NGXLogger) {
+              private logger: SysosLibLoggerService) {
   }
 
   createFolder(connectionUuid: string, path: string, name: string): Observable<any> {
-    this.logger.debug('[fileSystem Service] createFolder -> connectionUuid[%s], path[%s], name[%s]', connectionUuid, path, name);
+    this.logger.debug('fileSystem', 'createFolder', arguments);
 
     if (connectionUuid) {
       return this.http.post(`/api/remote-folder/${connectionUuid}/${encodeURIComponent(path + name)}`, {});
@@ -24,7 +24,7 @@ export class SysosLibFileSystemService {
   }
 
   getFileSystemPath(connectionUuid: string, path: string): Observable<any> {
-    this.logger.debug('[fileSystem Service] getFileSystemPath -> connectionUuid[%s], path[%s]', connectionUuid, path);
+    this.logger.debug('fileSystem', 'getFileSystemPath', arguments);
 
     if (connectionUuid) {
       return this.http.get(`/api/remote-folder/${connectionUuid}/${encodeURIComponent(path)}`);
@@ -34,7 +34,7 @@ export class SysosLibFileSystemService {
   }
 
   uploadFile(path: string, file: File): Observable<any> {
-    this.logger.debug('[fileSystem Service] uploadFile -> path[%s] fileName[%s]', path, file.name);
+    this.logger.debug('fileSystem', 'uploadFile', arguments);
 
     const formData = new FormData();
     formData.append('path', path + file.name);
@@ -48,13 +48,13 @@ export class SysosLibFileSystemService {
   }
 
   getFileContents(path: string): Observable<any> {
-    this.logger.debug('[fileSystem Service] getFileContents -> path[%s]', path);
+    this.logger.debug('fileSystem', 'getFileContents', arguments);
 
     return this.http.get(`/api/file/${encodeURIComponent(path)}`, {responseType: 'blob'});
   }
 
   deleteFile(connectionUuid: string, path: string, name: string): Observable<any> {
-    this.logger.debug('[fileSystem Service] deleteFile -> connectionUuid[%s], path[%s], name[%s]', connectionUuid, path, name);
+    this.logger.debug('fileSystem Service', 'deleteFile', arguments);
 
     if (connectionUuid) {
       return this.http.delete(`/api/remote-file/${connectionUuid}/${encodeURIComponent(path + name)}`);
@@ -64,8 +64,7 @@ export class SysosLibFileSystemService {
   }
 
   renameFile(connectionUuid: string, path: string, oldName: string, newName: string): Observable<any> {
-    this.logger.debug('[fileSystem Service] renameFile -> connectionUuid[%s], path[%s], oldName[%s], newName[%s]',
-      connectionUuid, path, oldName, newName);
+    this.logger.debug('fileSystem', 'renameFile', arguments);
 
     if (connectionUuid) {
       return this.http.patch(`/api/remote-file/rename/${connectionUuid}/${encodeURIComponent(path + oldName)}`, {
@@ -79,7 +78,7 @@ export class SysosLibFileSystemService {
   }
 
   copyFile(connectionUuid: string, src: string, dst: string): Observable<any> {
-    this.logger.debug('[fileSystem Service] copyFile -> connectionUuid[%s], src[%s], dst[%s]', connectionUuid, src, dst);
+    this.logger.debug('fileSystem', 'copyFile', arguments);
 
     if (connectionUuid) {
       return this.http.patch(`/api/remote-file/copy/${connectionUuid}/${encodeURIComponent(src)}`, {
@@ -93,7 +92,7 @@ export class SysosLibFileSystemService {
   }
 
   moveFile(connectionUuid: string, src: string, dst: string): Observable<any> {
-    this.logger.debug('[fileSystem Service] moveFile -> connectionUuid[%s], src[%s], dst[%s]', connectionUuid, src, dst);
+    this.logger.debug('fileSystem', 'moveFile', arguments);
 
     if (connectionUuid) {
       return this.http.patch(`/api/remote-file/move/${connectionUuid}/${encodeURIComponent(src)}`, {
@@ -109,8 +108,7 @@ export class SysosLibFileSystemService {
   downloadFileFromInet(connectionUuid: string, path: string, url: string,
                        credential?: { username: string, password: string }
   ): Observable<any> {
-    this.logger.debug('[fileSystem Service] downloadFileFromInet -> connectionUuid[%s], path[%s], url[%s], credential[%s]',
-      connectionUuid, path, url, credential);
+    this.logger.debug('fileSystem', 'downloadFileFromInet', arguments);
 
     if (connectionUuid) {
       return this.http.post('/api/remote-file/download_from_url', {
@@ -129,13 +127,13 @@ export class SysosLibFileSystemService {
   }
 
   getConfigFile(file: string): Observable<any> {
-    this.logger.debug('[fileSystem Service] getConfigFile -> file[%s]', file);
+    this.logger.debug('fileSystem', 'getConfigFile', arguments);
 
     return this.http.get(`/api/config-file/${encodeURIComponent(file)}`);
   }
 
   saveConfigFile(data: any, file: string, fullSave: boolean): Observable<any> {
-    this.logger.debug('[fileSystem Service] saveConfigFile -> data[%s], file[%s], fullSave[%s]', 'any', file, fullSave);
+    this.logger.debug('fileSystem', 'saveConfigFile', arguments);
 
     return this.http.put(`/api/config-file/${encodeURIComponent(file)}`, {
       data,
@@ -144,7 +142,7 @@ export class SysosLibFileSystemService {
   }
 
   deleteConfigFromFile(uuid: string, file: string): Observable<any> {
-    this.logger.debug('[fileSystem Service] deleteConfigFromFile -> uuid[%s], file[%s]', uuid, file);
+    this.logger.debug('fileSystem', 'deleteConfigFromFile', arguments);
 
     return this.http.delete(`/api/config-file/${uuid}/${encodeURIComponent(file)}`);
   }

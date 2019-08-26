@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 
-import {NGXLogger} from 'ngx-logger';
+import {SysosLibLoggerService} from '@sysos/lib-logger';
 import {v4 as uuidv4} from 'uuid';
 
 import {SysosLibNetappService} from '@sysos/lib-netapp';
@@ -19,7 +19,7 @@ import {BackupVm} from '../types/backup-vm';
 })
 export class SysosAppBackupsManagerHelpersService {
 
-  constructor(private logger: NGXLogger,
+  constructor(private logger: SysosLibLoggerService,
               private NetApp: SysosLibNetappService,
               private VMWare: SysosLibVmwareService) {
 
@@ -123,6 +123,8 @@ export class SysosAppBackupsManagerHelpersService {
   }
 
   restoreSnapshotIntoInstantVM(data: VmInstantRecovery) {
+    const loggerArgs = arguments;
+
     // Check for available licenses
     return this.checkLicenses(data).then((res) => {
       if (res instanceof Error) throw new Error('Failed to check licenses');
@@ -145,7 +147,7 @@ export class SysosAppBackupsManagerHelpersService {
 
       if (data.vm.powerOn) {
         // Power On VM
-        this.logger.debug('Backups Manager [%s] -> Powering on vm -> host [%s], VM [%s], ', data.uuid, data.host.host, data.vm.info.obj.name);
+        this.logger.debug('Backups Manager', 'Powering on vm', loggerArgs);
         return this.VMWare.PowerOnVM_Task(
           data.virtual,
           {$type: 'VirtualMachine', _value: data.vm.info.obj.name},
@@ -168,6 +170,8 @@ export class SysosAppBackupsManagerHelpersService {
   }
 
   restoreSnapshotIntoVM(data: RestoreVm) {
+    const loggerArgs = arguments;
+
     // TODO: if new location
     /*return cloneVMFromSnapshot(data).then((data) => {
 
@@ -178,7 +182,7 @@ export class SysosAppBackupsManagerHelpersService {
 
       if (data.vm.powerOn) {
         // Power On VM
-        this.logger.debug('Backups Manager [%s] -> Powering on vm -> host [%s], VM [%s], ', data.uuid, data.virtual.host, data.vm.info.obj.name);
+        this.logger.debug('Backups Manager', 'Powering on vm', loggerArgs);
         return this.VMWare.PowerOnVM_Task(
           data.virtual,
           {$type: 'VirtualMachine', _value: data.vm.info.obj.name},
@@ -211,7 +215,8 @@ export class SysosAppBackupsManagerHelpersService {
     if (data.selectedPrimaryStorage !== 'snapshot') return;
 
     // Start backup
-    this.logger.debug('Backups Manager [%s] -> Running backup now -> name [%s]', data.uuid, data.backupName);
+
+    this.logger.debug('Backups Manager', 'Running backup now', `uuid [${data.uuid}], name [${data.backupName}]`);
 
     // Get all relationships
     angular.forEach(data.selectedObjects, (object) => {
@@ -484,7 +489,7 @@ export class SysosAppBackupsManagerHelpersService {
    * Checks if NetApp storage have required licenses
    */
   checkLicenses(data: MountRestoreDatastore | RestoreDatastoreFiles | RestoreVmGuestFiles | VmInstantRecovery) {
-    this.logger.debug('Backups Manager [%s] -> Check storage licenses -> storage [%s]', data.uuid, data.storage.host);
+    this.logger.debug('Backups Manager', 'Check storage licenses', arguments);
 
     return this.NetApp.getLicenses(
       data.storage.credential,
@@ -510,6 +515,7 @@ export class SysosAppBackupsManagerHelpersService {
    * Clones Storage Volume from Snapshot
    */
   cloneVolumeFromSnapshot(data: MountRestoreDatastore | RestoreDatastoreFiles | RestoreVmGuestFiles | VmInstantRecovery, volumeNum: number = 0) {
+    const loggerArgs = arguments;
 
     // Set new volume name
     if (volumeNum !== 0) {
@@ -521,8 +527,7 @@ export class SysosAppBackupsManagerHelpersService {
     }
 
     // Create Volume Clone
-    this.logger.debug('Backups Manager [%s] -> Cloning volume from snapshot -> vserver [%s], volume [%s], snapshot [%s], volumeName [%s]',
-      data.uuid, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name, data.snapshot.name, data.volumeName);
+    this.logger.debug('Backups Manager', 'Cloning volume from snapshot', arguments);
     return this.NetApp.cloneVolumeFromSnapshot(
       data.storage.credential,
       data.storage.host,
@@ -544,7 +549,7 @@ export class SysosAppBackupsManagerHelpersService {
     }).then(() => {
 
       // Mount Volume Point
-      this.logger.debug('Backups Manager [%s] -> Mounting namespace of cloned volume -> vserver [%s], volume [%s]', data.uuid, data.vserver['vserver-name'], data.volumeName);
+      this.logger.debug('Backups Manager', 'Mounting namespace of cloned volume', loggerArgs);
       return this.NetApp.mountVolume(
         data.storage.credential,
         data.storage.host,
@@ -562,8 +567,7 @@ export class SysosAppBackupsManagerHelpersService {
 
       // Error duplicated volume, try next.
       if (e.message === '17159') {
-        this.logger.debug('Backups Manager [%s] -> Cloning volume from snapshot -> vserver [%s], volume [%s], snapshot [%s], volumeName [%s] -> Volume with same name found',
-          data.uuid, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name, data.snapshot.name, data.volumeName);
+        this.logger.debug('Backups Manager', 'Cloning volume from snapshot', loggerArgs);
 
         return this.cloneVolumeFromSnapshot(data, ++volumeNum);
       }
@@ -600,7 +604,7 @@ export class SysosAppBackupsManagerHelpersService {
       ipsRule = `${firewallRule.allowedHosts.ipAddress.join('', '')}, ${data.iface.address}`;
     }
 
-    this.logger.debug('Backups Manager [%s] -> Updating firewall rules -> vCenter [%s], host [%s], rule [%s]', data.uuid, data.virtual.host, data.host.host, ruleName);
+    this.logger.debug('Backups Manager', 'Updating firewall rules', arguments);
     return this.VMWare.getHostFirewallSystem(data.virtual, data.host.host).then((firewallSystem) => {
       if (firewallSystem.status === 'error') throw new Error('Failed to get Host firewallSystem from vCenter');
 
@@ -654,8 +658,9 @@ export class SysosAppBackupsManagerHelpersService {
    * Checks Storage volume export rules and allows to mount it into an ESXi server
    */
   checkStorageVolumeExports(data: MountRestoreDatastore | RestoreDatastoreFiles | RestoreVmGuestFiles | VmInstantRecovery): Promise<any> {
-    this.logger.debug('Backups Manager [%s] -> Get Volume Exports -> vserver [%s], volume [%s], volumeName [%s]',
-      data.uuid, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name, data.volumeName);
+    const loggerArgs = arguments;
+
+    this.logger.debug('Backups Manager', 'Get Volume Exports', arguments);
 
     return this.NetApp.getNFSExportRulesList(
       data.storage.credential,
@@ -676,7 +681,7 @@ export class SysosAppBackupsManagerHelpersService {
       if (allHostsExport.length === 0) {
 
         // TODO: check connectivity from NFS node
-        this.logger.debug('Backups Manager [%s] -> Getting network system -> host [%s]', data.uuid, data.host.host);
+        this.logger.debug('Backups Manager', 'Getting network system', loggerArgs);
         return this.VMWare.getHostConfigManagerNetworkSystem(data.virtual, data.host.host).then((networkSystemData) => {
           if (networkSystemData.status === 'error') throw new Error('Failed to get networkSystem from vCenter');
 
@@ -695,7 +700,7 @@ export class SysosAppBackupsManagerHelpersService {
           });
 
           if (esxiHostExport.length === 0) {
-            this.logger.debug('Backups Manager [%s] -> No Volume Export matched, create it -> vserver [%s], policy [%s], client [%s]', data.uuid, data.vserver['vserver-name'], esxiExportAddress);
+            this.logger.debug('Backups Manager', 'No Volume Export matched, create it', loggerArgs);
             return this.NetApp.setExportRule(
               data.storage.credential,
               data.storage.host,
@@ -721,7 +726,9 @@ export class SysosAppBackupsManagerHelpersService {
    * Mount storage Datastore to ESXi host
    */
   mountVolumeToESXi(data: MountRestoreDatastore | RestoreDatastoreFiles | RestoreVmGuestFiles | VmInstantRecovery) {
-    this.logger.debug('Backups Manager [%s] -> Connection to vCenter using SOAP -> vCenter [%s]', data.uuid, data.virtual.host);
+    const loggerArgs = arguments;
+
+    this.logger.debug('Backups Manager', 'Connection to vCenter using SOAP', arguments);
 
     return this.VMWare.connectvCenterSoap(data.virtual).then((res) => {
       if (res.status === 'error') throw new Error('Failed to connect to vCenter');
@@ -733,7 +740,7 @@ export class SysosAppBackupsManagerHelpersService {
     }).then(() => {
 
       // Get Datastore System from ESXi host to mount
-      this.logger.debug('Backups Manager [%s] -> Getting datastore system -> host [%s]', data.uuid, data.host.host);
+      this.logger.debug('Backups Manager', 'Getting datastore system', loggerArgs);
 
       return Promise.all([
         this.VMWare.getHostConfigManagerDatastoreSystem(data.virtual, data.host.host),
@@ -745,8 +752,7 @@ export class SysosAppBackupsManagerHelpersService {
 
       const datastoreSystem: string = res[0].data;
 
-      this.logger.debug('Backups Manager [%s] -> Mount volume to ESXi -> datastoreSystem [%s], nfs_ip [%s], volume [%s], path [%s]',
-        data.uuid, datastoreSystem, data.iface.address, '/' + data.volumeName + '/', data.datastorePath);
+      this.logger.debug('Backups Manager', 'Mount volume to ESXi', loggerArgs);
 
       return this.VMWare.CreateNasDatastore(
         data.virtual,
@@ -784,6 +790,7 @@ export class SysosAppBackupsManagerHelpersService {
    * Register and power on VM
    */
   registerVM(data: RestoreVmGuestFiles | VmInstantRecovery, esxiRestoredDatastore) {
+    const loggerArgs = arguments;
 
     let vmPath = data.vm['summary.config.vmPathName'].split(']').pop();
     vmPath = vmPath.substring(0, vmPath.lastIndexOf('/') + 1).substr(1);
@@ -801,8 +808,7 @@ export class SysosAppBackupsManagerHelpersService {
 
       // Register VM
       // TODO: check if VM with same name exists
-      this.logger.debug('Backups Manager [%s] -> Register VM to ESXi -> host [%s], vmx_file [%s], vm_name [%s], folder [%s], resource_pool [%s]',
-        data.uuid, data.host.host, '[' + data.datastorePath + '] ' + data.vm['summary.config.vmPathName'].split(']').pop(), data.vm.name, data.host.folder, data.host.resource_pool);
+      this.logger.debug('Backups Manager', 'Register VM to ESXi', loggerArgs);
       return this.VMWare.RegisterVM_Task(
         data.virtual,
         {$type: 'Folder', _value: data.host.folder},
@@ -826,7 +832,7 @@ export class SysosAppBackupsManagerHelpersService {
 
       // Set new uuid to this VM to prevent duplicates
       const newVMUuid = uuidv4();
-      this.logger.debug('Backups Manager [%s] -> Reconfigure VM uuid -> vm_name [%s], newVMUuid [%s]', data.vm.name, newVMUuid);
+      this.logger.debug('Backups Manager', 'Reconfigure VM uuid', loggerArgs);
       // TODO
       return this.VMWare.ReconfigVM_Task(
         data.virtual,
@@ -854,14 +860,16 @@ export class SysosAppBackupsManagerHelpersService {
    * Restore a VM from Snapshot to same location (override)
    */
   restoreVMfromSnapshotToCurrentLocation(data: RestoreVm) {
+    const loggerArgs = arguments;
+
     const sfrPromises = [];
     let vmPath;
 
-    this.logger.debug('Backups Manager [%s] -> Connection to vCenter using SOAP -> vCenter [%s]', data.uuid, data.virtual.host);
+    this.logger.debug('Backups Manager', 'Connection to vCenter using SOAP', arguments);
     return this.VMWare.connectvCenterSoap(data.virtual).then((res) => {
       if (res.status === 'error') throw new Error('Failed to connect to vCenter');
 
-      this.logger.debug('Backups Manager [%s] -> Get VM path -> VM [%s]', data.uuid, data.vm.info.obj.name);
+      this.logger.debug('Backups Manager', 'Get VM path', loggerArgs);
       return this.VMWare.getVMPath(data.virtual, data.vm.info.obj.name);
     }).then((res) => {
       if (res && res.status === 'error') throw new Error('Failed to get VM path');
@@ -873,13 +881,13 @@ export class SysosAppBackupsManagerHelpersService {
 
       if (!vmPath) throw new Error('SAFETY STOP: VM cannot be on root folder');
 
-      this.logger.debug('Backups Manager [%s] -> Get VM runtime -> VM [%s]', data.uuid, data.vm.info.obj.name);
+      this.logger.debug('Backups Manager', 'Get VM runtime', loggerArgs);
       return this.VMWare.getVMRuntime(data.virtual, data.vm.info.obj.name);
     }).then((res) => {
       if (res && res.status === 'error') throw new Error('Failed to get VM runtime');
 
       if (res.data.propSet.runtime.powerState === 'poweredOn') {
-        this.logger.debug('Backups Manager [%s] -> Powering off VM -> VM [%s]', data.uuid, data.vm.info.obj.name);
+        this.logger.debug('Backups Manager', 'Powering off VM', loggerArgs);
         return this.VMWare.PowerOffVM_Task(
           data.virtual,
           {$type: 'VirtualMachine', _value: data.vm.info.obj.name},
@@ -892,8 +900,7 @@ export class SysosAppBackupsManagerHelpersService {
     }).then((res) => {
       if (res.status === 'error') throw new Error('Failed to power off VM at vCenter');
 
-      this.logger.debug('Backups Manager [%s] -> Get snapshot files from storage -> storage [%s], vserver [%s], volume [%s], snapshot [%s], path [%s]',
-        data.uuid, data.storage.host, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name, data.snapshot.name, '/' + vmPath);
+      this.logger.debug('Backups Manager', 'Get snapshot files from storage', loggerArgs);
       return this.NetApp.getSnapshotFiles(
         data.storage.credential,
         data.storage.host,
@@ -918,9 +925,7 @@ export class SysosAppBackupsManagerHelpersService {
           data.snapshot.name,
           '/vol/' + data.volume['volume-id-attributes'].name + '/' + vmPath + '/' + file.name
         ).then((forRes) => {
-          this.logger.debug('Backups Manager [%s] -> Restoring file from storage snapshot -> storage [%s], vserver [%s], volume [%s], snapshot [%s], path [%s]',
-            data.uuid, data.storage.host, data.vserver['vserver-name'], data.volume['volume-id-attributes'].name,
-            data.snapshot.name, '/vol/' + data.volume['volume-id-attributes'].name + '/' + vmPath + '/' + file.name);
+          this.logger.debug('Backups Manager', 'Restoring file from storage snapshot', loggerArgs);
 
           if (forRes.status === 'error') throw new Error('Failed to restore file from storage snapshot');
         }));
@@ -930,7 +935,7 @@ export class SysosAppBackupsManagerHelpersService {
 
     }).then(() => {
 
-      this.logger.debug('Backups Manager [%s] -> Reloading VM -> VM [%s]', data.uuid, data.vm.info.obj.name);
+      this.logger.debug('Backups Manager', 'Reloading VM', loggerArgs);
       return this.VMWare.Reload(
         data.virtual,
         {$type: 'VirtualMachine', _value: data.vm.info.obj.name}
@@ -959,6 +964,8 @@ export class SysosAppBackupsManagerHelpersService {
    * Checks if VM have a snapshot called 'SysOS_backup_*' and if exists reverts the VM to this snapshot
    */
   goToSnapshot(data: RestoreVmGuestFiles | VmInstantRecovery | RestoreVm) {
+    const loggerArgs = arguments;
+
     let lastSnapshot: {
       name: string,
       snapshot: {
@@ -966,20 +973,20 @@ export class SysosAppBackupsManagerHelpersService {
       }
     };
 
-    this.logger.debug('Backups Manager [%s] -> Get all VM snapshots -> vm [%s]', data.uuid, data.vm.info.obj.name);
+    this.logger.debug('Backups Manager', 'Get all VM snapshots', arguments);
     return this.VMWare.getVMSnapshots(data.virtual, data.vm.info.obj.name).then((res) => {
       if (res.status === 'error') throw new Error('Failed to get VM Snapshots');
 
       // No snapshots found
       if (!res.data[0].propSet) {
-        this.logger.debug('Backups Manager [%s] -> No snapshots found -> vm [%s]', data.uuid, data.vm.info.obj.name);
+        this.logger.debug('Backups Manager', 'No snapshots found', loggerArgs);
         return res;
       }
 
       lastSnapshot = this.getLastSnapshot(res.data[0].propSet.snapshot.rootSnapshotList);
 
       if (lastSnapshot.name.startsWith('SysOS_backup_')) {
-        this.logger.debug('Backups Manager [%s] -> Reverting VM to snapshot -> snapshot [%s]', data.uuid, lastSnapshot.snapshot.name);
+        this.logger.debug('Backups Manager', 'Reverting VM to snapshot', loggerArgs);
         return this.VMWare.RevertToSnapshot_Task(
           data.virtual,
           {$type: 'VirtualMachineSnapshot', _value: lastSnapshot.snapshot.name},
@@ -989,7 +996,7 @@ export class SysosAppBackupsManagerHelpersService {
         );
       }
 
-      this.logger.debug('Backups Manager [%s] -> Last snapshot is not from SysOS backup -> snapshot [%s], snapshot_id [%s]', data.uuid, lastSnapshot.name, lastSnapshot.snapshot.name);
+      this.logger.debug('Backups Manager', 'Last snapshot is not from SysOS backup', loggerArgs);
       return res;
 
     }).then((res) => {
@@ -999,7 +1006,7 @@ export class SysosAppBackupsManagerHelpersService {
       if (!lastSnapshot) return res;
 
       if (lastSnapshot.name.startsWith('SysOS_backup_')) {
-        this.logger.debug('Backups Manager [%s] -> Deleting VM snapshot -> snapshot [%s]', data.uuid, lastSnapshot.snapshot.name);
+        this.logger.debug('Backups Manager', 'Deleting VM snapshot', loggerArgs);
         return this.VMWare.RemoveSnapshot_Task(
           data.virtual,
           {$type: 'VirtualMachineSnapshot', _value: lastSnapshot.snapshot.name},

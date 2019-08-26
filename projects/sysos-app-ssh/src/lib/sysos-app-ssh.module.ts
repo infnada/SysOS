@@ -10,16 +10,16 @@ import {SysosLibApplicationService} from '@sysos/lib-application';
 import {ActionsComponent} from './actions/actions.component';
 import {BodyComponent} from './body/body.component';
 import {MenuComponent} from './menu/menu.component';
-import {StatsComponent} from './stats/stats.component';
 import {SysosAppSshService} from './services/sysos-app-ssh.service';
 import {BodyNewConnectionComponent} from './body/body-new-connection/body-new-connection.component';
+import {StatusComponent} from './status/status.component';
 
 @NgModule({
   declarations: [
     ActionsComponent,
     BodyComponent,
     MenuComponent,
-    StatsComponent,
+    StatusComponent,
     BodyNewConnectionComponent
   ],
   imports: [

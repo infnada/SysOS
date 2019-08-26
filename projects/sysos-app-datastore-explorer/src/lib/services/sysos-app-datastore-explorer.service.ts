@@ -3,7 +3,7 @@ import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {Socket} from 'ngx-socket-io';
 import {ToastrService} from 'ngx-toastr';
-import {NGXLogger} from 'ngx-logger';
+import {SysosLibLoggerService} from '@sysos/lib-logger';
 import {v4 as uuidv4} from 'uuid';
 
 import {SysosLibModalService} from '@sysos/lib-modal';
@@ -28,7 +28,7 @@ export class SysosAppDatastoreExplorerService {
   activeConnection: Observable<any>;
   viewExchange: Observable<any>;
 
-  constructor(private logger: NGXLogger,
+  constructor(private logger: SysosLibLoggerService,
               private Toastr: ToastrService,
               private socket: Socket,
               private FileSystem: SysosLibFileSystemService,
@@ -92,7 +92,7 @@ export class SysosAppDatastoreExplorerService {
   connect(connection: DatastoreExplorerConnection): Promise<any> {
     if (!connection) throw new Error('connection_not_found');
 
-    this.logger.debug('DatastoreExplorer Factory -> Connect received -> host [%s]', connection.host);
+    this.logger.debug('Datastore Explorer', 'Connect received', arguments);
 
     if (connection.uuid) {
       connection.state = 'disconnected';
@@ -128,7 +128,7 @@ export class SysosAppDatastoreExplorerService {
   disconnectConnection(uuid?: string): void {
     if (!uuid) uuid = this.dataStore.activeConnection;
 
-    this.logger.debug('DatastoreExplorer Factory [%s] -> Disconnecting connection', uuid);
+    this.logger.debug('Datastore Explorer', 'Disconnecting connection', arguments);
 
     this.socket.emit('[disconnect-session]', {
       type: 'datastore-explorer',
@@ -142,6 +142,8 @@ export class SysosAppDatastoreExplorerService {
   }
 
   deleteConnection(uuid?: string): void {
+    const loggerArgs = arguments;
+
     if (!uuid) uuid = this.dataStore.activeConnection;
 
     const configFile = 'applications/datastore-explorer/config.json';
@@ -159,7 +161,7 @@ export class SysosAppDatastoreExplorerService {
       modalInstance.result.then((result: boolean) => {
         if (result === true) {
 
-          this.logger.debug('DatastoreExplorer Factory [%s] -> Deleting connection', uuid);
+          this.logger.debug('Datastore Explorer', 'Deleting connection', loggerArgs);
 
           this.disconnectConnection(uuid);
           this.setActiveConnection(null);
@@ -173,10 +175,10 @@ export class SysosAppDatastoreExplorerService {
               // broadcast data to subscribers
               this.$connections.next(Object.assign({}, this.dataStore).connections);
 
-              this.logger.debug('DatastoreExplorer Factory [%s] -> Connection deleted successfully', uuid);
+              this.logger.debug('Datastore Explorer', 'Connection deleted successfully', loggerArgs);
             },
             error => {
-              this.logger.error('DatastoreExplorer Factory [%s] -> Error while deleting connection -> ', uuid, error);
+              this.logger.error('Datastore Explorer', 'Error while deleting connection', loggerArgs, error);
             });
 
         }

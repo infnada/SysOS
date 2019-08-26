@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 
-import {NGXLogger} from 'ngx-logger';
+import {SysosLibLoggerService} from '@sysos/lib-logger';
 import {ToastrService} from 'ngx-toastr';
 
 import {SysosLibModalService} from '@sysos/lib-modal';
@@ -20,7 +20,7 @@ import {VMWareObject} from '../types/vmware-object';
   providedIn: 'root'
 })
 export class SysosAppInfrastructureNetappService {
-  constructor(private logger: NGXLogger,
+  constructor(private logger: SysosLibLoggerService,
               private Toastr: ToastrService,
               private Modal: SysosLibModalService,
               private NetApp: SysosLibNetappService,
@@ -34,6 +34,8 @@ export class SysosAppInfrastructureNetappService {
    * Get all data from NetApp node
    */
   getNetAppData(connection: IMConnection): void {
+    const loggerArgs = arguments;
+
     const mainPromises = [];
     const vsPromises = [];
     const shPromises = [];
@@ -232,7 +234,7 @@ export class SysosAppInfrastructureNetappService {
       this.InfrastructureManager.connectionsUpdated();
 
     }).catch((e) => {
-      this.logger.error(`Infrastructure Manager [${connection.uuid}] -> Error while getting NetApp data -> host [${connection.host}] -> ${e.description}`);
+      this.logger.error('Infrastructure Manager', 'Error while getting NetApp data', loggerArgs, e.description);
 
       if (this.Modal.isModalOpened('.window--infrastructure-manager .window__main')) {
         this.Modal.changeModalType('danger', '.window--infrastructure-manager .window__main');
@@ -253,7 +255,9 @@ export class SysosAppInfrastructureNetappService {
    * Refresh NetApp volume data
    */
   getVolumeData(connectionUuid: string, volume: NetAppVolume): void {
-    this.logger.debug(`Infrastructure Manager [${connectionUuid}] -> getVolumeData -> volumeUuid [${volume['volume-id-attributes'].uuid}], volume [${volume['volume-id-attributes'].name}]`);
+    const loggerArgs = arguments;
+
+    this.logger.debug('Infrastructure Manager', 'getVolumeData', arguments);
     const connection = this.InfrastructureManager.getConnectionByUuid(connectionUuid);
 
     const vserverIndex = this.InfrastructureManager.getConnectionByUuid(connection.uuid).data.Vservers.findIndex((item) => {
@@ -291,8 +295,7 @@ export class SysosAppInfrastructureNetappService {
       // Tell InfrastructureManager that we changed connections data
       this.InfrastructureManager.connectionsUpdated();
     }).catch((e) => {
-      this.logger.error(`Infrastructure Manager [${connectionUuid}] -> Error while getVolumeData -> volumeUuid [${volume['volume-id-attributes'].uuid}],
-       volume [${volume['volume-id-attributes'].name}] -> ${e.description}`);
+      this.logger.error('Infrastructure Manager', 'Error while getVolumeData', loggerArgs, e.description);
 
       if (this.Modal.isModalOpened('.window--infrastructure-manager .window__main')) {
         this.Modal.changeModalType('danger', '.window--infrastructure-manager .window__main');
@@ -308,7 +311,9 @@ export class SysosAppInfrastructureNetappService {
    * Fetch NetApp SnapShots
    */
   getSnapshotFiles(connectionUuid: string, host: string, vserver: string, volume: string, snapshot: string) {
-    this.logger.debug(`Infrastructure Manager [${connectionUuid}] -> getSnapshotFiles -> vserver [${vserver}], volume [${volume}, snapshot [${snapshot}]]`);
+    const loggerArgs = arguments;
+
+    this.logger.debug('Infrastructure Manager', 'getSnapshotFiles', arguments);
 
     let link;
     let datastoreIndex;
@@ -422,8 +427,7 @@ export class SysosAppInfrastructureNetappService {
       // Tell InfrastructureManager that we changed connections data
       this.InfrastructureManager.connectionsUpdated();
     }).catch((e) => {
-      this.logger.error(`Infrastructure Manager [${connectionUuid}] -> getSnapshotFiles -> volumeUuid [${volume['volume-id-attributes'].uuid}],
-       volume [${volume['volume-id-attributes'].name}] -> ${e.description}`);
+      this.logger.error('Infrastructure Manager', 'getSnapshotFiles', loggerArgs, e.description);
 
       if (this.Modal.isModalOpened('.window--infrastructure-manager .window__main')) {
         this.Modal.changeModalType('danger', '.window--infrastructure-manager .window__main');
@@ -435,8 +439,9 @@ export class SysosAppInfrastructureNetappService {
   }
 
   createStorageSnapShot(connectionUuid: string, volume: NetAppVolume): void {
-    this.logger.debug(`Infrastructure Manager [${connectionUuid}] -> Ask for create storage snapshot -> volumeUuid [${volume['volume-id-attributes'].uuid}],
-     volume [${volume['volume-id-attributes'].name}]`);
+    const loggerArgs = arguments;
+
+    this.logger.debug('Infrastructure Manager', 'Ask for create storage snapshot', arguments);
     const connection = this.InfrastructureManager.getConnectionByUuid(connectionUuid);
 
     this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
@@ -448,8 +453,7 @@ export class SysosAppInfrastructureNetappService {
       modalInstance.result.then((result: boolean) => {
         if (result !== true) return;
 
-        this.logger.debug(`Infrastructure Manager [${connectionUuid}] -> Creating storage snapshot -> volumeUuid [${volume['volume-id-attributes'].uuid}],
-         volume [${volume['volume-id-attributes'].name}]`);
+        this.logger.debug('Infrastructure Manager', 'Creating storage snapshot', loggerArgs);
         this.Modal.openLittleModal('PLEASE WAIT', 'Creating volume snapshot', '.window--infrastructure-manager .window__main', 'plain').then(() => {
 
           return this.NetApp.createSnapshot(
@@ -468,8 +472,7 @@ export class SysosAppInfrastructureNetappService {
             };
           }
 
-          this.logger.info(`Infrastructure Manager [${connectionUuid}] -> Storage snapshot created successfully -> volumeUuid [${volume['volume-id-attributes'].uuid}],
-           volume [${volume['volume-id-attributes'].name}`);
+          this.logger.info('Infrastructure Manager', 'Storage snapshot created successfully', loggerArgs);
           this.Modal.changeModalType('success', '.window--infrastructure-manager .window__main');
           this.Modal.changeModalText(`Snapshot created successfully for volume ${volume['volume-id-attributes'].name}`, '.window--infrastructure-manager .window__main');
 
@@ -480,8 +483,7 @@ export class SysosAppInfrastructureNetappService {
       });
 
     }).catch((e) => {
-      this.logger.error(`Infrastructure Manager [${connectionUuid}] -> createStorageSnapShot -> volumeUuid [${volume['volume-id-attributes'].uuid}],
-       volume [${volume['volume-id-attributes'].name}] -> ${e.description}`);
+      this.logger.error('Infrastructure Manager', 'createStorageSnapShot', loggerArgs, e.description);
 
       if (this.Modal.isModalOpened('.window--infrastructure-manager .window__main')) {
         this.Modal.changeModalType('danger', '.window--infrastructure-manager .window__main');
@@ -493,8 +495,9 @@ export class SysosAppInfrastructureNetappService {
   }
 
   deleteStorageSnapShot(connectionUuid: string, volume: NetAppVolume, snapshot: NetAppSnapshot): void {
-    this.logger.debug(`Infrastructure Manager [${connectionUuid}] -> Ask for delete storage snapshot -> volume [${volume['volume-id-attributes'].name}],
-     snapshotUuid [${snapshot['snapshot-instance-uuid']}], snapshot [${snapshot.name}]`);
+    const loggerArgs = arguments;
+
+    this.logger.debug('Infrastructure Manager', 'Ask for delete storage snapshot', arguments);
     const connection = this.InfrastructureManager.getConnectionByUuid(connectionUuid);
 
     this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
@@ -506,8 +509,7 @@ export class SysosAppInfrastructureNetappService {
       modalInstance.result.then((result: boolean) => {
         if (result !== true) return;
 
-        this.logger.debug(`Infrastructure Manager [${connectionUuid}] -> Deleting storage snapshot -> volume [${volume['volume-id-attributes'].name}],
-         snapshotUuid [${snapshot['snapshot-instance-uuid']}], snapshot [${snapshot.name}]`);
+        this.logger.debug('Infrastructure Manager', 'Deleting storage snapshot', loggerArgs);
         this.Modal.openLittleModal('PLEASE WAIT', 'Deleting volume snapshot', '.window--infrastructure-manager .window__main', 'plain').then(() => {
 
           return this.NetApp.deleteSnapshot(
@@ -528,8 +530,7 @@ export class SysosAppInfrastructureNetappService {
             };
           }
 
-          this.logger.info(`Infrastructure Manager [${connectionUuid}] -> Storage snapshot deleted successfully -> volume [${volume['volume-id-attributes'].name}],
-           snapshotUuid [${snapshot['snapshot-instance-uuid']}], snapshot [${snapshot.name}]`);
+          this.logger.info('Infrastructure Manager', 'Storage snapshot deleted successfully', loggerArgs);
           this.Modal.changeModalType('success', '.window--infrastructure-manager .window__main');
           this.Modal.changeModalText(`Snapshot ${snapshot.name} deleted successfully for volume ${volume['volume-id-attributes'].name}`, '.window--infrastructure-manager .window__main');
 
@@ -540,8 +541,7 @@ export class SysosAppInfrastructureNetappService {
       });
 
     }).catch((e) => {
-      this.logger.error(`Infrastructure Manager [${connectionUuid}] -> deleteStorageSnapShot -> volumeUuid [${volume['volume-id-attributes'].uuid}],
-       volume [${volume['volume-id-attributes'].name}], snapshot [${snapshot.name}] -> ${e.description}`);
+      this.logger.error('Infrastructure Manager', 'deleteStorageSnapShot', loggerArgs, e.description);
 
       if (this.Modal.isModalOpened('.window--infrastructure-manager .window__main')) {
         this.Modal.changeModalType('danger', '.window--infrastructure-manager .window__main');
@@ -556,7 +556,9 @@ export class SysosAppInfrastructureNetappService {
    * Storage Volume Snapshots Backup/Restore
    */
   mountSnapShotAsDatastore(storageUuid: string, vserver: NetAppVserver, volume: NetAppVolume, snapshot: NetAppSnapshot): void {
-    this.logger.debug(`Infrastructure Manager [${snapshot['snapshot-instance-uuid']}] -> Ask for mount storage snapshot into a datastore -> snapshot [${snapshot.name}]`);
+    const loggerArgs = arguments;
+
+    this.logger.debug('Infrastructure Manager', 'Ask for mount storage snapshot into a datastore', arguments);
 
     if (!Array.isArray(vserver['allowed-protocols'].protocol) ||
       (!vserver['allowed-protocols'].protocol.includes('nfs') &&
@@ -581,7 +583,7 @@ export class SysosAppInfrastructureNetappService {
       modalInstance.result.then((result: boolean) => {
         if (result === true) {
 
-          this.logger.debug(`Infrastructure Manager ${snapshot['snapshot-instance-uuid']} -> Launching Backups Manager for mounting storage snapshot into a datastore -> snapshot [${snapshot.name}]`);
+          this.logger.debug('Infrastructure Manager', 'Launching Backups Manager for mounting storage snapshot into a datastore', loggerArgs);
 
           this.InfrastructureManager.openBackupsManager(storageUuid, 'mount_restore_datastore', {
             storage: this.InfrastructureManager.getConnectionByUuid(storageUuid),
@@ -596,7 +598,9 @@ export class SysosAppInfrastructureNetappService {
   }
 
   restoreVolumeFiles(storageUuid: string, vserver: NetAppVserver, volume: NetAppVolume, snapshot: NetAppSnapshot): void {
-    this.logger.debug(`Infrastructure Manager [${snapshot['snapshot-instance-uuid']}] -> Ask for mount storage snapshot into a datastore to restore files -> snapshot [${snapshot.name}]`);
+    const loggerArgs = arguments;
+
+    this.logger.debug('Infrastructure Manager', 'Ask for mount storage snapshot into a datastore to restore files', arguments);
 
     this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
       {
@@ -607,7 +611,7 @@ export class SysosAppInfrastructureNetappService {
       modalInstance.result.then((result: boolean) => {
         if (result === true) {
 
-          this.logger.debug(`Infrastructure Manager [${snapshot['snapshot-instance-uuid']}] -> Launching Backups Manager for restoring a volume files -> snapshot [${snapshot.name}]`);
+          this.logger.debug('Infrastructure Manager', 'Launching Backups Manager for restoring a volume files', loggerArgs);
 
           this.InfrastructureManager.openBackupsManager(storageUuid, 'restore_datastore_files', {
             storage: this.InfrastructureManager.getConnectionByUuid(storageUuid),
@@ -622,6 +626,8 @@ export class SysosAppInfrastructureNetappService {
   }
 
   instantVM(storageUuid: string, virtualUuid: string, vserver: NetAppVserver, volume: NetAppVolume, snapshot: NetAppSnapshot, vm: VMWareObject & { info: { data: VMWareVM } }): void {
+    const loggerArgs = arguments;
+
     if (storageUuid === null) {
       console.log(vm);
       this.VMWare.getVM(
@@ -645,7 +651,7 @@ export class SysosAppInfrastructureNetappService {
       };
     }*/
 
-    this.logger.debug(`Infrastructure Manager [${vm.info.obj.name}] -> Ask for Instant VM recovery -> vm [${vm.name}]`);
+    this.logger.debug('Infrastructure Manager', 'Ask for Instant VM recovery ', arguments);
 
     this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
       {
@@ -656,7 +662,7 @@ export class SysosAppInfrastructureNetappService {
       modalInstance.result.then((result: boolean) => {
         if (result === true) {
 
-          this.logger.debug(`Infrastructure Manager [${vm.info.obj.name}] -> Launching Backups Manager for Instant VM recovery -> vm [${vm.name}]`);
+          this.logger.debug('Infrastructure Manager', 'Launching Backups Manager for Instant VM recovery', loggerArgs);
 
           this.InfrastructureManager.openBackupsManager(storageUuid, 'vm_instant_recovery', {
             storage: this.InfrastructureManager.getConnectionByUuid(storageUuid),
@@ -673,7 +679,9 @@ export class SysosAppInfrastructureNetappService {
   }
 
   restoreVM(storageUuid: string, virtualUuid: string, vserver: NetAppVserver, volume: NetAppVolume, snapshot: NetAppSnapshot, vm: VMWareObject & { info: { data: VMWareVM } }): void {
-    this.logger.debug(`Infrastructure Manager [${vm.info.obj.name}] -> Ask for restore entire VM -> vm [${vm.name}]`);
+    const loggerArgs = arguments;
+
+    this.logger.debug('Infrastructure Manager', 'Ask for restore entire VM', arguments);
 
     if (!vm.info.data) {
       this.Modal.openLittleModal(
@@ -694,7 +702,7 @@ export class SysosAppInfrastructureNetappService {
       modalInstance.result.then((result: boolean) => {
         if (result === true) {
 
-          this.logger.debug(`Infrastructure Manager [${vm.info.obj.name}] -> Launching Backups Manager for restore entire VM -> vm [${vm.name}]`);
+          this.logger.debug('Infrastructure Manager', 'Launching Backups Manager for restore entire VM', loggerArgs);
 
           this.InfrastructureManager.openBackupsManager(storageUuid, 'restore_vm', {
             storage: this.InfrastructureManager.getConnectionByUuid(storageUuid),
@@ -711,7 +719,9 @@ export class SysosAppInfrastructureNetappService {
   }
 
   restoreGuestFiles(storageUuid: string, vserver: NetAppVserver, volume: NetAppVolume, snapshot: NetAppSnapshot, vm: VMWareObject & { info: { data: VMWareVM } }): void {
-    this.logger.debug(`Infrastructure Manager [${vm.info.obj.name}] -> Ask for recovery VM Guest Files -> vm [${vm.name}]`);
+    const loggerArgs = arguments;
+
+    this.logger.debug('Infrastructure Manager', 'Ask for recovery VM Guest Files', arguments);
 
     this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
       {
@@ -722,7 +732,7 @@ export class SysosAppInfrastructureNetappService {
       modalInstance.result.then((result: boolean) => {
         if (result === true) {
 
-          this.logger.debug(`Infrastructure Manager [${vm.info.obj.name}] -> Launching Backups Manager for restore entire VM -> vm [${vm.name}]`);
+          this.logger.debug('Infrastructure Manager', 'Launching Backups Manager for restore entire VM', loggerArgs);
 
           this.InfrastructureManager.openBackupsManager(storageUuid, 'restore_vm_guest_files', {
             storage: storageUuid,
@@ -738,7 +748,7 @@ export class SysosAppInfrastructureNetappService {
   }
 
   backupVM(connectionUuid: string, vm: VMWareObject & { info: { data: VMWareVM } }): void {
-    this.logger.debug(`Infrastructure Manager [${vm.info.obj.name}] -> Launching VM Backup -> vm [${vm.name}]`);
+    this.logger.debug('Infrastructure Manager', 'Launching VM Backup', arguments);
 
     // TODO: ManagedObjectReference is an array even if all VM files are in same datastore
     if (!this.InfrastructureManager.getLinkByVMwareDatastore(connectionUuid, vm.info.data.datastore.ManagedObjectReference[0].name)) {

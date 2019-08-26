@@ -2,6 +2,18 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "paths": {
+      "@sysos/lib-logger": [
+        "dist/libs/sysos-lib-logger"
+      ],
+      "@sysos/lib-logger/*": [
+        "dist/libs/sysos-lib-logger/*"
+      ],
+      "@sysos/lib-mxgraph": [
+        "dist/libs/sysos-lib-mxgraph"
+      ],
+      "@sysos/lib-mxgraph/*": [
+        "dist/libs/sysos-lib-mxgraph/*"
+      ],
       "@sysos/lib-application": [
         "dist/libs/sysos-lib-application"
       ],

@@ -3,7 +3,7 @@ import {HttpClient} from '@angular/common/http';
 
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
-import {NGXLogger} from 'ngx-logger';
+import {SysosLibLoggerService} from '@sysos/lib-logger';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +11,7 @@ import {NGXLogger} from 'ngx-logger';
 export class SysosLibNetappService {
 
   constructor(private http: HttpClient,
-              private logger: NGXLogger) {
+              private logger: SysosLibLoggerService) {
   }
 
   // netapp-manageability-sdk-ontap-9.3-api-documentation/doc/WebHelp/index.htm

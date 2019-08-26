@@ -3,7 +3,7 @@ import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {ToastrService} from 'ngx-toastr';
 import {Socket} from 'ngx-socket-io';
-import {NGXLogger} from 'ngx-logger';
+import {SysosLibLoggerService} from '@sysos/lib-logger';
 
 import {SysOSFile} from '@sysos/lib-types';
 import {SysosLibFileSystemService} from '@sysos/lib-file-system';
@@ -32,7 +32,7 @@ export class SysosAppSftpServerService {
   viewAsList: Observable<any>;
   search: Observable<any>;
 
-  constructor(private logger: NGXLogger,
+  constructor(private logger: SysosLibLoggerService,
               private Toastr: ToastrService,
               private socket: Socket,
               private FileSystem: SysosLibFileSystemService,
@@ -101,7 +101,7 @@ export class SysosAppSftpServerService {
   }
 
   downloadFileToSysOS(src: string, dst: string, connectionUuid: string): void {
-    this.logger.debug('Sftp -> sftp_session__file_download -> src [], dst [], connectionUuid []', src, dst, connectionUuid);
+    this.logger.debug('Sftp', 'sftp_session__file_download', arguments);
     this.socket.emit('sftp_session__file_download', {
       src,
       dst,

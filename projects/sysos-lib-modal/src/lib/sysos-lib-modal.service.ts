@@ -2,7 +2,7 @@ import {Injectable, Injector, Compiler, NgModuleFactory, ModuleWithComponentFact
 } from '@angular/core';
 
 import {NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
-import {NGXLogger} from 'ngx-logger';
+import {SysosLibLoggerService} from '@sysos/lib-logger';
 
 import {SysosLibFileSystemService} from '@sysos/lib-file-system';
 
@@ -19,7 +19,7 @@ export class SysosLibModalService {
   modalInstances = [];
   registeredModals: Modal[] = [];
 
-  constructor(private logger: NGXLogger,
+  constructor(private logger: SysosLibLoggerService,
               private injector: Injector,
               private compiler: Compiler,
               private FileSystem: SysosLibFileSystemService) {
@@ -37,7 +37,7 @@ export class SysosLibModalService {
   getInstalledModals() {
     this.FileSystem.getFileSystemPath(null, '/bin/modals').subscribe(
       (res: { data: { filename: string }[] }) => {
-        this.logger.info('Modal Factory -> Get Installed Modals successfully');
+        this.logger.info('Modal', 'Get Installed Modals successfully');
 
         res.data.forEach((value) => {
           if (value.filename.endsWith('.umd.js')) {
@@ -47,7 +47,7 @@ export class SysosLibModalService {
 
       },
       error => {
-        this.logger.error('Modal Factory -> Error while getting installed modals -> ', error);
+        this.logger.error('Modal', 'Error while getting installed modals', null, error);
       });
   }
 
@@ -87,7 +87,7 @@ export class SysosLibModalService {
   }
 
   registerModal(data: Modal): void {
-    this.logger.debug('Modal Factory -> New modal registration -> id [%s]', data.modalId);
+    this.logger.debug('Modal', 'New modal registration', arguments);
 
     this.registeredModals[data.modalId] = data;
   }

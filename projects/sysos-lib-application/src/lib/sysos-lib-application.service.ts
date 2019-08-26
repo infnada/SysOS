@@ -3,7 +3,7 @@ import {HttpClient} from '@angular/common/http';
 
 import {Observable, BehaviorSubject, Subject} from 'rxjs';
 import {ToastrService} from 'ngx-toastr';
-import {NGXLogger} from 'ngx-logger';
+import {SysosLibLoggerService} from '@sysos/lib-logger';
 
 import {SysosLibFileSystemService} from '@sysos/lib-file-system';
 
@@ -35,7 +35,7 @@ export class SysosLibApplicationService {
 
   currentHoverApplication: string = null;
 
-  constructor(private logger: NGXLogger,
+  constructor(private logger: SysosLibLoggerService,
               private compiler: Compiler,
               private injector: Injector,
               private http: HttpClient,
@@ -98,7 +98,7 @@ export class SysosLibApplicationService {
     if (!e) throw new Error('e_not_found');
 
     this.Toastr.error(e, 'General Error');
-    this.logger.error('Applications Factory -> General Error -> [%s]', e);
+    this.logger.error('Applications', 'General Error', null, e);
     return new Error(e);
   }
 
@@ -109,7 +109,7 @@ export class SysosLibApplicationService {
   registerApplication(data: Application): void {
     if (!data) throw new Error('data_not_found');
 
-    this.logger.debug('Applications Factory -> New application registration -> id [%s], name [%s]', data.id, data.name);
+    this.logger.debug('Applications', 'New application registration', arguments);
 
     this.dataStore.applications.push(data);
 
@@ -124,7 +124,7 @@ export class SysosLibApplicationService {
   registerTaskBarApplication(data: Application, save?: boolean): void {
     if (!data) throw new Error('id_not_found');
 
-    this.logger.trace('Applications Factory -> Registering application in TaskBar -> id [%s], pinned [%s], save [%s]',
+    this.logger.trace('Applications', 'Registering application in TaskBar', arguments,
       data.id, data.pinned, save);
 
     const applicationIndex = this.getApplicationIndexInTaskBar(data.id);
@@ -143,7 +143,7 @@ export class SysosLibApplicationService {
 
     } else {
 
-      this.logger.trace('Applications Factory -> Register application in TaskBar -> id [%s], pinned [%s]', data.id, data.pinned);
+      this.logger.trace('Applications', 'Register application in TaskBar', arguments);
 
       // Application not in Task Bar
       this.dataStore.taskBarApplications.push(data);
@@ -177,7 +177,7 @@ export class SysosLibApplicationService {
   closeApplication(id: string): void {
     if (!id) throw new Error('id_not_found');
 
-    this.logger.debug('Applications Factory -> Closing application -> id [%s]', id);
+    this.logger.debug('Applications', 'Closing application', arguments);
 
     // Delete application object
     this.dataStore.openedApplications = this.dataStore.openedApplications.filter(el => {
@@ -203,7 +203,7 @@ export class SysosLibApplicationService {
 
     let app;
 
-    this.logger.debug('Applications Factory -> Opening application -> id [%s]', id);
+    this.logger.debug('Applications', 'Opening application', arguments);
 
     // If app is not an object get all application data
     if (typeof id === 'string') {
@@ -300,7 +300,7 @@ export class SysosLibApplicationService {
 
       this.FileSystem.getFileSystemPath(null, '/bin/applications').subscribe(
         (res: { data: { filename: string }[] }) => {
-          this.logger.info('Applications Factory -> Get Installed Applications successfully');
+          this.logger.info('Applications', 'Got Installed Applications successfully');
 
           // Register every application
           return Promise.all(
@@ -311,7 +311,7 @@ export class SysosLibApplicationService {
 
         },
         error => {
-          this.logger.error('Applications Factory -> Error while getting installed applications -> ', error);
+          this.logger.error('Applications', 'Error while getting installed applications', null, error);
           return reject();
         });
 
@@ -372,7 +372,7 @@ export class SysosLibApplicationService {
   getTaskBarApplications(): void {
     this.FileSystem.getConfigFile('desktop/task_bar.json').subscribe(
       (res: { id: string }[]) => {
-        this.logger.info('Applications Factory -> Get TaskBar Applications successfully');
+        this.logger.info('Applications', 'Got TaskBar Applications successfully');
 
         // Register Start button
         this.registerTaskBarApplication({id: 'start', pinned: true});
@@ -383,7 +383,7 @@ export class SysosLibApplicationService {
         });
       },
       error => {
-        this.logger.error('Applications Factory -> Error while getting TaskBar applications -> ', error);
+        this.logger.error('Applications', 'Error while getting TaskBar applications', null, error);
       });
   }
 
@@ -398,10 +398,10 @@ export class SysosLibApplicationService {
 
     this.FileSystem.saveConfigFile(applicationsToSave, 'desktop/task_bar.json', true).subscribe(
       () => {
-        this.logger.debug('Applications Factory -> TaskBar applications saved');
+        this.logger.debug('Applications', 'TaskBar applications saved');
       },
       error => {
-        this.logger.error('Applications Factory -> Error while saving TaskBar applications -> ', error);
+        this.logger.error('Applications', 'Error while saving TaskBar applications', null, error);
       });
   }
 

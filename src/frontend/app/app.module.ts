@@ -1,4 +1,6 @@
 // Prepare output for SystemJS
+import {SysosLibLoggerModule} from "@sysos/lib-logger";
+
 declare const SystemJS: any;
 
 import * as angularCore from '@angular/core';
@@ -12,7 +14,6 @@ import * as cdkTree from '@angular/cdk/tree';
 import * as cdkDragDrop from '@angular/cdk/drag-drop';
 import * as ngBootstrap from '@ng-bootstrap/ng-bootstrap';
 import * as rxjs from 'rxjs';
-import * as ngxLogger from 'ngx-logger';
 import * as ngxToastr from 'ngx-toastr';
 import * as ngxFilterPipe from 'ngx-filter-pipe';
 import * as ngxSocketIo from 'ngx-socket-io';
@@ -23,6 +24,7 @@ import * as SysOSLibApplications from '@sysos/lib-application';
 import * as SysOSLibFile from '@sysos/lib-file';
 import * as SysOSLibFileSystem from '@sysos/lib-file-system';
 import * as SysOSLibFileSystemUi from '@sysos/lib-file-system-ui';
+import * as SysOSLibLogger from '@sysos/lib-logger';
 import * as SysOSLibModal from '@sysos/lib-modal';
 import * as SysOSLibNetApp from '@sysos/lib-netapp';
 import * as SysOSLibSelectable from '@sysos/lib-selectable';
@@ -32,8 +34,6 @@ import * as SysOSLibUser from '@sysos/lib-user';
 import * as SysOSLibVMWare from '@sysos/lib-vmware';
 
 import * as NgxMonacoEditor from 'ngx-monaco-editor';
-import * as xterm from 'xterm';
-import * as xtermFit from 'xterm/lib/addons/fit/fit';
 import * as _ from 'lodash';
 
 SystemJS.set('@angular/core', SystemJS.newModule(angularCore));
@@ -47,7 +47,6 @@ SystemJS.set('@angular/cdk/tree', SystemJS.newModule(cdkTree));
 SystemJS.set('@angular/cdk/drag-drop', SystemJS.newModule(cdkDragDrop));
 SystemJS.set('@ng-bootstrap/ng-bootstrap', SystemJS.newModule(ngBootstrap));
 SystemJS.set('rxjs', SystemJS.newModule(rxjs));
-SystemJS.set('ngx-logger', SystemJS.newModule(ngxLogger));
 SystemJS.set('ngx-toastr', SystemJS.newModule(ngxToastr));
 SystemJS.set('ngx-filter-pipe', SystemJS.newModule(ngxFilterPipe));
 SystemJS.set('ngx-socket-io', SystemJS.newModule(ngxSocketIo));
@@ -59,6 +58,7 @@ SystemJS.set('@sysos/lib-application', SystemJS.newModule(SysOSLibApplications))
 SystemJS.set('@sysos/lib-file', SystemJS.newModule(SysOSLibFile));
 SystemJS.set('@sysos/lib-file-system', SystemJS.newModule(SysOSLibFileSystem));
 SystemJS.set('@sysos/lib-file-system-ui', SystemJS.newModule(SysOSLibFileSystemUi));
+SystemJS.set('@sysos/lib-logger', SystemJS.newModule(SysOSLibLogger));
 SystemJS.set('@sysos/lib-modal', SystemJS.newModule(SysOSLibModal));
 SystemJS.set('@sysos/lib-netapp', SystemJS.newModule(SysOSLibNetApp));
 SystemJS.set('@sysos/lib-selectable', SystemJS.newModule(SysOSLibSelectable));
@@ -68,8 +68,6 @@ SystemJS.set('@sysos/lib-user', SystemJS.newModule(SysOSLibUser));
 SystemJS.set('@sysos/lib-vmware', SystemJS.newModule(SysOSLibVMWare));
 
 SystemJS.set('ngx-monaco-editor', SystemJS.newModule(NgxMonacoEditor));
-SystemJS.set('xterm', SystemJS.newModule(xterm));
-SystemJS.set('xterm/lib/addons/fit/fit', SystemJS.newModule(xtermFit));
 
 import {CommonModule} from '@angular/common';
 import {BrowserModule} from '@angular/platform-browser';
@@ -88,7 +86,6 @@ import {
 
 import {CookieService} from 'ngx-cookie-service';
 import {SocketIoModule, SocketIoConfig} from 'ngx-socket-io';
-import {LoggerModule, NgxLoggerLevel} from 'ngx-logger';
 import {OrderModule} from 'ngx-order-pipe';
 import {MonacoEditorModule} from 'ngx-monaco-editor'; // this is an application required module...
 
@@ -144,11 +141,11 @@ export function createCompiler(fn: CompilerFactory): Compiler {
     MatButtonModule,
     MatProgressBarModule,
     SocketIoModule.forRoot(config),
-    LoggerModule.forRoot({level: NgxLoggerLevel.DEBUG}),
     OrderModule,
     SysosLibApplicationModule,
     SysosLibFileModule,
     SysosLibServiceInjectorModule,
+    SysosLibLoggerModule,
 
     MonacoEditorModule.forRoot()
   ],

@@ -4,7 +4,7 @@ import {HttpClient} from '@angular/common/http';
 import {map} from 'rxjs/operators';
 import {Observable} from 'rxjs';
 
-import {NGXLogger} from 'ngx-logger';
+import {SysosLibLoggerService} from '@sysos/lib-logger';
 import {ConnectionData} from './types/connection-data';
 
 @Injectable({
@@ -13,7 +13,7 @@ import {ConnectionData} from './types/connection-data';
 export class SysosLibVmwareHelperService {
 
   constructor(private http: HttpClient,
-              private logger: NGXLogger) {
+              private logger: SysosLibLoggerService) {
   }
 
   parseVMwareObject(data) {

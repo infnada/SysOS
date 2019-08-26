@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
-import {NGXLogger} from 'ngx-logger';
+import {SysosLibLoggerService} from '@sysos/lib-logger';
 
 import {SysosLibFileSystemService} from '@sysos/lib-file-system';
 import {SysOSFile} from '@sysos/lib-types';
@@ -27,7 +27,7 @@ export class SysosAppFileExplorerService {
   viewAsList: Observable<any>;
   search: Observable<any>;
 
-  constructor(private logger: NGXLogger,
+  constructor(private logger: SysosLibLoggerService,
               private FileSystem: SysosLibFileSystemService) {
     this.dataStore = {currentPath: '/', currentData: [], viewAsList: false, search: null};
     this.$currentPath = new BehaviorSubject('/') as BehaviorSubject<string>;
@@ -41,6 +41,8 @@ export class SysosAppFileExplorerService {
   }
 
   reloadPath(path?: string): void {
+    const loggerArgs = arguments;
+
     this.FileSystem.getFileSystemPath(null, (path ? path : this.dataStore.currentPath)).subscribe(
       (res: { data: SysOSFile[] }) => {
         this.dataStore.currentData = res.data;
@@ -56,7 +58,7 @@ export class SysosAppFileExplorerService {
         }
       },
       error => {
-        this.logger.error('File Explorer -> Error while getting fileSystemPath -> ', error);
+        this.logger.error('File Explorer', 'Error while getting fileSystemPath', loggerArgs, error);
       });
   }
 

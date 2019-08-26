@@ -1,6 +1,7 @@
 import {Component, Input, OnInit, ViewChild, ElementRef, ViewEncapsulation} from '@angular/core';
 
 import {Socket} from 'ngx-socket-io';
+
 import {Terminal} from 'xterm';
 import * as fit from 'xterm/lib/addons/fit/fit';
 

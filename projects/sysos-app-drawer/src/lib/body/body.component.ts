@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 
-import {mxgraph, mx} from '../types/mxgraph';
-import {mxPoint} from '../types/mx-point';
+import {SysosLibMxgraphService} from "@sysos/lib-mxgraph";
 
 @Component({
   selector: 'sadrw-body',
@@ -10,9 +9,11 @@ import {mxPoint} from '../types/mx-point';
 })
 export class BodyComponent implements OnInit {
 
-  private mx: mxgraph = mx;
+  private mx;
 
-  constructor() {
+  constructor(private MxgraphService: SysosLibMxgraphService) {
+    this.mx = this.MxgraphService.mx;
+
     /*const _this = this;
     const urlParams = (function(url)
     {
@@ -87,7 +88,7 @@ export class BodyComponent implements OnInit {
 
     // Redirects the perimeter to the label bounds if intersection between edge and label is found
     const mxGraphViewGetPerimeterPoint = this.mx.mxGraphView.getPerimeterPoint;
-    this.mx.mxGraphView.getPerimeterPoint = (terminal, next, orthogonal, border): mxPoint => {
+    this.mx.mxGraphView.getPerimeterPoint = (terminal, next, orthogonal, border) => {
       let point = mxGraphViewGetPerimeterPoint(terminal, next, orthogonal, border);
 
       if (point !== null) {

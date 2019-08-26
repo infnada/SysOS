@@ -1,6 +1,6 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
 
-import {NGXLogger} from 'ngx-logger';
+import {SysosLibLoggerService} from '@sysos/lib-logger';
 
 import {Application} from '@sysos/lib-application';
 import {SysosLibModalService} from '@sysos/lib-modal';
@@ -23,7 +23,7 @@ export class VmwareRecentTasksComponent implements OnInit {
   activeConnection: string;
   viewRecentTasks: boolean = true;
 
-  constructor(private logger: NGXLogger,
+  constructor(private logger: SysosLibLoggerService,
               private Modal: SysosLibModalService,
               private VMWare: SysosLibVmwareService,
               private InfrastructureManager: SysosAppInfrastructureManagerService) {
@@ -70,8 +70,7 @@ export class VmwareRecentTasksComponent implements OnInit {
 
       this.Modal.closeModal('.vmware-tasks');
     }).catch((e) => {
-      this.logger.error(`Infrastructure Manager [${this.activeConnection}] -> Error while getting VMware Tasks data ->
-       host [${this.InfrastructureManager.getConnectionByUuid(this.activeConnection).host}] -> ${e.description}`);
+      this.logger.error('Infrastructure Manager', 'Error while getting VMware Tasks data', null, e.description);
 
       if (this.Modal.isModalOpened('.vmware-tasks')) {
         this.Modal.changeModalType('danger', '.vmware-tasks');

@@ -6,15 +6,20 @@
     "@angular/core": "^7.2.0",
     "@angular/forms": "~7.2.0",
     "@angular/material": "^7.3.7",
-    "ngx-logger": "^3.3.13",
     "ngx-socket-io": "^2.1.1",
     "ngx-toastr": "^10.0.4",
     "rxjs": "~6.3.3",
     "uuid": "^3.3.2",
-    "xterm": "^3.14.2",
     "@sysos/lib-application": "~0.0.1",
     "@sysos/lib-file-system": "~0.0.1",
+    "@sysos/lib-logger": "~0.0.1",
     "@sysos/lib-modal": "~0.0.1",
     "@sysos/lib-service-injector": "~0.0.1"
-  }
+  },
+  "dependencies": {
+    "xterm": "^3.14.2"
+  },
+  "bundledDependencies": [
+    "xterm"
+  ]
 }

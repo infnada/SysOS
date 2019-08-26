@@ -8,9 +8,9 @@
     "@angular/common": "^7.2.0",
     "@angular/core": "^7.2.0",
     "angular-resizable-element": "^3.2.4",
-    "ngx-logger": "^3.3.13",
     "ngx-toastr": "^10.0.4",
     "rxjs": "~6.3.3",
-    "@sysos/lib-file-system": "~0.0.1"
+    "@sysos/lib-file-system": "~0.0.1",
+    "@sysos/lib-logger": "~0.0.1"
   }
 }

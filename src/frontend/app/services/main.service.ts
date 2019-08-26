@@ -1,12 +1,14 @@
-import {Injectable} from '@angular/core';
+import {Compiler, Injectable, Injector, NgModuleFactory} from '@angular/core';
 
 import {BehaviorSubject} from 'rxjs';
 import {Socket} from 'ngx-socket-io';
-import {NGXLogger} from 'ngx-logger';
+import {SysosLibLoggerService} from '@sysos/lib-logger';
 
 import {SysosLibModalService} from '@sysos/lib-modal';
 import {SysosLibApplicationService} from '@sysos/lib-application';
+import {SysosLibFileSystemService} from "@sysos/lib-file-system";
 
+declare const SystemJS: any;
 
 @Injectable({
   providedIn: 'root'
@@ -22,10 +24,43 @@ export class MainService {
     this.bootstrapSource.next(data);
   }
 
-  constructor(private logger: NGXLogger,
+  constructor(private compiler: Compiler,
+              private injector: Injector,
+              private logger: SysosLibLoggerService,
+              private FileSystem: SysosLibFileSystemService,
               private Applications: SysosLibApplicationService,
               private Modal: SysosLibModalService,
               private socket: Socket) {
+  }
+
+  getInstalledLibs(): Promise<null> {
+    return new Promise((resolve, reject) => {
+      this.FileSystem.getFileSystemPath(null, '/bin/libs').subscribe(
+        (res: { data: { filename: string }[] }) => {
+          this.logger.info('SysOs', 'Got Installed Libs successfully');
+
+          res.data.forEach((value) => {
+            if (value.filename.endsWith('.umd.js')) {
+              return this.loadLib(value);
+            }
+          });
+
+          return resolve();
+
+        },
+        error => {
+          this.logger.error('SysOs', 'Error while getting installed libs', null, error);
+        });
+    });
+
+  }
+
+  loadLib(lib): Promise<null> {
+    return new Promise((resolve) => {
+      SystemJS.import(`/api/file/${encodeURIComponent('/bin/libs/' + lib.filename)}`).then((moduleToCompile) => {
+        return resolve();
+      });
+    });
   }
 
   init(): void {
@@ -42,23 +77,25 @@ export class MainService {
     });
 
     this.socket.on('connect', () => {
-      this.logger.info('[SysOs] -> Socket.io connected');
+      this.logger.info('SysOs', 'Socket.io connected', null);
     });
     this.socket.on('disconnect', (err) => {
-      this.logger.fatal('[SysOs] -> Socket.io disconnect', err);
+      this.logger.fatal('SysOs', 'Socket.io disconnect', null, err);
     });
     this.socket.on('error', (err) => {
-      this.logger.fatal('[SysOs] -> Socket.io error', err);
+      this.logger.fatal('SysOs', 'Socket.io error', null, err);
     });
 
-    this.Applications.getInstalledApplications().then(() => {
+    this.getInstalledLibs().then(() => {
+      return this.Applications.getInstalledApplications();
+    }).then(() => {
       return Promise.all([
         this.Applications.getTaskBarApplications(),
         this.Modal.getInstalledModals()
-      ]).then(() => {
-        this.setBootstrapState({
-          appBootstrapped: true
-        });
+      ]);
+    }).then(() => {
+      this.setBootstrapState({
+        appBootstrapped: true
       });
     });
 

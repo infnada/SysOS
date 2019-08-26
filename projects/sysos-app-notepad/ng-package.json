@@ -3,9 +3,6 @@
   "dest": "../../dist/applications/sysos-app-notepad",
   "lib": {
     "entryFile": "src/public-api.ts",
-    "externals": {
-      "ngx-monaco-editor": "ngx-monaco-editor"
-    },
     "umdModuleIds": {
       "ngx-monaco-editor": "ngx-monaco-editor",
       "@sysos/lib-application": "sysos.lib-application"

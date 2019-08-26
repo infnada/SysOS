@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
-import {NGXLogger} from 'ngx-logger';
+import {SysosLibLoggerService} from '@sysos/lib-logger';
 import {ToastrService} from 'ngx-toastr';
 import {Socket} from 'ngx-socket-io';
 import {v4 as uuidv4} from 'uuid';
@@ -40,7 +40,7 @@ export class SysosAppInfrastructureManagerService {
   activeConnection: Observable<any>;
   treeData: Observable<any>;
 
-  constructor(private logger: NGXLogger,
+  constructor(private logger: SysosLibLoggerService,
               private Toastr: ToastrService,
               private socket: Socket,
               private Modal: SysosLibModalService,
@@ -268,7 +268,7 @@ export class SysosAppInfrastructureManagerService {
   initConnections(): void {
     this.FileSystem.getConfigFile('applications/infrastructure-manager/config.json').subscribe(
       (res: IMConnection[]) => {
-        this.logger.info('Infrastructure Manager Factory -> Get connections successfully');
+        this.logger.info('Infrastructure Manager', 'Got connections successfully');
 
         res.forEach((connection) => {
           if (connection.type !== 'vmware' && connection.type !== 'netapp')connection.state = 'disconnected';
@@ -282,7 +282,7 @@ export class SysosAppInfrastructureManagerService {
         this.connectionsUpdated();
       },
       error => {
-        this.logger.error('Infrastructure Manager Factory -> Error while getting connections -> ', error);
+        this.logger.error('Infrastructure Manager', 'Error while getting connections', null, error);
         return this.Toastr.error('Error getting connections.', 'Infrastructure Manager');
       });
   }
@@ -290,12 +290,12 @@ export class SysosAppInfrastructureManagerService {
   initLinksMap(): void {
     this.FileSystem.getConfigFile('applications/infrastructure-manager/links.json').subscribe(
       (res: IMLink[]) => {
-        this.logger.info('Infrastructure Manager Factory -> Get linksMap successfully');
+        this.logger.info('Infrastructure Manager', 'Got linksMap successfully');
 
         this.linksMap = res;
       },
       error => {
-        this.logger.error('Infrastructure Manager Factory -> Error while getting linksMap -> ', error);
+        this.logger.error('Infrastructure Manager', 'Error while getting linksMap', null, error);
         return this.Toastr.error('Error getting linksMap.', 'Infrastructure Manager');
       });
   }
@@ -307,7 +307,7 @@ export class SysosAppInfrastructureManagerService {
   connect(connection: IMConnection): void {
     if (!connection) throw new Error('connection_not_found');
 
-    this.logger.debug('InfrastructureManager Factory -> Connect received -> host [%s]', connection.host);
+    this.logger.debug('Infrastructure Manager', 'Connect received', arguments);
 
     if (connection.uuid) {
       connection.state = 'disconnected';
@@ -323,8 +323,7 @@ export class SysosAppInfrastructureManagerService {
       if (this.dataStore.connections.filter(obj => {
         return obj.type === connection.type && obj.host === connection.host;
       }).length > 0) {
-        this.logger.error('Connections Factory -> Error while setting new connection -> type[%s], host [%s] -> Connection already exists',
-          connection.type, connection.host);
+        this.logger.error('Infrastructure Manager', 'Error while setting new connection -> Connection already exists', arguments);
         this.Toastr.error(`Node (${connection.host}) already exists. Please modify the existing connection properties or ReScan the node.`, 'Error creating connection');
         return null;
       }
@@ -470,16 +469,16 @@ export class SysosAppInfrastructureManagerService {
    * Save node links to config file
    */
   private saveLinksMap(): void {
-    this.logger.debug('Connections Factory -> Saving linksMap');
+    this.logger.debug('Infrastructure Manager', 'Saving linksMap');
 
     const configFile = 'applications/infrastructure-manager/links.json';
 
     this.FileSystem.saveConfigFile(this.linksMap, configFile, false).subscribe(
       () => {
-        this.logger.debug('Infrastructure Manager Factory [%s] -> linksMap saved successfully');
+        this.logger.debug('Infrastructure Manager', 'linksMap saved successfully');
       },
       error => {
-        this.logger.error('Infrastructure Manager [%s] -> Error while saving linksMap -> ', error);
+        this.logger.error('Infrastructure Manager', 'Error while saving linksMap', null, error);
         this.Toastr.error('Error while saving linksMap.', 'Infrastructure Manager');
       });
 
@@ -489,21 +488,20 @@ export class SysosAppInfrastructureManagerService {
    * Save connection to config file
    */
   saveConnection(connection: IMConnection): Promise<any> {
+    const loggerArgs = arguments;
+
     if (!connection) throw new Error('connection_not_found');
 
-    this.logger.debug('Connections Factory [%s] -> Saving connection -> type [%s], host [%s]',
-      connection.uuid, connection.type, connection.host);
+    this.logger.debug('Infrastructure Manager', 'Saving connection', arguments);
 
     const configFile = 'applications/infrastructure-manager/config.json';
 
     return this.FileSystem.saveConfigFile(connection, configFile, false).toPromise().then(
       () => {
-        this.logger.debug('Infrastructure Manager Factory [%s] -> Saved connection successfully -> host [%s]',
-          connection.uuid, connection.host);
+        this.logger.debug('Infrastructure Manager', 'Saved connection successfully', loggerArgs);
       },
       error => {
-        this.logger.error('Infrastructure Manager [%s] -> Error while saving connection -> host [%s] -> ',
-          connection.uuid, connection.host, error);
+        this.logger.error('Infrastructure Manager', 'Error while saving connection', loggerArgs, error);
         this.Toastr.error('Error while saving connection.', 'Infrastructure Manager');
       });
 
@@ -512,7 +510,7 @@ export class SysosAppInfrastructureManagerService {
   disconnectConnection(connectionUuid?: string): void {
     if (!connectionUuid) connectionUuid = this.dataStore.activeConnection;
 
-    this.logger.debug(`Infrastructure Manager [${connectionUuid}] -> Disconnecting connection`);
+    this.logger.debug('Infrastructure Manager', 'Disconnecting connection');
 
     if (this.getConnectionByUuid(connectionUuid).type === 'linux') {
       this.socket.emit('[disconnect-session]', {
@@ -528,6 +526,8 @@ export class SysosAppInfrastructureManagerService {
   }
 
   deleteConnection(connectionUuid?: string): void {
+    const loggerArgs = arguments;
+
     if (!connectionUuid) connectionUuid = this.dataStore.activeConnection;
 
     const configFile = 'applications/infrastructure-manager/config.json';
@@ -541,7 +541,7 @@ export class SysosAppInfrastructureManagerService {
       modalInstance.result.then((result: boolean) => {
         if (result === true) {
 
-          this.logger.debug('Infrastructure Manager [%s] -> Deleting connection', connectionUuid);
+          this.logger.debug('Infrastructure Manager', 'Deleting connection', loggerArgs);
 
           this.disconnectConnection(connectionUuid);
           this.setActiveConnection(null);
@@ -555,10 +555,10 @@ export class SysosAppInfrastructureManagerService {
               // broadcast data to subscribers
               this.connectionsUpdated();
 
-              this.logger.debug('Infrastructure Manager [%s] -> Connection deleted successfully', connectionUuid);
+              this.logger.debug('Infrastructure Manager', 'Connection deleted successfully', loggerArgs);
             },
             error => {
-              this.logger.error('Infrastructure Manager [%s] -> Error while deleting connection -> ', connectionUuid, error);
+              this.logger.error('Infrastructure Manager', 'Error while deleting connection', loggerArgs, error);
             });
 
         }
@@ -608,7 +608,7 @@ export class SysosAppInfrastructureManagerService {
    *
    */
   openBackupsManager(connectionUuid: string, type: string, data: { [key: string]: any }) {
-    this.logger.debug(`Infrastructure Manager [${connectionUuid}] -> Opening Backups Manager APP`);
+    this.logger.debug('Infrastructure Manager', 'Opening Backups Manager APP');
 
     this.Applications.openApplication('backups-manager', {
       data,

@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 
-import {NGXLogger} from 'ngx-logger';
+import {SysosLibLoggerService} from '@sysos/lib-logger';
 
 import {SysosLibApplicationService} from '@sysos/lib-application';
 
@@ -14,7 +14,7 @@ import {IMNode} from '../types/imnode';
 })
 export class SysosAppInfrastructureManagerContextMenusService {
 
-  constructor(private logger: NGXLogger,
+  constructor(private logger: SysosLibLoggerService,
               private Applications: SysosLibApplicationService,
               private InfrastructureManager: SysosAppInfrastructureManagerService,
               private InfrastructureManagerNetApp: SysosAppInfrastructureNetappService,
@@ -1877,7 +1877,7 @@ export class SysosAppInfrastructureManagerContextMenusService {
   }
 
   private openRemoteConsole(connectionUuid: string, vm: any): void {
-    this.logger.debug('Infrastructure Manager [%s] -> Opening Remote Console APP -> vm [%s]', vm.vm, vm.name);
+    this.logger.debug('Infrastructure Manager', 'Opening Remote Console APP', arguments);
 
     this.Applications.openApplication('wmks', {
       connectionUuid,
@@ -1889,7 +1889,7 @@ export class SysosAppInfrastructureManagerContextMenusService {
   }
 
   private openDatastoreExplorer(connectionUuid: string, type: 'vmware' | 'netapp', data: any): void {
-    this.logger.debug('Infrastructure Manager [%s] -> Opening Datastore Explorer APP -> datastore [%s]', connectionUuid, type);
+    this.logger.debug('Infrastructure Manager', 'Opening Datastore Explorer APP', arguments);
 
     this.Applications.openApplication('datastore-explorer', {
       connectionUuid,

@@ -2,7 +2,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-import {NGXLogger} from 'ngx-logger';
+import {SysosLibLoggerService} from '@sysos/lib-logger';
 import {ToastrService} from 'ngx-toastr';
 
 import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
@@ -51,7 +51,7 @@ export class SysosModalRecoveryWizardComponent implements OnInit {
   thirdFormGroup: FormGroup;
 
   constructor(public activeModal: NgbActiveModal,
-              private logger: NGXLogger,
+              private logger: SysosLibLoggerService,
               private Toastr: ToastrService,
               private formBuilder: FormBuilder,
               private serviceInjector: SysosLibServiceInjectorService,
@@ -124,8 +124,7 @@ export class SysosModalRecoveryWizardComponent implements OnInit {
 
           // Check in every storage snapshot if main VM .vmx file exists
           this.data.volume.Snapshots.forEach((snapshotObj: NetAppSnapshot & { disabled?: boolean; }) => {
-            this.logger.debug(`Backups Manager [${this.data.uuid}] -> Check VM from storage snapshot -> storage [${this.data.storage.host}],
-              vserver [${this.data.vserver['vserver-name']}], volume [${this.data.volume['volume-id-attributes'].name}], snapshot [${snapshotObj.name}], path [/${vmPath}]`);
+            this.logger.debug('Recovery Wizard', 'Check VM from storage snapshot');
 
             // NetApp call
             gspPromises.push(this.NetApp.getSnapshotFiles(
@@ -138,8 +137,7 @@ export class SysosModalRecoveryWizardComponent implements OnInit {
               '/' + vmPath
             ).then((res) => {
               if (res.status === 'error') {
-                this.logger.debug(`Backups Manager [${this.data.uuid}] -> No VM data at this storage snapshot -> storage [${this.data.storage.host}],
-                  vserver [${this.data.vserver['vserver-name']}], volume [${this.data.volume['volume-id-attributes'].name}], snapshot [${snapshotObj.name}], path [/${vmPath}]`);
+                this.logger.debug('Recovery Wizard', 'No VM data at this storage snapshot');
 
                 // Disable this storage snapshot on error (file does not exist)
                 snapshotObj.disabled = true;
@@ -296,7 +294,7 @@ export class SysosModalRecoveryWizardComponent implements OnInit {
       // Get Host firewall rules data
       this.Modal.closeModal('.modal-recovery-wizard');
     }).catch((e) => {
-      this.logger.error(`Infrastructure Manager [${this.hostData.uuid}] -> Error while getting VMWare data -> host [${this.hostData.host}] -> ${e.description}`);
+      this.logger.error('Recover Wizard', 'Error while getting VMWare data', null, e.description);
 
       if (this.Modal.isModalOpened('.modal-recovery-wizard')) {
         this.Modal.changeModalType('danger', '.modal-recovery-wizard');
@@ -321,7 +319,7 @@ export class SysosModalRecoveryWizardComponent implements OnInit {
         this.ifaceServiceData = nfsServiceResult.data;
         this.Modal.closeModal('.modal-recovery-wizard');
       }).catch((e) => {
-        this.logger.error(`Infrastructure Manager [${this.data.storage.uuid}] -> Error while getting NetApp data -> host [${this.data.storage.host}] -> ${e.description}`);
+        this.logger.error('Recovery Wizard', 'Error while getting NetApp data', null, e.description);
 
         if (this.Modal.isModalOpened('.modal-recovery-wizard')) {
           this.Modal.changeModalType('danger', '.modal-recovery-wizard');

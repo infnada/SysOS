@@ -1,7 +1,7 @@
 import {Component, Input} from '@angular/core';
 
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-import {NGXLogger} from 'ngx-logger';
+import {SysosLibLoggerService} from '@sysos/lib-logger';
 import {ToastrService} from 'ngx-toastr';
 
 import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
@@ -39,7 +39,7 @@ export class SysosModalEsxiSelectableComponent {
   };
 
   constructor(public activeModal: NgbActiveModal,
-              private logger: NGXLogger,
+              private logger: SysosLibLoggerService,
               private Toastr: ToastrService,
               private serviceInjector: SysosLibServiceInjectorService,
               private Modal: SysosLibModalService,
@@ -142,7 +142,7 @@ export class SysosModalEsxiSelectableComponent {
       // Get Host firewall rules data
       this.Modal.closeModal('.modal-esxi-selectable');
     }).catch((e) => {
-      this.logger.error(`Infrastructure Manager [${this.hostData.uuid}] -> Error while getting VMWare data -> host [${this.hostData.host}] -> ${e.description}`);
+      this.logger.error('Infrastructure Manager', 'Error while getting VMWare data', null, e.description);
 
       if (this.Modal.isModalOpened('.modal-esxi-selectable')) {
         this.Modal.changeModalType('danger', '.modal-esxi-selectable');
@@ -167,7 +167,7 @@ export class SysosModalEsxiSelectableComponent {
         this.ifaceServiceData = nfsServiceResult.data;
         this.Modal.closeModal('.modal-esxi-selectable');
       }).catch((e) => {
-        this.logger.error(`Infrastructure Manager [${this.storage.uuid}] -> Error while getting NetApp data -> host [${this.storage.host}] -> ${e.description}`);
+        this.logger.error('Infrastructure Manager', 'Error while getting NetApp data', null, e.description);
 
         if (this.Modal.isModalOpened('.modal-esxi-selectable')) {
           this.Modal.changeModalType('danger', '.modal-esxi-selectable');

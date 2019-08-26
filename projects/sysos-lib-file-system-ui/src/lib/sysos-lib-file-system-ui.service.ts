@@ -3,13 +3,12 @@ import {CdkDragDrop} from '@angular/cdk/drag-drop';
 
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {ToastrService} from 'ngx-toastr';
-import {NGXLogger} from 'ngx-logger';
+import {SysosLibLoggerService} from '@sysos/lib-logger';
 
 import {SysosLibModalService} from '@sysos/lib-modal';
 import {SysosLibApplicationService} from '@sysos/lib-application';
 import {SysosLibFileSystemService} from '@sysos/lib-file-system';
 import {SysOSFile} from '@sysos/lib-types';
-
 
 @Injectable({
   providedIn: 'root'
@@ -36,7 +35,7 @@ export class SysosLibFileSystemUiService {
   currentFileDragApplication: string = null;
   currentFileDragConnectionUuid: string = null;
 
-  constructor(private logger: NGXLogger,
+  constructor(private logger: SysosLibLoggerService,
               private Toastr: ToastrService,
               private Modal: SysosLibModalService,
               private FileSystem: SysosLibFileSystemService,
@@ -78,6 +77,7 @@ export class SysosLibFileSystemUiService {
    * Creates a new folder
    */
   UIcreateFolder(currentPath: string, selector: string, type: string = null, data?: any) {
+    const loggerArgs = arguments;
 
     this.Modal.openRegisteredModal('input', selector,
       {
@@ -97,7 +97,7 @@ export class SysosLibFileSystemUiService {
             this.refreshPath(currentPath);
           },
           error => {
-            this.logger.error('[FileSystemUI] -> UIcreateFolder -> Error while creating folder -> ', error);
+            this.logger.error('FileSystemUI', 'UIcreateFolder -> Error while creating folder', loggerArgs, error);
           });
         }
 
@@ -115,6 +115,8 @@ export class SysosLibFileSystemUiService {
    * Rename file
    */
   UIrenameFile(currentPath: string, file: { longname: string, filename: string }, selector: string, type: string = null, data?: any) {
+    const loggerArgs = arguments;
+
     this.Modal.openRegisteredModal('input', selector,
       {
         title: 'Rename file',
@@ -133,7 +135,7 @@ export class SysosLibFileSystemUiService {
             this.refreshPath(currentPath);
           },
           error => {
-            this.logger.error('[FileSystemUI] -> UIrenameFile -> Error while renaming file -> ', error);
+            this.logger.error('FileSystemUI', 'UIrenameFile -> Error while renaming file', loggerArgs, error);
           });
         }
 
@@ -152,6 +154,8 @@ export class SysosLibFileSystemUiService {
    * Deletes selected files or folders
    */
   UIdeleteSelected(currentPath: string, file: { longname: string, filename: string }, selector: string, type: string = null, data?: any) {
+    const loggerArgs = arguments;
+
     this.Modal.openRegisteredModal('question', selector,
       {
         title: `Delete file ${file.filename}`,
@@ -172,7 +176,7 @@ export class SysosLibFileSystemUiService {
               this.refreshPath(currentPath);
             },
             error => {
-              this.logger.error('[FileSystemUI] -> UIdeleteSelected -> Error while deleting folder -> ', error);
+              this.logger.error('FileSystemUI', 'UIdeleteSelected -> Error while deleting folder', loggerArgs, error);
             });
           }
 
@@ -191,6 +195,7 @@ export class SysosLibFileSystemUiService {
    * Paste selected files or folders
    */
   UIpasteFile(currentPath: string, type: string = null, data?: any) {
+    const loggerArgs = arguments;
 
     if (this.dataStore.cutFrom) {
       if (type === null || type === 'linux') {
@@ -203,7 +208,7 @@ export class SysosLibFileSystemUiService {
           this.$cutFrom.next(Object.assign({}, this.dataStore).cutFrom);
         },
         error => {
-          this.logger.error('[FileSystemUI] -> UIpasteFile -> Error while moving file -> ', error);
+          this.logger.error('FileSystemUI', 'UIpasteFile -> Error while moving file', loggerArgs, error);
         });
       }
 
@@ -226,7 +231,7 @@ export class SysosLibFileSystemUiService {
           this.$copyFrom.next(Object.assign({}, this.dataStore).copyFrom);
         },
         error => {
-          this.logger.error('[FileSystemUI] -> UIpasteFile -> Error while copying file -> ', error);
+          this.logger.error('FileSystemUI', 'UIpasteFile -> Error while copying file', loggerArgs, error);
         });
       }
 
@@ -243,6 +248,8 @@ export class SysosLibFileSystemUiService {
    * Downloads content from URL
    */
   UIdownloadFromURL(currentPath: string, selector: string, type: string = null, data?: any) {
+    const loggerArgs = arguments;
+
     this.Modal.openRegisteredModal('input', selector,
       {
         title: 'Download file from URL',
@@ -262,7 +269,7 @@ export class SysosLibFileSystemUiService {
             this.Toastr.success('File downloaded to ' + currentPath, 'Download file from URL');
           },
           error => {
-            this.logger.error('[FileSystemUI] -> UIdownloadFromURL -> Error while downloading file -> ', error);
+            this.logger.error('FileSystemUI', 'UIdownloadFromURL -> Error while downloading file', loggerArgs, error);
           });
         }
 
@@ -309,6 +316,8 @@ export class SysosLibFileSystemUiService {
    * Checks if is a file or folder and do something
    */
   UIdoWithFile(applicationId: string, currentPath: string, file: { longname: string, filename: string }) {
+    const loggerArgs = arguments;
+
     let realApplication = applicationId;
     const filetype = this.FileSystem.getFileType(file.longname);
 
@@ -347,7 +356,7 @@ export class SysosLibFileSystemUiService {
 
         },
         error => {
-          this.logger.error('[FileSystemUI] -> UIdoWithFile -> Error while getting file contents -> ', error);
+          this.logger.error('FileSystemUI', 'UIdoWithFile -> Error while getting file contents', loggerArgs, error);
         });
     }
   }
@@ -365,6 +374,7 @@ export class SysosLibFileSystemUiService {
    * When dropping a dragged file
    */
   UIonDropItem(applicationId: string, $event: CdkDragDrop<any>, dropPath: string, connectionUuid?: string): void {
+    const loggerArgs = arguments;
 
     // Download from remote application
     if (this.currentFileDragApplication && !connectionUuid) {
@@ -392,7 +402,7 @@ export class SysosLibFileSystemUiService {
     }
 
     if (this.currentFileDragApplication && applicationId && this.currentFileDragApplication !== applicationId) {
-      this.logger.error('[FileSystemUI] -> UIonDropItem -> D&D from different applications -> drag [%s], drop [%s]', this.currentFileDragApplication, applicationId);
+      this.logger.error('FileSystemUI', 'UIonDropItem -> D&D from different applications', arguments);
       this.Toastr.error('Remote to Remote is not allowed', 'Drag&Drop');
       return;
     }
@@ -412,7 +422,7 @@ export class SysosLibFileSystemUiService {
         this.refreshPath(dropPath);
       },
       error => {
-        this.logger.error('[FileSystemUI] -> UIonDropItem -> Error while moving file -> ', error);
+        this.logger.error('FileSystemUI', 'UIonDropItem -> Error while moving file', loggerArgs, error);
       });
   }
 

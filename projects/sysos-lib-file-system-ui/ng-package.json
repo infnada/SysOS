@@ -4,10 +4,10 @@
   "lib": {
     "entryFile": "src/public-api.ts",
     "umdModuleIds": {
-      "ngx-logger": "ngx-logger",
       "ngx-toastr": "ngx-toastr",
       "@sysos/lib-application": "sysos.lib-application",
       "@sysos/lib-file-system": "sysos.lib-file-system",
+      "@sysos/lib-logger": "sysos.lib-logger",
       "@sysos/lib-modal": "sysos.lib-modal"
     }
   }

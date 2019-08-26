@@ -4,10 +4,10 @@
   "peerDependencies": {
     "@angular/common": "^7.2.0",
     "@angular/core": "^7.2.0",
-    "ngx-logger": "^3.3.13",
     "rxjs": "~6.3.3",
     "@sysos/lib-application": "~0.0.1",
     "@sysos/lib-file-system": "~0.0.1",
+    "@sysos/lib-logger": "~0.0.1",
     "@sysos/lib-modal": "~0.0.1",
     "@sysos/lib-types": "~0.0.1"
   }

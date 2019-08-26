@@ -3,7 +3,7 @@ import {HttpClient} from '@angular/common/http';
 
 import {map} from 'rxjs/operators';
 
-import {NGXLogger} from 'ngx-logger';
+import {SysosLibLoggerService} from '@sysos/lib-logger';
 
 import {SysosLibVmwareHelperService} from './sysos-lib-vmware-helper.service';
 import {SysosLibVmwareAlarmService} from './managed-object-types/sysos-lib-vmware-alarm.service';
@@ -164,7 +164,7 @@ import {DateTime} from './types/date-time';
 export class SysosLibVmwareService {
 
   constructor(private http: HttpClient,
-              private logger: NGXLogger,
+              private logger: SysosLibLoggerService,
               private SysosLibVmwareHelper: SysosLibVmwareHelperService,
               private Alarm: SysosLibVmwareAlarmService,
               private AlarmManager: SysosLibVmwareAlarmManagerService,

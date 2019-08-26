@@ -21,14 +21,13 @@
     <i class="fa fa-arrow-right sidebar-open-font open-sidebar"></i>
   </div>
   <div class="window__main row no_padding" (window:resize)="onBodyResize()">
-    <div class="col">
 
-      <sassh-body-new-connection [application]="application" *ngIf="activeConnection === null || getActiveConnection().state === 'disconnected'"></sassh-body-new-connection>
+    <sassh-body-new-connection [application]="application" *ngIf="activeConnection === null || getActiveConnection().state === 'disconnected'"></sassh-body-new-connection>
 
-      <ng-container *ngIf="activeConnection !== null && getActiveConnection().state !== 'disconnected'">
-        <div #terminalContainer id="terminal-container-{{getActiveConnection().uuid}}" class="terminal-container terminal"></div>
-      </ng-container>
+    <ng-container *ngIf="activeConnection !== null && getActiveConnection().state !== 'disconnected'">
+      <div #terminalContainer id="terminal-container-{{getActiveConnection().uuid}}" class="terminal-container terminal"></div>
+    </ng-container>
 
-    </div>
+
   </div>
 </div>

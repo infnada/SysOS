@@ -3,7 +3,7 @@ import {HttpResponse, HttpEvent} from '@angular/common/http';
 import {MatMenuTrigger} from '@angular/material';
 
 import {Subscription} from 'rxjs';
-import {NGXLogger} from 'ngx-logger';
+import {SysosLibLoggerService} from '@sysos/lib-logger';
 
 import {SysosLibSelectableService} from '@sysos/lib-selectable';
 import {SysosLibFileSystemService} from '@sysos/lib-file-system';
@@ -76,7 +76,7 @@ export class BodyComponent implements OnInit {
     }
   ];
 
-  constructor(private logger: NGXLogger,
+  constructor(private logger: SysosLibLoggerService,
               public Selectable: SysosLibSelectableService,
               private FileSystem: SysosLibFileSystemService,
               private FileSystemUi: SysosLibFileSystemUiService,

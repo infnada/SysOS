@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 
-import {NGXLogger} from 'ngx-logger';
+import {SysosLibLoggerService} from '@sysos/lib-logger';
 import {ToastrService} from 'ngx-toastr';
 
 import {SysosLibModalService} from '@sysos/lib-modal';
@@ -17,7 +17,7 @@ import {VMWareObject} from '../types/vmware-object';
   providedIn: 'root'
 })
 export class SysosAppInfrastructureVmwareService {
-  constructor(private logger: NGXLogger,
+  constructor(private logger: SysosLibLoggerService,
               private Toastr: ToastrService,
               private Modal: SysosLibModalService,
               private FileSystemUi: SysosLibFileSystemUiService,
@@ -26,8 +26,7 @@ export class SysosAppInfrastructureVmwareService {
   }
 
   getVMWareData(connection: IMConnection): void {
-
-    console.log('getVMWareData');
+    const loggerArgs = arguments;
 
     this.Modal.openLittleModal('PLEASE WAIT', 'Connecting to vCenter/ESXi...', '.window--infrastructure-manager .window__main', 'plain').then(() => {
 
@@ -102,7 +101,7 @@ export class SysosAppInfrastructureVmwareService {
       this.InfrastructureManager.connectionsUpdated();
 
     }).catch((e) => {
-      this.logger.error(`Infrastructure Manager [${connection.uuid}] -> Error while getting VMWare data -> host [${connection.host}] -> ${e.description}`);
+      this.logger.error('Infrastructure Manager', 'Error while getting VMWare data', loggerArgs, e.description);
 
       if (this.Modal.isModalOpened('.window--infrastructure-manager .window__main')) {
         this.Modal.changeModalType('danger', '.window--infrastructure-manager .window__main');
@@ -294,7 +293,7 @@ export class SysosAppInfrastructureVmwareService {
 
         this.FileSystemUi.refreshPath(data.currentPath);
       }).catch((e) => {
-        this.logger.error(`Infrastructure Manager [${data.connection.uuid}] -> createFolderToDatastore -> host [${data.connection.host}] -> ${e.description}`);
+        this.logger.error('Infrastructure Manager', 'createFolderToDatastore', null, e.description);
 
         this.Modal.changeModalType('danger', data.selector);
         this.Modal.changeModalText(e.description, data.selector);
@@ -325,7 +324,7 @@ export class SysosAppInfrastructureVmwareService {
 
         this.FileSystemUi.refreshPath(data.currentPath);
       }).catch((e) => {
-        this.logger.error(`Infrastructure Manager [${data.connection.uuid}] -> moveFileFromDatastore -> host [${data.connection.host}] -> ${e.description}`);
+        this.logger.error('Infrastructure Manager', 'moveFileFromDatastore', null, e.description);
 
         this.Modal.changeModalType('danger', data.selector);
         this.Modal.changeModalText(e.description, data.selector);
@@ -352,7 +351,7 @@ export class SysosAppInfrastructureVmwareService {
 
         this.FileSystemUi.refreshPath(data.currentPath);
       }).catch((e) => {
-        this.logger.error(`Infrastructure Manager [${data.connection.uuid}] -> deleteFileFromDatastore -> host [${data.connection.host}] -> ${e.description}`);
+        this.logger.error('Infrastructure Manager', 'deleteFileFromDatastore', null, e.description);
 
         this.Modal.changeModalType('danger', data.selector);
         this.Modal.changeModalText(e.description, data.selector);
@@ -366,7 +365,9 @@ export class SysosAppInfrastructureVmwareService {
    * VM Backup/Restore
    */
   instantVM(virtualUuid: string, vm: VMWareObject & { info: { data: VMWareVM } }): void {
-    this.logger.debug(`Infrastructure Manager [${vm.info.obj.name}] -> Ask for Instant VM recovery -> vm [${vm.name}]`);
+    const loggerArgs = arguments;
+
+    this.logger.debug('Infrastructure Manager', 'Ask for Instant VM recovery', arguments);
 
     this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
       {
@@ -377,7 +378,7 @@ export class SysosAppInfrastructureVmwareService {
       modalInstance.result.then((result: boolean) => {
         if (result === true) {
 
-          this.logger.debug(`Infrastructure Manager [${vm.info.obj.name}] -> Launching Backups Manager for Instant VM recovery -> vm [${vm.name}]`);
+          this.logger.debug('Infrastructure Manager', 'Launching Backups Manager for Instant VM recovery', loggerArgs);
 
           this.InfrastructureManager.openBackupsManager(virtualUuid, 'vm_instant_recovery', {
             virtual: this.InfrastructureManager.getConnectionByUuid(virtualUuid),
@@ -390,7 +391,9 @@ export class SysosAppInfrastructureVmwareService {
   }
 
   restoreVM(virtualUuid: string, vm: VMWareObject & { info: { data: VMWareVM } }): void {
-    this.logger.debug(`Infrastructure Manager [${vm.info.obj.name}] -> Ask for restore entire VM -> vm [${vm.name}]`);
+    const loggerArgs = arguments;
+
+    this.logger.debug('Infrastructure Manager', 'Ask for restore entire VM', arguments);
 
     this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
       {
@@ -401,7 +404,7 @@ export class SysosAppInfrastructureVmwareService {
       modalInstance.result.then((result: boolean) => {
         if (result === true) {
 
-          this.logger.debug(`Infrastructure Manager [${vm.info.obj.name}] -> Launching Backups Manager for restore entire VM -> vm [${vm.name}]`);
+          this.logger.debug('Infrastructure Manager', 'Launching Backups Manager for restore entire VM', loggerArgs);
 
           this.InfrastructureManager.openBackupsManager(virtualUuid, 'restore_vm', {
             virtual: this.InfrastructureManager.getConnectionByUuid(virtualUuid),

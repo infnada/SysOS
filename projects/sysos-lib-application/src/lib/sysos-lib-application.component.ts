@@ -2,7 +2,7 @@ import {Component, ElementRef, Input, OnInit, AfterViewInit, ViewChild, ViewCont
 import {CdkDragRelease, CdkDragStart} from '@angular/cdk/drag-drop';
 
 import {Subscription} from 'rxjs';
-import {NGXLogger} from 'ngx-logger';
+import {SysosLibLoggerService} from '@sysos/lib-logger';
 import {ResizeEvent} from 'angular-resizable-element';
 
 import {SysosLibApplicationService} from './sysos-lib-application.service';
@@ -45,7 +45,7 @@ export class SysosLibApplicationComponent implements OnInit, AfterViewInit {
   fullWidth: string = window.innerWidth + 'px';
 
   constructor(private compiler: Compiler,
-              private logger: NGXLogger,
+              private logger: SysosLibLoggerService,
               private Applications: SysosLibApplicationService) {
 
     /**
@@ -54,13 +54,13 @@ export class SysosLibApplicationComponent implements OnInit, AfterViewInit {
 
     // Called from Task Bar Context Menu
     this.closeAppSubscription = this.Applications.getObserverCloseApplication().subscribe(application => {
-      this.logger.debug('[Application Component] Closing application [%s]', application.id);
+      this.logger.debug('Applications', `Closing application [${application.id}]`);
 
       if (application.id === this.application.id) this.close();
     });
 
     this.togglingAppSubscription = this.Applications.getObserverToggleApplication().subscribe(id => {
-      this.logger.debug('[Application Component] Toggling application [%s]', id);
+      this.logger.debug('Applications', `Toggling application [${id}]`);
 
       // Called to minimize all applications
       if (id === null) return this.minimize();
@@ -150,7 +150,7 @@ export class SysosLibApplicationComponent implements OnInit, AfterViewInit {
   }
 
   onDrop(event: CdkDragRelease<string[]>): void {
-    this.logger.debug('[Application Component] onDrop event');
+    this.logger.debug('Applications', 'onDrop event');
 
     const bounding = this.appElement.nativeElement.getBoundingClientRect();
 
@@ -173,7 +173,7 @@ export class SysosLibApplicationComponent implements OnInit, AfterViewInit {
   }
 
   onDragStart(event: CdkDragStart<string[]>): void {
-    this.logger.debug('[Application Component] onDragStart event');
+    this.logger.debug('Applications', 'onDragStart event');
     this.Applications.toggleApplication(this.application.id);
 
     // $(this).css({'z-index' : zIndex++});
@@ -194,14 +194,14 @@ export class SysosLibApplicationComponent implements OnInit, AfterViewInit {
    * (click) functions
    */
   focusApplication(): void {
-    this.logger.debug('[Application Component] focusApplication event');
+    this.logger.debug('Applications', 'focusApplication event');
     if (this.Applications.isActiveApplication(this.application.id)) return;
     if (this.isMinimized) return;
     this.Applications.toggleApplication(this.application.id);
   }
 
   close(): void {
-    this.logger.debug('[Application Component] close event');
+    this.logger.debug('Applications', 'close event');
 
     // Close this application
     this.isClosing = true;
@@ -227,13 +227,13 @@ export class SysosLibApplicationComponent implements OnInit, AfterViewInit {
   }
 
   minimize(): void {
-    this.logger.debug('[Application Component] minimize event');
+    this.logger.debug('Applications', 'minimize event');
     this.isMinimized = true;
     this.Applications.toggleApplication(null);
   }
 
   maximize(): void {
-    this.logger.debug('[Application Component] maximize event');
+    this.logger.debug('Applications', 'maximize event');
     this.isMaximized = !this.isMaximized;
 
     if (!this.isMaximized) {

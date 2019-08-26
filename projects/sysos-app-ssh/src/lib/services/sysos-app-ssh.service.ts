@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 
 import {BehaviorSubject, Observable} from 'rxjs';
 import {v4 as uuidv4} from 'uuid';
-import {NGXLogger} from 'ngx-logger';
+import {SysosLibLoggerService} from '@sysos/lib-logger';
 import {ToastrService} from 'ngx-toastr';
 import {Socket} from 'ngx-socket-io';
 import {Terminal} from 'xterm';
@@ -27,7 +27,7 @@ export class SysosAppSshService {
 
   SshTerminals: [] = [];
 
-  constructor(private logger: NGXLogger,
+  constructor(private logger: SysosLibLoggerService,
               private Toastr: ToastrService,
               private socket: Socket,
               private FileSystem: SysosLibFileSystemService,
@@ -77,7 +77,7 @@ export class SysosAppSshService {
   initConnections(): void {
     this.FileSystem.getConfigFile('applications/ssh/config.json').subscribe(
       (res: SshConnection[]) => {
-        this.logger.info('Ssh Factory -> Get connections successfully');
+        this.logger.info('Ssh', 'Get connections successfully');
 
         res.forEach((connection) => {
           connection.state = 'disconnected';
@@ -89,7 +89,7 @@ export class SysosAppSshService {
         this.$connections.next(Object.assign({}, this.dataStore).connections);
       },
       error => {
-        this.logger.error('Ssh Factory -> Error while getting credentials -> ', error);
+        this.logger.error('Ssh', 'Error while getting credentials', null, error);
         return this.Toastr.error('Error getting connections.', 'SSH');
       });
   }
@@ -118,9 +118,11 @@ export class SysosAppSshService {
   }
 
   connect(connection: SshConnection): void {
+    const loggerArgs = arguments;
+
     if (!connection) throw new Error('connection_not_found');
 
-    this.logger.debug('Ssh Factory -> Connect received -> host [%s]', connection.host);
+    this.logger.debug('Ssh', 'Connect received', arguments);
 
     if (connection.uuid) {
       connection.state = 'disconnected';
@@ -169,26 +171,27 @@ export class SysosAppSshService {
       credential: connection.credential,
       uuid: connection.uuid
     }, (e) => {
-      this.logger.error('Ssh Factory -> Error while emitting [new-session] -> ', e);
+      this.logger.error('Ssh', 'Error while emitting [new-session]', loggerArgs, e);
     });
 
     this.setActiveConnection(connection.uuid);
   }
 
   saveConnection(connection: SshConnection): void {
+    const loggerArgs = arguments;
+
     if (!connection) throw new Error('connection_not_found');
 
     const configFile = 'applications/ssh/config.json';
 
-    this.logger.debug('Ssh Factory [%s] -> Saving connection -> host [%s]', connection.uuid, connection.host);
+    this.logger.debug('Ssh', 'Saving connection', arguments);
 
     this.FileSystem.saveConfigFile(connection, configFile, false).subscribe(
       () => {
-        this.logger.debug('Ssh Factory [%s] -> Saved connection successfully -> host [%s]', connection.uuid, connection.host);
+        this.logger.debug('Ssh', 'Saved connection successfully', loggerArgs);
       },
       error => {
-        this.logger.error('Ssh Factory [%s] -> Error while saving connection -> host [%s] -> ',
-          connection.uuid, connection.host, error);
+        this.logger.error('Ssh', 'Error while saving connection', loggerArgs, error);
         this.Toastr.error('Error while saving connection.', 'Infrastructure Manager');
       });
   }
@@ -196,7 +199,7 @@ export class SysosAppSshService {
   disconnectConnection(uuid?: string): void {
     if (!uuid) uuid = this.dataStore.activeConnection;
 
-    this.logger.debug('Ssh Factory [%s] -> Disconnecting connection', uuid);
+    this.logger.debug('Ssh', 'Disconnecting connection', arguments);
 
     this.socket.emit('[disconnect-session]', {
       type: 'ssh',
@@ -210,6 +213,8 @@ export class SysosAppSshService {
   }
 
   deleteConnection(uuid?: string): void {
+    const loggerArgs = arguments;
+
     if (!uuid) uuid = this.dataStore.activeConnection;
 
     const configFile = 'applications/ssh/config.json';
@@ -223,7 +228,7 @@ export class SysosAppSshService {
       modalInstance.result.then((result: boolean) => {
         if (result === true) {
 
-          this.logger.debug('Ssh Factory [%s] -> Deleting connection', uuid);
+          this.logger.debug('Ssh', 'Deleting connection', loggerArgs);
 
           this.disconnectConnection(uuid);
           this.setActiveConnection(null);
@@ -237,10 +242,10 @@ export class SysosAppSshService {
               // broadcast data to subscribers
               this.$connections.next(Object.assign({}, this.dataStore).connections);
 
-              this.logger.debug('Ssh Factory [%s] -> Connection deleted successfully', uuid);
+              this.logger.debug('Ssh', 'Connection deleted successfully', loggerArgs);
             },
             error => {
-              this.logger.error('Ssh Factory [%s] -> Error while deleting connection -> ', uuid, error);
+              this.logger.error('Ssh', 'Error while deleting connection', loggerArgs, error);
             });
 
         }

@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 
-import {NGXLogger} from 'ngx-logger';
+import {SysosLibLoggerService} from '@sysos/lib-logger';
 
 import {SysosLibUserService} from '@sysos/lib-user';
 
@@ -18,7 +18,7 @@ export class LoginComponent implements OnInit {
 
   loginExpanded: boolean = false;
 
-  constructor(private logger: NGXLogger,
+  constructor(private logger: SysosLibLoggerService,
               private UserState: SysosLibUserService,
               private Main: MainService) {
   }
@@ -39,7 +39,7 @@ export class LoginComponent implements OnInit {
         }
       },
       error => {
-        this.logger.error(error);
+        this.logger.error('Login', 'Error while login user', null, error);
       });
   }
 

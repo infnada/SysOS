@@ -5,9 +5,9 @@
     "entryFile": "src/public-api.ts",
     "umdModuleIds": {
       "angular-resizable-element": "angular-resizable-element",
-      "ngx-logger": "ngx-logger",
       "ngx-toastr": "ngx-toastr",
-      "@sysos/lib-file-system": "sysos.lib-file-system"
+      "@sysos/lib-file-system": "sysos.lib-file-system",
+      "@sysos/lib-logger": "sysos.lib-logger"
     }
   }
 }
