@@ -1,20 +1,26 @@
 {
   "name": "@sysos/sysos",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "homepage": "https://github.com/SysOS/SysOS#readme",
   "repository": {
     "type": "git",
     "url": "https://github.com/SysOS/SysOS.git"
   },
+  "bugs": "https://github.com/infnada/SysOS/issues",
   "keywords": [],
-  "author": "Isart Navarro",
-  "license": "MIT",
+  "description": "",
+  "author": "Isart Navarro <contact@isartnavarro.io> (https://isartnavarro.io)",
+  "license": "GNU GPL v3",
+  "engines" : {
+    "node" : ">=12.0.0 <13.0.0"
+  },
+  "private": false,
   "scripts": {
     "prod:start": "node dist/SysOS/index.js",
     "dev:start": "npm-run-all build dev:proxy",
     "dev:proxy": "ng serve --proxy-config proxy.conf.json",
-    "build": "npm-run-all clean lint-backend lint-frontend build-backend build-libs build-modals build-apps build-frontend copy-extra",
-    "build-libs": "ng build sysos-lib-logger && ng build sysos-lib-file-system && ng build sysos-lib-application && ng build sysos-lib-modal && ng build sysos-lib-netapp && ng build sysos-lib-selectable && ng build sysos-lib-types && ng build sysos-lib-user && ng build sysos-lib-vmware && ng build sysos-lib-file-system-ui && ng build sysos-lib-file && ng build sysos-lib-service-injector",
+    "build": "npm-run-all clean lint-backend lint-frontend build-backend build-libs build-apps build-modals build-frontend copy-extra",
+    "build-libs": "ng build sysos-lib-logger && ng build sysos-lib-file-system && ng build sysos-lib-application && ng build sysos-lib-modal && ng build sysos-lib-netapp && ng build sysos-lib-selectable && ng build sysos-lib-types && ng build sysos-lib-user && ng build sysos-lib-vmware && ng build sysos-lib-file-system-ui && ng build sysos-lib-file && ng build sysos-lib-service-injector && ng build sysos-lib-mxgraph",
     "build-apps": "ng build sysos-app-credentials-manager && ng build sysos-app-file-explorer && ng build sysos-app-drawer && ng build sysos-app-infrastructure-manager && ng build sysos-app-backups-manager && ng build sysos-app-datastore-explorer && ng build sysos-app-notepad && ng build sysos-app-sftp && ng build sysos-app-ssh && ng build sysos-app-wmks",
     "build-modals": "ng build sysos-modal-input && ng build sysos-modal-plain && ng build sysos-modal-question && ng build sysos-modal-esxi-selectable && ng build sysos-modal-recovery-wizard && ng build sysos-modal-backup-wizard",
     "build-frontend": "ng build",
@@ -29,7 +35,6 @@
     "copy-apps": "cp dist/applications/*/bundles/* dist/SysOS/filesystem/bin/applications/ && cp dist/modals/*/bundles/* dist/SysOS/filesystem/bin/modals/ && cp dist/libs/sysos-lib-mxgraph/bundles/* dist/SysOS/filesystem/bin/libs/ && npm run postscript",
     "postscript": "sed -i '1i// Addeded with package.json postscript\\nmxBasePath = \"assets/mxgraph\";\\nmxLoadResources = true;\\nmxForceIncludes = false;\\nmxResourceExtension = \".txt\";\\nmxLoadStylesheets = true;\\n' dist/SysOS/filesystem/bin/libs/sysos-lib-mxgraph.umd.js && sed -i -e 's=((.*(window))).==g' dist/SysOS/filesystem/bin/libs/sysos-lib-mxgraph.umd.js"
   },
-  "private": false,
   "dependencies": {
     "@angular/animations": "^7.2.14",
     "@angular/cdk": "^7.3.7",

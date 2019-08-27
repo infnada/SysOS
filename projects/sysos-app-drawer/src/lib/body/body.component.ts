@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 
-import {SysosLibMxgraphService} from "@sysos/lib-mxgraph";
+import {SysosLibMxgraphService} from '@sysos/lib-mxgraph';
 
 @Component({
   selector: 'sadrw-body',

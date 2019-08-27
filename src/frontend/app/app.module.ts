@@ -1,6 +1,4 @@
 // Prepare output for SystemJS
-import {SysosLibLoggerModule} from "@sysos/lib-logger";
-
 declare const SystemJS: any;
 
 import * as angularCore from '@angular/core';
@@ -93,6 +91,7 @@ import {SysosLibFileModule} from '@sysos/lib-file';
 import {SysosLibApplicationModule} from '@sysos/lib-application';
 import {SysosLibSelectableService} from '@sysos/lib-selectable';
 import {SysosLibServiceInjectorModule} from '@sysos/lib-service-injector';
+import {SysosLibLoggerModule} from '@sysos/lib-logger';
 
 import {AppComponent} from './app.component';
 import {LoginComponent} from './login/login.component';

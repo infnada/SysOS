@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 import {LoggerModule, NgxLoggerLevel} from 'ngx-logger';
-import {HttpClientModule} from "@angular/common/http";
+import {HttpClientModule} from '@angular/common/http';
 
 @NgModule({
   declarations: [],

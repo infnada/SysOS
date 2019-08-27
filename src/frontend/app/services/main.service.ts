@@ -1,4 +1,4 @@
-import {Compiler, Injectable, Injector, NgModuleFactory} from '@angular/core';
+import {Compiler, Injectable, Injector} from '@angular/core';
 
 import {BehaviorSubject} from 'rxjs';
 import {Socket} from 'ngx-socket-io';
@@ -6,7 +6,7 @@ import {SysosLibLoggerService} from '@sysos/lib-logger';
 
 import {SysosLibModalService} from '@sysos/lib-modal';
 import {SysosLibApplicationService} from '@sysos/lib-application';
-import {SysosLibFileSystemService} from "@sysos/lib-file-system";
+import {SysosLibFileSystemService} from '@sysos/lib-file-system';
 
 declare const SystemJS: any;
 

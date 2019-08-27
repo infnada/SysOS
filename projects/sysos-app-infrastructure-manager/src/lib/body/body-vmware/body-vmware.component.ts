@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 
 import {Application} from '@sysos/lib-application';
-import {mxgraph, mx} from '@sysos/app-drawer';
+import {SysosLibMxgraphService} from '@sysos/lib-mxgraph';
 
 import {VMWareObject} from '../../types/vmware-object';
 
@@ -14,12 +14,12 @@ export class BodyVmwareComponent implements OnInit {
   @Input() vmwareObject: VMWareObject;
   @Input() application: Application;
 
-  private mx: mxgraph = mx;
-
+  private mx;
   private graph;
   private defaultGraphOverflow = 'hidden';
 
-  constructor() {
+  constructor(private MxgraphService: SysosLibMxgraphService) {
+    this.mx = this.MxgraphService.mx;
   }
 
   ngOnInit() {

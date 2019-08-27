@@ -1,9 +1,9 @@
 import {Component, Input, OnInit} from '@angular/core';
 
-import {Application} from "@sysos/lib-application";
+import {Application} from '@sysos/lib-application';
 
-import {SshConnection} from "../types/ssh-connection";
-import {SysosAppSshService} from "../services/sysos-app-ssh.service";
+import {SshConnection} from '../types/ssh-connection';
+import {SysosAppSshService} from '../services/sysos-app-ssh.service';
 
 @Component({
   selector: 'sassh-status',

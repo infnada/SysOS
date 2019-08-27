@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 
-import {SysosLibMxgraphService} from "@sysos/lib-mxgraph";
+import {SysosLibMxgraphService} from '@sysos/lib-mxgraph';
 
 @Injectable({
   providedIn: 'root'
