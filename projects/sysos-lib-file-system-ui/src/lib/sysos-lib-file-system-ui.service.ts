@@ -192,10 +192,54 @@ export class SysosLibFileSystemUiService {
   }
 
   /**
+   * Downloads content from URL
+   */
+  UIdownloadFromURL(currentPath: string, selector: string, type: string = null, data?: any) {
+    const loggerArgs = arguments;
+
+    this.Modal.openRegisteredModal('input', selector,
+      {
+        title: 'Download file from URL',
+        text: 'File URL',
+        buttonText: 'Download',
+        inputValue: ''
+      }
+    ).then((modalInstance) => {
+      modalInstance.result.then((name: string) => {
+        if (!name) return;
+
+        // Default SysOS handlers
+        if (type === null || type === 'linux') {
+          return this.FileSystem.downloadFileFromInet((type === null ? null : data.connection.uuid), currentPath, name).subscribe(
+            () => {
+              this.refreshPath(currentPath);
+              this.Toastr.success('File downloaded to ' + currentPath, 'Download file from URL');
+            },
+            error => {
+              this.logger.error('FileSystemUI', 'UIdownloadFromURL -> Error while downloading file', loggerArgs, error);
+            });
+        }
+
+        data.name = name;
+        data.currentPath = currentPath;
+        data.selector = selector;
+
+        // Application specific handlers
+        if (this.downloadFromURLFileHandlers[type]) this.downloadFromURLFileHandlers[type].fn(data);
+
+      });
+
+    });
+
+  }
+
+  /**
    * Paste selected files or folders
    */
   UIpasteFile(currentPath: string, type: string = null, data?: any) {
     const loggerArgs = arguments;
+
+    this.logger.debug('FileSystemUI', 'UIpasteFile', loggerArgs);
 
     if (this.dataStore.cutFrom) {
       if (type === null || type === 'linux') {
@@ -245,53 +289,14 @@ export class SysosLibFileSystemUiService {
   }
 
   /**
-   * Downloads content from URL
-   */
-  UIdownloadFromURL(currentPath: string, selector: string, type: string = null, data?: any) {
-    const loggerArgs = arguments;
-
-    this.Modal.openRegisteredModal('input', selector,
-      {
-        title: 'Download file from URL',
-        text: 'File URL',
-        buttonText: 'Download',
-        inputValue: ''
-      }
-    ).then((modalInstance) => {
-      modalInstance.result.then((name: string) => {
-        if (!name) return;
-
-        // Default SysOS handlers
-        if (type === null || type === 'linux') {
-          return this.FileSystem.downloadFileFromInet((type === null ? null : data.connection.uuid), currentPath, name).subscribe(
-          () => {
-            this.refreshPath(currentPath);
-            this.Toastr.success('File downloaded to ' + currentPath, 'Download file from URL');
-          },
-          error => {
-            this.logger.error('FileSystemUI', 'UIdownloadFromURL -> Error while downloading file', loggerArgs, error);
-          });
-        }
-
-        data.name = name;
-        data.currentPath = currentPath;
-        data.selector = selector;
-
-        // Application specific handlers
-        if (this.downloadFromURLFileHandlers[type]) this.downloadFromURLFileHandlers[type].fn(data);
-
-      });
-
-    });
-
-  }
-
-  /**
    * Copy File
    */
   UIcopyFile(currentPath: string, file: { longname: string, filename: string }) {
+    this.logger.debug('FileSystemUI', 'UIcopyFile', arguments);
+
     this.dataStore.cutFrom = null;
     this.dataStore.copyFrom = currentPath + file.filename;
+    this.currentCopyCutFile = file.filename;
 
     // broadcast data to subscribers
     this.$cutFrom.next(Object.assign({}, this.dataStore).cutFrom);
@@ -303,6 +308,8 @@ export class SysosLibFileSystemUiService {
    * Cut file
    */
   UIcutFile(currentPath: string, file: { longname: string, filename: string }) {
+    this.logger.debug('FileSystemUI', 'UIcutFile', arguments);
+
     this.dataStore.copyFrom = null;
     this.dataStore.cutFrom = currentPath + file.filename;
     this.currentCopyCutFile = file.filename;

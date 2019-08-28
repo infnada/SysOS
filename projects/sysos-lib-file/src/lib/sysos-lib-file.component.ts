@@ -19,15 +19,18 @@ import {IMConnection, SftpConnection, DatastoreExplorerConnection} from '@sysos/
 export class SysosLibFileComponent implements OnInit, AfterViewInit {
   @ViewChild(MatMenuTrigger) contextMenuFile: MatMenuTrigger;
   @ViewChild('selectableFileElement') selectableFileElement: ElementRef;
+
+  @Input() file: SysOSFile;
   @Input() application: Application;
+  // Some applications like SFTP, DatastoreBrowser have 2 file windows. We use this value to know which window this file belongs
+  @Input() subApplication: string;
   @Input() connection: null|IMConnection|SftpConnection|DatastoreExplorerConnection = null;
   @Input() uploadAllowed: boolean = false;
-  @Input() subApplication: string;
-  @Input() file: SysOSFile;
+  @Input() selectable: SysosLibSelectableService;
   @Input() isCurrentActive: boolean;
   @Input() currentPath: string;
   @Input() viewAsList: boolean;
-  @Input() selectable: SysosLibSelectableService;
+  // Where to show the modal box
   @Input() selector: string;
 
   contextMenuPosition = {x: '0px', y: '0px'};
@@ -40,19 +43,20 @@ export class SysosLibFileComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.fileContextMenuItems = [
       {
-        id: 0, text: '<i class="fa fa-upload"></i> Upload to Remote', action: (file: SysOSFile) => {
-
+        id: 0, text: '<i class="fa fa-upload"></i> Upload to Remote', action: (file: SysOSFile): void => {
           this.UIuploadFileToRemote(file);
         }, disabled: () => {
           return !this.uploadAllowed;
         }
       },
       {
-        id: 1, text: (this.connection && this.connection.uuid !== null ? '<i class="fa fa-cloud-download"></i> Download to SysOS' :
-          '<i class="fa fa-download"></i> Download to local'), action: (file: SysOSFile) => {
-
-          if (this.connection.uuid) this.UIdownloadFileToSysOS(file);
-
+        id: 1, text: (
+          this.connection && this.connection.uuid !== null ?
+            '<i class="fa fa-cloud-download"></i> Download to SysOS' :
+            '<i class="fa fa-download"></i> Download to local'
+        ), action: (file: SysOSFile): void => {
+          if (this.connection) return this.UIdownloadFileToSysOS(file);
+          return this.UIdownloadFileToLocal(file);
         }
       },
       {
@@ -64,36 +68,36 @@ export class SysosLibFileComponent implements OnInit, AfterViewInit {
           } else {
             return '<i class="fa fa-edit"></i> Open with Notepad';
           }
-        }, action: (file: SysOSFile) => {
+        }, action: (file: SysOSFile): void => {
           this.UIdoWithFile(file);
         }
       },
       {id: 3, text: 'divider'},
       {
-        id: 4, text: '<i class="fa fa-files-o"></i> Copy', action: (file: SysOSFile) => {
+        id: 4, text: '<i class="fa fa-files-o"></i> Copy', action: (file: SysOSFile): void => {
           this.UIcopyFile(file);
         }
       },
       {
-        id: 6, text: '<i class="fa fa-scissors"></i> Cut', action: (file: SysOSFile) => {
+        id: 6, text: '<i class="fa fa-scissors"></i> Cut', action: (file: SysOSFile): void => {
           this.UIcutFile(file);
         }
       },
       {id: 7, text: 'divider'},
       {
-        id: 8, text: '<i class="fa fa-font"></i> Rename', action: (file: SysOSFile) => {
+        id: 8, text: '<i class="fa fa-font"></i> Rename', action: (file: SysOSFile): void => {
           return this.UIrenameFile(file);
         }
       },
       {
-        id: 9, text: '<i class="fa fa-remove"></i> Delete', action: (file: SysOSFile) => {
+        id: 9, text: '<i class="fa fa-remove"></i> Delete', action: (file: SysOSFile): void => {
           return this.UIdeleteSelected(file);
         }
       },
       {id: 10, text: 'divider'},
       {
-        id: 11, text: '<i class="fa fa-lock"></i> Permissions', action: (file: SysOSFile) => {
-          // TODO
+        id: 11, text: '<i class="fa fa-lock"></i> Permissions', action: (file: SysOSFile): void => {
+          return this.UIfilePermissions(file);
         }
       }
     ];
@@ -128,23 +132,23 @@ export class SysosLibFileComponent implements OnInit, AfterViewInit {
     return this.FileSystem.getFileType(longname);
   }
 
-  UIrenameFile(file: SysOSFile) {
-    this.FileSystemUi.UIrenameFile(this.currentPath, file, this.selector, this.connection.type, { connection: this.connection });
+  UIrenameFile(file: SysOSFile): void {
+    this.FileSystemUi.UIrenameFile(this.currentPath, file, this.selector, (this.connection ? this.connection.type : null), (this.connection ? { connection: this.connection } : null));
   }
 
-  UIdeleteSelected(file: SysOSFile) {
-    this.FileSystemUi.UIdeleteSelected(this.currentPath, file, this.selector, this.connection.type, { connection: this.connection });
+  UIdeleteSelected(file: SysOSFile): void {
+    this.FileSystemUi.UIdeleteSelected(this.currentPath, file, this.selector, (this.connection ? this.connection.type : null), (this.connection ? { connection: this.connection } : null));
   }
 
-  UIcopyFile(file: SysOSFile) {
+  UIcopyFile(file: SysOSFile): void {
     this.FileSystemUi.UIcopyFile(this.currentPath, file);
   }
 
-  UIcutFile(file: SysOSFile) {
+  UIcutFile(file: SysOSFile): void {
     this.FileSystemUi.UIcutFile(this.currentPath, file);
   }
 
-  UIdownloadFileToSysOS(file: SysOSFile) {
+  UIdownloadFileToSysOS(file: SysOSFile): void {
     this.FileSystemUi.sendDownloadRemoteFile({
       path: this.currentPath,
       file,
@@ -153,7 +157,11 @@ export class SysosLibFileComponent implements OnInit, AfterViewInit {
     });
   }
 
-  UIuploadFileToRemote(file: SysOSFile) {
+  UIdownloadFileToLocal(file: SysOSFile): void {
+    // TODO
+  }
+
+  UIuploadFileToRemote(file: SysOSFile): void {
     this.FileSystemUi.sendUploadToRemote({
       path: this.currentPath,
       file,
@@ -161,7 +169,11 @@ export class SysosLibFileComponent implements OnInit, AfterViewInit {
     });
   }
 
-  UIdoWithFile(file: SysOSFile) {
+  UIfilePermissions(file: SysOSFile): void {
+    // TODO
+  }
+
+  UIdoWithFile(file: SysOSFile): void {
     let realApplication = this.application.id;
     if (this.subApplication) realApplication = this.application.id + '#' + this.subApplication;
 

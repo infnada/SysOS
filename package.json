@@ -8,7 +8,7 @@
   },
   "bugs": "https://github.com/infnada/SysOS/issues",
   "keywords": [],
-  "description": "",
+  "description": "Web based operating system for SysOps, DevOps, NetOps, SecOps... Monitor, manage, configure, backup & recovery your virtual and physical infrastructure.",
   "author": "Isart Navarro <contact@isartnavarro.io> (https://isartnavarro.io)",
   "license": "GNU GPL v3",
   "engines" : {
