@@ -238,7 +238,7 @@ export class SysosLibApplicationService {
    * Check if application is active (not in background) on Desktop
    */
   isActiveApplication(id: string): boolean {
-    if (!id) throw new Error('id_not_found');
+    if (typeof id !== 'string' && id !== null) throw new Error('id_not_found');
 
     return this.dataStore.taskbarItemOpen === id;
   }

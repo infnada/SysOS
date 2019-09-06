@@ -523,6 +523,18 @@ li li .list__toggle:before {
   margin:0;
   padding:0;
   height: 100%;
+
+  #local_body {
+    margin-top: 32px;
+    height: calc(100% - 32px);
+    position: relative;
+  }
+
+  .folders {
+    overflow-y: scroll;
+    height: calc(100% - 64px);
+    position: relative;
+  }
 }
 
 .folders__body.last > div {
@@ -535,13 +547,6 @@ li li .list__toggle:before {
 
 .folders__body .window__actions {
   top:0;
-}
-
-.folders__body .folders {
-  margin-top:32px;
-  overflow-y: scroll;
-  height: calc(100% - 32px);
-  position: relative;
 }
 
 

@@ -22,7 +22,7 @@ export class SnmpSocketModule {
 
       this.SocketModule.emitProp(type, 'snmp://public@' + host + ':161', uuid, 'footer');
       this.SocketModule.emitProp(type, 'SNMP CONNECTION ESTABLISHED', uuid, 'status');
-      this.SocketModule.emitProp(type, 'connected', uuid, 'type');
+      this.SocketModule.emitProp(type, 'connected', uuid, 'state');
     });
 
   }

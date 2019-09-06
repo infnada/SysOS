@@ -37,12 +37,6 @@
       "@sysos/lib-application/*": [
         "projects/sysos-lib-application/*"
       ],
-      "@sysos/lib-file-system": [
-        "projects/sysos-lib-file-system/src/public-api"
-      ],
-      "@sysos/lib-file-system/*": [
-        "projects/sysos-lib-file-system/*"
-      ],
       "@sysos/lib-modal": [
         "projects/sysos-lib-modal/src/public-api"
       ],
@@ -79,11 +73,23 @@
       "@sysos/lib-file-system-ui/*": [
         "projects/sysos-lib-file-system-ui/*"
       ],
+      "@sysos/lib-file-system": [
+        "projects/sysos-lib-file-system/src/public-api"
+      ],
+      "@sysos/lib-file-system/*": [
+        "projects/sysos-lib-file-system/*"
+      ],
       "@sysos/lib-file": [
         "projects/sysos-lib-file/src/public-api"
       ],
       "@sysos/lib-file/*": [
         "projects/sysos-lib-file/*"
+      ],
+      "@sysos/lib-folder": [
+        "projects/sysos-lib-folder/src/public-api"
+      ],
+      "@sysos/lib-folder/*": [
+        "projects/sysos-lib-folder/*"
       ],
       "@sysos/lib-selectable": [
         "projects/sysos-lib-selectable/src/public-api"
@@ -192,6 +198,12 @@
       ],
       "@sysos/modal-recovery-wizard/*": [
         "projects/sysos-modal-recovery-wizard/*"
+      ],
+      "sysos-lib-folder": [
+        "dist/sysos-lib-folder"
+      ],
+      "sysos-lib-folder/*": [
+        "dist/sysos-lib-folder/*"
       ]
     }
   }

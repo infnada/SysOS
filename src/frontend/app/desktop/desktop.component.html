@@ -1,33 +1,14 @@
 <div class="desktop" cdkDropListGroup>
   <div class="col-xl-12 desktop__body">
-    <div id="desktop_body" class="folders" tabindex="0"
-         #selectableContainer
-         cdkDropList
-         (cdkDropListDropped)="UIonDropItem($event)"
-         [cdkDropListData]="'/root/Desktop'"
-         (mouseover)="setCurrentHoverApplication();"
-         (click)="handleDesktopClick($event)"
-         (keydown)="handleItemKeyPress($event)"
-         (contextmenu)="onDesktopContextMenu($event)"
-    >
 
-      <slf-sysos-lib-file *ngFor="let file of desktopFiles.currentData; index as $index" cdkDrag cdkDragBoundary=".desktop" [cdkDragData]="file" (cdkDragStarted)="onDragStart()" [application]="{id: 'file-explorer'}" [selectable]=Selectable [file]=file [isCurrentActive]="$index === currentActive" [currentPath]="desktopFiles.currentPath" [selector]="'.desktop .desktop__body'" (click)="setCurrentActive($index)"></slf-sysos-lib-file>
-
-      <div style="position: fixed"
-           [style.left]="contextMenuPosition.x"
-           [style.top]="contextMenuPosition.y"
-           [matMenuTriggerFor]="contextMenuDesktop">
-      </div>
+    <div id="desktop_body" (mouseover)="setCurrentHoverApplication();">
+      <slfolder-sysos-lib-folder
+        [application]="{id: null}"
+        [currentPath]=currentPath
+        [currentData]=currentData
+        [currentActive]=currentActive
+        [selector]="'.desktop .desktop__body'"></slfolder-sysos-lib-folder>
     </div>
-
-    <mat-menu #contextMenuDesktop="matMenu">
-      <ng-template matMenuContent>
-        <ng-container *ngFor="let item of desktopContextMenuItems">
-          <button mat-menu-item *ngIf="item.text !== 'divider'" (click)="item.action()" [disabled]="checkIfDisabled(item)" [innerHTML]="contextToText(item)"></button>
-          <mat-divider *ngIf="item.text === 'divider'"></mat-divider>
-        </ng-container>
-      </ng-template>
-    </mat-menu>
 
     <app-task-bar></app-task-bar>
 

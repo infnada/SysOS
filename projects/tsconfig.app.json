@@ -20,12 +20,6 @@
       "@sysos/lib-application/*": [
         "dist/libs/sysos-lib-application/*"
       ],
-      "@sysos/lib-file-system": [
-        "dist/libs/sysos-lib-file-system"
-      ],
-      "@sysos/lib-file-system/*": [
-        "dist/libs/sysos-lib-file-system/*"
-      ],
       "@sysos/lib-modal": [
         "dist/libs/sysos-lib-modal"
       ],
@@ -62,11 +56,23 @@
       "@sysos/lib-file-system-ui/*": [
         "dist/libs/sysos-lib-file-system-ui/*"
       ],
+      "@sysos/lib-file-system": [
+        "dist/libs/sysos-lib-file-system"
+      ],
+      "@sysos/lib-file-system/*": [
+        "dist/libs/sysos-lib-file-system/*"
+      ],
       "@sysos/lib-file": [
         "dist/libs/sysos-lib-file"
       ],
       "@sysos/lib-file/*": [
         "dist/libs/sysos-lib-file/*"
+      ],
+      "@sysos/lib-folder": [
+        "dist/libs/sysos-lib-folder"
+      ],
+      "@sysos/lib-folder/*": [
+        "dist/libs/sysos-lib-folder/*"
       ],
       "@sysos/lib-selectable": [
         "dist/libs/sysos-lib-selectable"

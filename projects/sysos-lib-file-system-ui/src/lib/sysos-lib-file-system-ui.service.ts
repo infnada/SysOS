@@ -1,10 +1,9 @@
 import {Injectable} from '@angular/core';
-import {CdkDragDrop} from '@angular/cdk/drag-drop';
 
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {ToastrService} from 'ngx-toastr';
-import {SysosLibLoggerService} from '@sysos/lib-logger';
 
+import {SysosLibLoggerService} from '@sysos/lib-logger';
 import {SysosLibModalService} from '@sysos/lib-modal';
 import {SysosLibApplicationService} from '@sysos/lib-application';
 import {SysosLibFileSystemService} from '@sysos/lib-file-system';
@@ -21,19 +20,26 @@ export class SysosLibFileSystemUiService {
   private subjectUploadFileToRemote = new Subject<any>();
   private subjectUploadFileToSysOS = new Subject<any>();
 
-  private $copyFrom: BehaviorSubject<string>;
-  private $cutFrom: BehaviorSubject<string>;
-  private dataStore: {  // This is where we will store our data in memory
-    copyFrom: string,
-    cutFrom: string
-  };
-  copyFrom: Observable<any>;
-  cutFrom: Observable<any>;
+  private $copyFile: BehaviorSubject<Object>;
+  private $cutFile: BehaviorSubject<Object>;
 
-  currentCopyCutFile: string = null;
-  currentFileDrag: string = null;
-  currentFileDragApplication: string = null;
-  currentFileDragConnectionUuid: string = null;
+  private dataStore: {  // This is where we will store our data in memory
+    copyFile: {
+      fileName: string;
+      currentPath: string;
+      fullPath: string;
+    };
+    cutFile: {
+      fileName: string;
+      currentPath: string;
+      fullPath: string;
+    };
+  };
+  copyFile: Observable<any>;
+  cutFile: Observable<any>;
+
+  currentCutCopyApplication: string = null;
+  currentCutCopyConnectionUuid: string = null;
 
   constructor(private logger: SysosLibLoggerService,
               private Toastr: ToastrService,
@@ -41,11 +47,11 @@ export class SysosLibFileSystemUiService {
               private FileSystem: SysosLibFileSystemService,
               private Applications: SysosLibApplicationService) {
 
-    this.dataStore = {copyFrom: null, cutFrom: null};
-    this.$copyFrom = new BehaviorSubject(null) as BehaviorSubject<string>;
-    this.$cutFrom = new BehaviorSubject(null) as BehaviorSubject<string>;
-    this.copyFrom = this.$copyFrom.asObservable();
-    this.cutFrom = this.$cutFrom.asObservable();
+    this.dataStore = {copyFile: null, cutFile: null};
+    this.$copyFile = new BehaviorSubject(null) as BehaviorSubject<Object>;
+    this.$cutFile = new BehaviorSubject(null) as BehaviorSubject<Object>;
+    this.copyFile = this.$copyFile.asObservable();
+    this.cutFile = this.$cutFile.asObservable();
 
   }
 
@@ -76,7 +82,7 @@ export class SysosLibFileSystemUiService {
   /**
    * Creates a new folder
    */
-  UIcreateFolder(currentPath: string, selector: string, type: string = null, data?: any) {
+  UIcreateFolder(currentPath: string, selector: string, type: string = null, data?: any): void {
     const loggerArgs = arguments;
 
     this.Modal.openRegisteredModal('input', selector,
@@ -114,7 +120,7 @@ export class SysosLibFileSystemUiService {
   /**
    * Rename file
    */
-  UIrenameFile(currentPath: string, file: { longname: string, filename: string }, selector: string, type: string = null, data?: any) {
+  UIrenameFile(currentPath: string, file: SysOSFile, selector: string, type: string = null, data?: any): void {
     const loggerArgs = arguments;
 
     this.Modal.openRegisteredModal('input', selector,
@@ -153,7 +159,7 @@ export class SysosLibFileSystemUiService {
   /**
    * Deletes selected files or folders
    */
-  UIdeleteSelected(currentPath: string, file: { longname: string, filename: string }, selector: string, type: string = null, data?: any) {
+  UIdeleteSelected(currentPath: string, file: SysOSFile, selector: string, type: string = null, data?: any): void {
     const loggerArgs = arguments;
 
     this.Modal.openRegisteredModal('question', selector,
@@ -194,7 +200,7 @@ export class SysosLibFileSystemUiService {
   /**
    * Downloads content from URL
    */
-  UIdownloadFromURL(currentPath: string, selector: string, type: string = null, data?: any) {
+  UIdownloadFromURL(currentPath: string, selector: string, type: string = null, data?: any): void {
     const loggerArgs = arguments;
 
     this.Modal.openRegisteredModal('input', selector,
@@ -236,94 +242,152 @@ export class SysosLibFileSystemUiService {
   /**
    * Paste selected files or folders
    */
-  UIpasteFile(currentPath: string, type: string = null, data?: any) {
+  UIpasteFile(currentPath: string, type: string = null, applicationId: string = null, connectionUuid: string = null, data?: any): void {
     const loggerArgs = arguments;
 
     this.logger.debug('FileSystemUI', 'UIpasteFile', loggerArgs);
 
-    if (this.dataStore.cutFrom) {
-      if (type === null || type === 'linux') {
-        return this.FileSystem.moveFile((type === null ? null : data.connection.uuid), this.dataStore.cutFrom, currentPath + this.currentCopyCutFile).subscribe(
-        () => {
-          this.refreshPath(currentPath);
-          this.dataStore.cutFrom = null;
-
-          // broadcast data to subscribers
-          this.$cutFrom.next(Object.assign({}, this.dataStore).cutFrom);
-        },
-        error => {
-          this.logger.error('FileSystemUI', 'UIpasteFile -> Error while moving file', loggerArgs, error);
-        });
-      }
-
-      data.currentPath = currentPath;
-      data.cutFrom = this.dataStore.cutFrom;
-      data.pasteTo = currentPath + this.currentCopyCutFile;
-
-      // Application specific handlers
-      if (this.moveFileHandlers[type]) this.moveFileHandlers[type].fn(data);
+    if (this.currentCutCopyApplication && applicationId && this.currentCutCopyConnectionUuid && connectionUuid && this.currentCutCopyApplication !== applicationId) {
+      this.logger.error('FileSystemUI', 'UIpasteFile -> C&P, D&D from different applications', arguments);
+      this.Toastr.error('Remote to Remote is not allowed', 'Drag&Drop');
+      return;
     }
 
-    if (this.dataStore.copyFrom) {
-      if (type === null || type === 'linux') {
-        return this.FileSystem.copyFile((type === null ? null : data.connection.uuid), this.dataStore.copyFrom, currentPath + this.currentCopyCutFile).subscribe(
-        () => {
-          this.refreshPath(currentPath);
-          this.dataStore.copyFrom = null;
+    // Do not cut/copy files to same directory
+    if (this.dataStore.cutFile && this.currentCutCopyApplication === applicationId && this.dataStore.cutFile.currentPath === currentPath) return;
+    if (this.dataStore.copyFile && this.currentCutCopyApplication === applicationId && this.dataStore.copyFile.currentPath === currentPath) return;
 
-          // broadcast data to subscribers
-          this.$copyFrom.next(Object.assign({}, this.dataStore).copyFrom);
-        },
-        error => {
-          this.logger.error('FileSystemUI', 'UIpasteFile -> Error while copying file', loggerArgs, error);
+    // Normal handler
+    if (type === null || type === 'linux') {
+
+      // Download from remote application
+      if (this.currentCutCopyConnectionUuid && !connectionUuid) {
+        console.log('download from server');
+        this.sendDownloadRemoteFile({
+          path: this.dataStore.cutFile.currentPath,
+          fileName: this.dataStore.cutFile.fileName,
+          connectionUuid: this.currentCutCopyApplication,
+          applicationId
         });
+
+        return;
+        // Always make a copy
       }
 
-      data.currentPath = currentPath;
-      data.cutFrom = this.dataStore.cutFrom;
-      data.pasteTo = currentPath + this.currentCopyCutFile;
+      // Upload to remote application
+      if (!this.currentCutCopyConnectionUuid && connectionUuid) {
+        console.log('upload to server');
+        this.sendUploadToRemote({
+          path: this.dataStore.cutFile.currentPath,
+          fileName: this.dataStore.cutFile.fileName,
+          applicationId
+        });
 
-      // Application specific handlers
-      if (this.copyFileHandlers[type]) this.copyFileHandlers[type].fn(data);
+        return;
+        // Always make a copy
+      }
+
+      if (this.dataStore.cutFile) {
+        this.FileSystem.moveFile(
+          (type === null ? null : data.connection.uuid),
+          this.dataStore.cutFile.fullPath,
+          currentPath + this.dataStore.cutFile.fileName
+        ).subscribe(
+          () => {
+            // Refresh origin and remote paths
+            this.refreshPath(this.dataStore.cutFile.currentPath);
+            this.refreshPath(currentPath);
+
+            // Reset cut & broadcast data to subscribers
+            this.dataStore.cutFile = null;
+            this.$cutFile.next(Object.assign({}, this.dataStore).cutFile);
+          },
+          error => {
+            this.logger.error('FileSystemUI', 'UIpasteFile -> Error while moving file', loggerArgs, error);
+          });
+
+        return;
+      }
+
+      if (this.dataStore.copyFile) {
+        this.FileSystem.copyFile(
+          (type === null ? null : data.connection.uuid),
+          this.dataStore.copyFile.fullPath,
+          currentPath + this.dataStore.copyFile.fileName
+        ).subscribe(
+          () => {
+            // Refresh remote path
+            this.refreshPath(currentPath);
+
+            // Reset copy & broadcast data to subscribers
+            this.dataStore.copyFile = null;
+            this.$copyFile.next(Object.assign({}, this.dataStore).copyFile);
+          },
+          error => {
+            this.logger.error('FileSystemUI', 'UIpasteFile -> Error while copying file', loggerArgs, error);
+          });
+
+        return;
+      }
     }
+
+    // Application specific handlers
+    data.cutFrom = this.dataStore.cutFile;
+    data.copyFrom = this.dataStore.copyFile;
+    data.pasteTo = currentPath;
+
+    if (this.dataStore.cutFile && this.moveFileHandlers[type]) return this.moveFileHandlers[type].fn(data);
+    if (this.dataStore.copyFile && this.copyFileHandlers[type]) return this.copyFileHandlers[type].fn(data);
   }
 
   /**
    * Copy File
    */
-  UIcopyFile(currentPath: string, file: { longname: string, filename: string }) {
+  UIcopyFile(currentPath: string, file: SysOSFile, applicationId: string = null, connectionUuid: string = null): void {
     this.logger.debug('FileSystemUI', 'UIcopyFile', arguments);
 
-    this.dataStore.cutFrom = null;
-    this.dataStore.copyFrom = currentPath + file.filename;
-    this.currentCopyCutFile = file.filename;
+    this.dataStore.cutFile = null;
+    this.dataStore.copyFile = {
+      fileName: file.filename,
+      currentPath,
+      fullPath: currentPath + file.filename
+    };
 
     // broadcast data to subscribers
-    this.$cutFrom.next(Object.assign({}, this.dataStore).cutFrom);
-    this.$copyFrom.next(Object.assign({}, this.dataStore).copyFrom);
+    this.$cutFile.next(Object.assign({}, this.dataStore).cutFile);
+    this.$copyFile.next(Object.assign({}, this.dataStore).copyFile);
 
   }
 
   /**
    * Cut file
    */
-  UIcutFile(currentPath: string, file: { longname: string, filename: string }) {
+  UIcutFile(currentPath: string, file: SysOSFile, applicationId: string = null, connectionUuid: string = null): void {
     this.logger.debug('FileSystemUI', 'UIcutFile', arguments);
 
-    this.dataStore.copyFrom = null;
-    this.dataStore.cutFrom = currentPath + file.filename;
-    this.currentCopyCutFile = file.filename;
+    this.currentCutCopyApplication = applicationId;
+    this.currentCutCopyConnectionUuid = connectionUuid;
+
+    this.dataStore.copyFile = null;
+    this.dataStore.cutFile = {
+      fileName: file.filename,
+      currentPath,
+      fullPath: currentPath + file.filename
+    };
 
     // broadcast data to subscribers
-    this.$copyFrom.next(Object.assign({}, this.dataStore).copyFrom);
-    this.$cutFrom.next(Object.assign({}, this.dataStore).cutFrom);
+    this.$copyFile.next(Object.assign({}, this.dataStore).copyFile);
+    this.$cutFile.next(Object.assign({}, this.dataStore).cutFile);
   }
 
   /**
    * Checks if is a file or folder and do something
    */
-  UIdoWithFile(applicationId: string, currentPath: string, file: { longname: string, filename: string }) {
+  UIdoWithFile(applicationId: string, currentPath: string, file: SysOSFile): void {
     const loggerArgs = arguments;
+
+    // Rewrite desktop folders to open file-explorer when clicking on it
+    if (applicationId === null) applicationId = 'file-explorer';
 
     let realApplication = applicationId;
     const filetype = this.FileSystem.getFileType(file.longname);
@@ -368,71 +432,6 @@ export class SysosLibFileSystemUiService {
     }
   }
 
-  /**
-   * When dragging a file
-   */
-  setCurrentFileDrag(path: string, applicationId?: string, connectionUuid?: string): void {
-    this.currentFileDrag = path;
-    this.currentFileDragApplication = (applicationId ? applicationId : null);
-    this.currentFileDragConnectionUuid = (connectionUuid ? connectionUuid : null);
-  }
-
-  /**
-   * When dropping a dragged file
-   */
-  UIonDropItem(applicationId: string, $event: CdkDragDrop<any>, dropPath: string, connectionUuid?: string): void {
-    const loggerArgs = arguments;
-
-    // Download from remote application
-    if (this.currentFileDragApplication && !connectionUuid) {
-      console.log('download from server');
-      this.sendDownloadRemoteFile({
-        path: this.currentFileDrag,
-        file: $event.item.data,
-        connectionUuid: this.currentFileDragConnectionUuid,
-        applicationId
-      });
-
-      return;
-    }
-
-    // Upload to remote application
-    if (!this.currentFileDragApplication && connectionUuid) {
-      console.log('upload to server');
-      this.sendUploadToRemote({
-        path: this.currentFileDrag,
-        file: $event.item.data,
-        applicationId
-      });
-
-      return;
-    }
-
-    if (this.currentFileDragApplication && applicationId && this.currentFileDragApplication !== applicationId) {
-      this.logger.error('FileSystemUI', 'UIonDropItem -> D&D from different applications', arguments);
-      this.Toastr.error('Remote to Remote is not allowed', 'Drag&Drop');
-      return;
-    }
-
-    // Do not move files to same directory
-    if (this.currentFileDrag === dropPath) return;
-
-    // D&D from/to same applications or local/local
-    // TODO remote application
-    this.FileSystem.moveFile(connectionUuid,
-      this.currentFileDrag + $event.item.data.filename,
-      dropPath + $event.item.data.filename
-    ).subscribe(
-      () => {
-
-        this.refreshPath(this.currentFileDrag);
-        this.refreshPath(dropPath);
-      },
-      error => {
-        this.logger.error('FileSystemUI', 'UIonDropItem -> Error while moving file', loggerArgs, error);
-      });
-  }
-
   refreshPath(path: string): void {
     this.subjectRefreshPath.next(path);
   }
@@ -452,7 +451,7 @@ export class SysosLibFileSystemUiService {
     return this.subjectGoToPath.asObservable();
   }
 
-  sendDownloadRemoteFile(data: { path: string, file: SysOSFile, connectionUuid: string, applicationId: string }): void {
+  sendDownloadRemoteFile(data: { path: string, fileName: string, connectionUuid: string, applicationId: string }): void {
     this.subjectDownloadRemoteFile.next(data);
   }
 
@@ -460,7 +459,7 @@ export class SysosLibFileSystemUiService {
     return this.subjectDownloadRemoteFile.asObservable();
   }
 
-  sendUploadToRemote(data: { path: string, file: SysOSFile, applicationId: string }): void {
+  sendUploadToRemote(data: { path: string, fileName: string, applicationId: string }): void {
     this.subjectUploadFileToRemote.next(data);
   }
 

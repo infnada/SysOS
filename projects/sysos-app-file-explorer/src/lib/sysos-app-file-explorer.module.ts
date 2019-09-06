@@ -4,11 +4,11 @@ import {FormsModule} from '@angular/forms';
 import {MatMenuModule, MatDividerModule} from '@angular/material';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 
-import {FilterPipeModule} from 'ngx-filter-pipe';
 import {ngfModule} from 'angular-file';
 
 import {SysosLibApplicationService} from '@sysos/lib-application';
 import {SysosLibFileModule} from '@sysos/lib-file';
+import {SysosLibFolderModule} from '@sysos/lib-folder';
 
 import {BodyComponent} from './body/body.component';
 import {MenuComponent} from './menu/menu.component';
@@ -23,13 +23,13 @@ import {ActionsBodyComponent} from './actions/actions-body/actions-body.componen
   imports: [
     CommonModule,
     FormsModule,
-    FilterPipeModule,
     MatMenuModule,
     MatDividerModule,
     DragDropModule,
     ngfModule,
     // Shared module import
-    SysosLibFileModule
+    SysosLibFileModule,
+    SysosLibFolderModule
   ],
   exports: []
 })

@@ -2,7 +2,6 @@ import {Component, OnInit, Input, ViewChild, ElementRef, AfterViewInit} from '@a
 import {MatMenuTrigger} from '@angular/material';
 
 import {SysosLibSelectableService} from '@sysos/lib-selectable';
-
 import {SysosLibFileSystemService} from '@sysos/lib-file-system';
 import {SysosLibFileSystemUiService} from '@sysos/lib-file-system-ui';
 
@@ -24,7 +23,7 @@ export class SysosLibFileComponent implements OnInit, AfterViewInit {
   @Input() application: Application;
   // Some applications like SFTP, DatastoreBrowser have 2 file windows. We use this value to know which window this file belongs
   @Input() subApplication: string;
-  @Input() connection: null|IMConnection|SftpConnection|DatastoreExplorerConnection = null;
+  @Input() connection: IMConnection = null;
   @Input() uploadAllowed: boolean = false;
   @Input() selectable: SysosLibSelectableService;
   @Input() isCurrentActive: boolean;
@@ -141,17 +140,17 @@ export class SysosLibFileComponent implements OnInit, AfterViewInit {
   }
 
   UIcopyFile(file: SysOSFile): void {
-    this.FileSystemUi.UIcopyFile(this.currentPath, file);
+    this.FileSystemUi.UIcopyFile(this.currentPath, file, `${this.application.id + (this.subApplication ? '#' + this.subApplication : '')}`, (this.connection ? this.connection.uuid : null));
   }
 
   UIcutFile(file: SysOSFile): void {
-    this.FileSystemUi.UIcutFile(this.currentPath, file);
+    this.FileSystemUi.UIcutFile(this.currentPath, file, `${this.application.id + (this.subApplication ? '#' + this.subApplication : '')}`, (this.connection ? this.connection.uuid : null));
   }
 
   UIdownloadFileToSysOS(file: SysOSFile): void {
     this.FileSystemUi.sendDownloadRemoteFile({
       path: this.currentPath,
-      file,
+      fileName: file.filename,
       connectionUuid: this.connection.uuid,
       applicationId: this.application.id
     });
@@ -164,7 +163,7 @@ export class SysosLibFileComponent implements OnInit, AfterViewInit {
   UIuploadFileToRemote(file: SysOSFile): void {
     this.FileSystemUi.sendUploadToRemote({
       path: this.currentPath,
-      file,
+      fileName: file.filename,
       applicationId: this.application.id
     });
   }

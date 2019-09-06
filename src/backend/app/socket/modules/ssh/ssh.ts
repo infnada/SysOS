@@ -24,7 +24,7 @@ export class SshSocketModule {
     logger.info(`[Socket SSH] -> closeOnError -> type [${type}], uuid [${uuid}], [${err}]`);
     // sshSession.closeSession(type, uuid);
     this.SocketModule.emitProp(type, err, uuid, 'status');
-    // this.SocketModule.emitProp(type, 'disconnected', uuid, 'type');
+    // this.SocketModule.emitProp(type, 'disconnected', uuid, 'state');
   }
 
   newConnection(type: string, uuid: string, host: string, port: number, username: string, password: string): void {
@@ -63,7 +63,7 @@ export class SshSocketModule {
           }, (err, stream) => {
             if (err) return this.closeOnError(type, err, uuid);
 
-            this.SocketModule.emitProp(type, 'connected', uuid, 'type');
+            this.SocketModule.emitProp(type, 'connected', uuid, 'state');
             this.socket.on('ssh_session__geometry', (data) => stream.setWindow(data.rows, data.cols));
             this.socket.on('ssh_session__data', (data) => {
               if (data.uuid !== uuid) return;
@@ -92,7 +92,7 @@ export class SshSocketModule {
 
             session.sftpSession = sftp;
 
-            this.SocketModule.emitProp(type, 'connected', uuid, 'type');
+            this.SocketModule.emitProp(type, 'connected', uuid, 'state');
 
             sftp.readdir('/', (e, data) => {
               if (e) return this.closeOnError(type, e, uuid);
@@ -185,7 +185,7 @@ export class SshSocketModule {
          * SMANAGER
          */
         } else if (type === 'smanager') {
-          this.SocketModule.emitProp(type, 'connected', uuid, 'type');
+          this.SocketModule.emitProp(type, 'connected', uuid, 'state');
         }
       });
     });
@@ -199,7 +199,7 @@ export class SshSocketModule {
         sessions.sftp.forEach((session: any) => session.end());
       });
     } else {
-      this.SocketModule.emitProp(type, 'disconnected', uuid, 'type');
+      this.SocketModule.emitProp(type, 'disconnected', uuid, 'state');
       this.SshSessionsModule.closeSession(type, uuid);
     }
   }

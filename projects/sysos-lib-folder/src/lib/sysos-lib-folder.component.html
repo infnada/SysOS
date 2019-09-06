@@ -1,0 +1,71 @@
+<div class="folders" tabindex="0"
+     #selectableContainer
+     cdkDropList
+     (cdkDropListDropped)="UIonDropItem()"
+     (click)="handleFolderClick($event)"
+     (keydown)="handleItemKeyPress($event)"
+     (contextmenu)="onFolderContextMenu($event)"
+>
+
+  <ng-container *ngIf="viewAsList === false">
+    <slf-sysos-lib-file *ngFor="let file of currentData | filterBy: search; index as $index"
+                        cdkDrag
+                        cdkDragBoundary=".desktop"
+                        [cdkDragData]=file
+                        (cdkDragStarted)="onDragStart($event)"
+                        [application]=application
+                        [subApplication]=subApplication
+                        [viewAsList]=viewAsList
+                        [selectable]=Selectable
+                        [file]=file
+                        [isCurrentActive]="$index === currentActive"
+                        [currentPath]=currentPath
+                        [selector]=selector
+                        (click)="setCurrentActive($index)"></slf-sysos-lib-file>
+  </ng-container>
+
+  <ng-container *ngIf="viewAsList === true">
+    <table class="table table-hover">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Size</th>
+        <th>Type</th>
+      </tr>
+      </thead>
+      <tbody>
+
+      <slf-sysos-lib-file *ngFor="let file of currentData | filterBy: search; index as $index"
+                          cdkDrag
+                          cdkDragBoundary=".desktop"
+                          [cdkDragData]=file
+                          (cdkDragStarted)="onDragStart()"
+                          [application]=application
+                          [subApplication]=subApplication
+                          [viewAsList]=viewAsList
+                          [selectable]=Selectable
+                          [file]=file
+                          [isCurrentActive]="$index === currentActive"
+                          [currentPath]=currentPath
+                          [selector]=selector
+                          (click)="setCurrentActive($index)"></slf-sysos-lib-file>
+
+      </tbody>
+    </table>
+  </ng-container>
+
+  <div style="position: fixed"
+       [style.left]="contextMenuPosition.x"
+       [style.top]="contextMenuPosition.y"
+       [matMenuTriggerFor]="contextMenuFolder">
+  </div>
+</div>
+
+<mat-menu #contextMenuFolder="matMenu">
+  <ng-template matMenuContent>
+    <ng-container *ngFor="let item of folderContextMenuItems">
+      <button mat-menu-item *ngIf="item.text !== 'divider'" (click)="item.action()" [disabled]="checkIfDisabled(item)" [innerHTML]="contextToText(item)"></button>
+      <mat-divider *ngIf="item.text === 'divider'"></mat-divider>
+    </ng-container>
+  </ng-template>
+</mat-menu>

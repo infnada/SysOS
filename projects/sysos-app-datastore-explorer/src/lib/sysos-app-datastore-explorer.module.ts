@@ -10,6 +10,7 @@ import {ToastrModule} from 'ngx-toastr';
 
 import {SysosLibApplicationService} from '@sysos/lib-application';
 import {SysosLibFileModule} from '@sysos/lib-file';
+import {SysosLibFolderModule} from '@sysos/lib-folder';
 
 import {ActionsComponent} from './actions/actions.component';
 import {ActionsLocalComponent} from './actions/actions-local/actions-local.component';
@@ -48,6 +49,7 @@ import {StatusComponent} from './status/status.component';
     ngfModule,
     ToastrModule.forRoot(),
     // Shared module import
+    SysosLibFolderModule,
     SysosLibFileModule
   ],
   exports: []

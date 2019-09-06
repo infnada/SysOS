@@ -41,6 +41,7 @@ import {NotesComponent} from './body/body-vmware/notes/notes.component';
 import {RelatedObjectsComponent} from './body/body-vmware/related-objects/related-objects.component';
 import {CustomAttributesComponent} from './body/body-vmware/custom-attributes/custom-attributes.component';
 import {VmStoragePoliciesComponent} from './body/body-vmware/vm-storage-policies/vm-storage-policies.component';
+import {SysosAppInfrastructureNetappService} from "./services/sysos-app-infrastructure-netapp.service";
 
 @NgModule({
   declarations: [
@@ -86,7 +87,8 @@ export class SysosAppInfrastructureManagerModule {
   constructor(private serviceInjector: SysosLibServiceInjectorService,
               private Applications: SysosLibApplicationService,
               private InfrastructureManager: SysosAppInfrastructureManagerService,
-              private InfrastructureVmwareService: SysosAppInfrastructureVmwareService) {
+              private InfrastructureVmwareService: SysosAppInfrastructureVmwareService,
+              private InfrastructureNetAppService: SysosAppInfrastructureNetappService) {
 
     this.serviceInjector.set('SysosAppInfrastructureManagerService', this.InfrastructureManager);
     this.serviceInjector.set('SysosAppInfrastructureVmwareService', this.InfrastructureVmwareService);
@@ -104,5 +106,6 @@ export class SysosAppInfrastructureManagerModule {
     this.InfrastructureManager.initConnections();
     this.InfrastructureManager.initLinksMap();
     this.InfrastructureVmwareService.registerFileSystemUiHandlers();
+    this.InfrastructureNetAppService.registerFileSystemUiHandlers();
   }
 }

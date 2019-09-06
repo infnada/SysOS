@@ -30,7 +30,7 @@
 
       <safe-actions-body [application]="application"></safe-actions-body>
 
-      <div id="local_body" class="folders" #selectableContainer cdkDropList (cdkDropListDropped)="UIonDropItem($event)" (click)="handleBodyClick($event)" tabindex="0" (keydown)="handleItemKeyPress($event)" (contextmenu)="onBodyContextMenu($event)">
+      <div id="local_body">
 
         <ngfUploadStatus
           [(percent)] = "progress"
@@ -43,41 +43,14 @@
           Drop files here (from local system) or click to upload.
         </div>
 
-        <ng-container *ngIf="viewAsList === false">
-          <slf-sysos-lib-file *ngFor="let file of currentData | filterBy: search; index as $index" cdkDrag cdkDragBoundary=".desktop" [cdkDragData]="file" (cdkDragStarted)="onDragStart()" [application]="application" [viewAsList]="viewAsList" [selectable]=Selectable [file]=file [isCurrentActive]="$index === currentActive" [currentPath]="currentPath" [selector]="'.window--file-explorer .window__main'" (click)="setCurrentActive($index)"></slf-sysos-lib-file>
-        </ng-container>
-
-        <ng-container *ngIf="viewAsList === true">
-          <table class="table table-hover">
-            <thead>
-            <tr>
-              <th>Name</th>
-              <th>Size</th>
-              <th>Type</th>
-            </tr>
-            </thead>
-            <tbody>
-
-            <slf-sysos-lib-file *ngFor="let file of currentData | filterBy: search; index as $index" cdkDrag cdkDragBoundary=".desktop" [cdkDragData]="file" (cdkDragStarted)="onDragStart()" [application]="application" [viewAsList]="viewAsList" [selectable]=Selectable [file]=file [isCurrentActive]="$index === currentActive" [currentPath]="currentPath" [selector]="'.window--file-explorer .window__main'" (click)="setCurrentActive($index)"></slf-sysos-lib-file>
-
-            </tbody>
-          </table>
-        </ng-container>
-
-        <div style="position: fixed"
-             [style.left]="contextMenuPosition.x"
-             [style.top]="contextMenuPosition.y"
-             [matMenuTriggerFor]="contextMenuBody">
-        </div>
-
-        <mat-menu #contextMenuBody="matMenu">
-          <ng-template matMenuContent>
-            <ng-container *ngFor="let item of bodyContextMenuItems">
-              <button mat-menu-item *ngIf="item.text !== 'divider'" (click)="item.action()" [disabled]="checkIfDisabled(item)" [innerHTML]="contextToText(item)"></button>
-              <mat-divider *ngIf="item.text === 'divider'"></mat-divider>
-            </ng-container>
-          </ng-template>
-        </mat-menu>
+        <slfolder-sysos-lib-folder
+          [application]=application
+          [currentPath]=currentPath
+          [currentData]=currentData
+          [currentActive]=currentActive
+          [selector]="'.window--file-explorer .window__main'"
+          [viewAsList]=viewAsList
+          [search]=search></slfolder-sysos-lib-folder>
 
       </div>
     </div>

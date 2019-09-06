@@ -6,6 +6,7 @@ import {ToastrService} from 'ngx-toastr';
 import {SysosLibModalService} from '@sysos/lib-modal';
 import {SysosLibNetappService} from '@sysos/lib-netapp';
 import {SysosLibVmwareService} from '@sysos/lib-vmware';
+import {SysosLibFileSystemUiService} from "@sysos/lib-file-system-ui";
 
 import {SysosAppInfrastructureManagerService} from './sysos-app-infrastructure-manager.service';
 import {SysosAppInfrastructureVmwareService} from './sysos-app-infrastructure-vmware.service';
@@ -23,6 +24,7 @@ export class SysosAppInfrastructureNetappService {
   constructor(private logger: SysosLibLoggerService,
               private Toastr: ToastrService,
               private Modal: SysosLibModalService,
+              private FileSystemUi: SysosLibFileSystemUiService,
               private NetApp: SysosLibNetappService,
               private VMWare: SysosLibVmwareService,
               private InfrastructureManager: SysosAppInfrastructureManagerService,
@@ -765,5 +767,92 @@ export class SysosAppInfrastructureNetappService {
       vm
     });
 
+  }
+
+  registerFileSystemUiHandlers(): void {
+    this.FileSystemUi.createHandler('folder', 'netapp', (data) => {
+      this.Modal.openLittleModal('PLEASE WAIT', 'Creating folder...', data.selector, 'plain').then(() => {
+
+        return this.VMWare.MakeDirectory(
+          data.connection,
+          data.connection.name,
+          data.currentPath + data.name,
+          {$type: 'Datacenter', _value: data.connection.datacenter},
+          true
+        );
+
+      }).then((createFolderResult) => {
+        if (createFolderResult.status === 'error') throw {error: createFolderResult.error, description: 'Failed to create folder to VMWare'};
+
+        this.Modal.closeModal(data.selector);
+
+        this.FileSystemUi.refreshPath(data.currentPath);
+      }).catch((e) => {
+        this.logger.error('Infrastructure Manager', 'createFolderToDatastore', null, e.description);
+
+        this.Modal.changeModalType('danger', data.selector);
+        this.Modal.changeModalText(e.description, data.selector);
+
+        throw e;
+      });
+    });
+
+    this.FileSystemUi.createHandler('rename', 'netapp', (data) => {
+      this.Modal.openLittleModal('PLEASE WAIT', 'Moving file...', data.selector, 'plain').then(() => {
+
+        return this.VMWare.MoveDatastoreFile_Task(
+          data.connection,
+          data.connection.name,
+          data.currentPath + data.file.filename, // original file name
+          {$type: 'Datacenter', _value: data.connection.datacenter},
+          data.connection.name,
+          data.currentPath + data.name, // new file name
+          {$type: 'Datacenter', _value: data.connection.datacenter},
+          false,
+          true
+        );
+
+      }).then((renameFileResult) => {
+        if (renameFileResult.status === 'error') throw {error: renameFileResult.error, description: 'Failed to rename file to VMWare'};
+
+        this.Modal.closeModal(data.selector);
+
+        this.FileSystemUi.refreshPath(data.currentPath);
+      }).catch((e) => {
+        this.logger.error('Infrastructure Manager', 'moveFileFromDatastore', null, e.description);
+
+        this.Modal.changeModalType('danger', data.selector);
+        this.Modal.changeModalText(e.description, data.selector);
+
+        throw e;
+      });
+    });
+
+    this.FileSystemUi.createHandler('delete', 'netapp', (data) => {
+      this.Modal.openLittleModal('PLEASE WAIT', 'Deleting file...', data.selector, 'plain').then(() => {
+
+        return this.VMWare.DeleteDatastoreFile_Task(
+          data.connection,
+          data.connection.name,
+          data.currentPath + data.file.filename,
+          {$type: 'Datacenter', _value: data.connection.datacenter},
+          true
+        );
+
+      }).then((deleteFileResult) => {
+        if (deleteFileResult.status === 'error') throw {error: deleteFileResult.error, description: 'Failed to delete file to VMWare'};
+
+        this.Modal.closeModal(data.selector);
+
+        this.FileSystemUi.refreshPath(data.currentPath);
+      }).catch((e) => {
+        this.logger.error('Infrastructure Manager', 'deleteFileFromDatastore', null, e.description);
+
+        this.Modal.changeModalType('danger', data.selector);
+        this.Modal.changeModalText(e.description, data.selector);
+
+        throw e;
+      });
+    });
   }
 }

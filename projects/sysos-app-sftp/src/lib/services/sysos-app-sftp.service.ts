@@ -1,11 +1,11 @@
 import {Injectable} from '@angular/core';
 
 import {BehaviorSubject, Observable} from 'rxjs';
-import {SysosLibLoggerService} from '@sysos/lib-logger';
 import {Socket} from 'ngx-socket-io';
 import {ToastrService} from 'ngx-toastr';
 import {v4 as uuidv4} from 'uuid';
 
+import {SysosLibLoggerService} from '@sysos/lib-logger';
 import {SysosLibModalService} from '@sysos/lib-modal';
 import {SysosLibFileSystemService} from '@sysos/lib-file-system';
 
@@ -104,10 +104,8 @@ export class SysosAppSftpService {
       this.dataStore.connections[currentConnectionIndex] = connection;
 
     } else {
-      connection.uuid = uuidv4();
-
-      this.dataStore.connections.push({
-        uuid: connection.uuid,
+      connection = {
+        uuid: uuidv4(),
         host: connection.host,
         port: connection.port,
         description: connection.description,
@@ -116,7 +114,9 @@ export class SysosAppSftpService {
         save: connection.save,
         type: 'linux',
         state: 'disconnected'
-      });
+      };
+
+      this.dataStore.connections.push(connection);
     }
 
     // broadcast data to subscribers

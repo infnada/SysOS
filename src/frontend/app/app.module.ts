@@ -19,6 +19,7 @@ import * as NgxSocketIoService from 'ngx-socket-io/src/socket-io.service';
 import * as angularFile from 'angular-file';
 import * as uuid from 'uuid';
 import * as SysOSLibApplications from '@sysos/lib-application';
+import * as SysOSLibFolder from '@sysos/lib-folder';
 import * as SysOSLibFile from '@sysos/lib-file';
 import * as SysOSLibFileSystem from '@sysos/lib-file-system';
 import * as SysOSLibFileSystemUi from '@sysos/lib-file-system-ui';
@@ -53,6 +54,7 @@ SystemJS.set('angular-file', SystemJS.newModule(angularFile));
 SystemJS.set('uuid', SystemJS.newModule(uuid));
 SystemJS.set('lodash', SystemJS.newModule(_));
 SystemJS.set('@sysos/lib-application', SystemJS.newModule(SysOSLibApplications));
+SystemJS.set('@sysos/lib-folder', SystemJS.newModule(SysOSLibFolder));
 SystemJS.set('@sysos/lib-file', SystemJS.newModule(SysOSLibFile));
 SystemJS.set('@sysos/lib-file-system', SystemJS.newModule(SysOSLibFileSystem));
 SystemJS.set('@sysos/lib-file-system-ui', SystemJS.newModule(SysOSLibFileSystemUi));
@@ -88,6 +90,7 @@ import {OrderModule} from 'ngx-order-pipe';
 import {MonacoEditorModule} from 'ngx-monaco-editor'; // this is an application required module...
 
 import {SysosLibFileModule} from '@sysos/lib-file';
+import {SysosLibFolderModule} from '@sysos/lib-folder';
 import {SysosLibApplicationModule} from '@sysos/lib-application';
 import {SysosLibSelectableService} from '@sysos/lib-selectable';
 import {SysosLibServiceInjectorModule} from '@sysos/lib-service-injector';
@@ -143,6 +146,7 @@ export function createCompiler(fn: CompilerFactory): Compiler {
     OrderModule,
     SysosLibApplicationModule,
     SysosLibFileModule,
+    SysosLibFolderModule,
     SysosLibServiceInjectorModule,
     SysosLibLoggerModule,
 
