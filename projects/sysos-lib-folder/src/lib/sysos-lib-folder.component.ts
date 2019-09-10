@@ -169,12 +169,21 @@ export class SysosLibFolderComponent implements OnInit, AfterViewInit {
    * On file dragstart
    */
   onDragStart($event: CdkDragStart): void {
-    console.log($event);
-    this.FileSystemUi.UIcutFile(this.currentPath, $event.source.data, `${this.application.id + (this.subApplication ? '#' + this.subApplication : '')}`, (this.connection ? this.connection.uuid : null));
+    this.FileSystemUi.UIcutFile(
+      this.currentPath,
+      $event.source.data,
+      `${this.application.id + (this.subApplication ? '#' + this.subApplication : '')}`,
+      (this.connection ? this.connection.uuid : null)
+    );
   }
 
   UIonDropItem(): void {
-    this.FileSystemUi.UIpasteFile(this.currentPath, (this.connection ? this.connection.type : null), `${this.application.id + (this.subApplication ? '#' + this.subApplication : '')}`, (this.connection ? this.connection.uuid : null));
+    this.FileSystemUi.UIpasteFile(
+      this.currentPath,
+      (this.connection ? this.connection.type : null),
+      `${this.application.id + (this.subApplication ? '#' + this.subApplication : '')}`,
+      (this.connection ? this.connection.uuid : null)
+    );
   }
 
   UIdownloadFromURL(): void {

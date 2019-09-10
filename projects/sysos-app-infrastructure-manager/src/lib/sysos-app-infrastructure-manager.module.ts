@@ -29,6 +29,7 @@ import {StatusComponent} from './status/status.component';
 
 import {SysosAppInfrastructureManagerService} from './services/sysos-app-infrastructure-manager.service';
 import {SysosAppInfrastructureVmwareService} from './services/sysos-app-infrastructure-vmware.service';
+import {SysosAppInfrastructureNetappService} from './services/sysos-app-infrastructure-netapp.service';
 import {BodyVmwareComponent} from './body/body-vmware/body-vmware.component';
 import {BodyNetappComponent} from './body/body-netapp/body-netapp.component';
 import {BodyNetappVserverComponent} from './body/body-netapp-vserver/body-netapp-vserver.component';
@@ -41,7 +42,6 @@ import {NotesComponent} from './body/body-vmware/notes/notes.component';
 import {RelatedObjectsComponent} from './body/body-vmware/related-objects/related-objects.component';
 import {CustomAttributesComponent} from './body/body-vmware/custom-attributes/custom-attributes.component';
 import {VmStoragePoliciesComponent} from './body/body-vmware/vm-storage-policies/vm-storage-policies.component';
-import {SysosAppInfrastructureNetappService} from "./services/sysos-app-infrastructure-netapp.service";
 
 @NgModule({
   declarations: [

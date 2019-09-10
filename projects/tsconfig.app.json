@@ -86,6 +86,30 @@
       "@sysos/lib-service-injector/*": [
         "dist/libs/sysos-lib-service-injector/*"
       ],
+      "@sysos/lib-ext-dygraphs": [
+        "dist/libs/sysos-lib-ext-dygraphs"
+      ],
+      "@sysos/lib-ext-dygraphs/*": [
+        "dist/libs/sysos-lib-ext-dygraphs/*"
+      ],
+      "@sysos/lib-ext-easypiechart": [
+        "dist/libs/sysos-lib-ext-easypiechart"
+      ],
+      "@sysos/lib-ext-easypiechart/*": [
+        "dist/libs/sysos-lib-ext-easypiechart/*"
+      ],
+      "@sysos/lib-ext-gaugejs": [
+        "dist/libs/sysos-lib-ext-gaugejs"
+      ],
+      "@sysos/lib-ext-gaugejs/*": [
+        "dist/libs/sysos-lib-ext-gaugejs/*"
+      ],
+      "@sysos/lib-ext-jquery": [
+        "dist/libs/sysos-lib-ext-jquery"
+      ],
+      "@sysos/lib-ext-jquery/*": [
+        "dist/libs/sysos-lib-ext-jquery/*"
+      ],
       "@sysos/app-backups-manager": [
         "dist/applications/sysos-app-backups-manager"
       ],
@@ -115,6 +139,12 @@
       ],
       "@sysos/app-infrastructure-manager/*": [
         "dist/applications/sysos-app-infrastructure-manager/*"
+      ],
+      "@sysos/app-monitor": [
+        "dist/applications/sysos-app-monitor"
+      ],
+      "@sysos/app-monitor/*": [
+        "dist/applications/sysos-app-monitor/*"
       ],
       "@sysos/app-notepad": [
         "dist/applications/sysos-app-notepad"

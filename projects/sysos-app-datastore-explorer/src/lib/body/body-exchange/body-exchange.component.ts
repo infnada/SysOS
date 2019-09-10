@@ -43,7 +43,7 @@ export class BodyExchangeComponent implements OnInit {
 
     // Watcher sent by FileComponent
     this.downloadRemoteFileSubscription = this.FileSystemUi.getObserverDownloadRemoteFile().subscribe((data) => {
-      if (data.applicationId === 'datastore-explorer') {
+      if (data.applicationId === 'datastore-explorer#server') {
         this.filesExchange.push({
           uuid: data.connectionUuid,
           name: data.file.filename,

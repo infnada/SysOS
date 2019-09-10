@@ -13,6 +13,7 @@ import remoteFolder from './api/remote-folder';
 import credential from './api/credential';
 import netapp from './api/netapp';
 import vmware from './api/vmware';
+import monitor from './api/monitor';
 
 const config = readConfig(path.join(__dirname, '../filesystem/etc/expressjs/config.json'));
 const logger = getLogger('mainlog');
@@ -94,6 +95,7 @@ export class RoutesModule {
     this.app.use('/api/credential/', credential);
     this.app.use('/api/netapp/', netapp);
     this.app.use('/api/vmware/', vmware);
+    this.app.use('/api/monitor/', monitor);
 
     // upload & download called from socket.io
     /*

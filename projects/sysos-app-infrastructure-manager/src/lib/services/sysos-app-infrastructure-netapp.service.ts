@@ -6,7 +6,7 @@ import {ToastrService} from 'ngx-toastr';
 import {SysosLibModalService} from '@sysos/lib-modal';
 import {SysosLibNetappService} from '@sysos/lib-netapp';
 import {SysosLibVmwareService} from '@sysos/lib-vmware';
-import {SysosLibFileSystemUiService} from "@sysos/lib-file-system-ui";
+import {SysosLibFileSystemUiService} from '@sysos/lib-file-system-ui';
 
 import {SysosAppInfrastructureManagerService} from './sysos-app-infrastructure-manager.service';
 import {SysosAppInfrastructureVmwareService} from './sysos-app-infrastructure-vmware.service';

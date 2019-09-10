@@ -39,7 +39,7 @@
                           cdkDrag
                           cdkDragBoundary=".desktop"
                           [cdkDragData]=file
-                          (cdkDragStarted)="onDragStart()"
+                          (cdkDragStarted)="onDragStart($event)"
                           [application]=application
                           [subApplication]=subApplication
                           [viewAsList]=viewAsList

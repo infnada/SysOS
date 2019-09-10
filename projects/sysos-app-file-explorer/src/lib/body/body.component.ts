@@ -37,7 +37,6 @@ export class BodyComponent implements OnInit {
   httpEvent: HttpEvent<{}>;
 
   constructor(private logger: SysosLibLoggerService,
-              public Selectable: SysosLibSelectableService,
               private FileSystem: SysosLibFileSystemService,
               private FileSystemUi: SysosLibFileSystemUiService,
               private Applications: SysosLibApplicationService,

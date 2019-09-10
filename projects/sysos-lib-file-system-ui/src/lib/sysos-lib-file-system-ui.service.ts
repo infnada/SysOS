@@ -20,8 +20,8 @@ export class SysosLibFileSystemUiService {
   private subjectUploadFileToRemote = new Subject<any>();
   private subjectUploadFileToSysOS = new Subject<any>();
 
-  private $copyFile: BehaviorSubject<Object>;
-  private $cutFile: BehaviorSubject<Object>;
+  private $copyFile: BehaviorSubject<object>;
+  private $cutFile: BehaviorSubject<object>;
 
   private dataStore: {  // This is where we will store our data in memory
     copyFile: {
@@ -48,8 +48,8 @@ export class SysosLibFileSystemUiService {
               private Applications: SysosLibApplicationService) {
 
     this.dataStore = {copyFile: null, cutFile: null};
-    this.$copyFile = new BehaviorSubject(null) as BehaviorSubject<Object>;
-    this.$cutFile = new BehaviorSubject(null) as BehaviorSubject<Object>;
+    this.$copyFile = new BehaviorSubject(null) as BehaviorSubject<object>;
+    this.$cutFile = new BehaviorSubject(null) as BehaviorSubject<object>;
     this.copyFile = this.$copyFile.asObservable();
     this.cutFile = this.$cutFile.asObservable();
 
@@ -262,12 +262,11 @@ export class SysosLibFileSystemUiService {
 
       // Download from remote application
       if (this.currentCutCopyConnectionUuid && !connectionUuid) {
-        console.log('download from server');
         this.sendDownloadRemoteFile({
-          path: this.dataStore.cutFile.currentPath,
-          fileName: this.dataStore.cutFile.fileName,
-          connectionUuid: this.currentCutCopyApplication,
-          applicationId
+          path: (this.dataStore.cutFile ? this.dataStore.cutFile.currentPath : this.dataStore.copyFile.currentPath),
+          fileName: (this.dataStore.cutFile ? this.dataStore.cutFile.fileName : this.dataStore.copyFile.fileName),
+          connectionUuid: this.currentCutCopyConnectionUuid,
+          applicationId: this.currentCutCopyApplication
         });
 
         return;
@@ -276,10 +275,9 @@ export class SysosLibFileSystemUiService {
 
       // Upload to remote application
       if (!this.currentCutCopyConnectionUuid && connectionUuid) {
-        console.log('upload to server');
         this.sendUploadToRemote({
-          path: this.dataStore.cutFile.currentPath,
-          fileName: this.dataStore.cutFile.fileName,
+          path: (this.dataStore.cutFile ? this.dataStore.cutFile.currentPath : this.dataStore.copyFile.currentPath),
+          fileName: (this.dataStore.cutFile ? this.dataStore.cutFile.fileName : this.dataStore.copyFile.fileName),
           applicationId
         });
 

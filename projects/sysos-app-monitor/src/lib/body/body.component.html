@@ -1,0 +1,374 @@
+<div class="window__body" [ngClass]="{'with_status': application.status, 'with_actions': application.actions}">
+
+  <div class="window__side" *ngIf="viewSide">
+
+    <div class="secondary-content__new__box__toggle pointer visible-lg">
+      <div class="secondary-content__new__box__toggle__slide" (click)="toggleSide()">
+        <i class="fa fa-arrow-left sidebar-open-font open-sidebar"></i>
+      </div>
+    </div>
+  </div>
+  <div class="secondary-content__new__box__toggle toggle_left pointer visible-lg" *ngIf="!viewSide" (click)="toggleSide()">
+    <i class="fa fa-arrow-right sidebar-open-font open-sidebar"></i>
+  </div>
+  <div class="window__main">
+    <div class="col">
+      <nav class="navbar navbar-default navbar-fixed-top" role="banner">
+        <div class="container">
+          <div class="navbar-header">
+            <button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <ul class="nav navbar-nav" style="display: inline-block">
+              <li data-placement="right" class="hidden-xs hidden-sm" style="line-height: 50px; margin-right: 15px" title="Netdata Agent">
+                <img src="images/netdata-logomark.svg" height="32"/>
+              </li>
+              <li class="dropdown" id="myNetdataDropdownParent" title="your other netdata servers" data-toggle="tooltip" data-placement="right">
+                <a href="#" id="hostname" class="dropdown-toggle" data-toggle="dropdown">
+                  my-netdata
+                  <strong class="caret"></strong></a>
+                <div id="my-netdata-dropdown-content" class="dropdown-menu scrollable-menu inpagemenu">
+                  <div class="agent-item" style="white-space: nowrap">
+                    <i class="fas fa-hourglass-half"></i>
+                    Loading, please wait...
+                    <div></div>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <nav class="collapse navbar-collapse navbar-right" role="navigation">
+            <ul class="nav navbar-nav">
+              <li title="Nodes view" data-toggle="tooltip" data-placement="bottom"><a onclick="openAuthenticatedUrl('console.html');" class="btn" target="_blank"><i class="fas fa-tv"></i>&nbsp;<span class="hidden-sm hidden-md">Nodes<sup class="beta"> beta</sup></span></a></li>
+              <li id="alarmsButton"  title="check the health monitoring alarms and their log" data-toggle="tooltip" data-placement="bottom"><a href="#" class="btn" data-toggle="modal" data-target="#alarmsModal"><i class="fas fa-bell"></i>&nbsp;<span class="hidden-sm hidden-md">Alarms&nbsp;</span><span id="alarms_count_badge" class="badge"></span></a></li>
+              <li title="change dashboard settings" data-toggle="tooltip" data-placement="bottom"><a href="#" class="btn" data-toggle="modal" data-target="#optionsModal"><i class="fas fa-cog"></i>&nbsp;<span class="hidden-sm hidden-md">Settings</span></a></li>
+              <li title="check for netdata updates<br/>you should keep your netdata updated" data-toggle="tooltip" data-placement="bottom" class="hidden-sm" id="updateButton"><a href="#" class="btn" data-toggle="modal" data-target="#updateModal"><i class="fas fa-cloud-download-alt"></i> <span class="hidden-sm hidden-md">Update </span><span id="update_badge" class="badge"></span></a></li>
+              <li title="the netdata wiki home at github<br/>remember to <b>give netdata a <i class=&quot;fas fa-star&quot;></i></b> !" data-toggle="tooltip" data-placement="bottom" class="hidden-xs hidden-sm hidden-md"><a href="https://github.com/netdata/netdata" class="btn" target="_blank"><i class="fab fa-github"></i></a></li>
+              <li title="follow netdata on twitter" data-toggle="tooltip" data-placement="bottom" class="hidden-xs hidden-sm hidden-md"><a href="https://twitter.com/linuxnetdata" class="btn" target="_blank"><i class="fab fa-twitter"></i></a></li>
+              <li title="like netdata on facebook" data-toggle="tooltip" data-placement="bottom" class="hidden-xs hidden-sm hidden-md"><a href="https://www.facebook.com/linuxnetdata/" class="btn" target="_blank"><i class="fab fa-facebook"></i></a></li>
+              <li title="import / load a netdata snapshot" data-toggle="tooltip" data-placement="bottom" id="loadButton"><a href="#" class="btn" data-toggle="modal" data-target="#loadSnapshotModal"><i class="fas fa-download"></i>&nbsp;<span class="hidden-sm hidden-md hidden-lg">Import</span></a></li>
+              <li title="export / save a netdata snapshot" data-toggle="tooltip" data-placement="bottom" id="saveButton"><a href="#" class="btn" data-toggle="modal" data-target="#saveSnapshotModal"><i class="fas fa-upload"></i>&nbsp;<span class="hidden-sm hidden-md hidden-lg">Export</span></a></li>
+              <li title="print this dashboard to PDF" data-toggle="tooltip" data-placement="bottom" id="printButton"><a href="#" class="btn" data-toggle="modal" data-target="#printPreflightModal"><i class="fas fa-print"></i>&nbsp;<span class="hidden-sm hidden-md hidden-lg">Print</span></a></li>
+              <li title="get help on using the charts" data-toggle="tooltip" data-placement="bottom" class="hidden-sm"><a href="#" class="btn" data-toggle="modal" data-target="#helpModal"><i class="fas fa-question-circle"></i>&nbsp;<span class="hidden-sm hidden-md">Help</span></a></li>
+              <li id="account-menu-container" class="dropdown" data-toggle="tooltip"></li>
+            </ul>
+          </nav>
+        </div>
+      </nav>
+      <div class="navbar-highlight">
+        <div id="navbar-highlight-content" class="navbar-highlight-content"></div>
+      </div>
+
+      <div id="sign-in-banner" style="display: none">
+        <div class="container">
+          Like what you see?
+          <strong><a href="#" class="__link" onclick="signInDidClick(event); return false">Sign in</a>
+            to experience the full-range of netdata capabilities!</strong>
+          <div class="__close" onclick="closeSignInBannerDidClick(event)">
+            Close <i class="fas fa-times"></i>
+          </div>
+        </div>
+      </div>
+
+      <div id="masthead" style="display: none;">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-7">
+              <h1>Netdata
+                <p class="lead">Real-time performance monitoring, in the greatest possible detail</p>
+              </h1>
+            </div>
+            <div class="col-md-5">
+              <div class="well well-lg">
+                <div class="row">
+                  <div class="col-md-6">
+                    <b>Drag</b> charts to pan.
+                    <b>Shift + wheel</b> on them, to zoom in and out.
+                    <b>Double-click</b> on them, to reset.
+                    <b>Hover</b> on them too!
+                  </div>
+                  <div class="col-md-6">
+                    <div class="netdata-container" data-netdata="system.intr" data-chart-library="dygraph" data-dygraph-theme="sparkline" data-dygraph-type="line" data-dygraph-strokewidth="3" data-dygraph-smooth="true" data-dygraph-highlightcirclesize="6" data-after="-90" data-height="60px" data-colors="#C66"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="container">
+        <div class="row">
+          <div class="charts-body" role="main">
+            <div id="charts_div" #chartsDiv>
+
+              <ng-container *ngIf="options && netdataDashboard">
+                <ng-container *ngFor="let menu of menus | orderBy:'priority'">
+                  <div role="section" class="dashboard-section">
+                    <div role="sectionhead"><h1 id="menu_{{menu.id}}" role="heading" [innerHTML]="menu.icon + ' ' + menu.title"></h1></div>
+                    <div role="section" class="dashboard-subsection">
+                      <div *ngIf="menu.info" [innerHTML]="menu.info"></div>
+                      <div class="netdata-chart-row"><!--{{generateHeadCharts('mainheads', chart, options.duration)}}-->
+
+                        <div *ngIf="chartsData.charts['system.swap']" class="netdata-container"
+                             style="margin-right: 10px;"
+                             data-netdata="system.swap"
+                             data-dimensions="used"
+                             data-append-options="percentage"
+                             data-chart-library="easypiechart"
+                             data-title="Used Swap"
+                             data-units="%"
+                             data-easypiechart-max-value="100"
+                             data-width="9%"
+                             data-before="0"
+                             attr.data-after="-{{options.duration.toString()}}"
+                             attr.data-points="{{options.duration.toString()}}"
+                             data-colors="#DD4400"
+                             role="application"></div>
+
+                        <div *ngIf="chartsData.charts['system.io']" class="netdata-container" style="margin-right: 10px;"
+                             data-netdata="system.io"
+                             data-dimensions="in"
+                             data-chart-library="easypiechart"
+                             data-title="Disk Read"
+                             data-width="11%"
+                             data-before="0"
+                             attr.data-after="-{{options.duration.toString()}}"
+                             attr.data-points="{{options.duration.toString()}}"
+                             data-common-units="system.io.mainhead"
+                             role="application"></div>
+
+                        <div *ngIf="chartsData.charts['system.io']" class="netdata-container" style="margin-right: 10px;"
+                             data-netdata="system.io"
+                             data-dimensions="out"
+                             data-chart-library="easypiechart"
+                             data-title="Disk Write"
+                             data-width="11%"
+                             data-before="0"
+                             attr.data-after="-{{options.duration.toString()}}"
+                             attr.data-points="{{options.duration.toString()}}"
+                             data-common-units="system.io.mainhead"
+                             role="application"></div>
+
+                        <div *ngIf="chartsData.charts['system.pgpgio']" class="netdata-container" style="margin-right: 10px;"
+                             data-netdata="system.pgpgio"
+                             data-dimensions="in"
+                             data-chart-library="easypiechart"
+                             data-title="Disk Read"
+                             data-width="11%"
+                             data-before="0"
+                             attr.data-after="-{{options.duration.toString()}}"
+                             attr.data-points="{{options.duration.toString()}}"
+                             data-common-units="system.pgpgio.mainhead"
+                             role="application"></div>
+
+                        <div *ngIf="chartsData.charts['system.pgpgio']" class="netdata-container" style="margin-right: 10px;"
+                             data-netdata="system.pgpgio"
+                             data-dimensions="out"
+                             data-chart-library="easypiechart"
+                             data-title="Disk Write"
+                             data-width="11%"
+                             data-before="0"
+                             attr.data-after="-{{options.duration.toString()}}"
+                             attr.data-points="{{options.duration.toString()}}"
+                             data-common-units="system.pgpgio.mainhead"
+                             role="application"></div>
+
+                        <div *ngIf="chartsData.charts['system.cpu']" class="netdata-container" style="margin-right: 10px;"
+                             data-netdata="system.cpu"
+                             data-chart-library="gauge"
+                             data-title="CPU"
+                             data-units="%"
+                             data-gauge-max-value="100"
+                             data-width="20%"
+                             attr.data-after="-{{options.duration.toString()}}"
+                             attr.data-points="{{options.duration.toString()}}"
+                             attr.data-colors="{{NETDATA.colors[12]}}"
+                             role="application"></div>
+
+                        <div *ngIf="chartsData.charts['system.net']" class="netdata-container" style="margin-right: 10px;"
+                             data-netdata="system.net"
+                             data-dimensions="received"
+                             data-chart-library="easypiechart"
+                             data-title="Net Inbound"
+                             data-width="11%"
+                             data-before="0"
+                             attr.data-after="-{{options.duration.toString()}}"
+                             attr.data-points="{{options.duration.toString()}}"
+                             data-common-units="system.net.mainhead"
+                             role="application"></div>
+
+                        <div *ngIf="chartsData.charts['system.net']" class="netdata-container" style="margin-right: 10px;"
+                             data-netdata="system.net"
+                             data-dimensions="sent"
+                             data-chart-library="easypiechart"
+                             data-title="Net Outbound"
+                             data-width="11%"
+                             data-before="0"
+                             attr.data-after="-{{options.duration.toString()}}"
+                             attr.data-points="{{options.duration.toString()}}"
+                             data-common-units="system.net.mainhead"
+                             role="application"></div>
+
+                        <div *ngIf="chartsData.charts['system.ip']" class="netdata-container" style="margin-right: 10px;"
+                             data-netdata="system.ip"
+                             data-dimensions="received"
+                             data-chart-library="easypiechart"
+                             data-title="IP Inbound"
+                             data-width="11%"
+                             data-before="0"
+                             attr.data-after="-{{options.duration.toString()}}"
+                             attr.data-points="{{options.duration.toString()}}"
+                             data-common-units="system.ip.mainhead"
+                             role="application"></div>
+
+                        <div *ngIf="chartsData.charts['system.ip']" class="netdata-container" style="margin-right: 10px;"
+                             data-netdata="system.ip"
+                             data-dimensions="sent"
+                             data-chart-library="easypiechart"
+                             data-title="IP Outbound"
+                             data-width="11%"
+                             data-before="0"
+                             attr.data-after="-{{options.duration.toString()}}"
+                             attr.data-points="{{options.duration.toString()}}"
+                             data-common-units="system.ip.mainhead"
+                             role="application"></div>
+
+                        <div *ngIf="chartsData.charts['system.ipv4']" class="netdata-container" style="margin-right: 10px;"
+                             data-netdata="system.ipv4"
+                             data-dimensions="received"
+                             data-chart-library="easypiechart"
+                             data-title="IPv4 Inbound"
+                             data-width="11%"
+                             data-before="0"
+                             attr.data-after="-{{options.duration.toString()}}"
+                             attr.data-points="{{options.duration.toString()}}"
+                             data-common-units="system.ipv4.mainhead"
+                             role="application"></div>
+
+                        <div *ngIf="chartsData.charts['system.ipv4']" class="netdata-container" style="margin-right: 10px;"
+                             data-netdata="system.ipv4"
+                             data-dimensions="sent"
+                             data-chart-library="easypiechart"
+                             data-title="IPv4 Outbound"
+                             data-width="11%"
+                             data-before="0"
+                             attr.data-after="-{{options.duration.toString()}}"
+                             attr.data-points="{{options.duration.toString()}}"
+                             data-common-units="system.ipv4.mainhead"
+                             role="application"></div>
+
+                        <div *ngIf="chartsData.charts['system.ipv6']" class="netdata-container" style="margin-right: 10px;"
+                             data-netdata="system.ipv6"
+                             data-dimensions="received"
+                             data-chart-library="easypiechart"
+                             data-title="IPv6 Inbound"
+                             data-units="kbps"
+                             data-width="11%"
+                             data-before="0"
+                             attr.data-after="-{{options.duration.toString()}}"
+                             attr.data-points="{{options.duration.toString()}}"
+                             data-common-units="system.ipv6.mainhead"
+                             role="application"></div>
+
+                        <div *ngIf="chartsData.charts['system.ipv6']" class="netdata-container" style="margin-right: 10px;"
+                             data-netdata="system.ipv6"
+                             data-dimensions="sent"
+                             data-chart-library="easypiechart"
+                             data-title="IPv6 Outbound"
+                             data-units="kbps"
+                             data-width="11%"
+                             data-before="0"
+                             attr.data-after="-{{options.duration.toString()}}"
+                             attr.data-points="{{options.duration.toString()}}"
+                             data-common-units="system.ipv6.mainhead"
+                             role="application"></div>
+
+                        <div *ngIf="chartsData.charts['system.ram']" class="netdata-container" style="margin-right: 10px;"
+                           data-netdata="system.ram"
+                           data-dimensions="used|buffers|active|wired // active and wired are FreeBSD stats"
+                           data-append-options="percentage"
+                           data-chart-library="easypiechart"
+                           data-title="Used RAM"
+                           data-units="%"
+                           data-easypiechart-max-value="100"
+                           data-width="9%"
+                             attr.data-after="-{{options.duration.toString()}}"
+                             attr.data-points="{{options.duration.toString()}}"
+                             attr.data-colors="{{NETDATA.colors[7]}}"
+                           role="application"></div>
+                      </div>
+
+                      <div role="section" class="dashboard-section-container" *ngFor="let submenu of menu.submenus | orderBy:'priority'">
+                        <h2 id="menu_{{menu.id}}_submenu_{{submenu.id}}" class="netdata-chart-alignment" role="heading">{{submenu.title}}</h2>
+                        <div *ngIf="submenu.info" class="dashboard-submenu-info netdata-chart-alignment" role="document" [innerHTML]="submenu.info"></div>
+
+                        <ng-container *ngFor="let chart of submenu.charts">
+                          <div class="netdata-chart-row" [innerHTML]="generateHeadCharts('heads', chart, options.duration) | sanitizeHtml"></div>
+                          <div class="netdata-chartblock-container" style="width: 100%;" >
+                            <div [innerHTML]="netdataDashboard.contextInfo(chart.context) | sanitizeHtml"></div>
+                            <div class="netdata-container" id="chart_{{chart.id}}"
+                                 attr.data-netdata="{{chart.id}}"
+                                 data-width="100%"
+                                 attr.data-url="{{chart.data_url}}"
+                                 attr.data-height="{{netdataDashboard.contextHeight(chart.context, options.chartsHeight).toString()}}px"
+                                 attr.data-dygraph-valuerange="{{netdataDashboard.contextValueRange(chart.context)}}"
+                                 data-before="0"
+                                 attr.data-after="-{{options.duration.toString()}}"
+                                 attr.data-id="{{options.hostname}}/{{chart.id}}"
+                                 attr.data-colors="{{netdataDashboard.anyAttribute(netdataDashboard.context, 'colors', chart.context, '')}}"
+                                 attr.data-decimal-digits="{{netdataDashboard.contextDecimalDigits(chart.context, -1) }}" role="application">
+                              <!--{{chartCommonMin(chart.family, chart.context, chart.units)}}
+                              {{chartCommonMax(chart.family, chart.context, chart.units)}}-->
+
+
+                            </div>
+                          </div>
+                        </ng-container>
+
+                      </div>
+
+                    </div>
+                  </div>
+                  <hr role="separator">
+                </ng-container>
+              </ng-container>
+
+            </div>
+          </div>
+          <div class="sidebar-body hidden-xs hidden-sm hidden-print" id="sidebar-body" role="complementary">
+            <nav class="dashboard-sidebar hidden-print hidden-xs hidden-sm" id="sidebar" role="menu">
+              <ul class="nav dashboard-sidenav" data-spy="affix" id="sidebar_ul">
+
+                <li *ngFor="let menu of menus">
+                  <a href="#{{menu.id}}" (click)="scrollToId(menu.id);" [innerHTML]="menu.icon + ' ' + menu.title"></a>
+                  <ul class="nav">
+
+                    <li *ngFor="let submenu of menu.submenus">
+                      <a href="#menu_{{menu.id}}_submenu_{{submenu.id}}" (click)="scrollToId('menu_' + menu.id + '_submenu_' + submenu.id);">{{submenu.title}}</a>
+                    </li>
+
+                  </ul>
+                </li>
+
+                <li style="margin:20px;color:#666;">
+                  <small *ngIf="chartsData">
+                    Every {{((chartsData.update_every === 1) ? 'second' : chartsData.update_every.toString() + ' seconds')}}, Netdata collects <b>
+                    {{chartsData.dimensions_count.toLocaleString()}}</b> metrics, presents them in <b>
+                    {{chartsData.charts_count.toLocaleString()}}</b> charts and monitors them with <b>
+                    {{chartsData.alarms_count.toLocaleString()}}</b> alarms. Netdata is using {{memoryUsage()}} MB of memory on <b>
+                    {{chartsData.hostname.toString()}}</b> for
+                    {{NETDATA.seconds4human(chartsData.update_every * chartsData.history, {minute: 'minute', minutes: 'minutes', second: 'second', seconds: 'seconds', space: '&nbsp;'})}} of real-time history.
+                  </small>
+                </li>
+
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -43,7 +43,7 @@ export class BodyExchangeComponent implements OnInit {
 
     // Watcher sent by FileComponent
     this.downloadRemoteFileSubscription = this.FileSystemUi.getObserverDownloadRemoteFile().subscribe((data) => {
-      if (data.applicationId === 'sftp') {
+      if (data.applicationId === 'sftp#server') {
         this.filesExchange.push({
           uuid: data.connectionUuid,
           name: data.file.filename,
@@ -64,7 +64,7 @@ export class BodyExchangeComponent implements OnInit {
 
     // Watcher sent by FileComponent
     this.uploadToRemoteSubscription = this.FileSystemUi.getObserverUploadToRemote().subscribe((data) => {
-      if (data.applicationId === 'sftp') {
+      if (data.applicationId === 'sftp#server') {
         this.filesExchange.push({
           uuid: this.activeConnection,
           name: data.file.filename,

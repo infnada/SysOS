@@ -1,4 +1,6 @@
 // Prepare output for SystemJS
+import {Pipe, PipeTransform} from "@angular/core";
+
 declare const SystemJS: any;
 
 import * as angularCore from '@angular/core';
@@ -35,8 +37,11 @@ import * as SysOSLibVMWare from '@sysos/lib-vmware';
 import * as NgxMonacoEditor from 'ngx-monaco-editor';
 import * as _ from 'lodash';
 
+import * as angularPb from '@angular/platform-browser';
+
 SystemJS.set('@angular/core', SystemJS.newModule(angularCore));
 SystemJS.set('@angular/forms', SystemJS.newModule(angularForms));
+SystemJS.set('@angular/platform-browser', SystemJS.newModule(angularPb));
 SystemJS.set('@angular/common', SystemJS.newModule(angularCommon));
 SystemJS.set('@angular/common/http', SystemJS.newModule(angularCommonHttp));
 SystemJS.set('@angular/material', SystemJS.newModule(angularMaterial));
@@ -105,6 +110,7 @@ import {TaskBarItemsComponent} from './task-bar-items/task-bar-items.component';
 import {DesktopComponent} from './desktop/desktop.component';
 
 import {CapsLockDirective} from './directives/caps-lock.directive';
+
 import {BootstrapComponent} from './bootstrap/bootstrap.component';
 
 const config: SocketIoConfig = {

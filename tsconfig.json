@@ -103,6 +103,30 @@
       "@sysos/lib-service-injector/*": [
         "projects/sysos-lib-service-injector/*"
       ],
+      "@sysos/lib-ext-dygraphs": [
+        "projects/sysos-lib-ext-dygraphs/src/public-api"
+      ],
+      "@sysos/lib-ext-dygraphs/*": [
+        "projects/sysos-lib-dygraphs/*"
+      ],
+      "@sysos/lib-ext-easypiechart": [
+        "projects/sysos-lib-ext-easypiechart/src/public-api"
+      ],
+      "@sysos/lib-ext-easypiechart/*": [
+        "projects/sysos-lib-easypiechart/*"
+      ],
+      "@sysos/lib-ext-gaugejs": [
+        "projects/sysos-lib-ext-gaugejs/src/public-api"
+      ],
+      "@sysos/lib-ext-gaugejs/*": [
+        "projects/sysos-lib-gauge/*"
+      ],
+      "@sysos/lib-ext-jquery": [
+        "projects/sysos-lib-ext-jquery/src/public-api"
+      ],
+      "@sysos/lib-ext-jquery/*": [
+        "projects/sysos-lib-jquery/*"
+      ],
       "@sysos/app-backups-manager": [
         "projects/sysos-app-backups-manager/src/public-api"
       ],
@@ -132,6 +156,12 @@
       ],
       "@sysos/app-infrastructure-manager/*": [
         "projects/sysos-app-infrastructure-manager/*"
+      ],
+      "@sysos/app-monitor": [
+        "projects/sysos-app-monitor/src/public-api"
+      ],
+      "@sysos/app-monitor/*": [
+        "projects/sysos-app-monitor/*"
       ],
       "@sysos/app-notepad": [
         "projects/sysos-app-notepad/src/public-api"
@@ -198,12 +228,6 @@
       ],
       "@sysos/modal-recovery-wizard/*": [
         "projects/sysos-modal-recovery-wizard/*"
-      ],
-      "sysos-lib-folder": [
-        "dist/sysos-lib-folder"
-      ],
-      "sysos-lib-folder/*": [
-        "dist/sysos-lib-folder/*"
       ]
     }
   }
