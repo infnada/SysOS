@@ -1,1 +1,6 @@
+@import '~netdata/web/gui/main.css';
 @import '~netdata/web/gui/dashboard.css';
+
+.sidebar-body {
+  right: 0;
+}

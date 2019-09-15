@@ -1,5 +1,5 @@
-import {GlobalsModule} from '../../globals';
-import {SshSessionsModule} from '../../../../socket/modules/ssh/ssh-sessions';
+import {GlobalsModule} from '../../../globals';
+import {SshSessionsModule} from '../../../../../socket/modules/ssh/ssh-sessions';
 
 export class NetworkMonitorModule {
 

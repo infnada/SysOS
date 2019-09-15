@@ -1,4 +1,4 @@
-import {Component, ElementRef, Input, OnInit, ViewChild, ViewEncapsulation, Pipe, PipeTransform} from '@angular/core';
+import {Component, ElementRef, Input, AfterViewInit, ViewChild, ViewEncapsulation, Pipe, PipeTransform} from '@angular/core';
 import {DomSanitizer} from '@angular/platform-browser';
 
 declare var NETDATA: any;
@@ -29,7 +29,7 @@ export class sanitizeHtmlPipe implements PipeTransform  {
   templateUrl: './body.component.html',
   styleUrls: ['./body.component.scss']
 })
-export class BodyComponent implements OnInit {
+export class BodyComponent implements AfterViewInit {
   @ViewChild("chartsDiv", {read: ElementRef}) chartsDiv: ElementRef;
   @Input() application: Application;
 
@@ -47,8 +47,6 @@ export class BodyComponent implements OnInit {
               private easyPieChart: SysosLibExtEasypiechartService,
               private gaugeJS: SysosLibExtGaugejsService,
               private MonitorService: SysosAppMonitorService) {
-
-    console.log(this.gaugeJS);
 
     let _this = this;
 
@@ -98,12 +96,11 @@ export class BodyComponent implements OnInit {
           this.menus.push(menus[menu]);
         }
 
-        console.log(this.menus);
       }
     });
   }
 
-  ngOnInit() {
+  ngAfterViewInit() {
     this.MonitorService.initializeDynamicDashboard(this.chartsDiv);
   }
 

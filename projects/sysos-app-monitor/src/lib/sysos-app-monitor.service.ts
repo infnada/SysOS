@@ -466,7 +466,6 @@ export class SysosAppMonitorService {
 
   private scrollDashboardTo() {
     if (this.netdataSnapshotData !== null && typeof this.netdataSnapshotData.hash !== 'undefined') {
-      //console.log(netdataSnapshotData.hash);
       this.scrollToId(this.netdataSnapshotData.hash.replace('#', ''));
     }
   }
@@ -571,7 +570,7 @@ export class SysosAppMonitorService {
       }
 
       // find the proper duration for per-second updates
-      this.dataStore.options.duration = Math.round((this.chartsDiv.nativeElement.width * 100 / 100 * this.dataStore.options.data.update_every / 3) / 60) * 60;
+      this.dataStore.options.duration = Math.round((this.chartsDiv.nativeElement.clientWidth * 100 / 100 * this.dataStore.options.data.update_every / 3) / 60) * 60;
       this.dataStore.options.update_every = this.dataStore.options.data.update_every;
 
       this.createSidebarMenus();

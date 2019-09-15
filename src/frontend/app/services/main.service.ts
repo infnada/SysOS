@@ -39,13 +39,17 @@ export class MainService {
         (res: { data: { filename: string }[] }) => {
           this.logger.info('SysOs', 'Got Installed Libs successfully');
 
+          let libPromises = [];
+
           res.data.forEach((value) => {
             if (value.filename.endsWith('.umd.js')) {
-              return this.loadLib(value);
+              libPromises.push(this.loadLib(value));
             }
           });
 
-          return resolve();
+          return Promise.all(libPromises).then(() => {
+            return resolve();
+          });
 
         },
         error => {

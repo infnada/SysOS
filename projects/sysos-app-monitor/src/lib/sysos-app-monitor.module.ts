@@ -32,7 +32,7 @@ export class SysosAppMonitorModule {
       menu: true,
       actions: false,
       status: false,
-      style: {width: '770px', height: '600px', top: '9%', left: '12%'}
+      style: {width: '1370px', height: '700px', top: '9%', left: '9%'}
     });
   }
 }
