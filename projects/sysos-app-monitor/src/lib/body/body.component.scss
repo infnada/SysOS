@@ -4,3 +4,9 @@
 .sidebar-body {
   right: 0;
 }
+h1, h2 {
+  z-index: inherit;
+}
+.container {
+  max-width: 100%;
+}

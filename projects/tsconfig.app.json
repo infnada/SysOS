@@ -110,6 +110,12 @@
       "@sysos/lib-ext-jquery/*": [
         "dist/libs/sysos-lib-ext-jquery/*"
       ],
+      "@sysos/lib-ext-perfectscrollbar": [
+        "dist/libs/sysos-lib-ext-perfectscrollbar"
+      ],
+      "@sysos/lib-ext-perfectscrollbar/*": [
+        "dist/libs/sysos-lib-ext-perfectscrollbar/*"
+      ],
       "@sysos/app-backups-manager": [
         "dist/applications/sysos-app-backups-manager"
       ],

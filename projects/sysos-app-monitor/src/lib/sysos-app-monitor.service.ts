@@ -2,6 +2,7 @@ import {ElementRef, Injectable} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
 
 import {SysosLibExtJqueryService} from '@sysos/lib-ext-jquery';
+import {SysosLibExtPerfectscrollbarService} from '@sysos/lib-ext-perfectscrollbar';
 
 declare let NETDATA: any;
 
@@ -11,6 +12,8 @@ declare let NETDATA: any;
 export class SysosAppMonitorService {
 
   private $;
+  private Ps;
+
   private $options: BehaviorSubject<object>;
   private $netdataDashboard: BehaviorSubject<object>;
   private $menus: BehaviorSubject<object>;
@@ -33,8 +36,10 @@ export class SysosAppMonitorService {
   runOnceOnDashboardLastRun = 0;
   netdataSnapshotData = null;
 
-  constructor(private jQuery: SysosLibExtJqueryService) {
+  constructor(private jQuery: SysosLibExtJqueryService,
+              private PerfectScrollbar: SysosLibExtPerfectscrollbarService) {
     this.$ = this.jQuery.$;
+    this.Ps = this.PerfectScrollbar.PerfectScrollbar;
 
     this.dataStore = {
       options: {
@@ -472,6 +477,21 @@ export class SysosAppMonitorService {
 
   private runOnceOnDashboardWithjQuery() {
     this.scrollDashboardTo();
+
+    this.Ps.initialize(document.getElementById('sidebar'), {
+      wheelSpeed: 0.5,
+      wheelPropagation: true,
+      swipePropagation: true,
+      minScrollbarLength: null,
+      maxScrollbarLength: null,
+      useBothWheelAxes: false,
+      suppressScrollX: true,
+      suppressScrollY: false,
+      scrollXMarginOffset: 0,
+      scrollYMarginOffset: 0,
+      theme: 'default'
+    });
+
 
     //dashboardSettingsSetup();
     //loadSnapshotDragAndDropSetup();

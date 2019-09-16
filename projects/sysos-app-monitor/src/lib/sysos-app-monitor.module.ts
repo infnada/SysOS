@@ -8,6 +8,7 @@ import {SysosLibApplicationService} from "@sysos/lib-application";
 import {ActionsComponent} from './actions/actions.component';
 import {BodyComponent, sanitizeHtmlPipe} from './body/body.component';
 import {MenuComponent} from './menu/menu.component';
+import { NoCheckDirective } from './directives/no-check.directive';
 
 
 @NgModule({
@@ -15,7 +16,8 @@ import {MenuComponent} from './menu/menu.component';
     ActionsComponent,
     BodyComponent,
     MenuComponent,
-    sanitizeHtmlPipe
+    sanitizeHtmlPipe,
+    NoCheckDirective
   ],
   imports: [
     CommonModule,

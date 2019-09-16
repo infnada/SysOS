@@ -105,234 +105,64 @@
             <div id="charts_div" #chartsDiv>
 
               <ng-container *ngIf="options && netdataDashboard">
-                <ng-container *ngFor="let menu of menus | orderBy:'priority'">
-                  <div role="section" class="dashboard-section">
-                    <div role="sectionhead"><h1 id="menu_{{menu.id}}" role="heading" [innerHTML]="menu.icon + ' ' + menu.title"></h1></div>
-                    <div role="section" class="dashboard-subsection">
-                      <div *ngIf="menu.info" [innerHTML]="menu.info"></div>
-                      <div class="netdata-chart-row"><!--{{generateHeadCharts('mainheads', chart, options.duration)}}-->
-
-                        <div *ngIf="chartsData.charts['system.swap']" class="netdata-container"
-                             style="margin-right: 10px;"
-                             data-netdata="system.swap"
-                             data-dimensions="used"
-                             data-append-options="percentage"
-                             data-chart-library="easypiechart"
-                             data-title="Used Swap"
-                             data-units="%"
-                             data-easypiechart-max-value="100"
-                             data-width="9%"
-                             data-before="0"
-                             attr.data-after="-{{options.duration.toString()}}"
-                             attr.data-points="{{options.duration.toString()}}"
-                             data-colors="#DD4400"
-                             role="application"></div>
-
-                        <div *ngIf="chartsData.charts['system.io']" class="netdata-container" style="margin-right: 10px;"
-                             data-netdata="system.io"
-                             data-dimensions="in"
-                             data-chart-library="easypiechart"
-                             data-title="Disk Read"
-                             data-width="11%"
-                             data-before="0"
-                             attr.data-after="-{{options.duration.toString()}}"
-                             attr.data-points="{{options.duration.toString()}}"
-                             data-common-units="system.io.mainhead"
-                             role="application"></div>
-
-                        <div *ngIf="chartsData.charts['system.io']" class="netdata-container" style="margin-right: 10px;"
-                             data-netdata="system.io"
-                             data-dimensions="out"
-                             data-chart-library="easypiechart"
-                             data-title="Disk Write"
-                             data-width="11%"
-                             data-before="0"
-                             attr.data-after="-{{options.duration.toString()}}"
-                             attr.data-points="{{options.duration.toString()}}"
-                             data-common-units="system.io.mainhead"
-                             role="application"></div>
-
-                        <div *ngIf="chartsData.charts['system.pgpgio']" class="netdata-container" style="margin-right: 10px;"
-                             data-netdata="system.pgpgio"
-                             data-dimensions="in"
-                             data-chart-library="easypiechart"
-                             data-title="Disk Read"
-                             data-width="11%"
-                             data-before="0"
-                             attr.data-after="-{{options.duration.toString()}}"
-                             attr.data-points="{{options.duration.toString()}}"
-                             data-common-units="system.pgpgio.mainhead"
-                             role="application"></div>
-
-                        <div *ngIf="chartsData.charts['system.pgpgio']" class="netdata-container" style="margin-right: 10px;"
-                             data-netdata="system.pgpgio"
-                             data-dimensions="out"
-                             data-chart-library="easypiechart"
-                             data-title="Disk Write"
-                             data-width="11%"
-                             data-before="0"
-                             attr.data-after="-{{options.duration.toString()}}"
-                             attr.data-points="{{options.duration.toString()}}"
-                             data-common-units="system.pgpgio.mainhead"
-                             role="application"></div>
-
-                        <div *ngIf="chartsData.charts['system.cpu']" class="netdata-container" style="margin-right: 10px;"
-                             data-netdata="system.cpu"
-                             data-chart-library="gauge"
-                             data-title="CPU"
-                             data-units="%"
-                             data-gauge-max-value="100"
-                             data-width="20%"
-                             attr.data-after="-{{options.duration.toString()}}"
-                             attr.data-points="{{options.duration.toString()}}"
-                             attr.data-colors="{{NETDATA.colors[12]}}"
-                             role="application"></div>
-
-                        <div *ngIf="chartsData.charts['system.net']" class="netdata-container" style="margin-right: 10px;"
-                             data-netdata="system.net"
-                             data-dimensions="received"
-                             data-chart-library="easypiechart"
-                             data-title="Net Inbound"
-                             data-width="11%"
-                             data-before="0"
-                             attr.data-after="-{{options.duration.toString()}}"
-                             attr.data-points="{{options.duration.toString()}}"
-                             data-common-units="system.net.mainhead"
-                             role="application"></div>
-
-                        <div *ngIf="chartsData.charts['system.net']" class="netdata-container" style="margin-right: 10px;"
-                             data-netdata="system.net"
-                             data-dimensions="sent"
-                             data-chart-library="easypiechart"
-                             data-title="Net Outbound"
-                             data-width="11%"
-                             data-before="0"
-                             attr.data-after="-{{options.duration.toString()}}"
-                             attr.data-points="{{options.duration.toString()}}"
-                             data-common-units="system.net.mainhead"
-                             role="application"></div>
-
-                        <div *ngIf="chartsData.charts['system.ip']" class="netdata-container" style="margin-right: 10px;"
-                             data-netdata="system.ip"
-                             data-dimensions="received"
-                             data-chart-library="easypiechart"
-                             data-title="IP Inbound"
-                             data-width="11%"
-                             data-before="0"
-                             attr.data-after="-{{options.duration.toString()}}"
-                             attr.data-points="{{options.duration.toString()}}"
-                             data-common-units="system.ip.mainhead"
-                             role="application"></div>
-
-                        <div *ngIf="chartsData.charts['system.ip']" class="netdata-container" style="margin-right: 10px;"
-                             data-netdata="system.ip"
-                             data-dimensions="sent"
-                             data-chart-library="easypiechart"
-                             data-title="IP Outbound"
-                             data-width="11%"
-                             data-before="0"
-                             attr.data-after="-{{options.duration.toString()}}"
-                             attr.data-points="{{options.duration.toString()}}"
-                             data-common-units="system.ip.mainhead"
-                             role="application"></div>
-
-                        <div *ngIf="chartsData.charts['system.ipv4']" class="netdata-container" style="margin-right: 10px;"
-                             data-netdata="system.ipv4"
-                             data-dimensions="received"
-                             data-chart-library="easypiechart"
-                             data-title="IPv4 Inbound"
-                             data-width="11%"
-                             data-before="0"
-                             attr.data-after="-{{options.duration.toString()}}"
-                             attr.data-points="{{options.duration.toString()}}"
-                             data-common-units="system.ipv4.mainhead"
-                             role="application"></div>
-
-                        <div *ngIf="chartsData.charts['system.ipv4']" class="netdata-container" style="margin-right: 10px;"
-                             data-netdata="system.ipv4"
-                             data-dimensions="sent"
-                             data-chart-library="easypiechart"
-                             data-title="IPv4 Outbound"
-                             data-width="11%"
-                             data-before="0"
-                             attr.data-after="-{{options.duration.toString()}}"
-                             attr.data-points="{{options.duration.toString()}}"
-                             data-common-units="system.ipv4.mainhead"
-                             role="application"></div>
-
-                        <div *ngIf="chartsData.charts['system.ipv6']" class="netdata-container" style="margin-right: 10px;"
-                             data-netdata="system.ipv6"
-                             data-dimensions="received"
-                             data-chart-library="easypiechart"
-                             data-title="IPv6 Inbound"
-                             data-units="kbps"
-                             data-width="11%"
-                             data-before="0"
-                             attr.data-after="-{{options.duration.toString()}}"
-                             attr.data-points="{{options.duration.toString()}}"
-                             data-common-units="system.ipv6.mainhead"
-                             role="application"></div>
-
-                        <div *ngIf="chartsData.charts['system.ipv6']" class="netdata-container" style="margin-right: 10px;"
-                             data-netdata="system.ipv6"
-                             data-dimensions="sent"
-                             data-chart-library="easypiechart"
-                             data-title="IPv6 Outbound"
-                             data-units="kbps"
-                             data-width="11%"
-                             data-before="0"
-                             attr.data-after="-{{options.duration.toString()}}"
-                             attr.data-points="{{options.duration.toString()}}"
-                             data-common-units="system.ipv6.mainhead"
-                             role="application"></div>
-
-                        <div *ngIf="chartsData.charts['system.ram']" class="netdata-container" style="margin-right: 10px;"
-                           data-netdata="system.ram"
-                           data-dimensions="used|buffers|active|wired"
-                           data-append-options="percentage"
-                           data-chart-library="easypiechart"
-                           data-title="Used RAM"
-                           data-units="%"
-                           data-easypiechart-max-value="100"
-                           data-width="9%"
-                             attr.data-after="-{{options.duration.toString()}}"
-                             attr.data-points="{{options.duration.toString()}}"
-                             attr.data-colors="{{NETDATA.colors[7]}}"
-                           role="application"></div>
+                <ng-container *samonNoCheck>
+                  <ng-container *ngFor="let menu of menus | orderBy:['priority', 'id']; trackBy: trackItemById">
+                    <div role="section" class="dashboard-section">
+                      <div role="sectionhead">
+                        <h1 id="menu_{{menu.id}}" role="heading" [innerHTML]="menu.icon + ' ' + menu.title"></h1>
                       </div>
+                      <div role="section" class="dashboard-subsection">
 
-                      <div role="section" class="dashboard-section-container" *ngFor="let submenu of menu.submenus | orderBy:'priority'">
-                        <h2 id="menu_{{menu.id}}_submenu_{{submenu.id}}" class="netdata-chart-alignment" role="heading">{{submenu.title}}</h2>
-                        <div *ngIf="submenu.info" class="dashboard-submenu-info netdata-chart-alignment" role="document" [innerHTML]="submenu.info"></div>
+                        <div *ngIf="menu.info" [innerHTML]="menu.info"></div>
 
-                        <ng-container *ngFor="let chart of submenu.charts">
-                          <div class="netdata-chart-row" [innerHTML]="generateHeadCharts('heads', chart, options.duration) | sanitizeHtml"></div>
-                          <div class="netdata-chartblock-container" style="width: 100%;" >
-                            <div [innerHTML]="netdataDashboard.contextInfo(chart.context) | sanitizeHtml"></div>
-                            <div class="netdata-container" id="chart_{{chart.id}}"
-                                 attr.data-netdata="{{chart.id}}"
-                                 data-width="100%"
-                                 attr.data-url="{{chart.data_url}}"
-                                 attr.data-height="{{netdataDashboard.contextHeight(chart.context, options.chartsHeight).toString()}}px"
-                                 attr.data-dygraph-valuerange="{{netdataDashboard.contextValueRange(chart.context)}}"
-                                 data-before="0"
-                                 attr.data-after="-{{options.duration.toString()}}"
-                                 attr.data-id="{{options.hostname}}/{{chart.id}}"
-                                 attr.data-colors="{{netdataDashboard.anyAttribute(netdataDashboard.context, 'colors', chart.context, '')}}"
-                                 attr.data-decimal-digits="{{netdataDashboard.contextDecimalDigits(chart.context, -1) }}" role="application">
-                              <!--{{chartCommonMin(chart.family, chart.context, chart.units)}}
-                              {{chartCommonMax(chart.family, chart.context, chart.units)}}-->
+                        <!--mhead-->
+                        <div class="netdata-chart-row">
 
+                          <!--mainhead-->
+                          <div class="w-100" [innerHTML]="headMain(netdataDashboard.os, chartsData.charts, options.duration) | sanitizeHtml"></div>
 
-                            </div>
+                          <ng-container *ngFor="let submenu of menu.submenus | orderBy:['priority', 'id']; trackBy: trackItemById">
+                            <ng-container *ngFor="let chart of submenu.charts | orderBy:['priority', 'id']; trackBy: trackItemById">
+                              <div [innerHTML]="generateHeadCharts('mainheads', chart, options.duration) | sanitizeHtml"></div>
+                            </ng-container>
+                          </ng-container>
+                        </div>
+
+                        <!--shtml-->
+                        <div *ngFor="let submenu of menu.submenus | orderBy:['priority', 'id']; trackBy: trackItemById" role="section" class="dashboard-section-container">
+                          <h2 id="menu_{{menu.id}}_submenu_{{submenu.id}}" class="netdata-chart-alignment" role="heading">{{submenu.title}}</h2>
+                          <div *ngIf="submenu.info" class="dashboard-submenu-info netdata-chart-alignment" role="document" [innerHTML]="submenu.info"></div>
+
+                          <!--head-->
+                          <div *ngFor="let chart of submenu.charts | orderBy:['priority', 'id']; trackBy: trackItemById" class="netdata-chart-row">
+                            <div [innerHTML]="generateHeadCharts('heads', chart, options.duration) | sanitizeHtml"></div>
                           </div>
-                        </ng-container>
 
+                          <!--chtml-->
+                          <ng-container *ngFor="let chart of submenu.charts | orderBy:['priority', 'id']; trackBy: trackItemById">
+                            <div class="netdata-chartblock-container" style="width: 100%;">
+                              <div [innerHTML]="netdataDashboard.contextInfo(chart.context) | sanitizeHtml"></div>
+                              <div class="netdata-container" id="chart_{{chart.id}}"
+                                   attr.data-netdata="{{chart.id}}"
+                                   data-width="100%"
+                                   attr.data-url="{{chart.data_url}}"
+                                   attr.data-height="{{netdataDashboard.contextHeight(chart.context, options.chartsHeight).toString()}}px"
+                                   attr.data-dygraph-valuerange="{{netdataDashboard.contextValueRange(chart.context)}}"
+                                   data-before="0"
+                                   attr.data-after="-{{options.duration.toString()}}"
+                                   attr.data-id="{{options.hostname}}/{{chart.id}}"
+                                   attr.data-colors="{{netdataDashboard.anyAttribute(netdataDashboard.context, 'colors', chart.context, '')}}"
+                                   attr.data-decimal-digits="{{netdataDashboard.contextDecimalDigits(chart.context, -1) }}" role="application">
+                                <!--{{chartCommonMin(chart.family, chart.context, chart.units)}}
+                                {{chartCommonMax(chart.family, chart.context, chart.units)}}-->
+                              </div>
+                            </div>
+                          </ng-container>
+                        </div>
                       </div>
-
                     </div>
-                  </div>
-                  <hr role="separator">
+                    <hr role="separator"/>
+                  </ng-container>
                 </ng-container>
               </ng-container>
 
@@ -342,12 +172,12 @@
             <nav class="dashboard-sidebar hidden-print hidden-xs hidden-sm" id="sidebar" role="menu">
               <ul class="nav dashboard-sidenav" data-spy="affix" id="sidebar_ul">
 
-                <li *ngFor="let menu of menus">
-                  <a href="#{{menu.id}}" (click)="scrollToId(menu.id);" [innerHTML]="menu.icon + ' ' + menu.title"></a>
+                <li *ngFor="let menu of menus | orderBy:['priority', 'id']; trackBy: trackItemById">
+                  <a href="#" (click)="scrollToId(menu.id);" [innerHTML]="menu.icon + ' ' + menu.title"></a>
                   <ul class="nav">
 
-                    <li *ngFor="let submenu of menu.submenus">
-                      <a href="#menu_{{menu.id}}_submenu_{{submenu.id}}" (click)="scrollToId('menu_' + menu.id + '_submenu_' + submenu.id);">{{submenu.title}}</a>
+                    <li *ngFor="let submenu of menu.submenus | orderBy:['priority', 'id']; trackBy: trackItemById">
+                      <a href="#" (click)="scrollToId('menu_' + menu.id + '_submenu_' + submenu.id);">{{submenu.title}}</a>
                     </li>
 
                   </ul>

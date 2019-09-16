@@ -1,12 +1,14 @@
 # Redistributed software
 
-SysOS copyright info:
+anyOpsOS copyright info:
 
-- Copyright 2018-2019, SysOS
+- Copyright 2018-2019, anyOpsOS
 - Released under [GPL v3 or later](LICENSE).
 
+- Desktop template found at https://codepen.io/keithpickering/pen/azBdNj under MIT License by Keith Pickering
 
-SysOS redistributes the following third-party software on the pre-built docker image.
+
+anyOpsOS redistributes the following third-party software on the pre-built docker image.
 
 
 | name                              | license period | material / not material | license type      | link                                                             | comment |
