@@ -42,8 +42,8 @@ export class QueryMonitorModule {
 
   // Returned values
   latestReturnedValues;
-  min = new Decimal(0);
-  max = new Decimal(0);
+  min;
+  max;
 
   constructor(private req: express.Request,
               private res: express.Response) {
@@ -170,7 +170,6 @@ export class QueryMonitorModule {
     // Calculate result based on group
     if (this.group === 'average') {
       res = this.currentValues.reduce((a, b) => {
-        console.log(a, b);
         // calculate average
         return a.map((suba, i) => new Decimal(a[i]).plus(b[i]).dividedBy(this.currentValues.length));
       });
@@ -190,7 +189,9 @@ export class QueryMonitorModule {
     }
 
     // Set current value as latest value
-    if (!this.latestReturnedValues) this.latestReturnedValues = res.map((d) => { return new Decimal(d).toSignificantDigits(7); });
+    if (!this.latestReturnedValues) {
+      this.latestReturnedValues = res.map((d) => { return new Decimal(d).toSignificantDigits(7).toNumber(); });
+    }
 
     /**
      * output formats
@@ -203,8 +204,8 @@ export class QueryMonitorModule {
 
       this.currentResult.push(res);
 
-      if (this.max < res) this.max = res;
-      if (this.min > res) this.min = res;
+      if (!this.max || this.max < res) this.max = parseFloat(res);
+      if (!this.min || this.min > res) this.min = parseFloat(res);
     }
 
     if (this.format === 'json') {
@@ -217,8 +218,8 @@ export class QueryMonitorModule {
       });
       this.currentResult.push([timeToReturn, ...res]);
 
-      if (this.max < Decimal.max(...res)) this.max = Decimal.max(...res);
-      if (this.min > Decimal.min(...res)) this.min = Decimal.min(...res);
+      if (this.max < Decimal.max(...res)) this.max = Decimal.max(...res).toNumber();
+      if (this.min > Decimal.min(...res)) this.min = Decimal.min(...res).toNumber();
     }
 
     if (!this.firstEntryReturnedTimestamp) this.firstEntryReturnedTimestamp = timeToReturn;
@@ -534,14 +535,14 @@ export class QueryMonitorModule {
         api: 1, // 'The API version this conforms to, currently 1'
         id: this.chart, // 'The unique id of the chart'
         name: chartInfo.name, // 'The name of the chart'
-        view_update_every: 1, // TODO 'The current view appropriate update frequency of this chart, in seconds.
+        view_update_every: chartInfo.update_every, // TODO 'The current view appropriate update frequency of this chart, in seconds.
         // There is no point to request chart refreshes, using the same settings, more frequently than this.'
         update_every: chartInfo.update_every, // 'The update frequency of this chart, in seconds.
         // One value every this amount of time is kept in the round robin database (indepedently of the current view).'
         first_entry: firstEntryTimestamp, // The UNIX timestamp of the first entry (the oldest) in the round robin database.
         last_entry: lastEntryTimestamp, // The UNIX timestamp of the latest entry in the round robin database.
-        before: this.lastEntryReturnedTimestamp, // 'The UNIX timestamp of the first entry (the oldest) returned in this response.'
-        after: this.firstEntryReturnedTimestamp, // 'The UNIX timestamp of the latest entry returned in this response.'
+        before: this.firstEntryReturnedTimestamp, // 'The UNIX timestamp of the first entry (the oldest) returned in this response.'
+        after: this.lastEntryReturnedTimestamp, // 'The UNIX timestamp of the latest entry returned in this response.'
         dimension_names: this.dimensionsNames, // 'The dimension names of the chart as returned in the current view.'
         dimension_ids: this.dimensionsIds, // 'The dimension IDs of the chart as returned in the current view.'
         latest_values: this.latestValues, // 'The latest values collected for the chart (indepedently of the current view).'
