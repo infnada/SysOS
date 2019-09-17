@@ -15,11 +15,15 @@ If we manage all our VMWare infrastructure with `Infrastructure Manager` App and
 
 Now we integrate our physical Storage Systems (like NetApp/EMC...) to `Infrastructure Manager`, we can control performance issues with `Monitor` and automatically link it to VMWare VMs IOPS/IOwaits issues. Or with `Backups Manager` we can perform Storage Snapshots, Instant VM Recovery, File Recovery and much more.
 
-But... why not integrate it to Ansible, Terraform and many others and work as GitOps method with `Notepad`?
+But... why not integrate it to Ansible, Terraform and many others to work as GitOps method with `Notepad`?
 
 Or just open a SSH shell with `SSH` or maybe... upload/download files with `SFTP` to these VMs.
 
 As said, same with PCI Compliance checks, services management, security audits...
+
+---
+
+> This project is for ProdOps, DevOps, NetOps, SecOps... people, yeah; anyOps
 
 ## Installation
 
@@ -61,12 +65,14 @@ Edit the main expressjs file located at `/dist/anyOpsOS/filesystem/etc/expressjs
 
 [ROADMAP.md](ROADMAP.md)
 
+Don't hesitate to provide a Logo and Backgrounds :)
+
 ## Currently installed applications
 
 ![alt text](https://isartnavarro.io/img/SysOS/smanager_app.png "Infrastructure Manager app")
 
 - Credentials Manager
-    - Manage all your anyOpsOS credentials to use in other installed applications.
+    - Manage all your `anyOpsOS` credentials to use in other installed applications.
 - Infrastructure Manager
     - Full integration with `VMware vCenter`/`ESXi` nodes and `VM`s.
     - Full integration with `NetApp` storage.
@@ -110,6 +116,57 @@ Edit the main expressjs file located at `/dist/anyOpsOS/filesystem/etc/expressjs
 
 ![alt text](https://isartnavarro.io/img/SysOS/sftp_app.png "SFTP app")
 
+## Built in libraries
+
+- Libraries to manage files
+
+`@anyopsos/lib-file`
+
+`@anyopsos/lib-file-system`
+
+`@anyopsos/lib-file-system-ui`
+
+`@anyopsos/lib-folder`
+
+`@anyopsos/lib-selectable`
+
+- Libraries to manage infrastructure
+
+`@anyopsos/lib-netapp`
+
+`@anyopsos/lib-vmware`
+
+- Internal libraries
+
+`@anyopsos/lib-logger`
+
+`@anyopsos/lib-service-injector`
+
+`@anyopsos/lib-user`
+
+`@anyopsos/lib-modal`
+
+- Others
+
+`@anyopsos/lib-scroll-spy`
+
+- External libraries ready to use in anyOpsOS
+
+`@anyopsos/lib-ext-dygraphs`
+
+`@anyopsos/lib-ext-easypiechart`
+
+`@anyopsos/lib-ext-gaugejs`
+
+`@anyopsos/lib-ext-jquery`
+
+`@anyopsos/lib-ext-mxgraph`
+
+`@anyopsos/lib-ext-perfectscrollbar`
+
+`@anyopsos/lib-ext-underscore`
+
+
 ## Acknowledgments
 
-<img src="docs/assets/jetbrains.png" width="100">
+[<img src="docs/assets/jetbrains.png" width="100">](https://www.jetbrains.com/?from=anyOpsOS)

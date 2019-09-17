@@ -39,7 +39,7 @@ export class MainService {
         (res: { data: { filename: string }[] }) => {
           this.logger.info('SysOs', 'Got Installed Libs successfully');
 
-          let libPromises = [];
+          const libPromises = [];
 
           res.data.forEach((value) => {
             if (value.filename.endsWith('.umd.js')) {

@@ -3,7 +3,8 @@ import {CommonModule} from '@angular/common';
 
 import {OrderModule} from 'ngx-order-pipe';
 
-import {SysosLibApplicationService} from "@sysos/lib-application";
+import {SysosLibApplicationService} from '@sysos/lib-application';
+import {SysosLibScrollSpyModule} from '@sysos/lib-scroll-spy';
 
 import {ActionsComponent} from './actions/actions.component';
 import {BodyComponent, sanitizeHtmlPipe} from './body/body.component';
@@ -21,7 +22,8 @@ import { NoCheckDirective } from './directives/no-check.directive';
   ],
   imports: [
     CommonModule,
-    OrderModule
+    OrderModule,
+    SysosLibScrollSpyModule
   ],
   exports: []
 })

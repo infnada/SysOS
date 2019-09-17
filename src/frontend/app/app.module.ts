@@ -1,9 +1,8 @@
 // Prepare output for SystemJS
-import {Pipe, PipeTransform} from "@angular/core";
-
 declare const SystemJS: any;
 
 import * as angularCore from '@angular/core';
+import * as angularPb from '@angular/platform-browser';
 import * as angularForms from '@angular/forms';
 import * as angularCommon from '@angular/common';
 import * as angularCommonHttp from '@angular/common/http';
@@ -28,6 +27,7 @@ import * as SysOSLibFileSystemUi from '@sysos/lib-file-system-ui';
 import * as SysOSLibLogger from '@sysos/lib-logger';
 import * as SysOSLibModal from '@sysos/lib-modal';
 import * as SysOSLibNetApp from '@sysos/lib-netapp';
+import * as SysOSLibScrollSpy from '@sysos/lib-scroll-spy';
 import * as SysOSLibSelectable from '@sysos/lib-selectable';
 import * as SysOSLibServiceInjector from '@sysos/lib-service-injector';
 import * as SysOSLibTypes from '@sysos/lib-types';
@@ -36,8 +36,6 @@ import * as SysOSLibVMWare from '@sysos/lib-vmware';
 
 import * as NgxMonacoEditor from 'ngx-monaco-editor';
 import * as _ from 'lodash';
-
-import * as angularPb from '@angular/platform-browser';
 
 SystemJS.set('@angular/core', SystemJS.newModule(angularCore));
 SystemJS.set('@angular/forms', SystemJS.newModule(angularForms));
@@ -66,6 +64,7 @@ SystemJS.set('@sysos/lib-file-system-ui', SystemJS.newModule(SysOSLibFileSystemU
 SystemJS.set('@sysos/lib-logger', SystemJS.newModule(SysOSLibLogger));
 SystemJS.set('@sysos/lib-modal', SystemJS.newModule(SysOSLibModal));
 SystemJS.set('@sysos/lib-netapp', SystemJS.newModule(SysOSLibNetApp));
+SystemJS.set('@sysos/lib-scroll-spy', SystemJS.newModule(SysOSLibScrollSpy));
 SystemJS.set('@sysos/lib-selectable', SystemJS.newModule(SysOSLibSelectable));
 SystemJS.set('@sysos/lib-service-injector', SystemJS.newModule(SysOSLibServiceInjector));
 SystemJS.set('@sysos/lib-types', SystemJS.newModule(SysOSLibTypes));

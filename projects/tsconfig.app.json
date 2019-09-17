@@ -74,6 +74,12 @@
       "@sysos/lib-folder/*": [
         "dist/libs/sysos-lib-folder/*"
       ],
+      "@sysos/lib-scroll-spy": [
+        "dist/libs/sysos-lib-scroll-spy"
+      ],
+      "@sysos/lib-scroll-spy/*": [
+        "dist/libs/sysos-lib-scroll-spy/*"
+      ],
       "@sysos/lib-selectable": [
         "dist/libs/sysos-lib-selectable"
       ],

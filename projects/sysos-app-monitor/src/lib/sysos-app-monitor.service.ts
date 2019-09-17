@@ -2,7 +2,6 @@ import {ElementRef, Injectable} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
 
 import {SysosLibExtJqueryService} from '@sysos/lib-ext-jquery';
-import {SysosLibExtPerfectscrollbarService} from '@sysos/lib-ext-perfectscrollbar';
 
 declare let NETDATA: any;
 
@@ -12,7 +11,6 @@ declare let NETDATA: any;
 export class SysosAppMonitorService {
 
   private $;
-  private Ps;
 
   private $options: BehaviorSubject<object>;
   private $netdataDashboard: BehaviorSubject<object>;
@@ -36,10 +34,8 @@ export class SysosAppMonitorService {
   runOnceOnDashboardLastRun = 0;
   netdataSnapshotData = null;
 
-  constructor(private jQuery: SysosLibExtJqueryService,
-              private PerfectScrollbar: SysosLibExtPerfectscrollbarService) {
+  constructor(private jQuery: SysosLibExtJqueryService) {
     this.$ = this.jQuery.$;
-    this.Ps = this.PerfectScrollbar.PerfectScrollbar;
 
     this.dataStore = {
       options: {
@@ -459,38 +455,7 @@ export class SysosAppMonitorService {
     return;
   }
 
-  scrollToId(hash) {
-    if (hash && hash !== '' && document.getElementById(hash) !== null) {
-      let el = document.getElementById(hash);
-      el.scrollIntoView();
-    }
-
-    // we must return false to prevent the default action
-    return false;
-  }
-
-  private scrollDashboardTo() {
-    if (this.netdataSnapshotData !== null && typeof this.netdataSnapshotData.hash !== 'undefined') {
-      this.scrollToId(this.netdataSnapshotData.hash.replace('#', ''));
-    }
-  }
-
   private runOnceOnDashboardWithjQuery() {
-    this.scrollDashboardTo();
-
-    this.Ps.initialize(document.getElementById('sidebar'), {
-      wheelSpeed: 0.5,
-      wheelPropagation: true,
-      swipePropagation: true,
-      minScrollbarLength: null,
-      maxScrollbarLength: null,
-      useBothWheelAxes: false,
-      suppressScrollX: true,
-      suppressScrollY: false,
-      scrollXMarginOffset: 0,
-      scrollYMarginOffset: 0,
-      theme: 'default'
-    });
 
 
     //dashboardSettingsSetup();
@@ -546,7 +511,7 @@ export class SysosAppMonitorService {
     }
   }
 
-  alarmsCallback(data) {
+  private alarmsCallback(data) {
     let count = 0, x;
     for (x in data.alarms) {
       if (!data.alarms.hasOwnProperty(x)) {
@@ -566,7 +531,7 @@ export class SysosAppMonitorService {
     }
   }
 
-  initializeCharts() {
+  private initializeCharts() {
     NETDATA.alarms.callback = this.alarmsCallback;
 
     // download all the charts the server knows
@@ -577,7 +542,7 @@ export class SysosAppMonitorService {
     });
   }
 
-  initializeDynamicDashboardWithData(data) {
+  private initializeDynamicDashboardWithData(data) {
     if (data !== null) {
       this.dataStore.options.hostname = data.hostname;
       this.dataStore.options.data = data;

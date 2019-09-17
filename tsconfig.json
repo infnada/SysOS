@@ -91,6 +91,12 @@
       "@sysos/lib-folder/*": [
         "projects/sysos-lib-folder/*"
       ],
+      "@sysos/lib-scroll-spy": [
+        "projects/sysos-lib-scroll-spy/src/public-api"
+      ],
+      "@sysos/lib-scroll-spy/*": [
+        "projects/sysos-lib-scroll-spy/*"
+      ],
       "@sysos/lib-selectable": [
         "projects/sysos-lib-selectable/src/public-api"
       ],

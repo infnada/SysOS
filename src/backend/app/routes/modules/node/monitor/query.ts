@@ -2,19 +2,19 @@ import * as express from 'express';
 import {Decimal} from 'decimal.js';
 
 import {ApiGlobalsModule} from '../../../api/api-globals';
-import {DatabaseMonitorModule, chartsDatabase} from './database';
+import {DatabaseMonitorModule} from './database';
 
 export class QueryMonitorModule {
 
   dataDatabase = new DatabaseMonitorModule().getDataDatabase();
-  chartsDatabase = chartsDatabase;
+  chartsDatabase = new DatabaseMonitorModule().getCharts();
 
   chart: string = this.req.query.chart;
   dimensions: string[] = (this.req.query.dimensions !== undefined ? this.req.query.dimensions.split('|') : []);
-  after: number = (this.req.query.after !== undefined ? parseInt(this.req.query.after) : -600);
-  before: number = (this.req.query.before !== undefined ? parseInt(this.req.query.before) : 0);
-  points: number = (this.req.query.points !== undefined ? parseInt(this.req.query.points) : 20);
-  gtime: number = (this.req.query.gtime !== undefined ? parseInt(this.req.query.gtime) : 0);
+  after: number = (this.req.query.after !== undefined ? parseInt(this.req.query.after, 10) : -600);
+  before: number = (this.req.query.before !== undefined ? parseInt(this.req.query.before, 10) : 0);
+  points: number = (this.req.query.points !== undefined ? parseInt(this.req.query.points, 10) : 20);
+  gtime: number = (this.req.query.gtime !== undefined ? parseInt(this.req.query.gtime, 10) : 0);
   group: string = (this.req.query.group !== undefined ? this.req.query.group : 'average');
   format: string = (this.req.query.format !== undefined ? this.req.query.format : 'json');
   options: string[] = (this.req.query.options !== undefined ? this.req.query.options.split('|') : ['seconds', 'jsonwrap']);
@@ -54,7 +54,7 @@ export class QueryMonitorModule {
   private async parseRequest(): Promise<any> {
     const apiGlobals = new ApiGlobalsModule(this.req, this.res);
 
-    let data = await this.generateResponse();
+    const data = await this.generateResponse();
     return apiGlobals.responseJsonData(data);
   }
 
@@ -65,21 +65,21 @@ export class QueryMonitorModule {
     this.latestValues.shift(); // Remove timestamp from data
 
     if (this.dimensions.length !== 0 || this.options.includes('percentage')) {
-      let dimensions_index = [];
+      const dimensionsIndex = [];
       let currentTotal;
 
       // Some domensions specified could not be correct or not exist in this chart
       if (this.dimensions.length !== 0) {
         // Get dimensions index that we want to delete
         this.dimensionsNames.forEach((obj, i) => {
-          if (!this.dimensions.includes(obj)) dimensions_index.push(i); // +1 because we need to pass the 'time' dimension
+          if (!this.dimensions.includes(obj)) dimensionsIndex.push(i); // +1 because we need to pass the 'time' dimension
         });
 
         // Sort reverse to make sure all data is deleted in order
-        dimensions_index.sort(function(a, b){return b-a});
+        dimensionsIndex.sort((a, b) => b - a);
 
         // Remove non wanted dimensions
-        dimensions_index.forEach(idx => {
+        dimensionsIndex.forEach(idx => {
           this.dimensionsNames.splice(idx, 1);
           this.dimensionsIds.splice(idx, 1);
           this.latestValues.splice(idx, 1);
@@ -100,8 +100,8 @@ export class QueryMonitorModule {
           }, 0);
         }
 
-        if (dimensions_index.length !== 0) {
-          dimensions_index.forEach(idx => {
+        if (dimensionsIndex.length !== 0) {
+          dimensionsIndex.forEach(idx => {
             obj.splice(idx + 1, 1);  // +1 because we need to pass the 'time' dimension
           });
         }
@@ -117,7 +117,7 @@ export class QueryMonitorModule {
 
   private prepareCurrentValues() {
     let res;
-    let timeToReturn = (!this.options.includes('ms') && !this.options.includes('milliseconds') ? this.currentIntervalMax / 1000 : this.currentIntervalMax);
+    const timeToReturn = (!this.options.includes('ms') && !this.options.includes('milliseconds') ? this.currentIntervalMax / 1000 : this.currentIntervalMax);
 
     if (this.options.includes('nonzero')) {
       // TODO delete dimensions that have all values to 0
@@ -190,7 +190,7 @@ export class QueryMonitorModule {
 
     // Set current value as latest value
     if (!this.latestReturnedValues) {
-      this.latestReturnedValues = res.map((d) => { return new Decimal(d).toSignificantDigits(7).toNumber(); });
+      this.latestReturnedValues = res.map((d) => new Decimal(d).toSignificantDigits(7).toNumber());
     }
 
     /**
@@ -227,86 +227,86 @@ export class QueryMonitorModule {
 
     // Set next interval and reset current values
     this.currentValues = [];
-  };
+  }
 
-  private async getDatabaseMatchingData(update_every, first_entry_t, last_entry_t, absolute_period_requested): Promise<any[]> {
+  private async getDatabaseMatchingData(updateEvery, firstEntryT, lastEntryT, absolutePeriodRequested): Promise<any[]> {
     if (!this.dbData || this.dbData.length === 0) return null;
 
-    let points_requested = this.points;
-    let after_requested = this.after;
-    let before_requested = this.before;
-    const resampling_time_requested = this.gtime;
+    let pointsRequested = this.points;
+    let afterRequested = this.after;
+    let beforeRequested = this.before;
+    const resamplingTimeRequested = this.gtime;
 
     const aligned = !(this.options.includes('unaligned'));
 
-    if (!absolute_period_requested) {
-      if (before_requested % update_every) {
+    if (!absolutePeriodRequested) {
+      if (beforeRequested % updateEvery) {
 
-        // make sure it is multiple of update_every
-        if (before_requested > 0) before_requested = before_requested - update_every + before_requested % update_every;
+        // make sure it is multiple of updateEvery
+        if (beforeRequested > 0) beforeRequested = beforeRequested - updateEvery + beforeRequested % updateEvery;
       }
 
-      if (after_requested % update_every) {
+      if (afterRequested % updateEvery) {
 
-        // make sure it is multiple of update_every
-        if (after_requested < 0) after_requested = after_requested - update_every + after_requested % update_every;
+        // make sure it is multiple of updateEvery
+        if (afterRequested < 0) afterRequested = afterRequested - updateEvery + afterRequested % updateEvery;
       }
-      if (after_requested === before_requested) after_requested -= update_every;
+      if (afterRequested === beforeRequested) afterRequested -= updateEvery;
     }
 
     // the duration of the chart
-    let duration = before_requested - after_requested;
-    let available_points = duration / update_every;
+    let duration = beforeRequested - afterRequested;
+    let availablePoints = duration / updateEvery;
 
-    if (duration <= 0 || available_points <= 0) return null;
+    if (duration <= 0 || availablePoints <= 0) return null;
 
     // check the number of wanted points in the result
-    if (points_requested < 0) points_requested = -points_requested;
-    if (points_requested > available_points) points_requested = available_points;
-    if (points_requested === 0) points_requested = available_points;
+    if (pointsRequested < 0) pointsRequested = -pointsRequested;
+    if (pointsRequested > availablePoints) pointsRequested = availablePoints;
+    if (pointsRequested === 0) pointsRequested = availablePoints;
 
     // calculate the desired grouping of source data points
-    let group = available_points / points_requested;
+    let group = availablePoints / pointsRequested;
     if (group <= 0) group = 1;
-    if (available_points % points_requested > points_requested / 2) group = Math.round(group); // rounding to the closest integer
+    if (availablePoints % pointsRequested > pointsRequested / 2) group = Math.round(group); // rounding to the closest integer
 
-    // resampling_time_requested enforces a certain grouping multiple
-    let resampling_divisor = 1.0;
-    let resampling_group = 1;
-    if (resampling_time_requested > update_every) {
-      if (resampling_time_requested > duration) {
+    // resamplingTimeRequested enforces a certain grouping multiple
+    let resamplingDivisor = 1.0;
+    let resamplingGroup = 1;
+    if (resamplingTimeRequested > updateEvery) {
+      if (resamplingTimeRequested > duration) {
         // group_time is above the available duration
-        after_requested = before_requested - resampling_time_requested;
-        duration = before_requested - after_requested;
-        available_points = duration / update_every;
-        group = available_points / points_requested;
+        afterRequested = beforeRequested - resamplingTimeRequested;
+        duration = beforeRequested - afterRequested;
+        availablePoints = duration / updateEvery;
+        group = availablePoints / pointsRequested;
       }
 
       // if the duration is not aligned to resampling time
       // extend the duration to the past, to avoid a gap at the chart
       // only when the missing duration is above 1/10th of a point
-      if (duration % resampling_time_requested) {
-        const delta = duration % resampling_time_requested;
-        if (delta > resampling_time_requested / 10) {
-          after_requested -= resampling_time_requested - delta;
-          duration = before_requested - after_requested;
-          available_points = duration / update_every;
-          group = available_points / points_requested;
+      if (duration % resamplingTimeRequested) {
+        const delta = duration % resamplingTimeRequested;
+        if (delta > resamplingTimeRequested / 10) {
+          afterRequested -= resamplingTimeRequested - delta;
+          duration = beforeRequested - afterRequested;
+          availablePoints = duration / updateEvery;
+          group = availablePoints / pointsRequested;
         }
       }
 
       // the points we should group to satisfy gtime
-      resampling_group = resampling_time_requested / update_every;
-      if (resampling_time_requested % update_every) {
-        resampling_group++;
+      resamplingGroup = resamplingTimeRequested / updateEvery;
+      if (resamplingTimeRequested % updateEvery) {
+        resamplingGroup++;
       }
 
-      // adapt group according to resampling_group
-      if (group < resampling_group) group = resampling_group; // do not allow grouping below the desired one
-      if (group % resampling_group) group += resampling_group - (group % resampling_group); // make sure group is multiple of resampling_group
+      // adapt group according to resamplingGroup
+      if (group < resamplingGroup) group = resamplingGroup; // do not allow grouping below the desired one
+      if (group % resamplingGroup) group += resamplingGroup - (group % resamplingGroup); // make sure group is multiple of resamplingGroup
 
-      // resampling_divisor = group / resampling_group;
-      resampling_divisor = (group * update_every) / resampling_time_requested;
+      // resamplingDivisor = group / resamplingGroup;
+      resamplingDivisor = (group * updateEvery) / resamplingTimeRequested;
     }
 
     // now that we have group,
@@ -314,62 +314,62 @@ export class QueryMonitorModule {
 
     if (aligned) {
       // alignement has been requested, so align the values
-      before_requested -= before_requested % (group * update_every);
-      after_requested -= after_requested % (group * update_every);
+      beforeRequested -= beforeRequested % (group * updateEvery);
+      afterRequested -= afterRequested % (group * updateEvery);
     }
 
     // we align the request on requested_before
-    let before_wanted = before_requested;
-    if (before_wanted > last_entry_t) {
-      before_wanted = last_entry_t - (last_entry_t % (((aligned) ? group : 1) * update_every));
+    let beforeWanted = beforeRequested;
+    if (beforeWanted > lastEntryT) {
+      beforeWanted = lastEntryT - (lastEntryT % (((aligned) ? group : 1) * updateEvery));
     }
 
     // we need to estimate the number of points, for having an integer number of values per point
-    let points_wanted = (before_wanted - after_requested) / (update_every * group);
+    let pointsWanted = (beforeWanted - afterRequested) / (updateEvery * group);
 
-    let after_wanted = before_wanted - (points_wanted * group * update_every) + update_every;
-    if (after_wanted < first_entry_t) {
-      // hm... we go to the past, calculate again points_wanted using all the db from before_wanted to the beginning
-      points_wanted = (before_wanted - first_entry_t) / group;
+    let afterWanted = beforeWanted - (pointsWanted * group * updateEvery) + updateEvery;
+    if (afterWanted < firstEntryT) {
+      // hm... we go to the past, calculate again pointsWanted using all the db from beforeWanted to the beginning
+      pointsWanted = (beforeWanted - firstEntryT) / group;
 
       // recalculate after wanted with the new number of points
-      after_wanted = before_wanted - (points_wanted * group * update_every) + update_every;
+      afterWanted = beforeWanted - (pointsWanted * group * updateEvery) + updateEvery;
 
-      if (after_wanted < first_entry_t) {
-        after_wanted = first_entry_t - (first_entry_t % (((aligned) ? group : 1) * update_every)) + (((aligned) ? group : 1) * update_every);
+      if (afterWanted < firstEntryT) {
+        afterWanted = firstEntryT - (firstEntryT % (((aligned) ? group : 1) * updateEvery)) + (((aligned) ? group : 1) * updateEvery);
       }
     }
 
     // check if they are reversed
-    if (after_wanted > before_wanted) {
-      const tmp = before_wanted;
-      before_wanted = after_wanted;
-      after_wanted = tmp;
+    if (afterWanted > beforeWanted) {
+      const tmp = beforeWanted;
+      beforeWanted = afterWanted;
+      afterWanted = tmp;
     }
 
-    // recalculate points_wanted using the final time-frame
-    points_wanted = (before_wanted - after_wanted) / update_every / group + 1;
-    if (points_wanted < 0) {
-      points_wanted = 0;
+    // recalculate pointsWanted using the final time-frame
+    pointsWanted = (beforeWanted - afterWanted) / updateEvery / group + 1;
+    if (pointsWanted < 0) {
+      pointsWanted = 0;
     }
 
     // -------------------------------------------------------------------------
     // initialize our result set
 
-    if (!points_wanted) return null;
+    if (!pointsWanted) return null;
 
     // -------------------------------------------------------------------------
     // initialize RRDR
 
     const r = {
-      group: group,
-      update_every: group * update_every,
-      before: Math.floor(before_wanted * 1000),
-      after: Math.floor(after_wanted * 1000),
-      points_wanted: Math.floor(points_wanted),
+      group,
+      updateEvery: group * updateEvery,
+      before: Math.floor(beforeWanted * 1000),
+      after: Math.floor(afterWanted * 1000),
+      pointsWanted: Math.floor(pointsWanted),
       internal: {
-        resampling_group: resampling_group,
-        resampling_divisor: resampling_divisor
+        resamplingGroup,
+        resamplingDivisor
       }
     };
 
@@ -386,21 +386,21 @@ export class QueryMonitorModule {
     this.currentIntervalMax = r.before;
     this.currentIntervalMin = Math.round(r.before - group * 1000);
 
-    let BreakException = {};
+    const BreakException = {};
     try {
       this.dbMatchingData.forEach((obj) => {
         this.intervalNotFound = true;
 
         // Finish forEach if we already have all points wanted
-        if (this.currentResult.length >= r.points_wanted) throw BreakException;
+        if (this.currentResult.length >= r.pointsWanted) throw BreakException;
 
         // Keep the loop till the obj matches the interval
-        while(this.intervalNotFound) {
+        while (this.intervalNotFound) {
           // safe exit
           if (this.currentIntervalMin < r.after) return this.intervalNotFound = false;
 
           // Get all objects inside current interval
-          let timestampIndex = (this.options.includes('percentage') ? 1 : 0);
+          const timestampIndex = (this.options.includes('percentage') ? 1 : 0);
           if (obj[timestampIndex] <= this.currentIntervalMax && obj[timestampIndex] > this.currentIntervalMin && this.currentValues.length <= r.group) {
             this.currentValues.push(obj);
             this.intervalNotFound = false;
@@ -408,7 +408,7 @@ export class QueryMonitorModule {
             this.prepareCurrentValues();
 
             this.currentIntervalMax = this.currentIntervalMin;
-            this.currentIntervalMin -= Math.round((r.update_every / r.group) * 1000);
+            this.currentIntervalMin -= Math.round((r.updateEvery / r.group) * 1000);
           }
         }
 
@@ -423,54 +423,54 @@ export class QueryMonitorModule {
   }
 
   private convertBeforeAfterToAbsolute(firstEntryTimestamp, lastEntryTimestamp): 1 | 0 {
-    let before_requested = this.before;
-    let after_requested = this.after;
-    let absolute_period_requested;
+    let beforeRequested = this.before;
+    let afterRequested = this.after;
+    let absolutePeriodRequested;
 
-    if (before_requested === 0 && after_requested === 0) {
+    if (beforeRequested === 0 && afterRequested === 0) {
       // dump the all the data
-      before_requested = lastEntryTimestamp;
-      after_requested = firstEntryTimestamp;
-      absolute_period_requested = 0;
+      beforeRequested = lastEntryTimestamp;
+      afterRequested = firstEntryTimestamp;
+      absolutePeriodRequested = 0;
     }
 
     // allow relative for before (smaller than API_RELATIVE_TIME_MAX)
-    if (Math.abs(before_requested) <= (3 * 365 * 86400)) {
-      if (before_requested > 0) {
-        before_requested = firstEntryTimestamp + before_requested;
+    if (Math.abs(beforeRequested) <= (3 * 365 * 86400)) {
+      if (beforeRequested > 0) {
+        beforeRequested = firstEntryTimestamp + beforeRequested;
       } else {
-        before_requested = lastEntryTimestamp + before_requested; // last_entry_t is not really now_t
+        beforeRequested = lastEntryTimestamp + beforeRequested; // lastEntryT is not really now_t
       }
-      // TODO: fix before_requested to be relative to now_t
-      absolute_period_requested = 0;
+      // TODO: fix beforeRequested to be relative to now_t
+      absolutePeriodRequested = 0;
     }
 
     // allow relative for after (smaller than API_RELATIVE_TIME_MAX)
-    if (Math.abs(after_requested) <= (3 * 365 * 86400)) {
-      after_requested = before_requested + after_requested;
-      absolute_period_requested = 0;
+    if (Math.abs(afterRequested) <= (3 * 365 * 86400)) {
+      afterRequested = beforeRequested + afterRequested;
+      absolutePeriodRequested = 0;
     }
 
-    if (absolute_period_requested === -1) absolute_period_requested = 1;
+    if (absolutePeriodRequested === -1) absolutePeriodRequested = 1;
 
     // make sure they are within our timeframe
-    if (before_requested > lastEntryTimestamp) before_requested = lastEntryTimestamp;
-    if (before_requested < firstEntryTimestamp) before_requested = firstEntryTimestamp;
+    if (beforeRequested > lastEntryTimestamp) beforeRequested = lastEntryTimestamp;
+    if (beforeRequested < firstEntryTimestamp) beforeRequested = firstEntryTimestamp;
 
-    if (after_requested > lastEntryTimestamp) after_requested = lastEntryTimestamp;
-    if (after_requested < firstEntryTimestamp) after_requested = firstEntryTimestamp;
+    if (afterRequested > lastEntryTimestamp) afterRequested = lastEntryTimestamp;
+    if (afterRequested < firstEntryTimestamp) afterRequested = firstEntryTimestamp;
 
     // check if they are reversed
-    if (after_requested > before_requested) {
-      const tmp = before_requested;
-      before_requested = after_requested;
-      after_requested = tmp;
+    if (afterRequested > beforeRequested) {
+      const tmp = beforeRequested;
+      beforeRequested = afterRequested;
+      afterRequested = tmp;
     }
 
-    this.before = before_requested;
-    this.after = after_requested;
+    this.before = beforeRequested;
+    this.after = afterRequested;
 
-    return absolute_period_requested;
+    return absolutePeriodRequested;
   }
 
   private async generateResponse() {
@@ -494,7 +494,7 @@ export class QueryMonitorModule {
     /**
      * before & after to absolute
      */
-    const absolute_period_requested = this.convertBeforeAfterToAbsolute(firstEntryTimestamp, lastEntryTimestamp);
+    const absolutePeriodRequested = this.convertBeforeAfterToAbsolute(firstEntryTimestamp, lastEntryTimestamp);
 
     /**
      * Get matching data
@@ -504,7 +504,7 @@ export class QueryMonitorModule {
       this.dimensionsNames.push(chartInfo.dimensions[d].name);
     });
 
-    let data = await this.getDatabaseMatchingData(chartInfo.update_every, firstEntryTimestamp, lastEntryTimestamp, absolute_period_requested);
+    await this.getDatabaseMatchingData(chartInfo.update_every, firstEntryTimestamp, lastEntryTimestamp, absolutePeriodRequested);
 
     // Create labels
     let resultLabels;
@@ -521,13 +521,13 @@ export class QueryMonitorModule {
     if (this.options.includes('flip')) this.currentResult.reverse();
 
     let resultData;
-      if (this.format === 'array') {
-        resultData = this.currentResult;
-      } else {
-        resultData = {
-          labels: resultLabels,
-          data: this.currentResult
-        }
+    if (this.format === 'array') {
+      resultData = this.currentResult;
+    } else {
+      resultData = {
+        labels: resultLabels,
+        data: this.currentResult
+      };
     }
 
     if (this.options.includes('jsonwrap')) {
@@ -535,9 +535,9 @@ export class QueryMonitorModule {
         api: 1, // 'The API version this conforms to, currently 1'
         id: this.chart, // 'The unique id of the chart'
         name: chartInfo.name, // 'The name of the chart'
-        view_update_every: chartInfo.update_every, // TODO 'The current view appropriate update frequency of this chart, in seconds.
+        view_updateEvery: chartInfo.update_every, // TODO 'The current view appropriate update frequency of this chart, in seconds.
         // There is no point to request chart refreshes, using the same settings, more frequently than this.'
-        update_every: chartInfo.update_every, // 'The update frequency of this chart, in seconds.
+        updateEvery: chartInfo.update_every, // 'The update frequency of this chart, in seconds.
         // One value every this amount of time is kept in the round robin database (indepedently of the current view).'
         first_entry: firstEntryTimestamp, // The UNIX timestamp of the first entry (the oldest) in the round robin database.
         last_entry: lastEntryTimestamp, // The UNIX timestamp of the latest entry in the round robin database.
