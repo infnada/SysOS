@@ -152,7 +152,7 @@ export class SysosAppSftpService {
       },
       error => {
         this.logger.error('Sftp', 'Error while saving connection', loggerArgs, error);
-        this.Toastr.error('Error while saving connection.', 'Infrastructure Manager');
+        this.Toastr.error('Error while saving connection.', 'SFTP');
       });
 
   }

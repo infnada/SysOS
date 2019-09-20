@@ -7,7 +7,7 @@ declare var window: any;
   imports: [],
   exports: []
 })
-export class SysosLibMxgraphModule {
+export class SysosLibExtMxgraphModule {
   constructor() {
 
     // urlParams is null when used for embedding

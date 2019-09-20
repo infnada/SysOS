@@ -8,7 +8,7 @@ import {mxgraph, mx} from './types/mxgraph';
 @Injectable({
   providedIn: 'root'
 })
-export class SysosLibMxgraphService {
+export class SysosLibExtMxgraphService {
 
   public mx: mxgraph;
 

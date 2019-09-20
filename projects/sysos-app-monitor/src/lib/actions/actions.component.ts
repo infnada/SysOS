@@ -26,27 +26,30 @@ export class ActionsComponent implements OnInit {
   }
 
   openOptionsModal() {
-    this.Modal.openRegisteredModal('monitor-options', '.window--monitor .window__main', {}).then((modalInstance) => {
-      modalInstance.result.then((selectedData) => {
-
-
-      });
-    });
+    this.Modal.openRegisteredModal('monitor-options', '.window--monitor .window__main', {});
   }
 
   newConnection() {
+    if (this.activeConnection === null) return;
 
+    this.Monitor.setActiveConnection(null);
   }
 
   editConnection() {
+    if (this.activeConnection === null) return;
 
+    this.Monitor.editConnection();
   }
 
   disconnectConnection() {
+    if (this.activeConnection === null) return;
 
+    this.Monitor.disconnectConnection();
   }
 
   deleteConnection() {
+    if (this.activeConnection === null) return;
 
+    this.Monitor.deleteConnection();
   }
 }

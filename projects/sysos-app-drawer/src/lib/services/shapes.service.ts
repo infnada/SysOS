@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 
-import {SysosLibMxgraphService} from '@sysos/lib-mxgraph';
+import {SysosLibExtMxgraphService} from '@sysos/lib-ext-mxgraph';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +9,7 @@ export class ShapesService {
 
   private mx;
 
-  constructor(private MxgraphService: SysosLibMxgraphService) {
+  constructor(private MxgraphService: SysosLibExtMxgraphService) {
     this.mx = this.MxgraphService.mx;
   }
 

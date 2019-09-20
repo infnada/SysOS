@@ -192,7 +192,7 @@ export class SysosAppSshService {
       },
       error => {
         this.logger.error('Ssh', 'Error while saving connection', loggerArgs, error);
-        this.Toastr.error('Error while saving connection.', 'Infrastructure Manager');
+        this.Toastr.error('Error while saving connection.', 'SSH');
       });
   }
 

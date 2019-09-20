@@ -1,6 +1,6 @@
 {
   "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
-  "dest": "../../dist/libs/sysos-lib-mxgraph",
+  "dest": "../../dist/libs/sysos-lib-ext-mxgraph",
   "lib": {
     "entryFile": "src/public-api.ts"
   },

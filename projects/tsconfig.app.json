@@ -8,11 +8,11 @@
       "@sysos/lib-logger/*": [
         "dist/libs/sysos-lib-logger/*"
       ],
-      "@sysos/lib-mxgraph": [
-        "dist/libs/sysos-lib-mxgraph"
+      "@sysos/lib-ext-mxgraph": [
+        "dist/libs/sysos-lib-ext-mxgraph"
       ],
-      "@sysos/lib-mxgraph/*": [
-        "dist/libs/sysos-lib-mxgraph/*"
+      "@sysos/lib-ext-mxgraph/*": [
+        "dist/libs/sysos-lib-ext-mxgraph/*"
       ],
       "@sysos/lib-application": [
         "dist/libs/sysos-lib-application"
