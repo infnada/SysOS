@@ -1,0 +1,72 @@
+.modal-monitor-options {
+  .mat-slide-toggle-bar {
+    width: 110px !important;
+    height: 35px;
+    border-radius: 5px;
+    color: #333;
+    background-color: #e6e6e6;
+    border-color: #adadad;
+
+    &:hover {
+      background-color: #d4d4d4;
+      border-color: #8c8c8c;
+    }
+  }
+
+  .mat-slide-toggle-thumb {
+    height: 35px;
+    width: 14px;
+    border-radius: 5px;
+    background-color: #fff;
+    border-color: #ccc;
+  }
+
+  .mat-slide-toggle-thumb-container {
+    height: 35px;
+    top: 0;
+  }
+
+  .mat-ripple-element {
+    border-radius: 20px;
+  }
+
+  .mat-slide-toggle .mat-slide-toggle-ripple {
+    left: calc(50% - 13px);
+    width: 20px;
+  }
+
+  .mat-slide-toggle-content {
+    width: 75px;
+    left: 30px;
+    position: absolute;
+    color: #fff;
+    text-align: center;
+    font-size: 14px;
+    font-weight: normal;
+  }
+
+  .mat-slide-toggle.mat-checked {
+    .mat-slide-toggle-content {
+      left: 25px;
+    }
+
+    .mat-slide-toggle-thumb-container {
+      transform: translate3d(95px,0,0);
+    }
+
+    .mat-slide-toggle-thumb {
+      background-color: #fff;
+    }
+
+    .mat-slide-toggle-bar {
+      background-color: #62c462;
+
+      &:hover {
+        color: #fff;
+        background-color: #449d44;
+        border-color: #398439;
+      }
+    }
+  }
+}
+

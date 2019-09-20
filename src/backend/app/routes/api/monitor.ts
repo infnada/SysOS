@@ -13,7 +13,7 @@ const router = Router();
 /**
  * getCharts
  */
-router.get('/charts', (req: express.Request, res: express.Response) => {
+router.get('/charts/:uuid/', (req: express.Request, res: express.Response) => {
   logger.info(`[API Monitor] -> getCharts -> connectionUuid []`);
 
   const apiGlobals = new ApiGlobalsModule(req, res);
@@ -25,7 +25,7 @@ router.get('/charts', (req: express.Request, res: express.Response) => {
 /**
  * getChart
  */
-router.get('/chart', (req: express.Request, res: express.Response) => {
+router.get('/chart/:uuid/', (req: express.Request, res: express.Response) => {
   logger.info(`[API Monitor] -> getChart -> connectionUuid [], chart [${req.query.chart}]`);
 
   const apiGlobals = new ApiGlobalsModule(req, res);
@@ -87,7 +87,7 @@ router.get('/chart', (req: express.Request, res: express.Response) => {
 /**
  * getData
  */
-router.get('/data', (req: express.Request, res: express.Response) => {
+router.get('/data/:uuid/', (req: express.Request, res: express.Response) => {
   logger.info(`[API Monitor] -> getData -> connectionUuid [], chart [${req.query.chart}]`);
 
   if (!req.query.chart) console.log('no chart');

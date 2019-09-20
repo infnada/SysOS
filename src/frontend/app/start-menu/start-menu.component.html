@@ -1,7 +1,7 @@
 <div class="start-menu" [ngClass]="{'start-menu--open' : taskbarItemOpen == 'start'}">
   <div class="start-menu__list">
     <div class="media">
-      <a class="user-info menu-toggle"  (click)="openMenu('user')">
+      <a class="user-info menu-toggle" (click)="openMenu('user')">
         <img class="user-info__img media__img" src="/assets/img/KkCqvK9.png" alt="User image">
         <div class="user-info__name media__body">
           User Name
@@ -12,7 +12,7 @@
         <a >Lock</a>
         <a >Sign out</a>
       </div>
-      <a class="user-info__power menu-toggle"  (click)="openMenu('power')">
+      <a class="user-info__power menu-toggle" (click)="openMenu('power')">
         <i class="fa fa-power-off"></i>
       </a>
     </div>

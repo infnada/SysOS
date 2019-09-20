@@ -148,7 +148,10 @@ Don't hesitate to provide a Logo and Backgrounds :)
 
 - Others
 
-`@anyopsos/lib-scroll-spy`
+`@anyopsos/lib-scroll-spy` => Directive
+
+`@anyopsos/lib-sanitize-html` => Pipe
+
 
 - External libraries ready to use in anyOpsOS
 

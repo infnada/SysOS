@@ -36,7 +36,7 @@ fs.readFile('dist/SysOS/filesystem/bin/applications/sysos-app-monitor.umd.js', '
 
   // Set correct URL
   result = result.replace(/NETDATA\._scriptSource = function \(\) {(.+?(?=};))};/s, 'NETDATA._scriptSource = function () {\n' +
-    '        return window.location.origin;\n' +
+    '        return (connection.type === \'netdata\' ? connection.url : window.location.origin);\n' +
     '    };');
 
   // Do not load dynamic css
@@ -46,7 +46,7 @@ fs.readFile('dist/SysOS/filesystem/bin/applications/sysos-app-monitor.umd.js', '
   result = result.replace(/NETDATA\._loadjQuery\(function \(\) {(.+?(?=}\);))(.+?(?=}\);))}\);/s, 'NETDATA.start();');
 
   // Remove global and make it inside Dashboard function to call it from angular
-  result = result.replace('(function(window, document, $, undefined$1) {', 'var Dashboard = function($, Dygraph, Gauge, Ps, undefined$1) {');
+  result = result.replace('(function(window, document, $, undefined$1) {', 'var Dashboard = function(connection, $, Dygraph, Gauge, Ps, undefined$1) {');
   result = result.replace('})(window, document, (typeof jQuery === \'function\')?jQuery:undefined);', '};');
   result = result.replace('    var Dashboard = /*#__PURE__*/Object.freeze({\n' +
     '\n' +
@@ -99,12 +99,15 @@ fs.readFile('dist/SysOS/filesystem/bin/applications/sysos-app-monitor.umd.js', '
   result = result.replace(/smoothPlotter/g, 'Dygraph.smoothPlotter');
 
   // Change url where to fetch server data
-  result = result.replace(/api\/v1\/charts/g, 'api/monitor/charts');
-  result = result.replace(/api\/v1\/chart/g, 'api/monitor/chart');
-  result = result.replace(/api\/v1\/data/g, 'api/monitor/data');
-  result = result.replace('data = NETDATA.xss.checkOptional(\'/api/monitor/charts\', data);', 'data = NETDATA.xss.checkOptional(\'/api/monitor/charts\', data.data);');
-  result = result.replace('chart = NETDATA.xss.checkOptional(\'/api/monitor/chart\', chart);', 'chart = NETDATA.xss.checkOptional(\'/api/monitor/chart\', chart.data);');
-  result = result.replace('data = NETDATA.xss.checkData(\'/api/monitor/data\', data, that.library.xssRegexIgnore);', 'data = NETDATA.xss.checkData(\'/api/monitor/data\', data.data, that.library.xssRegexIgnore);');
+  result = result.replace('data = NETDATA.xss.checkOptional(\'/api/v1/charts\', data);', 'data = NETDATA.xss.checkOptional(\'/api/v1/charts\', (connection.type === \'netdata\' ? data : data.data));');
+  result = result.replace('chart = NETDATA.xss.checkOptional(\'/api/v1/chart\', chart);', 'chart = NETDATA.xss.checkOptional(\'/api/v1/chart\', (connection.type === \'netdata\' ? chart : chart.data));');
+  result = result.replace('data = NETDATA.xss.checkData(\'/api/v1/data\', data, that.library.xssRegexIgnore);', 'data = NETDATA.xss.checkData(\'/api/v1/data\', (connection.type === \'netdata\' ? data : data.data), that.library.xssRegexIgnore);');
+  result = result.replace('data = NETDATA.xss.checkData(\'/api/v1/data\', data, this.library.xssRegexIgnore);', 'data = NETDATA.xss.checkData(\'/api/v1/data\', (connection.type === \'netdata\' ? data : data.data), this.library.xssRegexIgnore);');
+
+  result = result.replace(/'\/api\/v1\/charts'/g, '(connection.type === \'netdata\' ? \'/api/v1/charts\' : \'/api/monitor/charts/\' + connection.uuid + \'/\')');
+  result = result.replace(/'\/api\/v1\/chart'/g, '(connection.type === \'netdata\' ? \'/api/v1/chart\' : \'/api/monitor/chart/\' + connection.uuid + \'/\')');
+  result = result.replace(/'\/api\/v1\/data'/g, '(connection.type === \'netdata\' ? \'/api/v1/data\' : \'/api/monitor/data/\' + connection.uuid + \'/\')');
+
 
   result = result.replace('key = key + \'.\' + _this.dataStore.netdataDashboard.sparklines_registry[key].count;', 'key = key + \'.\' + 1');
 

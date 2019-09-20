@@ -1,0 +1,168 @@
+<div class="modal-header">
+  <div class="modal-title" id="modal-title">Monitor Options</div>
+  <div class="window__controls window__controls--right">
+    <a class="window__close" (click)="activeModal.dismiss(); $event.stopPropagation();">
+      <i class="fa fa-close"></i>
+    </a>
+  </div>
+</div>
+<div class="modal-body modal-monitor-options" id="modal-body">
+  <mat-tab-group dynamicHeight>
+    <mat-tab label="Performance">
+      <table class="table table-hover m-t-xl">
+        <tbody>
+        <tr>
+          <th class="w-25 p-m"><mat-slide-toggle class="mb-3" (change)="optionChanged('stop_updates_when_focus_is_lost', stop_updates_when_focus_is_lost)" [(ngModel)]="stop_updates_when_focus_is_lost" [ngModelOptions]="{standalone: true}">{{stop_updates_when_focus_is_lost ? 'On Focus' : 'Always'}}</mat-slide-toggle></th>
+          <td>
+            <p><strong>When to refresh the charts?</strong></p>
+            <p>When set to <strong>On Focus</strong>, the charts will stop being updated if the page / tab does not have the focus of the user. When set to <strong>Always</strong>, the charts will always be refreshed. Set it to On Focus it to lower the CPU requirements of the browser (and extend the battery of laptops and tablets) when this page does not have your focus. Set to <strong>Always</strong> to work on another window (i.e. change the settings of something) and have the charts auto-refresh in this window.</p>
+          </td>
+        </tr>
+        <tr>
+          <th class="w-25 p-m"><mat-slide-toggle class="mb-3" (change)="optionChanged('eliminate_zero_dimensions', eliminate_zero_dimensions)" [(ngModel)]="eliminate_zero_dimensions" [ngModelOptions]="{standalone: true}">{{eliminate_zero_dimensions ? 'Non Zero' : 'All'}}</mat-slide-toggle></th>
+          <td>
+            <p><strong>Which dimensions to show?</strong></p>
+            <p>When set to <strong>Non Zero</strong>, dimensions that have all their values (within the current view) set to zero will not be transferred from the netdata server (except if all dimensions of the chart are zero, in which case this setting does nothing - all dimensions are transferred and shown). When set to <strong>All</strong>, all dimensions will always be shown. Set it to <strong>Non Zero</strong> to lower the data transferred between netdata and your browser, lower the CPU requirements of your browser (fewer lines to draw) and increase the focus on the legends (fewer entries at the legends).</p>
+          </td>
+        </tr>
+        <tr>
+          <th class="w-25 p-m"><mat-slide-toggle class="mb-3" (change)="optionChanged('destroy_on_hide', destroy_on_hide)" [(ngModel)]="destroy_on_hide" [ngModelOptions]="{standalone: true}">{{destroy_on_hide ? 'Destroy' : 'Hide'}}</mat-slide-toggle></th>
+          <td>
+            <p><strong>How to handle hidden charts?</strong></p>
+            <p>When set to <strong>Destroy</strong>, charts that are not in the current viewport of the browser (are above, or below the visible area of the page), will be destroyed and re-created if and when they become visible again. When set to <strong>Hide</strong>, the not-visible charts will be just hidden, to simplify the DOM and speed up your browser. Set it to <strong>Destroy</strong>, to lower the memory requirements of your browser. Set it to <strong>Hide</strong> for faster restoration of charts on page scrolling.</p>
+          </td>
+        </tr>
+        <tr>
+          <th class="w-25 p-m"><mat-slide-toggle class="mb-3" (change)="optionChanged('async_on_scroll', async_on_scroll)" [(ngModel)]="async_on_scroll" [ngModelOptions]="{standalone: true}">{{async_on_scroll ? 'Async' : 'Sync'}}</mat-slide-toggle></th>
+          <td>
+            <p><strong>Page scroll handling?</strong></p>
+            <p>When set to <strong>Sync</strong>, charts will be examined for their visibility immediately after scrolling. On slow computers this may impact the smoothness of page scrolling. To update the page when scrolling ends, set it to <strong>Async</strong>. Set it to <strong>Sync</strong> for immediate chart updates when scrolling. Set it to <strong>Async</strong> for smoother page scrolling on slower computers.</p>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </mat-tab>
+    <mat-tab label="Synchronization">
+      <table class="table table-hover m-t-xl">
+        <tbody>
+        <tr>
+          <th class="w-25 p-m"><mat-slide-toggle class="mb-3" (change)="optionChanged('parallel_refresher', parallel_refresher)" [(ngModel)]="parallel_refresher" [ngModelOptions]="{standalone: true}">{{parallel_refresher ? 'Parallel' : 'Sequential'}}</mat-slide-toggle></th>
+          <td>
+            <p><strong>Which chart refresh policy to use?</strong></p>
+            <p>When set to <strong>Parallel</strong>, visible charts are refreshed in parallel (all queries are sent to netdata server in parallel) and are rendered asynchronously. When set to <strong>Sequential</strong> charts are refreshed one after another. Set it to <strong>Parallel</strong> if your browser can cope with it (most modern browsers do), set it to <strong>Sequential</strong> if you work on an older/slower computer.</p>
+          </td>
+        </tr>
+        <tr *ngIf="parallel_refresher">
+          <th class="w-25 p-m"><mat-slide-toggle class="mb-3" (change)="optionChanged('concurrent_refreshes', concurrent_refreshes)" [(ngModel)]="concurrent_refreshes" [ngModelOptions]="{standalone: true}">{{concurrent_refreshes ? 'Resync' : 'Best Effort'}}</mat-slide-toggle></th>
+          <td>
+            <p><strong>Shall we re-sync chart refreshes?</strong></p>
+            <p>When set to <strong>Resync</strong>, the dashboard will attempt to re-synchronize all the charts so that they are refreshed concurrently. When set to <strong>Best Effort</strong>, each chart may be refreshed with a little time difference to the others. Normally, the dashboard starts refreshing them in parallel, but depending on the speed of your computer and the network latencies, charts start having a slight time difference. Setting this to <strong>Resync</strong> will attempt to re-synchronize the charts on every update. Setting it to <strong>Best Effort</strong> may lower the pressure on your browser and the network.</p>
+          </td>
+        </tr>
+        <tr>
+          <th class="w-25 p-m"><mat-slide-toggle class="mb-3" (change)="optionChanged('sync_selection', sync_selection)" [(ngModel)]="sync_selection" [ngModelOptions]="{standalone: true}">{{sync_selection ? 'Sync' : 'Don\'t Sync'}}</mat-slide-toggle></th>
+          <td>
+            <p><strong>Sync hover selection on all charts?</strong></p>
+            <p>When enabled, a selection on one chart will automatically select the same time on all other visible charts and the legends of all visible charts will be updated to show the selected values. When disabled, only the chart getting the user's attention will be selected. Enable it to get better insights of the data. Disable it if you are on a very slow computer that cannot actually do it.</p>
+          </td>
+        </tr>
+        <tr>
+          <th class="w-25 p-m"><mat-slide-toggle class="mb-3" (change)="optionChanged('sync_pan_and_zoom', sync_pan_and_zoom)" [(ngModel)]="sync_pan_and_zoom" [ngModelOptions]="{standalone: true}">{{sync_pan_and_zoom ? 'Sync' : 'Don\'t Sync'}}</mat-slide-toggle></th>
+          <td>
+            <p><strong>Sync pan and zoom on all charts?</strong></p>
+            <p>When enabled, pan and zoom operations on a chart will be replicated to all charts (even the ones that are not currently visible - of course only when they will become visible). When disabled, pan and zoom operations will not be propagated to other charts.</p>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </mat-tab>
+    <mat-tab label="Visual">
+      <table class="table table-hover m-t-xl">
+        <tbody>
+        <tr>
+          <th class="w-25 p-m"><mat-slide-toggle class="mb-3" (change)="optionChanged('theme', (netdata_theme_control ? 'slate' : 'white'))" [(ngModel)]="netdata_theme_control" [ngModelOptions]="{standalone: true}">{{netdata_theme_control ? 'Dark' : 'White'}}</mat-slide-toggle></th>
+          <td>
+            <p><strong>Which theme to use?</strong></p>
+            <p>Netdata comes with two themes: <strong>Dark</strong> (the default) and <strong>White</strong>.
+              <br>
+              <strong>Switching this will reload the dashboard</strong>.</p>
+          </td>
+        </tr>
+        <tr>
+          <th class="w-25 p-m"><mat-slide-toggle class="mb-3" (change)="optionChanged('show_help', show_help)" [(ngModel)]="show_help" [ngModelOptions]="{standalone: true}">{{show_help ? 'Help Me' : 'No Help'}}</mat-slide-toggle></th>
+          <td>
+            <p><strong>Do you need help?</strong></p>
+            <p>Netdata can show some help in some areas to help you use the dashboard. If all these balloons bother you, disable them using this switch.
+              <br>
+              <strong>Switching this will reload the dashboard</strong>.</p>
+          </td>
+        </tr>
+        <tr>
+          <th class="w-25 p-m"><mat-slide-toggle class="mb-3" (change)="optionChanged('pan_and_zoom_data_padding', pan_and_zoom_data_padding)" [(ngModel)]="pan_and_zoom_data_padding" [ngModelOptions]="{standalone: true}">{{pan_and_zoom_data_padding ? 'Pad' : 'Don\'t Pad'}}</mat-slide-toggle></th>
+          <td>
+            <p><strong>Enable data padding when panning and zooming?</strong></p>
+            <p>When set to <strong>Pad</strong> the charts will be padded with more data, both before and after the visible area, thus giving the impression the whole database is loaded. This padding will happen only after the first pan or zoom operation on the chart (initially all charts have only the visible data). When set to <strong>Don't Pad</strong> only the visible data will be transfered from the netdata server, even after the first pan and zoom operation.</p>
+          </td>
+        </tr>
+        <tr>
+          <th class="w-25 p-m"><mat-slide-toggle class="mb-3" (change)="optionChanged('smooth_plot', smooth_plot)" [(ngModel)]="smooth_plot" [ngModelOptions]="{standalone: true}">{{smooth_plot ? 'Smooth' : 'Roughc'}}</mat-slide-toggle></th>
+          <td>
+            <p><strong>Enable Bézier lines on charts?</strong></p>
+            <p>When set to <strong>Smooth</strong> the charts libraries that support it, will plot smooth curves instead of simple straight lines to connect the points.
+              <br>
+              Keep in mind <a href="http://dygraphs.com" target="_blank">dygraphs</a>, the main charting library in netdata dashboards, can only smooth line charts. It cannot smooth area or stacked charts. When set to <strong>Rough</strong>, this setting can lower the CPU resources consumed by your browser.</p>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </mat-tab>
+    <mat-tab label="Locale">
+      <table class="table table-hover m-t-xl">
+        <tbody>
+        <tr>
+          <th class="w-25 p-m"><mat-slide-toggle class="mb-3" (change)="optionChanged('units', (units_conversion ? 'auto' : 'original'))" [(ngModel)]="units_conversion" [ngModelOptions]="{standalone: true}">{{units_conversion ? 'Scale Units' : 'Fixed Units'}}</mat-slide-toggle></th>
+          <td>
+            <p><strong>Enable auto-scaling of select units?</strong></p>
+            <p>When set to <strong>Scale Units</strong> the values shown will dynamically be scaled (e.g. 1000 kilobits will be shown as 1 megabit).
+              Netdata can auto-scale these original units: <code>kilobits/s</code>, <code>kilobytes/s</code>, <code>KB/s</code>,
+              <code>KB</code>, <code>MB</code>, and <code>GB</code>.
+              When set to <strong>Fixed Units</strong> all the values will be rendered using the original units maintained by the netdata server.</p>
+          </td>
+        </tr>
+        <tr *ngIf="units_conversion">
+          <th class="w-25 p-m"><mat-slide-toggle class="mb-3" (change)="optionChanged('temperature', (units_temp ? 'celsius' : 'fahrenheit'))" [(ngModel)]="units_temp" [ngModelOptions]="{standalone: true}">{{units_temp ? 'Celsius' : 'Fahrenheit'}}</mat-slide-toggle></th>
+          <td>
+            <p><strong>Which units to use for temperatures?</strong></p>
+            <p>Set the temperature units of the dashboard.</p>
+          </td>
+        </tr>
+        <tr *ngIf="units_conversion">
+          <th class="w-25 p-m"><mat-slide-toggle class="mb-3" (change)="optionChanged('seconds_as_time', seconds_as_time)" [(ngModel)]="seconds_as_time" [ngModelOptions]="{standalone: true}">{{seconds_as_time ? 'Time' : 'Seconds'}}</mat-slide-toggle></th>
+          <td>
+            <p><strong>Convert seconds to time?</strong></p>
+            <p>When set to <strong>Time</strong>, charts that present <code>seconds</code> will show <code>DDd:HH:MM:SS</code>.
+              When set to <strong>Seconds</strong>, the raw number of seconds will be presented.</p>
+          </td>
+        </tr>
+        <tr>
+          <th class="w-25 p-m"><mat-slide-toggle class="mb-3" (change)="optionChanged('local_timezone', local_timezone)" [(ngModel)]="local_timezone" [ngModelOptions]="{standalone: true}">{{local_timezone ? 'Your Time' : 'Server Time'}}</mat-slide-toggle></th>
+          <td>
+            <p><strong>Show browser local time or server time?</strong></p>
+            <p>When set to <strong>Your Time</strong>, the charts will use your browser local time. When set to <strong>Server Time</strong> the charts will use the server time.
+              <br>
+              Set it to <strong>Your Time</strong> to have a common time-reference, no matter where the server is and which time zone it uses (all your dashboards will report your local time).
+              Set it to <strong>Server Time</strong> when you need to compare netdata charts with server log files.
+              <br>
+              Your browser time zone is: <strong><span id="browser_timezone">Europe/Madrid</span></strong>.<br>
+              The server reported timezone is: <strong><span id="server_timezone">UTC</span></strong> (you can set this in netdata.conf <code>[global].timezone</code>).<br>
+              The current time zone on the dashboard is: <strong><span id="current_timezone">unset, using browser default</span></strong>.</p>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </mat-tab>
+  </mat-tab-group>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-default" type="button" (click)="activeModal.close()">Close</button>
+</div>

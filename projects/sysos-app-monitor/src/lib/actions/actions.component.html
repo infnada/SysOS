@@ -1,6 +1,19 @@
 <div class="window__actions">
-  <a class="window__item"  title="New restore">
+  <a class="window__item" title="New connection" (click)="newConnection()">
     <i class="fa fa-plus text-success"></i>
   </a>
   <a class="window__item separator" ></a>
+  <a class="window__item" title="Edit connection" (click)="editConnection()">
+    <i class="fa fa-edit" [ngClass]="{'text-primary': activeConnection !== null}"></i>
+  </a>
+  <a class="window__item" title="Disconnect" (click)="disconnectConnection()">
+    <i class="fa fa-close" [ngClass]="{'text-danger': activeConnection !== null && getActiveConnection().state === 'connected'}"></i>
+  </a>
+  <a class="window__item" title="Delete" (click)="deleteConnection()">
+    <i class="fa fa-trash" [ngClass]="{'text-danger': activeConnection !== null}"></i>
+  </a>
+  <a class="window__item separator"></a>
+  <a class="window__item" title="Edit options" (click)="openOptionsModal()">
+    <i class="fa fa-cog text-primary"></i>
+  </a>
 </div>

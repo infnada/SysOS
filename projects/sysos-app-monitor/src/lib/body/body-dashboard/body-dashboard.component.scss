@@ -1,0 +1,27 @@
+@import '~netdata/web/gui/main.css';
+@import '~netdata/web/gui/dashboard.css';
+
+
+h1, h2 {
+  z-index: inherit;
+}
+.charts-body {
+  overflow-y: scroll;
+  position: absolute;
+  height: calc(100% - 32px);
+  bottom: 0;
+}
+.sidebar-body {
+  position: absolute;
+  right: 0;
+  height: calc(100% - 32px);
+  bottom: 0;
+}
+.dashboard-sidebar {
+  overflow-y: scroll;
+  max-height: 100% !important;
+
+  li {
+    width: 100%;
+  }
+}

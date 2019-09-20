@@ -47,6 +47,7 @@ export class DatabaseMonitorModule {
   constructor() {
   }
 
+  // TODO: this is temporal to check internal monitoring works OK
   initChartsDatabase() {
     setInterval(() => {
       request({
@@ -77,11 +78,14 @@ export class DatabaseMonitorModule {
   }
 
   getDataDatabase() {
-    return this.dataDatabase;
+        return this.dataDatabase;
   }
 
   getCharts() {
     if (!this.chartsDatabase) {
+      // TODO: this is temporal to check internal monitoring works OK
+      this.initChartsDatabase();
+
       request({
         url: 'https://frankfurt.my-netdata.io/api/v1/charts',
         json: true,

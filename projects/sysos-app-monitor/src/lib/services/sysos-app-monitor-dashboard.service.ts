@@ -1,20 +1,32 @@
 import {ElementRef, Injectable} from '@angular/core';
-import {BehaviorSubject, Observable} from 'rxjs';
 
-import {SysosLibExtJqueryService} from '@sysos/lib-ext-jquery';
+import {BehaviorSubject, Observable} from "rxjs";
 
 declare let NETDATA: any;
+
+import {SysosLibExtJqueryService} from "@sysos/lib-ext-jquery";
+import {SysosLibExtDygraphsService} from "@sysos/lib-ext-dygraphs";
+import {SysosLibExtEasypiechartService} from "@sysos/lib-ext-easypiechart";
+import {SysosLibExtGaugejsService} from "@sysos/lib-ext-gaugejs";
+import {SysosLibExtPerfectscrollbarService} from "@sysos/lib-ext-perfectscrollbar";
+
+import * as Dashboard from "netdata/web/gui/dashboard";
+import * as DashboardInfo from "netdata/web/gui/dashboard_info";
+
+import {SysosAppMonitorService} from "./sysos-app-monitor.service";
 
 @Injectable({
   providedIn: 'root'
 })
-export class SysosAppMonitorService {
+export class SysosAppMonitorDashboardService {
 
   private $;
 
   private $options: BehaviorSubject<object>;
   private $netdataDashboard: BehaviorSubject<object>;
   private $menus: BehaviorSubject<object>;
+
+  NETDATA = NETDATA;
 
   options: Observable<any>;
   netdataDashboard: Observable<any>;
@@ -29,12 +41,17 @@ export class SysosAppMonitorService {
   private initializeConfig = {
     url: null
   };
-  mainhead;
+
   chartsDiv: ElementRef;
   runOnceOnDashboardLastRun = 0;
   netdataSnapshotData = null;
 
-  constructor(private jQuery: SysosLibExtJqueryService) {
+  constructor(private jQuery: SysosLibExtJqueryService,
+              private Dygraphs: SysosLibExtDygraphsService,
+              private easyPieChart: SysosLibExtEasypiechartService,
+              private gaugeJS: SysosLibExtGaugejsService,
+              private Ps: SysosLibExtPerfectscrollbarService,
+              private MonitorService: SysosAppMonitorService) {
     this.$ = this.jQuery.$;
 
     this.dataStore = {
@@ -234,6 +251,30 @@ export class SysosAppMonitorService {
     this.options = this.$options.asObservable();
     this.netdataDashboard = this.$netdataDashboard.asObservable();
     this.menus = this.$menus.asObservable();
+
+
+    let _this = this;
+
+    // Set easyPieChart
+    this.jQuery.$.fn.easyPieChart = function(options) {
+      return this.each(function() {
+        let instanceOptions;
+
+        if (!_this.jQuery.$.data(this, 'easyPieChart')) {
+          instanceOptions = _this.jQuery.$.extend({}, options, _this.jQuery.$(this).data());
+          _this.jQuery.$.data(this, 'easyPieChart', new _this.easyPieChart.easyPieChart(this, instanceOptions));
+        }
+      });
+    };
+  }
+
+  newDashboard() {
+    // Set Netdata dashboard
+    new Dashboard(this.MonitorService.getActiveConnection(), this.jQuery.$, this.Dygraphs.Dygraph, this.gaugeJS.gaugeJS.Gauge, this.Ps.PerfectScrollbar);
+    new DashboardInfo(this.dataStore.netdataDashboard);
+
+    // Store NETDATA var into service to reuse it on other components
+    this.MonitorService.setNetdata(this.NETDATA);
   }
 
   initializeDynamicDashboard(chartsDiv, netdata_url?) {
