@@ -137,6 +137,8 @@ import {mxWindow} from './mx-window';
 import {mxXmlCanvas2D} from './mx-xml-canvas-2d';
 import {mxXmlRequest} from './mx-xml-request';
 
+import {mxPanningManager} from './mx-panning-manager';
+
 /*export function MxGraphFactory(opts: {
   // Specifies the path in mxClient.basePath.
   mxBasePath?: string;
@@ -236,13 +238,13 @@ export const mx: mxgraph = {
   mxGraphView: (window as any).mxGraphView,
   // mxGraphViewCodec: (window as any).mxGraphViewCodec,
   mxGuide: (window as any).mxGuide,
-  // mxHandle: (window as any).mxHandle,
+  mxHandle: (window as any).mxHandle,
   mxHexagon: (window as any).mxHexagon,
   mxHierarchicalLayout: (window as any).mxHierarchicalLayout,
   mxHierarchicalLayoutStage: (window as any).mxHierarchicalLayoutStage,
   mxImage: (window as any).mxImage,
-  // mxImageBundle: (window as any).mxImageBundle,
-  // mxImageExport: (window as any).mxImageExport,
+  mxImageBundle: (window as any).mxImageBundle,
+  mxImageExport: (window as any).mxImageExport,
   mxImageShape: (window as any).mxImageShape,
   mxKeyHandler: (window as any).mxKeyHandler,
   mxLabel: (window as any).mxLabel,
@@ -255,12 +257,12 @@ export const mx: mxgraph = {
   // mxModelCodec: (window as any).mxModelCodec,
   mxMorphing: (window as any).mxMorphing,
   mxMouseEvent: (window as any).mxMouseEvent,
-  // mxMultiplicity: (window as any).mxMultiplicity,
+  mxMultiplicity: (window as any).mxMultiplicity,
   mxObjectCodec: (window as any).mxObjectCodec,
   mxObjectIdentity: (window as any).mxObjectIdentity,
   mxOutline: (window as any).mxOutline,
   mxPanningHandler: (window as any).mxPanningHandler,
-  // mxPanningManager: (window as any).mxPanningManager,
+  mxPanningManager: (window as any).mxPanningManager,
   mxParallelEdgeLayout: (window as any).mxParallelEdgeLayout,
   mxPartitionLayout: (window as any).mxPartitionLayout,
   mxPerimeter: (window as any).mxPerimeter,
@@ -391,13 +393,13 @@ export interface mxgraph {
   mxGraphView: mxGraphView;
   // mxGraphViewCodec: mxGraphViewCodec;
   mxGuide: mxGuide;
-  // mxHandle: mxHandle;
+  mxHandle: mxHandle;
   mxHexagon: mxHexagon;
   mxHierarchicalLayout: mxHierarchicalLayout;
   mxHierarchicalLayoutStage: mxHierarchicalLayoutStage;
   mxImage: mxImage;
-  // mxImageBundle: mxImageBundle;
-  // mxImageExport: mxImageExport;
+  mxImageBundle: mxImageBundle;
+  mxImageExport: mxImageExport;
   mxImageShape: mxImageShape;
   mxKeyHandler: mxKeyHandler;
   mxLabel: mxLabel;
@@ -410,12 +412,12 @@ export interface mxgraph {
   // mxModelCodec: mxModelCodec;
   mxMorphing: mxMorphing;
   mxMouseEvent: mxMouseEvent;
-  // mxMultiplicity: mxMultiplicity;
+  mxMultiplicity: mxMultiplicity;
   mxObjectCodec: mxObjectCodec;
   mxObjectIdentity: mxObjectIdentity;
   mxOutline: mxOutline;
   mxPanningHandler: mxPanningHandler;
-  // mxPanningManager: mxPanningManager;
+  mxPanningManager: mxPanningManager;
   mxParallelEdgeLayout: mxParallelEdgeLayout;
   mxPartitionLayout: mxPartitionLayout;
   mxPerimeter: mxPerimeter;

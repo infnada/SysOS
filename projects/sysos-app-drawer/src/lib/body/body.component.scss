@@ -1,37 +1,158 @@
-:host ::ng-deep .flow {
-  stroke-dasharray: 8;
-  animation: dash 0.5s linear;
-  animation-iteration-count: infinite;
-}
-@keyframes dash {
-  to {
-    stroke-dashoffset: -16;
+#graphContainer {
+
+  .flow {
+    stroke-dasharray: 8;
+    animation: dash 0.5s linear;
+    animation-iteration-count: infinite;
   }
-}
 
-:host ::ng-deep .border-blink-green {
-  stroke-dasharray: 8;
-  animation: border-blink-green 2s linear;
-  animation-iteration-count: infinite;
-}
-@keyframes border-blink-green {
-  0%   { border-color:transparent; }
-  50%  { border-color:green;}
-  100% { border-color:transparent; }
-}
-:host ::ng-deep .border-blink-red {
-  stroke-dasharray: 8;
-  animation: border-blink-red 2s linear;
-  animation-iteration-count: infinite;
-}
-@keyframes border-blink-red {
-  0%   { border-color:transparent; }
-  50%  { border-color:red;}
-  100% { border-color:transparent; }
-}
-:host ::ng-deep .border-grey {
-  border-color: #363636;
-}
+  @keyframes dash {
+    to {
+      stroke-dashoffset: -16;
+    }
+  }
+
+  .border-blink-green {
+    stroke-dasharray: 8;
+    animation: border-blink-green 2s linear;
+    animation-iteration-count: infinite;
+  }
+
+  @keyframes border-blink-green {
+    0% {
+      border-color: transparent;
+    }
+    50% {
+      border-color: green;
+    }
+    100% {
+      border-color: transparent;
+    }
+  }
+
+  .border-blink-red {
+    stroke-dasharray: 8;
+    animation: border-blink-red 2s linear;
+    animation-iteration-count: infinite;
+  }
+
+  @keyframes border-blink-red {
+    0% {
+      border-color: transparent;
+    }
+    50% {
+      border-color: red;
+    }
+    100% {
+      border-color: transparent;
+    }
+  }
+
+  .border-grey {
+    border-color: #363636;
+  }
+
+  *, *:before, *:after {
+    box-sizing: initial;
+  }
+
+  hr {
+    margin-top: initial;
+    margin-bottom: initial;
+  }
 
 
-@import '~mxgraph_dl/javascript/examples/grapheditor/www/styles/grapheditor.css';
+  @import '~draw.io/drawio/src/main/webapp/styles/grapheditor.css';
+
+  div.picker {
+    z-index: 10007;
+  }
+
+  .geSidebarContainer .geTitle input {
+    font-size: 8pt;
+    color: #606060;
+  }
+
+  .geBlock {
+    z-index: -3;
+    margin: 100px;
+    margin-top: 40px;
+    margin-bottom: 30px;
+    padding: 20px;
+  }
+
+  .geBlock h1, .geBlock h2 {
+    margin-top: 0px;
+    padding-top: 0px;
+  }
+
+  .geEditor ::-webkit-scrollbar {
+    width: 14px;
+    height: 14px;
+  }
+
+  .geEditor ::-webkit-scrollbar-track {
+    background-clip: padding-box;
+    border: solid transparent;
+    border-width: 1px;
+  }
+
+  .geEditor ::-webkit-scrollbar-corner {
+    background-color: transparent;
+  }
+
+  .geEditor ::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, .1);
+    background-clip: padding-box;
+    border: solid transparent;
+    border-radius: 10px;
+  }
+
+  .geEditor ::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, .4);
+  }
+
+  .geTemplate {
+    border: 1px solid transparent;
+    display: inline-block;
+    _display: inline;
+    vertical-align: top;
+    border-radius: 3px;
+    overflow: hidden;
+    font-size: 14pt;
+    cursor: pointer;
+    margin: 5px;
+  }
+
+  .geFooterContainer div.geSocialFooter a {
+    display: inline;
+    padding: 0px;
+  }
+
+  .geFooterContainer div.geSocialFooter a img {
+    margin-top: 10px;
+    opacity: 0.5;
+  }
+
+  .geFooterContainer div.geSocialFooter a img:hover {
+    opacity: 1;
+  }
+
+  .geFooterContainer > div#geFooter > img {
+    opacity: 0.5;
+    border: 1px solid transparent;
+    cursor: pointer;
+    margin-top: 3px;
+    margin-right: 6px;
+    position: absolute;
+    right: 4px;
+    top: 12px;
+    padding: 1px;
+    cursor: pointer;
+  }
+
+  .geFooterContainer > div#geFooter > img:hover {
+    opacity: 1;
+  }
+
+}

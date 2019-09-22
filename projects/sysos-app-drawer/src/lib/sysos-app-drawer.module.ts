@@ -1,4 +1,5 @@
 import {NgModule} from '@angular/core';
+import {CommonModule} from "@angular/common";
 
 import {SysosLibApplicationService} from '@sysos/lib-application';
 
@@ -8,7 +9,9 @@ import {ShapesService} from './services/shapes.service';
 
 @NgModule({
   declarations: [BodyComponent, MenuComponent],
-  imports: [],
+  imports: [
+    CommonModule
+  ],
   exports: []
 })
 export class SysosAppDrawerModule {
@@ -21,7 +24,7 @@ export class SysosAppDrawerModule {
       ico: 'paint-brush',
       name: 'Drawer',
       menu: true,
-      style: {width: '600px', height: '300px', top: '10%', left: '30%'}
+      style: {width: '1800px', height: '750px', top: '5%', left: '5%'}
     });
 
     this.Shapes.registerShapes();

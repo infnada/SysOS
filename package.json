@@ -31,8 +31,8 @@
     "test": "ng test",
     "e2e": "ng e2e",
     "clean": "rm -rf dist/SysOS/*",
-    "copy-extra": "cp -rf src/backend/app/ssl dist/SysOS/ && cp -rf src/backend/app/filesystem dist/SysOS/",
-    "copy-apps": "cp dist/applications/*/bundles/* dist/SysOS/filesystem/bin/applications/ && cp dist/modals/*/bundles/* dist/SysOS/filesystem/bin/modals/ && cp dist/libs/sysos-lib-ext-mxgraph/bundles/* dist/SysOS/filesystem/bin/libs/ && cp dist/libs/sysos-lib-ext-jquery/bundles/* dist/SysOS/filesystem/bin/libs/ && cp dist/libs/sysos-lib-ext-dygraphs/bundles/* dist/SysOS/filesystem/bin/libs/ && cp dist/libs/sysos-lib-ext-easypiechart/bundles/* dist/SysOS/filesystem/bin/libs/ && cp dist/libs/sysos-lib-ext-gaugejs/bundles/* dist/SysOS/filesystem/bin/libs/ && cp dist/libs/sysos-lib-ext-perfectscrollbar/bundles/* dist/SysOS/filesystem/bin/libs/ && cp -rf node_modules/draw.io/drawio/src/main/webapp/stencils/* dist/SysOS/filesystem/etc/applications/drawer/stencils/ && npm run postscript",
+    "copy-extra": "cp -rf src/backend/app/ssl dist/SysOS/ && cp -rf src/backend/app/filesystem dist/SysOS/ && cp -rf node_modules/draw.io/drawio/src/main/webapp/resources dist/SysOS/filesystem/etc/applications/drawer && cp -rf node_modules/draw.io/drawio/src/main/webapp/stencils/* dist/SysOS/filesystem/etc/applications/drawer/stencils/ && cp -rf node_modules/draw.io/drawio/src/main/webapp/templates dist/SysOS/filesystem/etc/applications/drawer && cp -rf node_modules/draw.io/drawio/src/main/webapp/images dist/SysOS/filesystem/etc/applications/drawer",
+    "copy-apps": "cp dist/applications/*/bundles/* dist/SysOS/filesystem/bin/applications/ && cp dist/modals/*/bundles/* dist/SysOS/filesystem/bin/modals/ && cp dist/libs/sysos-lib-ext-mxgraph/bundles/* dist/SysOS/filesystem/bin/libs/ && cp dist/libs/sysos-lib-ext-jquery/bundles/* dist/SysOS/filesystem/bin/libs/ && cp dist/libs/sysos-lib-ext-dygraphs/bundles/* dist/SysOS/filesystem/bin/libs/ && cp dist/libs/sysos-lib-ext-easypiechart/bundles/* dist/SysOS/filesystem/bin/libs/ && cp dist/libs/sysos-lib-ext-gaugejs/bundles/* dist/SysOS/filesystem/bin/libs/ && cp dist/libs/sysos-lib-ext-perfectscrollbar/bundles/* dist/SysOS/filesystem/bin/libs/ && npm run postscript",
     "postscript": "node postscript.js",
     "postinstall": "node postinstall.js"
   },
@@ -89,6 +89,7 @@
     "rxjs": "~6.3.3",
     "serve-favicon": "^2.5.0",
     "socket.io": "^2.2.0",
+    "spin.js": "^4.0.0",
     "ssh2": "^0.8.4",
     "systemjs": "^0.21.5",
     "tslib": "^1.9.0",

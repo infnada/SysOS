@@ -1,4 +1,9 @@
 /**
  * Implements a handler for panning.
  */
-export function mxPanningManager(graph: any): void;
+export interface mxPanningManager {
+  damper: any;
+  delay: any;
+  handleMouseOut: any;
+  border: any;
+}
