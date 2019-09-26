@@ -163,7 +163,11 @@ Don't hesitate to provide a Logo and Backgrounds :)
 
 `@anyopsos/lib-ext-jquery`
 
+`@anyopsos/lib-ext-lz-string`
+
 `@anyopsos/lib-ext-mxgraph`
+
+`@anyopsos/lib-ext-pako`
 
 `@anyopsos/lib-ext-perfectscrollbar`
 

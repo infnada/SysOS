@@ -1,4 +1,7 @@
 import {NgModule} from '@angular/core';
+import {CommonModule} from "@angular/common";
+import {FormsModule} from "@angular/forms";
+import {MatSliderModule, MatProgressBarModule} from "@angular/material";
 
 import {NgbActiveModal, NgbModalModule} from '@ng-bootstrap/ng-bootstrap';
 
@@ -6,10 +9,6 @@ import {SysosLibModalService} from '@sysos/lib-modal';
 
 import {SysosModalMonitorExportComponent} from './sysos-modal-monitor-export.component';
 import {EntryComponent} from "./monitor-export-entry/entry.component";
-import {CommonModule} from "@angular/common";
-import {FormsModule} from "@angular/forms";
-import {MatSliderModule} from "@angular/material/slider";
-import {MatProgressBarModule} from "@angular/material/progress-bar";
 
 @NgModule({
   declarations: [
@@ -17,11 +16,11 @@ import {MatProgressBarModule} from "@angular/material/progress-bar";
     EntryComponent
   ],
   imports: [
-    NgbModalModule,
     CommonModule,
     FormsModule,
     MatSliderModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    NgbModalModule
   ],
   providers: [
     NgbActiveModal

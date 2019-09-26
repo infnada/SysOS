@@ -128,6 +128,18 @@
       "@sysos/lib-ext-perfectscrollbar/*": [
         "dist/libs/sysos-lib-ext-perfectscrollbar/*"
       ],
+      "@sysos/lib-ext-pako": [
+        "dist/libs/sysos-lib-ext-pako"
+      ],
+      "@sysos/lib-ext-pako/*": [
+        "dist/libs/sysos-lib-ext-pako/*"
+      ],
+      "@sysos/lib-ext-lz-string": [
+        "dist/libs/sysos-lib-ext-lz-string"
+      ],
+      "@sysos/lib-ext-lz-string/*": [
+        "dist/libs/sysos-lib-ext-lz-string/*"
+      ],
       "@sysos/app-backups-manager": [
         "dist/applications/sysos-app-backups-manager"
       ],

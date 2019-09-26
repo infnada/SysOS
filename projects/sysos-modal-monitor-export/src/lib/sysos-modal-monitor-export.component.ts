@@ -1,8 +1,11 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 
-import {SysosLibServiceInjectorService} from "@sysos/lib-service-injector";
+import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
+
+import {SysosLibExtPakoService} from '@sysos/lib-ext-pako';
+import {SysosLibExtLzStringService} from '@sysos/lib-ext-lz-string';
 
 @Component({
   selector: 'smme-sysos-modal-monitor-export',
@@ -10,10 +13,12 @@ import {SysosLibServiceInjectorService} from "@sysos/lib-service-injector";
   styleUrls: ['./sysos-modal-monitor-export.component.scss']
 })
 export class SysosModalMonitorExportComponent implements OnInit {
-  @Input() options;
-
   private MonitorService;
+  private MonitorDashboardService;
   private NETDATA;
+  private options;
+  private netdataDashboard;
+
   private saveSnapshotStop: boolean = false;
   private saveData;
   private backedupOptions = {};
@@ -37,102 +42,79 @@ export class SysosModalMonitorExportComponent implements OnInit {
       'none': {
         bytes_per_point_memory: 5.2,
         bytes_per_point_disk: 5.6,
-
-        compress: function (s) {
+        compress: (s) => {
           return s;
         },
-
-        compressed_length: function (s) {
+        compressed_length: (s) => {
           return s.length;
         },
-
-        uncompress: function (s) {
+        uncompress: (s) => {
           return s;
         }
       },
-
       'pako.deflate.base64': {
         bytes_per_point_memory: 1.8,
         bytes_per_point_disk: 1.9,
-
-        compress: function (s) {
-          return btoa(pako.deflate(s, { to: 'string' }));
+        compress: (s) => {
+          return btoa(this.pako.deflate(s, { to: 'string' }));
         },
-
-        compressed_length: function (s) {
+        compressed_length: (s) => {
           return s.length;
         },
-
-        uncompress: function (s) {
-          return pako.inflate(atob(s), { to: 'string' });
+        uncompress: (s) => {
+          return this.pako.inflate(atob(s), { to: 'string' });
         }
       },
-
       'pako.deflate': {
         bytes_per_point_memory: 1.4,
         bytes_per_point_disk: 3.2,
-
-        compress: function (s) {
-          return pako.deflate(s, { to: 'string' });
+        compress: (s) => {
+          return this.pako.deflate(s, { to: 'string' });
         },
-
-        compressed_length: function (s) {
+        compressed_length: (s) => {
           return s.length;
         },
-
-        uncompress: function (s) {
-          return pako.inflate(s, { to: 'string' });
+        uncompress: (s) => {
+          return this.pako.inflate(s, { to: 'string' });
         }
       },
-
       'lzstring.utf16': {
         bytes_per_point_memory: 1.7,
         bytes_per_point_disk: 2.6,
-
-        compress: function (s) {
-          return LZString.compressToUTF16(s);
+        compress: (s) => {
+          return this.LZString.compressToUTF16(s);
         },
-
-        compressed_length: function (s) {
+        compressed_length: (s) => {
           return s.length * 2;
         },
-
-        uncompress: function (s) {
-          return LZString.decompressFromUTF16(s);
+        uncompress: (s) => {
+          return this.LZString.decompressFromUTF16(s);
         }
       },
-
       'lzstring.base64': {
         bytes_per_point_memory: 2.1,
         bytes_per_point_disk: 2.3,
-
-        compress: function (s) {
-          return LZString.compressToBase64(s);
+        compress: (s) => {
+          return this.LZString.compressToBase64(s);
         },
-
-        compressed_length: function (s) {
+        compressed_length: (s) => {
           return s.length;
         },
-
-        uncompress: function (s) {
-          return LZString.decompressFromBase64(s);
+        uncompress: (s) => {
+          return this.LZString.decompressFromBase64(s);
         }
       },
-
       'lzstring.uri': {
         bytes_per_point_memory: 2.1,
         bytes_per_point_disk: 2.3,
-
-        compress: function (s) {
-          return LZString.compressToEncodedURIComponent(s);
+        compress: (s) => {
+          return this.LZString.compressToEncodedURIComponent(s);
         },
-
-        compressed_length: function (s) {
+        compressed_length: (s) => {
           return s.length;
         },
-
-        uncompress: function (s) {
-          return LZString.decompressFromEncodedURIComponent(s);
+        uncompress: (s) => {
+          return this.LZString.decompressFromEncodedURIComponent(s);
         }
       }
     }
@@ -141,12 +123,17 @@ export class SysosModalMonitorExportComponent implements OnInit {
   private snapshotViewDuration: number = this.options.duration;
 
   constructor(public activeModal: NgbActiveModal,
-              private serviceInjector: SysosLibServiceInjectorService) {
-
-    loadPako loadLzString
+              private serviceInjector: SysosLibServiceInjectorService,
+              private pako: SysosLibExtPakoService,
+              private LZString: SysosLibExtLzStringService) {
 
     this.MonitorService = this.serviceInjector.get('SysosAppMonitorService');
+    this.MonitorDashboardService = this.serviceInjector.get('SysosAppMonitorDashboardService');
     this.NETDATA = this.MonitorService.getNetdata();
+
+    // Get all data generated by the service
+    this.MonitorDashboardService.options.subscribe(options => this.options = options);
+    this.MonitorDashboardService.netdataDashboard.subscribe(netdataDashboard => this.netdataDashboard = netdataDashboard);
   }
 
   ngOnInit() {
@@ -262,9 +249,9 @@ export class SysosModalMonitorExportComponent implements OnInit {
       hash: urlOptions.hash,
       charts: this.options.data,
       info: this.jsonStringifyFn({
-        menu: netdataDashboard.menu,
-        submenu: netdataDashboard.submenu,
-        context: netdataDashboard.context
+        menu: this.netdataDashboard.menu,
+        submenu: this.netdataDashboard.submenu,
+        context: this.netdataDashboard.context
       }),
       charts_ok: 0,
       charts_failed: 0,

@@ -1747,6 +1747,76 @@
           }
         }
       }
+    },
+    "sysos-lib-ext-pako": {
+      "root": "projects/sysos-lib-ext-pako",
+      "sourceRoot": "projects/sysos-lib-ext-pako/src",
+      "projectType": "library",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-lib-ext-pako/tsconfig.lib.json",
+            "project": "projects/sysos-lib-ext-pako/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-lib-ext-pako/src/test.ts",
+            "tsConfig": "projects/sysos-lib-ext-pako/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-lib-ext-pako/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-lib-ext-pako/tsconfig.lib.json",
+              "projects/sysos-lib-ext-pako/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-lib-ext-lz-string": {
+      "root": "projects/sysos-lib-ext-lz-string",
+      "sourceRoot": "projects/sysos-lib-ext-lz-string/src",
+      "projectType": "library",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-lib-ext-lz-string/tsconfig.lib.json",
+            "project": "projects/sysos-lib-ext-lz-string/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-lib-ext-lz-string/src/test.ts",
+            "tsConfig": "projects/sysos-lib-ext-lz-string/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-lib-ext-lz-string/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-lib-ext-lz-string/tsconfig.lib.json",
+              "projects/sysos-lib-ext-lz-string/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
   "defaultProject": "SysOS"

@@ -145,6 +145,18 @@
       "@sysos/lib-ext-perfectscrollbar/*": [
         "projects/sysos-lib-perfectscrollbar/*"
       ],
+      "@sysos/lib-ext-pako": [
+        "projects/sysos-lib-ext-pako/src/public-api"
+      ],
+      "@sysos/lib-ext-pako/*": [
+        "projects/sysos-lib-pako/*"
+      ],
+      "@sysos/lib-ext-lz-string": [
+        "projects/sysos-lib-ext-lz-string/src/public-api"
+      ],
+      "@sysos/lib-ext-lz-string/*": [
+        "projects/sysos-lib-lz-string/*"
+      ],
       "@sysos/app-backups-manager": [
         "projects/sysos-app-backups-manager/src/public-api"
       ],
