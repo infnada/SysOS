@@ -1,0 +1,65 @@
+<div class="modal-header">
+  <div class="modal-title" id="modal-title">Import a netdata snapshot</div>
+  <div class="window__controls window__controls--right">
+    <a class="window__close" (click)="activeModal.close(); $event.stopPropagation();">
+      <i class="fa fa-close"></i>
+    </a>
+  </div>
+</div>
+<div class="modal-body modal-monitor-import" id="modal-body">
+  <div id="loadSnapshotDragAndDrop" class="modal-body">
+    <p>
+      netdata can export and import dashboard snapshots.
+      Any netdata can import the snapshot of any other netdata.
+      The snapshots are not uploaded to a server. They are handled entirely by your web browser, on your computer.
+    </p>
+    <p style="text-align: center;">
+      <label class="btn btn-default">
+        Click here to select the netdata snapshot file to import
+        <input type="file" id="loadSnapshotSelectFiles" value="Import" style="display: none;"
+               onchange="loadSnapshotPreflight();">
+      </label>
+    </p>
+    <div id="loadSnapshotStatus" class="alert alert-info" role="alert">
+      Browse for a snapshot file (or drag it and drop it here), then click <b>Import</b> to render it.
+    </div>
+
+      <table class="table">
+        <tbody>
+          <tr>
+            <th>Filename</th>
+            <td id="loadSnapshotFilename"></td>
+          </tr>
+          <tr>
+            <th>Hostname</th>
+            <td id="loadSnapshotHostname"></td>
+          </tr>
+          <tr>
+            <th>Origin URL</th>
+            <td id="loadSnapshotURL"></td>
+          </tr>
+          <tr>
+            <th>Charts Info</th>
+            <td id="loadSnapshotCharts"></td>
+          </tr>
+          <tr>
+            <th>Snapshot Info</th>
+            <td id="loadSnapshotInfo"></td>
+          </tr>
+          <tr>
+            <th>Time Range</th>
+            <td id="loadSnapshotTimeRange"></td>
+          </tr>
+          <tr>
+            <th>Comments</th>
+            <td id="loadSnapshotComments"></td>
+          </tr>
+        </tbody>
+      </table>
+  </div>
+</div>
+<div class="modal-footer">
+  <span style="display: inline-block; padding-right: 20px;">Snapshot files contain both data and javascript code. Make sure <b>you trust the files</b> you import!</span>
+  <button class="btn btn-primary" type="button" (click)="">Import</button>
+  <button class="btn btn-default" type="button" (click)="activeModal.close()">Close</button>
+</div>

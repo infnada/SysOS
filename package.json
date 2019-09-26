@@ -10,7 +10,7 @@
   "keywords": [],
   "description": "Web based operating system for SysOps, DevOps, NetOps, SecOps... Monitor, manage, configure, backup & recovery your virtual and physical infrastructure.",
   "author": "Isart Navarro <contact@isartnavarro.io> (https://isartnavarro.io)",
-  "license": "GNU GPL v3",
+  "license": "GPL-3.0-or-later",
   "engines": {
     "node": ">=12.0.0 <13.0.0"
   },
@@ -22,7 +22,7 @@
     "build": "npm-run-all clean lint-backend lint-frontend build-backend build-libs build-apps build-modals build-frontend copy-extra copy-apps",
     "build-libs": "ng build sysos-lib-logger && ng build sysos-lib-file-system && ng build sysos-lib-application && ng build sysos-lib-modal && ng build sysos-lib-netapp && ng build sysos-lib-selectable && ng build sysos-lib-types && ng build sysos-lib-user && ng build sysos-lib-vmware && ng build sysos-lib-file-system-ui && ng build sysos-lib-file && ng build sysos-lib-folder && ng build sysos-lib-service-injector && ng build sysos-lib-scroll-spy && ng build sysos-lib-sanitize && ng build sysos-lib-ext-mxgraph && ng build sysos-lib-ext-jquery && ng build sysos-lib-ext-dygraphs && ng build sysos-lib-ext-easypiechart && ng build sysos-lib-ext-gaugejs && ng build sysos-lib-ext-perfectscrollbar",
     "build-apps": "ng build sysos-app-credentials-manager && ng build sysos-app-file-explorer && ng build sysos-app-drawer && ng build sysos-app-infrastructure-manager && ng build sysos-app-backups-manager && ng build sysos-app-datastore-explorer && ng build sysos-app-notepad && ng build sysos-app-sftp && ng build sysos-app-ssh && ng build sysos-app-monitor && ng build sysos-app-wmks",
-    "build-modals": "ng build sysos-modal-input && ng build sysos-modal-plain && ng build sysos-modal-question && ng build sysos-modal-esxi-selectable && ng build sysos-modal-recovery-wizard && ng build sysos-modal-backup-wizard && ng build sysos-modal-monitor-options && ng build sysos-modal-monitor-alarms",
+    "build-modals": "ng build sysos-modal-input && ng build sysos-modal-plain && ng build sysos-modal-question && ng build sysos-modal-esxi-selectable && ng build sysos-modal-recovery-wizard && ng build sysos-modal-backup-wizard && ng build sysos-modal-monitor-options && ng build sysos-modal-monitor-alarms && ng build sysos-modal-monitor-import && ng build sysos-modal-monitor-export",
     "build-frontend": "ng build",
     "build-backend": "tsc --build src/backend/tsconfig.json",
     "lint-frontend": "ng lint",
@@ -33,8 +33,8 @@
     "clean": "rm -rf dist/SysOS/*",
     "copy-extra": "cp -rf src/backend/app/ssl dist/SysOS/ && cp -rf src/backend/app/filesystem dist/SysOS/ && cp -rf node_modules/draw.io/drawio/src/main/webapp/resources dist/SysOS/filesystem/etc/applications/drawer && cp -rf node_modules/draw.io/drawio/src/main/webapp/stencils/* dist/SysOS/filesystem/etc/applications/drawer/stencils/ && cp -rf node_modules/draw.io/drawio/src/main/webapp/templates dist/SysOS/filesystem/etc/applications/drawer && cp -rf node_modules/draw.io/drawio/src/main/webapp/images dist/SysOS/filesystem/etc/applications/drawer && cp -rf node_modules/draw.io/drawio/src/main/webapp/shapes dist/SysOS/filesystem/etc/applications/drawer",
     "copy-apps": "cp dist/applications/*/bundles/* dist/SysOS/filesystem/bin/applications/ && cp dist/modals/*/bundles/* dist/SysOS/filesystem/bin/modals/ && cp dist/libs/sysos-lib-ext-mxgraph/bundles/* dist/SysOS/filesystem/bin/libs/ && cp dist/libs/sysos-lib-ext-jquery/bundles/* dist/SysOS/filesystem/bin/libs/ && cp dist/libs/sysos-lib-ext-dygraphs/bundles/* dist/SysOS/filesystem/bin/libs/ && cp dist/libs/sysos-lib-ext-easypiechart/bundles/* dist/SysOS/filesystem/bin/libs/ && cp dist/libs/sysos-lib-ext-gaugejs/bundles/* dist/SysOS/filesystem/bin/libs/ && cp dist/libs/sysos-lib-ext-perfectscrollbar/bundles/* dist/SysOS/filesystem/bin/libs/ && npm run postscript",
-    "postscript": "node postscript.js",
-    "postinstall": "node postinstall.js"
+    "postscript": "node scripts/postscript.js",
+    "postinstall": "node scripts/postinstall.js"
   },
   "dependencies": {
     "@angular/animations": "^7.2.14",
@@ -122,6 +122,7 @@
     "@types/xml2js": "^0.4.4",
     "codelyzer": "~4.5.0",
     "download-git-repo": "^2.0.0",
+    "husky": "^3.0.5",
     "jasmine-core": "~2.99.1",
     "jasmine-spec-reporter": "~4.2.1",
     "karma": "~4.0.0",
@@ -137,6 +138,11 @@
     "tslib": "^1.9.0",
     "tslint": "~5.11.0",
     "typescript": "~3.2.2"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
   },
   "husky": {
     "hooks": {

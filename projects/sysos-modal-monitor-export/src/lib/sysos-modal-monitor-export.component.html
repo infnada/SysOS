@@ -1,0 +1,78 @@
+<div class="modal-header">
+  <div class="modal-title" id="modal-title">Export a snapshot</div>
+  <div class="window__controls window__controls--right">
+    <a class="window__close" (click)="activeModal.close(); $event.stopPropagation();">
+      <i class="fa fa-close"></i>
+    </a>
+  </div>
+</div>
+<div class="modal-body modal-monitor-export" id="modal-body">
+  <div *ngIf="showProgress" id="saveSnapshotModalProgressSection">
+    Please wait while we collect all the dashboard data...
+    <mat-progress-bar mode="determinate" [value]="progressPcent"></mat-progress-bar>
+
+    <div class="alert alert-{{progressType}}" role="alert" [innerHTML]="progressText"></div>
+  </div>
+
+  <div *ngIf="!showProgress" id="saveSnapshotResolutionRadio" style="text-align: center;">
+    <p>Select the desired resolution of the snapshot. This is the <b>seconds of data per point</b>.</p>
+    <mat-slider
+      [max]="this.slider.max"
+      [min]="this.slider.min"
+      [step]="this.slider.step"
+      [thumbLabel]="true"
+      [displayWith]="this.slider.displayWith"
+      [tickInterval]="'auto'"
+      [(ngModel)]="this.slider.value">
+    </mat-slider>
+
+    <div class="input-group">
+      <span class="input-group-addon" id="sizing-saveSnapshotFilename" style="width: 100px;">Filename</span>
+      <input class="form-control" placeholder="Filename of the generated snapshot" aria-describedby="sizing-saveSnapshotFilename" tabindex="2" [(ngModel)]="snapshotName" />
+      <div class="input-group-btn">
+        <div class="input-group-btn">
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span id="saveSnapshotCompressionName">Compression</span> <span class="caret"></span></button>
+          <ul class="dropdown-menu dropdown-menu-right">
+            <li class="disabled"><a href="#" class="disabled">Select Compression</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#" onclick="saveSnapshotSetCompression('none'); return false;">uncompressed</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#" onclick="saveSnapshotSetCompression('pako.deflate'); return false;">pako.deflate (gzip, binary)</a></li>
+            <li><a href="#" onclick="saveSnapshotSetCompression('pako.deflate.base64'); return false;">pako.deflate.base64 (gzip, ascii)</a></li>
+            <li role="separator" class="divider"></li>
+            <li><a href="#" onclick="saveSnapshotSetCompression('lzstring.uri'); return false;">lzstring.uri (LZ, ascii)</a></li>
+            <li><a href="#" onclick="saveSnapshotSetCompression('lzstring.utf16'); return false;">lzstring.utf16 (LZ, utf16)</a></li>
+            <li><a href="#" onclick="saveSnapshotSetCompression('lzstring.base64'); return false;">lzstring.base64 (LZ, ascii)</a></li>
+          </ul>
+        </div><!-- /btn-group -->
+      </div>
+    </div>
+    <div class="input-group" style="padding-top: 10px; width: 100%">
+      <span class="input-group-addon" id="sizing-saveSnapshotComments" style="width: 100px;">Comments</span>
+      <input class="form-control" placeholder="Any comments about this snapshot?" aria-describedby="sizing-saveSnapshotComments" tabindex="3" [(ngModel)]="snapshotComment"/>
+    </div>
+  </div>
+
+
+  <div class="alert alert-{{snapshotExpectedSize()[0]}}" role="alert">
+    {{snapshotExpectedSize()[1]}}
+  </div>
+  <p>
+    The generated snapshot will include all charts of this dashboard, <b>for the visible timeframe</b>, so align, pan and zoom the charts as needed.
+    The scroll position of the dashboard will also be saved.
+    The snapshot will be downloaded as a file, to your computer, that can be imported back into any netdata dashboard (no need to import it back on this server).
+  </p>
+  <p>
+    <small>
+      Snapshot files include all the information of the dashboard, including the URL of the origin server, its netdata unique ID, etc.
+      So, if you share the snapshot file with third parties, they will be able to access the origin server, if this server is exposed on the internet.
+      <br/>
+      Snapshots are handled entirely by the web browser. The netdata servers are not aware of them.
+    </small>
+  </p>
+
+</div>
+<div class="modal-footer">
+  <button class="btn btn-primary" type="button" (click)="saveSnapshot()" [disabled]="showProgress">Export</button>
+  <button class="btn btn-default" type="button" (click)="cancelSnapshot()">Close</button>
+</div>

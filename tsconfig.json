@@ -258,6 +258,18 @@
       ],
       "@sysos/modal-monitor-alarms/*": [
         "projects/sysos-modal-monitor-alarms/*"
+      ],
+      "@sysos/modal-monitor-export": [
+        "projects/sysos-modal-monitor-export/src/public-api"
+      ],
+      "@sysos/modal-monitor-export/*": [
+        "projects/sysos-modal-monitor-export/*"
+      ],
+      "@sysos/modal-monitor-import": [
+        "projects/sysos-modal-monitor-import/src/public-api"
+      ],
+      "@sysos/modal-monitor-import/*": [
+        "projects/sysos-modal-monitor-import/*"
       ]
     }
   }

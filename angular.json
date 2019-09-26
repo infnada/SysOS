@@ -1667,6 +1667,86 @@
           }
         }
       }
+    },
+    "sysos-modal-monitor-export": {
+      "root": "projects/sysos-modal-monitor-export",
+      "sourceRoot": "projects/sysos-modal-monitor-export/src",
+      "projectType": "library",
+      "prefix": "smme",
+      "schematics": {
+        "@schematics/angular:component": {
+          "styleext": "scss"
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-modal-monitor-export/tsconfig.lib.json",
+            "project": "projects/sysos-modal-monitor-export/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-modal-monitor-export/src/test.ts",
+            "tsConfig": "projects/sysos-modal-monitor-export/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-modal-monitor-export/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-modal-monitor-export/tsconfig.lib.json",
+              "projects/sysos-modal-monitor-export/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-modal-monitor-import": {
+      "root": "projects/sysos-modal-monitor-import",
+      "sourceRoot": "projects/sysos-modal-monitor-import/src",
+      "projectType": "library",
+      "prefix": "smmi",
+      "schematics": {
+        "@schematics/angular:component": {
+          "styleext": "scss"
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-modal-monitor-import/tsconfig.lib.json",
+            "project": "projects/sysos-modal-monitor-import/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-modal-monitor-import/src/test.ts",
+            "tsConfig": "projects/sysos-modal-monitor-import/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-modal-monitor-import/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-modal-monitor-import/tsconfig.lib.json",
+              "projects/sysos-modal-monitor-import/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
   "defaultProject": "SysOS"

@@ -22,7 +22,7 @@ import {EntryComponent} from './monitor-options-entry/entry.component';
     ReactiveFormsModule,
     MatTabsModule,
     MatSlideToggleModule,
-    NgbModalModule,
+    NgbModalModule
   ],
   providers: [
     NgbActiveModal

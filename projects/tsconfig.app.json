@@ -241,6 +241,18 @@
       ],
       "@sysos/modal-monitor-alarms/*": [
         "dist/sysos-modal-monitor-alarms/*"
+      ],
+      "@sysos/modal-monitor-export": [
+        "dist/sysos-modal-monitor-export"
+      ],
+      "@sysos/modal-monitor-export/*": [
+        "dist/sysos-modal-monitor-export/*"
+      ],
+      "@sysos/modal-monitor-import": [
+        "dist/sysos-modal-monitor-import"
+      ],
+      "@sysos/modal-monitor-import/*": [
+        "dist/sysos-modal-monitor-import/*"
       ]
     }
   }
