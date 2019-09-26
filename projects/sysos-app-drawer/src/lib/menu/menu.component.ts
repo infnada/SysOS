@@ -1,5 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Application} from "@sysos/lib-application/lib/types/application";
+
+import {Application} from '@sysos/lib-application';
 
 @Component({
   selector: 'sadrw-menu',

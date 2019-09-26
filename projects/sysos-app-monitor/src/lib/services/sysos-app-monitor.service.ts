@@ -1,19 +1,22 @@
 import {Injectable} from '@angular/core';
 
-import {BehaviorSubject, Observable} from "rxjs";
+import {BehaviorSubject, Observable} from 'rxjs';
 import {v4 as uuidv4} from 'uuid';
+import {ToastrService} from 'ngx-toastr';
 
-import {SysosLibLoggerService} from "@sysos/lib-logger";
-import {SysosLibModalService} from "@sysos/lib-modal";
+import {SysosLibLoggerService} from '@sysos/lib-logger';
+import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
+import {SysosLibModalService} from '@sysos/lib-modal';
+import {SysosLibFileSystemService} from '@sysos/lib-file-system';
 
-import {Netdata} from "../types/netdata";
-import {SysosLibFileSystemService} from "@sysos/lib-file-system/lib/sysos-lib-file-system.service";
-import {ToastrService} from "ngx-toastr";
+import {Netdata} from '../types/netdata';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SysosAppMonitorService {
+
+  private CredentialsManager;
 
   private NETDATA;
 
@@ -27,9 +30,12 @@ export class SysosAppMonitorService {
   activeConnection: Observable<any>;
 
   constructor(private logger: SysosLibLoggerService,
+              private serviceInjector: SysosLibServiceInjectorService,
               private Modal: SysosLibModalService,
               private FileSystem: SysosLibFileSystemService,
               private Toastr: ToastrService) {
+
+    this.CredentialsManager = this.serviceInjector.get('SysosAppCredentialsManagerService');
 
     this.dataStore = {connections: [], activeConnection: null};
     this.$connections = new BehaviorSubject([]) as BehaviorSubject<Netdata[]>;
@@ -38,29 +44,39 @@ export class SysosAppMonitorService {
     this.activeConnection = this.$activeConnection.asObservable();
   }
 
-  setNetdata(NETDATA) {
+  setNetdata(NETDATA): void {
     this.NETDATA = NETDATA;
   }
 
-  getNetdata() {
+  getNetdata(): {} {
     return this.NETDATA;
   }
 
-  connect(data) {
-    let uuid = uuidv4();
-
-    this.dataStore.connections.push({
-      uuid: uuid,
+  async connect(data): Promise<void> {
+    const connectionData: Netdata = {
+      uuid: uuidv4(),
       url: data.url,
       description: data.description,
       credential: data.credential,
       autologin: data.autologin,
+      credentialBtoa: null,
       save: data.save,
       type: data.type,
       state: 'connected'
-    });
+    };
 
-    this.dataStore.activeConnection = uuid;
+
+    if (connectionData.credential) {
+      let credential = await this.CredentialsManager.getCredential(connectionData.credential);
+
+      // TODO password sent by backend should be encrypted
+      connectionData.credentialBtoa = btoa(credential.username + ':' + credential.password);
+      credential = undefined;
+    }
+
+    this.dataStore.connections.push(connectionData);
+
+    this.dataStore.activeConnection = connectionData.uuid;
 
     // broadcast data to subscribers
     this.$activeConnection.next(Object.assign({}, this.dataStore).activeConnection);
@@ -101,7 +117,7 @@ export class SysosAppMonitorService {
       },
       error => {
         this.logger.error('Monitor', 'Error while saving connection', loggerArgs, error);
-        this.Toastr.error('Error while saving connection.', 'Infrastructure Manager');
+        this.Toastr.error('Error while saving connection.', 'Monitor');
       });
   }
 

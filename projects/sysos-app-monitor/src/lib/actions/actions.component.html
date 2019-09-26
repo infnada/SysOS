@@ -16,4 +16,7 @@
   <a class="window__item" title="Edit options" (click)="openOptionsModal()">
     <i class="fa fa-cog text-primary"></i>
   </a>
+  <a class="window__item" title="Alarms" (click)="openAlarmsModal()">
+    <i class="fa fa-bell" [ngClass]="{'text-primary': activeConnection !== null}"></i>
+  </a>
 </div>

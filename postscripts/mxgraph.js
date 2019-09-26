@@ -16,7 +16,9 @@ fs.readFile('dist/SysOS/filesystem/bin/libs/sysos-lib-ext-mxgraph.umd.js', 'utf8
 
   let mxClient = await readFile('node_modules/mxgraph/javascript/mxClient.js');
 
-  let result = '// Addeded with package.json postscript\n' +
+  let result = data;
+
+  result = result.replace('\'use strict\';\n', '\'use strict\';\n' + '// Addeded with package.json postscript\n' +
     'var mxBasePath = "assets/mxgraph";\n' +
     'var mxLoadResources = false;\n' +
     'var mxForceIncludes = false;\n' +
@@ -47,11 +49,12 @@ fs.readFile('dist/SysOS/filesystem/bin/libs/sysos-lib-ext-mxgraph.umd.js', 'utf8
     'var minX;\n' +
     'var maxX;\n' +
     'var td;\n' +
-    '\n' + data;
-
-  result = result.replace('\'use strict\';\n', '\'use strict\';\n' + mxClient);
+    'var pt;\n' +
+    '\n' + mxClient);
 
   result = result.replace(/\(\(.*\(window\)\)\)./g, '');
+
+  result = result.replace('ctor = window[node.nodeName];', 'ctor = node.nodeName;');
 
   fs.writeFile('dist/SysOS/filesystem/bin/libs/sysos-lib-ext-mxgraph.umd.js', result, 'utf8', function (err) {
     if (err) return console.log(err);

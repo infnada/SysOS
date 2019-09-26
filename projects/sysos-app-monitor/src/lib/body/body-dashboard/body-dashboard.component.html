@@ -18,7 +18,7 @@
               <div class="netdata-chart-row">
 
                 <!--mainhead-->
-                <div class="w-100" [innerHTML]="headMain(netdataDashboard.os, chartsData.charts, options.duration) | sanitizeHtml"></div>
+                <div class="w-100" [innerHTML]="headMain(netdataDashboard.os, options.data.charts, options.duration) | sanitizeHtml"></div>
 
                 <ng-container *ngFor="let submenu of menu.submenus | orderBy:['priority', 'id']; trackBy: trackItemById">
                   <ng-container *ngFor="let chart of submenu.charts | orderBy:['priority', 'id']; trackBy: trackItemById">
@@ -86,13 +86,13 @@
       </li>
 
       <li style="margin:20px;color:#666;">
-        <small *ngIf="chartsData">
-          Every {{((chartsData.update_every === 1) ? 'second' : chartsData.update_every.toString() + ' seconds')}}, Netdata collects <b>
-          {{chartsData.dimensions_count.toLocaleString()}}</b> metrics, presents them in <b>
-          {{chartsData.charts_count.toLocaleString()}}</b> charts and monitors them with <b>
-          {{chartsData.alarms_count.toLocaleString()}}</b> alarms. Netdata is using {{memoryUsage()}} MB of memory on <b>
-          {{chartsData.hostname.toString()}}</b> for
-          {{NETDATA.seconds4human(chartsData.update_every * chartsData.history, {minute: 'minute', minutes: 'minutes', second: 'second', seconds: 'seconds', space: '&nbsp;'})}} of real-time history.
+        <small *ngIf="options">
+          Every {{((options.data.update_every === 1) ? 'second' : options.data.update_every.toString() + ' seconds')}}, Netdata collects <b>
+          {{options.data.dimensions_count.toLocaleString()}}</b> metrics, presents them in <b>
+          {{options.data.charts_count.toLocaleString()}}</b> charts and monitors them with <b>
+          {{options.data.alarms_count.toLocaleString()}}</b> alarms. Netdata is using {{memoryUsage()}} MB of memory on <b>
+          {{options.data.hostname.toString()}}</b> for
+          {{NETDATA.seconds4human(options.data.update_every * options.data.history, {minute: 'minute', minutes: 'minutes', second: 'second', seconds: 'seconds', space: '&nbsp;'})}} of real-time history.
         </small>
       </li>
 

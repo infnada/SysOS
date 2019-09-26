@@ -91,11 +91,11 @@
       "@sysos/lib-folder/*": [
         "projects/sysos-lib-folder/*"
       ],
-      "@sysos/lib-sanitize-html": [
-        "projects/sysos-lib-sanitize-html/src/public-api"
+      "@sysos/lib-sanitize": [
+        "projects/sysos-lib-sanitize/src/public-api"
       ],
-      "@sysos/lib-sanitize-html/*": [
-        "projects/sysos-lib-sanitize-html/*"
+      "@sysos/lib-sanitize/*": [
+        "projects/sysos-lib-sanitize/*"
       ],
       "@sysos/lib-scroll-spy": [
         "projects/sysos-lib-scroll-spy/src/public-api"
@@ -252,6 +252,12 @@
       ],
       "@sysos/modal-monitor-options/*": [
         "projects/sysos-modal-monitor-options/*"
+      ],
+      "@sysos/modal-monitor-alarms": [
+        "projects/sysos-modal-monitor-alarms/src/public-api"
+      ],
+      "@sysos/modal-monitor-alarms/*": [
+        "projects/sysos-modal-monitor-alarms/*"
       ]
     }
   }

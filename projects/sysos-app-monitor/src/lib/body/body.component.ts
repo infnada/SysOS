@@ -2,8 +2,8 @@ import {Component, Input, OnInit} from '@angular/core';
 
 import {Application} from '@sysos/lib-application';
 
-import {SysosAppMonitorService} from "../services/sysos-app-monitor.service";
-import {Netdata} from "../types/netdata";
+import {SysosAppMonitorService} from '../services/sysos-app-monitor.service';
+import {Netdata} from '../types/netdata';
 
 @Component({
   selector: 'samon-body',

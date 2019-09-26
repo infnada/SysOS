@@ -1,9 +1,9 @@
 import {Component, OnInit} from '@angular/core';
 
-import {SysosLibModalService} from "@sysos/lib-modal";
+import {SysosLibModalService} from '@sysos/lib-modal';
 
-import {SysosAppMonitorService} from "../services/sysos-app-monitor.service";
-import {Netdata} from "../types/netdata";
+import {SysosAppMonitorService} from '../services/sysos-app-monitor.service';
+import {Netdata} from '../types/netdata';
 
 @Component({
   selector: 'samon-actions',
@@ -13,8 +13,11 @@ import {Netdata} from "../types/netdata";
 export class ActionsComponent implements OnInit {
   activeConnection: null;
 
+  private NETDATA;
+
   constructor(private Modal: SysosLibModalService,
               private Monitor: SysosAppMonitorService) {
+
   }
 
   ngOnInit() {
@@ -26,7 +29,23 @@ export class ActionsComponent implements OnInit {
   }
 
   openOptionsModal() {
-    this.Modal.openRegisteredModal('monitor-options', '.window--monitor .window__main', {});
+    this.NETDATA = this.Monitor.getNetdata();
+    this.NETDATA.pause(() => {});
+    this.Modal.openRegisteredModal('monitor-options', '.window--monitor .window__main', {}).then((modalInstance) => {
+      modalInstance.result.then(() => {
+        this.NETDATA.unpause();
+      });
+    });
+  }
+
+  openAlarmsModal() {
+    this.NETDATA = this.Monitor.getNetdata();
+    this.NETDATA.pause(() => {});
+    this.Modal.openRegisteredModal('monitor-alarms', '.window--monitor .window__main', {}).then((modalInstance) => {
+      modalInstance.result.then(() => {
+        this.NETDATA.unpause();
+      });
+    });
   }
 
   newConnection() {

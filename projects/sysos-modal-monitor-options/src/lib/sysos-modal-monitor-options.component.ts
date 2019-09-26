@@ -1,6 +1,7 @@
 import {Component, OnInit, ViewEncapsulation} from '@angular/core';
 
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+
 import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
 
 @Component({
@@ -77,7 +78,7 @@ export class SysosModalMonitorOptionsComponent implements OnInit {
       }
     }
 
-    this.NETDATA.setOption(option, state)
+    this.NETDATA.setOption(option, state);
   }
 
 }

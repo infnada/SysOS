@@ -1,19 +1,21 @@
 import {ElementRef, Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
 
-import {BehaviorSubject, Observable} from "rxjs";
+import {BehaviorSubject, Observable} from 'rxjs';
 
 declare let NETDATA: any;
 
-import {SysosLibExtJqueryService} from "@sysos/lib-ext-jquery";
-import {SysosLibExtDygraphsService} from "@sysos/lib-ext-dygraphs";
-import {SysosLibExtEasypiechartService} from "@sysos/lib-ext-easypiechart";
-import {SysosLibExtGaugejsService} from "@sysos/lib-ext-gaugejs";
-import {SysosLibExtPerfectscrollbarService} from "@sysos/lib-ext-perfectscrollbar";
+import {SysosLibLoggerService} from '@sysos/lib-logger';
+import {SysosLibExtJqueryService} from '@sysos/lib-ext-jquery';
+import {SysosLibExtDygraphsService} from '@sysos/lib-ext-dygraphs';
+import {SysosLibExtEasypiechartService} from '@sysos/lib-ext-easypiechart';
+import {SysosLibExtGaugejsService} from '@sysos/lib-ext-gaugejs';
+import {SysosLibExtPerfectscrollbarService} from '@sysos/lib-ext-perfectscrollbar';
 
-import * as Dashboard from "netdata/web/gui/dashboard";
-import * as DashboardInfo from "netdata/web/gui/dashboard_info";
+import * as Dashboard from 'netdata/web/gui/dashboard';
+import * as DashboardInfo from 'netdata/web/gui/dashboard_info';
 
-import {SysosAppMonitorService} from "./sysos-app-monitor.service";
+import {SysosAppMonitorService} from './sysos-app-monitor.service';
 
 @Injectable({
   providedIn: 'root'
@@ -46,7 +48,9 @@ export class SysosAppMonitorDashboardService {
   runOnceOnDashboardLastRun = 0;
   netdataSnapshotData = null;
 
-  constructor(private jQuery: SysosLibExtJqueryService,
+  constructor(private http: HttpClient,
+              private logger: SysosLibLoggerService,
+              private jQuery: SysosLibExtJqueryService,
               private Dygraphs: SysosLibExtDygraphsService,
               private easyPieChart: SysosLibExtEasypiechartService,
               private gaugeJS: SysosLibExtGaugejsService,
@@ -70,6 +74,8 @@ export class SysosAppMonitorDashboardService {
         chartsPerRow: 0,
         // chartsMinWidth: 1450,
         chartsHeight: 180,
+
+        activeAlarms: 0
       },
       netdataDashboard: {
         sparklines_registry: {},
@@ -253,7 +259,7 @@ export class SysosAppMonitorDashboardService {
     this.menus = this.$menus.asObservable();
 
 
-    let _this = this;
+    const _this = this;
 
     // Set easyPieChart
     this.jQuery.$.fn.easyPieChart = function(options) {
@@ -277,6 +283,21 @@ export class SysosAppMonitorDashboardService {
     this.MonitorService.setNetdata(this.NETDATA);
   }
 
+  private alarmsCallback(data) {
+    let count = 0;
+
+    for (let x in data.alarms) {
+      if (!data.alarms.hasOwnProperty(x)) continue;
+
+      let alarm = data.alarms[x];
+      if (alarm.status === 'WARNING' || alarm.status === 'CRITICAL') count++;
+    }
+
+    console.log(this);
+
+    if (this.dataStore) this.dataStore.options.activeAlarms = count;
+  }
+
   initializeDynamicDashboard(chartsDiv, netdata_url?) {
     this.chartsDiv = chartsDiv;
 
@@ -295,6 +316,150 @@ export class SysosAppMonitorDashboardService {
       this.initializeCharts();
     });
 
+  }
+
+  private initializeCharts() {
+    NETDATA.alarms.callback = this.alarmsCallback;
+
+    // download all the charts the server knows
+    return NETDATA.chartRegistry.downloadAll(this.initializeConfig.url, (data) => {
+      if (data !== null) {
+        if (data.custom_info) {
+
+          this.http.get(NETDATA.serverDefault + data.custom_info).subscribe(
+            (data) => {
+              this.initializeDynamicDashboardWithData(data);
+            },
+            error => {
+              this.logger.error('Monitor', 'Error while getting custom dashboards', null, error);
+            });
+
+        } else {
+          this.initializeDynamicDashboardWithData(data);
+        }
+      }
+    });
+  }
+
+  private initializeDynamicDashboardWithData(data) {
+    this.dataStore.options.hostname = data.hostname;
+    this.dataStore.options.data = data;
+    this.dataStore.options.version = data.version;
+    this.dataStore.options.release_channel = data.release_channel;
+    this.dataStore.netdataDashboard.os = data.os;
+
+    if (typeof data.hosts !== 'undefined') {
+      this.dataStore.options.hosts = data.hosts;
+    }
+
+    // find the proper duration for per-second updates
+    this.dataStore.options.duration = Math.round((this.chartsDiv.nativeElement.clientWidth * 100 / 100 * this.dataStore.options.data.update_every / 3) / 60) * 60;
+    this.dataStore.options.update_every = this.dataStore.options.data.update_every;
+
+    // create a chart_by_name index
+    data.charts_by_name = {};
+    let charts = data.charts;
+    let x;
+    for (x in charts) {
+      if (!charts.hasOwnProperty(x)) {
+        continue;
+      }
+
+      let chart = charts[x];
+      data.charts_by_name[chart.name] = chart;
+    }
+
+    this.createSidebarMenus();
+
+    NETDATA.globalChartUnderlay.clear();
+
+    this.finalizePage();
+
+    this.$options.next(Object.assign({}, this.dataStore).options);
+    this.$netdataDashboard.next(Object.assign({}, this.dataStore).netdataDashboard);
+  }
+
+  private createSidebarMenus(): void {
+    let menu_key;
+
+    // Set Menus info
+    for (let c in this.dataStore.options.data.charts) {
+      if (!this.dataStore.options.data.charts.hasOwnProperty(c)) {
+        continue;
+      }
+
+      let chart = this.dataStore.options.data.charts[c];
+
+      this.enrichChartData(chart);
+      let m = chart.menu;
+
+      // create the menu
+      if (typeof this.dataStore.menus[m] === 'undefined') {
+        this.dataStore.menus[m] = {
+          menu_pattern: chart.menu_pattern,
+          priority: chart.priority,
+          submenus: {},
+          title: this.dataStore.netdataDashboard.menuTitle(chart),
+          icon: this.dataStore.netdataDashboard.menuIcon(chart),
+          info: this.dataStore.netdataDashboard.menuInfo(chart),
+          height: this.dataStore.netdataDashboard.menuHeight(chart) * this.dataStore.options.chartsHeight
+        };
+      } else {
+        if (typeof (this.dataStore.menus[m].menu_pattern) === 'undefined') {
+          this.dataStore.menus[m].menu_pattern = chart.menu_pattern;
+        }
+
+        if (chart.priority < this.dataStore.menus[m].priority) {
+          this.dataStore.menus[m].priority = chart.priority;
+        }
+      }
+
+      menu_key = (typeof (this.dataStore.menus[m].menu_pattern) !== 'undefined') ? this.dataStore.menus[m].menu_pattern : m;
+
+      // create the submenu
+      if (typeof this.dataStore.menus[m].submenus[chart.submenu] === 'undefined') {
+        this.dataStore.menus[m].submenus[chart.submenu] = {
+          priority: chart.priority,
+          charts: [],
+          title: null,
+          info: this.dataStore.netdataDashboard.submenuInfo(menu_key, chart.submenu),
+          height: this.dataStore.netdataDashboard.submenuHeight(menu_key, chart.submenu, this.dataStore.menus[m].height)
+        };
+      } else {
+        if (chart.priority < this.dataStore.menus[m].submenus[chart.submenu].priority) {
+          this.dataStore.menus[m].submenus[chart.submenu].priority = chart.priority;
+        }
+      }
+
+      // index the chart in the menu/submenu
+      this.dataStore.menus[m].submenus[chart.submenu].charts.push(chart);
+    }
+
+    // propagate the descriptive subname given to QoS
+    // to all the other submenus with the same name
+    for (let m in this.dataStore.menus) {
+      if (!this.dataStore.menus.hasOwnProperty(m)) {
+        continue;
+      }
+
+      for (let s in this.dataStore.menus[m].submenus) {
+        if (!this.dataStore.menus[m].submenus.hasOwnProperty(s)) {
+          continue;
+        }
+
+        // set the family using a name
+        if (typeof this.dataStore.options.submenu_names[s] !== 'undefined') {
+          this.dataStore.menus[m].submenus[s].title = s + ' (' + this.dataStore.options.submenu_names[s] + ')';
+        } else {
+          menu_key = (typeof (this.dataStore.menus[m].menu_pattern) !== 'undefined') ? this.dataStore.menus[m].menu_pattern : m;
+          this.dataStore.menus[m].submenus[s].title = this.dataStore.netdataDashboard.submenuTitle(menu_key, s);
+        }
+      }
+    }
+
+    this.$menus.next(Object.assign({}, this.dataStore).menus);
+
+    return;
   }
 
   private enrichChartData(chart): void {
@@ -413,120 +578,6 @@ export class SysosAppMonitorDashboardService {
     chart.submenu = chart.family;
   }
 
-  private createSidebarMenus(): void {
-    let menu_key;
-
-    // Set Menus info
-    for (let c in this.dataStore.options.data.charts) {
-      if (!this.dataStore.options.data.charts.hasOwnProperty(c)) {
-        continue;
-      }
-
-      let chart = this.dataStore.options.data.charts[c];
-
-      this.enrichChartData(chart);
-      let m = chart.menu;
-
-      // create the menu
-      if (typeof this.dataStore.menus[m] === 'undefined') {
-        this.dataStore.menus[m] = {
-          menu_pattern: chart.menu_pattern,
-          priority: chart.priority,
-          submenus: {},
-          title: this.dataStore.netdataDashboard.menuTitle(chart),
-          icon: this.dataStore.netdataDashboard.menuIcon(chart),
-          info: this.dataStore.netdataDashboard.menuInfo(chart),
-          height: this.dataStore.netdataDashboard.menuHeight(chart) * this.dataStore.options.chartsHeight
-        };
-      } else {
-        if (typeof (this.dataStore.menus[m].menu_pattern) === 'undefined') {
-          this.dataStore.menus[m].menu_pattern = chart.menu_pattern;
-        }
-
-        if (chart.priority < this.dataStore.menus[m].priority) {
-          this.dataStore.menus[m].priority = chart.priority;
-        }
-      }
-
-      menu_key = (typeof (this.dataStore.menus[m].menu_pattern) !== 'undefined') ? this.dataStore.menus[m].menu_pattern : m;
-
-      // create the submenu
-      if (typeof this.dataStore.menus[m].submenus[chart.submenu] === 'undefined') {
-        this.dataStore.menus[m].submenus[chart.submenu] = {
-          priority: chart.priority,
-          charts: [],
-          title: null,
-          info: this.dataStore.netdataDashboard.submenuInfo(menu_key, chart.submenu),
-          height: this.dataStore.netdataDashboard.submenuHeight(menu_key, chart.submenu, this.dataStore.menus[m].height)
-        };
-      } else {
-        if (chart.priority < this.dataStore.menus[m].submenus[chart.submenu].priority) {
-          this.dataStore.menus[m].submenus[chart.submenu].priority = chart.priority;
-        }
-      }
-
-      // index the chart in the menu/submenu
-      this.dataStore.menus[m].submenus[chart.submenu].charts.push(chart);
-    }
-
-    // propagate the descriptive subname given to QoS
-    // to all the other submenus with the same name
-    for (let m in this.dataStore.menus) {
-      if (!this.dataStore.menus.hasOwnProperty(m)) {
-        continue;
-      }
-
-      for (let s in this.dataStore.menus[m].submenus) {
-        if (!this.dataStore.menus[m].submenus.hasOwnProperty(s)) {
-          continue;
-        }
-
-        // set the family using a name
-        if (typeof this.dataStore.options.submenu_names[s] !== 'undefined') {
-          this.dataStore.menus[m].submenus[s].title = s + ' (' + this.dataStore.options.submenu_names[s] + ')';
-        } else {
-          menu_key = (typeof (this.dataStore.menus[m].menu_pattern) !== 'undefined') ? this.dataStore.menus[m].menu_pattern : m;
-          this.dataStore.menus[m].submenus[s].title = this.dataStore.netdataDashboard.submenuTitle(menu_key, s);
-        }
-      }
-    }
-
-    this.$menus.next(Object.assign({}, this.dataStore).menus);
-
-    return;
-  }
-
-  private runOnceOnDashboardWithjQuery() {
-
-
-    //dashboardSettingsSetup();
-    //loadSnapshotDragAndDropSetup();
-    //saveSnapshotModalSetup();
-
-    // ------------------------------------------------------------------------
-    // https://github.com/viralpatel/jquery.shorten/blob/master/src/jquery.shorten.js
-
-    this.$.fn.popover = () => {
-      console.log('popover');
-    };
-
-    this.$.fn.tooltip = () => {
-      console.log('tooltip');
-    };
-
-  }
-
-  private enableTooltipsAndPopovers() {
-    this.$('[data-toggle="tooltip"]').tooltip({
-      animated: 'fade',
-      trigger: 'hover',
-      html: true,
-      delay: { show: 500, hide: 0 },
-      container: 'body'
-    });
-    this.$('[data-toggle="popover"]').popover();
-  }
-
   private finalizePage() {
     // resize all charts - without starting the background thread
     // this has to be done while NETDATA is paused
@@ -552,82 +603,36 @@ export class SysosAppMonitorDashboardService {
     }
   }
 
-  private alarmsCallback(data) {
-    let count = 0, x;
-    for (x in data.alarms) {
-      if (!data.alarms.hasOwnProperty(x)) {
-        continue;
-      }
+  private runOnceOnDashboardWithjQuery() {
 
-      let alarm = data.alarms[x];
-      if (alarm.status === 'WARNING' || alarm.status === 'CRITICAL') {
-        count++;
-      }
-    }
 
-    if (count > 0) {
-      document.getElementById('alarms_count_badge').innerHTML = count.toString();
-    } else {
-      document.getElementById('alarms_count_badge').innerHTML = '';
-    }
+    // dashboardSettingsSetup();
+    // loadSnapshotDragAndDropSetup();
+    // saveSnapshotModalSetup();
+
+    // ------------------------------------------------------------------------
+    // https://github.com/viralpatel/jquery.shorten/blob/master/src/jquery.shorten.js
+
+    this.$.fn.popover = () => {
+      console.log('popover');
+    };
+
+    this.$.fn.tooltip = () => {
+      console.log('tooltip');
+    };
+
   }
 
-  private initializeCharts() {
-    NETDATA.alarms.callback = this.alarmsCallback;
-
-    // download all the charts the server knows
-    return NETDATA.chartRegistry.downloadAll(this.initializeConfig.url, (data) => {
-      if (data !== null) {
-        this.initializeDynamicDashboardWithData(data);
-      }
+  private enableTooltipsAndPopovers() {
+    this.$('[data-toggle="tooltip"]').tooltip({
+      animated: 'fade',
+      trigger: 'hover',
+      html: true,
+      delay: { show: 500, hide: 0 },
+      container: 'body'
     });
+    this.$('[data-toggle="popover"]').popover();
   }
 
-  private initializeDynamicDashboardWithData(data) {
-    if (data !== null) {
-      this.dataStore.options.hostname = data.hostname;
-      this.dataStore.options.data = data;
-      this.dataStore.options.version = data.version;
-      this.dataStore.options.release_channel = data.release_channel;
-      this.dataStore.netdataDashboard.os = data.os;
 
-      if (typeof data.hosts !== 'undefined') {
-        this.dataStore.options.hosts = data.hosts;
-      }
-
-      // find the proper duration for per-second updates
-      this.dataStore.options.duration = Math.round((this.chartsDiv.nativeElement.clientWidth * 100 / 100 * this.dataStore.options.data.update_every / 3) / 60) * 60;
-      this.dataStore.options.update_every = this.dataStore.options.data.update_every;
-
-      this.createSidebarMenus();
-      NETDATA.globalChartUnderlay.clear();
-      this.finalizePage();
-
-      // TODO if is snapshot
-      /*
-      if (netdataSnapshotData !== null) {
-        $('#alarmsButton').hide();
-        $('#updateButton').hide();
-        // $('#loadButton').hide();
-        $('#saveButton').hide();
-        $('#printButton').hide();
-      }*/
-
-      // create a chart_by_name index
-      data.charts_by_name = {};
-      let charts = data.charts;
-      let x;
-      for (x in charts) {
-        if (!charts.hasOwnProperty(x)) {
-          continue;
-        }
-
-        let chart = charts[x];
-        data.charts_by_name[chart.name] = chart;
-      }
-    }
-
-    this.$options.next(Object.assign({}, this.dataStore).options);
-    this.$netdataDashboard.next(Object.assign({}, this.dataStore).netdataDashboard);
-  }
 }

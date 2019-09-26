@@ -134,7 +134,19 @@ fs.readFile('dist/SysOS/filesystem/bin/applications/sysos-app-drawer.umd.js', 'u
     return console.log(err);
   }
 
-  let result = '// Addeded with package.json postscript\n' +
+  let result = data;
+
+
+  let res = await insertContent();
+  let initBlock = 'App.main();\n' +
+    '}\n';
+
+  let jscolor = await readFile('node_modules/draw.io/drawio/src/main/webapp/js/jscolor/jscolor.js');
+  let Pako = await readFile('node_modules/draw.io/drawio/src/main/webapp/js/deflate/pako.min.js');
+  let Base64 = await readFile('node_modules/draw.io/drawio/src/main/webapp/js/deflate/base64.js');
+  let spinner = await readFile('node_modules/spin.js/spin.js');
+
+  result = result.replace('window&&(window.html=ha,window.html_sanitize=la);})();', 'window&&(window.html=ha,window.html_sanitize=la);})();\n' + '// Addeded with package.json postscript\n' +
     'var Editor;\n' +
     'var EditorUi;\n' +
     'var Sidebar;\n' +
@@ -206,20 +218,10 @@ fs.readFile('dist/SysOS/filesystem/bin/applications/sysos-app-drawer.umd.js', 'u
     'var sb;\n' +
     'var clip;\n' +
     'var urlParams = {};\n' +
-    '\n' + data;
-
-
-  let res = await insertContent();
-  let initBlock = 'App.main();\n' +
-    '}\n';
-
-  let jscolor = await readFile('node_modules/draw.io/drawio/src/main/webapp/js/jscolor/jscolor.js');
-  let Pako = await readFile('node_modules/draw.io/drawio/src/main/webapp/js/deflate/pako.min.js');
-  let Base64 = await readFile('node_modules/draw.io/drawio/src/main/webapp/js/deflate/base64.js');
-  let spinner = await readFile('node_modules/spin.js/spin.js');
-
-  result = result.replace('window&&(window.html=ha,window.html_sanitize=la);})();', 'window&&(window.html=ha,window.html_sanitize=la);})();\n' + '\n\nvar Load = function (mx) {\n' +
-    '    mx = mx\n' + spinner + Pako + Base64 + jscolor + res + initBlock);
+    '\n'
+  + '\n\nvar Load = function (mx) {\n' +
+    '    mx = mx\n' +
+    '    mx.mxClient.IS_CHROMEAPP = true;\n' + spinner + Pako + Base64 + jscolor + res + initBlock);
 
   // Replace wrong var names (multiple times cos this regex only changes 1 match per line)
   result = result.replace(/([^.'<;/])(mxDefaultKeyHandler|mxDefaultPopupMenu|mxDefaultToolbar|mxEditor|mxCellHighlight|mxCellMarker|mxCellTracker|mxConnectionHandler|mxConstraintHandler|mxEdgeHandler|mxEdgeSegmentHandler.js|mxElbowEdgeHandler|mxGraphHandler|mxHandle|mxKeyHandler|mxPanningHandler|mxPopupMenuHandler|mxRubberband|mxSelectionCellsHandler|mxTooltipHandler|mxVertexHandler|mxCellCodec|mxChildChangeCodec|mxCodec|mxCodecRegistry|mxDefaultKeyHandlerCodec|mxDefaultPopupMenuCodec|mxDefaultToolbarCodec|mxEditorCodec|mxGenericChangeCodec|mxGraphCodec|mxGraphViewCodec|mxModelCodec|mxObjectCodec|mxRootChangeCodec|mxStylesheetCodec|mxTerminalChangeCodec|mxGraphAbstractHierarchyCell|mxGraphHierarchyEdge|mxGraphHierarchyModel|mxGraphHierarchyNode|mxSwimlaneModel|mxHierarchicalLayout|mxSwimlaneLayout|mxCoordinateAssignment|mxHierarchicalLayoutStage|mxMedianHybridCrossingReduction|mxMinimumCycleRemover|mxSwimlaneOrdering|mxCircleLayout|mxCompactTreeLayout|mxCompositeLayout|mxEdgeLabelLayout|mxFastOrganicLayout|mxGraphLayout|mxParallelEdgeLayout|mxPartitionLayout|mxRadialTreeLayout|mxStackLayout|mxCell|mxCellPath|mxGeometry|mxGraphModel|mxClient|mxActor|mxArrow|mxArrowConnector|mxCloud|mxConnector|mxCylinder|mxDoubleEllipse|mxEllipse|mxHexagon|mxImageShape|mxLabel|mxLine|mxMarker|mxPolyline|mxRectangleShape|mxRhombus|mxShape|mxStencil|mxStencilRegistry|mxSwimlane|mxText|mxTriangle|mxAbstractCanvas2D|mxAnimation|mxAutoSaveManager|mxClipboard|mxConstants|mxDictionary|mxDivResizer|mxDragSource|mxEffects|mxEvent|mxEventObject|mxEventSource|mxForm|mxGuide|mxImage|mxImageBundle|mxImageExport|mxLog|mxMorphing|mxMouseEvent|mxObjectIdentity|mxPanningManager|mxPoint|mxPopupMenu|mxRectangle|mxResources|mxSvgCanvas2D|mxToolbar|mxUndoableEdit|mxUndoManager|mxUrlConverter|mxUtils|mxVmlCanvas2D|mxWindow|mxXmlCanvas2D|mxXmlRequest|mxCellEditor|mxCellOverlay|mxCellRenderer|mxCellState|mxCellStatePreview|mxConnectionConstraint|mxEdgeStyle|mxGraph|mxGraphSelectionModel|mxGraphView|mxLayoutManager|mxMultiplicity|mxOutline|mxPerimeter|mxPrintPreview|mxStyleRegistry|mxStylesheet|mxSwimlaneManager|mxTemporaryCellStates|mxRootChange|mxChildChange)([^a-zA-Z])/g, '$1mx.$2$3');
@@ -241,6 +243,8 @@ fs.readFile('dist/SysOS/filesystem/bin/applications/sysos-app-drawer.umd.js', 'u
   result = result.replace('&&o.adj?i():j=d(o,"animation"),h});', '&&o.adj?i():j=d(o,"animation"),h};');
 
   result = result.replace(/document\.title = title;/g, '');
+
+  result = result.replace('wnd = window.open(url);', '');
 
   result = result.replace(/document\.body/g, 'document.getElementById(\'graphContainer\')');
 

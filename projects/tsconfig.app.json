@@ -74,11 +74,11 @@
       "@sysos/lib-folder/*": [
         "dist/libs/sysos-lib-folder/*"
       ],
-      "@sysos/lib-sanitize-html": [
-        "dist/libs/sysos-lib-sanitize-html"
+      "@sysos/lib-sanitize": [
+        "dist/libs/sysos-lib-sanitize"
       ],
-      "@sysos/lib-sanitize-html/*": [
-        "dist/libs/sysos-lib-sanitize-html/*"
+      "@sysos/lib-sanitize/*": [
+        "dist/libs/sysos-lib-sanitize/*"
       ],
       "@sysos/lib-scroll-spy": [
         "dist/libs/sysos-lib-scroll-spy"
@@ -235,6 +235,12 @@
       ],
       "@sysos/modal-monitor-options/*": [
         "dist/sysos-modal-monitor-options/*"
+      ],
+      "@sysos/modal-monitor-alarms": [
+        "dist/sysos-modal-monitor-alarms"
+      ],
+      "@sysos/modal-monitor-alarms/*": [
+        "dist/sysos-modal-monitor-alarms/*"
       ]
     }
   }

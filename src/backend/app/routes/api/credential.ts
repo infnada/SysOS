@@ -31,6 +31,23 @@ router.get('/', (req: express.Request, res: express.Response) => {
 });
 
 /**
+ * Get credential
+ */
+router.get('/:uuid', (req: express.Request, res: express.Response) => {
+  logger.info(`[API Credentials] -> Get credential -> uuid [${req.params.uuid}]`);
+
+  const apiGlobals = new ApiGlobalsModule(req, res);
+
+  const fileData = readConfig(path.join(__dirname, '../../filesystem/root/credentials.json'), {skipUnresolved: true});
+
+  const credential = fileData.find((obj) => {
+    return obj.uuid === req.params.uuid;
+  });
+
+  return apiGlobals.responseJsonData(credential);
+});
+
+/**
  * Save credentials
  */
 router.put('/', (req: express.Request, res: express.Response) => {

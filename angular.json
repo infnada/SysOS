@@ -1553,33 +1553,33 @@
         }
       }
     },
-    "sysos-lib-sanitize-html": {
-      "root": "projects/sysos-lib-sanitize-html",
-      "sourceRoot": "projects/sysos-lib-sanitize-html/src",
+    "sysos-lib-sanitize": {
+      "root": "projects/sysos-lib-sanitize",
+      "sourceRoot": "projects/sysos-lib-sanitize/src",
       "projectType": "library",
       "prefix": "slsh",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-ng-packagr:build",
           "options": {
-            "tsConfig": "projects/sysos-lib-sanitize-html/tsconfig.lib.json",
-            "project": "projects/sysos-lib-sanitize-html/ng-package.json"
+            "tsConfig": "projects/sysos-lib-sanitize/tsconfig.lib.json",
+            "project": "projects/sysos-lib-sanitize/ng-package.json"
           }
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "main": "projects/sysos-lib-sanitize-html/src/test.ts",
-            "tsConfig": "projects/sysos-lib-sanitize-html/tsconfig.spec.json",
-            "karmaConfig": "projects/sysos-lib-sanitize-html/karma.conf.js"
+            "main": "projects/sysos-lib-sanitize/src/test.ts",
+            "tsConfig": "projects/sysos-lib-sanitize/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-lib-sanitize/karma.conf.js"
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": [
-              "projects/sysos-lib-sanitize-html/tsconfig.lib.json",
-              "projects/sysos-lib-sanitize-html/tsconfig.spec.json"
+              "projects/sysos-lib-sanitize/tsconfig.lib.json",
+              "projects/sysos-lib-sanitize/tsconfig.spec.json"
             ],
             "exclude": [
               "**/node_modules/**"
@@ -1620,6 +1620,46 @@
             "tsConfig": [
               "projects/sysos-modal-monitor-options/tsconfig.lib.json",
               "projects/sysos-modal-monitor-options/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-modal-monitor-alarms": {
+      "root": "projects/sysos-modal-monitor-alarms",
+      "sourceRoot": "projects/sysos-modal-monitor-alarms/src",
+      "projectType": "library",
+      "prefix": "smma",
+      "schematics": {
+        "@schematics/angular:component": {
+          "styleext": "scss"
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-modal-monitor-alarms/tsconfig.lib.json",
+            "project": "projects/sysos-modal-monitor-alarms/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-modal-monitor-alarms/src/test.ts",
+            "tsConfig": "projects/sysos-modal-monitor-alarms/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-modal-monitor-alarms/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-modal-monitor-alarms/tsconfig.lib.json",
+              "projects/sysos-modal-monitor-alarms/tsconfig.spec.json"
             ],
             "exclude": [
               "**/node_modules/**"

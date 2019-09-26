@@ -9,13 +9,7 @@ fs.readFile('dist/SysOS/filesystem/bin/applications/sysos-app-monitor.umd.js', '
   if (err) {
     return console.log(err);
   }
-  let result = '// Addeded with package.json postscript\n' +
-    'let netdataSnapshotData;\n' +
-    'let netdataShowHelp;\n' +
-    'let netdataShowAlarms;\n' +
-    'let netdataRegistryAfterMs;\n' +
-    'let netdataRegistry;\n' +
-    '\n' + data;
+  let result = data;
 
 
   result = result.replace(/NETDATA\$1/g, 'NETDATA');
@@ -32,7 +26,13 @@ fs.readFile('dist/SysOS/filesystem/bin/applications/sysos-app-monitor.umd.js', '
   result = result.replace(/NETDATA\._loadjQuery\(function \(\) {(.+?(?=}\);))(.+?(?=}\);))}\);/s, 'NETDATA.start();');
 
   // Remove global and make it inside Dashboard function to call it from angular
-  result = result.replace('(function(window, document, $, undefined$1) {', 'var Dashboard = function(connection, $, Dygraph, Gauge, Ps, undefined$1) {');
+  result = result.replace('(function(window, document, $, undefined$1) {', 'var Dashboard = function(connection, $, Dygraph, Gauge, Ps, undefined$1) {' + '// Addeded with package.json postscript\n' +
+    'let netdataSnapshotData;\n' +
+    'let netdataShowHelp;\n' +
+    'let netdataShowAlarms = true;\n' +
+    'let netdataRegistryAfterMs;\n' +
+    'let netdataRegistry;\n' +
+    '\n');
   result = result.replace('})(window, document, (typeof jQuery === \'function\')?jQuery:undefined);', '};');
   result = result.replace('    var Dashboard = /*#__PURE__*/Object.freeze({\n' +
     '\n' +
@@ -93,6 +93,11 @@ fs.readFile('dist/SysOS/filesystem/bin/applications/sysos-app-monitor.umd.js', '
   result = result.replace(/'\/api\/v1\/charts'/g, '(connection.type === \'netdata\' ? \'/api/v1/charts\' : \'/api/monitor/charts/\' + connection.uuid + \'/\')');
   result = result.replace(/'\/api\/v1\/chart'/g, '(connection.type === \'netdata\' ? \'/api/v1/chart\' : \'/api/monitor/chart/\' + connection.uuid + \'/\')');
   result = result.replace(/'\/api\/v1\/data'/g, '(connection.type === \'netdata\' ? \'/api/v1/data\' : \'/api/monitor/data/\' + connection.uuid + \'/\')');
+
+  result = result.replace(/\$\.ajax\({/g, '$.ajax({\n' +
+    '            beforeSend: function (xhr) {\n' +
+    '              if (connection.credentialBtoa) xhr.setRequestHeader("Authorization", "Basic " + connection.credentialBtoa);\n' +
+    '            },');
 
 
   result = result.replace('key = key + \'.\' + _this.dataStore.netdataDashboard.sparklines_registry[key].count;', 'key = key + \'.\' + 1');

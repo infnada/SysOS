@@ -3,6 +3,7 @@ export interface Netdata {
   url: string;
   description: string;
   credential: string;
+  credentialBtoa?: string;
   autologin: boolean;
   save: boolean;
   state: string;

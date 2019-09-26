@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 
 import {BehaviorSubject, Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
 import {ToastrService} from 'ngx-toastr';
 import {SysosLibLoggerService} from '@sysos/lib-logger';
 
@@ -52,6 +53,19 @@ export class SysosAppCredentialsManagerService {
         this.logger.error('Credentials Manager', 'Error while getting credentials', null, error);
         return this.Toastr.error('Error getting credentials.', 'Credential Manager');
       });
+  }
+
+  async getCredential(credentialUuid): Promise<any> {
+    return this.http.get('/api/credential/' + credentialUuid).pipe(map(
+      (res: { data: Credential }) => {
+        this.logger.info('Credentials Manager', 'Got credential successfully');
+
+        return res.data;
+      },
+      error => {
+        this.logger.error('Credentials Manager', 'Error while getting credentials', null, error);
+        return this.Toastr.error('Error getting credentials.', 'Credential Manager');
+      })).toPromise();
   }
 
   deleteCredential(uuid: string): void {

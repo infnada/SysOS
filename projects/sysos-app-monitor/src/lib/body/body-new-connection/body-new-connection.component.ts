@@ -2,8 +2,8 @@ import {Component, Input, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 
 import {Application, SysosLibApplicationService} from '@sysos/lib-application';
-import {SysosLibServiceInjectorService} from "@sysos/lib-service-injector";
-import {Credential} from "@sysos/app-credentials-manager";
+import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
+import {Credential} from '@sysos/app-credentials-manager';
 
 import {SysosAppMonitorService} from '../../services/sysos-app-monitor.service';
 import {Netdata} from "../../types/netdata";
