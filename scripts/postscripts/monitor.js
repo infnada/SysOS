@@ -16,7 +16,7 @@ fs.readFile('dist/SysOS/filesystem/bin/applications/sysos-app-monitor.umd.js', '
 
   // Set correct URL
   result = result.replace(/NETDATA\._scriptSource = function \(\) {(.+?(?=};))};/s, 'NETDATA._scriptSource = function () {\n' +
-    '        return (connection.type === \'netdata\' ? connection.url : window.location.origin);\n' +
+    '        return (connection && (connection.type === \'netdata\' || connection.type === \'snapshot\') ? connection.url : window.location.origin);\n' +
     '    };');
 
   // Do not load dynamic css
@@ -26,13 +26,39 @@ fs.readFile('dist/SysOS/filesystem/bin/applications/sysos-app-monitor.umd.js', '
   result = result.replace(/NETDATA\._loadjQuery\(function \(\) {(.+?(?=}\);))(.+?(?=}\);))}\);/s, 'NETDATA.start();');
 
   // Remove global and make it inside Dashboard function to call it from angular
-  result = result.replace('(function(window, document, $, undefined$1) {', 'var Dashboard = function(connection, $, Dygraph, Gauge, Ps, undefined$1) {' + '// Addeded with package.json postscript\n' +
-    'let netdataSnapshotData;\n' +
-    'let netdataShowHelp;\n' +
+  result = result.replace('(function(window, document, $, undefined$1) {', '// Addeded with package.json postscript\n' +
+    'let netdataNoDygraphs = false;\n' +
+    'let netdataNoSparklines = false;\n' +
+    'let netdataNoPeitys = false;\n' +
+    'let netdataNoGoogleCharts = false;\n' +
+    'let netdataNoMorris = false;\n' +
+    'let netdataNoEasyPieChart = false;\n' +
+    'let netdataNoGauge = false;\n' +
+    'let netdataNoD3 = false;\n' +
+    'let netdataNoC3 = false;\n' +
+    'let netdataNoD3pie = false;\n' +
+    'let netdataNoBootstrap = false;\n' +
+    'let netdataNoFontAwesome = false;\n' +
+    'let netdataIcons;\n' +
+    'let netdataDontStart = false;\n' +
+    'let netdataErrorCallback = null;\n' +
+    'let netdataRegistry = false;\n' +
+    'let netdataNoRegistry = false;\n' +
+    'let netdataRegistryCallback = null;\n' +
+    'let netdataShowHelp = true;\n' +
     'let netdataShowAlarms = true;\n' +
-    'let netdataRegistryAfterMs;\n' +
-    'let netdataRegistry;\n' +
-    '\n');
+    'let netdataRegistryAfterMs = 1500;\n' +
+    'let netdataCallback = null;\n' +
+    'let netdataPrepCallback = null;\n' +
+    'let netdataServer;\n' +
+    'let netdataServerStatic;\n' +
+    'let netdataSnapshotData = null;\n' +
+    'let netdataAlarmsRecipients = null;\n' +
+    'let netdataAlarmsRemember = true;\n' +
+    'let netdataAlarmsActiveCallback;\n' +
+    'let netdataAlarmsNotifCallback;\n' +
+    'let netdataIntersectionObserver = true;\n' +
+    'let netdataCheckXSS = false;\n\n' + 'var Dashboard = function(connection, $, Dygraph, Gauge, Ps, undefined$1) {');
   result = result.replace('})(window, document, (typeof jQuery === \'function\')?jQuery:undefined);', '};');
   result = result.replace('    var Dashboard = /*#__PURE__*/Object.freeze({\n' +
     '\n' +
@@ -85,18 +111,18 @@ fs.readFile('dist/SysOS/filesystem/bin/applications/sysos-app-monitor.umd.js', '
   result = result.replace(/smoothPlotter/g, 'Dygraph.smoothPlotter');
 
   // Change url where to fetch server data
-  result = result.replace('data = NETDATA.xss.checkOptional(\'/api/v1/charts\', data);', 'data = NETDATA.xss.checkOptional(\'/api/v1/charts\', (connection.type === \'netdata\' ? data : data.data));');
-  result = result.replace('chart = NETDATA.xss.checkOptional(\'/api/v1/chart\', chart);', 'chart = NETDATA.xss.checkOptional(\'/api/v1/chart\', (connection.type === \'netdata\' ? chart : chart.data));');
-  result = result.replace('data = NETDATA.xss.checkData(\'/api/v1/data\', data, that.library.xssRegexIgnore);', 'data = NETDATA.xss.checkData(\'/api/v1/data\', (connection.type === \'netdata\' ? data : data.data), that.library.xssRegexIgnore);');
-  result = result.replace('data = NETDATA.xss.checkData(\'/api/v1/data\', data, this.library.xssRegexIgnore);', 'data = NETDATA.xss.checkData(\'/api/v1/data\', (connection.type === \'netdata\' ? data : data.data), this.library.xssRegexIgnore);');
+  result = result.replace('data = NETDATA.xss.checkOptional(\'/api/v1/charts\', data);', 'data = NETDATA.xss.checkOptional(\'/api/v1/charts\', (connection && (connection.type === \'netdata\' || connection.type === \'snapshot\') ? data : data.data));');
+  result = result.replace('chart = NETDATA.xss.checkOptional(\'/api/v1/chart\', chart);', 'chart = NETDATA.xss.checkOptional(\'/api/v1/chart\', (connection && (connection.type === \'netdata\' || connection.type === \'snapshot\') ? chart : chart.data));');
+  result = result.replace('data = NETDATA.xss.checkData(\'/api/v1/data\', data, that.library.xssRegexIgnore);', 'data = NETDATA.xss.checkData(\'/api/v1/data\', (connection && (connection.type === \'netdata\' || connection.type === \'snapshot\') ? data : data.data), that.library.xssRegexIgnore);');
+  result = result.replace('data = NETDATA.xss.checkData(\'/api/v1/data\', data, this.library.xssRegexIgnore);', 'data = NETDATA.xss.checkData(\'/api/v1/data\', (connection && (connection.type === \'netdata\' || connection.type === \'snapshot\') ? data : data.data), this.library.xssRegexIgnore);');
 
-  result = result.replace(/'\/api\/v1\/charts'/g, '(connection.type === \'netdata\' ? \'/api/v1/charts\' : \'/api/monitor/charts/\' + connection.uuid + \'/\')');
-  result = result.replace(/'\/api\/v1\/chart'/g, '(connection.type === \'netdata\' ? \'/api/v1/chart\' : \'/api/monitor/chart/\' + connection.uuid + \'/\')');
-  result = result.replace(/'\/api\/v1\/data'/g, '(connection.type === \'netdata\' ? \'/api/v1/data\' : \'/api/monitor/data/\' + connection.uuid + \'/\')');
+  result = result.replace(/'\/api\/v1\/charts'/g, '(!connection || connection.type === \'netdata\' || connection.type === \'snapshot\' ? \'/api/v1/charts\' : \'/api/monitor/charts/\' + connection.uuid + \'/\')');
+  result = result.replace(/'\/api\/v1\/chart'/g, '(!connection || connection.type === \'netdata\' || connection.type === \'snapshot\' ? \'/api/v1/chart\' : \'/api/monitor/chart/\' + connection.uuid + \'/\')');
+  result = result.replace(/'\/api\/v1\/data'/g, '(!connection || connection.type === \'netdata\' || connection.type === \'snapshot\' ? \'/api/v1/data\' : \'/api/monitor/data/\' + connection.uuid + \'/\')');
 
   result = result.replace(/\$\.ajax\({/g, '$.ajax({\n' +
     '            beforeSend: function (xhr) {\n' +
-    '              if (connection.credentialBtoa) xhr.setRequestHeader("Authorization", "Basic " + connection.credentialBtoa);\n' +
+    '              if (connection && connection.credentialBtoa) xhr.setRequestHeader("Authorization", "Basic " + connection.credentialBtoa);\n' +
     '            },');
 
 

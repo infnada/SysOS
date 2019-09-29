@@ -4,6 +4,9 @@ import {HttpClient} from '@angular/common/http';
 import {BehaviorSubject, Observable} from 'rxjs';
 
 declare let NETDATA: any;
+declare let netdataShowAlarms: boolean;
+declare let netdataSnapshotData: any;
+declare let netdataCheckXSS: boolean;
 
 import {SysosLibLoggerService} from '@sysos/lib-logger';
 import {SysosLibModalService} from "@sysos/lib-modal";
@@ -50,16 +53,9 @@ export class SysosAppMonitorDashboardService {
     returnFromHighlight: any;
   };
 
-  private initializeConfig = {
-    url: null,
-    custom_info: true
-  };
-
-  private netdataCheckXSS = false;
-  chartsDiv: ElementRef;
-  netdataSnapshotData = null;
-
-  snapshotOptions = {
+  private customInfo = true;
+  private chartsDiv: ElementRef;
+  private snapshotOptions = {
     bytes_per_chart: 2048,
     compressionDefault: 'pako.deflate.base64',
 
@@ -144,7 +140,6 @@ export class SysosAppMonitorDashboardService {
       }
     }
   };
-
   urlOptions = {
     hash: '#',
     theme: null,
@@ -227,7 +222,7 @@ export class SysosAppMonitorDashboardService {
 
       if (this.urlOptions.server !== null && this.urlOptions.server !== '') {
         this.NETDATA.serverDefault = this.urlOptions.server;
-        this.netdataCheckXSS = true;
+        netdataCheckXSS = true;
       } else {
         this.urlOptions.server = null;
       }
@@ -243,7 +238,7 @@ export class SysosAppMonitorDashboardService {
 
     },
     netdataPanAndZoomCallback: (status, after, before) => {
-      if (this.netdataSnapshotData === null) {
+      if (netdataSnapshotData === null) {
         this.urlOptions.pan_and_zoom = status;
         this.urlOptions.after = after;
         this.urlOptions.before = before;
@@ -256,7 +251,7 @@ export class SysosAppMonitorDashboardService {
         before = 0;
       }
 
-      if (this.netdataSnapshotData === null) {
+      if (netdataSnapshotData === null) {
         this.urlOptions.highlight = status;
       } else {
         this.urlOptions.highlight = false;
@@ -278,14 +273,13 @@ export class SysosAppMonitorDashboardService {
           before: this.NETDATA.dateTime.localeTimeString(before),
           duration: this.NETDATA.seconds4human(Math.round((before - after) / 1000))
         };
-
-        this.$returnFromHighlight.next(Object.assign({}, this.dataStore).returnFromHighlight);
       } else {
         this.dataStore.returnFromHighlight = {
           showHighlight: false
         };
-        this.$returnFromHighlight.next(Object.assign({}, this.dataStore).returnFromHighlight);
       }
+
+      this.$returnFromHighlight.next(Object.assign({}, this.dataStore).returnFromHighlight);
     },
     clearHighlight: () => {
       this.NETDATA.globalChartUnderlay.clear();
@@ -321,14 +315,10 @@ export class SysosAppMonitorDashboardService {
         version: 'unknown',
         release_channel: 'unknown',
         hosts: [],
-
         duration: 0, // the default duration of the charts
         update_every: 1,
-
         chartsPerRow: 0,
-        // chartsMinWidth: 1450,
         chartsHeight: 180,
-
         activeAlarms: 0
       },
       netdataDashboard: {
@@ -341,27 +331,14 @@ export class SysosAppMonitorDashboardService {
         // generate a sparkline
         // used in the documentation
         sparkline: (prefix, chart, dimension, units, suffix) => {
-          if (this.dataStore.options.data === null || typeof this.dataStore.options.data.charts === 'undefined') {
-            return '';
-          }
-
-          if (typeof this.dataStore.options.data.charts[chart] === 'undefined') {
-            return '';
-          }
-
-          if (typeof this.dataStore.options.data.charts[chart].dimensions === 'undefined') {
-            return '';
-          }
-
-          if (typeof this.dataStore.options.data.charts[chart].dimensions[dimension] === 'undefined') {
-            return '';
-          }
+          if (this.dataStore.options.data === null || typeof this.dataStore.options.data.charts === 'undefined') return '';
+          if (typeof this.dataStore.options.data.charts[chart] === 'undefined') return '';
+          if (typeof this.dataStore.options.data.charts[chart].dimensions === 'undefined') return '';
+          if (typeof this.dataStore.options.data.charts[chart].dimensions[dimension] === 'undefined') return '';
 
           let key = chart + '.' + dimension;
 
-          if (typeof units === 'undefined') {
-            units = '';
-          }
+          if (typeof units === 'undefined') units = '';
 
           if (typeof this.dataStore.netdataDashboard.sparklines_registry[key] === 'undefined') {
             this.dataStore.netdataDashboard.sparklines_registry[key] = { count: 1 };
@@ -370,18 +347,11 @@ export class SysosAppMonitorDashboardService {
           }
 
           key = key + '.' + this.dataStore.netdataDashboard.sparklines_registry[key].count;
-
           return prefix + '<div class="netdata-container" data-netdata="' + chart + '" data-after="-120" data-width="25%" data-height="15px" data-chart-library="dygraph" data-dygraph-theme="sparkline" data-dimensions="' + dimension + '" data-show-value-of-' + dimension + '-at="' + key + '"></div> (<span id="' + key + '" style="display: inline-block; min-width: 50px; text-align: right;">X</span>' + units + ')' + suffix;
         },
-
         gaugeChart: (title, width, dimensions, colors) => {
-          if (typeof colors === 'undefined') {
-            colors = '';
-          }
-
-          if (typeof dimensions === 'undefined') {
-            dimensions = '';
-          }
+          if (typeof colors === 'undefined') colors = '';
+          if (typeof dimensions === 'undefined') dimensions = '';
 
           return '<div class="netdata-container" data-netdata="CHART_UNIQUE_ID"'
             + ' data-dimensions="' + dimensions + '"'
@@ -395,25 +365,18 @@ export class SysosAppMonitorDashboardService {
             + ' data-colors="' + colors + '"'
             + ' role="application"></div>';
         },
-
         anyAttribute: (obj, attr, key, def) => {
           if (typeof (obj[key]) !== 'undefined') {
             let x = obj[key][attr];
 
-            if (typeof (x) === 'undefined') {
-              return def;
-            }
-
-            if (typeof (x) === 'function') {
-              return x(this.dataStore.netdataDashboard.os);
-            }
+            if (typeof (x) === 'undefined') return def;
+            if (typeof (x) === 'function') return x(this.dataStore.netdataDashboard.os);
 
             return x;
           }
 
           return def;
         },
-
         menuTitle: (chart) => {
           if (typeof chart.menu_pattern !== 'undefined') {
             return (this.dataStore.netdataDashboard.anyAttribute(this.dataStore.netdataDashboard.menu, 'title', chart.menu_pattern, chart.menu_pattern).toString()
@@ -422,7 +385,6 @@ export class SysosAppMonitorDashboardService {
 
           return (this.dataStore.netdataDashboard.anyAttribute(this.dataStore.netdataDashboard.menu, 'title', chart.menu, chart.menu)).toString().replace(/_/g, ' ');
         },
-
         menuIcon: (chart) => {
           if (typeof chart.menu_pattern !== 'undefined') {
             return this.dataStore.netdataDashboard.anyAttribute(this.dataStore.netdataDashboard.menu, 'icon', chart.menu_pattern, '<i class="fas fa-puzzle-piece"></i>').toString();
@@ -430,15 +392,12 @@ export class SysosAppMonitorDashboardService {
 
           return this.dataStore.netdataDashboard.anyAttribute(this.dataStore.netdataDashboard.menu, 'icon', chart.menu, '<i class="fas fa-puzzle-piece"></i>');
         },
-
         menuInfo: (chart) => {
           if (typeof chart.menu_pattern !== 'undefined') {
             return this.dataStore.netdataDashboard.anyAttribute(this.dataStore.netdataDashboard.menu, 'info', chart.menu_pattern, null);
           }
-
           return this.dataStore.netdataDashboard.anyAttribute(this.dataStore.netdataDashboard.menu, 'info', chart.menu, null);
         },
-
         menuHeight: (chart) => {
           if (typeof chart.menu_pattern !== 'undefined') {
             return this.dataStore.netdataDashboard.anyAttribute(this.dataStore.netdataDashboard.menu, 'height', chart.menu_pattern, 1.0);
@@ -446,7 +405,6 @@ export class SysosAppMonitorDashboardService {
 
           return this.dataStore.netdataDashboard.anyAttribute(this.dataStore.netdataDashboard.menu, 'height', chart.menu, 1.0);
         },
-
         submenuTitle: (menu, submenu) => {
           let key = menu + '.' + submenu;
           let title = this.dataStore.netdataDashboard.anyAttribute(this.dataStore.netdataDashboard.submenu, 'title', key, submenu).toString().replace(/_/g, ' ');
@@ -457,17 +415,14 @@ export class SysosAppMonitorDashboardService {
           }
           return title;
         },
-
         submenuInfo: (menu, submenu) => {
           let key = menu + '.' + submenu;
           return this.dataStore.netdataDashboard.anyAttribute(this.dataStore.netdataDashboard.submenu, 'info', key, null);
         },
-
         submenuHeight: (menu, submenu, relative) => {
           let key = menu + '.' + submenu;
           return this.dataStore.netdataDashboard.anyAttribute(this.dataStore.netdataDashboard.submenu, 'height', key, 1.0) * relative;
         },
-
         contextInfo: (id) => {
           let x = this.dataStore.netdataDashboard.anyAttribute(this.dataStore.netdataDashboard.context, 'info', id, null);
 
@@ -477,7 +432,6 @@ export class SysosAppMonitorDashboardService {
             return '';
           }
         },
-
         contextValueRange: (id) => {
           if (typeof this.dataStore.netdataDashboard.context[id] !== 'undefined' && typeof this.dataStore.netdataDashboard.context[id].valueRange !== 'undefined') {
             return this.dataStore.netdataDashboard.context[id].valueRange;
@@ -485,7 +439,6 @@ export class SysosAppMonitorDashboardService {
             return '[null, null]';
           }
         },
-
         contextHeight: (id, def) => {
           if (typeof this.dataStore.netdataDashboard.context[id] !== 'undefined' && typeof this.dataStore.netdataDashboard.context[id].height !== 'undefined') {
             return def * this.dataStore.netdataDashboard.context[id].height;
@@ -493,7 +446,6 @@ export class SysosAppMonitorDashboardService {
             return def;
           }
         },
-
         contextDecimalDigits: (id, def) => {
           if (typeof this.dataStore.netdataDashboard.context[id] !== 'undefined' && typeof this.dataStore.netdataDashboard.context[id].decimalDigits !== 'undefined') {
             return this.dataStore.netdataDashboard.context[id].decimalDigits;
@@ -532,20 +484,32 @@ export class SysosAppMonitorDashboardService {
     };
   }
 
+  resetDashboard() {
+    netdataShowAlarms = false;
+    this.NETDATA.globalReset();
+  }
+
   newDashboard() {
     // Set Netdata dashboard
+    if (!this.MonitorService.getActiveConnection()) {
+      netdataShowAlarms = false;
+    }
+
     new Dashboard(this.MonitorService.getActiveConnection(), this.jQuery.$, this.Dygraphs.Dygraph, this.gaugeJS.gaugeJS.Gauge, this.Ps.PerfectScrollbar);
     new DashboardInfo(this.dataStore.netdataDashboard);
-
-    this.NETDATA.globalReset();
 
     this.urlOptions.parseHash();
 
     // Store NETDATA var into service to reuse it on other components
     this.MonitorService.setNetdata(this.NETDATA);
+    return this.NETDATA
   }
 
-  private  jsonParseFn(str) {
+  private jsonParseFn(str) {
+    
+    // Required to be available inside eval
+    let netdataDashboard = this.dataStore.netdataDashboard;
+
     return JSON.parse(str, function (key, value) {
       if (typeof value != 'string') {
         return value;
@@ -570,43 +534,46 @@ export class SysosAppMonitorDashboardService {
   }
 
   private loadSnapshot() {
-    this.NETDATA.serverDefault = this.netdataSnapshotData.server;
+    netdataSnapshotData = this.MonitorService.getActiveConnection().snapshotData;
+    netdataShowAlarms = false;
+    this.NETDATA.serverDefault = netdataSnapshotData.server;
 
-    if (typeof this.netdataSnapshotData.hash !== 'undefined') {
-      this.urlOptions.hash = this.netdataSnapshotData.hash;
+
+    if (typeof netdataSnapshotData.hash !== 'undefined') {
+      this.urlOptions.hash = netdataSnapshotData.hash;
     } else {
       this.urlOptions.hash = '#';
     }
 
-    if (typeof this.netdataSnapshotData.info !== 'undefined') {
-      let info = this.jsonParseFn(this.netdataSnapshotData.info);
+    if (typeof netdataSnapshotData.info !== 'undefined') {
+      let info = this.jsonParseFn(netdataSnapshotData.info);
 
       if (typeof info.menu !== 'undefined') this.dataStore.netdataDashboard.menu = info.menu;
       if (typeof info.submenu !== 'undefined') this.dataStore.netdataDashboard.submenu = info.submenu;
       if (typeof info.context !== 'undefined') this.dataStore.netdataDashboard.context = info.context;
     }
 
-    if (typeof this.netdataSnapshotData.compression !== 'string') this.netdataSnapshotData.compression = 'none';
+    if (typeof netdataSnapshotData.compression !== 'string') netdataSnapshotData.compression = 'none';
 
-    if (typeof this.snapshotOptions.compressions[this.netdataSnapshotData.compression] === 'undefined') {
-      alert('unknown compression method: ' + this.netdataSnapshotData.compression);
-      this.netdataSnapshotData.compression = 'none';
+    if (typeof this.snapshotOptions.compressions[netdataSnapshotData.compression] === 'undefined') {
+      alert('unknown compression method: ' + netdataSnapshotData.compression);
+      netdataSnapshotData.compression = 'none';
     }
 
-    this.netdataSnapshotData.uncompress = this.snapshotOptions.compressions[this.netdataSnapshotData.compression].uncompress;
+    netdataSnapshotData.uncompress = this.snapshotOptions.compressions[netdataSnapshotData.compression].uncompress;
 
-    this.urlOptions.after = this.netdataSnapshotData.after_ms;
-    this.urlOptions.before = this.netdataSnapshotData.before_ms;
+    this.urlOptions.after = netdataSnapshotData.after_ms;
+    this.urlOptions.before = netdataSnapshotData.before_ms;
 
-    if (typeof this.netdataSnapshotData.highlight_after_ms !== 'undefined'
-      && this.netdataSnapshotData.highlight_after_ms !== null
-      && this.netdataSnapshotData.highlight_after_ms > 0
-      && typeof this.netdataSnapshotData.highlight_before_ms !== 'undefined'
-      && this.netdataSnapshotData.highlight_before_ms !== null
-      && this.netdataSnapshotData.highlight_before_ms > 0
+    if (typeof netdataSnapshotData.highlight_after_ms !== 'undefined'
+      && netdataSnapshotData.highlight_after_ms !== null
+      && netdataSnapshotData.highlight_after_ms > 0
+      && typeof netdataSnapshotData.highlight_before_ms !== 'undefined'
+      && netdataSnapshotData.highlight_before_ms !== null
+      && netdataSnapshotData.highlight_before_ms > 0
     ) {
-      this.urlOptions.highlight_after = this.netdataSnapshotData.highlight_after_ms;
-      this.urlOptions.highlight_before = this.netdataSnapshotData.highlight_before_ms;
+      this.urlOptions.highlight_after = netdataSnapshotData.highlight_after_ms;
+      this.urlOptions.highlight_before = netdataSnapshotData.highlight_before_ms;
       this.urlOptions.highlight = true;
     } else {
       this.urlOptions.highlight_after = 0;
@@ -614,7 +581,7 @@ export class SysosAppMonitorDashboardService {
       this.urlOptions.highlight = false;
     }
 
-    this.netdataCheckXSS = false; // disable the modal - this does not affect XSS checks, since dashboard.js is already loaded
+    netdataCheckXSS = false; // disable the modal - this does not affect XSS checks, since dashboard.js is already loaded
     this.NETDATA.xss.enabled = true;             // we should not do any remote requests, but if we do, check them
     this.NETDATA.xss.enabled_for_data = true;    // check also snapshot data - that have been excluded from the initial check, due to compression
   }
@@ -622,13 +589,9 @@ export class SysosAppMonitorDashboardService {
   initializeDynamicDashboard(chartsDiv, netdataUrl?) {
     this.chartsDiv = chartsDiv;
 
-    if (this.MonitorService.getActiveConnection().snapshotData) {
-      this.netdataSnapshotData = this.MonitorService.getActiveConnection().snapshotData;
-      this.loadSnapshot();
-    }
+    if (this.MonitorService.getActiveConnection().snapshotData) this.loadSnapshot();
 
-    if (typeof netdataUrl === 'undefined' || netdataUrl === null) netdataUrl = this.NETDATA.serverDefault;
-    this.initializeConfig.url = netdataUrl;
+    if (netdataUrl) this.NETDATA.serverDefault = netdataUrl;
 
     // initialize clickable alarms
     this.NETDATA.alarms.chart_div_offset = -50;
@@ -636,20 +599,20 @@ export class SysosAppMonitorDashboardService {
     this.NETDATA.alarms.chart_div_animation_duration = 0;
 
     this.NETDATA.pause(() => {
-      if (this.netdataCheckXSS) {
+      if (netdataCheckXSS) {
 
         this.Modal.openRegisteredModal('monitor-xss', '.window--monitor .window__main', {}).then((modalInstance) => {
           modalInstance.result.then((res) => {
             if (res === 'xssModalKeepXss') {
               this.NETDATA.xss.enabled = true;
               this.NETDATA.xss.enabled_for_data = true;
-              this.initializeConfig.custom_info = false;
+              this.customInfo = false;
             }
 
             if (res === 'xssModalDisableXss') {
               this.NETDATA.xss.enabled = false;
               this.NETDATA.xss.enabled_for_data = false;
-              this.initializeConfig.custom_info = true;
+              this.customInfo = true;
             }
 
             this.initializeCharts();
@@ -667,9 +630,10 @@ export class SysosAppMonitorDashboardService {
     this.NETDATA.alarms.callback = this.alarmsCallback;
 
     // download all the charts the server knows
-    return this.NETDATA.chartRegistry.downloadAll(this.initializeConfig.url, (data) => {
+    return this.NETDATA.chartRegistry.downloadAll(this.NETDATA.serverDefault, (data) => {
       if (data !== null) {
-        if (data.custom_info) {
+
+        if (this.customInfo && data.custom_info && netdataSnapshotData === null) {
 
           this.http.get(this.NETDATA.serverDefault + data.custom_info).subscribe(
             (data) => {
@@ -682,6 +646,7 @@ export class SysosAppMonitorDashboardService {
         } else {
           this.initializeDynamicDashboardWithData(data);
         }
+
       }
     });
   }
@@ -948,8 +913,8 @@ export class SysosAppMonitorDashboardService {
     this.runOnceOnDashboardWithjQuery();
     this.enableTooltipsAndPopovers();
 
-    if (this.netdataSnapshotData !== null) {
-      this.NETDATA.globalPanAndZoom.setMaster(this.NETDATA.options.targets[0], this.netdataSnapshotData.after_ms, this.netdataSnapshotData.before_ms);
+    if (netdataSnapshotData !== null) {
+      this.NETDATA.globalPanAndZoom.setMaster(this.NETDATA.options.targets[0], netdataSnapshotData.after_ms, netdataSnapshotData.before_ms);
     }
   }
 

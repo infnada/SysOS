@@ -30,4 +30,15 @@
   <a class="window__item" title="get help on using the charts" (click)="openHelpModal()">
     <i class="fa fa-question-circle text-primary"></i>
   </a>
+
+  <div class="navbar-highlight" *ngIf="returnFromHighlight.showHighlight">
+    <div id="navbar-highlight-content" class="navbar-highlight-content">
+
+      <!-- TODO: change title by matTooltip throws strange error -->
+      <span class="navbar-highlight-bar highlight-tooltip" (click)="this.urlOptions.showHighlight();" title="restore the highlighted view">
+        highlighted time-frame <b>{{returnFromHighlight.d1}} <code>{{returnFromHighlight.after}}</code></b> to <b>{{returnFromHighlight.d2}} <code>{{returnFromHighlight.before}}</code></b>, duration <b>{{returnFromHighlight.duration}}</b>
+      </span>
+      <span class="navbar-highlight-button-right highlight-tooltip" (click)="this.urlOptions.clearHighlight();" title="clear the highlighted time-frame"><i class="fas fa-times"></i></span>
+    </div>
+  </div>
 </div>

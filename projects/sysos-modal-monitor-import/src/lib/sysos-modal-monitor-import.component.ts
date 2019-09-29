@@ -37,8 +37,6 @@ export class SysosModalMonitorImportComponent implements OnInit {
   }
 
   loadSnapshotPreflight(fileInput: any) {
-    console.log(fileInput);
-
     let files = fileInput.target.files;
     if (files.length <= 0) {
       this.snapshotStatusText = 'No file selected';

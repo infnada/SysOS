@@ -1,15 +1,5 @@
 <div class="charts-body" role="main" slssScrollSpy [spiedTags]="['H1', 'H2']" (sectionChange)="onSectionChange($event)">
 
-  <div class="navbar-highlight" *ngIf="returnFromHighlight.showHighlight">
-    <div id="navbar-highlight-content" class="navbar-highlight-content">
-
-      <span class="navbar-highlight-bar highlight-tooltip" (click)="this.urlOptions.showHighlight();" matTooltip="restore the highlighted view">
-        highlighted time-frame <b>{{returnFromHighlight.d1}} <code>{{returnFromHighlight.after}}</code></b> to <b>{{returnFromHighlight.d2}} <code>{{returnFromHighlight.before}}</code></b>, duration <b>{{returnFromHighlight.duration}}</b>
-      </span>
-      <span class="navbar-highlight-button-right highlight-tooltip" (click)="this.urlOptions.clearHighlight();" matTooltip="clear the highlighted time-frame"><i class="fas fa-times"></i></span>
-    </div>
-  </div>
-
   <div id="charts_div" #chartsDiv>
 
     <ng-container *ngIf="options && netdataDashboard">

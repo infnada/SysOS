@@ -3,6 +3,7 @@ import {Component, OnInit} from '@angular/core';
 import {SysosLibModalService} from '@sysos/lib-modal';
 
 import {SysosAppMonitorService} from '../services/sysos-app-monitor.service';
+import {SysosAppMonitorDashboardService} from "../services/sysos-app-monitor-dashboard.service";
 import {Netdata} from '../types/netdata';
 
 @Component({
@@ -15,9 +16,15 @@ export class ActionsComponent implements OnInit {
 
   private NETDATA;
 
-  constructor(private Modal: SysosLibModalService,
-              private Monitor: SysosAppMonitorService) {
+  returnFromHighlight;
+  urlOptions;
 
+  constructor(private Modal: SysosLibModalService,
+              private Monitor: SysosAppMonitorService,
+              private DashboardService: SysosAppMonitorDashboardService) {
+
+    this.DashboardService.returnFromHighlight.subscribe(returnFromHighlight => this.returnFromHighlight = returnFromHighlight);
+    this.urlOptions = this.DashboardService.urlOptions;
   }
 
   ngOnInit() {
@@ -31,6 +38,9 @@ export class ActionsComponent implements OnInit {
   openOptionsModal() {
     this.NETDATA = this.Monitor.getNetdata();
     if (this.NETDATA) this.NETDATA.pause(() => {});
+
+    if (!this.NETDATA) this.NETDATA = this.DashboardService.newDashboard();
+
     this.Modal.openRegisteredModal('monitor-options', '.window--monitor .window__main', {}).then((modalInstance) => {
       modalInstance.result.then(() => {
         this.NETDATA.unpause();
@@ -50,12 +60,14 @@ export class ActionsComponent implements OnInit {
     });
   }
 
-  openImportModal() {
+  async openImportModal() {
     this.NETDATA = this.Monitor.getNetdata();
     if (this.NETDATA) this.NETDATA.pause(() => {});
+
+    if (!this.NETDATA) this.NETDATA = this.DashboardService.newDashboard();
+
     this.Modal.openRegisteredModal('monitor-import', '.window--monitor .window__main', {}).then((modalInstance) => {
       modalInstance.result.then(() => {
-        this.NETDATA.unpause();
       });
     });
   }
@@ -64,7 +76,8 @@ export class ActionsComponent implements OnInit {
     if (this.activeConnection === null) return;
 
     this.NETDATA = this.Monitor.getNetdata();
-    if (this.NETDATA) this.NETDATA.pause(() => {});
+    this.NETDATA.pause(() => {});
+
     this.Modal.openRegisteredModal('monitor-export', '.window--monitor .window__main', {}).then((modalInstance) => {
       modalInstance.result.then(() => {
         this.NETDATA.unpause();
