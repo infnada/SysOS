@@ -282,6 +282,18 @@
       ],
       "@sysos/modal-monitor-import/*": [
         "projects/sysos-modal-monitor-import/*"
+      ],
+      "@sysos/modal-monitor-xss": [
+        "projects/sysos-modal-monitor-xss/src/public-api"
+      ],
+      "@sysos/modal-monitor-xss/*": [
+        "projects/sysos-modal-monitor-xss/*"
+      ],
+      "@sysos/modal-monitor-help": [
+        "projects/sysos-modal-monitor-help/src/public-api"
+      ],
+      "@sysos/modal-monitor-help/*": [
+        "projects/sysos-modal-monitor-help/*"
       ]
     }
   }

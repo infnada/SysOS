@@ -8,18 +8,19 @@ h1, h2 {
 .charts-body {
   overflow-y: scroll;
   position: absolute;
-  height: calc(100% - 32px);
+  height: 100%;
   bottom: 0;
 }
 .sidebar-body {
   position: absolute;
   right: 0;
-  height: calc(100% - 32px);
+  height: 100%;
   bottom: 0;
 }
 .dashboard-sidebar {
   overflow-y: scroll;
   max-height: 100% !important;
+  padding-left: 0 !important;
 
   li {
     width: 100%;

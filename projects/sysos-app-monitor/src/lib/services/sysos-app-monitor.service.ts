@@ -62,7 +62,8 @@ export class SysosAppMonitorService {
       credentialBtoa: null,
       save: data.save,
       type: data.type,
-      state: 'connected'
+      state: 'connected',
+      snapshotData: data.snapshotData
     };
 
 

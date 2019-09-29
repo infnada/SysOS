@@ -9,4 +9,5 @@ export interface Netdata {
   state: string;
   type: string;
   error?: string;
+  snapshotData?: any;
 }

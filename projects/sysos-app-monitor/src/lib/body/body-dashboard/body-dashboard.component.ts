@@ -22,6 +22,8 @@ export class BodyDashboardComponent implements AfterViewInit {
   options;
   netdataDashboard;
   menus;
+  returnFromHighlight;
+  urlOptions;
 
   // ScrollSpy
   currentSection: string = 'menu';
@@ -54,6 +56,8 @@ export class BodyDashboardComponent implements AfterViewInit {
 
       }
     });
+    this.DashboardService.returnFromHighlight.subscribe(returnFromHighlight => this.returnFromHighlight = returnFromHighlight);
+    this.urlOptions = this.DashboardService.urlOptions;
   }
 
   ngAfterViewInit() {

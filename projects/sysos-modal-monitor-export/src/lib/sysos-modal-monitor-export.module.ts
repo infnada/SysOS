@@ -1,14 +1,14 @@
 import {NgModule} from '@angular/core';
-import {CommonModule} from "@angular/common";
-import {FormsModule} from "@angular/forms";
-import {MatSliderModule, MatProgressBarModule} from "@angular/material";
+import {CommonModule} from '@angular/common';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {MatSliderModule, MatProgressBarModule, MatInputModule, MatSelectModule, MatFormFieldModule, MatDividerModule} from '@angular/material';
 
 import {NgbActiveModal, NgbModalModule} from '@ng-bootstrap/ng-bootstrap';
 
 import {SysosLibModalService} from '@sysos/lib-modal';
 
 import {SysosModalMonitorExportComponent} from './sysos-modal-monitor-export.component';
-import {EntryComponent} from "./monitor-export-entry/entry.component";
+import {EntryComponent} from './monitor-export-entry/entry.component';
 
 @NgModule({
   declarations: [
@@ -18,8 +18,13 @@ import {EntryComponent} from "./monitor-export-entry/entry.component";
   imports: [
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     MatSliderModule,
     MatProgressBarModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatDividerModule,
     NgbModalModule
   ],
   providers: [

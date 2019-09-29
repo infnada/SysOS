@@ -10,6 +10,6 @@ export class SysosLibExtLzStringService {
   public LZString;
 
   constructor() {
-    this.LZString = LZString;
+    this.LZString = (LZString as any).default;
   }
 }

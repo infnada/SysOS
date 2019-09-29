@@ -1,0 +1,23 @@
+.modal-monitor-export {
+  .mat-slider {
+    width: 80%;
+
+    .mat-slider-thumb {
+      transform: scale(1) !important;
+    }
+
+    .mat-slider-thumb-label {
+      transform: none !important;
+      right: -94px;
+      position: absolute;
+      width: 190px;
+      border-radius: 5px !important;
+
+      .mat-slider-thumb-label-text {
+        opacity: 1;
+        transform: none;
+        user-select: none;
+      }
+    }
+  }
+}

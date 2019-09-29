@@ -1,0 +1,32 @@
+<div class="modal-header">
+  <div class="modal-title" id="modal-title">XSS Protection</div>
+  <div class="window__controls window__controls--right">
+    <a class="window__close" (click)="activeModal.close(); $event.stopPropagation();">
+      <i class="fa fa-close"></i>
+    </a>
+  </div>
+</div>
+<div class="modal-body modal-monitor-xss" id="modal-body">
+  <p>
+    This dashboard is about to render data from server:
+  </p>
+  <p style="font-size: 1.25em;">
+    <code>{{initializeConfig.url}}</code>
+  </p>
+  <p>
+    To protect your privacy, the dashboard will <b>check all data transferred</b> for cross site scripting (XSS).
+    <br/>This is CPU intensive, so your browser might be a bit slower.
+  </p>
+  <p>
+    If you <b>trust</b> the remote server, you can disable XSS protection.<br/>
+    In this case, any remote dashboard decoration code (javascript) will also run.
+  </p>
+  <p>
+    If you <b>don't trust</b> the remote server, you should keep the protection on.<br/>
+    The dashboard will run slower and remote dashboard decoration code will not run, but better be safe than sorry...
+  </p>
+</div>
+<div class="modal-footer">
+  <button class="btn btn-success" type="button" (click)="activeModal.close('xssModalKeepXss')">Keep protecting me</button>
+  <button class="btn btn-danger" type="button" (click)="activeModal.close('xssModalDisableXss')">I don't need this, the server is mine</button>
+</div>

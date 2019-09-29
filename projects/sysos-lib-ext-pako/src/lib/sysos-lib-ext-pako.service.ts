@@ -10,6 +10,6 @@ export class SysosLibExtPakoService {
   public Pako;
 
   constructor() {
-    this.Pako = Pako;
+    this.Pako = (Pako as any).default;
   }
 }

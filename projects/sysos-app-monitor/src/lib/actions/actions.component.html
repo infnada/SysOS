@@ -17,6 +17,17 @@
     <i class="fa fa-cog text-primary"></i>
   </a>
   <a class="window__item" title="Alarms" (click)="openAlarmsModal()">
-    <i class="fa fa-bell" [ngClass]="{'text-primary': activeConnection !== null}"></i>
+    <i class="fa fa-bell" [ngClass]="{'text-primary': activeConnection !== null && !this.getActiveConnection().snapshotData}"></i>
+  </a>
+  <a class="window__item separator"></a>
+  <a class="window__item" title="import / load a netdata snapshot" (click)="openImportModal()">
+    <i class="fa fa-download text-primary"></i>
+  </a>
+  <a class="window__item" title="export / save a netdata snapshot" (click)="openExportModal()">
+    <i class="fa fa-upload" [ngClass]="{'text-primary': activeConnection !== null}"></i>
+  </a>
+  <a class="window__item separator"></a>
+  <a class="window__item" title="get help on using the charts" (click)="openHelpModal()">
+    <i class="fa fa-question-circle text-primary"></i>
   </a>
 </div>

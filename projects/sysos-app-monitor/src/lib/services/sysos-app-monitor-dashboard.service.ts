@@ -6,16 +6,21 @@ import {BehaviorSubject, Observable} from 'rxjs';
 declare let NETDATA: any;
 
 import {SysosLibLoggerService} from '@sysos/lib-logger';
+import {SysosLibModalService} from "@sysos/lib-modal";
+
 import {SysosLibExtJqueryService} from '@sysos/lib-ext-jquery';
 import {SysosLibExtDygraphsService} from '@sysos/lib-ext-dygraphs';
 import {SysosLibExtEasypiechartService} from '@sysos/lib-ext-easypiechart';
 import {SysosLibExtGaugejsService} from '@sysos/lib-ext-gaugejs';
 import {SysosLibExtPerfectscrollbarService} from '@sysos/lib-ext-perfectscrollbar';
+import {SysosLibExtPakoService} from '@sysos/lib-ext-pako';
+import {SysosLibExtLzStringService} from '@sysos/lib-ext-lz-string';
 
 import * as Dashboard from 'netdata/web/gui/dashboard';
 import * as DashboardInfo from 'netdata/web/gui/dashboard_info';
 
 import {SysosAppMonitorService} from './sysos-app-monitor.service';
+
 
 @Injectable({
   providedIn: 'root'
@@ -23,40 +28,289 @@ import {SysosAppMonitorService} from './sysos-app-monitor.service';
 export class SysosAppMonitorDashboardService {
 
   private $;
+  private pako;
+  private LZString;
+
+  NETDATA = NETDATA;
 
   private $options: BehaviorSubject<object>;
   private $netdataDashboard: BehaviorSubject<object>;
   private $menus: BehaviorSubject<object>;
-
-  NETDATA = NETDATA;
+  private $returnFromHighlight: BehaviorSubject<object>;
 
   options: Observable<any>;
   netdataDashboard: Observable<any>;
   menus: Observable<any>;
+  returnFromHighlight: Observable<any>;
 
   dataStore: {  // This is where we will store our data in memory
     options: any;
     netdataDashboard: any;
     menus: any;
+    returnFromHighlight: any;
   };
 
   private initializeConfig = {
-    url: null
+    url: null,
+    custom_info: true
   };
 
+  private netdataCheckXSS = false;
   chartsDiv: ElementRef;
-  runOnceOnDashboardLastRun = 0;
   netdataSnapshotData = null;
+
+  snapshotOptions = {
+    bytes_per_chart: 2048,
+    compressionDefault: 'pako.deflate.base64',
+
+    compressions: {
+      'none': {
+        bytes_per_point_memory: 5.2,
+        bytes_per_point_disk: 5.6,
+        compress: (s) => {
+          return s;
+        },
+        compressed_length: (s) => {
+          return s.length;
+        },
+        uncompress: (s) => {
+          return s;
+        }
+      },
+      'pako.deflate.base64': {
+        bytes_per_point_memory: 1.8,
+        bytes_per_point_disk: 1.9,
+        compress: (s) => {
+          return btoa((this.pako as any).deflate(s, { to: 'string' }));
+        },
+        compressed_length: (s) => {
+          return s.length;
+        },
+        uncompress: (s) => {
+          return (this.pako as any).inflate(atob(s), { to: 'string' });
+        }
+      },
+      'pako.deflate': {
+        bytes_per_point_memory: 1.4,
+        bytes_per_point_disk: 3.2,
+        compress: (s) => {
+          return (this.pako as any).deflate(s, { to: 'string' });
+        },
+        compressed_length: (s) => {
+          return s.length;
+        },
+        uncompress: (s) => {
+          return (this.pako as any).inflate(s, { to: 'string' });
+        }
+      },
+      'lzstring.utf16': {
+        bytes_per_point_memory: 1.7,
+        bytes_per_point_disk: 2.6,
+        compress: (s) => {
+          return (this.LZString as any).compressToUTF16(s);
+        },
+        compressed_length: (s) => {
+          return s.length * 2;
+        },
+        uncompress: (s) => {
+          return (this.LZString as any).decompressFromUTF16(s);
+        }
+      },
+      'lzstring.base64': {
+        bytes_per_point_memory: 2.1,
+        bytes_per_point_disk: 2.3,
+        compress: (s) => {
+          return (this.LZString as any).compressToBase64(s);
+        },
+        compressed_length: (s) => {
+          return s.length;
+        },
+        uncompress: (s) => {
+          return (this.LZString as any).decompressFromBase64(s);
+        }
+      },
+      'lzstring.uri': {
+        bytes_per_point_memory: 2.1,
+        bytes_per_point_disk: 2.3,
+        compress: (s) => {
+          return (this.LZString as any).compressToEncodedURIComponent(s);
+        },
+        compressed_length: (s) => {
+          return s.length;
+        },
+        uncompress: (s) => {
+          return (this.LZString as any).decompressFromEncodedURIComponent(s);
+        }
+      }
+    }
+  };
+
+  urlOptions = {
+    hash: '#',
+    theme: null,
+    help: null,
+    mode: 'live',
+    update_always: false,
+    pan_and_zoom: false,
+    server: null,
+    after: 0,
+    before: 0,
+    highlight: false,
+    highlight_after: 0,
+    highlight_before: 0,
+    nowelcome: false,
+    show_alarms: false,
+    chart: null,
+    family: null,
+    alarm: null,
+    alarm_unique_id: 0,
+    alarm_id: 0,
+    alarm_event_id: 0,
+    alarm_when: 0,
+
+    hasProperty: (property) => typeof this[property] !== 'undefined',
+    parseHash: () => {
+      let variables = document.location.hash.split(';');
+      let len = variables.length;
+      while (len--) {
+        if (len !== 0) {
+          let p = variables[len].split('=');
+          if (this.urlOptions.hasProperty(p[0]) && typeof p[1] !== 'undefined') {
+            this.urlOptions[p[0]] = decodeURIComponent(p[1]);
+          }
+        } else {
+          if (variables[len].length > 0) {
+            this.urlOptions.hash = variables[len];
+          }
+        }
+      }
+
+      let booleans = ['nowelcome', 'show_alarms', 'update_always'];
+      len = booleans.length;
+      while (len--) {
+        if (this.urlOptions[booleans[len]] === 'true' || this.urlOptions[booleans[len]] === true || this.urlOptions[booleans[len]] === '1' || this.urlOptions[booleans[len]] === 1) {
+          this.urlOptions[booleans[len]] = true;
+        } else {
+          this.urlOptions[booleans[len]] = false;
+        }
+      }
+
+      let numeric = ['after', 'before', 'highlight_after', 'highlight_before', 'alarm_when'];
+      len = numeric.length;
+      while (len--) {
+        if (typeof this.urlOptions[numeric[len]] === 'string') {
+          try {
+            this.urlOptions[numeric[len]] = parseInt(this.urlOptions[numeric[len]]);
+          }
+          catch (e) {
+            console.log('failed to parse URL hash parameter ' + numeric[len]);
+            this.urlOptions[numeric[len]] = 0;
+          }
+        }
+      }
+
+      if (this.urlOptions.alarm_when) {
+        // if alarm_when exists, create after/before params
+        // -/+ 2 minutes from the alarm, and reload the page
+        const alarmTime = new Date(this.urlOptions.alarm_when * 1000).valueOf();
+        const timeMarginMs = 120000; // 2 mins
+
+        const after = alarmTime - timeMarginMs;
+        const before = alarmTime + timeMarginMs;
+        const newHash = document.location.hash.replace(
+          /;alarm_when=[0-9]*/i,
+          ";after=" + after + ";before=" + before,
+        );
+        history.replaceState(null, '', newHash);
+        location.reload();
+      }
+
+      if (this.urlOptions.server !== null && this.urlOptions.server !== '') {
+        this.NETDATA.serverDefault = this.urlOptions.server;
+        this.netdataCheckXSS = true;
+      } else {
+        this.urlOptions.server = null;
+      }
+
+      if (this.urlOptions.before > 0 && this.urlOptions.after > 0) {
+        this.urlOptions.pan_and_zoom = true;
+        this.urlOptions.nowelcome = true;
+      } else {
+        this.urlOptions.pan_and_zoom = false;
+      }
+
+      this.urlOptions.highlight = this.urlOptions.highlight_before > 0 && this.urlOptions.highlight_after > 0;
+
+    },
+    netdataPanAndZoomCallback: (status, after, before) => {
+      if (this.netdataSnapshotData === null) {
+        this.urlOptions.pan_and_zoom = status;
+        this.urlOptions.after = after;
+        this.urlOptions.before = before;
+      }
+    },
+    netdataHighlightCallback: (status, after, before) => {
+      if (status === true && (after === null || before === null || after <= 0 || before <= 0 || after >= before)) {
+        status = false;
+        after = 0;
+        before = 0;
+      }
+
+      if (this.netdataSnapshotData === null) {
+        this.urlOptions.highlight = status;
+      } else {
+        this.urlOptions.highlight = false;
+      }
+
+      this.urlOptions.highlight_after = Math.round(after);
+      this.urlOptions.highlight_before = Math.round(before);
+
+      if (status === true && after > 0 && before > 0 && after < before) {
+        let d1 = NETDATA.dateTime.localeDateString(after);
+        let d2 = NETDATA.dateTime.localeDateString(before);
+        if (d1 === d2) d2 = '';
+
+        this.dataStore.returnFromHighlight = {
+          showHighlight: true,
+          d1,
+          d2,
+          after: this.NETDATA.dateTime.localeTimeString(after),
+          before: this.NETDATA.dateTime.localeTimeString(before),
+          duration: this.NETDATA.seconds4human(Math.round((before - after) / 1000))
+        };
+
+        this.$returnFromHighlight.next(Object.assign({}, this.dataStore).returnFromHighlight);
+      } else {
+        this.dataStore.returnFromHighlight = {
+          showHighlight: false
+        };
+        this.$returnFromHighlight.next(Object.assign({}, this.dataStore).returnFromHighlight);
+      }
+    },
+    clearHighlight: () => {
+      this.NETDATA.globalChartUnderlay.clear();
+
+      if (this.NETDATA.globalPanAndZoom.isActive() === true) this.NETDATA.globalPanAndZoom.clearMaster();
+    },
+    showHighlight: () => {
+      this.NETDATA.globalChartUnderlay.focus();
+    }
+  };
 
   constructor(private http: HttpClient,
               private logger: SysosLibLoggerService,
+              private Modal: SysosLibModalService,
               private jQuery: SysosLibExtJqueryService,
               private Dygraphs: SysosLibExtDygraphsService,
               private easyPieChart: SysosLibExtEasypiechartService,
               private gaugeJS: SysosLibExtGaugejsService,
               private Ps: SysosLibExtPerfectscrollbarService,
+              private pakoService: SysosLibExtPakoService,
+              private LZStringService: SysosLibExtLzStringService,
               private MonitorService: SysosAppMonitorService) {
     this.$ = this.jQuery.$;
+    this.pako = pakoService.Pako;
+    this.LZString = LZStringService.LZString;
 
     this.dataStore = {
       options: {
@@ -248,16 +502,20 @@ export class SysosAppMonitorDashboardService {
           }
         }
       },
-      menus: {}
+      menus: {},
+      returnFromHighlight: {
+        showHighlight: false
+      }
     };
 
     this.$options = new BehaviorSubject(null) as BehaviorSubject<object>;
     this.$netdataDashboard = new BehaviorSubject(null) as BehaviorSubject<object>;
     this.$menus = new BehaviorSubject(null) as BehaviorSubject<object>;
+    this.$returnFromHighlight = new BehaviorSubject(this.dataStore.returnFromHighlight) as BehaviorSubject<object>;
     this.options = this.$options.asObservable();
     this.netdataDashboard = this.$netdataDashboard.asObservable();
     this.menus = this.$menus.asObservable();
-
+    this.returnFromHighlight = this.$returnFromHighlight.asObservable();
 
     const _this = this;
 
@@ -279,8 +537,21 @@ export class SysosAppMonitorDashboardService {
     new Dashboard(this.MonitorService.getActiveConnection(), this.jQuery.$, this.Dygraphs.Dygraph, this.gaugeJS.gaugeJS.Gauge, this.Ps.PerfectScrollbar);
     new DashboardInfo(this.dataStore.netdataDashboard);
 
+    this.NETDATA.globalReset();
+
+    this.urlOptions.parseHash();
+
     // Store NETDATA var into service to reuse it on other components
     this.MonitorService.setNetdata(this.NETDATA);
+  }
+
+  private  jsonParseFn(str) {
+    return JSON.parse(str, function (key, value) {
+      if (typeof value != 'string') {
+        return value;
+      }
+      return (value.substring(0, 8) == 'function') ? eval('(' + value + ')') : value;
+    });
   }
 
   private alarmsCallback(data) {
@@ -298,35 +569,109 @@ export class SysosAppMonitorDashboardService {
     if (this.dataStore) this.dataStore.options.activeAlarms = count;
   }
 
-  initializeDynamicDashboard(chartsDiv, netdata_url?) {
-    this.chartsDiv = chartsDiv;
+  private loadSnapshot() {
+    this.NETDATA.serverDefault = this.netdataSnapshotData.server;
 
-    if (typeof netdata_url === 'undefined' || netdata_url === null) {
-      netdata_url = NETDATA.serverDefault;
+    if (typeof this.netdataSnapshotData.hash !== 'undefined') {
+      this.urlOptions.hash = this.netdataSnapshotData.hash;
+    } else {
+      this.urlOptions.hash = '#';
     }
 
-    this.initializeConfig.url = netdata_url;
+    if (typeof this.netdataSnapshotData.info !== 'undefined') {
+      let info = this.jsonParseFn(this.netdataSnapshotData.info);
+
+      if (typeof info.menu !== 'undefined') this.dataStore.netdataDashboard.menu = info.menu;
+      if (typeof info.submenu !== 'undefined') this.dataStore.netdataDashboard.submenu = info.submenu;
+      if (typeof info.context !== 'undefined') this.dataStore.netdataDashboard.context = info.context;
+    }
+
+    if (typeof this.netdataSnapshotData.compression !== 'string') this.netdataSnapshotData.compression = 'none';
+
+    if (typeof this.snapshotOptions.compressions[this.netdataSnapshotData.compression] === 'undefined') {
+      alert('unknown compression method: ' + this.netdataSnapshotData.compression);
+      this.netdataSnapshotData.compression = 'none';
+    }
+
+    this.netdataSnapshotData.uncompress = this.snapshotOptions.compressions[this.netdataSnapshotData.compression].uncompress;
+
+    this.urlOptions.after = this.netdataSnapshotData.after_ms;
+    this.urlOptions.before = this.netdataSnapshotData.before_ms;
+
+    if (typeof this.netdataSnapshotData.highlight_after_ms !== 'undefined'
+      && this.netdataSnapshotData.highlight_after_ms !== null
+      && this.netdataSnapshotData.highlight_after_ms > 0
+      && typeof this.netdataSnapshotData.highlight_before_ms !== 'undefined'
+      && this.netdataSnapshotData.highlight_before_ms !== null
+      && this.netdataSnapshotData.highlight_before_ms > 0
+    ) {
+      this.urlOptions.highlight_after = this.netdataSnapshotData.highlight_after_ms;
+      this.urlOptions.highlight_before = this.netdataSnapshotData.highlight_before_ms;
+      this.urlOptions.highlight = true;
+    } else {
+      this.urlOptions.highlight_after = 0;
+      this.urlOptions.highlight_before = 0;
+      this.urlOptions.highlight = false;
+    }
+
+    this.netdataCheckXSS = false; // disable the modal - this does not affect XSS checks, since dashboard.js is already loaded
+    this.NETDATA.xss.enabled = true;             // we should not do any remote requests, but if we do, check them
+    this.NETDATA.xss.enabled_for_data = true;    // check also snapshot data - that have been excluded from the initial check, due to compression
+  }
+
+  initializeDynamicDashboard(chartsDiv, netdataUrl?) {
+    this.chartsDiv = chartsDiv;
+
+    if (this.MonitorService.getActiveConnection().snapshotData) {
+      this.netdataSnapshotData = this.MonitorService.getActiveConnection().snapshotData;
+      this.loadSnapshot();
+    }
+
+    if (typeof netdataUrl === 'undefined' || netdataUrl === null) netdataUrl = this.NETDATA.serverDefault;
+    this.initializeConfig.url = netdataUrl;
 
     // initialize clickable alarms
-    NETDATA.alarms.chart_div_offset = -50;
-    NETDATA.alarms.chart_div_id_prefix = 'chart_';
-    NETDATA.alarms.chart_div_animation_duration = 0;
+    this.NETDATA.alarms.chart_div_offset = -50;
+    this.NETDATA.alarms.chart_div_id_prefix = 'chart_';
+    this.NETDATA.alarms.chart_div_animation_duration = 0;
 
-    NETDATA.pause(() => {
-      this.initializeCharts();
+    this.NETDATA.pause(() => {
+      if (this.netdataCheckXSS) {
+
+        this.Modal.openRegisteredModal('monitor-xss', '.window--monitor .window__main', {}).then((modalInstance) => {
+          modalInstance.result.then((res) => {
+            if (res === 'xssModalKeepXss') {
+              this.NETDATA.xss.enabled = true;
+              this.NETDATA.xss.enabled_for_data = true;
+              this.initializeConfig.custom_info = false;
+            }
+
+            if (res === 'xssModalDisableXss') {
+              this.NETDATA.xss.enabled = false;
+              this.NETDATA.xss.enabled_for_data = false;
+              this.initializeConfig.custom_info = true;
+            }
+
+            this.initializeCharts();
+          });
+
+        });
+      } else {
+        this.initializeCharts();
+      }
     });
 
   }
 
   private initializeCharts() {
-    NETDATA.alarms.callback = this.alarmsCallback;
+    this.NETDATA.alarms.callback = this.alarmsCallback;
 
     // download all the charts the server knows
-    return NETDATA.chartRegistry.downloadAll(this.initializeConfig.url, (data) => {
+    return this.NETDATA.chartRegistry.downloadAll(this.initializeConfig.url, (data) => {
       if (data !== null) {
         if (data.custom_info) {
 
-          this.http.get(NETDATA.serverDefault + data.custom_info).subscribe(
+          this.http.get(this.NETDATA.serverDefault + data.custom_info).subscribe(
             (data) => {
               this.initializeDynamicDashboardWithData(data);
             },
@@ -371,7 +716,7 @@ export class SysosAppMonitorDashboardService {
 
     this.createSidebarMenus();
 
-    NETDATA.globalChartUnderlay.clear();
+    this.NETDATA.globalChartUnderlay.clear();
 
     this.finalizePage();
 
@@ -583,32 +928,34 @@ export class SysosAppMonitorDashboardService {
     // this has to be done while NETDATA is paused
     // if we ommit this, the affix menu will be wrong, since all
     // the Dom elements are initially zero-sized
-    NETDATA.parseDom();
+    this.NETDATA.parseDom();
 
     // ------------------------------------------------------------------------
 
-    NETDATA.globalPanAndZoom.callback = null;
-    NETDATA.globalChartUnderlay.callback = null;
+    if (this.urlOptions.pan_and_zoom === true && this.NETDATA.options.targets.length > 0) {
+      this.NETDATA.globalPanAndZoom.setMaster(this.NETDATA.options.targets[0], this.urlOptions.after, this.urlOptions.before);
+    }
+
+    // callback for us to track PanAndZoom operations
+    this.NETDATA.globalPanAndZoom.callback = this.urlOptions.netdataPanAndZoomCallback;
+    this.NETDATA.globalChartUnderlay.callback = this.urlOptions.netdataHighlightCallback;
 
     // ------------------------------------------------------------------------
 
     // let it run (update the charts)
-    NETDATA.unpause();
+    this.NETDATA.unpause();
 
     this.runOnceOnDashboardWithjQuery();
     this.enableTooltipsAndPopovers();
 
     if (this.netdataSnapshotData !== null) {
-      NETDATA.globalPanAndZoom.setMaster(NETDATA.options.targets[0], this.netdataSnapshotData.after_ms, this.netdataSnapshotData.before_ms);
+      this.NETDATA.globalPanAndZoom.setMaster(this.NETDATA.options.targets[0], this.netdataSnapshotData.after_ms, this.netdataSnapshotData.before_ms);
     }
   }
 
   private runOnceOnDashboardWithjQuery() {
 
-
-    // dashboardSettingsSetup();
     // loadSnapshotDragAndDropSetup();
-    // saveSnapshotModalSetup();
 
     // ------------------------------------------------------------------------
     // https://github.com/viralpatel/jquery.shorten/blob/master/src/jquery.shorten.js

@@ -9,50 +9,48 @@
 <div class="modal-body modal-monitor-import" id="modal-body">
   <div id="loadSnapshotDragAndDrop" class="modal-body">
     <p>
-      netdata can export and import dashboard snapshots.
+      Netdata can export and import dashboard snapshots.
       Any netdata can import the snapshot of any other netdata.
       The snapshots are not uploaded to a server. They are handled entirely by your web browser, on your computer.
     </p>
     <p style="text-align: center;">
       <label class="btn btn-default">
         Click here to select the netdata snapshot file to import
-        <input type="file" id="loadSnapshotSelectFiles" value="Import" style="display: none;"
-               onchange="loadSnapshotPreflight();">
+        <input type="file" id="loadSnapshotSelectFiles" value="Import" style="display: none;" (change)="loadSnapshotPreflight($event);">
       </label>
     </p>
-    <div id="loadSnapshotStatus" class="alert alert-info" role="alert">
-      Browse for a snapshot file (or drag it and drop it here), then click <b>Import</b> to render it.
-    </div>
+
+    <div id="loadSnapshotStatus" class="alert alert-{{snapshotStatusType}}" role="alert" [innerHTML]="snapshotStatusText"></div>
 
       <table class="table">
         <tbody>
           <tr>
             <th>Filename</th>
-            <td id="loadSnapshotFilename"></td>
+            <td><code *ngIf="fileName">{{fileName}}</code></td>
           </tr>
           <tr>
             <th>Hostname</th>
-            <td id="loadSnapshotHostname"></td>
+            <td><ng-container *ngIf="fileResult"><b>{{fileResult.hostname}}</b>, netdata version: <b>{{fileResult.netdata_version}}</b></ng-container></td>
           </tr>
           <tr>
             <th>Origin URL</th>
-            <td id="loadSnapshotURL"></td>
+            <td><ng-container *ngIf="fileResult">{{fileResult.url}}</ng-container></td>
           </tr>
           <tr>
             <th>Charts Info</th>
-            <td id="loadSnapshotCharts"></td>
+            <td><ng-container *ngIf="fileResult">{{fileResult.charts.charts_count}} charts, {{fileResult.charts.dimensions_count}} dimensions, {{fileResult.data_points}} points per dimension, {{Math.round(fileResult.duration_ms / fileResult.data_points)}} ms per point</ng-container></td>
           </tr>
           <tr>
             <th>Snapshot Info</th>
-            <td id="loadSnapshotInfo"></td>
+            <td ><ng-container *ngIf="fileResult">version: <b>{{fileResult.snapshot_version}}</b>, includes <b>{{fileResult.charts_ok}}</b> unique chart data queries <ng-container *ngIf="fileResult.charts_failed"><b>{{fileResult.charts_failed}}</b> failed'</ng-container>, compressed with <code>{{fileResult.compression}}</code>, data size {{Math.round(fileResult.data_size * 100 / 1024 / 1024) / 100}} MB</ng-container></td>
           </tr>
           <tr>
             <th>Time Range</th>
-            <td id="loadSnapshotTimeRange"></td>
+            <td><ng-container *ngIf="dateAfter && dateBefore"><b>{{NETDATA.dateTime.localeDateString(dateAfter)}} {{NETDATA.dateTime.localeTimeString(dateAfter)}}</b> to <b>{{NETDATA.dateTime.localeDateString(dateBefore)}} {{NETDATA.dateTime.localeTimeString(dateBefore)}}</b></ng-container></td>
           </tr>
           <tr>
             <th>Comments</th>
-            <td id="loadSnapshotComments"></td>
+            <td><ng-container *ngIf="fileResult">{{fileResult.comments}}</ng-container></td>
           </tr>
         </tbody>
       </table>
@@ -60,6 +58,6 @@
 </div>
 <div class="modal-footer">
   <span style="display: inline-block; padding-right: 20px;">Snapshot files contain both data and javascript code. Make sure <b>you trust the files</b> you import!</span>
-  <button class="btn btn-primary" type="button" (click)="">Import</button>
+  <button class="btn btn-primary" type="button" (click)="loadSnapshot()" [disabled]="!readyToImport">Import</button>
   <button class="btn btn-default" type="button" (click)="activeModal.close()">Close</button>
 </div>

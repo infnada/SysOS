@@ -2,7 +2,7 @@ import {Component, Input, Output} from '@angular/core';
 
 import {NgbModal, NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
 
-import {SysosModalMonitorOptionsComponent} from '../sysos-modal-monitor-options.component';
+import {SysosModalMonitorImportComponent} from '../sysos-modal-monitor-import.component';
 
 @Component({
   template: ''
@@ -21,7 +21,7 @@ export class EntryComponent {
 
   launchModal(): void {
     this.OutputNgbModalRef = this.ngbModal.open(
-      SysosModalMonitorOptionsComponent,
+      SysosModalMonitorImportComponent,
       {
         centered: true,
         backdrop: 'static',

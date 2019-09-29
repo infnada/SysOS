@@ -265,6 +265,18 @@
       ],
       "@sysos/modal-monitor-import/*": [
         "dist/sysos-modal-monitor-import/*"
+      ],
+      "@sysos/modal-monitor-xss": [
+        "dist/sysos-modal-monitor-xss"
+      ],
+      "@sysos/modal-monitor-xss/*": [
+        "dist/sysos-modal-monitor-xss/*"
+      ],
+      "@sysos/modal-monitor-help": [
+        "dist/sysos-modal-monitor-help"
+      ],
+      "@sysos/modal-monitor-help/*": [
+        "dist/sysos-modal-monitor-help/*"
       ]
     }
   }
