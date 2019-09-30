@@ -11,6 +11,7 @@ declare let connection: Netdata;
 
 import {SysosLibLoggerService} from '@sysos/lib-logger';
 import {SysosLibModalService} from "@sysos/lib-modal";
+import {SysosLibApplicationService} from '@sysos/lib-application';
 
 import {SysosLibExtJqueryService} from '@sysos/lib-ext-jquery';
 import {SysosLibExtDygraphsService} from '@sysos/lib-ext-dygraphs';
@@ -24,8 +25,7 @@ import * as Dashboard from 'netdata/web/gui/dashboard';
 import * as DashboardInfo from 'netdata/web/gui/dashboard_info';
 
 import {SysosAppMonitorService} from './sysos-app-monitor.service';
-import {Netdata} from "../types/netdata";
-
+import {Netdata} from '../types/netdata';
 
 @Injectable({
   providedIn: 'root'
@@ -297,6 +297,7 @@ export class SysosAppMonitorDashboardService {
   constructor(private http: HttpClient,
               private logger: SysosLibLoggerService,
               private Modal: SysosLibModalService,
+              private Applications: SysosLibApplicationService,
               private jQuery: SysosLibExtJqueryService,
               private Dygraphs: SysosLibExtDygraphsService,
               private easyPieChart: SysosLibExtEasypiechartService,
@@ -326,6 +327,14 @@ export class SysosAppMonitorDashboardService {
     this.netdataDashboard = this.$netdataDashboard.asObservable();
     this.menus = this.$menus.asObservable();
     this.returnFromHighlight = this.$returnFromHighlight.asObservable();
+
+    // Make sure charts are not refreshed when 'monitor' is not the current active application
+    this.Applications.taskbarItemOpen.subscribe(application => {
+      if (this.dashboardInitialized) {
+        if (application !== 'monitor') this.NETDATA.options.page_is_visible = false;
+        if (application === 'monitor') this.NETDATA.options.page_is_visible = true;
+      }
+    });
 
     const _this = this;
 

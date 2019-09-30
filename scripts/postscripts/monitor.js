@@ -132,7 +132,6 @@ fs.readFile('dist/SysOS/filesystem/bin/applications/sysos-app-monitor.umd.js', '
   result = result.replace(/this.timeoutId = undefined\$1;/g, 'NETDATA.globalSelectionSync.timeoutId = undefined$1;');
 
   // Make sure listeners are on correct div
-  result = result.replace(/\$\('#charts_div'\)/g, '$(window)');
   result = result.replace(/window.addEventListener/g, 'document.getElementsByClassName("charts-body")[0].addEventListener');
 
   // Not necessary
