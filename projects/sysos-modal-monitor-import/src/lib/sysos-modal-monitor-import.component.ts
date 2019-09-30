@@ -96,7 +96,7 @@ export class SysosModalMonitorImportComponent implements OnInit {
     this.activeModal.close();
 
     this.MonitorService.connect({
-      description: '',
+      description: 'Netdata Snapshot',
       url: this.fileResult.server,
       credential: '',
       save: false,

@@ -7,6 +7,7 @@ declare let NETDATA: any;
 declare let netdataShowAlarms: boolean;
 declare let netdataSnapshotData: any;
 declare let netdataCheckXSS: boolean;
+declare let connection: Netdata;
 
 import {SysosLibLoggerService} from '@sysos/lib-logger';
 import {SysosLibModalService} from "@sysos/lib-modal";
@@ -23,6 +24,7 @@ import * as Dashboard from 'netdata/web/gui/dashboard';
 import * as DashboardInfo from 'netdata/web/gui/dashboard_info';
 
 import {SysosAppMonitorService} from './sysos-app-monitor.service';
+import {Netdata} from "../types/netdata";
 
 
 @Injectable({
@@ -53,7 +55,8 @@ export class SysosAppMonitorDashboardService {
     returnFromHighlight: any;
   };
 
-  private customInfo = true;
+  private dashboardInitialized: boolean = false;
+  private customInfo: boolean = true;
   private chartsDiv: ElementRef;
   private snapshotOptions = {
     bytes_per_chart: 2048,
@@ -307,153 +310,8 @@ export class SysosAppMonitorDashboardService {
     this.LZString = LZStringService.LZString;
 
     this.dataStore = {
-      options: {
-        menus: {},
-        submenu_names: {},
-        data: null,
-        hostname: 'netdata_server', // will be overwritten by the netdata server
-        version: 'unknown',
-        release_channel: 'unknown',
-        hosts: [],
-        duration: 0, // the default duration of the charts
-        update_every: 1,
-        chartsPerRow: 0,
-        chartsHeight: 180,
-        activeAlarms: 0
-      },
-      netdataDashboard: {
-        sparklines_registry: {},
-        os: 'unknown',
-        menu: {},
-        submenu: {},
-        context: {},
-
-        // generate a sparkline
-        // used in the documentation
-        sparkline: (prefix, chart, dimension, units, suffix) => {
-          if (this.dataStore.options.data === null || typeof this.dataStore.options.data.charts === 'undefined') return '';
-          if (typeof this.dataStore.options.data.charts[chart] === 'undefined') return '';
-          if (typeof this.dataStore.options.data.charts[chart].dimensions === 'undefined') return '';
-          if (typeof this.dataStore.options.data.charts[chart].dimensions[dimension] === 'undefined') return '';
-
-          let key = chart + '.' + dimension;
-
-          if (typeof units === 'undefined') units = '';
-
-          if (typeof this.dataStore.netdataDashboard.sparklines_registry[key] === 'undefined') {
-            this.dataStore.netdataDashboard.sparklines_registry[key] = { count: 1 };
-          } else {
-            this.dataStore.netdataDashboard.sparklines_registry[key].count++;
-          }
-
-          key = key + '.' + this.dataStore.netdataDashboard.sparklines_registry[key].count;
-          return prefix + '<div class="netdata-container" data-netdata="' + chart + '" data-after="-120" data-width="25%" data-height="15px" data-chart-library="dygraph" data-dygraph-theme="sparkline" data-dimensions="' + dimension + '" data-show-value-of-' + dimension + '-at="' + key + '"></div> (<span id="' + key + '" style="display: inline-block; min-width: 50px; text-align: right;">X</span>' + units + ')' + suffix;
-        },
-        gaugeChart: (title, width, dimensions, colors) => {
-          if (typeof colors === 'undefined') colors = '';
-          if (typeof dimensions === 'undefined') dimensions = '';
-
-          return '<div class="netdata-container" data-netdata="CHART_UNIQUE_ID"'
-            + ' data-dimensions="' + dimensions + '"'
-            + ' data-chart-library="gauge"'
-            + ' data-gauge-adjust="width"'
-            + ' data-title="' + title + '"'
-            + ' data-width="' + width + '"'
-            + ' data-before="0"'
-            + ' data-after="-CHART_DURATION"'
-            + ' data-points="CHART_DURATION"'
-            + ' data-colors="' + colors + '"'
-            + ' role="application"></div>';
-        },
-        anyAttribute: (obj, attr, key, def) => {
-          if (typeof (obj[key]) !== 'undefined') {
-            let x = obj[key][attr];
-
-            if (typeof (x) === 'undefined') return def;
-            if (typeof (x) === 'function') return x(this.dataStore.netdataDashboard.os);
-
-            return x;
-          }
-
-          return def;
-        },
-        menuTitle: (chart) => {
-          if (typeof chart.menu_pattern !== 'undefined') {
-            return (this.dataStore.netdataDashboard.anyAttribute(this.dataStore.netdataDashboard.menu, 'title', chart.menu_pattern, chart.menu_pattern).toString()
-              + '&nbsp;' + chart.type.slice(-(chart.type.length - chart.menu_pattern.length - 1)).toString()).replace(/_/g, ' ');
-          }
-
-          return (this.dataStore.netdataDashboard.anyAttribute(this.dataStore.netdataDashboard.menu, 'title', chart.menu, chart.menu)).toString().replace(/_/g, ' ');
-        },
-        menuIcon: (chart) => {
-          if (typeof chart.menu_pattern !== 'undefined') {
-            return this.dataStore.netdataDashboard.anyAttribute(this.dataStore.netdataDashboard.menu, 'icon', chart.menu_pattern, '<i class="fas fa-puzzle-piece"></i>').toString();
-          }
-
-          return this.dataStore.netdataDashboard.anyAttribute(this.dataStore.netdataDashboard.menu, 'icon', chart.menu, '<i class="fas fa-puzzle-piece"></i>');
-        },
-        menuInfo: (chart) => {
-          if (typeof chart.menu_pattern !== 'undefined') {
-            return this.dataStore.netdataDashboard.anyAttribute(this.dataStore.netdataDashboard.menu, 'info', chart.menu_pattern, null);
-          }
-          return this.dataStore.netdataDashboard.anyAttribute(this.dataStore.netdataDashboard.menu, 'info', chart.menu, null);
-        },
-        menuHeight: (chart) => {
-          if (typeof chart.menu_pattern !== 'undefined') {
-            return this.dataStore.netdataDashboard.anyAttribute(this.dataStore.netdataDashboard.menu, 'height', chart.menu_pattern, 1.0);
-          }
-
-          return this.dataStore.netdataDashboard.anyAttribute(this.dataStore.netdataDashboard.menu, 'height', chart.menu, 1.0);
-        },
-        submenuTitle: (menu, submenu) => {
-          let key = menu + '.' + submenu;
-          let title = this.dataStore.netdataDashboard.anyAttribute(this.dataStore.netdataDashboard.submenu, 'title', key, submenu).toString().replace(/_/g, ' ');
-          if (title.length > 28) {
-            let a = title.substring(0, 13);
-            let b = title.substring(title.length - 12, title.length);
-            return a + '...' + b;
-          }
-          return title;
-        },
-        submenuInfo: (menu, submenu) => {
-          let key = menu + '.' + submenu;
-          return this.dataStore.netdataDashboard.anyAttribute(this.dataStore.netdataDashboard.submenu, 'info', key, null);
-        },
-        submenuHeight: (menu, submenu, relative) => {
-          let key = menu + '.' + submenu;
-          return this.dataStore.netdataDashboard.anyAttribute(this.dataStore.netdataDashboard.submenu, 'height', key, 1.0) * relative;
-        },
-        contextInfo: (id) => {
-          let x = this.dataStore.netdataDashboard.anyAttribute(this.dataStore.netdataDashboard.context, 'info', id, null);
-
-          if (x !== null) {
-            return '<div class="shorten dashboard-context-info netdata-chart-alignment" role="document">' + x + '</div>';
-          } else {
-            return '';
-          }
-        },
-        contextValueRange: (id) => {
-          if (typeof this.dataStore.netdataDashboard.context[id] !== 'undefined' && typeof this.dataStore.netdataDashboard.context[id].valueRange !== 'undefined') {
-            return this.dataStore.netdataDashboard.context[id].valueRange;
-          } else {
-            return '[null, null]';
-          }
-        },
-        contextHeight: (id, def) => {
-          if (typeof this.dataStore.netdataDashboard.context[id] !== 'undefined' && typeof this.dataStore.netdataDashboard.context[id].height !== 'undefined') {
-            return def * this.dataStore.netdataDashboard.context[id].height;
-          } else {
-            return def;
-          }
-        },
-        contextDecimalDigits: (id, def) => {
-          if (typeof this.dataStore.netdataDashboard.context[id] !== 'undefined' && typeof this.dataStore.netdataDashboard.context[id].decimalDigits !== 'undefined') {
-            return this.dataStore.netdataDashboard.context[id].decimalDigits;
-          } else {
-            return def;
-          }
-        }
-      },
+      options: {},
+      netdataDashboard: {},
       menus: {},
       returnFromHighlight: {
         showHighlight: false
@@ -486,17 +344,179 @@ export class SysosAppMonitorDashboardService {
 
   resetDashboard() {
     netdataShowAlarms = false;
-    this.NETDATA.globalReset();
+    netdataSnapshotData = null;
+
+    // Reset the view
+    this.dataStore.options = {
+      menus: {},
+      submenu_names: {},
+      data: null,
+      hostname: 'netdata_server', // will be overwritten by the netdata server
+      version: 'unknown',
+      release_channel: 'unknown',
+      hosts: [],
+      duration: 0, // the default duration of the charts
+      update_every: 1,
+      chartsPerRow: 0,
+      chartsHeight: 180,
+      activeAlarms: 0
+    };
+    this.dataStore.netdataDashboard = {
+      sparklines_registry: {},
+      os: 'unknown',
+      menu: {},
+      submenu: {},
+      context: {},
+
+      // generate a sparkline
+      // used in the documentation
+      sparkline: (prefix, chart, dimension, units, suffix) => {
+        if (this.dataStore.options.data === null || typeof this.dataStore.options.data.charts === 'undefined') return '';
+        if (typeof this.dataStore.options.data.charts[chart] === 'undefined') return '';
+        if (typeof this.dataStore.options.data.charts[chart].dimensions === 'undefined') return '';
+        if (typeof this.dataStore.options.data.charts[chart].dimensions[dimension] === 'undefined') return '';
+
+        let key = chart + '.' + dimension;
+
+        if (typeof units === 'undefined') units = '';
+
+        if (typeof this.dataStore.netdataDashboard.sparklines_registry[key] === 'undefined') {
+          this.dataStore.netdataDashboard.sparklines_registry[key] = { count: 1 };
+        } else {
+          this.dataStore.netdataDashboard.sparklines_registry[key].count++;
+        }
+
+        key = key + '.' + this.dataStore.netdataDashboard.sparklines_registry[key].count;
+        return prefix + '<div class="netdata-container" data-netdata="' + chart + '" data-after="-120" data-width="25%" data-height="15px" data-chart-library="dygraph" data-dygraph-theme="sparkline" data-dimensions="' + dimension + '" data-show-value-of-' + dimension + '-at="' + key + '"></div> (<span id="' + key + '" style="display: inline-block; min-width: 50px; text-align: right;">X</span>' + units + ')' + suffix;
+      },
+      gaugeChart: (title, width, dimensions, colors) => {
+        if (typeof colors === 'undefined') colors = '';
+        if (typeof dimensions === 'undefined') dimensions = '';
+
+        return '<div class="netdata-container" data-netdata="CHART_UNIQUE_ID"'
+          + ' data-dimensions="' + dimensions + '"'
+          + ' data-chart-library="gauge"'
+          + ' data-gauge-adjust="width"'
+          + ' data-title="' + title + '"'
+          + ' data-width="' + width + '"'
+          + ' data-before="0"'
+          + ' data-after="-CHART_DURATION"'
+          + ' data-points="CHART_DURATION"'
+          + ' data-colors="' + colors + '"'
+          + ' role="application"></div>';
+      },
+      anyAttribute: (obj, attr, key, def) => {
+        if (typeof (obj[key]) !== 'undefined') {
+          let x = obj[key][attr];
+
+          if (typeof (x) === 'undefined') return def;
+          if (typeof (x) === 'function') return x(this.dataStore.netdataDashboard.os);
+
+          return x;
+        }
+
+        return def;
+      },
+      menuTitle: (chart) => {
+        if (typeof chart.menu_pattern !== 'undefined') {
+          return (this.dataStore.netdataDashboard.anyAttribute(this.dataStore.netdataDashboard.menu, 'title', chart.menu_pattern, chart.menu_pattern).toString()
+            + '&nbsp;' + chart.type.slice(-(chart.type.length - chart.menu_pattern.length - 1)).toString()).replace(/_/g, ' ');
+        }
+
+        return (this.dataStore.netdataDashboard.anyAttribute(this.dataStore.netdataDashboard.menu, 'title', chart.menu, chart.menu)).toString().replace(/_/g, ' ');
+      },
+      menuIcon: (chart) => {
+        if (typeof chart.menu_pattern !== 'undefined') {
+          return this.dataStore.netdataDashboard.anyAttribute(this.dataStore.netdataDashboard.menu, 'icon', chart.menu_pattern, '<i class="fas fa-puzzle-piece"></i>').toString();
+        }
+
+        return this.dataStore.netdataDashboard.anyAttribute(this.dataStore.netdataDashboard.menu, 'icon', chart.menu, '<i class="fas fa-puzzle-piece"></i>');
+      },
+      menuInfo: (chart) => {
+        if (typeof chart.menu_pattern !== 'undefined') {
+          return this.dataStore.netdataDashboard.anyAttribute(this.dataStore.netdataDashboard.menu, 'info', chart.menu_pattern, null);
+        }
+        return this.dataStore.netdataDashboard.anyAttribute(this.dataStore.netdataDashboard.menu, 'info', chart.menu, null);
+      },
+      menuHeight: (chart) => {
+        if (typeof chart.menu_pattern !== 'undefined') {
+          return this.dataStore.netdataDashboard.anyAttribute(this.dataStore.netdataDashboard.menu, 'height', chart.menu_pattern, 1.0);
+        }
+
+        return this.dataStore.netdataDashboard.anyAttribute(this.dataStore.netdataDashboard.menu, 'height', chart.menu, 1.0);
+      },
+      submenuTitle: (menu, submenu) => {
+        let key = menu + '.' + submenu;
+        let title = this.dataStore.netdataDashboard.anyAttribute(this.dataStore.netdataDashboard.submenu, 'title', key, submenu).toString().replace(/_/g, ' ');
+        if (title.length > 28) {
+          let a = title.substring(0, 13);
+          let b = title.substring(title.length - 12, title.length);
+          return a + '...' + b;
+        }
+        return title;
+      },
+      submenuInfo: (menu, submenu) => {
+        let key = menu + '.' + submenu;
+        return this.dataStore.netdataDashboard.anyAttribute(this.dataStore.netdataDashboard.submenu, 'info', key, null);
+      },
+      submenuHeight: (menu, submenu, relative) => {
+        let key = menu + '.' + submenu;
+        return this.dataStore.netdataDashboard.anyAttribute(this.dataStore.netdataDashboard.submenu, 'height', key, 1.0) * relative;
+      },
+      contextInfo: (id) => {
+        let x = this.dataStore.netdataDashboard.anyAttribute(this.dataStore.netdataDashboard.context, 'info', id, null);
+
+        if (x !== null) {
+          return '<div class="shorten dashboard-context-info netdata-chart-alignment" role="document">' + x + '</div>';
+        } else {
+          return '';
+        }
+      },
+      contextValueRange: (id) => {
+        if (typeof this.dataStore.netdataDashboard.context[id] !== 'undefined' && typeof this.dataStore.netdataDashboard.context[id].valueRange !== 'undefined') {
+          return this.dataStore.netdataDashboard.context[id].valueRange;
+        } else {
+          return '[null, null]';
+        }
+      },
+      contextHeight: (id, def) => {
+        if (typeof this.dataStore.netdataDashboard.context[id] !== 'undefined' && typeof this.dataStore.netdataDashboard.context[id].height !== 'undefined') {
+          return def * this.dataStore.netdataDashboard.context[id].height;
+        } else {
+          return def;
+        }
+      },
+      contextDecimalDigits: (id, def) => {
+        if (typeof this.dataStore.netdataDashboard.context[id] !== 'undefined' && typeof this.dataStore.netdataDashboard.context[id].decimalDigits !== 'undefined') {
+          return this.dataStore.netdataDashboard.context[id].decimalDigits;
+        } else {
+          return def;
+        }
+      }
+    };
+    this.dataStore.menus = {};
+
+    if (this.dashboardInitialized) {
+      this.NETDATA.abortAllRefreshes();
+      this.NETDATA.globalReset();
+
+      // Reset the view
+      this.$options.next(null);
+      this.$netdataDashboard.next(null);
+      this.$menus.next(null);
+    }
+
   }
 
   newDashboard() {
     // Set Netdata dashboard
-    if (!this.MonitorService.getActiveConnection()) {
-      netdataShowAlarms = false;
-    }
+    this.resetDashboard();
 
-    new Dashboard(this.MonitorService.getActiveConnection(), this.jQuery.$, this.Dygraphs.Dygraph, this.gaugeJS.gaugeJS.Gauge, this.Ps.PerfectScrollbar);
+    connection = this.MonitorService.getActiveConnection();
+
+    if (!this.dashboardInitialized) new Dashboard(this.jQuery.$, this.Dygraphs.Dygraph, this.gaugeJS.gaugeJS.Gauge, this.Ps.PerfectScrollbar);
     new DashboardInfo(this.dataStore.netdataDashboard);
+    this.dashboardInitialized = true;
 
     this.urlOptions.parseHash();
 
@@ -506,7 +526,7 @@ export class SysosAppMonitorDashboardService {
   }
 
   private jsonParseFn(str) {
-    
+
     // Required to be available inside eval
     let netdataDashboard = this.dataStore.netdataDashboard;
 
@@ -586,12 +606,12 @@ export class SysosAppMonitorDashboardService {
     this.NETDATA.xss.enabled_for_data = true;    // check also snapshot data - that have been excluded from the initial check, due to compression
   }
 
-  initializeDynamicDashboard(chartsDiv, netdataUrl?) {
+  initializeDynamicDashboard(chartsDiv) {
     this.chartsDiv = chartsDiv;
 
-    if (this.MonitorService.getActiveConnection().snapshotData) this.loadSnapshot();
+    this.NETDATA.serverDefault = this.MonitorService.getActiveConnection().url;
 
-    if (netdataUrl) this.NETDATA.serverDefault = netdataUrl;
+    if (this.MonitorService.getActiveConnection().snapshotData) this.loadSnapshot();
 
     // initialize clickable alarms
     this.NETDATA.alarms.chart_div_offset = -50;
@@ -681,12 +701,22 @@ export class SysosAppMonitorDashboardService {
 
     this.createSidebarMenus();
 
-    this.NETDATA.globalChartUnderlay.clear();
-
-    this.finalizePage();
-
     this.$options.next(Object.assign({}, this.dataStore).options);
     this.$netdataDashboard.next(Object.assign({}, this.dataStore).netdataDashboard);
+
+    if (this.urlOptions.highlight === true) {
+      this.NETDATA.globalChartUnderlay.init(
+        null,
+        this.urlOptions.highlight_after,
+        this.urlOptions.highlight_before,
+        (this.urlOptions.after > 0) ? this.urlOptions.after : null,
+        (this.urlOptions.before > 0) ? this.urlOptions.before : null
+      );
+    } else {
+      this.NETDATA.globalChartUnderlay.clear();
+    }
+
+    setTimeout(() => this.finalizePage(), 0)
   }
 
   private createSidebarMenus(): void {

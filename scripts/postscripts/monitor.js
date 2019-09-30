@@ -27,6 +27,7 @@ fs.readFile('dist/SysOS/filesystem/bin/applications/sysos-app-monitor.umd.js', '
 
   // Remove global and make it inside Dashboard function to call it from angular
   result = result.replace('(function(window, document, $, undefined$1) {', '// Addeded with package.json postscript\n' +
+    'let connection;\n' +
     'let netdataNoDygraphs = false;\n' +
     'let netdataNoSparklines = false;\n' +
     'let netdataNoPeitys = false;\n' +
@@ -58,7 +59,7 @@ fs.readFile('dist/SysOS/filesystem/bin/applications/sysos-app-monitor.umd.js', '
     'let netdataAlarmsActiveCallback;\n' +
     'let netdataAlarmsNotifCallback;\n' +
     'let netdataIntersectionObserver = true;\n' +
-    'let netdataCheckXSS = false;\n\n' + 'var Dashboard = function(connection, $, Dygraph, Gauge, Ps, undefined$1) {');
+    'let netdataCheckXSS = false;\n\n' + 'var Dashboard = function($, Dygraph, Gauge, Ps, undefined$1) {');
   result = result.replace('})(window, document, (typeof jQuery === \'function\')?jQuery:undefined);', '};');
   result = result.replace('    var Dashboard = /*#__PURE__*/Object.freeze({\n' +
     '\n' +

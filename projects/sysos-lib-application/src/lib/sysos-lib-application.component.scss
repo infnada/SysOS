@@ -507,6 +507,13 @@ li li .list__toggle:before {
   transition: all 100ms;
   background: #fff;
   cursor: pointer;
+
+  .connection-state {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
 }
 .window__side .menu__item:hover {
   background-color: #e0e0e0;
