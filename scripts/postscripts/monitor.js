@@ -131,6 +131,24 @@ fs.readFile('dist/SysOS/filesystem/bin/applications/sysos-app-monitor.umd.js', '
 
   result = result.replace(/this.timeoutId = undefined\$1;/g, 'NETDATA.globalSelectionSync.timeoutId = undefined$1;');
 
+  // Make sure listeners are on correct div
+  result = result.replace(/\$\('#charts_div'\)/g, '$(window)');
+  result = result.replace(/window.addEventListener/g, 'document.getElementsByClassName("charts-body")[0].addEventListener');
+
+  // Not necessary
+  result = result.replace('// bootstrap tab switching\n' +
+    '        $(\'a[data-toggle="tab"]\').on(\'shown.bs.tab\', NETDATA.onscroll);\n' +
+    '\n' +
+    '        // bootstrap modal switching\n' +
+    '        let $modal = $(\'.modal\');\n' +
+    '        $modal.on(\'hidden.bs.modal\', NETDATA.onscroll);\n' +
+    '        $modal.on(\'shown.bs.modal\', NETDATA.onscroll);\n' +
+    '\n' +
+    '        // bootstrap collapse switching\n' +
+    '        let $collapse = $(\'.collapse\');\n' +
+    '        $collapse.on(\'hidden.bs.collapse\', NETDATA.onscroll);\n' +
+    '        $collapse.on(\'shown.bs.collapse\', NETDATA.onscroll);', '');
+
   //result = result.replace(/= \(\) =>/g, '= function()');
 
   fs.writeFile('dist/SysOS/filesystem/bin/applications/sysos-app-monitor.umd.js', result, 'utf8', function (err) {
