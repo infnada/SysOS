@@ -1,7 +1,7 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatSliderModule, MatProgressBarModule, MatInputModule, MatSelectModule, MatFormFieldModule} from '@angular/material';
+import {MatSliderModule, MatProgressBarModule, MatInputModule, MatSelectModule, MatFormFieldModule, MatRadioModule} from '@angular/material';
 
 import {NgbActiveModal, NgbModalModule} from '@ng-bootstrap/ng-bootstrap';
 
@@ -24,6 +24,7 @@ import {EntryComponent} from './monitor-export-entry/entry.component';
     MatInputModule,
     MatFormFieldModule,
     MatSelectModule,
+    MatRadioModule,
     NgbModalModule
   ],
   providers: [

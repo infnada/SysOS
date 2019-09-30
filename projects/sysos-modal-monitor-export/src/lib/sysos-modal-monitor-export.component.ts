@@ -4,8 +4,7 @@ import {FormControl, Validators} from '@angular/forms';
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 
 import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
-
-
+import {SysosLibFileSystemService} from '@sysos/lib-file-system';
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -32,6 +31,7 @@ export class SysosModalMonitorExportComponent implements OnInit {
 
   private snapshotOptions;
 
+  saveAt: 'anyopsos' | 'download' = 'anyopsos';
   filename = new FormControl('', [Validators.required]);
 
   progressText: string;
@@ -45,7 +45,8 @@ export class SysosModalMonitorExportComponent implements OnInit {
   slider;
 
   constructor(public activeModal: NgbActiveModal,
-              private serviceInjector: SysosLibServiceInjectorService) {
+              private serviceInjector: SysosLibServiceInjectorService,
+              private FileSystem: SysosLibFileSystemService) {
 
     this.MonitorService = this.serviceInjector.get('SysosAppMonitorService');
     this.MonitorDashboardService = this.serviceInjector.get('SysosAppMonitorDashboardService');
@@ -296,25 +297,38 @@ export class SysosModalMonitorExportComponent implements OnInit {
   }
 
   private saveObjectToClient(data, filename) {
-    let blob = new Blob([JSON.stringify(data)], {
-      type: 'application/octet-stream'
-    });
+    let blob;
 
-    let url = URL.createObjectURL(blob);
-    let link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', filename);
+    if (this.saveAt === 'download') {
+      blob = new Blob([JSON.stringify(data)], {
+        type: 'application/octet-stream'
+      });
 
-    let el = document.getElementById('hiddenDownloadLinks');
-    el.innerHTML = '';
-    el.appendChild(link);
+      let url = URL.createObjectURL(blob);
+      let link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', filename);
 
-    setTimeout(function () {
-      el.removeChild(link);
-      URL.revokeObjectURL(url);
-    }, 60);
+      let el = document.getElementById('hiddenDownloadLinks');
+      el.innerHTML = '';
+      el.appendChild(link);
 
-    link.click();
+      setTimeout(function () {
+        el.removeChild(link);
+        URL.revokeObjectURL(url);
+      }, 60);
+
+      link.click();
+    }
+
+    if (this.saveAt === 'anyopsos') {
+      blob = new Blob([JSON.stringify(data)]);
+      let file: File = new File([blob], filename);
+
+      // Upload file to Downloads folder
+      return this.FileSystem.uploadFile('/root/Downloads/', file);
+    }
+
   }
 
   cancelSnapshot() {

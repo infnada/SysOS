@@ -1,7 +1,7 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ReactiveFormsModule} from '@angular/forms';
-import {MatSlideToggleModule, MatTooltipModule} from '@angular/material';
+import {MatSlideToggleModule, MatTooltipModule, MatButtonModule} from '@angular/material';
 
 import {OrderModule} from 'ngx-order-pipe';
 import {ToastrModule} from 'ngx-toastr';
@@ -34,6 +34,7 @@ import {SysosAppMonitorDashboardService} from './services/sysos-app-monitor-dash
     ReactiveFormsModule,
     MatSlideToggleModule,
     MatTooltipModule,
+    MatButtonModule,
     OrderModule,
     ToastrModule.forRoot(),
     SysosLibScrollSpyModule,
