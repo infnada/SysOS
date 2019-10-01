@@ -5,6 +5,10 @@
 h1, h2 {
   z-index: inherit;
 }
+
+h1:before, h2:before {
+  display: none;
+}
 .charts-body {
   overflow-y: scroll;
   position: absolute;
