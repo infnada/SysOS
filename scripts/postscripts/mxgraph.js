@@ -19,7 +19,7 @@ fs.readFile('dist/SysOS/filesystem/bin/libs/sysos-lib-ext-mxgraph.umd.js', 'utf8
   let result = data;
 
   result = result.replace('\'use strict\';\n', '\'use strict\';\n' + '// Addeded with package.json postscript\n' +
-    'var mxBasePath = "assets/mxgraph";\n' +
+    'var mxBasePath = "/api/file/etc/applications/drawer";\n' +
     'var mxLoadResources = false;\n' +
     'var mxForceIncludes = false;\n' +
     'var mxResourceExtension = ".txt";\n' +
