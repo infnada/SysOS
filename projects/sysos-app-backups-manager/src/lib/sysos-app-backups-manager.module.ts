@@ -25,7 +25,7 @@ export class SysosAppBackupsManagerModule {
 
     Applications.registerApplication({
       id: 'backups-manager',
-      ico: 'hdd-o',
+      ico: 'fas fa-hdd',
       name: 'Backups Manager',
       menu: true,
       actions: true,

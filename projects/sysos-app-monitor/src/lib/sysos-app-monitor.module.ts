@@ -53,7 +53,7 @@ export class SysosAppMonitorModule {
 
     Applications.registerApplication({
       id: 'monitor',
-      ico: 'pie-chart',
+      ico: 'fas fa-chart-pie',
       name: 'Monitor',
       menu: true,
       actions: true,

@@ -1,6 +1,6 @@
 <li class="start-menu__{{application.id}}" (click)="toggleApplication(application.id)" *ngIf="application.id !== 'start'" (contextmenu)="onAppContextMenu($event)">
   <a>
-    <i class="fa fa-{{application.ico}}"></i>
+    <i class="{{application.ico}}"></i>
     {{application.name}}
   </a>
 </li>

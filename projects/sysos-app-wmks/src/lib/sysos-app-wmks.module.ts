@@ -15,7 +15,7 @@ export class SysosAppWmksModule {
   constructor(private Applications: SysosLibApplicationService) {
     Applications.registerApplication({
       id: 'wmks',
-      ico: 'television',
+      ico: 'fas fa-tv',
       name: 'VM Remote Console',
       menu: true,
       style: {width: '90%', height: '90%', top: '2%', left: '5%'}

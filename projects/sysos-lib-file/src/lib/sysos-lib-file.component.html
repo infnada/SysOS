@@ -1,5 +1,5 @@
 <a *ngIf="!viewAsList" #selectableFileElement title="{{file.filename}}" [ngClass]="{'active': isCurrentActive}" (dblclick)="UIdoWithFile(file)" (contextmenu)="onFileContextMenu($event)">
-  <i class="fa fa-{{getFileType(file.longname)}}"></i>
+  <i class="fas fa-{{getFileType(file.longname)}}"></i>
   <span>{{file.filename}}</span>
 
   <div style="position: fixed"
@@ -10,7 +10,7 @@
 </a>
 
 <tr *ngIf="viewAsList" #selectableFileElement title="{{file.filename}}" [ngClass]="{'active': isCurrentActive}" (dblclick)="UIdoWithFile(file)" (contextmenu)="onFileContextMenu($event)">
-  <td><i class="fa fa-{{getFileType(file.longname)}}"></i> {{file.filename}}</td>
+  <td><i class="fas fa-{{getFileType(file.longname)}}"></i> {{file.filename}}</td>
   <td>{{file.attrs.size}}</td>
   <td>{{getFileType(file.longname)}}</td>
 

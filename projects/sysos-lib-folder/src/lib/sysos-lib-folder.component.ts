@@ -48,24 +48,24 @@ export class SysosLibFolderComponent implements OnInit, AfterViewInit {
 
   folderContextMenuItems: ContextMenuItem[] = [
     {
-      id: 1, text: '<i class="fa fa-download"></i> Download from URL to current folder', action: () => {
+      id: 1, text: '<i class="fas fa-download"></i> Download from URL to current folder', action: () => {
         this.UIdownloadFromURL();
       }
     },
     {
-      id: 2, text: '<i class="fa fa-folder"></i> Create Folder', action: () => {
+      id: 2, text: '<i class="fas fa-folder"></i> Create Folder', action: () => {
         this.UIcreateFolder();
       }
     },
     {id: 3, text: 'divider'},
     {
-      id: 4, text: '<i class="fa fa-refresh"></i> Refresh', action: () => {
+      id: 4, text: '<i class="fas fa-sync-alt"></i> Refresh', action: () => {
         this.reloadPath();
       }
     },
     {id: 5, text: 'divider'},
     {
-      id: 6, text: '<i class="fa fa-clipboard"></i> Paste', action: () => {
+      id: 6, text: '<i class="fas fa-paste"></i> Paste', action: () => {
         this.UIpasteFile();
       }, disabled: () => {
         return this.copyFile === null && this.cutFile === null;
@@ -73,7 +73,7 @@ export class SysosLibFolderComponent implements OnInit, AfterViewInit {
     },
     {id: 7, text: 'divider'},
     {
-      id: 8, text: '<i class="fa fa-lock"></i> Permissions', action: () => {
+      id: 8, text: '<i class="fas fa-lock"></i> Permissions', action: () => {
         // TODO
       }
     }

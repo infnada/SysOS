@@ -19,7 +19,7 @@ export class TaskBarItemsComponent implements OnInit {
     {
       id: 1, text: (application: Application) => {
         return '<span class="fa-stack">' +
-          '<i class="fa fa-stack-2x fa-' + this.getApplicationById(application.id).ico + '"></i>' +
+          '<i class="fa-stack-2x ' + this.getApplicationById(application.id).ico + '"></i>' +
           '</span> ' + this.getApplicationById(application.id).name;
       }, action: (application: Application) => {
         this.toggleApplication(application.id);
@@ -30,10 +30,10 @@ export class TaskBarItemsComponent implements OnInit {
       id: 3, text: (application: Application) => {
         if (application.pinned) {
           return '<span class="fa-stack">' +
-            '<i class="fa fa-thumb-tack fa-stack-2x"></i><i class="fa fa-ban fa-stack-1x text-danger"></i>' +
+            '<i class="fas fa-thumbtack fa-stack-2x"></i><i class="fas fa-ban fa-stack-1x text-danger"></i>' +
             '</span> Unpin from Task Bar';
         }
-        return '<span class="fa-stack"><i class="fa fa-stack-2x fa-thumb-tack fa-rotate-90"></i></span> Pin to Task Bar';
+        return '<span class="fa-stack"><i class="fas fa-stack-2x fas-thumbtack fa-rotate-90"></i></span> Pin to Task Bar';
       }, action: (application: Application) => {
         // Pin application
         this.Applications.registerTaskBarApplication({
@@ -43,7 +43,7 @@ export class TaskBarItemsComponent implements OnInit {
       }
     },
     {
-      id: 4, text: '<span class="fa-stack"><i class="fa fa-stack-2x fa-times"></i></span> Close', action: (application: Application) => {
+      id: 4, text: '<span class="fa-stack"><i class="fas fa-stack-2x fa-times"></i></span> Close', action: (application: Application) => {
         this.Applications.sendCloseApplication(application);
       }, disabled: (application: Application) => {
         return !this.isApplicationOpened(application.id);

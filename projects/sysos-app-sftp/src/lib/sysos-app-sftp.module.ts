@@ -60,7 +60,7 @@ export class SysosAppSftpModule {
               private Sftp: SysosAppSftpService) {
     Applications.registerApplication({
       id: 'sftp',
-      ico: 'upload',
+      ico: 'fas fa-upload',
       name: 'SFTP',
       menu: true,
       actions: true,

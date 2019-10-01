@@ -2,7 +2,7 @@
   <div class="modal-title" id="modal-title">Select ESXi host</div>
   <div class="window__controls window__controls--right">
     <a class="window__close" ngbAutofocus (click)="activeModal.dismiss(); $event.stopPropagation();">
-      <i class="fa fa-close"></i>
+      <i class="fas fa-times"></i>
     </a>
   </div>
 </div>
@@ -29,11 +29,11 @@
       <ul *ngIf="selectedIface['data-protocols']['data-protocol'] === 'nfs' && ifaceServiceData">
         <li>
           Version 3 Support <i class="fa" [ngClass]="ifaceServiceData['is-nfsv3-enabled'] === true ? 'fa-check text-success' : 'fa-close text-danger'"></i><br />
-          <span *ngIf="ifaceServiceData['is-nfsv3-enabled'] === true && !checkFirewallNFS(3)" class="text-danger"><i class="fa fa-exclamation-triangle"></i> ESXi firewall rules will be permanently changed adding the selected storage IP.</span>
+          <span *ngIf="ifaceServiceData['is-nfsv3-enabled'] === true && !checkFirewallNFS(3)" class="text-danger"><i class="fas fa-exclamation-triangle"></i> ESXi firewall rules will be permanently changed adding the selected storage IP.</span>
         </li>
         <li>
           Version 4.1 Support <i class="fa" [ngClass]="ifaceServiceData['is-nfsv41-enabled'] === true ? 'fa-check text-success' : 'fa-close text-danger'"></i><br />
-          <span *ngIf="ifaceServiceData['is-nfsv41-enabled'] === true && !checkFirewallNFS(4)" class="text-danger"><i class="fa fa-exclamation-triangle"></i> ESXi firewall rules will be permanently changed adding the selected storage IP.</span>
+          <span *ngIf="ifaceServiceData['is-nfsv41-enabled'] === true && !checkFirewallNFS(4)" class="text-danger"><i class="fas fa-exclamation-triangle"></i> ESXi firewall rules will be permanently changed adding the selected storage IP.</span>
         </li>
       </ul>
     </ng-container>

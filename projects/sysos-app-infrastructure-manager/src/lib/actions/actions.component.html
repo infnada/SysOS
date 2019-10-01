@@ -1,47 +1,47 @@
 <div class="window__actions">
   <a class="window__item" title="New connection" (click)="newConnection()">
-    <i class="fa fa-plus text-success"></i>
+    <i class="fas fa-plus text-success"></i>
   </a>
   <a class="window__item separator" ></a>
   <a class="window__item" title="Edit connection" (click)="editConnection()">
-    <i class="fa fa-edit" [ngClass]="{'text-primary': activeConnection !== null}"></i>
+    <i class="fas fa-edit" [ngClass]="{'text-primary': activeConnection !== null}"></i>
   </a>
   <a class="window__item" title="Disconnect" (click)="disconnectConnection()">
-    <i class="fa fa-close" [ngClass]="{'text-danger': activeConnection !== null}"></i>
+    <i class="fas fa-times" [ngClass]="{'text-danger': activeConnection !== null}"></i>
   </a>
   <a class="window__item" title="Delete" (click)="deleteConnection()">
-    <i class="fa fa-trash" [ngClass]="{'text-danger': activeConnection !== null}"></i>
+    <i class="fas fa-trash" [ngClass]="{'text-danger': activeConnection !== null}"></i>
   </a>
   <a class="window__item" title="Connection options" (click)="configureConnection()">
-    <i class="fa fa-cog" [ngClass]="{'text-primary': activeConnection !== null}"></i>
+    <i class="fas fa-cog" [ngClass]="{'text-primary': activeConnection !== null}"></i>
   </a>
   <a class="window__item separator" ></a>
   <a class="window__item" title="Power status">
-    <i class="fa fa-power-off" [ngClass]="{'text-danger': activeConnection !== null}"></i>
+    <i class="fas fa-power-off" [ngClass]="{'text-danger': activeConnection !== null}"></i>
   </a>
   <a class="window__item" title="Refresh" (click)="remoteRefresh();">
-    <i class="fa fa-refresh" [ngClass]="{'text-success': activeConnection !== null}"></i>
+    <i class="fas fa-sync-alt" [ngClass]="{'text-success': activeConnection !== null}"></i>
   </a>
   <a class="window__item" title="SSH" (click)="openWithApp('ssh')">
-    <i class="fa fa-terminal" [ngClass]="{'text-primary': activeConnection !== null}"></i>
+    <i class="fas fa-terminal" [ngClass]="{'text-primary': activeConnection !== null}"></i>
   </a>
   <a class="window__item" title="File explorer" (click)="openWithApp('sftp')">
-    <i class="fa fa-upload" [ngClass]="{'text-primary': activeConnection !== null}"></i>
+    <i class="fas fa-upload" [ngClass]="{'text-primary': activeConnection !== null}"></i>
   </a>
   <a class="window__item" title="Hardware monitor">
-    <i class="fa fa-microchip" [ngClass]="{'text-primary': activeConnection !== null}"></i>
+    <i class="fas fa-microchip" [ngClass]="{'text-primary': activeConnection !== null}"></i>
   </a>
   <a class="window__item" title="Alerts">
-    <i class="fa fa-bullhorn" [ngClass]="{'text-primary': activeConnection !== null}"></i>
+    <i class="fas fa-bullhorn" [ngClass]="{'text-primary': activeConnection !== null}"></i>
   </a>
   <a class="window__item" title="Services">
-    <i class="fa fa-cubes" [ngClass]="{'text-primary': activeConnection !== null}"></i>
+    <i class="fas fa-cubes" [ngClass]="{'text-primary': activeConnection !== null}"></i>
   </a>
   <a class="window__item" title="Firewall">
-    <i class="fa fa-exchange" [ngClass]="{'text-primary': activeConnection !== null}"></i>
+    <i class="fas fa-exchange-alt" [ngClass]="{'text-primary': activeConnection !== null}"></i>
   </a>
   <a class="window__item" title="HIDS" (click)="runHIDS()">
-    <i class="fa fa-shield" [ngClass]="{'text-primary': activeConnection !== null}"></i>
-  </a>
+    <i class="fas fa-shield" [ngClass]="{'text-primary': activeConnection !== null}"></i>
+  </a>-alt
   <a class="window__item separator" ></a>
 </div>

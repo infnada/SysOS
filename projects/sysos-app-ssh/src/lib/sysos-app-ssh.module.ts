@@ -39,7 +39,7 @@ export class SysosAppSshModule {
               private Ssh: SysosAppSshService) {
     Applications.registerApplication({
       id: 'ssh',
-      ico: 'terminal',
+      ico: 'fas fa-terminal',
       name: 'SSH',
       menu: true,
       actions: true,

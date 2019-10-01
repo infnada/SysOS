@@ -2,7 +2,7 @@
   <div class="modal-title" id="modal-title">{{title}}</div>
   <div class="window__controls window__controls--right">
     <a class="window__close" (click)="activeModal.dismiss(); $event.stopPropagation();">
-      <i class="fa fa-close"></i>
+      <i class="fas fa-times"></i>
     </a>
   </div>
 </div>
@@ -29,7 +29,7 @@
         <hr class="hr-text" data-content="Select a restore location">
         <mat-radio-group aria-label="Select a recovery mode" formControlName="recoveryModeFormControl">
           <mat-radio-button value="original" disabled="type === 'vm_instant_recovery'">
-            <h5>Restore to the original location</h5>Quickly initiate restore of selected VMs to the original location, and with the original name and settings. This option minimizes the chance of user input error.<br/><i class="fa fa-exclamation text-warning"></i> This virtual machine will be powered down during the restore process.
+            <h5>Restore to the original location</h5>Quickly initiate restore of selected VMs to the original location, and with the original name and settings. This option minimizes the chance of user input error.<br/><i class="fas fa-exclamation text-warning"></i> This virtual machine will be powered down during the restore process.
           </mat-radio-button>
           <mat-radio-button value="new">
             <h5>Restore to a new location, or with different settings</h5>Customize restored VM location, and change its settings. The wizard will automatically populate all controls with the original VM settings as the default settings.
@@ -66,11 +66,11 @@
             <ul *ngIf="selectedIface['data-protocols']['data-protocol'] === 'nfs' && ifaceServiceData">
               <li>
                 Version 3 Support <i class="fa" [ngClass]="ifaceServiceData['is-nfsv3-enabled'] === true ? 'fa-check text-success' : 'fa-close text-danger'"></i><br />
-                <span *ngIf="ifaceServiceData['is-nfsv3-enabled'] === true && !checkFirewallNFS(3)" class="text-danger"><i class="fa fa-exclamation-triangle"></i> ESXi firewall rules will be permanently changed adding the selected storage IP.</span>
+                <span *ngIf="ifaceServiceData['is-nfsv3-enabled'] === true && !checkFirewallNFS(3)" class="text-danger"><i class="fas fa-exclamation-triangle"></i> ESXi firewall rules will be permanently changed adding the selected storage IP.</span>
               </li>
               <li>
                 Version 4.1 Support <i class="fa" [ngClass]="ifaceServiceData['is-nfsv41-enabled'] === true ? 'fa-check text-success' : 'fa-close text-danger'"></i><br />
-                <span *ngIf="ifaceServiceData['is-nfsv41-enabled'] === true && !checkFirewallNFS(4)" class="text-danger"><i class="fa fa-exclamation-triangle"></i> ESXi firewall rules will be permanently changed adding the selected storage IP.</span>
+                <span *ngIf="ifaceServiceData['is-nfsv41-enabled'] === true && !checkFirewallNFS(4)" class="text-danger"><i class="fas fa-exclamation-triangle"></i> ESXi firewall rules will be permanently changed adding the selected storage IP.</span>
               </li>
             </ul>
           </ng-container>

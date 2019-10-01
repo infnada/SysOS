@@ -95,7 +95,7 @@ export class SysosAppInfrastructureManagerModule {
 
     Applications.registerApplication({
       id: 'infrastructure-manager',
-      ico: 'server',
+      ico: 'fas fa-server',
       name: 'Infrastructure Manager',
       menu: true,
       actions: true,

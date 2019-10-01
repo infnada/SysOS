@@ -7,17 +7,17 @@
         <!-- use a disabled button to provide padding for tree leaf -->
         <button mat-icon-button disabled></button>
 
-        <ng-container *ngIf="node.type === 'standalone'"><span><i class="mr-1 text-primary fa fa-folder"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'linux'"><span><i class="mr-1 text-primary fa fa-linux"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'windows'"><span><i class="mr-1 text-primary fa fa-windows"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'snmp'"><span><i class="mr-1 text-primary fa fa-desktop"></i> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'standalone'"><span><i class="mr-1 text-primary fas fa-folder"></i> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'linux'"><span><i class="mr-1 text-primary fab fa-linux"></i> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'windows'"><span><i class="mr-1 text-primary fab fa-windows"></i> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'snmp'"><span><i class="mr-1 text-primary fas fa-desktop"></i> {{node.name}}</span></ng-container>
 
-        <ng-container *ngIf="node.type === 'storage'"><span><i class="mr-1 text-primary fa fa-database"></i> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'storage'"><span><i class="mr-1 text-primary fas fa-database"></i> {{node.name}}</span></ng-container>
         <ng-container *ngIf="node.type === 'netapp'"><span (click)="setActiveView('netapp', node);"><img src="/assets/img/NetApp-logo.png" width="16px" class="mr-1" /> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'vserver'"><span (click)="setActiveView('netapp-vserver', node);"><i class="mr-1 fa fa-server"></i> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'vserver'"><span (click)="setActiveView('netapp-vserver', node);"><i class="mr-1 fas fa-server"></i> {{node.name}}</span></ng-container>
         <ng-container *ngIf="node.type === 'volume'"><span (click)="setActiveView('netapp-volume', node);"><i class="vs-icon vsphere-icon-datastore"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'snapshot'"><span (click)="setActiveView('netapp-snapshot', node);"><i class="mr-1 fa fa-camera"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'virtual'"><span><i class="mr-1 text-primary fa fa-cloud"></i> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'snapshot'"><span (click)="setActiveView('netapp-snapshot', node);"><i class="mr-1 fas fa-camera"></i> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'virtual'"><span><i class="mr-1 text-primary fas fa-cloud"></i> {{node.name}}</span></ng-container>
         <ng-container *ngIf="node.type === 'vmware'"><span (click)="setActiveView('vmware', node);"><i class="vs-icon vsphere-icon-vcenter"></i> {{node.name}}</span></ng-container>
         <ng-container *ngIf="node.type === 'Datacenter'"><span (click)="setActiveView('vmware-datacenter', node);"><i class="vs-icon vsphere-icon-datacenter"></i> {{node.name}}</span></ng-container>
         <ng-container *ngIf="node.type === 'ClusterComputeResource'"><span (click)="setActiveView('vmware-cluster', node);"><i class="vs-icon vsphere-icon-cluster"></i> {{node.name}}</span></ng-container>
@@ -47,17 +47,17 @@
           </mat-icon>
         </button>
 
-        <ng-container *ngIf="node.type === 'standalone'"><span><i class="mr-1 text-primary fa fa-folder"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'linux'"><span><i class="mr-1 text-primary fa fa-linux"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'windows'"><span><i class="mr-1 text-primary fa fa-windows"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'snmp'"><span><i class="mr-1 text-primary fa fa-desktop"></i> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'standalone'"><span><i class="mr-1 text-primary fas fa-folder"></i> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'linux'"><span><i class="mr-1 text-primary fab fa-linux"></i> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'windows'"><span><i class="mr-1 text-primary fab fa-windows"></i> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'snmp'"><span><i class="mr-1 text-primary fas fa-desktop"></i> {{node.name}}</span></ng-container>
 
-        <ng-container *ngIf="node.type === 'storage'"><span><i class="mr-1 text-primary fa fa-database"></i> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'storage'"><span><i class="mr-1 text-primary fas fa-database"></i> {{node.name}}</span></ng-container>
         <ng-container *ngIf="node.type === 'netapp'"><span (click)="setActiveView('netapp', node);"><img src="/assets/img/NetApp-logo.png" width="16px" class="mr-1" /> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'vserver'"><span (click)="setActiveView('netapp-vserver', node);"><i class="mr-1 fa fa-server"></i> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'vserver'"><span (click)="setActiveView('netapp-vserver', node);"><i class="mr-1 fas fa-server"></i> {{node.name}}</span></ng-container>
         <ng-container *ngIf="node.type === 'volume'"><span (click)="setActiveView('netapp-volume', node);"><i class="vs-icon vsphere-icon-datastore"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'snapshot'"><span (click)="setActiveView('netapp-snapshot', node);"><i class="mr-1 fa fa-camera"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'virtual'"><span><i class="mr-1 text-primary fa fa-cloud"></i> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'snapshot'"><span (click)="setActiveView('netapp-snapshot', node);"><i class="mr-1 fas fa-camera"></i> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'virtual'"><span><i class="mr-1 text-primary fas fa-cloud"></i> {{node.name}}</span></ng-container>
         <ng-container *ngIf="node.type === 'vmware'"><span (click)="setActiveView('vmware', node);"><i class="vs-icon vsphere-icon-vcenter"></i> {{node.name}}</span></ng-container>
         <ng-container *ngIf="node.type === 'Datacenter'"><span (click)="setActiveView('vmware-datacenter', node);"><i class="vs-icon vsphere-icon-datacenter"></i> {{node.name}}</span></ng-container>
         <ng-container *ngIf="node.type === 'ClusterComputeResource'"><span (click)="setActiveView('vmware-cluster', node);"><i class="vs-icon vsphere-icon-cluster"></i> {{node.name}}</span></ng-container>
@@ -114,12 +114,12 @@
 
     <div class="secondary-content__new__box__toggle pointer visible-lg">
       <div class="secondary-content__new__box__toggle__slide" (click)="toggleSide()">
-        <i class="fa fa-arrow-left sidebar-open-font open-sidebar"></i>
+        <i class="fas fa-arrow-left sidebar-open-font open-sidebar"></i>
       </div>
     </div>
   </div>
   <div class="secondary-content__new__box__toggle toggle_left pointer visible-lg" *ngIf="!viewSide" (click)="toggleSide()">
-    <i class="fa fa-arrow-right sidebar-open-font open-sidebar"></i>
+    <i class="fas fa-arrow-right sidebar-open-font open-sidebar"></i>
   </div>
   <div class="window__main no_padding">
     <div class="col">

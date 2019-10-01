@@ -6,19 +6,19 @@
       <div class="menu__item" *ngIf="connection != undefined" [ngClass]="{'active': connection.uuid === activeConnection}" (click)="setActiveConnection(connection)">
         <h5 class="position-relative">
           {{connection.description}} <small class="d-block">({{connection.url}})</small>
-          <i class="fa fa-circle connection-state" [ngClass]="{'text-danger': connection.state == 'disconnected', 'text-success': connection.state == 'connected'}"></i>
+          <i class="fas fa-circle connection-state" [ngClass]="{'text-danger': connection.state == 'disconnected', 'text-success': connection.state == 'connected'}"></i>
         </h5>
       </div>
     </ng-container>
 
     <div class="secondary-content__new__box__toggle pointer visible-lg">
       <div class="secondary-content__new__box__toggle__slide" (click)="toggleSide()">
-        <i class="fa fa-arrow-left sidebar-open-font open-sidebar"></i>
+        <i class="fas fa-arrow-left sidebar-open-font open-sidebar"></i>
       </div>
     </div>
   </div>
   <div class="secondary-content__new__box__toggle toggle_left pointer visible-lg" *ngIf="!viewSide" (click)="toggleSide()">
-    <i class="fa fa-arrow-right sidebar-open-font open-sidebar"></i>
+    <i class="fas fa-arrow-right sidebar-open-font open-sidebar"></i>
   </div>
   <div class="window__main no_padding">
 

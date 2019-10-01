@@ -58,7 +58,7 @@ export class SysosAppDatastoreExplorerModule {
   constructor(private Applications: SysosLibApplicationService) {
     Applications.registerApplication({
       id: 'datastore-explorer',
-      ico: 'database',
+      ico: 'fas fa-database',
       name: 'Datastore Explorer',
       menu: true,
       actions: true,

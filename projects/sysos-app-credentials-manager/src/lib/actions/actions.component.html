@@ -1,10 +1,10 @@
 <div class="window__actions">
   <a class="window__item" title="New Credential" (click)="newCredential()">
-    <i class="fa fa-plus text-success"></i>
+    <i class="fas fa-plus text-success"></i>
   </a>
   <a class="window__item separator" ></a>
   <a class="window__item" title="Delete Current Credential" (click)="deleteCredential()">
-    <i class="fa fa-close" [ngClass]="{'text-danger': activeCredential !== null}"></i>
+    <i class="fas fa-times" [ngClass]="{'text-danger': activeCredential !== null}"></i>
   </a>
   <a class="window__item separator"></a>
 </div>

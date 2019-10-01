@@ -293,7 +293,7 @@ export class SysosLibApplicationService {
 
     return new Promise((resolve, reject) => {
 
-      this.dataStore.applications.push({id: 'start', ico: 'windows', name: 'Start Menu', menu: true});
+      this.dataStore.applications.push({id: 'start', ico: 'fab fa-windows', name: 'Start Menu', menu: true});
 
       // broadcast data to subscribers
       this.$applications.next(Object.assign({}, this.dataStore).applications);

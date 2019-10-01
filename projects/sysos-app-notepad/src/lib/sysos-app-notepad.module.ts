@@ -25,7 +25,7 @@ export class SysosAppNotepadModule {
   constructor(private Applications: SysosLibApplicationService) {
     Applications.registerApplication({
       id: 'notepad',
-      ico: 'pencil',
+      ico: 'fas fa-pencil-alt',
       name: 'Notepad',
       menu: true,
       style: {width: '600px', height: '300px', top: '10%', left: '30%'}

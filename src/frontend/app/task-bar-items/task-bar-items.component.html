@@ -1,5 +1,5 @@
 <a class="taskbar__item taskbar__item--{{application.id}}" (click)="toggleApplication(application.id)" [ngClass]="{'start--open' : isStartOpened(application.id), 'taskbar__item--open' : isItemOpened(application.id), 'taskbar__item--active' : isItemActive(application.id)}" (contextmenu)="onAppContextMenu($event, application)">
-  <i class="fa fa-{{getApplicationById(application.id).ico}}"></i>
+  <i class="{{getApplicationById(application.id).ico}}"></i>
 </a>
 <div style="position: fixed"
      [style.left]="contextMenuPosition.x"

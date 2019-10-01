@@ -42,7 +42,7 @@ export class SysosLibFileComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.fileContextMenuItems = [
       {
-        id: 0, text: '<i class="fa fa-upload"></i> Upload to Remote', action: (file: SysOSFile): void => {
+        id: 0, text: '<i class="fas fa-upload"></i> Upload to Remote', action: (file: SysOSFile): void => {
           this.UIuploadFileToRemote(file);
         }, disabled: () => {
           return !this.uploadAllowed;
@@ -51,8 +51,8 @@ export class SysosLibFileComponent implements OnInit, AfterViewInit {
       {
         id: 1, text: (
           this.connection && this.connection.uuid !== null ?
-            '<i class="fa fa-cloud-download"></i> Download to SysOS' :
-            '<i class="fa fa-download"></i> Download to local'
+            '<i class="fas fa-cloud-download-alt"></i> Download to SysOS' :
+            '<i class="fas fa-download"></i> Download to local'
         ), action: (file: SysOSFile): void => {
           if (this.connection) return this.UIdownloadFileToSysOS(file);
           return this.UIdownloadFileToLocal(file);
@@ -63,9 +63,9 @@ export class SysosLibFileComponent implements OnInit, AfterViewInit {
           const filetype = this.getFileType(file.longname);
 
           if (filetype === 'folder') {
-            return '<i class="fa fa-folder-open"></i> Open';
+            return '<i class="fas fa-folder-open"></i> Open';
           } else {
-            return '<i class="fa fa-edit"></i> Open with Notepad';
+            return '<i class="fas fa-edit"></i> Open with Notepad';
           }
         }, action: (file: SysOSFile): void => {
           this.UIdoWithFile(file);
@@ -73,29 +73,29 @@ export class SysosLibFileComponent implements OnInit, AfterViewInit {
       },
       {id: 3, text: 'divider'},
       {
-        id: 4, text: '<i class="fa fa-files-o"></i> Copy', action: (file: SysOSFile): void => {
+        id: 4, text: '<i class="fas fa-copy"></i> Copy', action: (file: SysOSFile): void => {
           this.UIcopyFile(file);
         }
       },
       {
-        id: 6, text: '<i class="fa fa-scissors"></i> Cut', action: (file: SysOSFile): void => {
+        id: 6, text: '<i class="fas fa-cut"></i> Cut', action: (file: SysOSFile): void => {
           this.UIcutFile(file);
         }
       },
       {id: 7, text: 'divider'},
       {
-        id: 8, text: '<i class="fa fa-font"></i> Rename', action: (file: SysOSFile): void => {
+        id: 8, text: '<i class="fas fa-font"></i> Rename', action: (file: SysOSFile): void => {
           return this.UIrenameFile(file);
         }
       },
       {
-        id: 9, text: '<i class="fa fa-remove"></i> Delete', action: (file: SysOSFile): void => {
+        id: 9, text: '<i class="fas fa-trash-alt"></i> Delete', action: (file: SysOSFile): void => {
           return this.UIdeleteSelected(file);
         }
       },
       {id: 10, text: 'divider'},
       {
-        id: 11, text: '<i class="fa fa-lock"></i> Permissions', action: (file: SysOSFile): void => {
+        id: 11, text: '<i class="fas fa-lock"></i> Permissions', action: (file: SysOSFile): void => {
           return this.UIfilePermissions(file);
         }
       }

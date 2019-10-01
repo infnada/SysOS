@@ -37,7 +37,7 @@ export class SysosAppFileExplorerModule {
   constructor(private Applications: SysosLibApplicationService) {
     Applications.registerApplication({
       id: 'file-explorer',
-      ico: 'folder',
+      ico: 'fas fa-folder',
       name: 'File Explorer',
       menu: true,
       actions: false,

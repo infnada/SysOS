@@ -1,34 +1,34 @@
 <div class="window__actions">
   <a class="window__item" title="New connection" (click)="newConnection()">
-    <i class="fa fa-plus text-success"></i>
+    <i class="fas fa-plus text-success"></i>
   </a>
   <a class="window__item separator" ></a>
   <a class="window__item" title="Edit connection" (click)="editConnection()">
-    <i class="fa fa-edit" [ngClass]="{'text-primary': activeConnection !== null}"></i>
+    <i class="fas fa-edit" [ngClass]="{'text-primary': activeConnection !== null}"></i>
   </a>
   <a class="window__item" title="Disconnect" (click)="disconnectConnection()">
-    <i class="fa fa-close" [ngClass]="{'text-danger': activeConnection !== null && getActiveConnection().state === 'connected'}"></i>
+    <i class="fas fa-times" [ngClass]="{'text-danger': activeConnection !== null && getActiveConnection().state === 'connected'}"></i>
   </a>
   <a class="window__item" title="Delete" (click)="deleteConnection()">
-    <i class="fa fa-trash" [ngClass]="{'text-danger': activeConnection !== null}"></i>
+    <i class="fas fa-trash" [ngClass]="{'text-danger': activeConnection !== null}"></i>
   </a>
   <a class="window__item separator"></a>
   <a class="window__item" title="Edit options" (click)="openOptionsModal()">
-    <i class="fa fa-cog text-primary"></i>
+    <i class="fas fa-cog text-primary"></i>
   </a>
   <a class="window__item" title="Alarms" (click)="openAlarmsModal()">
-    <i class="fa fa-bell" [ngClass]="{'text-primary': activeConnection !== null && !this.getActiveConnection().snapshotData}"></i>
+    <i class="fas fa-bell" [ngClass]="{'text-primary': activeConnection !== null && !this.getActiveConnection().snapshotData}"></i>
   </a>
   <a class="window__item separator"></a>
   <a class="window__item" title="import / load a netdata snapshot" (click)="openImportModal()">
-    <i class="fa fa-download text-primary"></i>
+    <i class="fas fa-download text-primary"></i>
   </a>
   <a class="window__item" title="export / save a netdata snapshot" (click)="openExportModal()">
-    <i class="fa fa-upload" [ngClass]="{'text-primary': activeConnection !== null}"></i>
+    <i class="fas fa-upload" [ngClass]="{'text-primary': activeConnection !== null}"></i>
   </a>
   <a class="window__item separator"></a>
   <a class="window__item" title="get help on using the charts" (click)="openHelpModal()">
-    <i class="fa fa-question-circle text-primary"></i>
+    <i class="fas fa-question-circle text-primary"></i>
   </a>
 
   <div class="navbar-highlight" *ngIf="returnFromHighlight.showHighlight">

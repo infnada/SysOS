@@ -40,7 +40,7 @@ export class SysosAppCredentialsManagerModule {
 
     Applications.registerApplication({
       id: 'credentials-manager',
-      ico: 'key',
+      ico: 'fas fa-key',
       name: 'Credentials Manager',
       menu: true,
       actions: true,

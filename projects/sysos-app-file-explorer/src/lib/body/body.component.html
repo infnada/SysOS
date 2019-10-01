@@ -1,26 +1,26 @@
 <div class="window__body" [ngClass]="{'with_status': application.status, 'with_actions': application.actions}">
   <div class="window__side">
     <ul class="side__list">
-      <li><a><i class="fa fa-home"></i> Home</a></li>
+      <li><a><i class="fas fa-home"></i> Home</a></li>
       <li class="side__list--open">
         <a>
-          <i class="fa fa-star"></i> Favorites
+          <i class="fas fa-star"></i> Favorites
           <span class="list__toggle" (click)="toggleList($event)"></span>
         </a>
         <ul class="side__list">
-          <li (click)="goToPath('/root/Desktop/')"><a><i class="fa fa-desktop"></i> Desktop</a></li>
-          <li (click)="goToPath('/root/Downloads/')"><a><i class="fa fa-cloud-download"></i> Downloads</a></li>
+          <li (click)="goToPath('/root/Desktop/')"><a><i class="fas fa-desktop"></i> Desktop</a></li>
+          <li (click)="goToPath('/root/Downloads/')"><a><i class="fas fa-cloud-download-alt"></i> Downloads</a></li>
         </ul>
       </li>
       <li class="side__list--open">
         <a>
-          <i class="fa fa-server"></i> This Device
+          <i class="fas fa-server"></i> This Device
           <span class="list__toggle" (click)="toggleList($event)"></span>
         </a>
         <ul class="side__list">
-          <li (click)="goToPath('/root/Desktop/')"><a><i class="fa fa-desktop"></i> Desktop</a></li>
-          <li (click)="goToPath('/root/Documents/')"><a><i class="fa fa-files-o"></i> Documents</a></li>
-          <li (click)="goToPath('/root/Downloads/')"><a><i class="fa fa-cloud-download"></i> Downloads</a></li>
+          <li (click)="goToPath('/root/Desktop/')"><a><i class="fas fa-desktop"></i> Desktop</a></li>
+          <li (click)="goToPath('/root/Documents/')"><a><i class="fas fa-copy"></i> Documents</a></li>
+          <li (click)="goToPath('/root/Downloads/')"><a><i class="fas fa-cloud-download-alt"></i> Downloads</a></li>
         </ul>
       </li>
     </ul>
