@@ -42,7 +42,6 @@ export class BodyDashboardComponent implements AfterViewInit, OnDestroy {
     this.DashboardService.options.pipe(takeUntil(this.destroySubject$)).subscribe(options => this.options = options);
     this.DashboardService.netdataDashboard.pipe(takeUntil(this.destroySubject$)).subscribe(netdataDashboard => this.netdataDashboard = netdataDashboard);
     this.DashboardService.menus.pipe(takeUntil(this.destroySubject$)).subscribe(menus => {
-      console.log('menus change');
       this.menus = [];
 
       if (menus) {
@@ -81,6 +80,9 @@ export class BodyDashboardComponent implements AfterViewInit, OnDestroy {
         // Set new NETDATA object
         this.NETDATA = this.DashboardService.newDashboard();
         this.DashboardService.initializeDynamicDashboard(this.chartsDiv);
+
+        this.chartsDiv.nativeElement.parentNode.addEventListener('resize', this.NETDATA.onresize, this.NETDATA.supportsPassiveEvents() ? {passive: true} : false);
+        this.chartsDiv.nativeElement.parentNode.addEventListener('scroll', this.NETDATA.onscroll, this.NETDATA.supportsPassiveEvents() ? {passive: true} : false);
       }
     });
   }
