@@ -33,7 +33,7 @@ export class TaskBarItemsComponent implements OnInit {
             '<i class="fas fa-thumbtack fa-stack-2x"></i><i class="fas fa-ban fa-stack-1x text-danger"></i>' +
             '</span> Unpin from Task Bar';
         }
-        return '<span class="fa-stack"><i class="fas fa-stack-2x fas-thumbtack fa-rotate-90"></i></span> Pin to Task Bar';
+        return '<span class="fa-stack"><i class="fas fa-stack-2x fa-thumbtack fa-rotate-90"></i></span> Pin to Task Bar';
       }, action: (application: Application) => {
         // Pin application
         this.Applications.registerTaskBarApplication({
