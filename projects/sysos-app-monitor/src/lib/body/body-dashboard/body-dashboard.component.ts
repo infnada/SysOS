@@ -277,6 +277,21 @@ export class BodyDashboardComponent implements AfterViewInit, OnDestroy {
     return head;
   }
 
+  /**
+   * Checks if executing generateAllHeadCharts will return an empty string.
+   */
+  haveHeads(type, charts) {
+    return charts.some(chart => {
+      return this.netdataDashboard.anyAttribute(this.netdataDashboard.context, type, chart.context, []).length > 0;
+    });
+  }
+
+  generateAllHeadCharts(type, charts, duration) {
+    return charts.map(chart => {
+      return this.generateHeadCharts(type, chart, duration);
+    })
+  }
+
   generateHeadCharts(type, chart, duration) {
     let head = '';
     let hcharts = this.netdataDashboard.anyAttribute(this.netdataDashboard.context, type, chart.context, []);

@@ -4,7 +4,7 @@
 
     <ng-container *ngIf="options && netdataDashboard">
 
-      <ng-container *ngFor="let menu of menus | orderBy:['priority', 'id']; trackBy: trackItemById">
+      <ng-container *ngFor="let menu of menus | orderBy:['priority', 'id']; first as isFirst; trackBy: trackItemById">
         <div role="section" class="dashboard-section">
 
           <ng-container *samonNoCheck>
@@ -19,12 +19,10 @@
               <div class="netdata-chart-row">
 
                 <!--mainhead-->
-                <div class="w-100" [innerHTML]="headMain(netdataDashboard.os, options.data.charts, options.duration) | sanitizeHtml"></div>
+                <div class="w-100" *ngIf="isFirst" [innerHTML]="headMain(netdataDashboard.os, options.data.charts, options.duration) | sanitizeHtml"></div>
 
                 <ng-container *ngFor="let submenu of menu.submenus | orderBy:['priority', 'id']; trackBy: trackItemById">
-                  <ng-container *ngFor="let chart of submenu.charts | orderBy:['priority', 'id']; trackBy: trackItemById">
-                    <div [innerHTML]="generateHeadCharts('mainheads', chart, options.duration) | sanitizeHtml"></div>
-                  </ng-container>
+                  <div class="w-100" *ngIf="haveHeads('mainheads', submenu.charts)" [innerHTML]="generateAllHeadCharts('mainheads', submenu.charts, options.duration) | sanitizeHtml"></div>
                 </ng-container>
               </div>
 
@@ -34,8 +32,8 @@
                 <div *ngIf="submenu.info" class="dashboard-submenu-info netdata-chart-alignment" role="document" [innerHTML]="submenu.info"></div>
 
                 <!--head-->
-                <div *ngFor="let chart of submenu.charts | orderBy:['priority', 'id']; trackBy: trackItemById" class="netdata-chart-row">
-                  <div [innerHTML]="generateHeadCharts('heads', chart, options.duration) | sanitizeHtml"></div>
+                <div class="netdata-chart-row">
+                  <div class="w-100" *ngIf="haveHeads('heads', submenu.charts)" [innerHTML]="generateAllHeadCharts('heads', submenu.charts, options.duration) | sanitizeHtml"></div>
                 </div>
 
                 <!--chtml-->
