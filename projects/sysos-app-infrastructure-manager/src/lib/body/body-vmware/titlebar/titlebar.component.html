@@ -1,0 +1,42 @@
+<div class="titlebar">
+  <div class="object horizontal-flex-container">
+
+    <div role="titlebar-icon" [ngClass]="VmwareTemplateHelpers.getObjectIconClass(vmwareObject)"></div>
+
+    <div role="titlebar-title" class="summary-name-label">{{vmwareObject.name}}</div>
+
+    <ng-container *ngIf="VmwareTemplateHelpers.isVmObject(vmwareObject)">
+      <div role="titlebar-divider" class="divider"></div>
+      <div>
+        <div id="quickActionPowerOn" class="quick-action">
+          <span class="vm-ui-icon-vmPowerOn" title="Power On">
+          </span>
+        </div>
+        <div id="quickActionShutdownGuest" class="quick-action disabled-action">
+          <span class="vm-ui-icon-vmShutdown" title="Shut Down Guest OS">
+          </span>
+        </div>
+        <div id="quickActionConsole" class="quick-action">
+          <span class="icon-vSphere-openConsole" title="Launch Console">
+          </span>
+        </div>
+        <div id="quickActionEditVm" class="quick-action">
+          <span class="icon-vSphere-vmEdit" title="Edit Settings...">
+          </span>
+        </div>
+        <div id="quickActionSnapshot" class="quick-action">
+          <span class="vm-ui-icon-snapshotTake" title="Take Snapshot...">
+          </span>
+        </div>
+      </div>
+    </ng-container>
+
+
+    <div role="titlebar-divider" class="divider"></div>
+    <div role="titlebar-actionable">
+      <a class="summary-action-link" data-test-id="summaryActionLink" href="" (click)="showActionsMenu()">
+        <span role="actionable-title">Actions</span><span role="actionable-toggle" class="icon-dropdownToggle"></span>
+      </a>
+    </div>
+  </div>
+</div>

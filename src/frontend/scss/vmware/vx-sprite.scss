@@ -1,0 +1,1517 @@
+/*
+Icon classes can be used entirely standalone. They are named after their original file names.
+
+```html
+<!-- `display: block` sprite -->
+<div class="icon-home"></div>
+
+<!-- `display: inline-block` sprite -->
+<img class="icon-home" />
+```
+*/
+.vx-icon-CPU {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -143px -502px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-VServiceIcon {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -447px -470px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-acknowledgedAlarm {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -47px -438px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-addIcon {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -63px -470px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-addRolesIcon {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -319px -486px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-attach {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -207px -550px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-battery {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -191px -550px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-bios {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -175px -550px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-cable {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -159px -550px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-cancel {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -447px -534px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-cancel_disabled {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -383px -534px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-cancel_hover {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -367px -534px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-category_add {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -271px -518px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-cloneLibraryItem {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -239px -518px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-cloneRolesIcon {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -233px -412px;
+  width: 20px;
+  height: 20px;
+}
+.vx-icon-closex {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -223px -518px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-cluster-edit {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -111px -518px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-clusterComputeResourceRed {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -383px -502px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-clusterComputeResourceYellow {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -287px -502px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-compliant {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -175px -502px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-convert_attributes {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -159px -502px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-createTag {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -111px -502px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-datacenterAlert {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -431px -486px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-datacenterWarning {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -415px -486px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-datastore-enter-maintenance-mode {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -399px -486px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-datastore-exit-maintenance-mode {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -191px -486px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-datastore {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -315px -383px;
+  width: 24px;
+  height: 24px;
+}
+.vx-icon-datastoreInaccessible {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -351px -470px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-datastoreWarning {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -207px -470px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-defaultShortcut {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -299px -347px;
+  width: 32px;
+  height: 32px;
+}
+.vx-icon-deleteIcon {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -191px -470px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-dell_logo {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -167px -318px;
+  width: 162px;
+  height: 29px;
+}
+.vx-icon-detach {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -175px -470px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-detach_host_profile {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -159px -470px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-downArrowBlack {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -453px -318px;
+  width: 10px;
+  height: 10px;
+}
+.vx-icon-dropdownArrow {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -437px -332px;
+  width: 7px;
+  height: 4px;
+}
+.vx-icon-dsAddFolder {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -253px -412px;
+  width: 20px;
+  height: 20px;
+}
+.vx-icon-dsDownload {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -273px -412px;
+  width: 20px;
+  height: 20px;
+}
+.vx-icon-dsUpload {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -293px -412px;
+  width: 20px;
+  height: 20px;
+}
+.vx-icon-dvPortGroupAlert {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -207px -438px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-dvPortGroupWarning {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -191px -438px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-dvsAlert {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -63px -438px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-dvsWarning {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -389px -412px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-edit16x16 {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -367px -486px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-editRolesIcon {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -405px -412px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-edit_host_customizations {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -421px -412px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-erase-partitions {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -437px -412px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-error {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -453px -412px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-errorStack {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -284px -550px;
+  width: 12px;
+  height: 14px;
+}
+.vx-icon-evc-enabled {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -387px -383px;
+  width: 24px;
+  height: 24px;
+}
+.vx-icon-events {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -79px -438px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-export {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -95px -438px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-exportLibraryItem {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -111px -438px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-exportOvf {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -127px -438px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-fan {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -143px -438px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-file {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -159px -438px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-floppyImage {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -175px -438px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-glyphicons-halflings-white {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: 0px 0px;
+  width: 469px;
+  height: 159px;
+}
+.vx-icon-glyphicons-halflings {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: 0px -159px;
+  width: 469px;
+  height: 159px;
+}
+.vx-icon-group {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -223px -438px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-host-drs-group {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -239px -438px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-hostAlert {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -255px -438px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-hostConnect {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -271px -438px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-hostDisconnect {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -287px -438px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-hostDisconnected {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -303px -438px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-hostEnterMaintenanceMode {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -319px -438px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-hostEnterQuarantine {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -335px -438px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-hostExitMaintenanceMode {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -351px -438px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-hostExitQuarantine {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -367px -438px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-hostMaintenanceMode {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -383px -438px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-hostPortraitLarge {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -47px -318px;
+  width: 120px;
+  height: 120px;
+}
+.vx-icon-hostPowerOn {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -415px -438px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-hostShutDown {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -431px -438px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-hostStandby {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -447px -438px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-hostWarning {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -47px -454px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-host_profile {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -63px -454px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-host_profile_association {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -79px -454px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-ic_info_16x {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -95px -454px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-importLibraryItem {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -111px -454px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-info_normal {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -127px -454px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-install-vmware-tools {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -143px -454px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-inventory {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -159px -454px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-ipPool {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -175px -454px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-isoImage {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -191px -454px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-issueStatusError {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -207px -454px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-issueStatusInfo {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -223px -454px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-issueStatusNone {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -239px -454px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-issueStatusQuestion {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -255px -454px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-issueStatusWarning {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -271px -454px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-library {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -287px -454px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-license {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -303px -454px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-licenseAssigned {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -319px -454px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-mark-local {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -335px -454px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-mark-remote {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -351px -454px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-memory {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -367px -454px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-moveDown {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -383px -454px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-moveUp {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -399px -454px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-network {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -415px -454px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-networkAlert {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -431px -454px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-networkAndSecurity-small {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -447px -454px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-networkWarning {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -47px -470px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-networkingInventorySpec {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -291px -383px;
+  width: 24px;
+  height: 24px;
+}
+.vx-icon-new-cluster {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -79px -470px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-new-ds-cluster {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -95px -470px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-next_disabled {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -111px -470px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-next_over {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -127px -470px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-next_up {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -143px -470px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-number_1 {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -391px -347px;
+  width: 28px;
+  height: 29px;
+}
+.vx-icon-number_2 {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -167px -383px;
+  width: 28px;
+  height: 29px;
+}
+.vx-icon-number_3 {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -363px -347px;
+  width: 28px;
+  height: 29px;
+}
+.vx-icon-number_4 {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -419px -347px;
+  width: 28px;
+  height: 29px;
+}
+.vx-icon-acked-alarms {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -442px -318px;
+  width: 11px;
+  height: 11px;
+}
+.vx-icon-acknowledged {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -223px -550px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-alarm {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -373px -412px;
+  width: 16px;
+  height: 17px;
+}
+.vx-icon-alarm_definition {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -95px -502px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-alarm_definition_disabled {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -335px -486px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-green2yellow {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -329px -330px;
+  width: 36px;
+  height: 12px;
+}
+.vx-icon-red2yellow {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -365px -330px;
+  width: 36px;
+  height: 12px;
+}
+.vx-icon-reset_green {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -399px -438px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-yellow2green {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -406px -318px;
+  width: 36px;
+  height: 12px;
+}
+.vx-icon-yellow2red {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -401px -330px;
+  width: 36px;
+  height: 12px;
+}
+.vx-icon-other-16x {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -223px -470px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-other {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -239px -470px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-ovf-unknown {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -255px -470px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-pause {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -271px -470px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-pause_disabled {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -287px -470px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-pause_hover {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -303px -470px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-pci-pt-reboot {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -319px -470px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-pci {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -335px -470px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-physicalInventorySpec {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -339px -383px;
+  width: 24px;
+  height: 24px;
+}
+.vx-icon-power {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -367px -470px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-previous_disabled {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -383px -470px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-previous_over {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -399px -470px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-previous_up {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -415px -470px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-published-library {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -431px -470px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-refresh {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -313px -412px;
+  width: 20px;
+  height: 20px;
+}
+.vx-icon-refreshBright {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -47px -486px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-refreshDark {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -63px -486px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-removeIcon {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -79px -486px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-removeRolesIcon {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -95px -486px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-rename {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -111px -486px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-restartWarning {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -127px -486px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-resume {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -143px -486px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-resume_disabled {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -159px -486px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-resume_hover {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -175px -486px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-roles32x32 {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -267px -347px;
+  width: 32px;
+  height: 32px;
+}
+.vx-icon-rp {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -207px -486px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-rpEdit {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -223px -486px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-rpNew {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -239px -486px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-rpRed {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -255px -486px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-rpYellow {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -271px -486px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-rule-conflict {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -287px -486px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-rule {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -303px -486px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-saveSmall {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -47px -566px;
+  width: 15px;
+  height: 16px;
+}
+.vx-icon-search {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -239px -550px;
+  width: 17px;
+  height: 15px;
+}
+.vx-icon-sel {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -351px -486px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-separator {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -437px -330px;
+  width: 19px;
+  height: 2px;
+}
+.vx-icon-serviceEdit {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -383px -486px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-serviceRestart {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -213px -412px;
+  width: 20px;
+  height: 20px;
+}
+.vx-icon-serviceStart {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -353px -412px;
+  width: 20px;
+  height: 20px;
+}
+.vx-icon-serviceStop {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -333px -412px;
+  width: 20px;
+  height: 20px;
+}
+.vx-icon-smiley-happy {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -447px -486px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-smiley-neutral {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -47px -502px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-smiley-sad {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -63px -502px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-software {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -79px -502px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-statusCompliant {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -270px -550px;
+  width: 14px;
+  height: 14px;
+}
+.vx-icon-statusCompliant24x {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -267px -383px;
+  width: 24px;
+  height: 24px;
+}
+.vx-icon-statusNotApplicable {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -127px -502px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-statusNotCompliant {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -256px -550px;
+  width: 14px;
+  height: 14px;
+}
+.vx-icon-statusNotCompliant24x {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -243px -383px;
+  width: 24px;
+  height: 24px;
+}
+.vx-icon-statusUnknown24x {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -195px -383px;
+  width: 24px;
+  height: 24px;
+}
+.vx-icon-storage {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -191px -502px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-storagePod {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -207px -502px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-storagePodAlert {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -223px -502px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-storagePodWarning {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -239px -502px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-storage_profile {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -255px -502px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-subscribed-library {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -271px -502px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-summary-issues {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: 0px -318px;
+  width: 47px;
+  height: 409px;
+}
+.vx-icon-sync {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -303px -502px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-system_board {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -319px -502px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-tag {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -335px -502px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-tag_assign {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -351px -502px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-tag_remove {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -367px -502px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-task_shortcut {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -235px -347px;
+  width: 32px;
+  height: 32px;
+}
+.vx-icon-temp {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -399px -502px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-updateLibraryItem {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -415px -502px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-uplinkPortGroup {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -431px -502px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-uplinkPortGroupAlert {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -447px -502px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-uplinkPortGroupWarning {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -47px -518px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-user {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -63px -518px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vApp-template {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -79px -518px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vAppManaged {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -95px -518px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vAppManagedBy24 {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -363px -383px;
+  width: 24px;
+  height: 24px;
+}
+.vx-icon-vAppRunning {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -127px -518px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vAppRunningManaged {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -143px -518px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vAppSuspended {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -159px -518px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vAppSuspendedManaged {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -175px -518px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vCenterExtension {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -191px -518px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vcenter {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -207px -518px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vi_shortcut {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -331px -347px;
+  width: 32px;
+  height: 32px;
+}
+.vx-icon-virtualInventorySpec {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -219px -383px;
+  width: 24px;
+  height: 24px;
+}
+.vx-icon-virtualMachineFolder {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -255px -518px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-virtualMachineManagedBy24 {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -411px -383px;
+  width: 24px;
+  height: 24px;
+}
+.vx-icon-vm-drs-group {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -287px -518px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vm-template {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -303px -518px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vmDisk {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -319px -518px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vmEdit {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -335px -518px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vmLog {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -351px -518px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vmManaged {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -367px -518px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vmNvram {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -383px -518px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vmOn {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -399px -518px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vmOnManaged {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -415px -518px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vmOnPrimaryFT {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -431px -518px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vmOnSecondaryFT {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -447px -518px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vmPrimaryFT {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -47px -534px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vmRed {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -63px -534px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vmRedManaged {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -79px -534px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vmRedPrimaryFT {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -95px -534px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vmRedSecondaryFT {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -111px -534px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vmRestartSecondaryFT {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -127px -534px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vmSecondaryFT {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -143px -534px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vmSnapshot {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -159px -534px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vmStuck {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -175px -534px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vmStuckManaged {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -191px -534px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vmStuckPrimaryFT {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -207px -534px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vmSuspended {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -223px -534px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vmSuspendedManaged {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -239px -534px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vmSuspendedPrimaryFT {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -255px -534px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vmSuspendedSecondaryFT {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -271px -534px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vmTemplate {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -287px -534px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vmYellow {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -303px -534px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vmYellowManaged {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -319px -534px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vmYellowPrimaryFT {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -335px -534px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vmYellowSecondaryFT {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -351px -534px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vm_logo {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -167px -347px;
+  width: 36px;
+  height: 36px;
+}
+.vx-icon-vmwareLogoAppHeader {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -329px -318px;
+  width: 77px;
+  height: 12px;
+}
+.vx-icon-voltage {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -399px -534px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-vsanWitnessHost {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -415px -534px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-warn {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -431px -534px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-warning-32x32 {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -203px -347px;
+  width: 32px;
+  height: 32px;
+}
+.vx-icon-watchdog {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -47px -550px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-whiteHome {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -63px -550px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-window-popout {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -79px -550px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-witnessHostDisconnected {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -95px -550px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-witnessHostMaintenance {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -111px -550px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-witnessHostRed {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -127px -550px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-witnessHostWarning {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -143px -550px;
+  width: 16px;
+  height: 16px;
+}
+.vx-icon-wizardStep1 {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -435px -383px;
+  width: 24px;
+  height: 23px;
+}
+.vx-icon-wizardStep2 {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -189px -412px;
+  width: 24px;
+  height: 20px;
+}
+.vx-icon-wizardStep3 {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -447px -347px;
+  width: 22px;
+  height: 25px;
+}
+.vx-icon-wizardStep4 {
+  background-image: url(/assets/img/vmware/js-ui-lib-sprite.png);
+  background-position: -167px -412px;
+  width: 22px;
+  height: 23px;
+}

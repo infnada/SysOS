@@ -1,0 +1,890 @@
+
+.network-lib-ui-icon-add,
+.network-lib-ui-icon-cluster {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-cluster {
+  background-position: -137px -96px
+}
+
+.network-lib-ui-icon-defaultGateway {
+  background-position: 0 -67px
+}
+
+.network-lib-ui-icon-defaultGateway,
+.network-lib-ui-icon-deleteIcon {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-deleteIcon {
+  background-position: -16px -67px
+}
+
+.network-lib-ui-icon-dvPortGroup {
+  background-position: -89px 0
+}
+
+.network-lib-ui-icon-dvPortGroup,
+.network-lib-ui-icon-dvPortGroupEdit {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-dvPortGroupEdit {
+  background-position: -64px -99px
+}
+
+.network-lib-ui-icon-dvPortGroupNew {
+  background-position: -48px -115px
+}
+
+.network-lib-ui-icon-dvPortGroupNew,
+.network-lib-ui-icon-dvPortGroupsManage {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-dvPortGroupsManage {
+  background-position: -137px -48px
+}
+
+.network-lib-ui-icon-dvs-hc {
+  background-position: -41px 0
+}
+
+.network-lib-ui-icon-dvs-hc,
+.network-lib-ui-icon-dvs-iorm {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 24px;
+  height: 24px
+}
+
+.network-lib-ui-icon-dvs-iorm {
+  background-position: -65px 0
+}
+
+.network-lib-ui-icon-dvs-vmw {
+  background-position: 0 -43px;
+  width: 24px;
+  height: 24px
+}
+
+.network-lib-ui-icon-dvs-vmw,
+.network-lib-ui-icon-dvsAddHost {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png)
+}
+
+.network-lib-ui-icon-dvsAddHost {
+  background-position: -32px -67px;
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-dvsCollapse {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  background-position: -185px -58px;
+  width: 10px;
+  height: 10px
+}
+
+.network-lib-ui-icon-dvsDelete {
+  background-position: -64px -67px;
+  width: 16px
+}
+
+.network-lib-ui-icon-dvsDelete,
+.network-lib-ui-icon-dvsDown {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  height: 16px
+}
+
+.network-lib-ui-icon-dvsDown {
+  background-position: -42px -43px;
+  width: 18px
+}
+
+.network-lib-ui-icon-dvsEdit {
+  background-position: -89px -16px;
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-dvsEdit,
+.network-lib-ui-icon-dvsExpand {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png)
+}
+
+.network-lib-ui-icon-dvsExpand {
+  background-position: -185px -48px;
+  width: 10px;
+  height: 10px
+}
+
+.network-lib-ui-icon-dvsImport {
+  background-position: -89px -48px
+}
+
+.network-lib-ui-icon-dvsImport,
+.network-lib-ui-icon-dvsInformation {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-dvsInformation {
+  background-position: -89px -64px
+}
+
+.network-lib-ui-icon-dvsManageHost {
+  background-position: 0 -83px
+}
+
+.network-lib-ui-icon-dvsManageHost,
+.network-lib-ui-icon-dvsNetworkHeader {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-dvsNetworkHeader {
+  background-position: -16px -83px
+}
+
+.network-lib-ui-icon-dvsNew {
+  background-position: -32px -83px
+}
+
+.network-lib-ui-icon-dvsNew,
+.network-lib-ui-icon-dvsPnicError {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-dvsPnicError {
+  background-position: -48px -83px
+}
+
+.network-lib-ui-icon-dvsPortBlocked {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  background-position: -64px -83px;
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-dvsPortBlockedLf {
+  background-position: -185px -24px
+}
+
+.network-lib-ui-icon-dvsPortBlockedLf,
+.network-lib-ui-icon-dvsPortBlockedRt {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 12px;
+  height: 12px
+}
+
+.network-lib-ui-icon-dvsPortBlockedRt {
+  background-position: -185px -12px
+}
+
+.network-lib-ui-icon-dvsPortConnectedLf {
+  background-position: -76px -43px
+}
+
+.network-lib-ui-icon-dvsPortConnectedLf,
+.network-lib-ui-icon-dvsPortConnectedRt {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 12px;
+  height: 12px
+}
+
+.network-lib-ui-icon-dvsPortConnectedRt {
+  background-position: -172px -163px
+}
+
+.network-lib-ui-icon-dvsPortCount {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  background-position: -105px -48px;
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-dvsPortErrorLf {
+  background-position: -185px -36px
+}
+
+.network-lib-ui-icon-dvsPortErrorLf,
+.network-lib-ui-icon-dvsPortErrorRt {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 12px;
+  height: 12px
+}
+
+.network-lib-ui-icon-dvsPortErrorRt {
+  background-position: -148px -163px
+}
+
+.network-lib-ui-icon-dvsPortLinkdown {
+  background-position: 0 -99px
+}
+
+.network-lib-ui-icon-dvsPortLinkdown,
+.network-lib-ui-icon-dvsPortLinkup {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-dvsPortLinkup {
+  background-position: -16px -99px
+}
+
+.network-lib-ui-icon-dvsPortNotconnectedLf {
+  background-position: -185px 0
+}
+
+.network-lib-ui-icon-dvsPortNotconnectedLf,
+.network-lib-ui-icon-dvsPortNotconnectedRt {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 12px;
+  height: 12px
+}
+
+.network-lib-ui-icon-dvsPortNotconnectedRt {
+  background-position: -136px -163px
+}
+
+.network-lib-ui-icon-dvsPortgroupArrow {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  background-position: 0 0;
+  width: 41px;
+  height: 43px
+}
+
+.network-lib-ui-icon-dvsPreferencesEdit {
+  background-position: -80px -99px
+}
+
+.network-lib-ui-icon-dvsPreferencesEdit,
+.network-lib-ui-icon-dvsRunning {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-dvsRunning {
+  background-position: -96px -99px
+}
+
+.network-lib-ui-icon-dvsSuspended {
+  background-position: -121px 0
+}
+
+.network-lib-ui-icon-dvsSuspended,
+.network-lib-ui-icon-dvsUp {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-dvsUp {
+  background-position: -121px -16px
+}
+
+.network-lib-ui-icon-dvsUpgrade {
+  background-position: -121px -32px
+}
+
+.network-lib-ui-icon-dvsUpgrade,
+.network-lib-ui-icon-dvsUplinks {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-dvsUplinks {
+  background-position: -121px -48px
+}
+
+.network-lib-ui-icon-edit {
+  background-position: -121px -64px
+}
+
+.network-lib-ui-icon-edit,
+.network-lib-ui-icon-egressTraffic {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-egressTraffic {
+  background-position: -121px -80px
+}
+
+.network-lib-ui-icon-filter {
+  background-position: -121px -96px
+}
+
+.network-lib-ui-icon-filter,
+.network-lib-ui-icon-filterAdd {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-filterAdd {
+  background-position: 0 -115px
+}
+
+.network-lib-ui-icon-filterDelete {
+  background-position: -16px -115px
+}
+
+.network-lib-ui-icon-filterDelete,
+.network-lib-ui-icon-filterEdit {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-filterEdit {
+  background-position: -32px -115px
+}
+
+.network-lib-ui-icon-helpButton {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  background-position: -65px -24px;
+  width: 18px;
+  height: 18px
+}
+
+.network-lib-ui-icon-host {
+  background-position: -64px -115px
+}
+
+.network-lib-ui-icon-host,
+.network-lib-ui-icon-hostAdd {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-hostAdd {
+  background-position: -80px -115px
+}
+
+.network-lib-ui-icon-hostApplyToAll {
+  background-position: -96px -115px
+}
+
+.network-lib-ui-icon-hostApplyToAll,
+.network-lib-ui-icon-hostEdit {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-hostEdit {
+  background-position: -112px -115px
+}
+
+.network-lib-ui-icon-hostEditMultiple {
+  background-position: -137px 0
+}
+
+.network-lib-ui-icon-hostEditMultiple,
+.network-lib-ui-icon-hostWarning {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-hostWarning {
+  background-position: -137px -16px
+}
+
+.network-lib-ui-icon-info {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  background-position: -137px -32px;
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-infoNumber1 {
+  background-position: -41px -24px
+}
+
+.network-lib-ui-icon-infoNumber1,
+.network-lib-ui-icon-infoNumber2 {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 18px;
+  height: 18px
+}
+
+.network-lib-ui-icon-infoNumber2 {
+  background-position: -24px -43px
+}
+
+.network-lib-ui-icon-infoSignpost {
+  background-position: -137px -80px
+}
+
+.network-lib-ui-icon-infoSignpost,
+.network-lib-ui-icon-infoSignpostInactive {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-infoSignpostInactive {
+  background-position: -60px -43px
+}
+
+.network-lib-ui-icon-ingressEgressTraffic {
+  background-position: -137px -112px
+}
+
+.network-lib-ui-icon-ingressEgressTraffic,
+.network-lib-ui-icon-ingressTraffic {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-ingressTraffic {
+  background-position: 0 -131px
+}
+
+.network-lib-ui-icon-lag {
+  background-position: -16px -131px
+}
+
+.network-lib-ui-icon-lag,
+.network-lib-ui-icon-managePhysicalNics {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-managePhysicalNics {
+  background-position: -32px -131px
+}
+
+.network-lib-ui-icon-migrateNetworking {
+  background-position: -48px -131px
+}
+
+.network-lib-ui-icon-migrateNetworking,
+.network-lib-ui-icon-migrateVirtualNic {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-migrateVirtualNic {
+  background-position: -64px -131px
+}
+
+.network-lib-ui-icon-moveDown {
+  background-position: -80px -131px
+}
+
+.network-lib-ui-icon-moveDown,
+.network-lib-ui-icon-moveUp {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-moveUp {
+  background-position: -96px -131px
+}
+
+.network-lib-ui-icon-networkAdd {
+  background-position: -112px -131px
+}
+
+.network-lib-ui-icon-networkAdd,
+.network-lib-ui-icon-nic {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-nic {
+  background-position: -128px -131px
+}
+
+.network-lib-ui-icon-nicWarning {
+  background-position: -153px 0
+}
+
+.network-lib-ui-icon-nicWarning,
+.network-lib-ui-icon-opaqueSwitch {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-opaqueSwitch {
+  background-position: -153px -16px
+}
+
+.network-lib-ui-icon-path-active {
+  background-position: -153px -32px
+}
+
+.network-lib-ui-icon-path-active,
+.network-lib-ui-icon-path-dead {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-path-dead {
+  background-position: -153px -48px
+}
+
+.network-lib-ui-icon-path-disabled {
+  background-position: -153px -64px
+}
+
+.network-lib-ui-icon-path-disabled,
+.network-lib-ui-icon-path-standby {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-path-standby {
+  background-position: -153px -80px
+}
+
+.network-lib-ui-icon-physicalAdapter {
+  background-position: -153px -96px
+}
+
+.network-lib-ui-icon-physicalAdapter,
+.network-lib-ui-icon-physicalFunction {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-physicalFunction {
+  background-position: -153px -112px
+}
+
+.network-lib-ui-icon-portAdd {
+  background-position: -153px -128px
+}
+
+.network-lib-ui-icon-portAdd,
+.network-lib-ui-icon-portAddId {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-portAddId {
+  background-position: 0 -147px
+}
+
+.network-lib-ui-icon-portBlocked {
+  background-position: -16px -147px
+}
+
+.network-lib-ui-icon-portBlocked,
+.network-lib-ui-icon-portBlockedSriov {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-portBlockedSriov {
+  background-position: -32px -147px
+}
+
+.network-lib-ui-icon-portChannel {
+  background-position: -48px -147px
+}
+
+.network-lib-ui-icon-portChannel,
+.network-lib-ui-icon-portConnectedSriov {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-portConnectedSriov {
+  background-position: -64px -147px
+}
+
+.network-lib-ui-icon-portErrorSriov {
+  background-position: -80px -147px
+}
+
+.network-lib-ui-icon-portErrorSriov,
+.network-lib-ui-icon-portLinkdown {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-portLinkdown {
+  background-position: -96px -147px
+}
+
+.network-lib-ui-icon-portLinkup {
+  background-position: -112px -147px
+}
+
+.network-lib-ui-icon-portLinkup,
+.network-lib-ui-icon-portNotConnectedSriov {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-portNotConnectedSriov {
+  background-position: -128px -147px
+}
+
+.network-lib-ui-icon-rectify {
+  background-position: -144px -147px
+}
+
+.network-lib-ui-icon-rectify,
+.network-lib-ui-icon-refresh {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-refresh {
+  background-position: -169px 0
+}
+
+.network-lib-ui-icon-refreshNetwork {
+  background-position: -169px -16px
+}
+
+.network-lib-ui-icon-refreshNetwork,
+.network-lib-ui-icon-restartWarning {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-restartWarning {
+  background-position: -169px -32px
+}
+
+.network-lib-ui-icon-rowAdded {
+  background-position: -169px -48px
+}
+
+.network-lib-ui-icon-rowAdded,
+.network-lib-ui-icon-rowChanged {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-rowChanged {
+  background-position: -169px -64px
+}
+
+.network-lib-ui-icon-searchIcon {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  background-position: -160px -163px;
+  width: 12px;
+  height: 12px
+}
+
+.network-lib-ui-icon-show_details {
+  background-position: -169px -96px
+}
+
+.network-lib-ui-icon-show_details,
+.network-lib-ui-icon-startPortMonitoring {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-startPortMonitoring {
+  background-position: -169px -112px
+}
+
+.network-lib-ui-icon-statusGreen {
+  background-position: -108px -163px
+}
+
+.network-lib-ui-icon-statusGreen,
+.network-lib-ui-icon-statusRed {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 14px;
+  height: 14px
+}
+
+.network-lib-ui-icon-statusRed {
+  background-position: -94px -163px
+}
+
+.network-lib-ui-icon-statusUnknown {
+  background-position: -122px -163px
+}
+
+.network-lib-ui-icon-statusUnknown,
+.network-lib-ui-icon-statusYellow {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 14px;
+  height: 14px
+}
+
+.network-lib-ui-icon-statusYellow {
+  background-position: -80px -163px
+}
+
+.network-lib-ui-icon-stopPortMonitoring {
+  background-position: -32px -163px
+}
+
+.network-lib-ui-icon-stopPortMonitoring,
+.network-lib-ui-icon-unassignDvPortGroup {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-unassignDvPortGroup {
+  background-position: -48px -163px
+}
+
+.network-lib-ui-icon-undo {
+  background-position: -16px -163px
+}
+
+.network-lib-ui-icon-undo,
+.network-lib-ui-icon-unsetTemplateHost {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-unsetTemplateHost {
+  background-position: 0 -163px
+}
+
+.network-lib-ui-icon-uplink {
+  background-position: -169px -144px
+}
+
+.network-lib-ui-icon-uplink,
+.network-lib-ui-icon-uplinkAdd {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-uplinkAdd {
+  background-position: -169px -128px
+}
+
+.network-lib-ui-icon-uplinkPortGroup {
+  background-position: -169px -80px
+}
+
+.network-lib-ui-icon-uplinkPortGroup,
+.network-lib-ui-icon-virtualAdapter {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-virtualAdapter {
+  background-position: -48px -99px
+}
+
+.network-lib-ui-icon-virtualAdapterWarning {
+  background-position: -32px -99px
+}
+
+.network-lib-ui-icon-virtualAdapterWarning,
+.network-lib-ui-icon-virtualFunction {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-virtualFunction {
+  background-position: -105px -80px
+}
+
+.network-lib-ui-icon-virtualFunctionLf {
+  background-position: -105px -64px
+}
+
+.network-lib-ui-icon-virtualFunctionLf,
+.network-lib-ui-icon-vm {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-vm {
+  background-position: -105px -32px
+}
+
+.network-lib-ui-icon-vmAdapter {
+  background-position: -105px -16px
+}
+
+.network-lib-ui-icon-vmAdapter,
+.network-lib-ui-icon-vmMigrate {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-vmMigrate {
+  background-position: -105px 0
+}
+
+.network-lib-ui-icon-vmPrimaryFt {
+  background-position: -80px -83px
+}
+
+.network-lib-ui-icon-vmPrimaryFt,
+.network-lib-ui-icon-vmPrimaryFtWarning {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-vmPrimaryFtWarning {
+  background-position: -89px -32px
+}
+
+.network-lib-ui-icon-vmWarning {
+  background-position: -48px -67px
+}
+
+.network-lib-ui-icon-vmWarning,
+.network-lib-ui-icon-vswitch {
+  background-image: url(/assets/img/vmware/network-lib-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.network-lib-ui-icon-vswitch {
+  background-position: -64px -163px
+}

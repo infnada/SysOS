@@ -294,6 +294,138 @@
       ],
       "@sysos/modal-monitor-help/*": [
         "projects/sysos-modal-monitor-help/*"
+      ],
+      "@sysos/modal-infrastructure-manager-new-datacenter": [
+        "projects/sysos-modal-infrastructure-manager-new-datacenter/src/public-api"
+      ],
+      "@sysos/modal-infrastructure-manager-new-datacenter/*": [
+        "projects/sysos-modal-infrastructure-manager-new-datacenter/*"
+      ],
+      "@sysos/modal-infrastructure-manager-new-distributed-port-group": [
+        "projects/sysos-modal-infrastructure-manager-new-distributed-port-group/src/public-api"
+      ],
+      "@sysos/modal-infrastructure-manager-new-distributed-port-group/*": [
+        "projects/sysos-modal-infrastructure-manager-new-distributed-port-group/*"
+      ],
+      "@sysos/modal-infrastructure-manager-export-system-logs": [
+        "projects/sysos-modal-infrastructure-manager-export-system-logs/src/public-api"
+      ],
+      "@sysos/modal-infrastructure-manager-export-system-logs/*": [
+        "projects/sysos-modal-infrastructure-manager-export-system-logs/*"
+      ],
+      "@sysos/modal-infrastructure-manager-assign-license": [
+        "projects/sysos-modal-infrastructure-manager-assign-license/src/public-api"
+      ],
+      "@sysos/modal-infrastructure-manager-assign-license/*": [
+        "projects/sysos-modal-infrastructure-manager-assign-license/*"
+      ],
+      "@sysos/modal-infrastructure-manager-assign-tag": [
+        "projects/sysos-modal-infrastructure-manager-assign-tag/src/public-api"
+      ],
+      "@sysos/modal-infrastructure-manager-assign-tag/*": [
+        "projects/sysos-modal-infrastructure-manager-assign-tag/*"
+      ],
+      "@sysos/modal-infrastructure-manager-add-tag": [
+        "projects/sysos-modal-infrastructure-manager-add-tag/src/public-api"
+      ],
+      "@sysos/modal-infrastructure-manager-add-tag/*": [
+        "projects/sysos-modal-infrastructure-manager-add-tag/*"
+      ],
+      "@sysos/modal-infrastructure-manager-add-category": [
+        "projects/sysos-modal-infrastructure-manager-add-category/src/public-api"
+      ],
+      "@sysos/modal-infrastructure-manager-add-category/*": [
+        "projects/sysos-modal-infrastructure-manager-add-category/*"
+      ],
+      "@sysos/modal-infrastructure-manager-remove-tag": [
+        "projects/sysos-modal-infrastructure-manager-remove-tag/src/public-api"
+      ],
+      "@sysos/modal-infrastructure-manager-remove-tag/*": [
+        "projects/sysos-modal-infrastructure-manager-remove-tag/*"
+      ],
+      "@sysos/modal-infrastructure-manager-edit-custom-attributes": [
+        "projects/sysos-modal-infrastructure-manager-edit-custom-attributes/src/public-api"
+      ],
+      "@sysos/modal-infrastructure-manager-edit-custom-attributes/*": [
+        "projects/sysos-modal-infrastructure-manager-edit-custom-attributes/*"
+      ],
+      "@sysos/modal-infrastructure-manager-add-permission": [
+        "projects/sysos-modal-infrastructure-manager-add-permission/src/public-api"
+      ],
+      "@sysos/modal-infrastructure-manager-add-permission/*": [
+        "projects/sysos-modal-infrastructure-manager-add-permission/*"
+      ],
+      "@sysos/modal-infrastructure-manager-new-alarm-definition": [
+        "projects/sysos-modal-infrastructure-manager-new-alarm-definition/src/public-api"
+      ],
+      "@sysos/modal-infrastructure-manager-new-alarm-definition/*": [
+        "projects/sysos-modal-infrastructure-manager-new-alarm-definition/*"
+      ],
+      "@sysos/modal-infrastructure-manager-remediation-pre-check": [
+        "projects/sysos-modal-infrastructure-manager-remediation-pre-check/src/public-api"
+      ],
+      "@sysos/modal-infrastructure-manager-remediation-pre-check/*": [
+        "projects/sysos-modal-infrastructure-manager-remediation-pre-check/*"
+      ],
+      "@sysos/modal-infrastructure-manager-new-cluster": [
+        "projects/sysos-modal-infrastructure-manager-new-cluster/src/public-api"
+      ],
+      "@sysos/modal-infrastructure-manager-new-cluster/*": [
+        "projects/sysos-modal-infrastructure-manager-new-cluster/*"
+      ],
+      "@sysos/modal-infrastructure-manager-new-distributed-switch": [
+        "projects/sysos-modal-infrastructure-manager-new-distributed-switch/src/public-api"
+      ],
+      "@sysos/modal-infrastructure-manager-new-distributed-switch/*": [
+        "projects/sysos-modal-infrastructure-manager-new-distributed-switch/*"
+      ],
+      "@sysos/modal-infrastructure-manager-import-distributed-switch": [
+        "projects/sysos-modal-infrastructure-manager-import-distributed-switch/src/public-api"
+      ],
+      "@sysos/modal-infrastructure-manager-import-distributed-switch/*": [
+        "projects/sysos-modal-infrastructure-manager-import-distributed-switch/*"
+      ],
+      "@sysos/modal-infrastructure-manager-new-virtual-machine": [
+        "projects/sysos-modal-infrastructure-manager-new-virtual-machine/src/public-api"
+      ],
+      "@sysos/modal-infrastructure-manager-new-virtual-machine/*": [
+        "projects/sysos-modal-infrastructure-manager-new-virtual-machine/*"
+      ],
+      "@sysos/modal-infrastructure-manager-deploy-ovf-template": [
+        "projects/sysos-modal-infrastructure-manager-deploy-ovf-template/src/public-api"
+      ],
+      "@sysos/modal-infrastructure-manager-deploy-ovf-template/*": [
+        "projects/sysos-modal-infrastructure-manager-deploy-ovf-template/*"
+      ],
+      "@sysos/modal-infrastructure-manager-new-datastore": [
+        "projects/sysos-modal-infrastructure-manager-new-datastore/src/public-api"
+      ],
+      "@sysos/modal-infrastructure-manager-new-datastore/*": [
+        "projects/sysos-modal-infrastructure-manager-new-datastore/*"
+      ],
+      "@sysos/modal-infrastructure-manager-new-datastore-cluster": [
+        "projects/sysos-modal-infrastructure-manager-new-datastore-cluster/src/public-api"
+      ],
+      "@sysos/modal-infrastructure-manager-new-datastore-cluster/*": [
+        "projects/sysos-modal-infrastructure-manager-new-datastore-cluster/*"
+      ],
+      "@sysos/modal-infrastructure-manager-rescan-storage": [
+        "projects/sysos-modal-infrastructure-manager-rescan-storage/src/public-api"
+      ],
+      "@sysos/modal-infrastructure-manager-rescan-storage/*": [
+        "projects/sysos-modal-infrastructure-manager-rescan-storage/*"
+      ],
+      "@sysos/modal-infrastructure-manager-edit-default-vm-compatibility": [
+        "projects/sysos-modal-infrastructure-manager-edit-default-vm-compatibility/src/public-api"
+      ],
+      "@sysos/modal-infrastructure-manager-edit-default-vm-compatibility/*": [
+        "projects/sysos-modal-infrastructure-manager-edit-default-vm-compatibility/*"
+      ],
+      "@sysos/modal-infrastructure-manager-migrate-vms-another-network": [
+        "projects/sysos-modal-infrastructure-manager-migrate-vms-another-network/src/public-api"
+      ],
+      "@sysos/modal-infrastructure-manager-migrate-vms-another-network/*": [
+        "projects/sysos-modal-infrastructure-manager-migrate-vms-another-network/*"
       ]
     }
   }

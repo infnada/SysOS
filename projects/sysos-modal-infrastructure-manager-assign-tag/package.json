@@ -1,0 +1,10 @@
+{
+  "name": "@sysos/modal-infrastructure-manager-assign-tag",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@angular/common": "^7.2.0",
+    "@angular/core": "^7.2.0",
+    "@ng-bootstrap/ng-bootstrap": "^4.2.1",
+    "@sysos/lib-modal": "~0.0.1"
+  }
+}

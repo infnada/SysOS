@@ -28,20 +28,27 @@ import {MenuComponent} from './menu/menu.component';
 import {StatusComponent} from './status/status.component';
 
 import {SysosAppInfrastructureManagerService} from './services/sysos-app-infrastructure-manager.service';
-import {SysosAppInfrastructureVmwareService} from './services/sysos-app-infrastructure-vmware.service';
-import {SysosAppInfrastructureNetappService} from './services/sysos-app-infrastructure-netapp.service';
+import {SysosAppInfrastructureVmwareService} from './services/vmware/sysos-app-infrastructure-vmware.service';
+import {SysosAppInfrastructureNetappService} from './services/netapp/sysos-app-infrastructure-netapp.service';
 import {BodyVmwareComponent} from './body/body-vmware/body-vmware.component';
 import {BodyNetappComponent} from './body/body-netapp/body-netapp.component';
 import {BodyNetappVserverComponent} from './body/body-netapp-vserver/body-netapp-vserver.component';
 import {BodyNetappVolumeComponent} from './body/body-netapp-volume/body-netapp-volume.component';
 import {BodyNetappSnapshotComponent} from './body/body-netapp-snapshot/body-netapp-snapshot.component';
 import {VmwareRecentTasksComponent} from './body/vmware-recent-tasks/vmware-recent-tasks.component';
-import {TagsComponent} from './body/body-vmware/tags/tags.component';
-import {VmHardwareComponent} from './body/body-vmware/vm-hardware/vm-hardware.component';
-import {NotesComponent} from './body/body-vmware/notes/notes.component';
-import {RelatedObjectsComponent} from './body/body-vmware/related-objects/related-objects.component';
-import {CustomAttributesComponent} from './body/body-vmware/custom-attributes/custom-attributes.component';
-import {VmStoragePoliciesComponent} from './body/body-vmware/vm-storage-policies/vm-storage-policies.component';
+import {TagsComponent} from './body/body-vmware/tab-summary/tags/tags.component';
+import {VmHardwareComponent} from './body/body-vmware/tab-summary/vm-hardware/vm-hardware.component';
+import {NotesComponent} from './body/body-vmware/tab-summary/notes/notes.component';
+import {RelatedObjectsComponent} from './body/body-vmware/tab-summary/related-objects/related-objects.component';
+import {CustomAttributesComponent} from './body/body-vmware/tab-summary/custom-attributes/custom-attributes.component';
+import {VmStoragePoliciesComponent} from './body/body-vmware/tab-summary/vm-storage-policies/vm-storage-policies.component';
+import {TitlebarComponent} from './body/body-vmware/titlebar/titlebar.component';
+import {SummaryStatsComponent} from './body/body-vmware/tab-summary/summary-stats/summary-stats.component';
+import {SummaryInfoComponent} from './body/body-vmware/tab-summary/summary-info/summary-info.component';
+import {SummaryImageComponent} from './body/body-vmware/tab-summary/summary-image/summary-image.component';
+import {TabSummaryComponent} from './body/body-vmware/tab-summary/tab-summary.component';
+import {HomeComponent} from './body/body-vmware/home/home.component';
+import {ObjectComponent} from './body/body-vmware/object/object.component';
 
 @NgModule({
   declarations: [
@@ -61,7 +68,14 @@ import {VmStoragePoliciesComponent} from './body/body-vmware/vm-storage-policies
     NotesComponent,
     RelatedObjectsComponent,
     CustomAttributesComponent,
-    VmStoragePoliciesComponent
+    VmStoragePoliciesComponent,
+    TitlebarComponent,
+    SummaryStatsComponent,
+    SummaryInfoComponent,
+    SummaryImageComponent,
+    TabSummaryComponent,
+    HomeComponent,
+    ObjectComponent
   ],
   imports: [
     CommonModule,

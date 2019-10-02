@@ -1892,7 +1892,782 @@
           }
         }
       }
+    },
+    "sysos-modal-infrastructure-manager-new-datacenter": {
+      "root": "projects/sysos-modal-infrastructure-manager-new-datacenter",
+      "sourceRoot": "projects/sysos-modal-infrastructure-manager-new-datacenter/src",
+      "projectType": "library",
+      "prefix": "smimnd",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-new-datacenter/tsconfig.lib.json",
+            "project": "projects/sysos-modal-infrastructure-manager-new-datacenter/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-modal-infrastructure-manager-new-datacenter/src/test.ts",
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-new-datacenter/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-modal-infrastructure-manager-new-datacenter/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-modal-infrastructure-manager-new-datacenter/tsconfig.lib.json",
+              "projects/sysos-modal-infrastructure-manager-new-datacenter/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-modal-infrastructure-manager-new-distributed-port-group": {
+      "root": "projects/sysos-modal-infrastructure-manager-new-distributed-port-group",
+      "sourceRoot": "projects/sysos-modal-infrastructure-manager-new-distributed-port-group/src",
+      "projectType": "library",
+      "prefix": "smimndpp",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-new-distributed-port-group/tsconfig.lib.json",
+            "project": "projects/sysos-modal-infrastructure-manager-new-distributed-port-group/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-modal-infrastructure-manager-new-distributed-port-group/src/test.ts",
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-new-distributed-port-group/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-modal-infrastructure-manager-new-distributed-port-group/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-modal-infrastructure-manager-new-distributed-port-group/tsconfig.lib.json",
+              "projects/sysos-modal-infrastructure-manager-new-distributed-port-group/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-modal-infrastructure-manager-export-system-logs": {
+      "root": "projects/sysos-modal-infrastructure-manager-export-system-logs",
+      "sourceRoot": "projects/sysos-modal-infrastructure-manager-export-system-logs/src",
+      "projectType": "library",
+      "prefix": "smimesl",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-export-system-logs/tsconfig.lib.json",
+            "project": "projects/sysos-modal-infrastructure-manager-export-system-logs/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-modal-infrastructure-manager-export-system-logs/src/test.ts",
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-export-system-logs/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-modal-infrastructure-manager-export-system-logs/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-modal-infrastructure-manager-export-system-logs/tsconfig.lib.json",
+              "projects/sysos-modal-infrastructure-manager-export-system-logs/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-modal-infrastructure-manager-assign-license": {
+      "root": "projects/sysos-modal-infrastructure-manager-assign-license",
+      "sourceRoot": "projects/sysos-modal-infrastructure-manager-assign-license/src",
+      "projectType": "library",
+      "prefix": "smimal",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-assign-license/tsconfig.lib.json",
+            "project": "projects/sysos-modal-infrastructure-manager-assign-license/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-modal-infrastructure-manager-assign-license/src/test.ts",
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-assign-license/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-modal-infrastructure-manager-assign-license/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-modal-infrastructure-manager-assign-license/tsconfig.lib.json",
+              "projects/sysos-modal-infrastructure-manager-assign-license/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-modal-infrastructure-manager-assign-tag": {
+      "root": "projects/sysos-modal-infrastructure-manager-assign-tag",
+      "sourceRoot": "projects/sysos-modal-infrastructure-manager-assign-tag/src",
+      "projectType": "library",
+      "prefix": "smimat",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-assign-tag/tsconfig.lib.json",
+            "project": "projects/sysos-modal-infrastructure-manager-assign-tag/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-modal-infrastructure-manager-assign-tag/src/test.ts",
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-assign-tag/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-modal-infrastructure-manager-assign-tag/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-modal-infrastructure-manager-assign-tag/tsconfig.lib.json",
+              "projects/sysos-modal-infrastructure-manager-assign-tag/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-modal-infrastructure-manager-add-tag": {
+      "root": "projects/sysos-modal-infrastructure-manager-add-tag",
+      "sourceRoot": "projects/sysos-modal-infrastructure-manager-add-tag/src",
+      "projectType": "library",
+      "prefix": "smimadt",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-add-tag/tsconfig.lib.json",
+            "project": "projects/sysos-modal-infrastructure-manager-add-tag/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-modal-infrastructure-manager-add-tag/src/test.ts",
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-add-tag/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-modal-infrastructure-manager-add-tag/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-modal-infrastructure-manager-add-tag/tsconfig.lib.json",
+              "projects/sysos-modal-infrastructure-manager-add-tag/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-modal-infrastructure-manager-add-category": {
+      "root": "projects/sysos-modal-infrastructure-manager-add-category",
+      "sourceRoot": "projects/sysos-modal-infrastructure-manager-add-category/src",
+      "projectType": "library",
+      "prefix": "smimac",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-add-category/tsconfig.lib.json",
+            "project": "projects/sysos-modal-infrastructure-manager-add-category/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-modal-infrastructure-manager-add-category/src/test.ts",
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-add-category/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-modal-infrastructure-manager-add-category/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-modal-infrastructure-manager-add-category/tsconfig.lib.json",
+              "projects/sysos-modal-infrastructure-manager-add-category/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-modal-infrastructure-manager-remove-tag": {
+      "root": "projects/sysos-modal-infrastructure-manager-remove-tag",
+      "sourceRoot": "projects/sysos-modal-infrastructure-manager-remove-tag/src",
+      "projectType": "library",
+      "prefix": "smimrt",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-remove-tag/tsconfig.lib.json",
+            "project": "projects/sysos-modal-infrastructure-manager-remove-tag/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-modal-infrastructure-manager-remove-tag/src/test.ts",
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-remove-tag/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-modal-infrastructure-manager-remove-tag/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-modal-infrastructure-manager-remove-tag/tsconfig.lib.json",
+              "projects/sysos-modal-infrastructure-manager-remove-tag/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-modal-infrastructure-manager-edit-custom-attributes": {
+      "root": "projects/sysos-modal-infrastructure-manager-edit-custom-attributes",
+      "sourceRoot": "projects/sysos-modal-infrastructure-manager-edit-custom-attributes/src",
+      "projectType": "library",
+      "prefix": "smimeca",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-edit-custom-attributes/tsconfig.lib.json",
+            "project": "projects/sysos-modal-infrastructure-manager-edit-custom-attributes/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-modal-infrastructure-manager-edit-custom-attributes/src/test.ts",
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-edit-custom-attributes/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-modal-infrastructure-manager-edit-custom-attributes/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-modal-infrastructure-manager-edit-custom-attributes/tsconfig.lib.json",
+              "projects/sysos-modal-infrastructure-manager-edit-custom-attributes/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-modal-infrastructure-manager-add-permission": {
+      "root": "projects/sysos-modal-infrastructure-manager-add-permission",
+      "sourceRoot": "projects/sysos-modal-infrastructure-manager-add-permission/src",
+      "projectType": "library",
+      "prefix": "smimap",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-add-permission/tsconfig.lib.json",
+            "project": "projects/sysos-modal-infrastructure-manager-add-permission/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-modal-infrastructure-manager-add-permission/src/test.ts",
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-add-permission/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-modal-infrastructure-manager-add-permission/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-modal-infrastructure-manager-add-permission/tsconfig.lib.json",
+              "projects/sysos-modal-infrastructure-manager-add-permission/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-modal-infrastructure-manager-new-alarm-definition": {
+      "root": "projects/sysos-modal-infrastructure-manager-new-alarm-definition",
+      "sourceRoot": "projects/sysos-modal-infrastructure-manager-new-alarm-definition/src",
+      "projectType": "library",
+      "prefix": "smimnad",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-new-alarm-definition/tsconfig.lib.json",
+            "project": "projects/sysos-modal-infrastructure-manager-new-alarm-definition/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-modal-infrastructure-manager-new-alarm-definition/src/test.ts",
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-new-alarm-definition/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-modal-infrastructure-manager-new-alarm-definition/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-modal-infrastructure-manager-new-alarm-definition/tsconfig.lib.json",
+              "projects/sysos-modal-infrastructure-manager-new-alarm-definition/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-modal-infrastructure-manager-remediation-pre-check": {
+      "root": "projects/sysos-modal-infrastructure-manager-remediation-pre-check",
+      "sourceRoot": "projects/sysos-modal-infrastructure-manager-remediation-pre-check/src",
+      "projectType": "library",
+      "prefix": "smimrpc",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-remediation-pre-check/tsconfig.lib.json",
+            "project": "projects/sysos-modal-infrastructure-manager-remediation-pre-check/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-modal-infrastructure-manager-remediation-pre-check/src/test.ts",
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-remediation-pre-check/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-modal-infrastructure-manager-remediation-pre-check/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-modal-infrastructure-manager-remediation-pre-check/tsconfig.lib.json",
+              "projects/sysos-modal-infrastructure-manager-remediation-pre-check/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-modal-infrastructure-manager-new-cluster": {
+      "root": "projects/sysos-modal-infrastructure-manager-new-cluster",
+      "sourceRoot": "projects/sysos-modal-infrastructure-manager-new-cluster/src",
+      "projectType": "library",
+      "prefix": "smimnc",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-new-cluster/tsconfig.lib.json",
+            "project": "projects/sysos-modal-infrastructure-manager-new-cluster/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-modal-infrastructure-manager-new-cluster/src/test.ts",
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-new-cluster/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-modal-infrastructure-manager-new-cluster/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-modal-infrastructure-manager-new-cluster/tsconfig.lib.json",
+              "projects/sysos-modal-infrastructure-manager-new-cluster/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-modal-infrastructure-manager-new-distributed-switch": {
+      "root": "projects/sysos-modal-infrastructure-manager-new-distributed-switch",
+      "sourceRoot": "projects/sysos-modal-infrastructure-manager-new-distributed-switch/src",
+      "projectType": "library",
+      "prefix": "smimnds",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-new-distributed-switch/tsconfig.lib.json",
+            "project": "projects/sysos-modal-infrastructure-manager-new-distributed-switch/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-modal-infrastructure-manager-new-distributed-switch/src/test.ts",
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-new-distributed-switch/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-modal-infrastructure-manager-new-distributed-switch/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-modal-infrastructure-manager-new-distributed-switch/tsconfig.lib.json",
+              "projects/sysos-modal-infrastructure-manager-new-distributed-switch/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-modal-infrastructure-manager-import-distributed-switch": {
+      "root": "projects/sysos-modal-infrastructure-manager-import-distributed-switch",
+      "sourceRoot": "projects/sysos-modal-infrastructure-manager-import-distributed-switch/src",
+      "projectType": "library",
+      "prefix": "smimids",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-import-distributed-switch/tsconfig.lib.json",
+            "project": "projects/sysos-modal-infrastructure-manager-import-distributed-switch/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-modal-infrastructure-manager-import-distributed-switch/src/test.ts",
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-import-distributed-switch/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-modal-infrastructure-manager-import-distributed-switch/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-modal-infrastructure-manager-import-distributed-switch/tsconfig.lib.json",
+              "projects/sysos-modal-infrastructure-manager-import-distributed-switch/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-modal-infrastructure-manager-new-virtual-machine": {
+      "root": "projects/sysos-modal-infrastructure-manager-new-virtual-machine",
+      "sourceRoot": "projects/sysos-modal-infrastructure-manager-new-virtual-machine/src",
+      "projectType": "library",
+      "prefix": "smimnvm",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-new-virtual-machine/tsconfig.lib.json",
+            "project": "projects/sysos-modal-infrastructure-manager-new-virtual-machine/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-modal-infrastructure-manager-new-virtual-machine/src/test.ts",
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-new-virtual-machine/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-modal-infrastructure-manager-new-virtual-machine/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-modal-infrastructure-manager-new-virtual-machine/tsconfig.lib.json",
+              "projects/sysos-modal-infrastructure-manager-new-virtual-machine/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-modal-infrastructure-manager-deploy-ovf-template": {
+      "root": "projects/sysos-modal-infrastructure-manager-deploy-ovf-template",
+      "sourceRoot": "projects/sysos-modal-infrastructure-manager-deploy-ovf-template/src",
+      "projectType": "library",
+      "prefix": "smimdot",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-deploy-ovf-template/tsconfig.lib.json",
+            "project": "projects/sysos-modal-infrastructure-manager-deploy-ovf-template/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-modal-infrastructure-manager-deploy-ovf-template/src/test.ts",
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-deploy-ovf-template/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-modal-infrastructure-manager-deploy-ovf-template/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-modal-infrastructure-manager-deploy-ovf-template/tsconfig.lib.json",
+              "projects/sysos-modal-infrastructure-manager-deploy-ovf-template/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-modal-infrastructure-manager-new-datastore": {
+      "root": "projects/sysos-modal-infrastructure-manager-new-datastore",
+      "sourceRoot": "projects/sysos-modal-infrastructure-manager-new-datastore/src",
+      "projectType": "library",
+      "prefix": "smimnd",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-new-datastore/tsconfig.lib.json",
+            "project": "projects/sysos-modal-infrastructure-manager-new-datastore/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-modal-infrastructure-manager-new-datastore/src/test.ts",
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-new-datastore/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-modal-infrastructure-manager-new-datastore/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-modal-infrastructure-manager-new-datastore/tsconfig.lib.json",
+              "projects/sysos-modal-infrastructure-manager-new-datastore/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-modal-infrastructure-manager-new-datastore-cluster": {
+      "root": "projects/sysos-modal-infrastructure-manager-new-datastore-cluster",
+      "sourceRoot": "projects/sysos-modal-infrastructure-manager-new-datastore-cluster/src",
+      "projectType": "library",
+      "prefix": "smimndc",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-new-datastore-cluster/tsconfig.lib.json",
+            "project": "projects/sysos-modal-infrastructure-manager-new-datastore-cluster/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-modal-infrastructure-manager-new-datastore-cluster/src/test.ts",
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-new-datastore-cluster/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-modal-infrastructure-manager-new-datastore-cluster/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-modal-infrastructure-manager-new-datastore-cluster/tsconfig.lib.json",
+              "projects/sysos-modal-infrastructure-manager-new-datastore-cluster/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-modal-infrastructure-manager-rescan-storage": {
+      "root": "projects/sysos-modal-infrastructure-manager-rescan-storage",
+      "sourceRoot": "projects/sysos-modal-infrastructure-manager-rescan-storage/src",
+      "projectType": "library",
+      "prefix": "smimrs",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-rescan-storage/tsconfig.lib.json",
+            "project": "projects/sysos-modal-infrastructure-manager-rescan-storage/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-modal-infrastructure-manager-rescan-storage/src/test.ts",
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-rescan-storage/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-modal-infrastructure-manager-rescan-storage/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-modal-infrastructure-manager-rescan-storage/tsconfig.lib.json",
+              "projects/sysos-modal-infrastructure-manager-rescan-storage/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-modal-infrastructure-manager-edit-default-vm-compatibility": {
+      "root": "projects/sysos-modal-infrastructure-manager-edit-default-vm-compatibility",
+      "sourceRoot": "projects/sysos-modal-infrastructure-manager-edit-default-vm-compatibility/src",
+      "projectType": "library",
+      "prefix": "smimedvc",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-edit-default-vm-compatibility/tsconfig.lib.json",
+            "project": "projects/sysos-modal-infrastructure-manager-edit-default-vm-compatibility/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-modal-infrastructure-manager-edit-default-vm-compatibility/src/test.ts",
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-edit-default-vm-compatibility/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-modal-infrastructure-manager-edit-default-vm-compatibility/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-modal-infrastructure-manager-edit-default-vm-compatibility/tsconfig.lib.json",
+              "projects/sysos-modal-infrastructure-manager-edit-default-vm-compatibility/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "sysos-modal-infrastructure-manager-migrate-vms-another-network": {
+      "root": "projects/sysos-modal-infrastructure-manager-migrate-vms-another-network",
+      "sourceRoot": "projects/sysos-modal-infrastructure-manager-migrate-vms-another-network/src",
+      "projectType": "library",
+      "prefix": "smimmvan",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-migrate-vms-another-network/tsconfig.lib.json",
+            "project": "projects/sysos-modal-infrastructure-manager-migrate-vms-another-network/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-modal-infrastructure-manager-migrate-vms-another-network/src/test.ts",
+            "tsConfig": "projects/sysos-modal-infrastructure-manager-migrate-vms-another-network/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-modal-infrastructure-manager-migrate-vms-another-network/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-modal-infrastructure-manager-migrate-vms-another-network/tsconfig.lib.json",
+              "projects/sysos-modal-infrastructure-manager-migrate-vms-another-network/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
-  "defaultProject": "SysOS"
+  "defaultProject": "SysOS",
+  "schematics": {
+    "@schematics/angular:component": {
+      "styleext": "scss"
+    }
+  }
 }

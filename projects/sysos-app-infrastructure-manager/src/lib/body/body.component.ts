@@ -10,8 +10,8 @@ import {ContextMenuItem} from '@sysos/lib-types';
 
 import {SysosAppInfrastructureManagerService} from '../services/sysos-app-infrastructure-manager.service';
 import {SysosAppInfrastructureManagerContextMenusService} from '../services/sysos-app-infrastructure-manager-context-menus.service';
-import {SysosAppInfrastructureNetappService} from '../services/sysos-app-infrastructure-netapp.service';
-import {SysosAppInfrastructureVmwareService} from '../services/sysos-app-infrastructure-vmware.service';
+import {SysosAppInfrastructureNetappService} from '../services/netapp/sysos-app-infrastructure-netapp.service';
+import {SysosAppInfrastructureVmwareService} from '../services/vmware/sysos-app-infrastructure-vmware.service';
 import {IMConnection} from '../types/imconnection';
 import {IMNode} from '../types/imnode';
 

@@ -5,8 +5,11 @@ import {SysosLibLoggerService} from '@sysos/lib-logger';
 import {SysosLibApplicationService} from '@sysos/lib-application';
 
 import {SysosAppInfrastructureManagerService} from './sysos-app-infrastructure-manager.service';
-import {SysosAppInfrastructureNetappService} from './sysos-app-infrastructure-netapp.service';
-import {SysosAppInfrastructureVmwareService} from './sysos-app-infrastructure-vmware.service';
+import {SysosAppInfrastructureNetappService} from './netapp/sysos-app-infrastructure-netapp.service';
+import {SysosAppInfrastructureVmwareService} from './vmware/sysos-app-infrastructure-vmware.service';
+import {SysosAppInfrastructureNetappBackupService} from "./netapp/sysos-app-infrastructure-netapp-backup.service";
+import {SysosAppInfrastructureVmwareBackupService} from "./vmware/sysos-app-infrastructure-vmware-backup.service";
+
 import {IMNode} from '../types/imnode';
 
 @Injectable({
@@ -18,7 +21,9 @@ export class SysosAppInfrastructureManagerContextMenusService {
               private Applications: SysosLibApplicationService,
               private InfrastructureManager: SysosAppInfrastructureManagerService,
               private InfrastructureManagerNetApp: SysosAppInfrastructureNetappService,
-              private InfrastructureManagerVMWare: SysosAppInfrastructureVmwareService) {
+              private InfrastructureManagerVMWare: SysosAppInfrastructureVmwareService,
+              private InfrastructureManagerNetAppBackup: SysosAppInfrastructureNetappBackupService,
+              private InfrastructureManagerVMWareBackup: SysosAppInfrastructureVmwareBackupService) {
   }
 
   // Storage & Virtual
@@ -69,12 +74,12 @@ export class SysosAppInfrastructureManagerContextMenusService {
     return [
       {
         id: 0, text: '<i class="fas fa-database"></i> Mount as Datastore', action: (node: IMNode) => {
-          this.InfrastructureManagerNetApp.mountSnapShotAsDatastore(node.info.uuid, node.info.vserver, node.info.volume, node.info.snapshot);
+          this.InfrastructureManagerNetAppBackup.mountSnapShotAsDatastore(node.info.uuid, node.info.vserver, node.info.volume, node.info.snapshot);
         }
       },
       {
         id: 1, text: '<i class="fas fa-file"></i> Restore Volume files', action: (node: IMNode) => {
-          this.InfrastructureManagerNetApp.restoreVolumeFiles(node.info.uuid, node.info.vserver, node.info.volume, node.info.snapshot);
+          this.InfrastructureManagerNetAppBackup.restoreVolumeFiles(node.info.uuid, node.info.vserver, node.info.volume, node.info.snapshot);
         }
       },
       {
@@ -89,17 +94,17 @@ export class SysosAppInfrastructureManagerContextMenusService {
     return [
       {
         id: 0, text: '<i class="fas fa-server"></i> Instant VM', action: (node: IMNode) => {
-          this.InfrastructureManagerNetApp.instantVM(node.info.uuid, null, node.info.vserver, node.info.volume, node.info.snapshot, node.info);
+          this.InfrastructureManagerNetAppBackup.instantVM(node.info.uuid, null, node.info.vserver, node.info.volume, node.info.snapshot, node.info);
         }
       },
       {
         id: 1, text: '<i class="fas fa-server"></i> Restore entire VM', action: (node: IMNode) => {
-          this.InfrastructureManagerNetApp.restoreVM(node.info.uuid, null, node.info.vserver, node.info.volume, node.info.snapshot, node.info);
+          this.InfrastructureManagerNetAppBackup.restoreVM(node.info.uuid, null, node.info.vserver, node.info.volume, node.info.snapshot, node.info);
         }
       },
       {
         id: 2, text: '<i class="fas fa-file-import"></i> Restore Guest files', action: (node: IMNode) => {
-          this.InfrastructureManagerNetApp.restoreGuestFiles(node.info.uuid, node.info.vserver, node.info.volume, node.info.snapshot, node.info);
+          this.InfrastructureManagerNetAppBackup.restoreGuestFiles(node.info.uuid, node.info.vserver, node.info.volume, node.info.snapshot, node.info);
         }
       }
     ];
@@ -1142,28 +1147,28 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: '<i class="fas fa-server"></i> Instant VM',
             action: (node: IMNode) => {
-              this.InfrastructureManagerVMWare.instantVM(node.info.uuid, node);
+              this.InfrastructureManagerVMWareBackup.instantVM(node.info.uuid, node);
             }
           },
           {
             id: 1,
             text: '<i class="fas fa-server"></i> Restore entire VM',
             action: (node: IMNode) => {
-              this.InfrastructureManagerVMWare.restoreVM(node.info.uuid, node);
+              this.InfrastructureManagerVMWareBackup.restoreVM(node.info.uuid, node);
             }
           },
           {
             id: 2,
             text: '<i class="fas fa-server"></i> Restore Guest Files',
             action: (node: IMNode) => {
-              this.InfrastructureManagerNetApp.restoreGuestFiles(node.info.uuid, node.info.vserver, node.info.volume, node.info.snapshot, node.info);
+              this.InfrastructureManagerNetAppBackup.restoreGuestFiles(node.info.uuid, node.info.vserver, node.info.volume, node.info.snapshot, node.info);
             }
           }
         ]
       },
       {
         id: 4, text: '<i class="fas fa-server text-primary"></i> Backup', action: (node: IMNode) => {
-          this.InfrastructureManagerNetApp.backupVM(node.info.uuid, node.info);
+          this.InfrastructureManagerNetAppBackup.backupVM(node.info.uuid, node.info);
         }
       },
       {id: 5, text: 'divider'},

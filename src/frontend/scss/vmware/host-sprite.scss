@@ -1,0 +1,62 @@
+.host-ui-icon-_missing,
+.host-ui-icon-alert {
+  background-image: url(/assets/img/vmware/host-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.host-ui-icon-alert {
+  background-position: -16px 0
+}
+
+.host-ui-icon-default {
+  background-position: 0 -16px
+}
+
+.host-ui-icon-default,
+.host-ui-icon-poweron {
+  background-image: url(/assets/img/vmware/host-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.host-ui-icon-poweron {
+  background-position: -16px -16px
+}
+
+.host-ui-icon-profile {
+  background-position: -32px 0
+}
+
+.host-ui-icon-profile,
+.host-ui-icon-renewCertificate {
+  background-image: url(/assets/img/vmware/host-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.host-ui-icon-renewCertificate {
+  background-position: -32px -16px
+}
+
+.host-ui-icon-shutdown {
+  background-position: 0 -32px
+}
+
+.host-ui-icon-shutdown,
+.host-ui-icon-standby {
+  background-image: url(/assets/img/vmware/host-ui-icons.png);
+  width: 16px;
+  height: 16px
+}
+
+.host-ui-icon-standby {
+  background-position: -16px -32px
+}
+
+.host-ui-icon-warning {
+  background-image: url(/assets/img/vmware/host-ui-icons.png);
+  background-position: -32px -32px;
+  width: 16px;
+  height: 16px
+}
