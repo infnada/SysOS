@@ -19,6 +19,13 @@ fs.readFile('dist/SysOS/filesystem/bin/libs/sysos-lib-ext-mxgraph.umd.js', 'utf8
   let result = data;
 
   result = result.replace('\'use strict\';\n', '\'use strict\';\n' + '// Addeded with package.json postscript\n' +
+    'let mx;\n' +
+    'let mxGraphInitialized = false;\n' +
+    'var mxgraphWrapper = function () {\n' +
+    '// return object if mxgraph is already initialized\n' +
+    'if (mxGraphInitialized) return mx;\n' +
+    'mxGraphInitialized = true\n' +
+    '\n' +
     'var mxBasePath = "/api/file/etc/applications/drawer";\n' +
     'var mxLoadResources = false;\n' +
     'var mxForceIncludes = false;\n' +
@@ -55,6 +62,10 @@ fs.readFile('dist/SysOS/filesystem/bin/libs/sysos-lib-ext-mxgraph.umd.js', 'utf8
   result = result.replace(/\(\(.*\(window\)\)\)./g, '');
 
   result = result.replace('ctor = window[node.nodeName];', 'ctor = node.nodeName;');
+
+  result = result.replace(/(var mx = {(.+?(?=};))};)/s, '$1};');
+
+  result = result.replace('var mx = {', 'return mx = {');
 
   fs.writeFile('dist/SysOS/filesystem/bin/libs/sysos-lib-ext-mxgraph.umd.js', result, 'utf8', function (err) {
     if (err) return console.log(err);
