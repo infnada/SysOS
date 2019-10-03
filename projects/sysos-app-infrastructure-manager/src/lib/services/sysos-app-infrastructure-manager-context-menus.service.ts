@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
 
 import {SysosLibLoggerService} from '@sysos/lib-logger';
-
 import {SysosLibApplicationService} from '@sysos/lib-application';
+import {SysosLibModalService} from "@sysos/lib-modal";
 
 import {SysosAppInfrastructureManagerService} from './sysos-app-infrastructure-manager.service';
 import {SysosAppInfrastructureNetappService} from './netapp/sysos-app-infrastructure-netapp.service';
@@ -19,6 +19,7 @@ export class SysosAppInfrastructureManagerContextMenusService {
 
   constructor(private logger: SysosLibLoggerService,
               private Applications: SysosLibApplicationService,
+              private Modal: SysosLibModalService,
               private InfrastructureManager: SysosAppInfrastructureManagerService,
               private InfrastructureManagerNetApp: SysosAppInfrastructureNetappService,
               private InfrastructureManagerVMWare: SysosAppInfrastructureVmwareService,
@@ -129,7 +130,13 @@ export class SysosAppInfrastructureManagerContextMenusService {
       },
       {id: 1, text: 'divider'},
       {
-        id: 1, text: '<i class="vs-icon vsphere-icon-datacenter"></i> New Datacenter...', action: (node: IMNode) => {
+        id: 1, text: '<i class="vs-icon vsphere-icon-datacenter"></i> New Datacenter...',
+        action: (node: IMNode) => {
+          this.Modal.openRegisteredModal('infrastructure-manager-new-datacenter', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+            modalInstance.result.then(() => {
+
+            });
+          });
         }
       },
       {
@@ -142,6 +149,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: '<i class="vs-icon network-lib-ui-icon-dvPortGroupNew"></i> New Distributed Port Group...',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-new-distributed-port-group', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           }
         ]
@@ -149,11 +161,21 @@ export class SysosAppInfrastructureManagerContextMenusService {
       {id: 1, text: 'divider'},
       {
         id: 1, text: 'Export System Logs...', action: (node: IMNode) => {
+          this.Modal.openRegisteredModal('infrastructure-manager-export-system-logs', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+            modalInstance.result.then(() => {
+
+            });
+          });
         }
       },
       {id: 1, text: 'divider'},
       {
         id: 1, text: '<i class="vs-icon vsphere-icon-assign_license"></i> Assign License...', action: (node: IMNode) => {
+          this.Modal.openRegisteredModal('infrastructure-manager-assign-license', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+            modalInstance.result.then(() => {
+
+            });
+          });
         }
       },
       {id: 1, text: 'divider'},
@@ -163,12 +185,22 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_assign"></i> Assign Tag...',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-assign-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_remove"></i> Remove Tag',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-remove-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {id: 1, text: 'divider'},
@@ -176,6 +208,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: 'Edit Custom Attributes...',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-edit-custom-attributes', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           }
         ]
@@ -183,6 +220,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
       {id: 1, text: 'divider'},
       {
         id: 1, text: 'Add Permission...', action: (node: IMNode) => {
+          this.Modal.openRegisteredModal('infrastructure-manager-add-permission', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+            modalInstance.result.then(() => {
+
+            });
+          });
         }
       },
       {
@@ -191,6 +233,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: 'New Alarm Definition...',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-new-alarm-definition', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {
@@ -220,6 +267,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: 'Pre-check Remediation',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-remediation-pre-check', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           }
         ]
@@ -231,6 +283,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
     return [
       {
         id: 0, text: '<i class="vs-icon vsphere-icon-datacenter"></i> New Datacenter...', action: (node: IMNode) => {
+          this.Modal.openRegisteredModal('infrastructure-manager-new-datacenter', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+            modalInstance.result.then(() => {
+
+            });
+          });
         }
       },
       {
@@ -252,12 +309,22 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_assign"></i> Assign Tag...',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-assign-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_remove"></i> Remove Tag',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-remove-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {id: 1, text: 'divider'},
@@ -265,6 +332,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: 'Edit Custom Attributes...',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-edit-custom-attributes', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           }
         ]
@@ -276,6 +348,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: 'New Alarm Definition...',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-new-alarm-definition', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {
@@ -310,6 +387,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: 'Pre-check Remediation',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-remediation-pre-check', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           }
         ]
@@ -321,10 +403,20 @@ export class SysosAppInfrastructureManagerContextMenusService {
     return [
       {
         id: 0, text: '<i class="vs-icon vx-icon-new-ds-cluster"></i> New Datastore Cluster...', action: (node: IMNode) => {
+          this.Modal.openRegisteredModal('infrastructure-manager-new-datastore-cluster', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+            modalInstance.result.then(() => {
+
+            });
+          });
         }
       },
       {
         id: 0, text: '<i class="vs-icon storage-ui-icon-create-datastore"></i> New Datastore...', action: (node: IMNode) => {
+          this.Modal.openRegisteredModal('infrastructure-manager-new-datastore', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+            modalInstance.result.then(() => {
+
+            });
+          });
         }
       },
       {
@@ -337,7 +429,7 @@ export class SysosAppInfrastructureManagerContextMenusService {
         }
       },
       {
-        id: 0, text: '<i class="vs-icon vsphere-icon-folder"></i> ', action: (node: IMNode) => {
+        id: 0, text: '<i class="vs-icon vsphere-icon-folder"></i> Rename', action: (node: IMNode) => {
         }
       },
       {
@@ -346,12 +438,22 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_assign"></i> Assign Tag...',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-assign-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_remove"></i> Remove Tag',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-remove-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {id: 1, text: 'divider'},
@@ -359,6 +461,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: 'Edit Custom Attributes...',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-edit-custom-attributes', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           }
         ]
@@ -366,6 +473,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
       {id: 1, text: 'divider'},
       {
         id: 0, text: 'Add Permission...', action: (node: IMNode) => {
+          this.Modal.openRegisteredModal('infrastructure-manager-add-permission', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+            modalInstance.result.then(() => {
+
+            });
+          });
         }
       },
       {
@@ -374,6 +486,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: 'New Alarm Definition...',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-new-alarm-definition', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {
@@ -402,10 +519,20 @@ export class SysosAppInfrastructureManagerContextMenusService {
     return [
       {
         id: 0, text: '<i class="vs-icon vsphere-icon-vm-add"></i> New Virtual Machine...', action: (node: IMNode) => {
+          this.Modal.openRegisteredModal('infrastructure-manager-new-virtual-machine', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+            modalInstance.result.then(() => {
+
+            });
+          });
         }
       },
       {
         id: 0, text: '<i class="vs-icon vsphere-icon-ovf-deploy"></i> Deploy OVF Template...', action: (node: IMNode) => {
+          this.Modal.openRegisteredModal('infrastructure-manager-deploy-ovf-template', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+            modalInstance.result.then(() => {
+
+            });
+          });
         }
       },
       {
@@ -427,12 +554,22 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_assign"></i> Assign Tag...',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-assign-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_remove"></i> Remove Tag',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-remove-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {id: 1, text: 'divider'},
@@ -440,6 +577,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: 'Edit Custom Attributes...',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-edit-custom-attributes', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           }
         ]
@@ -447,6 +589,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
       {id: 1, text: 'divider'},
       {
         id: 0, text: 'Add Permission...', action: (node: IMNode) => {
+          this.Modal.openRegisteredModal('infrastructure-manager-add-permission', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+            modalInstance.result.then(() => {
+
+            });
+          });
         }
       },
       {
@@ -455,6 +602,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: 'New Alarm Definition...',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-new-alarm-definition', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {
@@ -500,10 +652,20 @@ export class SysosAppInfrastructureManagerContextMenusService {
     return [
       {
         id: 0, text: '<i class="vs-icon network-lib-ui-icon-dvsNew"></i> New Distributed Switch...', action: (node: IMNode) => {
+          this.Modal.openRegisteredModal('infrastructure-manager-new-distributes-switch', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+            modalInstance.result.then(() => {
+
+            });
+          });
         }
       },
       {
         id: 0, text: 'Import Distributed Switch...', action: (node: IMNode) => {
+          this.Modal.openRegisteredModal('infrastructure-manager-import-distributes-switch', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+            modalInstance.result.then(() => {
+
+            });
+          });
         }
       },
       {
@@ -525,12 +687,22 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_assign"></i> Assign Tag...',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-assign-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_remove"></i> Remove Tag',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-remove-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {id: 1, text: 'divider'},
@@ -538,6 +710,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: 'Edit Custom Attributes...',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-edit-custom-attributes', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           }
         ]
@@ -545,6 +722,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
       {id: 1, text: 'divider'},
       {
         id: 0, text: 'Add Permission...', action: (node: IMNode) => {
+          this.Modal.openRegisteredModal('infrastructure-manager-add-permission', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+            modalInstance.result.then(() => {
+
+            });
+          });
         }
       },
       {
@@ -553,6 +735,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: 'New Alarm Definition...',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-new-alarm-definition', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {
@@ -585,6 +772,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
       },
       {
         id: 0, text: '<i class="vs-icon vx-icon-new-cluster"></i> New Cluster...', action: (node: IMNode) => {
+          this.Modal.openRegisteredModal('infrastructure-manager-new-cluster', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+            modalInstance.result.then(() => {
+
+            });
+          });
         }
       },
       {
@@ -611,39 +803,79 @@ export class SysosAppInfrastructureManagerContextMenusService {
         id: 0, text: 'Distributed Switch', subMenu: [
           {
             id: 0, text: '<i class="vs-icon network-lib-ui-icon-dvsNew"></i> New Distributed Switch...', action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-new-distributed-switch', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {
             id: 0, text: '<i class="vs-icon network-lib-ui-icon-dvPortGroupNew"></i> New Distributed Port Group...', action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-new-distributed-port-group', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {
             id: 0, text: 'Import Distributed Switch...', action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-import-distributed-switch', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
         ]
       },
       {
         id: 0, text: '<i class="vs-icon vsphere-icon-vm-add"></i> New Virtual Machine', action: (node: IMNode) => {
+          this.Modal.openRegisteredModal('infrastructure-manager-new-virtual-machine', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+            modalInstance.result.then(() => {
+
+            });
+          });
         }
       },
       {
         id: 0, text: '<i class="vs-icon vsphere-icon-ovf-deploy"></i> Deploy OVF Template...', action: (node: IMNode) => {
+          this.Modal.openRegisteredModal('infrastructure-manager-deploy-ovf-template', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+            modalInstance.result.then(() => {
+
+            });
+          });
         }
       },
       {
         id: 0, text: 'Storage', subMenu: [
           {
             id: 0, text: '<i class="vs-icon storage-ui-icon-create-datastore"></i> New Datastore', action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-new-datastore', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {
             id: 0, text: '<i class="vs-icon vx-icon-new-ds-cluster"></i> New Datastore Cluster...', action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-new-datastore-cluster', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {id: 1, text: 'divider'},
           {
             id: 0, text: '<i class="vs-icon vsphere-icon-rescan-storage"></i> Rescan Storage...', action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-rescan-storage', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
         ]
@@ -651,11 +883,21 @@ export class SysosAppInfrastructureManagerContextMenusService {
       {id: 1, text: 'divider'},
       {
         id: 0, text: 'Edit Default VM Compatibility...', action: (node: IMNode) => {
+          this.Modal.openRegisteredModal('infrastructure-manager-edit-default-vm-compatibility', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+            modalInstance.result.then(() => {
+
+            });
+          });
         }
       },
       {id: 1, text: 'divider'},
       {
         id: 0, text: '<i class="vs-icon network-lib-ui-icon-vmMigrate"></i> Migrate VMs to Another Network...', action: (node: IMNode) => {
+          this.Modal.openRegisteredModal('infrastructure-manager-migrate-vms-another-network', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+            modalInstance.result.then(() => {
+
+            });
+          });
         }
       },
       {id: 1, text: 'divider'},
@@ -673,12 +915,22 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_assign"></i> Assign Tag...',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-assign-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_remove"></i> Remove Tag',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-remove-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {id: 1, text: 'divider'},
@@ -686,6 +938,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: 'Edit Custom Attributes...',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-edit-custom-attributes', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           }
         ]
@@ -693,6 +950,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
       {id: 1, text: 'divider'},
       {
         id: 0, text: 'Add Permission...', action: (node: IMNode) => {
+          this.Modal.openRegisteredModal('infrastructure-manager-add-permission', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+            modalInstance.result.then(() => {
+
+            });
+          });
         }
       },
       {
@@ -701,6 +963,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: 'New Alarm Definition...',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-new-alarm-definition', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {
@@ -735,6 +1002,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: 'Pre-check Remediation',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-remediation-pre-check', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           }
         ]
@@ -894,7 +1166,6 @@ export class SysosAppInfrastructureManagerContextMenusService {
       {id: 1, text: 'divider'},
       {
         id: 1, text: 'Migrate...', action: (node: IMNode) => {
-          this.openRemoteConsole(node.info.uuid, node.info);
         }
       },
       {
@@ -1034,6 +1305,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
       {id: 1, text: 'divider'},
       {
         id: 1, text: 'Export System Logs...', action: (node: IMNode) => {
+          this.Modal.openRegisteredModal('infrastructure-manager-export-system-logs', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+            modalInstance.result.then(() => {
+
+            });
+          });
         }
       },
       {id: 1, text: 'divider'},
@@ -1060,12 +1336,22 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_assign"></i> Assign Tag...',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-assign-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_remove"></i> Remove Tag',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-remove-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {id: 1, text: 'divider'},
@@ -1073,6 +1359,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: 'Edit Custom Attributes...',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-edit-custom-attributes', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           }
         ]
@@ -1080,6 +1371,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
       {id: 1, text: 'divider'},
       {
         id: 1, text: 'Add Permission...', action: (node: IMNode) => {
+          this.Modal.openRegisteredModal('infrastructure-manager-add-permission', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+            modalInstance.result.then(() => {
+
+            });
+          });
         }
       },
       {
@@ -1088,6 +1384,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: 'New Alarm Definition...',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-new-alarm-definition', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {
@@ -1184,6 +1485,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
     return [
       {
         id: 0, text: '<i class="vs-icon vsphere-icon-vm-add"></i> New Virtual Machine...', action: (node: IMNode) => {
+          this.Modal.openRegisteredModal('infrastructure-manager-new-virtual-machine', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+            modalInstance.result.then(() => {
+
+            });
+          });
         }
       },
       {id: 1, text: 'divider'},
@@ -1253,12 +1559,22 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_assign"></i> Assign Tag...',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-assign-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_remove"></i> Remove Tag',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-remove-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {id: 1, text: 'divider'},
@@ -1266,13 +1582,23 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: 'Edit Custom Attributes...',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-edit-custom-attributes', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           }
         ]
       },
       {id: 1, text: 'divider'},
       {
-        id: 0, text: 'Add Permissions...', action: (node: IMNode) => {
+        id: 0, text: 'Add Permission...', action: (node: IMNode) => {
+          this.Modal.openRegisteredModal('infrastructure-manager-add-permission', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+            modalInstance.result.then(() => {
+
+            });
+          });
         }
       },
       {
@@ -1281,6 +1607,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: 'New Alarm Definition...',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-new-alarm-definition', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {
@@ -1304,6 +1635,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
     return [
       {
         id: 0, text: '<i class="vs-icon vsphere-icon-vm-add"></i> New Virtual Machine...', action: (node: IMNode) => {
+          this.Modal.openRegisteredModal('infrastructure-manager-new-virtual-machine', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+            modalInstance.result.then(() => {
+
+            });
+          });
         }
       },
       {id: 1, text: 'divider'},
@@ -1326,12 +1662,22 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_assign"></i> Assign Tag...',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-assign-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_remove"></i> Remove Tag',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-remove-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {id: 1, text: 'divider'},
@@ -1339,13 +1685,23 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: 'Edit Custom Attributes...',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-edit-custom-attributes', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           }
         ]
       },
       {id: 1, text: 'divider'},
       {
-        id: 0, text: 'Add Permissions...', action: (node: IMNode) => {
+        id: 0, text: 'Add Permission...', action: (node: IMNode) => {
+          this.Modal.openRegisteredModal('infrastructure-manager-add-permission', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+            modalInstance.result.then(() => {
+
+            });
+          });
         }
       },
       {
@@ -1354,6 +1710,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: 'New Alarm Definition...',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-new-alarm-definition', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {
@@ -1386,6 +1747,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
       },
       {
         id: 0, text: '<i class="vs-icon vsphere-icon-vm-add"></i> New Virtual Machine...', action: (node: IMNode) => {
+          this.Modal.openRegisteredModal('infrastructure-manager-new-virtual-machine', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+            modalInstance.result.then(() => {
+
+            });
+          });
         }
       },
       {
@@ -1395,6 +1761,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
       {id: 1, text: 'divider'},
       {
         id: 0, text: '<i class="vs-icon vsphere-icon-ovf-deploy"></i> Deploy OVF Template....', action: (node: IMNode) => {
+          this.Modal.openRegisteredModal('infrastructure-manager-deploy-ovf-template', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+            modalInstance.result.then(() => {
+
+            });
+          });
         }
       },
       {id: 1, text: 'divider'},
@@ -1407,10 +1778,20 @@ export class SysosAppInfrastructureManagerContextMenusService {
         id: 0, text: 'Storage', subMenu: [
           {
             id: 0, text: '<i class="vs-icon storage-ui-icon-create-datastore"></i> New Datastore...', action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-new-datastore', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {
             id: 0, text: '<i class="vs-icon vsphere-icon-rescan-storage"></i> Rescan Storage...', action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-rescan-storage', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
         ]
@@ -1451,11 +1832,21 @@ export class SysosAppInfrastructureManagerContextMenusService {
       {id: 1, text: 'divider'},
       {
         id: 0, text: 'Edit Default VM Compatibility...', action: (node: IMNode) => {
+          this.Modal.openRegisteredModal('infrastructure-manager-edit-default-vm-compatibility', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+            modalInstance.result.then(() => {
+
+            });
+          });
         }
       },
       {id: 1, text: 'divider'},
       {
         id: 0, text: '<i class="vs-icon vsphere-icon-assign_license"></i> Assign License...', action: (node: IMNode) => {
+          this.Modal.openRegisteredModal('infrastructure-manager-assign-license', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+            modalInstance.result.then(() => {
+
+            });
+          });
         }
       },
       {id: 1, text: 'divider'},
@@ -1478,12 +1869,22 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_assign"></i> Assign Tag...',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-assign-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_remove"></i> Remove Tag',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-remove-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {id: 1, text: 'divider'},
@@ -1491,13 +1892,23 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: 'Edit Custom Attributes...',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-edit-custom-attributes', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           }
         ]
       },
       {id: 1, text: 'divider'},
       {
-        id: 0, text: 'Add Permissions...', action: (node: IMNode) => {
+        id: 0, text: 'Add Permission...', action: (node: IMNode) => {
+          this.Modal.openRegisteredModal('infrastructure-manager-add-permission', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+            modalInstance.result.then(() => {
+
+            });
+          });
         }
       },
       {
@@ -1506,6 +1917,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: 'New Alarm Definition...',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-new-alarm-definition', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {
@@ -1540,6 +1956,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: 'Pre-check Remediation',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-remediation-pre-check', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           }
         ]
@@ -1561,10 +1982,20 @@ export class SysosAppInfrastructureManagerContextMenusService {
     return [
       {
         id: 0, text: '<i class="vs-icon vsphere-icon-vm-add"></i> New Virtual Machine...', action: (node: IMNode) => {
+          this.Modal.openRegisteredModal('infrastructure-manager-new-virtual-machine', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+            modalInstance.result.then(() => {
+
+            });
+          });
         }
       },
       {
         id: 0, text: '<i class="vs-icon vsphere-icon-ovf-deploy"></i> Deploy OVF Template...', action: (node: IMNode) => {
+          this.Modal.openRegisteredModal('infrastructure-manager-deploy-ovf-template', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+            modalInstance.result.then(() => {
+
+            });
+          });
         }
       },
       {
@@ -1638,10 +2069,20 @@ export class SysosAppInfrastructureManagerContextMenusService {
         id: 0, text: 'Storage', subMenu: [
           {
             id: 0, text: '<i class="vs-icon storage-ui-icon-create-datastore"></i> New Datastore...', action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-new-datastore', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {
             id: 0, text: '<i class="vs-icon vsphere-icon-rescan-storage"></i> Rescan Storage...', action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-rescan-storage', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
         ]
@@ -1695,6 +2136,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
       {id: 1, text: 'divider'},
       {
         id: 0, text: 'Export System Logs...', action: (node: IMNode) => {
+          this.Modal.openRegisteredModal('infrastructure-manager-export-system-logs', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+            modalInstance.result.then(() => {
+
+            });
+          });
         }
       },
       {id: 1, text: 'divider'},
@@ -1704,6 +2150,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
       },
       {
         id: 0, text: '<i class="vs-icon vsphere-icon-assign_license"></i> Assign License...', action: (node: IMNode) => {
+          this.Modal.openRegisteredModal('infrastructure-manager-assign-license', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+            modalInstance.result.then(() => {
+
+            });
+          });
         }
       },
       {id: 1, text: 'divider'},
@@ -1722,12 +2173,22 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_assign"></i> Assign Tag...',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-assign-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_remove"></i> Remove Tag',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-remove-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {id: 1, text: 'divider'},
@@ -1735,6 +2196,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: 'Edit Custom Attributes...',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-edit-custom-attributes', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           }
         ]
@@ -1746,7 +2212,12 @@ export class SysosAppInfrastructureManagerContextMenusService {
       },
       {id: 1, text: 'divider'},
       {
-        id: 0, text: 'Add Permissions...', action: (node: IMNode) => {
+        id: 0, text: 'Add Permission...', action: (node: IMNode) => {
+          this.Modal.openRegisteredModal('infrastructure-manager-add-permission', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+            modalInstance.result.then(() => {
+
+            });
+          });
         }
       },
       {
@@ -1755,6 +2226,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: 'New Alarm Definition...',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-new-alarm-definition', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {
@@ -1784,6 +2260,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: 'Pre-check Remediation',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-remediation-pre-check', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           }
         ]
@@ -1795,10 +2276,20 @@ export class SysosAppInfrastructureManagerContextMenusService {
     return [
       {
         id: 0, text: '<i class="vs-icon vsphere-icon-vm-add"></i> New Virtual Machine...', action: (node: IMNode) => {
+          this.Modal.openRegisteredModal('infrastructure-manager-new-virtual-machine', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+            modalInstance.result.then(() => {
+
+            });
+          });
         }
       },
       {
         id: 0, text: '<i class="vs-icon vsphere-icon-ovf-deploy"></i> Deploy OVF Template...', action: (node: IMNode) => {
+          this.Modal.openRegisteredModal('infrastructure-manager-deploy-ovf-template', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+            modalInstance.result.then(() => {
+
+            });
+          });
         }
       },
       {
@@ -1829,12 +2320,22 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_assign"></i> Assign Tag...',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-assign-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_remove"></i> Remove Tag',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-remove-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {id: 1, text: 'divider'},
@@ -1842,13 +2343,23 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: 'Edit Custom Attributes...',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-edit-custom-attributes', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           }
         ]
       },
       {id: 1, text: 'divider'},
       {
-        id: 0, text: 'Add Permissions...', action: (node: IMNode) => {
+        id: 0, text: 'Add Permission...', action: (node: IMNode) => {
+          this.Modal.openRegisteredModal('infrastructure-manager-add-permission', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+            modalInstance.result.then(() => {
+
+            });
+          });
         }
       },
       {
@@ -1857,6 +2368,11 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: 'New Alarm Definition...',
             action: (node: IMNode) => {
+              this.Modal.openRegisteredModal('infrastructure-manager-new-alarm-definition', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
+                modalInstance.result.then(() => {
+
+                });
+              });
             }
           },
           {

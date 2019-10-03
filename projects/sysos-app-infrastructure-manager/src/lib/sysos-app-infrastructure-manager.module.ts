@@ -49,6 +49,22 @@ import {SummaryImageComponent} from './body/body-vmware/tab-summary/summary-imag
 import {TabSummaryComponent} from './body/body-vmware/tab-summary/tab-summary.component';
 import {HomeComponent} from './body/body-vmware/home/home.component';
 import {ObjectComponent} from './body/body-vmware/object/object.component';
+import { DatastoreClusterConsumersComponent } from './body/body-vmware/tab-summary/datastore-cluster-consumers/datastore-cluster-consumers.component';
+import { DatastoreClusterResourcesComponent } from './body/body-vmware/tab-summary/datastore-cluster-resources/datastore-cluster-resources.component';
+import { VappStatusComponent } from './body/body-vmware/tab-summary/vapp-status/vapp-status.component';
+import { ResourcePoolSettingsComponent } from './body/body-vmware/tab-summary/resource-pool-settings/resource-pool-settings.component';
+import { HostHardwareComponent } from './body/body-vmware/tab-summary/host-hardware/host-hardware.component';
+import { HostConfigurationComponent } from './body/body-vmware/tab-summary/host-configuration/host-configuration.component';
+import { VsphereDrsComponent } from './body/body-vmware/tab-summary/vsphere-drs/vsphere-drs.component';
+import { ClusterResourcesComponent } from './body/body-vmware/tab-summary/cluster-resources/cluster-resources.component';
+import { ClusterConsumersComponent } from './body/body-vmware/tab-summary/cluster-consumers/cluster-consumers.component';
+import { UpdateManagerComponent } from './body/body-vmware/tab-summary/update-manager/update-manager.component';
+import { VcenterHaComponent } from './body/body-vmware/tab-summary/vcenter-ha/vcenter-ha.component';
+import { VersionInformationComponent } from './body/body-vmware/tab-summary/version-information/version-information.component';
+import { StorageDrsComponent } from './body/body-vmware/tab-summary/storage-drs/storage-drs.component';
+import { DatastoreDetailsComponent } from './body/body-vmware/tab-summary/datastore-details/datastore-details.component';
+import { SwitchDetailsComponent } from './body/body-vmware/tab-summary/switch-details/switch-details.component';
+import { SwitchFeaturesComponent } from './body/body-vmware/tab-summary/switch-features/switch-features.component';
 
 @NgModule({
   declarations: [
@@ -75,7 +91,23 @@ import {ObjectComponent} from './body/body-vmware/object/object.component';
     SummaryImageComponent,
     TabSummaryComponent,
     HomeComponent,
-    ObjectComponent
+    ObjectComponent,
+    DatastoreClusterConsumersComponent,
+    DatastoreClusterResourcesComponent,
+    VappStatusComponent,
+    ResourcePoolSettingsComponent,
+    HostHardwareComponent,
+    HostConfigurationComponent,
+    VsphereDrsComponent,
+    ClusterResourcesComponent,
+    ClusterConsumersComponent,
+    UpdateManagerComponent,
+    VcenterHaComponent,
+    VersionInformationComponent,
+    StorageDrsComponent,
+    DatastoreDetailsComponent,
+    SwitchDetailsComponent,
+    SwitchFeaturesComponent
   ],
   imports: [
     CommonModule,
