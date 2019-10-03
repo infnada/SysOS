@@ -1,17 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+
 @Component({
   selector: 'smimmvan-sysos-modal-infrastructure-manager-migrate-vms-another-network',
-  template: `
-    <p>
-      sysos-modal-infrastructure-manager-migrate-vms-another-network works!
-    </p>
-  `,
-  styles: []
+  templateUrl: './sysos-modal-infrastructure-manager-migrate-vms-another-network.component.html',
+  styleUrls: ['./sysos-modal-infrastructure-manager-migrate-vms-another-network.component.scss']
 })
 export class SysosModalInfrastructureManagerMigrateVmsAnotherNetworkComponent implements OnInit {
 
-  constructor() { }
+  constructor(public activeModal: NgbActiveModal) { }
 
   ngOnInit() {
   }

@@ -10,7 +10,7 @@ declare let netdataCheckXSS: boolean;
 declare let connection: Netdata;
 
 import {SysosLibLoggerService} from '@sysos/lib-logger';
-import {SysosLibModalService} from "@sysos/lib-modal";
+import {SysosLibModalService} from '@sysos/lib-modal';
 import {SysosLibApplicationService} from '@sysos/lib-application';
 
 import {SysosLibExtJqueryService} from '@sysos/lib-ext-jquery';

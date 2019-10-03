@@ -1,17 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+
 @Component({
   selector: 'smimrt-sysos-modal-infrastructure-manager-remove-tag',
-  template: `
-    <p>
-      sysos-modal-infrastructure-manager-remove-tag works!
-    </p>
-  `,
-  styles: []
+  templateUrl: './sysos-modal-infrastructure-manager-remove-tag.component.html',
+  styleUrls: ['./sysos-modal-infrastructure-manager-remove-tag.component.scss']
 })
 export class SysosModalInfrastructureManagerRemoveTagComponent implements OnInit {
 
-  constructor() { }
+  constructor(public activeModal: NgbActiveModal) { }
 
   ngOnInit() {
   }

@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
 
-import {SysosAppInfrastructureManagerService} from "../sysos-app-infrastructure-manager.service";
+import {SysosAppInfrastructureManagerService} from '../sysos-app-infrastructure-manager.service';
 
-import {VMWareObject} from "../../types/vmware-object";
+import {VMWareObject} from '../../types/vmware-object';
 
 @Injectable({
   providedIn: 'root'

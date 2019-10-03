@@ -1,8 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
 
-import {SysosAppInfrastructureVmwareTemplateHelpersService} from "../../../services/vmware/sysos-app-infrastructure-vmware-template-helpers.service";
+import {SysosAppInfrastructureVmwareTemplateHelpersService} from '../../../services/vmware/sysos-app-infrastructure-vmware-template-helpers.service';
 
-import {VMWareObject} from "../../../types/vmware-object";
+import {VMWareObject} from '../../../types/vmware-object';
 
 @Component({
   selector: 'saim-titlebar',

@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {VMWareObject} from "../../../types/vmware-object";
+import {VMWareObject} from '../../../types/vmware-object';
 
 @Component({
   selector: 'saim-object',

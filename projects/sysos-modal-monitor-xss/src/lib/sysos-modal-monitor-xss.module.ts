@@ -5,7 +5,7 @@ import {NgbActiveModal, NgbModalModule} from '@ng-bootstrap/ng-bootstrap';
 import {SysosLibModalService} from '@sysos/lib-modal';
 
 import {SysosModalMonitorXssComponent} from './sysos-modal-monitor-xss.component';
-import {EntryComponent} from "./monitor-export-entry/entry.component";
+import {EntryComponent} from './monitor-export-entry/entry.component';
 @NgModule({
   declarations: [
     SysosModalMonitorXssComponent,

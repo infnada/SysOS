@@ -1,17 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+
 @Component({
   selector: 'smimndc-sysos-modal-infrastructure-manager-new-datastore-cluster',
-  template: `
-    <p>
-      sysos-modal-infrastructure-manager-new-datastore-cluster works!
-    </p>
-  `,
-  styles: []
+  templateUrl: './sysos-modal-infrastructure-manager-new-datastore-cluster.component.html',
+  styleUrls: ['./sysos-modal-infrastructure-manager-new-datastore-cluster.component.scss']
 })
 export class SysosModalInfrastructureManagerNewDatastoreClusterComponent implements OnInit {
 
-  constructor() { }
+  constructor(public activeModal: NgbActiveModal) { }
 
   ngOnInit() {
   }

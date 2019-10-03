@@ -6,7 +6,7 @@ import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
 import {Credential} from '@sysos/app-credentials-manager';
 
 import {SysosAppMonitorService} from '../../services/sysos-app-monitor.service';
-import {Netdata} from "../../types/netdata";
+import {Netdata} from '../../types/netdata';
 
 @Component({
   selector: 'samon-body-new-connection',

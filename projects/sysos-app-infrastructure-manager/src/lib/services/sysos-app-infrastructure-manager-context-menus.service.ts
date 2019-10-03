@@ -7,8 +7,8 @@ import {SysosLibApplicationService} from '@sysos/lib-application';
 import {SysosAppInfrastructureManagerService} from './sysos-app-infrastructure-manager.service';
 import {SysosAppInfrastructureNetappService} from './netapp/sysos-app-infrastructure-netapp.service';
 import {SysosAppInfrastructureVmwareService} from './vmware/sysos-app-infrastructure-vmware.service';
-import {SysosAppInfrastructureNetappBackupService} from "./netapp/sysos-app-infrastructure-netapp-backup.service";
-import {SysosAppInfrastructureVmwareBackupService} from "./vmware/sysos-app-infrastructure-vmware-backup.service";
+import {SysosAppInfrastructureNetappBackupService} from './netapp/sysos-app-infrastructure-netapp-backup.service';
+import {SysosAppInfrastructureVmwareBackupService} from './vmware/sysos-app-infrastructure-vmware-backup.service';
 
 import {IMNode} from '../types/imnode';
 

@@ -1,10 +1,35 @@
-import { NgModule } from '@angular/core';
-import { SysosModalInfrastructureManagerAssignLicenseComponent } from './sysos-modal-infrastructure-manager-assign-license.component';
+import {NgModule} from '@angular/core';
+
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+
+import {SysosLibModalService} from '@sysos/lib-modal';
+
+import {SysosModalInfrastructureManagerAssignLicenseComponent} from './sysos-modal-infrastructure-manager-assign-license.component';
+import {EntryComponent} from './infrastructure-manager-assign-license-entry/entry.component';
 
 @NgModule({
-  declarations: [SysosModalInfrastructureManagerAssignLicenseComponent],
-  imports: [
+  declarations: [
+    SysosModalInfrastructureManagerAssignLicenseComponent,
+    EntryComponent
   ],
-  exports: [SysosModalInfrastructureManagerAssignLicenseComponent]
+  imports: [],
+  providers: [
+    NgbActiveModal
+  ],
+  exports: [],
+  entryComponents: [
+    SysosModalInfrastructureManagerAssignLicenseComponent,
+    EntryComponent
+  ]
 })
-export class SysosModalInfrastructureManagerAssignLicenseModule { }
+export class SysosModalInfrastructureManagerAssignLicenseModule {
+
+  constructor(private Modal: SysosLibModalService) {
+
+    Modal.registerModal({
+      modalId: 'infrastructure-manager-assign-license',
+      size: 'lg'
+    });
+
+  }
+}

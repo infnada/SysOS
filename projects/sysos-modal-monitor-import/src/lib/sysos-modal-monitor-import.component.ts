@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 
-import {SysosLibServiceInjectorService} from "@sysos/lib-service-injector";
+import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
 
 @Component({
   selector: 'smmi-sysos-modal-monitor-import',

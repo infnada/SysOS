@@ -1,12 +1,12 @@
 import {Injectable} from '@angular/core';
 
-import {SysosLibLoggerService} from "@sysos/lib-logger";
-import {SysosLibModalService} from "@sysos/lib-modal";
+import {SysosLibLoggerService} from '@sysos/lib-logger';
+import {SysosLibModalService} from '@sysos/lib-modal';
 
-import {SysosAppInfrastructureManagerService} from "../sysos-app-infrastructure-manager.service";
+import {SysosAppInfrastructureManagerService} from '../sysos-app-infrastructure-manager.service';
 
-import {VMWareObject} from "../../types/vmware-object";
-import {VMWareVM} from "../../types/vmware-vm";
+import {VMWareObject} from '../../types/vmware-object';
+import {VMWareVM} from '../../types/vmware-vm';
 
 @Injectable({
   providedIn: 'root'

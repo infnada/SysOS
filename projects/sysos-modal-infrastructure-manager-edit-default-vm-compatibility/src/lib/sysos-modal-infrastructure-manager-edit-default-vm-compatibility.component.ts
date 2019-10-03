@@ -1,17 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+
 @Component({
   selector: 'smimedvc-sysos-modal-infrastructure-manager-edit-default-vm-compatibility',
-  template: `
-    <p>
-      sysos-modal-infrastructure-manager-edit-default-vm-compatibility works!
-    </p>
-  `,
-  styles: []
+  templateUrl: './sysos-modal-infrastructure-manager-edit-default-vm-compatibility.component.html',
+  styleUrls: ['./sysos-modal-infrastructure-manager-edit-default-vm-compatibility.component.scss']
 })
 export class SysosModalInfrastructureManagerEditDefaultVmCompatibilityComponent implements OnInit {
 
-  constructor() { }
+  constructor(public activeModal: NgbActiveModal) { }
 
   ngOnInit() {
   }

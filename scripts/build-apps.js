@@ -15,7 +15,7 @@ function onExit(child) {
   });
 }
 
-fs.readFile('../angular.json', 'utf8', async (err, data) => {
+fs.readFile('angular.json', 'utf8', async (err, data) => {
   const ngCli = JSON.parse(data);
 
   for (const project of Object.keys(ngCli.projects)) {

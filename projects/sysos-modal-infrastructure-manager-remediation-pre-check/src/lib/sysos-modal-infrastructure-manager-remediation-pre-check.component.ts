@@ -1,17 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+
 @Component({
   selector: 'smimrpc-sysos-modal-infrastructure-manager-remediation-pre-check',
-  template: `
-    <p>
-      sysos-modal-infrastructure-manager-remediation-pre-check works!
-    </p>
-  `,
-  styles: []
+  templateUrl: './sysos-modal-infrastructure-manager-remediation-pre-check.component.html',
+  styleUrls: ['./sysos-modal-infrastructure-manager-remediation-pre-check.component.scss']
 })
 export class SysosModalInfrastructureManagerRemediationPreCheckComponent implements OnInit {
 
-  constructor() { }
+  constructor(public activeModal: NgbActiveModal) { }
 
   ngOnInit() {
   }

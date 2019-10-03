@@ -1,12 +1,12 @@
 import {NgModule} from '@angular/core';
-import {CommonModule} from "@angular/common";
+import {CommonModule} from '@angular/common';
 
 import {NgbActiveModal, NgbModalModule} from '@ng-bootstrap/ng-bootstrap';
 
 import {SysosLibModalService} from '@sysos/lib-modal';
 
 import {SysosModalMonitorImportComponent} from './sysos-modal-monitor-import.component';
-import {EntryComponent} from "./monitor-import-entry/entry.component";
+import {EntryComponent} from './monitor-import-entry/entry.component';
 
 
 @NgModule({

@@ -1,17 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+
 @Component({
   selector: 'smimids-sysos-modal-infrastructure-manager-import-distributed-switch',
-  template: `
-    <p>
-      sysos-modal-infrastructure-manager-import-distributed-switch works!
-    </p>
-  `,
-  styles: []
+  templateUrl: './sysos-modal-infrastructure-manager-import-distributed-switch.component.html',
+  styleUrls: ['./sysos-modal-infrastructure-manager-import-distributed-switch.component.scss']
 })
 export class SysosModalInfrastructureManagerImportDistributedSwitchComponent implements OnInit {
 
-  constructor() { }
+  constructor(public activeModal: NgbActiveModal) { }
 
   ngOnInit() {
   }

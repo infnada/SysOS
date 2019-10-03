@@ -1,17 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+
 @Component({
   selector: 'smimac-sysos-modal-infrastructure-manager-add-category',
-  template: `
-    <p>
-      sysos-modal-infrastructure-manager-add-category works!
-    </p>
-  `,
-  styles: []
+  templateUrl: './sysos-modal-infrastructure-manager-add-category.component.html',
+  styleUrls: ['./sysos-modal-infrastructure-manager-add-category.component.scss']
 })
 export class SysosModalInfrastructureManagerAddCategoryComponent implements OnInit {
 
-  constructor() { }
+  constructor(public activeModal: NgbActiveModal) { }
 
   ngOnInit() {
   }

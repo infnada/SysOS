@@ -1,10 +1,35 @@
-import { NgModule } from '@angular/core';
-import { SysosModalInfrastructureManagerMigrateVmsAnotherNetworkComponent } from './sysos-modal-infrastructure-manager-migrate-vms-another-network.component';
+import {NgModule} from '@angular/core';
+
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+
+import {SysosLibModalService} from '@sysos/lib-modal';
+
+import {SysosModalInfrastructureManagerMigrateVmsAnotherNetworkComponent} from './sysos-modal-infrastructure-manager-migrate-vms-another-network.component';
+import {EntryComponent} from './infrastructure-manager-migrate-vms-another-network-entry/entry.component';
 
 @NgModule({
-  declarations: [SysosModalInfrastructureManagerMigrateVmsAnotherNetworkComponent],
-  imports: [
+  declarations: [
+    SysosModalInfrastructureManagerMigrateVmsAnotherNetworkComponent,
+    EntryComponent
   ],
-  exports: [SysosModalInfrastructureManagerMigrateVmsAnotherNetworkComponent]
+  imports: [],
+  providers: [
+    NgbActiveModal
+  ],
+  exports: [],
+  entryComponents: [
+    SysosModalInfrastructureManagerMigrateVmsAnotherNetworkComponent,
+    EntryComponent
+  ]
 })
-export class SysosModalInfrastructureManagerMigrateVmsAnotherNetworkModule { }
+export class SysosModalInfrastructureManagerMigrateVmsAnotherNetworkModule {
+
+  constructor(private Modal: SysosLibModalService) {
+
+    Modal.registerModal({
+      modalId: 'infrastructure-manager-migrate-vms-another-network',
+      size: 'lg'
+    });
+
+  }
+}

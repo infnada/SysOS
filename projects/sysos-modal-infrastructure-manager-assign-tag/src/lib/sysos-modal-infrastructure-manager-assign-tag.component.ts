@@ -1,17 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+
 @Component({
   selector: 'smimat-sysos-modal-infrastructure-manager-assign-tag',
-  template: `
-    <p>
-      sysos-modal-infrastructure-manager-assign-tag works!
-    </p>
-  `,
-  styles: []
+  templateUrl: './sysos-modal-infrastructure-manager-assign-tag.component.html',
+  styleUrls: ['./sysos-modal-infrastructure-manager-assign-tag.component.scss']
 })
 export class SysosModalInfrastructureManagerAssignTagComponent implements OnInit {
 
-  constructor() { }
+  constructor(public activeModal: NgbActiveModal) { }
 
   ngOnInit() {
   }

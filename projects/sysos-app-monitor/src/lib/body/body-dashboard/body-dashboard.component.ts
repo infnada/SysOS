@@ -5,8 +5,8 @@ import {SysosLibLoggerService} from '@sysos/lib-logger';
 
 import {SysosAppMonitorService} from '../../services/sysos-app-monitor.service';
 import {SysosAppMonitorDashboardService} from '../../services/sysos-app-monitor-dashboard.service';
-import {Subject} from "rxjs";
-import {takeUntil} from "rxjs/operators";
+import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 
 @Component({
   encapsulation: ViewEncapsulation.None,

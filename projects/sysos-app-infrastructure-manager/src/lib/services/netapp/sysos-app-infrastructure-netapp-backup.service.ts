@@ -1,16 +1,16 @@
 import {Injectable} from '@angular/core';
 
-import {SysosLibLoggerService} from "@sysos/lib-logger";
-import {SysosLibModalService} from "@sysos/lib-modal";
-import {SysosLibVmwareService} from "@sysos/lib-vmware";
+import {SysosLibLoggerService} from '@sysos/lib-logger';
+import {SysosLibModalService} from '@sysos/lib-modal';
+import {SysosLibVmwareService} from '@sysos/lib-vmware';
 
-import {SysosAppInfrastructureManagerService} from "../sysos-app-infrastructure-manager.service";
+import {SysosAppInfrastructureManagerService} from '../sysos-app-infrastructure-manager.service';
 
-import {NetAppVserver} from "../../types/netapp-vserver";
-import {NetAppVolume} from "../../types/netapp-volume";
-import {NetAppSnapshot} from "../../types/netapp-snapshot";
-import {VMWareObject} from "../../types/vmware-object";
-import {VMWareVM} from "../../types/vmware-vm";
+import {NetAppVserver} from '../../types/netapp-vserver';
+import {NetAppVolume} from '../../types/netapp-volume';
+import {NetAppSnapshot} from '../../types/netapp-snapshot';
+import {VMWareObject} from '../../types/vmware-object';
+import {VMWareVM} from '../../types/vmware-vm';
 
 @Injectable({
   providedIn: 'root'

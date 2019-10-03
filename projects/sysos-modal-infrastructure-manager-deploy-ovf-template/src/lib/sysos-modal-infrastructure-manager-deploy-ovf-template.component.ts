@@ -1,17 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+
 @Component({
   selector: 'smimdot-sysos-modal-infrastructure-manager-deploy-ovf-template',
-  template: `
-    <p>
-      sysos-modal-infrastructure-manager-deploy-ovf-template works!
-    </p>
-  `,
-  styles: []
+  templateUrl: './sysos-modal-infrastructure-manager-deploy-ovf-template.component.html',
+  styleUrls: ['./sysos-modal-infrastructure-manager-deploy-ovf-template.component.scss']
 })
 export class SysosModalInfrastructureManagerDeployOvfTemplateComponent implements OnInit {
 
-  constructor() { }
+  constructor(public activeModal: NgbActiveModal) { }
 
   ngOnInit() {
   }

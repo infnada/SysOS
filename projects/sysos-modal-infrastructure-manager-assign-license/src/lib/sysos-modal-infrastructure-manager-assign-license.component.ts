@@ -1,17 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 
+import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+
 @Component({
   selector: 'smimal-sysos-modal-infrastructure-manager-assign-license',
-  template: `
-    <p>
-      sysos-modal-infrastructure-manager-assign-license works!
-    </p>
-  `,
-  styles: []
+  templateUrl: './sysos-modal-infrastructure-manager-assign-license.component.html',
+  styleUrls: ['./sysos-modal-infrastructure-manager-assign-license.component.scss']
 })
 export class SysosModalInfrastructureManagerAssignLicenseComponent implements OnInit {
 
-  constructor() { }
+  constructor(public activeModal: NgbActiveModal) { }
 
   ngOnInit() {
   }
