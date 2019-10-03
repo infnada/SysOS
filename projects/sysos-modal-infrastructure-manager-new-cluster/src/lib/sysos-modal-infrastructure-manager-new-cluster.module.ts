@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 
-import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
+import {NgbModalModule, NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 
 import {SysosLibModalService} from '@sysos/lib-modal';
 
@@ -12,7 +12,9 @@ import {EntryComponent} from './infrastructure-manager-new-cluster-entry/entry.c
     SysosModalInfrastructureManagerNewClusterComponent,
     EntryComponent
   ],
-  imports: [],
+  imports: [
+    NgbModalModule
+  ],
   providers: [
     NgbActiveModal
   ],

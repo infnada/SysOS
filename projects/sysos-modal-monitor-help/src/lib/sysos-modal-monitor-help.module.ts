@@ -1,7 +1,7 @@
 import {NgModule} from '@angular/core';
 import {MatTabsModule} from '@angular/material';
 
-import {NgbActiveModal, NgbModalModule} from '@ng-bootstrap/ng-bootstrap';
+import {NgbModalModule, NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 
 import {SysosLibModalService} from '@sysos/lib-modal';
 

@@ -3,7 +3,7 @@ import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatTabsModule, MatSlideToggleModule, MatExpansionModule, MatTooltipModule} from '@angular/material';
 
-import {NgbActiveModal, NgbModalModule} from '@ng-bootstrap/ng-bootstrap';
+import {NgbModalModule, NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {OrderModule} from 'ngx-order-pipe';
 
 import {SysosLibModalService} from '@sysos/lib-modal';
