@@ -23,12 +23,7 @@
     "@sysos/lib-ext-perfectscrollbar": "~0.0.1",
     "@sysos/lib-ext-gaugejs": "~0.0.1",
     "@sysos/lib-ext-pako": "~0.0.1",
-    "@sysos/lib-ext-lz-string": "~0.0.1"
-  },
-  "dependencies": {
-    "netdata": "git+https://github.com/netdata/netdata.git"
-  },
-  "bundledDependencies": [
-    "netdata"
-  ]
+    "@sysos/lib-ext-lz-string": "~0.0.1",
+    "@sysos/lib-ext-netdata": "~0.0.1"
+  }
 }

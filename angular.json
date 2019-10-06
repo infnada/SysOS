@@ -2662,6 +2662,41 @@
           }
         }
       }
+    },
+    "sysos-lib-ext-netdata": {
+      "root": "projects/sysos-lib-ext-netdata",
+      "sourceRoot": "projects/sysos-lib-ext-netdata/src",
+      "projectType": "library",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/sysos-lib-ext-netdata/tsconfig.lib.json",
+            "project": "projects/sysos-lib-ext-netdata/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/sysos-lib-ext-netdata/src/test.ts",
+            "tsConfig": "projects/sysos-lib-ext-netdata/tsconfig.spec.json",
+            "karmaConfig": "projects/sysos-lib-ext-netdata/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/sysos-lib-ext-netdata/tsconfig.lib.json",
+              "projects/sysos-lib-ext-netdata/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
   "defaultProject": "SysOS",

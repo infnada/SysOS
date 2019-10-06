@@ -139,6 +139,12 @@
       "@sysos/lib-ext-jquery/*": [
         "projects/sysos-lib-jquery/*"
       ],
+      "@sysos/lib-ext-netdata": [
+        "projects/sysos-lib-ext-netdata/src/public-api"
+      ],
+      "@sysos/lib-ext-netdata/*": [
+        "projects/sysos-lib-netdata/*"
+      ],
       "@sysos/lib-ext-perfectscrollbar": [
         "projects/sysos-lib-ext-perfectscrollbar/src/public-api"
       ],

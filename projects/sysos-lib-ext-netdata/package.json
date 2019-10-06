@@ -1,0 +1,14 @@
+{
+  "name": "@sysos/lib-ext-netdata",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@angular/common": "^7.2.0",
+    "@angular/core": "^7.2.0"
+  },
+  "dependencies": {
+    "netdata": "git+https://github.com/netdata/netdata.git"
+  },
+  "bundledDependencies": [
+    "netdata"
+  ]
+}

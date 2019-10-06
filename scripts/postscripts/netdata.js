@@ -3,14 +3,13 @@ let fs = require('fs');
 console.log('Running monitor.js');
 
 /**
- * Monitor
+ * Netdata
  */
-fs.readFile('dist/SysOS/filesystem/bin/applications/sysos-app-monitor.umd.js', 'utf8', function (err, data) {
+fs.readFile('dist/SysOS/filesystem/bin/libs/sysos-lib-ext-netdata.umd.js', 'utf8', function (err, data) {
   if (err) {
     return console.log(err);
   }
   let result = data;
-
 
   result = result.replace(/NETDATA\$1/g, 'NETDATA');
 
@@ -140,9 +139,7 @@ fs.readFile('dist/SysOS/filesystem/bin/applications/sysos-app-monitor.umd.js', '
   result = result.replace(/.*\$modal.*/g, '');
   result = result.replace(/.*\$collapse.*/g, '');
 
-  //result = result.replace(/= \(\) =>/g, '= function()');
-
-  fs.writeFile('dist/SysOS/filesystem/bin/applications/sysos-app-monitor.umd.js', result, 'utf8', function (err) {
+  fs.writeFile('dist/SysOS/filesystem/bin/libs/sysos-lib-ext-netdata.umd.js', result, 'utf8', function (err) {
     if (err) return console.log(err);
   });
 });

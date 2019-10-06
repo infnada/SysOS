@@ -20,10 +20,8 @@
       "@sysos/lib-ext-gaugejs": "sysos.lib-ext-gaugejs",
       "@sysos/lib-ext-lz-string": "sysos.lib-ext-lz-string",
       "@sysos/lib-ext-pako": "sysos.lib-ext-pako",
-      "@sysos/lib-ext-perfectscrollbar": "sysos.lib-ext-perfectscrollbar"
+      "@sysos/lib-ext-perfectscrollbar": "sysos.lib-ext-perfectscrollbar",
+      "@sysos/lib-ext-netdata": "sysos.lib-ext-netdata"
     }
-  },
-  "whitelistedNonPeerDependencies": [
-    "netdata"
-  ]
+  }
 }

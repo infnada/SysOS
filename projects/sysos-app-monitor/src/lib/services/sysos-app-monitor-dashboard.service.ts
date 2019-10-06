@@ -3,12 +3,6 @@ import {HttpClient} from '@angular/common/http';
 
 import {BehaviorSubject, Observable} from 'rxjs';
 
-declare let NETDATA: any;
-declare let netdataShowAlarms: boolean;
-declare let netdataSnapshotData: any;
-declare let netdataCheckXSS: boolean;
-declare let connection: Netdata;
-
 import {SysosLibLoggerService} from '@sysos/lib-logger';
 import {SysosLibModalService} from '@sysos/lib-modal';
 import {SysosLibApplicationService} from '@sysos/lib-application';
@@ -20,12 +14,9 @@ import {SysosLibExtGaugejsService} from '@sysos/lib-ext-gaugejs';
 import {SysosLibExtPerfectscrollbarService} from '@sysos/lib-ext-perfectscrollbar';
 import {SysosLibExtPakoService} from '@sysos/lib-ext-pako';
 import {SysosLibExtLzStringService} from '@sysos/lib-ext-lz-string';
-
-import * as Dashboard from 'netdata/web/gui/dashboard';
-import * as DashboardInfo from 'netdata/web/gui/dashboard_info';
+import {SysosLibExtNetdataService} from '@sysos/lib-ext-netdata';
 
 import {SysosAppMonitorService} from './sysos-app-monitor.service';
-import {Netdata} from '../types/netdata';
 
 @Injectable({
   providedIn: 'root'
@@ -35,8 +26,7 @@ export class SysosAppMonitorDashboardService {
   private $;
   private pako;
   private LZString;
-
-  NETDATA = NETDATA;
+  private NETDATA;
 
   private $options: BehaviorSubject<object>;
   private $netdataDashboard: BehaviorSubject<object>;
@@ -225,7 +215,7 @@ export class SysosAppMonitorDashboardService {
 
       if (this.urlOptions.server !== null && this.urlOptions.server !== '') {
         this.NETDATA.serverDefault = this.urlOptions.server;
-        netdataCheckXSS = true;
+        this.NetdataService.setNetdataCheckXSS(true);
       } else {
         this.urlOptions.server = null;
       }
@@ -241,7 +231,7 @@ export class SysosAppMonitorDashboardService {
 
     },
     netdataPanAndZoomCallback: (status, after, before) => {
-      if (netdataSnapshotData === null) {
+      if (this.NetdataService.getNetdataSnapshotData() === null) {
         this.urlOptions.pan_and_zoom = status;
         this.urlOptions.after = after;
         this.urlOptions.before = before;
@@ -254,7 +244,7 @@ export class SysosAppMonitorDashboardService {
         before = 0;
       }
 
-      if (netdataSnapshotData === null) {
+      if (this.NetdataService.getNetdataSnapshotData() === null) {
         this.urlOptions.highlight = status;
       } else {
         this.urlOptions.highlight = false;
@@ -264,8 +254,8 @@ export class SysosAppMonitorDashboardService {
       this.urlOptions.highlight_before = Math.round(before);
 
       if (status === true && after > 0 && before > 0 && after < before) {
-        let d1 = NETDATA.dateTime.localeDateString(after);
-        let d2 = NETDATA.dateTime.localeDateString(before);
+        let d1 = this.NETDATA.dateTime.localeDateString(after);
+        let d2 = this.NETDATA.dateTime.localeDateString(before);
         if (d1 === d2) d2 = '';
 
         this.dataStore.returnFromHighlight = {
@@ -305,6 +295,7 @@ export class SysosAppMonitorDashboardService {
               private Ps: SysosLibExtPerfectscrollbarService,
               private pakoService: SysosLibExtPakoService,
               private LZStringService: SysosLibExtLzStringService,
+              private NetdataService: SysosLibExtNetdataService,
               private MonitorService: SysosAppMonitorService) {
     this.$ = this.jQuery.$;
     this.pako = pakoService.Pako;
@@ -352,8 +343,8 @@ export class SysosAppMonitorDashboardService {
   }
 
   resetDashboard() {
-    netdataShowAlarms = false;
-    netdataSnapshotData = null;
+    this.NetdataService.setNetdataShowAlarms(false);
+    this.NetdataService.setNetdataSnapshotData(null);
 
     // Reset the view
     this.dataStore.options = {
@@ -521,10 +512,12 @@ export class SysosAppMonitorDashboardService {
     // Set Netdata dashboard
     this.resetDashboard();
 
-    connection = this.MonitorService.getActiveConnection();
+    this.NetdataService.setConnection(this.MonitorService.getActiveConnection());
 
-    if (!this.dashboardInitialized) new Dashboard(this.jQuery.$, this.Dygraphs.Dygraph, this.gaugeJS.gaugeJS.Gauge, this.Ps.PerfectScrollbar);
-    new DashboardInfo(this.dataStore.netdataDashboard);
+    // Initialize
+    if (!this.dashboardInitialized) new this.NetdataService.Dashboard(this.jQuery.$, this.Dygraphs.Dygraph, this.gaugeJS.gaugeJS.Gauge, this.Ps.PerfectScrollbar);
+    new this.NetdataService.DashboardInfo(this.dataStore.netdataDashboard);
+    this.NETDATA = this.NetdataService.NETDATA;
     this.dashboardInitialized = true;
 
     this.urlOptions.parseHash();
@@ -563,46 +556,46 @@ export class SysosAppMonitorDashboardService {
   }
 
   private loadSnapshot() {
-    netdataSnapshotData = this.MonitorService.getActiveConnection().snapshotData;
-    netdataShowAlarms = false;
-    this.NETDATA.serverDefault = netdataSnapshotData.server;
+    this.NetdataService.setNetdataSnapshotData(this.MonitorService.getActiveConnection().snapshotData);
+    this.NetdataService.setNetdataShowAlarms(false);
+    this.NETDATA.serverDefault = this.NetdataService.getNetdataSnapshotData().server;
 
 
-    if (typeof netdataSnapshotData.hash !== 'undefined') {
-      this.urlOptions.hash = netdataSnapshotData.hash;
+    if (typeof this.NetdataService.getNetdataSnapshotData().hash !== 'undefined') {
+      this.urlOptions.hash = this.NetdataService.getNetdataSnapshotData().hash;
     } else {
       this.urlOptions.hash = '#';
     }
 
-    if (typeof netdataSnapshotData.info !== 'undefined') {
-      let info = this.jsonParseFn(netdataSnapshotData.info);
+    if (typeof this.NetdataService.getNetdataSnapshotData().info !== 'undefined') {
+      let info = this.jsonParseFn(this.NetdataService.getNetdataSnapshotData().info);
 
       if (typeof info.menu !== 'undefined') this.dataStore.netdataDashboard.menu = info.menu;
       if (typeof info.submenu !== 'undefined') this.dataStore.netdataDashboard.submenu = info.submenu;
       if (typeof info.context !== 'undefined') this.dataStore.netdataDashboard.context = info.context;
     }
 
-    if (typeof netdataSnapshotData.compression !== 'string') netdataSnapshotData.compression = 'none';
+    if (typeof this.NetdataService.getNetdataSnapshotData().compression !== 'string') this.NetdataService.getNetdataSnapshotData().compression = 'none';
 
-    if (typeof this.snapshotOptions.compressions[netdataSnapshotData.compression] === 'undefined') {
-      alert('unknown compression method: ' + netdataSnapshotData.compression);
-      netdataSnapshotData.compression = 'none';
+    if (typeof this.snapshotOptions.compressions[this.NetdataService.getNetdataSnapshotData().compression] === 'undefined') {
+      alert('unknown compression method: ' + this.NetdataService.getNetdataSnapshotData().compression);
+      this.NetdataService.getNetdataSnapshotData().compression = 'none';
     }
 
-    netdataSnapshotData.uncompress = this.snapshotOptions.compressions[netdataSnapshotData.compression].uncompress;
+    this.NetdataService.getNetdataSnapshotData().uncompress = this.snapshotOptions.compressions[this.NetdataService.getNetdataSnapshotData().compression].uncompress;
 
-    this.urlOptions.after = netdataSnapshotData.after_ms;
-    this.urlOptions.before = netdataSnapshotData.before_ms;
+    this.urlOptions.after = this.NetdataService.getNetdataSnapshotData().after_ms;
+    this.urlOptions.before = this.NetdataService.getNetdataSnapshotData().before_ms;
 
-    if (typeof netdataSnapshotData.highlight_after_ms !== 'undefined'
-      && netdataSnapshotData.highlight_after_ms !== null
-      && netdataSnapshotData.highlight_after_ms > 0
-      && typeof netdataSnapshotData.highlight_before_ms !== 'undefined'
-      && netdataSnapshotData.highlight_before_ms !== null
-      && netdataSnapshotData.highlight_before_ms > 0
+    if (typeof this.NetdataService.getNetdataSnapshotData().highlight_after_ms !== 'undefined'
+      && this.NetdataService.getNetdataSnapshotData().highlight_after_ms !== null
+      && this.NetdataService.getNetdataSnapshotData().highlight_after_ms > 0
+      && typeof this.NetdataService.getNetdataSnapshotData().highlight_before_ms !== 'undefined'
+      && this.NetdataService.getNetdataSnapshotData().highlight_before_ms !== null
+      && this.NetdataService.getNetdataSnapshotData().highlight_before_ms > 0
     ) {
-      this.urlOptions.highlight_after = netdataSnapshotData.highlight_after_ms;
-      this.urlOptions.highlight_before = netdataSnapshotData.highlight_before_ms;
+      this.urlOptions.highlight_after = this.NetdataService.getNetdataSnapshotData().highlight_after_ms;
+      this.urlOptions.highlight_before = this.NetdataService.getNetdataSnapshotData().highlight_before_ms;
       this.urlOptions.highlight = true;
     } else {
       this.urlOptions.highlight_after = 0;
@@ -610,7 +603,7 @@ export class SysosAppMonitorDashboardService {
       this.urlOptions.highlight = false;
     }
 
-    netdataCheckXSS = false; // disable the modal - this does not affect XSS checks, since dashboard.js is already loaded
+    this.NetdataService.setNetdataCheckXSS(false); // disable the modal - this does not affect XSS checks, since dashboard.js is already loaded
     this.NETDATA.xss.enabled = true;             // we should not do any remote requests, but if we do, check them
     this.NETDATA.xss.enabled_for_data = true;    // check also snapshot data - that have been excluded from the initial check, due to compression
   }
@@ -628,7 +621,7 @@ export class SysosAppMonitorDashboardService {
     this.NETDATA.alarms.chart_div_animation_duration = 0;
 
     this.NETDATA.pause(() => {
-      if (netdataCheckXSS) {
+      if (this.NetdataService.getNetdataCheckXSS()) {
 
         this.Modal.openRegisteredModal('monitor-xss', '.window--monitor .window__main', {}).then((modalInstance) => {
           modalInstance.result.then((res) => {
@@ -662,7 +655,7 @@ export class SysosAppMonitorDashboardService {
     return this.NETDATA.chartRegistry.downloadAll(this.NETDATA.serverDefault, (data) => {
       if (data !== null) {
 
-        if (this.customInfo && data.custom_info && netdataSnapshotData === null) {
+        if (this.customInfo && data.custom_info && this.NetdataService.getNetdataSnapshotData() === null) {
 
           this.http.get(this.NETDATA.serverDefault + data.custom_info).subscribe(
             (data) => {
@@ -952,8 +945,8 @@ export class SysosAppMonitorDashboardService {
     this.runOnceOnDashboardWithjQuery();
     this.enableTooltipsAndPopovers();
 
-    if (netdataSnapshotData !== null) {
-      this.NETDATA.globalPanAndZoom.setMaster(this.NETDATA.options.targets[0], netdataSnapshotData.after_ms, netdataSnapshotData.before_ms);
+    if (this.NetdataService.getNetdataSnapshotData() !== null) {
+      this.NETDATA.globalPanAndZoom.setMaster(this.NETDATA.options.targets[0], this.NetdataService.getNetdataSnapshotData().after_ms, this.NetdataService.getNetdataSnapshotData().before_ms);
     }
   }
 

@@ -1,5 +1,8 @@
 import {AfterViewInit, Component, ElementRef, Input, OnDestroy, ViewChild, ViewEncapsulation} from '@angular/core';
 
+// Required to be available inside generateHeadCharts
+let NETDATA = null;
+
 import {Application} from '@sysos/lib-application';
 import {SysosLibLoggerService} from '@sysos/lib-logger';
 
@@ -293,6 +296,7 @@ export class BodyDashboardComponent implements AfterViewInit, OnDestroy {
   }
 
   generateHeadCharts(type, chart, duration) {
+    NETDATA = this.NETDATA;
     let head = '';
     let hcharts = this.netdataDashboard.anyAttribute(this.netdataDashboard.context, type, chart.context, []);
     if (hcharts.length > 0) {

@@ -122,6 +122,12 @@
       "@sysos/lib-ext-jquery/*": [
         "dist/libs/sysos-lib-ext-jquery/*"
       ],
+      "@sysos/lib-ext-netdata": [
+        "dist/libs/sysos-lib-ext-netdata"
+      ],
+      "@sysos/lib-ext-netdata/*": [
+        "dist/libs/sysos-lib-ext-netdata/*"
+      ],
       "@sysos/lib-ext-perfectscrollbar": [
         "dist/libs/sysos-lib-ext-perfectscrollbar"
       ],
