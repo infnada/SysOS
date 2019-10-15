@@ -1,11 +1,11 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatTabsModule, MatSlideToggleModule, MatExpansionModule, MatTooltipModule} from '@angular/material';
 
 import {NgbModalModule, NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {OrderModule} from 'ngx-order-pipe';
 
+import {SysosLibAngularMaterialModule} from '@sysos/lib-angular-material';
 import {SysosLibModalService} from '@sysos/lib-modal';
 import {SysosLibSanitizeModule} from '@sysos/lib-sanitize';
 
@@ -23,12 +23,10 @@ import { AlarmComponent } from './components/alarm/alarm.component';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    MatTabsModule,
-    MatSlideToggleModule,
-    MatTooltipModule,
-    MatExpansionModule,
     NgbModalModule,
     OrderModule,
+    // Shared module import
+    SysosLibAngularMaterialModule,
     SysosLibSanitizeModule,
     SysosLibSanitizeModule,
   ],

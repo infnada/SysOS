@@ -1,16 +1,19 @@
 import {NgModule} from '@angular/core';
 import {SanitizeHtmlPipe} from './html/sanitize-html.pipe';
 import {SanitizeUrlPipe} from './url/sanitize-url.pipe';
+import {SanitizeStylePipe} from './style/sanitize-style.pipe';
 
 @NgModule({
   declarations: [
     SanitizeHtmlPipe,
-    SanitizeUrlPipe
+    SanitizeUrlPipe,
+    SanitizeStylePipe
   ],
   imports: [],
   exports: [
     SanitizeHtmlPipe,
-    SanitizeUrlPipe
+    SanitizeUrlPipe,
+    SanitizeStylePipe
   ]
 })
 export class SysosLibSanitizeModule {

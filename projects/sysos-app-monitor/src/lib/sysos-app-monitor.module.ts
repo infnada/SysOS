@@ -1,15 +1,16 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ReactiveFormsModule} from '@angular/forms';
-import {MatSlideToggleModule, MatTooltipModule, MatButtonModule} from '@angular/material';
 
 import {OrderModule} from 'ngx-order-pipe';
 import {ToastrModule} from 'ngx-toastr';
 
+import {SysosLibAngularMaterialModule} from '@sysos/lib-angular-material';
 import {SysosLibApplicationService} from '@sysos/lib-application';
 import {SysosLibScrollSpyModule} from '@sysos/lib-scroll-spy';
 import {SysosLibSanitizeModule} from '@sysos/lib-sanitize';
 import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
+import {SysosLibExtWeavescopeModule} from '@sysos/lib-ext-weavescope';
 
 import {ActionsComponent} from './actions/actions.component';
 import {BodyComponent} from './body/body.component';
@@ -32,13 +33,13 @@ import {SysosAppMonitorDashboardService} from './services/sysos-app-monitor-dash
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    MatSlideToggleModule,
-    MatTooltipModule,
-    MatButtonModule,
     OrderModule,
     ToastrModule.forRoot(),
+    // Shared module import
+    SysosLibAngularMaterialModule,
     SysosLibScrollSpyModule,
-    SysosLibSanitizeModule
+    SysosLibSanitizeModule,
+    SysosLibExtWeavescopeModule
   ],
   exports: []
 })

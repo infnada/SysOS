@@ -37,9 +37,9 @@ export class SysosLibExtDygraphsService {
      *
      * This is loosely based on the HighCharts algorithm.
      */
-    function getControlPoints(p0, p1, p2, opt_alpha?, opt_allowFalseExtrema?) {
-      const alpha = (opt_alpha !== undefined) ? opt_alpha : 1 / 3;  // 0=no smoothing, 1=crazy smoothing
-      const allowFalseExtrema = opt_allowFalseExtrema || false;
+    function getControlPoints(p0, p1, p2, optAlpha?, optAllowFalseExtrema?) {
+      const alpha = (optAlpha !== undefined) ? optAlpha : 1 / 3;  // 0=no smoothing, 1=crazy smoothing
+      const allowFalseExtrema = optAllowFalseExtrema || false;
 
       if (!p2) {
         return [p1.x, p1.y, null, null];

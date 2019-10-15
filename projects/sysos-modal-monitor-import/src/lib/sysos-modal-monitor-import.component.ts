@@ -37,7 +37,7 @@ export class SysosModalMonitorImportComponent implements OnInit {
   }
 
   loadSnapshotPreflight(fileInput: any) {
-    let files = fileInput.target.files;
+    const files = fileInput.target.files;
     if (files.length <= 0) {
       this.snapshotStatusText = 'No file selected';
       this.snapshotStatusType = 'danger';
@@ -52,7 +52,7 @@ export class SysosModalMonitorImportComponent implements OnInit {
 
   private loadSnapshotPreflightFile(file: File) {
     this.fileName = this.NETDATA.xss.string(file.name);
-    let fr = new FileReader();
+    const fr = new FileReader();
 
     fr.onload = (e: any) => {
       try {
@@ -70,8 +70,7 @@ export class SysosModalMonitorImportComponent implements OnInit {
         this.snapshotStatusType = 'success';
 
         this.readyToImport = true;
-      }
-      catch (e) {
+      } catch (e) {
         console.log(e);
         this.snapshotStatusText = 'Failed to parse this file!';
         this.snapshotStatusType = 'danger';
@@ -79,7 +78,7 @@ export class SysosModalMonitorImportComponent implements OnInit {
     };
 
     fr.readAsText(file);
-  };
+  }
 
   loadSnapshot() {
     this.readyToImport = false;

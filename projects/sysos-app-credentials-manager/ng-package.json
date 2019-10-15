@@ -5,6 +5,7 @@
     "entryFile": "src/public-api.ts",
     "umdModuleIds": {
       "ngx-toastr": "ngx-toastr",
+      "@sysos/lib-angular-material": "sysos.lib-angular-material",
       "@sysos/lib-application": "sysos.lib-application",
       "@sysos/lib-logger": "sysos.lib-logger",
       "@sysos/lib-service-injector": "sysos.lib-service-injector"

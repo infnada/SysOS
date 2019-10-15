@@ -6,6 +6,7 @@
     "umdModuleIds": {
       "angular-file": "angular-file",
       "ngx-filter-pipe": "ngx-filter-pipe",
+      "@sysos/lib-angular-material": "sysos.lib-angular-material",
       "@sysos/lib-application": "sysos.lib-application",
       "@sysos/lib-file": "sysos.lib-file",
       "@sysos/lib-file-system": "sysos.lib-file-system",

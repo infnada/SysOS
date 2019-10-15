@@ -7,6 +7,7 @@
       "uuid": "uuid",
       "ngx-order-pipe": "ngx-order-pipe",
       "ngx-toastr": "ngx-toastr",
+      "@sysos/lib-angular-material": "sysos.lib-angular-material",
       "@sysos/lib-application": "sysos.lib-application",
       "@sysos/lib-file-system": "sysos.lib-file-system",
       "@sysos/lib-logger": "sysos.lib-logger",

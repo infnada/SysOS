@@ -5,7 +5,8 @@
     "entryFile": "src/public-api.ts",
     "umdModuleIds": {
       "@sysos/lib-modal": "sysos.lib-modal",
-      "@ng-bootstrap/ng-bootstrap": "ng-bootstrap.ng-bootstrap"
+      "@ng-bootstrap/ng-bootstrap": "ng-bootstrap.ng-bootstrap",
+      "@sysos/lib-angular-material": "sysos.lib-angular-material"
     }
   }
 }

@@ -3,11 +3,8 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import {FilterPipeModule} from 'ngx-filter-pipe';
-import {
-  MatMenuModule,
-  MatDividerModule,
-} from '@angular/material';
 
+import {SysosLibAngularMaterialModule} from '@sysos/lib-angular-material';
 import {SysosLibFileModule} from '@sysos/lib-file';
 
 import {SysosLibFolderComponent} from './sysos-lib-folder.component';
@@ -18,8 +15,8 @@ import {SysosLibFolderComponent} from './sysos-lib-folder.component';
     CommonModule,
     DragDropModule,
     FilterPipeModule,
-    MatMenuModule,
-    MatDividerModule,
+    // Shared module import
+    SysosLibAngularMaterialModule,
     SysosLibFileModule
   ],
   exports: [SysosLibFolderComponent]

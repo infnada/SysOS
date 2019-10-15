@@ -1,10 +1,10 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatStepperModule, MatButtonModule, MatRadioModule, MatSelectModule, MatDividerModule, MatInputModule, MatSlideToggleModule} from '@angular/material';
 
 import {NgbModalModule, NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 
+import {SysosLibAngularMaterialModule} from '@sysos/lib-angular-material';
 import {SysosLibModalService} from '@sysos/lib-modal';
 
 import {EntryComponent} from './recovery-wizard-entry/entry.component';
@@ -20,13 +20,8 @@ import {SysosModalRecoveryWizardComponent} from './sysos-modal-recovery-wizard.c
     FormsModule,
     ReactiveFormsModule,
     NgbModalModule,
-    MatButtonModule,
-    MatStepperModule,
-    MatRadioModule,
-    MatSelectModule,
-    MatDividerModule,
-    MatInputModule,
-    MatSlideToggleModule
+    // Shared module import
+    SysosLibAngularMaterialModule
   ],
   exports: [],
   providers: [

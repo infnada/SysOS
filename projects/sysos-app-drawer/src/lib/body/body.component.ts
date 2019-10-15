@@ -23,6 +23,6 @@ export class BodyComponent implements AfterViewInit {
   }
 
   ngAfterViewInit() {
-    new Load(this.mx);
+    return new Load(this.mx);
   }
 }

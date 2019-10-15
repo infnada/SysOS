@@ -66,8 +66,8 @@ export class SysosModalMonitorExportComponent implements OnInit {
       start_ms = this.NETDATA.globalPanAndZoom.force_after_ms;
     }
 
-    let start_date = new Date(start_ms);
-    let yyyymmddhhssmm = start_date.getFullYear() + this.NETDATA.zeropad(start_date.getMonth() + 1) + this.NETDATA.zeropad(start_date.getDate()) + '-' + this.NETDATA.zeropad(start_date.getHours()) + this.NETDATA.zeropad(start_date.getMinutes()) + this.NETDATA.zeropad(start_date.getSeconds());
+    let startDate = new Date(start_ms);
+    const yyyymmddhhssmm = startDate.getFullYear() + this.NETDATA.zeropad(startDate.getMonth() + 1) + this.NETDATA.zeropad(startDate.getDate()) + '-' + this.NETDATA.zeropad(startDate.getHours()) + this.NETDATA.zeropad(startDate.getMinutes()) + this.NETDATA.zeropad(startDate.getSeconds());
 
     this.snapshotName = 'netdata-' + this.options.hostname.toString() + '-' + yyyymmddhhssmm.toString() + '-' + this.options.duration.toString() + '.snapshot';
     this.compressionType = this.snapshotOptions.compressionDefault;
@@ -93,22 +93,22 @@ export class SysosModalMonitorExportComponent implements OnInit {
   }
 
   private jsonStringifyFn(obj) {
-    return JSON.stringify(obj, function (key, value) {
+    return JSON.stringify(obj, (key, value) => {
       return (typeof value === 'function') ? value.toString() : value;
     });
   }
 
   snapshotExpectedSize() {
-    let points = Math.round(this.options.duration / this.slider.value);
+    const points = Math.round(this.options.duration / this.slider.value);
     let priority = 'info';
     let msg = 'A moderate snapshot.';
 
-    let sizemb = Math.round(
+    const sizemb = Math.round(
       (this.options.data.charts_count * this.snapshotOptions.bytes_per_chart
         + this.options.data.dimensions_count * points * this.snapshotOptions.compressions[this.compressionType].bytes_per_point_disk)
       * 10 / 1024 / 1024) / 10;
 
-    let memmb = Math.round(
+    const memmb = Math.round(
       (this.options.data.charts_count * this.snapshotOptions.bytes_per_chart
         + this.options.data.dimensions_count * points * this.snapshotOptions.compressions[this.compressionType].bytes_per_point_memory)
       * 10 / 1024 / 1024) / 10;
@@ -133,7 +133,7 @@ export class SysosModalMonitorExportComponent implements OnInit {
     this.progressText = 'Generating snapshot as <code>this.snapshotName</code>';
     this.showProgress = true;
 
-    let save_options = {
+    const saveOptions = {
       stop_updates_when_focus_is_lost: false,
       update_only_visible: false,
       sync_selection: false,
@@ -145,10 +145,10 @@ export class SysosModalMonitorExportComponent implements OnInit {
       pixels_per_point: 1
     };
 
-    for (let x in save_options) {
-      if (save_options.hasOwnProperty(x)) {
+    for (const x in saveOptions) {
+      if (saveOptions.hasOwnProperty(x)) {
         this.backedupOptions[x] = this.NETDATA.options.current[x];
-        this.NETDATA.options.current[x] = save_options[x];
+        this.NETDATA.options.current[x] = saveOptions[x];
       }
     }
 
@@ -204,7 +204,7 @@ export class SysosModalMonitorExportComponent implements OnInit {
   }
 
   private updateChart(idx) {
-    let info = ' Resolution: <b>' + this.slider.value + ((this.slider.value === 1) ? ' second ' : ' seconds ') + 'per point</b>.';
+    const info = ' Resolution: <b>' + this.slider.value + ((this.slider.value === 1) ? ' second ' : ' seconds ') + 'per point</b>.';
 
     if (this.saveSnapshotStop === true) {
       this.progressText = 'Cancelled!';
@@ -212,7 +212,7 @@ export class SysosModalMonitorExportComponent implements OnInit {
       return;
     }
 
-    let state = this.NETDATA.options.targets[--idx];
+    const state = this.NETDATA.options.targets[--idx];
 
     this.progressPcent = (this.NETDATA.options.targets.length - idx) * 100 / this.NETDATA.options.targets.length;
     this.progressCurrentId = state.id;
@@ -252,23 +252,23 @@ export class SysosModalMonitorExportComponent implements OnInit {
           this.saveSnapshotRestore();
           this.saveData = null;
         }
-      })
+      });
     }, 0);
   }
 
   private pack_api1_v1_chart_data(state) {
     if (state.library_name === null || state.data === null) return;
 
-    let compress = this.snapshotOptions.compressions[this.compressionType].compress;
-    let compressed_length = this.snapshotOptions.compressions[this.compressionType].compressed_length;
+    const compress = this.snapshotOptions.compressions[this.compressionType].compress;
+    const compressed_length = this.snapshotOptions.compressions[this.compressionType].compressed_length;
 
-    let data = state.data;
+    const data = state.data;
     state.data = null;
     data.state = null;
-    let str = JSON.stringify(data);
+    const str = JSON.stringify(data);
 
     if (typeof str === 'string') {
-      let cstr = compress(str);
+      const cstr = compress(str);
       this.saveData.data[state.chartDataUniqueID()] = cstr;
       return compressed_length(cstr);
     } else {
@@ -279,7 +279,7 @@ export class SysosModalMonitorExportComponent implements OnInit {
   private saveSnapshotRestore() {
 
     // restore the options
-    for (let x in this.backedupOptions) {
+    for (const x in this.backedupOptions) {
       if (this.backedupOptions.hasOwnProperty(x)) {
         this.NETDATA.options.current[x] = this.backedupOptions[x];
       }
@@ -304,16 +304,16 @@ export class SysosModalMonitorExportComponent implements OnInit {
         type: 'application/octet-stream'
       });
 
-      let url = URL.createObjectURL(blob);
-      let link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
       link.setAttribute('href', url);
       link.setAttribute('download', filename);
 
-      let el = document.getElementById('hiddenDownloadLinks');
+      const el = document.getElementById('hiddenDownloadLinks');
       el.innerHTML = '';
       el.appendChild(link);
 
-      setTimeout(function () {
+      setTimeout(() => {
         el.removeChild(link);
         URL.revokeObjectURL(url);
       }, 60);
@@ -323,7 +323,7 @@ export class SysosModalMonitorExportComponent implements OnInit {
 
     if (this.saveAt === 'anyopsos') {
       blob = new Blob([JSON.stringify(data)]);
-      let file: File = new File([blob], filename);
+      const file: File = new File([blob], filename);
 
       // Upload file to Downloads folder
       return this.FileSystem.uploadFile('/root/Downloads/', file);

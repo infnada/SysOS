@@ -34,11 +34,10 @@
   <div class="navbar-highlight" *ngIf="returnFromHighlight.showHighlight">
     <div id="navbar-highlight-content" class="navbar-highlight-content">
 
-      <!-- TODO: change title by matTooltip throws strange error -->
-      <span class="navbar-highlight-bar highlight-tooltip" (click)="this.urlOptions.showHighlight();" title="restore the highlighted view">
+      <span class="navbar-highlight-bar highlight-tooltip" (click)="this.urlOptions.showHighlight();" matTooltip="restore the highlighted view">
         highlighted time-frame <b>{{returnFromHighlight.d1}} <code>{{returnFromHighlight.after}}</code></b> to <b>{{returnFromHighlight.d2}} <code>{{returnFromHighlight.before}}</code></b>, duration <b>{{returnFromHighlight.duration}}</b>
       </span>
-      <span class="navbar-highlight-button-right highlight-tooltip" (click)="this.urlOptions.clearHighlight();" title="clear the highlighted time-frame"><i class="fas fa-times"></i></span>
+      <span class="navbar-highlight-button-right highlight-tooltip" (click)="this.urlOptions.clearHighlight();" matTooltip="clear the highlighted time-frame"><i class="fas fa-times"></i></span>
     </div>
   </div>
 </div>

@@ -1,10 +1,10 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatSliderModule, MatProgressBarModule, MatInputModule, MatSelectModule, MatFormFieldModule, MatRadioModule} from '@angular/material';
 
 import {NgbModalModule, NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 
+import {SysosLibAngularMaterialModule} from '@sysos/lib-angular-material';
 import {SysosLibModalService} from '@sysos/lib-modal';
 
 import {SysosModalMonitorExportComponent} from './sysos-modal-monitor-export.component';
@@ -19,13 +19,9 @@ import {EntryComponent} from './monitor-export-entry/entry.component';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    MatSliderModule,
-    MatProgressBarModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatRadioModule,
-    NgbModalModule
+    NgbModalModule,
+    // Shared module import
+    SysosLibAngularMaterialModule
   ],
   providers: [
     NgbActiveModal

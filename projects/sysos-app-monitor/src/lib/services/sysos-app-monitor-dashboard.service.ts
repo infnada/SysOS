@@ -536,17 +536,17 @@ export class SysosAppMonitorDashboardService {
       if (typeof value != 'string') {
         return value;
       }
-      return (value.substring(0, 8) == 'function') ? eval('(' + value + ')') : value;
+      return (value.substring(0, 8) === 'function') ? eval('(' + value + ')') : value;
     });
   }
 
   private alarmsCallback(data) {
     let count = 0;
 
-    for (let x in data.alarms) {
+    for (const x in data.alarms) {
       if (!data.alarms.hasOwnProperty(x)) continue;
 
-      let alarm = data.alarms[x];
+      const alarm = data.alarms[x];
       if (alarm.status === 'WARNING' || alarm.status === 'CRITICAL') count++;
     }
 
@@ -568,7 +568,7 @@ export class SysosAppMonitorDashboardService {
     }
 
     if (typeof this.NetdataService.getNetdataSnapshotData().info !== 'undefined') {
-      let info = this.jsonParseFn(this.NetdataService.getNetdataSnapshotData().info);
+      const info = this.jsonParseFn(this.NetdataService.getNetdataSnapshotData().info);
 
       if (typeof info.menu !== 'undefined') this.dataStore.netdataDashboard.menu = info.menu;
       if (typeof info.submenu !== 'undefined') this.dataStore.netdataDashboard.submenu = info.submenu;
@@ -658,8 +658,8 @@ export class SysosAppMonitorDashboardService {
         if (this.customInfo && data.custom_info && this.NetdataService.getNetdataSnapshotData() === null) {
 
           this.http.get(this.NETDATA.serverDefault + data.custom_info).subscribe(
-            (data) => {
-              this.initializeDynamicDashboardWithData(data);
+            (customData) => {
+              this.initializeDynamicDashboardWithData(customData);
             },
             error => {
               this.logger.error('Monitor', 'Error while getting custom dashboards', null, error);
@@ -690,14 +690,14 @@ export class SysosAppMonitorDashboardService {
 
     // create a chart_by_name index
     data.charts_by_name = {};
-    let charts = data.charts;
+    const charts = data.charts;
     let x;
     for (x in charts) {
       if (!charts.hasOwnProperty(x)) {
         continue;
       }
 
-      let chart = charts[x];
+      const chart = charts[x];
       data.charts_by_name[chart.name] = chart;
     }
 
@@ -718,22 +718,22 @@ export class SysosAppMonitorDashboardService {
       this.NETDATA.globalChartUnderlay.clear();
     }
 
-    setTimeout(() => this.finalizePage(), 0)
+    setTimeout(() => this.finalizePage(), 0);
   }
 
   private createSidebarMenus(): void {
-    let menu_key;
+    let menuKey;
 
     // Set Menus info
-    for (let c in this.dataStore.options.data.charts) {
+    for (const c in this.dataStore.options.data.charts) {
       if (!this.dataStore.options.data.charts.hasOwnProperty(c)) {
         continue;
       }
 
-      let chart = this.dataStore.options.data.charts[c];
+      const chart = this.dataStore.options.data.charts[c];
 
       this.enrichChartData(chart);
-      let m = chart.menu;
+      const m = chart.menu;
 
       // create the menu
       if (typeof this.dataStore.menus[m] === 'undefined') {
@@ -756,7 +756,7 @@ export class SysosAppMonitorDashboardService {
         }
       }
 
-      menu_key = (typeof (this.dataStore.menus[m].menu_pattern) !== 'undefined') ? this.dataStore.menus[m].menu_pattern : m;
+      menuKey = (typeof (this.dataStore.menus[m].menu_pattern) !== 'undefined') ? this.dataStore.menus[m].menu_pattern : m;
 
       // create the submenu
       if (typeof this.dataStore.menus[m].submenus[chart.submenu] === 'undefined') {
@@ -764,8 +764,8 @@ export class SysosAppMonitorDashboardService {
           priority: chart.priority,
           charts: [],
           title: null,
-          info: this.dataStore.netdataDashboard.submenuInfo(menu_key, chart.submenu),
-          height: this.dataStore.netdataDashboard.submenuHeight(menu_key, chart.submenu, this.dataStore.menus[m].height)
+          info: this.dataStore.netdataDashboard.submenuInfo(menuKey, chart.submenu),
+          height: this.dataStore.netdataDashboard.submenuHeight(menuKey, chart.submenu, this.dataStore.menus[m].height)
         };
       } else {
         if (chart.priority < this.dataStore.menus[m].submenus[chart.submenu].priority) {
@@ -779,12 +779,12 @@ export class SysosAppMonitorDashboardService {
 
     // propagate the descriptive subname given to QoS
     // to all the other submenus with the same name
-    for (let m in this.dataStore.menus) {
+    for (const m in this.dataStore.menus) {
       if (!this.dataStore.menus.hasOwnProperty(m)) {
         continue;
       }
 
-      for (let s in this.dataStore.menus[m].submenus) {
+      for (const s in this.dataStore.menus[m].submenus) {
         if (!this.dataStore.menus[m].submenus.hasOwnProperty(s)) {
           continue;
         }
@@ -793,8 +793,8 @@ export class SysosAppMonitorDashboardService {
         if (typeof this.dataStore.options.submenu_names[s] !== 'undefined') {
           this.dataStore.menus[m].submenus[s].title = s + ' (' + this.dataStore.options.submenu_names[s] + ')';
         } else {
-          menu_key = (typeof (this.dataStore.menus[m].menu_pattern) !== 'undefined') ? this.dataStore.menus[m].menu_pattern : m;
-          this.dataStore.menus[m].submenus[s].title = this.dataStore.netdataDashboard.submenuTitle(menu_key, s);
+          menuKey = (typeof (this.dataStore.menus[m].menu_pattern) !== 'undefined') ? this.dataStore.menus[m].menu_pattern : m;
+          this.dataStore.menus[m].submenus[s].title = this.dataStore.netdataDashboard.submenuTitle(menuKey, s);
         }
       }
     }
@@ -805,8 +805,8 @@ export class SysosAppMonitorDashboardService {
   }
 
   private enrichChartData(chart): void {
-    let parts = chart.type.split('_');
-    let tmp = parts[0];
+    const parts = chart.type.split('_');
+    const tmp = parts[0];
 
     switch (tmp) {
       case 'ap':
@@ -887,7 +887,7 @@ export class SysosAppMonitorDashboardService {
         // find a name for this device from fireqos info
         // we strip '_(in|out)' or '(in|out)_'
         if (chart.context === 'tc.qos' && (typeof this.dataStore.options.submenu_names[chart.family] === 'undefined' || this.dataStore.options.submenu_names[chart.family] === chart.family)) {
-          let n = chart.name.split('.')[1];
+          const n = chart.name.split('.')[1];
           if (n.endsWith('_in')) {
             this.dataStore.options.submenu_names[chart.family] = n.slice(0, n.lastIndexOf('_in'));
           } else if (n.endsWith('_out')) {

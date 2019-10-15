@@ -1,10 +1,10 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatDividerModule, MatMenuModule, MatButtonModule, MatSlideToggleModule} from '@angular/material';
 
 import {ToastrModule} from 'ngx-toastr';
 
+import {SysosLibAngularMaterialModule} from '@sysos/lib-angular-material';
 import {SysosLibApplicationService} from '@sysos/lib-application';
 
 import {ActionsComponent} from './actions/actions.component';
@@ -26,11 +26,9 @@ import {StatusComponent} from './status/status.component';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    MatMenuModule,
-    MatDividerModule,
-    MatButtonModule,
-    MatSlideToggleModule,
-    ToastrModule.forRoot()
+    ToastrModule.forRoot(),
+    // Shared module import
+    SysosLibAngularMaterialModule
   ],
   exports: []
 })

@@ -1,6 +1,6 @@
 import {Component, OnInit, Input, ViewChild, ElementRef, AfterViewInit} from '@angular/core';
-import {MatMenuTrigger} from '@angular/material';
 
+import {MatMenuTrigger} from '@sysos/lib-angular-material';
 import {SysosLibSelectableService} from '@sysos/lib-selectable';
 import {SysosLibFileSystemService} from '@sysos/lib-file-system';
 import {SysosLibFileSystemUiService} from '@sysos/lib-file-system-ui';

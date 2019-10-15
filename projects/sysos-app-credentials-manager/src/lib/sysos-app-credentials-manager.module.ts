@@ -1,10 +1,10 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatButtonModule} from '@angular/material/button';
 
 import {ToastrModule} from 'ngx-toastr';
 
+import {SysosLibAngularMaterialModule} from '@sysos/lib-angular-material';
 import {SysosLibApplicationService} from '@sysos/lib-application';
 import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
 
@@ -26,8 +26,9 @@ import {SysosAppCredentialsManagerService} from './services/sysos-app-credential
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    MatButtonModule,
-    ToastrModule.forRoot()
+    ToastrModule.forRoot(),
+    // Shared module import
+    SysosLibAngularMaterialModule
   ],
   exports: []
 })

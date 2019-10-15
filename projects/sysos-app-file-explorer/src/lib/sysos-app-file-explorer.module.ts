@@ -1,11 +1,11 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
-import {MatMenuModule, MatDividerModule} from '@angular/material';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 
 import {ngfModule} from 'angular-file';
 
+import {SysosLibAngularMaterialModule} from '@sysos/lib-angular-material';
 import {SysosLibApplicationService} from '@sysos/lib-application';
 import {SysosLibFileModule} from '@sysos/lib-file';
 import {SysosLibFolderModule} from '@sysos/lib-folder';
@@ -23,11 +23,10 @@ import {ActionsBodyComponent} from './actions/actions-body/actions-body.componen
   imports: [
     CommonModule,
     FormsModule,
-    MatMenuModule,
-    MatDividerModule,
     DragDropModule,
     ngfModule,
     // Shared module import
+    SysosLibAngularMaterialModule,
     SysosLibFileModule,
     SysosLibFolderModule
   ],

@@ -10,6 +10,7 @@
       "ngx-socket-io/src/socket-io.service": "ngx-socket-io",
       "ngx-toastr": "ngx-toastr",
       "uuid": "uuid",
+      "@sysos/lib-angular-material": "sysos.lib-angular-material",
       "@sysos/lib-application": "sysos.lib-application",
       "@sysos/lib-file": "sysos.lib-file",
       "@sysos/lib-file-system": "sysos.lib-file-system",

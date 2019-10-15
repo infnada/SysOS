@@ -1,13 +1,13 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {MatDividerModule, MatMenuModule, MatButtonModule, MatSlideToggleModule} from '@angular/material';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 
 import {FilterPipeModule} from 'ngx-filter-pipe';
 import {ngfModule} from 'angular-file';
 import {ToastrModule} from 'ngx-toastr';
 
+import {SysosLibAngularMaterialModule} from '@sysos/lib-angular-material';
 import {SysosLibApplicationService} from '@sysos/lib-application';
 import {SysosLibFileModule} from '@sysos/lib-file';
 import {SysosLibFolderModule} from '@sysos/lib-folder';
@@ -42,14 +42,11 @@ import {SysosAppSftpService} from './services/sysos-app-sftp.service';
     FormsModule,
     ReactiveFormsModule,
     FilterPipeModule,
-    MatMenuModule,
-    MatDividerModule,
-    MatButtonModule,
-    MatSlideToggleModule,
     DragDropModule,
     ngfModule,
     ToastrModule.forRoot(),
     // Shared module import
+    SysosLibAngularMaterialModule,
     SysosLibFolderModule,
     SysosLibFileModule
   ],

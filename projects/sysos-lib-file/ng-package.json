@@ -4,6 +4,7 @@
   "lib": {
     "entryFile": "src/public-api.ts",
     "umdModuleIds": {
+      "@sysos/lib-angular-material": "sysos.lib-angular-material",
       "@sysos/lib-file-system": "sysos.lib-file-system",
       "@sysos/lib-file-system-ui": "sysos.lib-file-system-ui",
       "@sysos/lib-selectable": "sysos.lib-selectable"

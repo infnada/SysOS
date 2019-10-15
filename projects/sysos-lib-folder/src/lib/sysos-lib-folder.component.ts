@@ -1,9 +1,9 @@
 import {Component, OnInit, ViewChild, ElementRef, AfterViewInit, Input} from '@angular/core';
-import {MatMenuTrigger} from '@angular/material';
 import {CdkDragStart} from '@angular/cdk/drag-drop';
 
 import {SysosLibLoggerService} from '@sysos/lib-logger';
 
+import {MatMenuTrigger} from '@sysos/lib-angular-material';
 import {SysosLibSelectableService} from '@sysos/lib-selectable';
 import {SysosLibFileSystemService} from '@sysos/lib-file-system';
 import {SysosLibFileSystemUiService} from '@sysos/lib-file-system-ui';

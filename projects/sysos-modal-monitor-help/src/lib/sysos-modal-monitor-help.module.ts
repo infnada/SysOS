@@ -1,8 +1,8 @@
 import {NgModule} from '@angular/core';
-import {MatTabsModule} from '@angular/material';
 
 import {NgbModalModule, NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 
+import {SysosLibAngularMaterialModule} from '@sysos/lib-angular-material';
 import {SysosLibModalService} from '@sysos/lib-modal';
 
 import {SysosModalMonitorHelpComponent} from './sysos-modal-monitor-help.component';
@@ -15,7 +15,8 @@ import {EntryComponent} from './monitor-export-entry/entry.component';
   ],
   imports: [
     NgbModalModule,
-    MatTabsModule
+    // Shared module import
+    SysosLibAngularMaterialModule
   ],
   providers: [
     NgbActiveModal
