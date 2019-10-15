@@ -16,6 +16,7 @@ function onExit(child) {
 }
 
 const projectInOrder = [
+  'sysos-lib-angular-material',
   'sysos-lib-logger',
   'sysos-lib-file-system',
   'sysos-lib-application',
