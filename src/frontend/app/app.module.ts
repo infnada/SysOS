@@ -7,8 +7,6 @@ import * as angularForms from '@angular/forms';
 import * as angularCommon from '@angular/common';
 import * as angularCommonHttp from '@angular/common/http';
 import * as angularMaterial from '@angular/material';
-import * as angularMaterialButton from '@angular/material/button';
-import * as angularMaterialTree from '@angular/material/tree';
 import * as cdkTree from '@angular/cdk/tree';
 import * as cdkDragDrop from '@angular/cdk/drag-drop';
 import * as ngBootstrap from '@ng-bootstrap/ng-bootstrap';
@@ -21,6 +19,8 @@ import * as ngxSocketIo from 'ngx-socket-io';
 import * as NgxSocketIoService from 'ngx-socket-io/src/socket-io.service';
 import * as angularFile from 'angular-file';
 import * as uuid from 'uuid';
+
+import * as SysOSLibAngularMaterial from '@sysos/lib-angular-material';
 import * as SysOSLibApplications from '@sysos/lib-application';
 import * as SysOSLibFolder from '@sysos/lib-folder';
 import * as SysOSLibFile from '@sysos/lib-file';
@@ -38,7 +38,6 @@ import * as SysOSLibUser from '@sysos/lib-user';
 import * as SysOSLibVMWare from '@sysos/lib-vmware';
 
 import * as NgxMonacoEditor from 'ngx-monaco-editor';
-import * as _ from 'lodash';
 
 SystemJS.set('@angular/core', SystemJS.newModule(angularCore));
 SystemJS.set('@angular/forms', SystemJS.newModule(angularForms));
@@ -46,8 +45,6 @@ SystemJS.set('@angular/platform-browser', SystemJS.newModule(angularPb));
 SystemJS.set('@angular/common', SystemJS.newModule(angularCommon));
 SystemJS.set('@angular/common/http', SystemJS.newModule(angularCommonHttp));
 SystemJS.set('@angular/material', SystemJS.newModule(angularMaterial));
-SystemJS.set('@angular/material/button', SystemJS.newModule(angularMaterialButton));
-SystemJS.set('@angular/material/tree', SystemJS.newModule(angularMaterialTree));
 SystemJS.set('@angular/cdk/tree', SystemJS.newModule(cdkTree));
 SystemJS.set('@angular/cdk/drag-drop', SystemJS.newModule(cdkDragDrop));
 SystemJS.set('@ng-bootstrap/ng-bootstrap', SystemJS.newModule(ngBootstrap));
@@ -60,7 +57,7 @@ SystemJS.set('ngx-socket-io', SystemJS.newModule(ngxSocketIo));
 SystemJS.set('ngx-socket-io/src/socket-io.service', SystemJS.newModule(NgxSocketIoService));
 SystemJS.set('angular-file', SystemJS.newModule(angularFile));
 SystemJS.set('uuid', SystemJS.newModule(uuid));
-SystemJS.set('lodash', SystemJS.newModule(_));
+SystemJS.set('@sysos/lib-angular-material', SystemJS.newModule(SysOSLibAngularMaterial));
 SystemJS.set('@sysos/lib-application', SystemJS.newModule(SysOSLibApplications));
 SystemJS.set('@sysos/lib-folder', SystemJS.newModule(SysOSLibFolder));
 SystemJS.set('@sysos/lib-file', SystemJS.newModule(SysOSLibFile));
@@ -86,13 +83,6 @@ import {COMPILER_OPTIONS, CompilerFactory, Compiler, NgModule} from '@angular/co
 import {JitCompilerFactory} from '@angular/platform-browser-dynamic';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {DragDropModule} from '@angular/cdk/drag-drop';
-import {
-  MatMenuModule,
-  MatDividerModule,
-  MatButtonModule,
-  MatProgressBarModule,
-  MAT_EXPANSION_PANEL_DEFAULT_OPTIONS
-} from '@angular/material';
 
 import {CookieService} from 'ngx-cookie-service';
 import {SocketIoModule, SocketIoConfig} from 'ngx-socket-io';
@@ -105,6 +95,7 @@ import {SysosLibApplicationModule} from '@sysos/lib-application';
 import {SysosLibSelectableService} from '@sysos/lib-selectable';
 import {SysosLibServiceInjectorModule} from '@sysos/lib-service-injector';
 import {SysosLibLoggerModule} from '@sysos/lib-logger';
+import {SysosLibAngularMaterialModule} from '@sysos/lib-angular-material';
 
 import {AppComponent} from './app.component';
 import {LoginComponent} from './login/login.component';
@@ -149,17 +140,15 @@ export function createCompiler(fn: CompilerFactory): Compiler {
     FormsModule,
     ReactiveFormsModule,
     DragDropModule,
-    MatMenuModule,
-    MatDividerModule,
-    MatButtonModule,
-    MatProgressBarModule,
     SocketIoModule.forRoot(config),
     OrderModule,
+
     SysosLibApplicationModule,
     SysosLibFileModule,
     SysosLibFolderModule,
     SysosLibServiceInjectorModule,
     SysosLibLoggerModule,
+    SysosLibAngularMaterialModule,
 
     MonacoEditorModule.forRoot()
   ],
@@ -181,10 +170,6 @@ export function createCompiler(fn: CompilerFactory): Compiler {
     },
     CookieService,
     SysosLibSelectableService,
-    {
-      provide: MAT_EXPANSION_PANEL_DEFAULT_OPTIONS,
-      useValue: {collapsedHeight: '38px', expandedHeight: '38px'}
-    }
   ],
   bootstrap: [AppComponent]
 })
