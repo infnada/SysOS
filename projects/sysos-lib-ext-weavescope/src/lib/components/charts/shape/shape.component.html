@@ -1,0 +1,8 @@
+<svg:g *ngIf="!stacked" [innerHTML]="renderBaseShape() | sanitizeHtml"></svg:g>
+
+<svg:g *ngIf="stacked" [attr.transform]="verticalTranslate(-2.5)">
+  <svg:g [attr.transform]="verticalTranslate(1) + ' scale(' + size + ',' + 1.14 * size + ')'" [innerHTML]="renderHighlightSpape() | sanitizeHtml"></svg:g>
+  <svg:g [attr.transform]="verticalTranslate(2)" [innerHTML]="renderBaseShape(false) | sanitizeHtml"></svg:g>
+  <svg:g [attr.transform]="verticalTranslate(1)" [innerHTML]="renderBaseShape(false) | sanitizeHtml"></svg:g>
+  <svg:g [attr.transform]="verticalTranslate(0)" [innerHTML]="renderBaseShape(false) | sanitizeHtml"></svg:g>
+</svg:g>

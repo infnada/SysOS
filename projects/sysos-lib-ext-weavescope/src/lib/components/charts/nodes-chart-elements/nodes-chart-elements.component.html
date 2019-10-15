@@ -1,0 +1,51 @@
+<ng-container *ngFor="let element of orderedElements; trackBy:trackElementBy">
+
+  <ng-container *ngIf="element.get('isOverlay')">
+    <svg:rect
+      class="nodes-chart-overlay"
+      [ngClass]="{'active': element.get('isActive')}"
+      key="elements-chart-overlay"
+      [attr.transform]="getScale()"
+      fill="hsl(240, 20%, 98%)"
+      x="-1"
+      y="-1"
+      width="2"
+      height="2"></svg:rect>
+  </ng-container>
+
+  <ng-container *ngIf="!element.get('isOverlay') && element.get('points')">
+    <svg:g slews-edge-container
+      [key]="element.get('id')"
+      [id]="element.get('id')"
+      [source]="element.get('source')"
+      [target]="element.get('target')"
+      [waypoints]="element.get('points')"
+      [highlighted]="element.get('highlighted')"
+      [focused]="element.get('focused')"
+      [scale]="element.get('scale')"
+      [isAnimated]="this.isAnimated"></svg:g>
+  </ng-container>
+
+  <ng-container *ngIf="!element.get('isOverlay') && !element.get('points')">
+    <svg:g slews-node-container
+      [matches]="element.get('matches')"
+      [networks]="element.get('networks')"
+      [metric]="element.get('metric')"
+      [focused]="element.get('focused')"
+      [highlighted]="element.get('highlighted')"
+      [shape]="element.get('shape') === 'storagesheet' ? 'sheet' : element.get('shape')"
+      [tag]="element.get('tag')"
+      [stacked]="element.get('stack')"
+      [key]="element.get('id')"
+      [id]="element.get('id')"
+      [label]="element.get('label')"
+      [labelMinor]="element.get('labelMinor')"
+      [pseudo]="element.get('pseudo')"
+      [rank]="element.get('rank')"
+      [x]="element.get('x')"
+      [y]="element.get('y')"
+      [size]="element.get('scale') * 100"
+      [isAnimated]="this.isAnimated"></svg:g>
+  </ng-container>
+
+</ng-container>

@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { UpdateManagerComponent } from './update-manager.component';
+import { MatchedTextComponent } from './matched-text.component';
 
-describe('UpdateManagerComponent', () => {
-  let component: UpdateManagerComponent;
-  let fixture: ComponentFixture<UpdateManagerComponent>;
+describe('MatchedTextComponent', () => {
+  let component: MatchedTextComponent;
+  let fixture: ComponentFixture<MatchedTextComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ UpdateManagerComponent ]
+      declarations: [ MatchedTextComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(UpdateManagerComponent);
+    fixture = TestBed.createComponent(MatchedTextComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

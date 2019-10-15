@@ -2,6 +2,12 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "paths": {
+      "@sysos/lib-angular-material": [
+        "dist/libs/sysos-lib-angular-material"
+      ],
+      "@sysos/lib-angular-material/*": [
+        "dist/libs/sysos-lib-angular-material/*"
+      ],
       "@sysos/lib-logger": [
         "dist/libs/sysos-lib-logger"
       ],
@@ -122,6 +128,12 @@
       "@sysos/lib-ext-jquery/*": [
         "dist/libs/sysos-lib-ext-jquery/*"
       ],
+      "@sysos/lib-ext-lz-string": [
+        "dist/libs/sysos-lib-ext-lz-string"
+      ],
+      "@sysos/lib-ext-lz-string/*": [
+        "dist/libs/sysos-lib-ext-lz-string/*"
+      ],
       "@sysos/lib-ext-netdata": [
         "dist/libs/sysos-lib-ext-netdata"
       ],
@@ -140,11 +152,11 @@
       "@sysos/lib-ext-pako/*": [
         "dist/libs/sysos-lib-ext-pako/*"
       ],
-      "@sysos/lib-ext-lz-string": [
-        "dist/libs/sysos-lib-ext-lz-string"
+      "@sysos/lib-ext-weavescope": [
+        "dist/libs/sysos-lib-ext-weavescope"
       ],
-      "@sysos/lib-ext-lz-string/*": [
-        "dist/libs/sysos-lib-ext-lz-string/*"
+      "@sysos/lib-ext-weavescope/*": [
+        "dist/libs/sysos-lib-ext-weavescope/*"
       ],
       "@sysos/app-backups-manager": [
         "dist/applications/sysos-app-backups-manager"

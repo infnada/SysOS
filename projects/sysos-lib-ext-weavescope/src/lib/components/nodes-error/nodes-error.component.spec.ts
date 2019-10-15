@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SwitchDetailsComponent } from './switch-details.component';
+import { NodesErrorComponent } from './nodes-error.component';
 
-describe('SwitchDetailsComponent', () => {
-  let component: SwitchDetailsComponent;
-  let fixture: ComponentFixture<SwitchDetailsComponent>;
+describe('NodesErrorComponent', () => {
+  let component: NodesErrorComponent;
+  let fixture: ComponentFixture<NodesErrorComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SwitchDetailsComponent ]
+      declarations: [ NodesErrorComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SwitchDetailsComponent);
+    fixture = TestBed.createComponent(NodesErrorComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

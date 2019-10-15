@@ -1,0 +1,9 @@
+<ng-container *ngIf="!isAnimated">
+  <svg:g slews-edge [id]="id" [source]="source" [target]="target" [highlighted]="highlighted" [focused]="focused" [path]="getEdgePath()" [thickness]="thickness"></svg:g>
+</ng-container>
+
+<ng-container *ngIf="isAnimated">
+  <!--<Motion [style]="getMotionStyle()">-->
+    <svg:g slews-edge [id]="id" [source]="source" [target]="target" [highlighted]="highlighted" [focused]="focused" [path]="getEdgePath(true)" [thickness]="weakSpring(thickness)"></svg:g>
+  <!--</Motion>-->
+</ng-container>

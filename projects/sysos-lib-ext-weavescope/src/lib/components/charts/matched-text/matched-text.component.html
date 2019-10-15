@@ -1,0 +1,17 @@
+<span title="{{text}}">
+
+  <ng-container *ngFor="let chunk of state.chunks">
+
+    <ng-container *ngIf="chunk.matched">
+      <span [style.background-color]="'hsla(191, 100%, 50%, 0.7)'" [style.border-radius]="'2px'">
+        <span>{{chunk.text}}</span>
+      </span>
+    </ng-container>
+
+    <ng-container *ngIf="!chunk.matched">
+      <span>{{chunk.text}}</span>
+    </ng-container>
+
+  </ng-container>
+
+</span>

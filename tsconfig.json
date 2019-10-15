@@ -19,6 +19,12 @@
       "dom"
     ],
     "paths": {
+      "@sysos/lib-angular-material": [
+        "projects/sysos-lib-angular-material/src/public-api"
+      ],
+      "@sysos/lib-angular-material/*": [
+        "projects/sysos-lib-angular-material/*"
+      ],
       "@sysos/lib-logger": [
         "projects/sysos-lib-logger/src/public-api"
       ],
@@ -139,6 +145,12 @@
       "@sysos/lib-ext-jquery/*": [
         "projects/sysos-lib-jquery/*"
       ],
+      "@sysos/lib-ext-lz-string": [
+        "projects/sysos-lib-ext-lz-string/src/public-api"
+      ],
+      "@sysos/lib-ext-lz-string/*": [
+        "projects/sysos-lib-lz-string/*"
+      ],
       "@sysos/lib-ext-netdata": [
         "projects/sysos-lib-ext-netdata/src/public-api"
       ],
@@ -157,11 +169,11 @@
       "@sysos/lib-ext-pako/*": [
         "projects/sysos-lib-pako/*"
       ],
-      "@sysos/lib-ext-lz-string": [
-        "projects/sysos-lib-ext-lz-string/src/public-api"
+      "@sysos/lib-ext-weavescope": [
+        "projects/sysos-lib-ext-weavescope/src/public-api"
       ],
-      "@sysos/lib-ext-lz-string/*": [
-        "projects/sysos-lib-lz-string/*"
+      "@sysos/lib-ext-weavescope/*": [
+        "projects/sysos-lib-weavescope/*"
       ],
       "@sysos/app-backups-manager": [
         "projects/sysos-app-backups-manager/src/public-api"

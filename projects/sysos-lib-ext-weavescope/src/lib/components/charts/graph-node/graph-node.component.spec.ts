@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TitlebarComponent } from './titlebar.component';
+import { GraphNodeComponent } from './graph-node.component';
 
-describe('TitlebarComponent', () => {
-  let component: TitlebarComponent;
-  let fixture: ComponentFixture<TitlebarComponent>;
+describe('GraphNodeComponent', () => {
+  let component: GraphNodeComponent;
+  let fixture: ComponentFixture<GraphNodeComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ TitlebarComponent ]
+      declarations: [ GraphNodeComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(TitlebarComponent);
+    fixture = TestBed.createComponent(GraphNodeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

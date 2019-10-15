@@ -1,0 +1,30 @@
+<div class="header">
+  <div class="selectors">
+    <slews-search class="float-left ml-5"></slews-search>
+    <slews-topologies class="float-left ml-5"></slews-topologies>
+    <slews-metrics class="float-left ml-5"></slews-metrics>
+  </div>
+</div>
+
+<div class="nodes-wrapper" #weaveApp>
+
+    <ng-container *ngIf="!topologiesLoaded || !nodesLoaded">
+      <slews-loading [itemType]="'topologies'" *ngIf="!topologiesLoaded"></slews-loading>
+      <slews-loading [itemType]="getNodeType(currentTopology, topologies)" *ngIf="topologiesLoaded && !nodesLoaded"></slews-loading>
+    </ng-container>
+
+    <ng-container *ngIf="topologiesLoaded && nodesLoaded">
+      <slews-nodes-error [faIconClass]="'far fa-circle'" *ngIf="nodesDisplayEmpty">
+        <div class="heading">Nothing to show. This can have any of these reasons:</div>
+        <ul>
+          <li *ngFor="let cause of topologyNodeCountZero ? NODES_STATS_COUNT_ZERO_CAUSES : NODES_NOT_DISPLAYED_CAUSES">{{cause}}</li>
+        </ul>
+      </slews-nodes-error>
+    </ng-container>
+
+    <slews-nodes-chart></slews-nodes-chart>
+</div>
+
+<div class="tour-step-anchor sidebar">
+  <slews-topology-options></slews-topology-options>
+</div>
