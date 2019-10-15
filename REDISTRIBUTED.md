@@ -5,8 +5,29 @@ anyOpsOS copyright info:
 - Copyright 2018-2019, anyOpsOS
 - Released under [GPL v3 or later](LICENSE).
 
+
+
 - Desktop template found at https://codepen.io/keithpickering/pen/azBdNj under MIT License by Keith Pickering
 
+
+- Some files or portion of it (of anyOps libraries listed below) are based on [netdata/netdata](https://github.com/netdata/netdata) code under [GNU General Public License v3.0](https://github.com/netdata/netdata/blob/master/LICENSE)
+    - [sysos-app-monitor](projects/sysos-app-monitor)
+    - [sysos-modal-monitor-alarms](projects/sysos-modal-monitor-alarms)
+    - [sysos-modal-monitor-export](projects/sysos-modal-monitor-export)
+    - [sysos-modal-monitor-help](projects/sysos-modal-monitor-help)
+    - [sysos-modal-monitor-import](projects/sysos-modal-monitor-import)
+    - [sysos-modal-monitor-options](projects/sysos-modal-monitor-options)
+    - [sysos-modal-monitor-xss](projects/sysos-modal-monitor-xss)
+
+
+- Some content of [sysos-lib-ext-dygraphs](projects/sysos-lib-ext-dygraphs/src/lib/sysos-lib-ext-dygraphs.service.ts) if part of [danvk/dygraphs](https://github.com/danvk/dygraphs) code under [MIT License](https://github.com/danvk/dygraphs/blob/master/LICENSE.txt)
+    
+   
+- Some content of [sysos-lib-ext-mxgraph](projects/sysos-lib-ext-mxgraph/src/lib/types) if part of [lgleim/mxgraph-typings](https://github.com/lgleim/mxgraph-typings) code under [MIT License](https://github.com/lgleim/mxgraph-typings/blob/master/LICENSE)
+
+- Some content of [sysos-lib-ext-weavescope](projects/sysos-lib-ext-weavescope) if based and rebuilt from [weaveworks/scope](https://github.com/weaveworks/scope) code under [Apache License Version 2.0](https://github.com/weaveworks/scope/blob/master/LICENSE)
+
+- Some content of [sysos-lib-selectable](projects/sysos-lib-selectable) if based and rebuilt from [Mobius1/Selectable](https://github.com/Mobius1/Selectable) code under [MIT License](https://github.com/Mobius1/Selectable/blob/master/LICENSE)
 
 anyOpsOS redistributes the following third-party software on the pre-built docker image.
 
