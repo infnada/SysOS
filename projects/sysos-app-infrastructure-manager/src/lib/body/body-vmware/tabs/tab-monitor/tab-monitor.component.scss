@@ -1,0 +1,25 @@
+.monitor_charts {
+  padding: 20px 0;
+}
+
+.chart_panel {
+  padding: 10px;
+  border: none;
+  border-top: 1px solid rgba(0,0,0,.12);
+}
+
+.monitor_charts h5 {
+  line-height: 2rem;
+  letter-spacing: .0125em;
+  margin-bottom: 5px;
+}
+
+.netdata-container-with-legend {
+  display: inline-block;
+  overflow: hidden;
+  transform: translate3d(0,0,0);
+  min-height: 99px;
+  position: relative;
+  margin-bottom: 20px;
+  background: #fff;
+}

@@ -1,0 +1,120 @@
+<mat-expansion-panel [expanded]=true>
+  <mat-expansion-panel-header>
+    <mat-panel-title>Host Configuration</mat-panel-title>
+  </mat-expansion-panel-header>
+
+  <mat-accordion [multi]=true>
+
+    <mat-expansion-panel [disabled]=true>
+      <mat-expansion-panel-header>
+        <mat-panel-title>Image Profile</mat-panel-title>
+        <mat-panel-description>ESXi-6.7.0-8169922-standard</mat-panel-description>
+      </mat-expansion-panel-header>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel [disabled]=true>
+      <mat-expansion-panel-header>
+        <mat-panel-title>vSphere HA State</mat-panel-title>
+        <mat-panel-description>N/A</mat-panel-description>
+      </mat-expansion-panel-header>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>Fault Tolerance (Legacy)</mat-panel-title>
+        <mat-panel-description>Unsupported</mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <mat-accordion>
+
+        <mat-expansion-panel [disabled]=true>
+          <mat-expansion-panel-header>
+            <mat-panel-title>vSphere HA agent</mat-panel-title>
+            <mat-panel-description>Not running</mat-panel-description>
+          </mat-expansion-panel-header>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel [disabled]=true>
+          <mat-expansion-panel-header>
+            <mat-panel-title>Hardware virtualization</mat-panel-title>
+            <mat-panel-description>Not supported by the host CPU</mat-panel-description>
+          </mat-expansion-panel-header>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel [disabled]=true>
+          <mat-expansion-panel-header>
+            <mat-panel-title>Virtual NIC for vSphere Fault Tolerance logging</mat-panel-title>
+            <mat-panel-description>Not configured</mat-panel-description>
+          </mat-expansion-panel-header>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel [disabled]=true>
+          <mat-expansion-panel-header>
+            <mat-panel-title>Virtual NIC for vMotion</mat-panel-title>
+            <mat-panel-description>Not configured</mat-panel-description>
+          </mat-expansion-panel-header>
+        </mat-expansion-panel>
+
+      </mat-accordion>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>Fault Tolerance</mat-panel-title>
+        <mat-panel-description>Unsupported</mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <mat-accordion>
+
+        <mat-expansion-panel [disabled]=true>
+          <mat-expansion-panel-header>
+            <mat-panel-title>vSphere HA agent</mat-panel-title>
+            <mat-panel-description>Not running</mat-panel-description>
+          </mat-expansion-panel-header>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel [disabled]=true>
+          <mat-expansion-panel-header>
+            <mat-panel-title>Virtual NIC for vSphere Fault Tolerance logging</mat-panel-title>
+            <mat-panel-description>Not configured</mat-panel-description>
+          </mat-expansion-panel-header>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel [disabled]=true>
+          <mat-expansion-panel-header>
+            <mat-panel-title>Virtual NIC for vMotion</mat-panel-title>
+            <mat-panel-description>Not configured</mat-panel-description>
+          </mat-expansion-panel-header>
+        </mat-expansion-panel>
+
+      </mat-accordion>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>EVC Mode</mat-panel-title>
+        <mat-panel-description>Disabled</mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <mat-accordion>
+
+        <mat-expansion-panel [disabled]=true>
+          <mat-expansion-panel-header>
+            <mat-panel-title>Current EVC Mode</mat-panel-title>
+            <mat-panel-description>Disabled</mat-panel-description>
+          </mat-expansion-panel-header>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel [disabled]=true>
+          <mat-expansion-panel-header>
+            <mat-panel-title>Supported EVC Modes</mat-panel-title>
+            <mat-panel-description>AMD Opteron™ Gen. 3 (no 3DNow!™)</mat-panel-description>
+          </mat-expansion-panel-header>
+        </mat-expansion-panel>
+
+      </mat-accordion>
+    </mat-expansion-panel>
+
+  </mat-accordion>
+
+</mat-expansion-panel>

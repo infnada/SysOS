@@ -2,12 +2,12 @@ import {Component, Input, OnInit, ViewChild} from '@angular/core';
 
 import {SysosLibLoggerService} from '@sysos/lib-logger';
 
+import {MatSort, MatTableDataSource} from '@sysos/lib-angular-material';
 import {Application} from '@sysos/lib-application';
 import {SysosLibModalService} from '@sysos/lib-modal';
 import {SysosLibVmwareService, TaskInfo} from '@sysos/lib-vmware';
 
 import {SysosAppInfrastructureManagerService} from '../../services/sysos-app-infrastructure-manager.service';
-import {MatSort, MatTableDataSource} from '@angular/material';
 
 @Component({
   selector: 'saim-vmware-recent-tasks',

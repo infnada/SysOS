@@ -1,17 +1,7 @@
-<div>
-  <saim-titlebar [vmwareObject]="vmwareObject"></saim-titlebar>
+<ng-container *ngIf="vmwareObject.type === 'vmware'">
+  <saim-home [vmwareObject]="vmwareObject"></saim-home>
+</ng-container>
 
-
-  <ng-container *ngIf="vmwareObject.type === 'vmware'">
-    <saim-home [vmwareObject]="vmwareObject"></saim-home>
-  </ng-container>
-
-  <ng-container *ngIf="vmwareObject.type !== 'vmware'">
-    <saim-object [vmwareObject]="vmwareObject"></saim-object>
-  </ng-container>
-</div>
-
-
-
-<h2 class="page-title">Home</h2>
-<div id="vmwareGraphContainer"></div>
+<ng-container *ngIf="vmwareObject.type !== 'vmware'">
+  <saim-object [vmwareObject]="vmwareObject"></saim-object>
+</ng-container>

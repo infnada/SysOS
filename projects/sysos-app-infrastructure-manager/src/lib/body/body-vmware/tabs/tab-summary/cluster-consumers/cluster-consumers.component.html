@@ -1,0 +1,57 @@
+<mat-expansion-panel [expanded]="true">
+  <mat-expansion-panel-header>
+    <mat-panel-title>Cluster Consumers</mat-panel-title>
+  </mat-expansion-panel-header>
+
+  <mat-accordion>
+
+    <mat-expansion-panel [disabled]=true>
+      <mat-expansion-panel-header>
+        <mat-panel-title>Resource pools</mat-panel-title>
+        <mat-panel-description>1</mat-panel-description>
+      </mat-expansion-panel-header>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel [disabled]=true>
+      <mat-expansion-panel-header>
+        <mat-panel-title>vApps</mat-panel-title>
+        <mat-panel-description>2</mat-panel-description>
+      </mat-expansion-panel-header>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>Virtual machines</mat-panel-title>
+        <mat-panel-description>13</mat-panel-description>
+      </mat-expansion-panel-header>
+
+      <mat-accordion>
+
+        <mat-expansion-panel [disabled]=true>
+          <mat-expansion-panel-header>
+            <mat-panel-title>Powered-on</mat-panel-title>
+            <mat-panel-description>1</mat-panel-description>
+          </mat-expansion-panel-header>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel [disabled]=true>
+          <mat-expansion-panel-header>
+            <mat-panel-title>Powered-off</mat-panel-title>
+            <mat-panel-description>12</mat-panel-description>
+          </mat-expansion-panel-header>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel [disabled]=true>
+          <mat-expansion-panel-header>
+            <mat-panel-title>Total</mat-panel-title>
+            <mat-panel-description>13</mat-panel-description>
+          </mat-expansion-panel-header>
+        </mat-expansion-panel>
+
+      </mat-accordion>
+
+    </mat-expansion-panel>
+
+  </mat-accordion>
+
+</mat-expansion-panel>

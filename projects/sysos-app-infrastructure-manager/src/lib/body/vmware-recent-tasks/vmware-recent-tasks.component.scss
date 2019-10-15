@@ -12,6 +12,11 @@
   }
 }
 
+tr.mat-header-row {
+  height: 30px;
+  background: #f3f3f3;
+}
+
 .table {
   margin-bottom: 0;
   height: 100%;
@@ -60,3 +65,20 @@
 .table-elipsis td:nth-child(8) {
   width: 15%;
 }
+
+.mat-tab-group {
+  box-shadow: 0 -2px 3px 3px hsla(0,0%,77%,.2);
+  height: 100%;
+
+  ::ng-deep .mat-tab-header {
+    box-shadow: inset 0 -1px 0 #ccc;
+    background: #fff;
+  }
+
+  ::ng-deep .mat-tab-label {
+    height: 38px;
+  }
+}
+
+
+

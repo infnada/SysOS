@@ -1,23 +1,10 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
-import {
-  MatDividerModule,
-  MatMenuModule,
-  MatButtonModule,
-  MatSlideToggleModule,
-  MatTreeModule,
-  MatIconModule,
-  MatCardModule,
-  MatProgressBarModule,
-  MatTabsModule,
-  MatExpansionModule,
-  MatSortModule,
-  MatTableModule
-} from '@angular/material';
 
 import {ToastrModule} from 'ngx-toastr';
 
+import {SysosLibAngularMaterialModule} from '@sysos/lib-angular-material';
 import {SysosLibApplicationService} from '@sysos/lib-application';
 import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
 
@@ -36,35 +23,32 @@ import {BodyNetappVserverComponent} from './body/body-netapp-vserver/body-netapp
 import {BodyNetappVolumeComponent} from './body/body-netapp-volume/body-netapp-volume.component';
 import {BodyNetappSnapshotComponent} from './body/body-netapp-snapshot/body-netapp-snapshot.component';
 import {VmwareRecentTasksComponent} from './body/vmware-recent-tasks/vmware-recent-tasks.component';
-import {TagsComponent} from './body/body-vmware/tab-summary/tags/tags.component';
-import {VmHardwareComponent} from './body/body-vmware/tab-summary/vm-hardware/vm-hardware.component';
-import {NotesComponent} from './body/body-vmware/tab-summary/notes/notes.component';
-import {RelatedObjectsComponent} from './body/body-vmware/tab-summary/related-objects/related-objects.component';
-import {CustomAttributesComponent} from './body/body-vmware/tab-summary/custom-attributes/custom-attributes.component';
-import {VmStoragePoliciesComponent} from './body/body-vmware/tab-summary/vm-storage-policies/vm-storage-policies.component';
-import {TitlebarComponent} from './body/body-vmware/titlebar/titlebar.component';
-import {SummaryStatsComponent} from './body/body-vmware/tab-summary/summary-stats/summary-stats.component';
-import {SummaryInfoComponent} from './body/body-vmware/tab-summary/summary-info/summary-info.component';
-import {SummaryImageComponent} from './body/body-vmware/tab-summary/summary-image/summary-image.component';
-import {TabSummaryComponent} from './body/body-vmware/tab-summary/tab-summary.component';
+import {TagsComponent} from './body/body-vmware/tabs/tab-summary/tags/tags.component';
+import {RelatedObjectsComponent} from './body/body-vmware/tabs/tab-summary/related-objects/related-objects.component';
+import {CustomAttributesComponent} from './body/body-vmware/tabs/tab-summary/custom-attributes/custom-attributes.component';
+import {VmStoragePoliciesComponent} from './body/body-vmware/tabs/tab-summary/vm-storage-policies/vm-storage-policies.component';
+import {SummaryInfoComponent} from './body/body-vmware/tabs/tab-summary/summary-info/summary-info.component';
 import {HomeComponent} from './body/body-vmware/home/home.component';
 import {ObjectComponent} from './body/body-vmware/object/object.component';
-import { DatastoreClusterConsumersComponent } from './body/body-vmware/tab-summary/datastore-cluster-consumers/datastore-cluster-consumers.component';
-import { DatastoreClusterResourcesComponent } from './body/body-vmware/tab-summary/datastore-cluster-resources/datastore-cluster-resources.component';
-import { VappStatusComponent } from './body/body-vmware/tab-summary/vapp-status/vapp-status.component';
-import { ResourcePoolSettingsComponent } from './body/body-vmware/tab-summary/resource-pool-settings/resource-pool-settings.component';
-import { HostHardwareComponent } from './body/body-vmware/tab-summary/host-hardware/host-hardware.component';
-import { HostConfigurationComponent } from './body/body-vmware/tab-summary/host-configuration/host-configuration.component';
-import { VsphereDrsComponent } from './body/body-vmware/tab-summary/vsphere-drs/vsphere-drs.component';
-import { ClusterResourcesComponent } from './body/body-vmware/tab-summary/cluster-resources/cluster-resources.component';
-import { ClusterConsumersComponent } from './body/body-vmware/tab-summary/cluster-consumers/cluster-consumers.component';
-import { UpdateManagerComponent } from './body/body-vmware/tab-summary/update-manager/update-manager.component';
-import { VcenterHaComponent } from './body/body-vmware/tab-summary/vcenter-ha/vcenter-ha.component';
-import { VersionInformationComponent } from './body/body-vmware/tab-summary/version-information/version-information.component';
-import { StorageDrsComponent } from './body/body-vmware/tab-summary/storage-drs/storage-drs.component';
-import { DatastoreDetailsComponent } from './body/body-vmware/tab-summary/datastore-details/datastore-details.component';
-import { SwitchDetailsComponent } from './body/body-vmware/tab-summary/switch-details/switch-details.component';
-import { SwitchFeaturesComponent } from './body/body-vmware/tab-summary/switch-features/switch-features.component';
+import {TabSummaryComponent} from './body/body-vmware/tabs/tab-summary/tab-summary.component';
+import {TabMonitorComponent} from './body/body-vmware/tabs/tab-monitor/tab-monitor.component';
+import {TabAlarmsComponent} from './body/body-vmware/tabs/tab-alarms/tab-alarms.component';
+import {TabUpdatesComponent} from './body/body-vmware/tabs/tab-updates/tab-updates.component';
+import {TabConfigureComponent} from './body/body-vmware/tabs/tab-configure/tab-configure.component';
+
+import {DatastoreClusterResourcesComponent} from './body/body-vmware/tabs/tab-summary/datastore-cluster-resources/datastore-cluster-resources.component';
+import {VappStatusComponent} from './body/body-vmware/tabs/tab-summary/vapp-status/vapp-status.component';
+import {ResourcePoolSettingsComponent} from './body/body-vmware/tabs/tab-summary/resource-pool-settings/resource-pool-settings.component';
+import {HostHardwareComponent} from './body/body-vmware/tabs/tab-summary/host-hardware/host-hardware.component';
+import {HostConfigurationComponent} from './body/body-vmware/tabs/tab-summary/host-configuration/host-configuration.component';
+import {VsphereDrsComponent} from './body/body-vmware/tabs/tab-summary/vsphere-drs/vsphere-drs.component';
+import {ClusterResourcesComponent} from './body/body-vmware/tabs/tab-summary/cluster-resources/cluster-resources.component';
+import {ClusterConsumersComponent} from './body/body-vmware/tabs/tab-summary/cluster-consumers/cluster-consumers.component';
+import {VcenterHaComponent} from './body/body-vmware/tabs/tab-summary/vcenter-ha/vcenter-ha.component';
+import {VersionInformationComponent} from './body/body-vmware/tabs/tab-summary/version-information/version-information.component';
+import {StorageDrsComponent} from './body/body-vmware/tabs/tab-summary/storage-drs/storage-drs.component';
+import {SwitchFeaturesComponent} from './body/body-vmware/tabs/tab-summary/switch-features/switch-features.component';
+import {SysosLibExtWeavescopeModule} from '@sysos/lib-ext-weavescope';
 
 @NgModule({
   declarations: [
@@ -80,19 +64,13 @@ import { SwitchFeaturesComponent } from './body/body-vmware/tab-summary/switch-f
     BodyNetappSnapshotComponent,
     VmwareRecentTasksComponent,
     TagsComponent,
-    VmHardwareComponent,
-    NotesComponent,
     RelatedObjectsComponent,
     CustomAttributesComponent,
     VmStoragePoliciesComponent,
-    TitlebarComponent,
-    SummaryStatsComponent,
     SummaryInfoComponent,
-    SummaryImageComponent,
     TabSummaryComponent,
     HomeComponent,
     ObjectComponent,
-    DatastoreClusterConsumersComponent,
     DatastoreClusterResourcesComponent,
     VappStatusComponent,
     ResourcePoolSettingsComponent,
@@ -101,31 +79,23 @@ import { SwitchFeaturesComponent } from './body/body-vmware/tab-summary/switch-f
     VsphereDrsComponent,
     ClusterResourcesComponent,
     ClusterConsumersComponent,
-    UpdateManagerComponent,
     VcenterHaComponent,
     VersionInformationComponent,
     StorageDrsComponent,
-    DatastoreDetailsComponent,
-    SwitchDetailsComponent,
-    SwitchFeaturesComponent
+    SwitchFeaturesComponent,
+    TabMonitorComponent,
+    TabAlarmsComponent,
+    TabUpdatesComponent,
+    TabConfigureComponent
   ],
   imports: [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    MatMenuModule,
-    MatDividerModule,
-    MatButtonModule,
-    MatSlideToggleModule,
-    MatTreeModule,
-    MatIconModule,
-    MatCardModule,
-    MatProgressBarModule,
-    MatTabsModule,
-    MatExpansionModule,
-    MatSortModule,
-    MatTableModule,
-    ToastrModule.forRoot()
+    ToastrModule.forRoot(),
+    // Shared module import
+    SysosLibExtWeavescopeModule,
+    SysosLibAngularMaterialModule
   ],
   exports: []
 })

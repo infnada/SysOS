@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 
 import {SysosLibLoggerService} from '@sysos/lib-logger';
 import {SysosLibApplicationService} from '@sysos/lib-application';
-import {SysosLibModalService} from "@sysos/lib-modal";
+import {SysosLibModalService} from '@sysos/lib-modal';
 
 import {SysosAppInfrastructureManagerService} from './sysos-app-infrastructure-manager.service';
 import {SysosAppInfrastructureNetappService} from './netapp/sysos-app-infrastructure-netapp.service';

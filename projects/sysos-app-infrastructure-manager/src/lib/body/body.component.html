@@ -122,17 +122,17 @@
     <i class="fas fa-arrow-right sidebar-open-font open-sidebar"></i>
   </div>
   <div class="window__main no_padding">
-    <div class="col">
-      <saim-body-new-connection [application]="application" *ngIf="activeConnection === null || getActiveConnection().state === 'disconnected'"></saim-body-new-connection>
+    <saim-body-new-connection [application]="application" *ngIf="activeConnection === null || getActiveConnection().state === 'disconnected'"></saim-body-new-connection>
 
-      <saim-body-vmware [application]="application" [vmwareObject]="activeView.data" *ngIf="activeView.type !== null && activeView.type.startsWith('vmware')"></saim-body-vmware>
-
-      <saim-body-netapp *ngIf="activeView.type === 'netapp'"></saim-body-netapp>
-      <saim-body-netapp-vserver *ngIf="activeView.type === 'netapp-vserver'"></saim-body-netapp-vserver>
-      <saim-body-netapp-volume *ngIf="activeView.type === 'netapp-volume'"></saim-body-netapp-volume>
-      <saim-body-netapp-snapshot *ngIf="activeView.type === 'netapp-snapshot'"></saim-body-netapp-snapshot>
+    <div *ngIf="activeView.type !== null && activeView.type.startsWith('vmware')" class="h-100">
+      <saim-body-vmware [application]="application" [vmwareObject]="activeView.data"></saim-body-vmware>
+      <saim-vmware-recent-tasks [application]="application" ></saim-vmware-recent-tasks>
     </div>
-    <saim-vmware-recent-tasks [application]="application" *ngIf="activeView.type !== null && activeView.type.startsWith('vmware')"></saim-vmware-recent-tasks>
+
+    <saim-body-netapp *ngIf="activeView.type === 'netapp'"></saim-body-netapp>
+    <saim-body-netapp-vserver *ngIf="activeView.type === 'netapp-vserver'"></saim-body-netapp-vserver>
+    <saim-body-netapp-volume *ngIf="activeView.type === 'netapp-volume'"></saim-body-netapp-volume>
+    <saim-body-netapp-snapshot *ngIf="activeView.type === 'netapp-snapshot'"></saim-body-netapp-snapshot>
 
     <!--<div ng-if="smB.showvCenter == true">
 	  <div ng-include="'templates/applications/vcenter-type-smanager.html'" include-replace></div>

@@ -1,0 +1,235 @@
+<div class="float-left">
+  <img alt="" *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'ClusterComputeResource'" src="https://192.168.1.9/ui/cluster-ui/resources/img/obj-cluster.png">
+  <img alt="" *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'HostSystem'" src="https://192.168.1.9/ui/host-ui/resources/img/obj-host.png">
+  <img alt="" *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'ResourcePool'" src="https://192.168.1.9/ui/cluster-ui/resources/img/obj-rp.png">
+  <img alt="" *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'VirtualApp'" src="https://192.168.1.9/ui/vapp-ui/resources/img/obj-vapp.png">
+  <img alt="" *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'Folder' && vmwareObject.info.data.childType.includes('ComputeResource')" src="https://192.168.1.9/ui/folder-ui/resources/img/obj-host-folder.png">
+  <img alt="" *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'Folder' && vmwareObject.info.data.childType.includes('VirtualMachine')" src="https://192.168.1.9/ui/folder-ui/resources/img/obj-vm-folder.png">
+  <img alt="" *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'Folder' && vmwareObject.info.data.childType.includes('Network')" src="https://192.168.1.9/ui/folder-ui/resources/img/obj-network-folder.png">
+  <img alt="" *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'Folder' && vmwareObject.info.data.childType.includes('Datastore')" src="https://192.168.1.9/ui/folder-ui/resources/img/obj-storage-folder.png">
+  <img alt="" *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'Datacenter'" src="https://192.168.1.9/ui/folder-ui/resources/img/obj-dc.png">
+  <img alt="" *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'StoragePod'" src="https://192.168.1.9/ui/ds-cluster-ui/resources/img/obj-ds-cluster.png">
+  <img alt="" *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'Datastore'" src="https://192.168.1.9/ui/storage-ui/resources/img/obj-ds.png">
+  <img alt="" *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'VmwareDistributedVirtualSwitch'" src="https://192.168.1.9/ui/network-ui/resources/img/obj-dvs.png">
+  <img alt="" *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'DistributedVirtualPortgroup'" src="https://192.168.1.9/ui/network-ui/resources/img/obj-dv-portgroup.png">
+  <img alt="" *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'Network'" src="https://192.168.1.9/ui/network-ui/resources/img/obj-network.png">
+</div>
+<div class="float-left">
+  <table class="table table-borderless table-sm">
+    <tbody>
+
+    <ng-container *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'Datacenter'">
+      <tr>
+        <td>Hosts:</td>
+        <td>1</td>
+      </tr>
+      <tr>
+        <td>Virtual Machines:</td>
+        <td>13</td>
+      </tr>
+      <tr>
+        <td>Clusters:</td>
+        <td>2</td>
+      </tr>
+      <tr>
+        <td>Networks:</td>
+        <td>4</td>
+      </tr>
+      <tr>
+        <td>Datastores:</td>
+        <td>6</td>
+      </tr>
+    </ng-container>
+
+    <ng-container *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'ClusterComputeResource'">
+      <tr>
+        <td>Total Processors:</td>
+        <td>0</td>
+      </tr>
+      <tr>
+        <td>Total vMotion Migrations:</td>
+        <td>0</td>
+      </tr>
+    </ng-container>
+
+    <ng-container *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'HostSystem'">
+      <tr>
+        <td>Hypervisor:</td>
+        <td>VMware ESXi, 6.7.0, 8169922</td>
+      </tr>
+      <tr>
+        <td>Model:</td>
+        <td>VMware7,1</td>
+      </tr>
+      <tr>
+        <td>Processor Type:</td>
+        <td>AMD Ryzen 7 1700X Eight-Core Processor</td>
+      </tr>
+      <tr>
+        <td>Logical Processors:</td>
+        <td>12</td>
+      </tr>
+      <tr>
+        <td>NICs:</td>
+        <td>1</td>
+      </tr>
+      <tr>
+        <td>Virtual Machines:</td>
+        <td>13</td>
+      </tr>
+      <tr>
+        <td>State:</td>
+        <td>Connected</td>
+      </tr>
+      <tr>
+        <td>Uptime:</td>
+        <td>3 days</td>
+      </tr>
+    </ng-container>
+
+    <ng-container *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'ResourcePool'">
+      <tr>
+        <td></td>
+        <td>This pool / Total</td>
+      </tr>
+      <tr>
+        <td>VMs and Templates:</td>
+        <td>2 / 2</td>
+      </tr>
+      <tr>
+        <td>Powered on VMs:</td>
+        <td>0 / 0</td>
+      </tr>
+      <tr>
+        <td>Child Resource Pools:</td>
+        <td>0 / 0</td>
+      </tr>
+      <tr>
+        <td>Child vApps:</td>
+        <td>0 / 0</td>
+      </tr>
+    </ng-container>
+
+    <ng-container *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'VirtualApp'">
+      <tr>
+        <td>Product</td>
+        <td>--</td>
+      </tr>
+      <tr>
+        <td>Vendor:</td>
+        <td>--</td>
+      </tr>
+      <tr>
+        <td>Version:</td>
+        <td>--</td>
+      </tr>
+    </ng-container>
+
+    <ng-container *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'VirtualMachine'">
+      <tr>
+        <td>Guest OS:</td>
+        <td><i class="fab fa-windows"></i> <i class="fab fa-linux"></i> Microsoft Windows Server 2016 (64-bit)</td>
+      </tr>
+      <tr>
+        <td>DNS Name:</td>
+        <td>labad01</td>
+      </tr>
+      <tr>
+        <td>IP Addresses:</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>Host:</td>
+        <td>192.168.1.2</td>
+      </tr>
+    </ng-container>
+
+    <ng-container *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'StoragePod'">
+      <tr>
+        <td>Total Datastores</td>
+        <td>2</td>
+      </tr>
+      <tr>
+        <td>Total VMDKs:</td>
+        <td>0</td>
+      </tr>
+      <tr>
+        <td>Snapshots:</td>
+        <td>0</td>
+      </tr>
+      <tr>
+        <td>Type:</td>
+        <td>NFS</td>
+      </tr>
+    </ng-container>
+
+    <ng-container *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'Datastore'">
+      <tr>
+        <td>Type</td>
+        <td>NFS 3</td>
+      </tr>
+      <tr>
+        <td>URL:</td>
+        <td>ds:///vmfs/volumes/0de4fd92-5bc556fe/</td>
+      </tr>
+      <tr>
+        <td>Server:</td>
+        <td>192.168.1.100</td>
+      </tr>
+      <tr>
+        <td>Folder:</td>
+        <td>/NFS9501_data01</td>
+      </tr>
+    </ng-container>
+
+    <ng-container *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'VmwareDistributedVirtualSwitch'">
+      <tr>
+        <td>Manufacturer</td>
+        <td>VMware, Inc.</td>
+      </tr>
+      <tr>
+        <td>Version:</td>
+        <td>6.6.0</td>
+      </tr>
+    </ng-container>
+
+    <ng-container *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'DistributedVirtualPortgroup'">
+      <tr>
+        <td>Port binding</td>
+        <td>Static binding</td>
+      </tr>
+      <tr>
+        <td>Port allocation:</td>
+        <td>Elastic</td>
+      </tr>
+      <tr>
+        <td>VLAN ID:</td>
+        <td>--</td>
+      </tr>
+    </ng-container>
+
+    <ng-container *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'Network'">
+      <tr>
+        <td>Accessible</td>
+        <td>Yes</td>
+      </tr>
+      <tr>
+        <td>Virtual machines:</td>
+        <td>12</td>
+      </tr>
+      <tr>
+        <td>Hosts:</td>
+        <td>1</td>
+      </tr>
+    </ng-container>
+
+    </tbody>
+  </table>
+</div>
+<ng-container *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'VirtualApp' || VmwareTemplateHelpers.getObjectType(vmwareObject) === 'VirtualMachine' || VmwareTemplateHelpers.getObjectType(vmwareObject) === 'VmwareDistributedVirtualSwitch' || VmwareTemplateHelpers.getObjectType(vmwareObject) === 'DistributedVirtualPortgroup'">
+  <div class="clearfix"></div>
+  <mat-divider></mat-divider>
+  <p>note</p>
+  <button class="btn text-uppercase" type="button" mat-flat-button color="primary">Edit Notes...</button>
+</ng-container>
+

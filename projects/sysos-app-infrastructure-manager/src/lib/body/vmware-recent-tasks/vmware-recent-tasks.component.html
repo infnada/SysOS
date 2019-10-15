@@ -1,45 +1,57 @@
-<table class="vmware-tasks" mat-table [dataSource]="dataSource" matSort *ngIf="viewRecentTasks === true">
+<div class="h-100">
+  <mat-tab-group dynamicHeight>
 
-  <ng-container matColumnDef="taskName">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header> Task Name </th>
-    <td mat-cell *matCellDef="let element"> {{element.descriptionId}} </td>
-  </ng-container>
+    <mat-tab label="Recent Tasks">
+      <table class="vmware-tasks" mat-table [dataSource]="dataSource" matSort *ngIf="viewRecentTasks === true">
 
-  <ng-container matColumnDef="target">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header> Target </th>
-    <td mat-cell *matCellDef="let element"> {{element.entityName}} </td>
-  </ng-container>
+        <ng-container matColumnDef="taskName">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Task Name </th>
+          <td mat-cell *matCellDef="let element"> {{element.descriptionId}} </td>
+        </ng-container>
 
-  <ng-container matColumnDef="status">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header> Status </th>
-    <td mat-cell *matCellDef="let element"> {{element.state}} </td>
-  </ng-container>
+        <ng-container matColumnDef="target">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Target </th>
+          <td mat-cell *matCellDef="let element"> {{element.entityName}} </td>
+        </ng-container>
 
-  <ng-container matColumnDef="initiator">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header> Initiator </th>
-    <td mat-cell *matCellDef="let element"> {{(element.reason.name ? element.reason.name : element.reason.userName ? element.reason.userName : '')}} </td>
-  </ng-container>
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Status </th>
+          <td mat-cell *matCellDef="let element"> {{element.state}} </td>
+        </ng-container>
 
-  <ng-container matColumnDef="queuedFor">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header> Queued For </th>
-    <td mat-cell *matCellDef="let element"> {{element.queueTime}} </td>
-  </ng-container>
+        <ng-container matColumnDef="initiator">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Initiator </th>
+          <td mat-cell *matCellDef="let element"> {{(element.reason.name ? element.reason.name : element.reason.userName ? element.reason.userName : '')}} </td>
+        </ng-container>
 
-  <ng-container matColumnDef="startTime">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header> Start Time </th>
-    <td mat-cell *matCellDef="let element"> {{element.startTime}} </td>
-  </ng-container>
+        <ng-container matColumnDef="queuedFor">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Queued For </th>
+          <td mat-cell *matCellDef="let element"> {{element.queueTime}} </td>
+        </ng-container>
 
-  <ng-container matColumnDef="completionTime">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header> Completion Time </th>
-    <td mat-cell *matCellDef="let element"> {{element.startTime}} </td>
-  </ng-container>
+        <ng-container matColumnDef="startTime">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Start Time </th>
+          <td mat-cell *matCellDef="let element"> {{element.startTime}} </td>
+        </ng-container>
 
-  <ng-container matColumnDef="server">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header> Server </th>
-    <td mat-cell *matCellDef="let element"> Server </td>
-  </ng-container>
+        <ng-container matColumnDef="completionTime">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Completion Time </th>
+          <td mat-cell *matCellDef="let element"> {{element.startTime}} </td>
+        </ng-container>
 
-  <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-</table>
+        <ng-container matColumnDef="server">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Server </th>
+          <td mat-cell *matCellDef="let element"> Server </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </mat-tab>
+
+    <mat-tab label="Alarms">
+    </mat-tab>
+
+  </mat-tab-group>
+
+</div>

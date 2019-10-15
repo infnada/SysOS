@@ -42,4 +42,8 @@ export class SysosAppInfrastructureVmwareTemplateHelpersService {
   isVmObject(vmwareObject) {
     return vmwareObject.type === 'VirtualMachine' || vmwareObject.type === 'VirtualApp';
   }
+
+  getObjectType(vmwareObject) {
+    return vmwareObject.type;
+  }
 }

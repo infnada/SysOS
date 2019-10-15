@@ -12,8 +12,13 @@
   overflow-y: scroll;
 }
 
+saim-body-vmware {
+  display: block;
+  height: calc(100% - 200px);
+  overflow: hidden;
+}
 saim-vmware-recent-tasks {
   width: 100%;
-  height: 30%;
+  height: 200px;
   display: block;
 }

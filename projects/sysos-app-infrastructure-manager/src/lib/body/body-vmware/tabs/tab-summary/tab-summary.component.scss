@@ -1,0 +1,49 @@
+saim-summary-info {
+  font-size: 13px;
+}
+
+::ng-deep.mat-expanded > .mat-expansion-panel-header .mat-expansion-panel-header-description {
+  display: none;
+}
+
+::ng-deep .mat-expansion-panel-header-description, ::ng-deep .mat-expansion-panel-header-title {
+  display: initial;
+  width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+::ng-deep .mat-expansion-panel-header[aria-disabled=true] {
+  color: initial;
+
+  .mat-expansion-panel-header-description {
+    color: rgba(0,0,0,.54);
+  }
+}
+
+::ng-deep .mat-expansion-panel {
+  border-top: 5px solid #a3f39e;
+
+  .mat-expansion-panel {
+    border-top: 0;
+    margin: 2px;
+
+    .mat-expansion-panel {
+      border-top: 0;
+      margin: 0;
+    }
+
+    .mat-expansion-panel-header.mat-expanded {
+      background-color: #d9e4ea;
+    }
+  }
+}
+
+::ng-deep .mat-expansion-panel-body {
+  padding: 0 0 10px !important;
+}
+
+::ng-deep .mat-expansion-panel-header {
+  font-size: 13px;
+}

@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, AfterViewInit} from '@angular/core';
 
 import {Application} from '@sysos/lib-application';
 import {SysosLibExtMxgraphService} from '@sysos/lib-ext-mxgraph';
@@ -10,7 +10,7 @@ import {VMWareObject} from '../../types/vmware-object';
   templateUrl: './body-vmware.component.html',
   styleUrls: ['./body-vmware.component.scss']
 })
-export class BodyVmwareComponent implements OnInit {
+export class BodyVmwareComponent implements AfterViewInit {
   @Input() vmwareObject: VMWareObject;
   @Input() application: Application;
 
@@ -22,7 +22,7 @@ export class BodyVmwareComponent implements OnInit {
     this.mx = this.MxgraphService.mx;
   }
 
-  ngOnInit() {
+  ngAfterViewInit() {
     const container = document.getElementById('vmwareGraphContainer');
     this.graph = new this.mx.mxGraph(container);
     this.graph.setGridEnabled(true);
@@ -33,8 +33,7 @@ export class BodyVmwareComponent implements OnInit {
     this.graph.setEnabled(true);
     this.graph.setCellsLocked(true);
 
-    const parent = this.graph.getDefaultParent();
-    const layout = new this.mx.mxHierarchicalLayout(this.graph);
+
     // tslint:disable:max-line-length
     const xml = `<mxGraphModel dx="1422" dy="764" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" background="#ffffff" math="0" shadow="0">
       <root>
@@ -346,9 +345,9 @@ export class BodyVmwareComponent implements OnInit {
         </mxCell>
       </root>
     </mxGraphModel>`;
-    let node = this.mx.mxUtils.parseXml(xml);
-    const dec = new this.mx.mxCodec(node.documentElement);
-    node = node.documentElement;
+    const xmlDocument  = this.mx.mxUtils.parseXml(xml);
+    const dec = new this.mx.mxCodec(xmlDocument);
+    const node = xmlDocument.documentElement;
 
     if (node.nodeName === 'mxGraphModel') {
       this.graph.model.beginUpdate();

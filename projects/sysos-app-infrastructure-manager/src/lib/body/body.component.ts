@@ -1,10 +1,8 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
-import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
 import {FlatTreeControl} from '@angular/cdk/tree';
-import {MatMenuTrigger} from '@angular/material';
-
 import {Subscription} from 'rxjs';
 
+import {MatTreeFlatDataSource, MatTreeFlattener, MatMenuTrigger} from '@sysos/lib-angular-material';
 import {Application} from '@sysos/lib-application';
 import {ContextMenuItem} from '@sysos/lib-types';
 
@@ -21,7 +19,6 @@ interface InfrastructureManagerFlatNode {
   level: number;
   type: string;
 }
-
 
 @Component({
   selector: 'saim-body',

@@ -1,0 +1,24 @@
+<mat-expansion-panel [expanded]="true">
+  <mat-expansion-panel-header>
+    <mat-panel-title>Status</mat-panel-title>
+  </mat-expansion-panel-header>
+
+  <mat-accordion>
+
+    <mat-expansion-panel [disabled]=true>
+      <mat-expansion-panel-header>
+        <mat-panel-title>Health</mat-panel-title>
+        <mat-panel-description><i class="far fa-check-circle text-success"></i> Normal</mat-panel-description>
+      </mat-expansion-panel-header>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel [disabled]=true>
+      <mat-expansion-panel-header>
+        <mat-panel-title>vApp state</mat-panel-title>
+        <mat-panel-description>Stopped</mat-panel-description>
+      </mat-expansion-panel-header>
+    </mat-expansion-panel>
+
+  </mat-accordion>
+
+</mat-expansion-panel>
