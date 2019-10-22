@@ -1,9 +1,9 @@
-import {Component, Input, OnInit, ViewChild, ElementRef, ViewEncapsulation} from '@angular/core';
+import {Component, Input, OnInit, ViewChild, ElementRef, ViewEncapsulation, OnDestroy} from '@angular/core';
+
+import {takeUntil} from 'rxjs/operators';
+import {Subject} from 'rxjs';
 
 import {Socket} from 'ngx-socket-io';
-
-import {Terminal} from 'xterm';
-import * as fit from 'xterm/lib/addons/fit/fit';
 
 import {Application} from '@sysos/lib-application';
 
@@ -16,24 +16,17 @@ import {SshConnection} from '../types/ssh-connection';
   templateUrl: './body.component.html',
   styleUrls: ['./body.component.scss']
 })
-export class BodyComponent implements OnInit {
+export class BodyComponent implements OnDestroy, OnInit {
   @Input() application: Application;
 
-  private terminalContainer: ElementRef;
-  private currentTerminal: Terminal;
   @ViewChild('terminalContainer') set content(content: ElementRef) {
     this.terminalContainer = content;
-
-    if (!this.activeConnection) return;
-
-    this.currentTerminal = this.Ssh.getSshTerminal(this.activeConnection);
-
-    if (!this.terminalContainer) return;
-
-    this.currentTerminal.open(this.terminalContainer.nativeElement);
-
-    this.onBodyResize();
+    this.loadTerm();
   }
+
+  private terminalContainer: ElementRef;
+  private destroySubject$: Subject<void> = new Subject();
+  private currentTerminal;
 
   connections: SshConnection[];
   activeConnection: string;
@@ -45,8 +38,17 @@ export class BodyComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.Ssh.connections.subscribe(connections => this.connections = connections);
-    this.Ssh.activeConnection.subscribe(activeConnection => this.activeConnection = activeConnection);
+    this.Ssh.connections.pipe(takeUntil(this.destroySubject$)).subscribe(connections => {
+      this.connections = connections;
+    });
+    this.Ssh.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe(activeConnection => {
+      this.activeConnection = activeConnection;
+      setTimeout(() => this.loadTerm(), 0);
+    });
+  }
+
+  ngOnDestroy() {
+    this.destroySubject$.next();
   }
 
   toggleSide(): void {
@@ -61,12 +63,22 @@ export class BodyComponent implements OnInit {
     return this.Ssh.getActiveConnection();
   }
 
-  onBodyResize(): void {
-    fit.fit(this.currentTerminal);
-    this.socket.emit('ssh_session__geometry', {
-      cols: this.currentTerminal.cols,
-      rows: this.currentTerminal.rows,
-      uuid: this.activeConnection
-    });
+  loadTerm() {
+    if (!this.activeConnection) return;
+    if (this.getActiveConnection().state === 'disconnected') return;
+
+    this.currentTerminal = this.Ssh.getSshTerminal(this.activeConnection);
+    if (!this.currentTerminal) return;
+
+    this.terminalContainer.nativeElement.innerHTML = '';
+    this.currentTerminal.open(this.terminalContainer.nativeElement);
+    this.currentTerminal.focus();
+    this.currentTerminal.fitAddon.fit();
   }
+
+  onBodyResize(): void {
+    console.log('res');
+    this.currentTerminal.fitAddon.fit();
+  }
+
 }

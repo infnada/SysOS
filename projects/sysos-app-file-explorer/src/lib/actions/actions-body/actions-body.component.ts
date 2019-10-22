@@ -1,6 +1,7 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 
-import {Subscription} from 'rxjs';
+import {Subject, Subscription} from 'rxjs';
+import {takeUntil} from "rxjs/operators";
 
 import {SysosLibFileSystemUiService} from '@sysos/lib-file-system-ui';
 import {Application} from '@sysos/lib-application';
@@ -13,8 +14,10 @@ import {SysosAppFileExplorerService} from '../../services/sysos-app-file-explore
   templateUrl: './actions-body.component.html',
   styleUrls: ['./actions-body.component.scss']
 })
-export class ActionsBodyComponent implements OnInit {
+export class ActionsBodyComponent implements OnDestroy, OnInit {
   @Input() application: Application;
+
+  private destroySubject$: Subject<void> = new Subject();
 
   goPathBackSubscription: Subscription;
   goToPathSubscription: Subscription;
@@ -30,20 +33,24 @@ export class ActionsBodyComponent implements OnInit {
   constructor(private FileSystemUi: SysosLibFileSystemUiService,
               private FileExplorer: SysosAppFileExplorerService) {
 
-    this.goPathBackSubscription = this.FileExplorer.getObserverGoPathBack().subscribe(() => {
+    this.goPathBackSubscription = this.FileExplorer.getObserverGoPathBack().pipe(takeUntil(this.destroySubject$)).subscribe(() => {
       this.goPathBack();
     });
 
-    this.goToPathSubscription = this.FileSystemUi.getObserverGoToPath().subscribe((data) => {
+    this.goToPathSubscription = this.FileSystemUi.getObserverGoToPath().pipe(takeUntil(this.destroySubject$)).subscribe((data) => {
       if (data.application === 'file-explorer') this.goToPath(data.path);
     });
   }
 
   ngOnInit(): void {
-    this.FileExplorer.currentPath.subscribe(path => this.currentPath = path);
-    this.FileExplorer.currentData.subscribe(data => this.currentData = data);
-    this.FileExplorer.viewAsList.subscribe(data => this.viewAsList = data);
-    this.FileExplorer.search.subscribe(data => this.search = data);
+    this.FileExplorer.currentPath.pipe(takeUntil(this.destroySubject$)).subscribe(path => this.currentPath = path);
+    this.FileExplorer.currentData.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.currentData = data);
+    this.FileExplorer.viewAsList.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.viewAsList = data);
+    this.FileExplorer.search.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.search = data);
+  }
+
+  ngOnDestroy() {
+    this.destroySubject$.next();
   }
 
   /**
@@ -114,6 +121,9 @@ export class ActionsBodyComponent implements OnInit {
     this.reloadPath(newPath);
   }
 
+  /**
+   * On file search change
+   */
   searchChange(event: string): void {
     this.FileExplorer.setSearch(event);
   }

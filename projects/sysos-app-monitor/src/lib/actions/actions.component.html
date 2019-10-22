@@ -1,33 +1,33 @@
 <div class="window__actions">
-  <a class="window__item" title="New connection" (click)="newConnection()">
+  <a class="window__item" matTooltip="New connection" (click)="newConnection()">
     <i class="fas fa-plus text-success"></i>
   </a>
   <a class="window__item separator" ></a>
-  <a class="window__item" title="Edit connection" (click)="editConnection()">
+  <a class="window__item" matTooltip="Edit connection" (click)="editConnection()">
     <i class="fas fa-edit" [ngClass]="{'text-primary': activeConnection !== null}"></i>
   </a>
-  <a class="window__item" title="Disconnect" (click)="disconnectConnection()">
+  <a class="window__item" matTooltip="Disconnect" (click)="disconnectConnection()">
     <i class="fas fa-times" [ngClass]="{'text-danger': activeConnection !== null && getActiveConnection().state === 'connected'}"></i>
   </a>
-  <a class="window__item" title="Delete" (click)="deleteConnection()">
+  <a class="window__item" matTooltip="Delete" (click)="deleteConnection()">
     <i class="fas fa-trash" [ngClass]="{'text-danger': activeConnection !== null}"></i>
   </a>
   <a class="window__item separator"></a>
-  <a class="window__item" title="Edit options" (click)="openOptionsModal()">
+  <a class="window__item" matTooltip="Edit options" (click)="openOptionsModal()">
     <i class="fas fa-cog text-primary"></i>
   </a>
-  <a class="window__item" title="Alarms" (click)="openAlarmsModal()">
+  <a class="window__item" matTooltip="Alarms" (click)="openAlarmsModal()">
     <i class="fas fa-bell" [ngClass]="{'text-primary': activeConnection !== null && !this.getActiveConnection().snapshotData}"></i>
   </a>
   <a class="window__item separator"></a>
-  <a class="window__item" title="import / load a netdata snapshot" (click)="openImportModal()">
+  <a class="window__item" matTooltip="import / load a netdata snapshot" (click)="openImportModal()">
     <i class="fas fa-download text-primary"></i>
   </a>
-  <a class="window__item" title="export / save a netdata snapshot" (click)="openExportModal()">
+  <a class="window__item" matTooltip="export / save a netdata snapshot" (click)="openExportModal()">
     <i class="fas fa-upload" [ngClass]="{'text-primary': activeConnection !== null}"></i>
   </a>
   <a class="window__item separator"></a>
-  <a class="window__item" title="get help on using the charts" (click)="openHelpModal()">
+  <a class="window__item" matTooltip="get help on using the charts" (click)="openHelpModal()">
     <i class="fas fa-question-circle text-primary"></i>
   </a>
 

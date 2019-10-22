@@ -1,0 +1,9 @@
+#server_body {
+  margin-top: 32px;
+  height: calc(100% - 32px);
+  position: relative;
+
+  ::ng-deep .folders {
+    height: 100%;
+  }
+}

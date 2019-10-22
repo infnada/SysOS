@@ -1,5 +1,17 @@
-import {Component, AfterViewInit, ViewChild, ElementRef, ViewEncapsulation, OnDestroy} from '@angular/core';
-import {List as makeList} from 'immutable';
+import {
+  Component,
+  AfterViewInit,
+  ViewChild,
+  ElementRef,
+  ViewEncapsulation,
+  OnDestroy,
+  Input,
+  Output,
+  EventEmitter,
+  OnChanges
+} from '@angular/core';
+import {fromJS, List as makeList} from 'immutable';
+import {isEqual} from 'lodash-es';
 
 import {takeUntil} from 'rxjs/operators';
 import {Subject} from 'rxjs';
@@ -8,6 +20,7 @@ import {StateService} from '../services/state.service';
 import {InitService} from '../services/init.service';
 import {SelectorsService} from '../services/selectors.service';
 import {TopologyUtilsService} from '../services/utils/topology-utils.service';
+import {NodeDetailsUtilsService} from '../services/utils/node-details-utils.service';
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -15,8 +28,11 @@ import {TopologyUtilsService} from '../services/utils/topology-utils.service';
   templateUrl: './sysos-lib-ext-weavescope.component.html',
   styleUrls: ['./sysos-lib-ext-weavescope.component.scss']
 })
-export class SysosLibExtWeavescopeComponent implements AfterViewInit, OnDestroy {
+export class SysosLibExtWeavescopeComponent implements OnChanges, AfterViewInit, OnDestroy {
   @ViewChild('weaveApp') weaveApp: ElementRef;
+  @Input('nodes') nodes;
+  @Input('simpleLayout') simpleLayout: boolean = false;
+  @Output() selectedNode = new EventEmitter<{}>();
 
   private destroySubject$: Subject<void> = new Subject();
   private state;
@@ -43,7 +59,10 @@ export class SysosLibExtWeavescopeComponent implements AfterViewInit, OnDestroy 
   constructor(private State: StateService,
               private Init: InitService,
               private Selectors: SelectorsService,
-              private TopologyUtils: TopologyUtilsService) {
+              private TopologyUtils: TopologyUtilsService,
+              private NodeDetailsUtils: NodeDetailsUtilsService) {
+
+    this.State.init();
 
     this.State.currentState.pipe(takeUntil(this.destroySubject$)).subscribe(state => {
       this.state = state;
@@ -53,7 +72,27 @@ export class SysosLibExtWeavescopeComponent implements AfterViewInit, OnDestroy 
       this.topologies = this.state.get('topologies');
       this.topologiesLoaded = this.state.get('topologiesLoaded');
       this.topologyNodeCountZero = this.TopologyUtils.isTopologyNodeCountZero(state);
+
+      // Send selectedNodeId as @Output
+      const selectedNode = this.Selectors.nodeIdDetailsSelector(this.state);
+      if (selectedNode) this.selectedNode.emit(selectedNode.toJS());
     });
+  }
+
+  ngOnChanges(nextProps) {
+    if (nextProps.nodes.firstChange) return;
+    if (!isEqual(nextProps.nodes.previousValue, nextProps.nodes.currentValue)) {
+
+      this.state = this.NodeDetailsUtils.closeAllNodeDetails(this.state);
+      this.state = this.NodeDetailsUtils.clearNodes(this.state);
+
+      this.state = this.state.set('nodes', fromJS(nextProps.nodes.currentValue.nodes));
+      this.state = this.state.set('nodesLoaded', true);
+      this.state = this.state.set('forceRelayout', true);
+      this.State.setState(this.state);
+
+      this.Init.updateStateFromNodes();
+    }
   }
 
   ngOnDestroy() {
@@ -70,7 +109,7 @@ export class SysosLibExtWeavescopeComponent implements AfterViewInit, OnDestroy 
     this.State.setState(this.state);
 
     // Set topology & nodes
-    setTimeout(() => this.Init.init(), 0);
+    setTimeout(() => this.Init.init(this.nodes), 0);
   }
 
 

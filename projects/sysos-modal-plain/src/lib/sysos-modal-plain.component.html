@@ -1,7 +1,7 @@
 <div class="modal-header" [ngClass]="type ? 'bg-' + type : ''">
   <div class="modal-title" id="modal-title">{{title}}</div>
   <div class="window__controls window__controls--right">
-    <a class="window__close" (click)="activeModal.dismiss(); $event.stopPropagation();">
+    <a class="window__close" (click)="activeModal.close(); $event.stopPropagation();">
       <i class="fas fa-times"></i>
     </a>
   </div>

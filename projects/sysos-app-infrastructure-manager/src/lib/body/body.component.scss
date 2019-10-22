@@ -12,6 +12,10 @@
   overflow-y: scroll;
 }
 
+.active-node {
+  box-shadow: inset 10px 0 2px 0 #0e88ff;
+}
+
 saim-body-vmware {
   display: block;
   height: calc(100% - 200px);

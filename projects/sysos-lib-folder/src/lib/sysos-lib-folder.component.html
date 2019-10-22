@@ -13,14 +13,17 @@
                         cdkDragBoundary=".desktop"
                         [cdkDragData]=file
                         (cdkDragStarted)="onDragStart($event)"
+
                         [application]=application
                         [subApplication]=subApplication
+                        [currentPath]=currentPath
+                        [isCurrentActive]="$index === currentActive"
+                        [selector]=selector
                         [viewAsList]=viewAsList
+                        [connection]=connection
+
                         [selectable]=Selectable
                         [file]=file
-                        [isCurrentActive]="$index === currentActive"
-                        [currentPath]=currentPath
-                        [selector]=selector
                         (click)="setCurrentActive($index)"></slf-sysos-lib-file>
   </ng-container>
 
@@ -35,19 +38,22 @@
       </thead>
       <tbody>
 
-      <slf-sysos-lib-file *ngFor="let file of currentData | filterBy: search; index as $index"
+      <slf-sysos-lib-file style="display: contents" *ngFor="let file of currentData | filterBy: search; index as $index"
                           cdkDrag
                           cdkDragBoundary=".desktop"
                           [cdkDragData]=file
                           (cdkDragStarted)="onDragStart($event)"
+
                           [application]=application
                           [subApplication]=subApplication
+                          [currentPath]=currentPath
+                          [isCurrentActive]="$index === currentActive"
+                          [selector]=selector
                           [viewAsList]=viewAsList
+                          [connection]=connection
+
                           [selectable]=Selectable
                           [file]=file
-                          [isCurrentActive]="$index === currentActive"
-                          [currentPath]=currentPath
-                          [selector]=selector
                           (click)="setCurrentActive($index)"></slf-sysos-lib-file>
 
       </tbody>

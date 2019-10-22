@@ -1,6 +1,7 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 
-import {Subscription} from 'rxjs';
+import {Subject, Subscription} from 'rxjs';
+import {takeUntil} from "rxjs/operators";
 
 import {SysosLibSelectableService} from '@sysos/lib-selectable';
 import {SysosLibFileSystemService} from '@sysos/lib-file-system';
@@ -18,8 +19,10 @@ import {SftpConnection} from '../../types/sftp-connection';
   styleUrls: ['./body-server.component.scss'],
   providers: [SysosLibSelectableService]
 })
-export class BodyServerComponent implements OnInit {
+export class BodyServerComponent implements OnDestroy, OnInit {
   @Input() application: Application;
+
+  private destroySubject$: Subject<void> = new Subject();
 
   reloadPathSubscription: Subscription;
 
@@ -40,22 +43,26 @@ export class BodyServerComponent implements OnInit {
               private Sftp: SysosAppSftpService,
               private SftpServer: SysosAppSftpServerService) {
 
-    this.reloadPathSubscription = this.FileSystemUi.getObserverRefreshPath().subscribe(path => {
+    this.reloadPathSubscription = this.FileSystemUi.getObserverRefreshPath().pipe(takeUntil(this.destroySubject$)).subscribe(path => {
       if (path === this.currentPath) this.reloadPath();
     });
   }
 
   ngOnInit() {
-    this.SftpServer.currentPath.subscribe(path => this.currentPath = path);
-    this.SftpServer.currentData.subscribe(data => {
+    this.SftpServer.currentPath.pipe(takeUntil(this.destroySubject$)).subscribe(path => this.currentPath = path);
+    this.SftpServer.currentData.pipe(takeUntil(this.destroySubject$)).subscribe(data => {
       this.currentData = data;
       this.resetActive();
     });
-    this.SftpServer.viewAsList.subscribe(data => this.viewAsList = data);
-    this.SftpServer.search.subscribe(data => this.search = data);
-    this.Sftp.activeConnection.subscribe(connection => this.activeConnection = connection);
+    this.SftpServer.viewAsList.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.viewAsList = data);
+    this.SftpServer.search.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.search = data);
+    this.Sftp.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe(connection => this.activeConnection = connection);
 
     this.goToPath('/');
+  }
+
+  ngOnDestroy() {
+    this.destroySubject$.next();
   }
 
   getActiveConnection(): SftpConnection {

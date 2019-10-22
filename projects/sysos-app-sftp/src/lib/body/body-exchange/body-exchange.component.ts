@@ -1,7 +1,9 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 
-import {Subscription} from 'rxjs';
+import {Subject, Subscription} from 'rxjs';
+import {takeUntil} from "rxjs/operators";
 
+import {SysosLibLoggerService} from '@sysos/lib-logger';
 import {Application} from '@sysos/lib-application';
 import {SysosLibFileSystemUiService} from '@sysos/lib-file-system-ui';
 
@@ -14,8 +16,10 @@ import {SysosAppSftpServerService} from '../../services/sysos-app-sftp-server.se
   templateUrl: './body-exchange.component.html',
   styleUrls: ['./body-exchange.component.scss']
 })
-export class BodyExchangeComponent implements OnInit {
+export class BodyExchangeComponent implements OnDestroy, OnInit {
   @Input() application: Application;
+
+  private destroySubject$: Subject<void> = new Subject();
 
   private downloadRemoteFileSubscription: Subscription;
   private uploadToRemoteSubscription: Subscription;
@@ -36,13 +40,14 @@ export class BodyExchangeComponent implements OnInit {
     exchange: string
   }[] = [];
 
-  constructor(private FileSystemUi: SysosLibFileSystemUiService,
+  constructor(private logger: SysosLibLoggerService,
+              private FileSystemUi: SysosLibFileSystemUiService,
               private Sftp: SysosAppSftpService,
               private SftpLocal: SysosAppSftpLocalService,
               private SftpServer: SysosAppSftpServerService) {
 
     // Watcher sent by FileComponent
-    this.downloadRemoteFileSubscription = this.FileSystemUi.getObserverDownloadRemoteFile().subscribe((data) => {
+    this.downloadRemoteFileSubscription = this.FileSystemUi.getObserverDownloadRemoteFile().pipe(takeUntil(this.destroySubject$)).subscribe((data) => {
       if (data.applicationId === 'sftp#server') {
         this.filesExchange.push({
           uuid: data.connectionUuid,
@@ -63,7 +68,7 @@ export class BodyExchangeComponent implements OnInit {
     });
 
     // Watcher sent by FileComponent
-    this.uploadToRemoteSubscription = this.FileSystemUi.getObserverUploadToRemote().subscribe((data) => {
+    this.uploadToRemoteSubscription = this.FileSystemUi.getObserverUploadToRemote().pipe(takeUntil(this.destroySubject$)).subscribe((data) => {
       if (data.applicationId === 'sftp#server') {
         this.filesExchange.push({
           uuid: this.activeConnection,
@@ -84,7 +89,7 @@ export class BodyExchangeComponent implements OnInit {
     });
 
     // Watcher sent by SftpBodyLocal
-    this.uploadToSysOSSubscription = this.FileSystemUi.getObserverUploadToSysOS().subscribe((data) => {
+    this.uploadToSysOSSubscription = this.FileSystemUi.getObserverUploadToSysOS().pipe(takeUntil(this.destroySubject$)).subscribe((data) => {
       console.log(data.file);
       let percentage = 0;
 
@@ -118,12 +123,12 @@ export class BodyExchangeComponent implements OnInit {
             if (result === 100) this.SftpLocal.reloadPath();
 
           },
-          error => console.log('Error Uploading', error)
+          error => this.logger.log('Error Uploading', error)
         );
       }
     });
 
-    this.fileProgressSubscription = this.SftpServer.getObserverFileProgress().subscribe((data) => {
+    this.fileProgressSubscription = this.SftpServer.getObserverFileProgress().pipe(takeUntil(this.destroySubject$)).subscribe((data) => {
 
       // Get path without filename
       if (data.progress === 100 && data.exchange === 'download') {
@@ -141,9 +146,13 @@ export class BodyExchangeComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.Sftp.viewExchange.subscribe(view => this.viewExchange = view);
-    this.Sftp.activeConnection.subscribe(connectionUuid => this.activeConnection = connectionUuid);
-    this.SftpLocal.currentPath.subscribe(path => this.currentLocalPath = path);
-    this.SftpServer.currentPath.subscribe(path => this.currentRemotePath = path);
+    this.Sftp.viewExchange.pipe(takeUntil(this.destroySubject$)).subscribe(view => this.viewExchange = view);
+    this.Sftp.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe(connectionUuid => this.activeConnection = connectionUuid);
+    this.SftpLocal.currentPath.pipe(takeUntil(this.destroySubject$)).subscribe(path => this.currentLocalPath = path);
+    this.SftpServer.currentPath.pipe(takeUntil(this.destroySubject$)).subscribe(path => this.currentRemotePath = path);
+  }
+
+  ngOnDestroy() {
+    this.destroySubject$.next();
   }
 }

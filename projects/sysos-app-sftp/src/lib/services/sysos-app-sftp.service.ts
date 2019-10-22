@@ -41,24 +41,11 @@ export class SysosAppSftpService {
     this.viewExchange = this.$viewExchange.asObservable();
   }
 
-  initConnections(): void {
-    this.FileSystem.getConfigFile('applications/sftp/config.json').subscribe(
-      (res: SftpConnection[]) => {
-        this.logger.info('Sftp', 'Get connections successfully');
+  setInitialConnections(connections: SftpConnection[]) {
+    this.dataStore.connections = connections;
 
-        res.forEach((connection) => {
-          connection.state = 'disconnected';
-        });
-
-        this.dataStore.connections = res;
-
-        // broadcast data to subscribers
-        this.$connections.next(Object.assign({}, this.dataStore).connections);
-      },
-      error => {
-        this.logger.error('Sftp', 'Error while getting credentials', null, error);
-        return this.Toastr.error('Error getting connections.', 'SFTP');
-      });
+    // broadcast data to subscribers
+    this.$connections.next(Object.assign({}, this.dataStore).connections);
   }
 
   getActiveConnection(): SftpConnection {
@@ -87,15 +74,14 @@ export class SysosAppSftpService {
     this.$viewExchange.next(Object.assign({}, this.dataStore).viewExchange);
   }
 
-  connect(connection: SftpConnection): void {
-    const loggerArgs = arguments;
-
+  connect(connection: SftpConnection, saveOnly: boolean = false): void {
     if (!connection) throw new Error('connection_not_found');
 
     this.logger.debug('Sftp', 'Connect received', arguments);
 
     if (connection.uuid) {
       connection.state = 'disconnected';
+      connection.type = 'linux';
 
       const currentConnectionIndex = this.dataStore.connections.findIndex((obj) => {
         return obj.uuid === connection.uuid;
@@ -106,10 +92,14 @@ export class SysosAppSftpService {
     } else {
       connection = {
         uuid: uuidv4(),
+        description: connection.description,
         host: connection.host,
         port: connection.port,
-        description: connection.description,
         credential: connection.credential,
+        hopping: connection.hopping,
+        hophost: connection.hophost,
+        hopport: connection.hopport,
+        hopcredential: connection.hopcredential,
         autologin: connection.autologin,
         save: connection.save,
         type: 'linux',
@@ -122,13 +112,24 @@ export class SysosAppSftpService {
     // broadcast data to subscribers
     this.$connections.next(Object.assign({}, this.dataStore).connections);
 
-    if (connection.save) this.saveConnection(connection);
+    if (connection.save) this.saveConnection(connection, saveOnly);
+
+    if (!saveOnly) this.sendConnect(connection);
+  }
+
+  sendConnect(connection: SftpConnection): void {
+    const loggerArgs = arguments;
+
+    this.logger.info('Sftp', 'Connecting to server', loggerArgs);
 
     this.socket.emit('[new-session]', {
       type: 'sftp',
       host: connection.host,
       port: connection.port,
       credential: connection.credential,
+      hophost: connection.hophost,
+      hopport: connection.hopport,
+      hopcredential: connection.hopcredential,
       uuid: connection.uuid
     }, (e) => {
       this.logger.error('Sftp', 'Error while emitting [new-session]', loggerArgs, e);
@@ -137,7 +138,7 @@ export class SysosAppSftpService {
     this.setActiveConnection(connection.uuid);
   }
 
-  saveConnection(connection: SftpConnection): void {
+  saveConnection(connection: SftpConnection, saveOnly: boolean = false): void {
     const loggerArgs = arguments;
 
     if (!connection) throw new Error('connection_not_found');
@@ -149,6 +150,8 @@ export class SysosAppSftpService {
     this.FileSystem.saveConfigFile(connection, configFile, false).subscribe(
       () => {
         this.logger.debug('Sftp', 'Saved connection successfully', loggerArgs);
+
+        if (saveOnly) this.Modal.closeModal('.window--sftp .window__main');
       },
       error => {
         this.logger.error('Sftp', 'Error while saving connection', loggerArgs, error);

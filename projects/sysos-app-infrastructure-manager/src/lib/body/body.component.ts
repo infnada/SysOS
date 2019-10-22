@@ -1,6 +1,7 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {FlatTreeControl} from '@angular/cdk/tree';
-import {Subscription} from 'rxjs';
+import {Subject, Subscription} from 'rxjs';
+import {takeUntil} from "rxjs/operators";
 
 import {MatTreeFlatDataSource, MatTreeFlattener, MatMenuTrigger} from '@sysos/lib-angular-material';
 import {Application} from '@sysos/lib-application';
@@ -25,10 +26,11 @@ interface InfrastructureManagerFlatNode {
   templateUrl: './body.component.html',
   styleUrls: ['./body.component.scss']
 })
-export class BodyComponent implements OnInit {
+export class BodyComponent implements OnInit, OnDestroy {
   @ViewChild(MatMenuTrigger) contextMenuTree: MatMenuTrigger;
   @Input() application: Application;
 
+  private destroySubject$: Subject<void> = new Subject();
   private connectGetDataSubscription: Subscription;
 
   activeConnection: string;
@@ -42,22 +44,8 @@ export class BodyComponent implements OnInit {
 
   viewSide: boolean = true;
   contextMenuPosition = {x: '0px', y: '0px'};
-  svContextMenu: ContextMenuItem[];
-  volumeContextMenu: ContextMenuItem[];
-  volumeSnapshotContextMenu: ContextMenuItem[];
-  volumeVMSnapshotContextMenu: ContextMenuItem[];
-  vmwareContextMenu: ContextMenuItem[];
-  folderDatacenterContextMenu: ContextMenuItem[];
-  folderDatastoreContextMenu: ContextMenuItem[];
-  folderVMContextMenu: ContextMenuItem[];
-  folderNetworkContextMenu: ContextMenuItem[];
-  datacenterContextMenu: ContextMenuItem[];
-  VMContextMenu: ContextMenuItem[];
-  datastoreContextMenu: ContextMenuItem[];
-  datastoreClusterContextMenu: ContextMenuItem[];
-  clusterComputeResourceContextMenu: ContextMenuItem[];
-  hostSystemContextMenu: ContextMenuItem[];
-  resourcePoolContextMenu: ContextMenuItem[];
+
+  contextMenus: {[s: string]: ContextMenuItem[]};
 
   treeControl = new FlatTreeControl<InfrastructureManagerFlatNode>(node => node.level, node => node.expandable);
   treeFlattener = new MatTreeFlattener(this.transformer, node => node.level, node => node.expandable, node => node.children);
@@ -74,38 +62,43 @@ export class BodyComponent implements OnInit {
      * @description Required to avoid circular dependency
      * @link{SysosAppInfrastructureManagerService#getObserverConnectGetData}
      */
-    this.connectGetDataSubscription = this.InfrastructureManager.getObserverConnectGetData().subscribe((connection) => {
+    this.connectGetDataSubscription = this.InfrastructureManager.getObserverConnectGetData().pipe(takeUntil(this.destroySubject$)).subscribe((connection) => {
       if (connection.type === 'netapp') this.InfrastructureManagerNetApp.getNetAppData(connection);
       if (connection.type === 'vmware') this.InfrastructureManagerVMWare.getVMWareData(connection);
     });
 
   }
 
+  ngOnDestroy() {
+    this.destroySubject$.next();
+  }
+
   ngOnInit() {
-    this.InfrastructureManager.activeConnection.subscribe(activeConnection => this.activeConnection = activeConnection);
-    this.InfrastructureManager.treeData.subscribe(data => {
-      console.log(data);
+    this.InfrastructureManager.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe(activeConnection => this.activeConnection = activeConnection);
+    this.InfrastructureManager.treeData.pipe(takeUntil(this.destroySubject$)).subscribe(data => {
       this.dataSource.data = data;
       this.treeControl.expandAll();
     });
 
     // Set Context Menus
-    this.svContextMenu = this.InfrastructureContextMenus.svContextMenu;
-    this.volumeContextMenu = this.InfrastructureContextMenus.volumeContextMenu;
-    this.volumeSnapshotContextMenu = this.InfrastructureContextMenus.volumeSnapshotContextMenu;
-    this.volumeVMSnapshotContextMenu = this.InfrastructureContextMenus.volumeVMSnapshotContextMenu;
-    this.vmwareContextMenu = this.InfrastructureContextMenus.vmwareContextMenu;
-    this.folderDatacenterContextMenu = this.InfrastructureContextMenus.folderDatacenterContextMenu;
-    this.folderDatastoreContextMenu = this.InfrastructureContextMenus.folderDatastoreContextMenu;
-    this.folderVMContextMenu = this.InfrastructureContextMenus.folderVMContextMenu;
-    this.folderNetworkContextMenu = this.InfrastructureContextMenus.folderNetworkContextMenu;
-    this.datacenterContextMenu = this.InfrastructureContextMenus.datacenterContextMenu;
-    this.VMContextMenu = this.InfrastructureContextMenus.VMContextMenu;
-    this.datastoreContextMenu = this.InfrastructureContextMenus.datastoreContextMenu;
-    this.datastoreClusterContextMenu = this.InfrastructureContextMenus.datastoreClusterContextMenu;
-    this.clusterComputeResourceContextMenu = this.InfrastructureContextMenus.clusterComputeResourceContextMenu;
-    this.hostSystemContextMenu = this.InfrastructureContextMenus.hostSystemContextMenu;
-    this.resourcePoolContextMenu = this.InfrastructureContextMenus.resourcePoolContextMenu;
+    this.contextMenus = {
+      svContextMenu: this.InfrastructureContextMenus.svContextMenu,
+      volumeContextMenu: this.InfrastructureContextMenus.volumeContextMenu,
+      volumeSnapshotContextMenu: this.InfrastructureContextMenus.volumeSnapshotContextMenu,
+      volumeVMSnapshotContextMenu: this.InfrastructureContextMenus.volumeVMSnapshotContextMenu,
+      vmwareContextMenu: this.InfrastructureContextMenus.vmwareContextMenu,
+      folderDatacenterContextMenu: this.InfrastructureContextMenus.folderDatacenterContextMenu,
+      folderDatastoreContextMenu: this.InfrastructureContextMenus.folderDatastoreContextMenu,
+      folderVMContextMenu: this.InfrastructureContextMenus.folderVMContextMenu,
+      folderNetworkContextMenu: this.InfrastructureContextMenus.folderNetworkContextMenu,
+      datacenterContextMenu: this.InfrastructureContextMenus.datacenterContextMenu,
+      VMContextMenu: this.InfrastructureContextMenus.VMContextMenu,
+      datastoreContextMenu: this.InfrastructureContextMenus.datastoreContextMenu,
+      datastoreClusterContextMenu: this.InfrastructureContextMenus.datastoreClusterContextMenu,
+      clusterComputeResourceContextMenu: this.InfrastructureContextMenus.clusterComputeResourceContextMenu,
+      hostSystemContextMenu: this.InfrastructureContextMenus.hostSystemContextMenu,
+      resourcePoolContextMenu: this.InfrastructureContextMenus.resourcePoolContextMenu
+    };
   }
 
   private transformer(node: IMNode, level: number)  {
@@ -122,21 +115,21 @@ export class BodyComponent implements OnInit {
    * ContextMenu
    */
   treeContextMenuItems(item: IMNode) {
-    if (item.type === 'netapp') return this.svContextMenu;
-    if (item.type === 'volume') return this.volumeContextMenu;
-    if (item.type === 'snapshot') return this.volumeSnapshotContextMenu;
-    if (item.type === 'vmware') return this.vmwareContextMenu;
-    if (item.type === 'Folder' && item.info.data.childType.string.includes('Datacenter')) return this.folderDatacenterContextMenu;
-    if (item.type === 'Folder' && (item.info.data.childType.string.includes('Datastore') || item.info.data.childType.string.includes('StoragePod'))) return this.folderDatastoreContextMenu;
-    if (item.type === 'Folder' && (item.info.data.childType.string.includes('VirtualMachine') || item.info.data.childType.string.includes('VirtualApp'))) return this.folderVMContextMenu;
-    if (item.type === 'Folder' && (item.info.data.childType.string.includes('Network') || item.info.data.childType.string.includes('DistributedVirtualSwitch'))) return this.folderNetworkContextMenu;
-    if (item.type === 'Datacenter') return this.datacenterContextMenu;
-    if (item.type === 'VirtualMachine') return this.VMContextMenu;
-    if (item.type === 'Datastore') return this.datastoreContextMenu;
-    if (item.type === 'StoragePod') return this.datastoreClusterContextMenu;
-    if (item.type === 'ClusterComputeResource') return this.clusterComputeResourceContextMenu;
-    if (item.type === 'HostSystem') return this.hostSystemContextMenu;
-    if (item.type === 'ResourcePool') return this.resourcePoolContextMenu;
+    if (item.type === 'netapp') return this.contextMenus.svContextMenu;
+    if (item.type === 'volume') return this.contextMenus.volumeContextMenu;
+    if (item.type === 'snapshot') return this.contextMenus.volumeSnapshotContextMenu;
+    if (item.type === 'vmware') return this.contextMenus.vmwareContextMenu;
+    if (item.type === 'Folder' && item.info.data.childType.string.includes('Datacenter')) return this.contextMenus.folderDatacenterContextMenu;
+    if (item.type === 'Folder' && (item.info.data.childType.string.includes('Datastore') || item.info.data.childType.string.includes('StoragePod'))) return this.contextMenus.folderDatastoreContextMenu;
+    if (item.type === 'Folder' && (item.info.data.childType.string.includes('VirtualMachine') || item.info.data.childType.string.includes('VirtualApp'))) return this.contextMenus.folderVMContextMenu;
+    if (item.type === 'Folder' && (item.info.data.childType.string.includes('Network') || item.info.data.childType.string.includes('DistributedVirtualSwitch'))) return this.contextMenus.folderNetworkContextMenu;
+    if (item.type === 'Datacenter') return this.contextMenus.datacenterContextMenu;
+    if (item.type === 'VirtualMachine') return this.contextMenus.VMContextMenu;
+    if (item.type === 'Datastore') return this.contextMenus.datastoreContextMenu;
+    if (item.type === 'StoragePod') return this.contextMenus.datastoreClusterContextMenu;
+    if (item.type === 'ClusterComputeResource') return this.contextMenus.clusterComputeResourceContextMenu;
+    if (item.type === 'HostSystem') return this.contextMenus.hostSystemContextMenu;
+    if (item.type === 'ResourcePool') return this.contextMenus.resourcePoolContextMenu;
   }
 
   onTreeContextMenu(event: MouseEvent, node: IMNode): void {
@@ -168,8 +161,8 @@ export class BodyComponent implements OnInit {
     this.InfrastructureManager.setActiveConnection(connection.uuid);
   }
 
-  getActiveConnection(): IMConnection {
-    return this.InfrastructureManager.getActiveConnection();
+  getActiveConnection(returnMain): IMConnection {
+    return this.InfrastructureManager.getActiveConnection(returnMain);
   }
 
   setActiveView(type: string, data: any): void {

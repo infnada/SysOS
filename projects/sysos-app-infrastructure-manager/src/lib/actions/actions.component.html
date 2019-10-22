@@ -1,65 +1,65 @@
 <div class="window__actions">
-  <a class="window__item" title="New connection" (click)="newConnection()">
+  <a class="window__item" matTooltip="New connection" (click)="newConnection()">
     <i class="fas fa-plus text-success"></i>
   </a>
   <a class="window__item separator"></a>
-  <a class="window__item" title="Edit connection" (click)="editConnection()">
+  <a class="window__item" matTooltip="Edit connection" (click)="editConnection()">
     <i class="fas fa-edit" [ngClass]="{'text-primary': activeConnection !== null}"></i>
   </a>
-  <a class="window__item" title="Disconnect" (click)="disconnectConnection()">
+  <a class="window__item" matTooltip="Disconnect" (click)="disconnectConnection()">
     <i class="fas fa-times" [ngClass]="{'text-danger': activeConnection !== null}"></i>
   </a>
-  <a class="window__item" title="Delete" (click)="deleteConnection()">
+  <a class="window__item" matTooltip="Delete" (click)="deleteConnection()">
     <i class="fas fa-trash" [ngClass]="{'text-danger': activeConnection !== null}"></i>
   </a>
-  <a class="window__item" title="Connection options" (click)="configureConnection()">
+  <a class="window__item" matTooltip="Connection options" (click)="configureConnection()">
     <i class="fas fa-cog" [ngClass]="{'text-primary': activeConnection !== null}"></i>
   </a>
   <a class="window__item separator"></a>
-  <a class="window__item" title="Power status">
+  <a class="window__item" matTooltip="Power status">
     <i class="fas fa-power-off" [ngClass]="{'text-danger': activeConnection !== null}"></i>
   </a>
-  <a class="window__item" title="Refresh" (click)="remoteRefresh();">
+  <a class="window__item" matTooltip="Refresh" (click)="remoteRefresh();">
     <i class="fas fa-sync-alt" [ngClass]="{'text-success': activeConnection !== null}"></i>
   </a>
-  <a class="window__item" title="SSH" (click)="openWithApp('ssh')">
+  <a class="window__item" matTooltip="SSH" (click)="openWithApp('ssh')">
     <i class="fas fa-terminal" [ngClass]="{'text-primary': activeConnection !== null}"></i>
   </a>
-  <a class="window__item" title="File explorer" (click)="openWithApp('sftp')">
+  <a class="window__item" matTooltip="File explorer" (click)="openWithApp('sftp')">
     <i class="fas fa-upload" [ngClass]="{'text-primary': activeConnection !== null}"></i>
   </a>
-  <a class="window__item" title="Hardware monitor">
+  <a class="window__item" matTooltip="Hardware monitor">
     <i class="fas fa-microchip" [ngClass]="{'text-primary': activeConnection !== null}"></i>
   </a>
-  <a class="window__item" title="Alerts">
+  <a class="window__item" matTooltip="Alerts">
     <i class="fas fa-bullhorn" [ngClass]="{'text-primary': activeConnection !== null}"></i>
   </a>
-  <a class="window__item" title="Services">
+  <a class="window__item" matTooltip="Services">
     <i class="fas fa-cubes" [ngClass]="{'text-primary': activeConnection !== null}"></i>
   </a>
-  <a class="window__item" title="Firewall">
+  <a class="window__item" matTooltip="Firewall">
     <i class="fas fa-exchange-alt" [ngClass]="{'text-primary': activeConnection !== null}"></i>
   </a>
-  <a class="window__item" title="HIDS" (click)="runHIDS()">
+  <a class="window__item" matTooltip="HIDS" (click)="runHIDS()">
     <i class="fas fa-shield-alt" [ngClass]="{'text-primary': activeConnection !== null}"></i>
   </a>
   <a class="window__item separator"></a>
 
   <!-- VM actions -->
   <ng-container>
-    <a class="window__item" title="Power On">
+    <a class="window__item" matTooltip="Power On">
       <i class="vm-ui-icon-vmPowerOn"></i>
     </a>
-    <a class="window__item" title="Shut Down Guest OS">
+    <a class="window__item" matTooltip="Shut Down Guest OS">
       <i class="vm-ui-icon-vmShutdown"></i>
     </a>
-    <a class="window__item" title="Launch Console">
+    <a class="window__item" matTooltip="Launch Console">
       <i class="icon-vSphere-openConsole"></i>
     </a>
-    <a class="window__item" title="Edit Settings...">
+    <a class="window__item" matTooltip="Edit Settings...">
       <i class="icon-vSphere-vmEdit"></i>
     </a>
-    <a class="window__item" title="Take Snapshot...">
+    <a class="window__item" matTooltip="Take Snapshot...">
       <i class="vm-ui-icon-snapshotTake"></i>
     </a>
   </ng-container>

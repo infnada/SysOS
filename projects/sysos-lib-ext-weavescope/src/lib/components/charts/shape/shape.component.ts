@@ -21,9 +21,6 @@ export class ShapeComponent {
   @Input() shape: 'circle' | 'cloud' | 'cylinder' | 'dottedcylinde' | 'ShapeDottedTriangle' | 'heptagon' | 'hexagon' | 'octago' | 'pentagon' | 'sheet' | 'square' | 'triangle';
   @Input() stacked: boolean;
 
-  clipId = encodeIdAttribute(`metric-clip-${this.id}`);
-  hasMetric = !isEmpty(this.metricFormattedValue) && isNumber(this.metricNumericValue);
-
   /**
    * SHAPES
    */
@@ -52,9 +49,9 @@ export class ShapeComponent {
     cylinder: `<path d="${this.UNIT_CYLINDER_PATH}" #ATTRS></path>`,
     dottedcylinder: `<path stroke-dasharray="0.4, 0.2" d="${this.UNIT_CYLINDER_PATH}" #ATTRS></path>`,
     dottedtriangle: `<path stroke-dasharray="0.4, 0.2" d="${this.curvedUnitPolygonPath(3)}" #ATTRS></path>`,
+    octagon: `<path d="${this.curvedUnitPolygonPath(8)}" #ATTRS></path>`,
     heptagon: `<path d="${this.curvedUnitPolygonPath(7)}" #ATTRS></path>`,
     hexagon: `<path d="${this.curvedUnitPolygonPath(6)}" #ATTRS></path>`,
-    octagon: `<path d="${this.curvedUnitPolygonPath(8)}" #ATTRS></path>`,
     pentagon: `<path d="${this.curvedUnitPolygonPath(5)}" #ATTRS></path>`,
     sheet: `<path d="${this.UNIT_SHEET}" #ATTRS></path>`,
     square: `<rect width="1.8" height="1.8" rx="0.4" ry="0.4" x="-0.9" y="-0.9" #ATTRS></rect>`,
@@ -62,6 +59,14 @@ export class ShapeComponent {
   };
 
   constructor() {
+  }
+
+  getClipId() {
+    return encodeIdAttribute(`metric-clip-${this.id}`);
+  }
+
+  hasMetric() {
+    return !isEmpty(this.metricFormattedValue) && isNumber(this.metricNumericValue);
   }
 
   verticalTranslate = t => `translate(0, ${t * this.size * (this.contrastMode ? 0.18 : 0.15)})`;
@@ -91,7 +96,7 @@ export class ShapeComponent {
     }
 
     if (type === 'metricFillAttrs') {
-      attrs.push({name: 'clipPath', value: `url(${this.clipId})`});
+      attrs.push({name: 'clip-path', value: `url(#${this.getClipId()})`});
       attrs.push({name: 'style', value: `fill: ${this.metricColor}; fill-opacity: 0.7; stroke: none`});
       attrs.push({name: 'transform', value: 'scale(0.48)'});
     }
@@ -129,14 +134,15 @@ export class ShapeComponent {
   }
 
   renderBaseShape(highlighted: boolean = this.highlighted) {
+
     return `<g transform="scale(${this.size})">
       ${highlighted ? `${this.renderTemplate('borderAttrs', false)}
       ${this.renderTemplate('shadowAttrs', false)}` : ''}
     
       ${this.renderTemplate('backgroundAttrs')}
     
-      ${this.hasMetric ? `<defs>
-          <clipPath id="${this.clipId}" transform="scale(${2 * 0.48})">
+      ${this.hasMetric() ? `<defs>
+          <clipPath id="${this.getClipId()}" transform="scale(${2 * 0.48})">
             <rect width="2" height="2" x="-1" y="${1 - 2 * this.metricNumericValue}"></rect>
           </clipPath>
         </defs>

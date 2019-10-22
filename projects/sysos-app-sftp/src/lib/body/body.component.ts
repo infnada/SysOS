@@ -1,4 +1,7 @@
-import {Component, OnInit, Input} from '@angular/core';
+import {Component, OnInit, Input, OnDestroy} from '@angular/core';
+
+import {takeUntil} from "rxjs/operators";
+import {Subject} from "rxjs";
 
 import {Application} from '@sysos/lib-application';
 
@@ -10,8 +13,10 @@ import {SftpConnection} from '../types/sftp-connection';
   templateUrl: './body.component.html',
   styleUrls: ['./body.component.scss']
 })
-export class BodyComponent implements OnInit {
+export class BodyComponent implements OnDestroy, OnInit {
   @Input() application: Application;
+
+  private destroySubject$: Subject<void> = new Subject();
 
   connections: SftpConnection[];
   activeConnection: string;
@@ -23,9 +28,13 @@ export class BodyComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.Sftp.connections.subscribe(connections => this.connections = connections);
-    this.Sftp.activeConnection.subscribe(connection => this.activeConnection = connection);
-    this.Sftp.viewExchange.subscribe(view => this.viewExchange = view);
+    this.Sftp.connections.pipe(takeUntil(this.destroySubject$)).subscribe(connections => this.connections = connections);
+    this.Sftp.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe(connection => this.activeConnection = connection);
+    this.Sftp.viewExchange.pipe(takeUntil(this.destroySubject$)).subscribe(view => this.viewExchange = view);
+  }
+
+  ngOnDestroy() {
+    this.destroySubject$.next();
   }
 
   toggleSide(): void {

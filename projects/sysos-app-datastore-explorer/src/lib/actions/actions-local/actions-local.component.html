@@ -16,7 +16,7 @@
   <a class="window__item" (click)="reloadPath()">
     <i class="fas fa-sync-alt"></i>
   </a>
-  <div class="window__path">
+  <div class="window__path" matTooltip="{{currentPath}}">
     <a (click)="goToPath(null)">
       <i class="fas fa-desktop"></i>
       SysOS /

@@ -64,9 +64,13 @@ router.post('/:folderName(*)', (req: express.Request, res: express.Response) => 
   const apiGlobals = new ApiGlobalsModule(req, res);
 
   const dirname = path.join(__dirname, '../../filesystem') + req.params.folderName;
-  fs.mkdirSync(dirname);
 
-  apiGlobals.validResponse();
+  fs.mkdir(dirname).then(() => {
+    return apiGlobals.validResponse();
+  }).catch((e) => {
+    if (e && e.code) return apiGlobals.serverError(e.code);
+    return apiGlobals.serverError(e);
+  });
 });
 
 export default router;

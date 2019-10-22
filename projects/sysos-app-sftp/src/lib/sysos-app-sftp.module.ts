@@ -22,7 +22,7 @@ import {BodyExchangeComponent} from './body/body-exchange/body-exchange.componen
 import {BodyNewConnectionComponent} from './body/body-new-connection/body-new-connection.component';
 import {MenuComponent} from './menu/menu.component';
 import {StatusComponent} from './status/status.component';
-import {SysosAppSftpService} from './services/sysos-app-sftp.service';
+import {SysosAppSftpServerService} from './services/sysos-app-sftp-server.service';
 
 @NgModule({
   declarations: [
@@ -54,7 +54,7 @@ import {SysosAppSftpService} from './services/sysos-app-sftp.service';
 })
 export class SysosAppSftpModule {
   constructor(private Applications: SysosLibApplicationService,
-              private Sftp: SysosAppSftpService) {
+              private SftpServer: SysosAppSftpServerService) {
     Applications.registerApplication({
       id: 'sftp',
       ico: 'fas fa-upload',
@@ -65,6 +65,6 @@ export class SysosAppSftpModule {
       style: {width: '1275px', height: '600px', top: '9%', left: '10%'}
     });
 
-    this.Sftp.initConnections();
+    this.SftpServer.initConnections();
   }
 }

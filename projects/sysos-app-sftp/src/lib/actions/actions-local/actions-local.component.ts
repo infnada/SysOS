@@ -1,6 +1,7 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 
-import {Subscription} from 'rxjs';
+import {Subject, Subscription} from 'rxjs';
+import {takeUntil} from "rxjs/operators";
 
 import {Application} from '@sysos/lib-application';
 import {SysOSFile} from '@sysos/lib-types';
@@ -13,8 +14,10 @@ import {SysosAppSftpLocalService} from '../../services/sysos-app-sftp-local.serv
   templateUrl: './actions-local.component.html',
   styleUrls: ['./actions-local.component.scss']
 })
-export class ActionsLocalComponent implements OnInit {
+export class ActionsLocalComponent implements OnDestroy, OnInit {
   @Input() application: Application;
+
+  private destroySubject$: Subject<void> = new Subject();
 
   goPathBackSubscription: Subscription;
   goToPathSubscription: Subscription;
@@ -30,20 +33,24 @@ export class ActionsLocalComponent implements OnInit {
   constructor(private FileSystemUi: SysosLibFileSystemUiService,
               private SftpLocal: SysosAppSftpLocalService) {
 
-    this.goPathBackSubscription = this.SftpLocal.getObserverGoPathBack().subscribe(() => {
+    this.goPathBackSubscription = this.SftpLocal.getObserverGoPathBack().pipe(takeUntil(this.destroySubject$)).subscribe(() => {
       this.goPathBack();
     });
 
-    this.goToPathSubscription = this.FileSystemUi.getObserverGoToPath().subscribe((data) => {
+    this.goToPathSubscription = this.FileSystemUi.getObserverGoToPath().pipe(takeUntil(this.destroySubject$)).subscribe((data) => {
       if (data.application === 'sftp#local') this.goToPath(data.path);
     });
   }
 
   ngOnInit(): void {
-    this.SftpLocal.currentPath.subscribe(path => this.currentPath = path);
-    this.SftpLocal.currentData.subscribe(data => this.currentData = data);
-    this.SftpLocal.viewAsList.subscribe(data => this.viewAsList = data);
-    this.SftpLocal.search.subscribe(data => this.search = data);
+    this.SftpLocal.currentPath.pipe(takeUntil(this.destroySubject$)).subscribe(path => this.currentPath = path);
+    this.SftpLocal.currentData.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.currentData = data);
+    this.SftpLocal.viewAsList.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.viewAsList = data);
+    this.SftpLocal.search.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.search = data);
+  }
+
+  ngOnDestroy() {
+    this.destroySubject$.next();
   }
 
   /**

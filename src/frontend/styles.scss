@@ -7,7 +7,6 @@ $fa-font-path : '~node_modules/@fortawesome/fontawesome-free/webfonts';
 @import "~@angular/material/prebuilt-themes/indigo-pink.css";
 @import "~material-design-icons/iconfont/material-icons.css";
 @import '~ngx-toastr/toastr.css';
-@import '~xterm/dist/xterm.css';
 
 
 *, *:before, *:after {
@@ -16,7 +15,7 @@ $fa-font-path : '~node_modules/@fortawesome/fontawesome-free/webfonts';
 
 body {
   overflow: hidden;
-  font-family: 'Segoe UI', sans-serif;font-family: 'Segoe UI', sans-serif;
+  font-family: 'Segoe UI', sans-serif;
 }
 
 a {

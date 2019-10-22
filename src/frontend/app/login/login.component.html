@@ -15,6 +15,7 @@
               <input type="password" id="fieldPassword" class="input" autocomplete="off" name="password" [(ngModel)]="password" readonly onfocus="this.removeAttribute('readonly');" required pattern=.*\S.* />
               <label for="fieldPassword" class="label">Password</label>
               <small class="text-primary text-center d-block" *ngIf="capsOn">Caps Locked</small>
+              <small class="text-danger text-center d-block" *ngIf="invalidLogin">{{invalidLogin}}</small>
             </div>
             <div class="profile__footer">
               <button class="btn" type="submit" (click)="login(username, password)" mat-flat-button color="primary">Login</button>

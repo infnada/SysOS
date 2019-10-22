@@ -47,3 +47,19 @@ saim-summary-info {
 ::ng-deep .mat-expansion-panel-header {
   font-size: 13px;
 }
+
+.tags {
+  position: absolute;
+  bottom: 0;
+  padding: 1rem;
+}
+
+.alerts {
+  position: absolute;
+  left: 0;
+  top: 65px;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  width: 70%;
+}

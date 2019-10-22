@@ -136,6 +136,8 @@ export class NodeContainerComponent implements OnDestroy {
     return `${text}${unit}`;
   }
 
+  formatMetricSvg = this.makeFormatMetric(this.renderSvg);
+
   getMetricValue(metric) {
     if (!metric) {
       return {formattedValue: 'n/a', height: 0, value: null};
@@ -160,7 +162,7 @@ export class NodeContainerComponent implements OnDestroy {
     }
 
     return {
-      formattedValue: this.makeFormatMetric(this.renderSvg(value, m)),
+      formattedValue: this.formatMetricSvg(value, m),
       hasMetric: value !== null,
       height: displayedValue
     };

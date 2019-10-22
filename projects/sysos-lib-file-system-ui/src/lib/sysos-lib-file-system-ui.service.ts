@@ -93,21 +93,23 @@ export class SysosLibFileSystemUiService {
         inputValue: 'NewFolder'
       }
     ).then((modalInstance) => {
-      modalInstance.result.then((name: string) => {
-        if (!name) return;
+      modalInstance.result.then((folderName: string) => {
+        if (!folderName) return;
 
         // Default SysOS handlers
         if (type === null || type === 'linux') {
-          return this.FileSystem.createFolder((type === null ? null : data.connection.uuid), currentPath, name).subscribe(
-          () => {
-            this.refreshPath(currentPath);
+          return this.FileSystem.createFolder((type === null ? null : data.connection.uuid), currentPath, folderName).subscribe(
+            (res: { status: string, data?: any }) => {
+              if (res.status === 'error') return this.logger.error('FileSystemUI', 'UIcreateFolder -> Error while creating folder', loggerArgs, res.data);
+
+              this.refreshPath(currentPath);
           },
           error => {
             this.logger.error('FileSystemUI', 'UIcreateFolder -> Error while creating folder', loggerArgs, error);
           });
         }
 
-        data.name = name;
+        data.name = folderName;
         data.currentPath = currentPath;
         data.selector = selector;
 
@@ -131,21 +133,23 @@ export class SysosLibFileSystemUiService {
         inputValue: file.filename
       }
     ).then((modalInstance) => {
-      modalInstance.result.then((name: string) => {
-        if (!name) return;
+      modalInstance.result.then((fileName: string) => {
+        if (!fileName) return;
 
         // Default SysOS handlers
         if (type === null || type === 'linux') {
-          return this.FileSystem.renameFile((type === null ? null : data.connection.uuid), currentPath, file.filename, name).subscribe(
-          () => {
-            this.refreshPath(currentPath);
+          return this.FileSystem.renameFile((type === null ? null : data.connection.uuid), currentPath, file.filename, fileName).subscribe(
+            (res: { status: string, data?: any }) => {
+              if (res.status === 'error') return this.logger.error('FileSystemUI', 'UIrenameFile -> Error while renaming file', loggerArgs, res.data);
+
+              this.refreshPath(currentPath);
           },
           error => {
             this.logger.error('FileSystemUI', 'UIrenameFile -> Error while renaming file', loggerArgs, error);
           });
         }
 
-        data.name = name;
+        data.name = fileName;
         data.currentPath = currentPath;
         data.file = file;
         data.selector = selector;
@@ -178,8 +182,10 @@ export class SysosLibFileSystemUiService {
           // Default SysOS handlers
           if (type === null || type === 'linux') {
             return this.FileSystem.deleteFile((type === null ? null : data.connection.uuid), currentPath, file.filename).subscribe(
-            () => {
-              this.refreshPath(currentPath);
+              (res: { status: string, data?: any }) => {
+                if (res.status === 'error') return this.logger.error('FileSystemUI', 'UIdeleteSelected -> Error while deleting file', loggerArgs, res.data);
+
+                this.refreshPath(currentPath);
             },
             error => {
               this.logger.error('FileSystemUI', 'UIdeleteSelected -> Error while deleting folder', loggerArgs, error);
@@ -211,13 +217,15 @@ export class SysosLibFileSystemUiService {
         inputValue: ''
       }
     ).then((modalInstance) => {
-      modalInstance.result.then((name: string) => {
-        if (!name) return;
+      modalInstance.result.then((url: string) => {
+        if (!url) return;
 
         // Default SysOS handlers
         if (type === null || type === 'linux') {
-          return this.FileSystem.downloadFileFromInet((type === null ? null : data.connection.uuid), currentPath, name).subscribe(
-            () => {
+          return this.FileSystem.downloadFileFromInet((type === null ? null : data.connection.uuid), currentPath, url).subscribe(
+            (res: { status: string, data?: any }) => {
+              if (res.status === 'error') return this.logger.error('FileSystemUI', 'UIdownloadFromURL -> Error while downloading file', loggerArgs, res.data);
+
               this.refreshPath(currentPath);
               this.Toastr.success('File downloaded to ' + currentPath, 'Download file from URL');
             },
@@ -226,17 +234,14 @@ export class SysosLibFileSystemUiService {
             });
         }
 
-        data.name = name;
+        data.name = url;
         data.currentPath = currentPath;
         data.selector = selector;
 
         // Application specific handlers
         if (this.downloadFromURLFileHandlers[type]) this.downloadFromURLFileHandlers[type].fn(data);
-
       });
-
     });
-
   }
 
   /**
@@ -291,7 +296,9 @@ export class SysosLibFileSystemUiService {
           this.dataStore.cutFile.fullPath,
           currentPath + this.dataStore.cutFile.fileName
         ).subscribe(
-          () => {
+          (res: { status: string, data?: any }) => {
+            if (res.status === 'error') return this.logger.error('FileSystemUI', 'UIpasteFile -> Error while moving file', loggerArgs, res.data);
+
             // Refresh origin and remote paths
             this.refreshPath(this.dataStore.cutFile.currentPath);
             this.refreshPath(currentPath);
@@ -313,7 +320,9 @@ export class SysosLibFileSystemUiService {
           this.dataStore.copyFile.fullPath,
           currentPath + this.dataStore.copyFile.fileName
         ).subscribe(
-          () => {
+          (res: { status: string, data?: any }) => {
+            if (res.status === 'error') return this.logger.error('FileSystemUI', 'UIpasteFile -> Error while copying file', loggerArgs, res.data);
+
             // Refresh remote path
             this.refreshPath(currentPath);
 

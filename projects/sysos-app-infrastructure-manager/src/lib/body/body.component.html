@@ -3,7 +3,14 @@
 
     <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
       <!-- This is the tree node template for leaf nodes -->
-      <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding matTreeNodePaddingIndent="10" (contextmenu)="onTreeContextMenu($event, node)">
+      <mat-tree-node
+        *matTreeNodeDef="let node"
+        matTreeNodePadding
+        matTreeNodePaddingIndent="10"
+        (contextmenu)="onTreeContextMenu($event, node)"
+        [ngClass]="{'active-node': activeConnection === (node.info && node.info.uuid)}"
+
+      >
         <!-- use a disabled button to provide padding for tree leaf -->
         <button mat-icon-button disabled></button>
 
@@ -39,8 +46,16 @@
              [matMenuTriggerData]="{item: node}">
         </div>
       </mat-tree-node>
+
       <!-- This is the tree node template for expandable nodes -->
-      <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding matTreeNodePaddingIndent="10" (contextmenu)="onTreeContextMenu($event, node)">
+      <mat-tree-node
+        *matTreeNodeDef="let node;when: hasChild"
+        matTreeNodePadding
+        matTreeNodePaddingIndent="10"
+        (contextmenu)="onTreeContextMenu($event, node)"
+        [ngClass]="{'active-node': activeConnection === (node.info && node.info.uuid)}"
+
+      >
         <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'toggle ' + node.name">
           <mat-icon class="mat-icon-rtl-mirror">
             {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
@@ -121,39 +136,22 @@
   <div class="secondary-content__new__box__toggle toggle_left pointer visible-lg" *ngIf="!viewSide" (click)="toggleSide()">
     <i class="fas fa-arrow-right sidebar-open-font open-sidebar"></i>
   </div>
-  <div class="window__main no_padding">
-    <saim-body-new-connection [application]="application" *ngIf="activeConnection === null || getActiveConnection().state === 'disconnected'"></saim-body-new-connection>
+  <div id="infrastructure-manager_main-body" class="window__main no_padding">
 
-    <div *ngIf="activeView.type !== null && activeView.type.startsWith('vmware')" class="h-100">
-      <saim-body-vmware [application]="application" [vmwareObject]="activeView.data"></saim-body-vmware>
-      <saim-vmware-recent-tasks [application]="application" ></saim-vmware-recent-tasks>
-    </div>
+    <saim-body-new-connection [application]="application" *ngIf="activeConnection === null || (getActiveConnection(true) && getActiveConnection(true).state === 'disconnected')"></saim-body-new-connection>
 
-    <saim-body-netapp *ngIf="activeView.type === 'netapp'"></saim-body-netapp>
-    <saim-body-netapp-vserver *ngIf="activeView.type === 'netapp-vserver'"></saim-body-netapp-vserver>
-    <saim-body-netapp-volume *ngIf="activeView.type === 'netapp-volume'"></saim-body-netapp-volume>
-    <saim-body-netapp-snapshot *ngIf="activeView.type === 'netapp-snapshot'"></saim-body-netapp-snapshot>
+    <ng-container *ngIf="activeConnection !== null || (getActiveConnection(true) && getActiveConnection(true).state !== 'disconnected')">
+      <div *ngIf="activeView.type !== null && activeView.type.startsWith('vmware')" class="h-100">
+        <saim-body-vmware [application]="application" [vmwareObject]="activeView.data"></saim-body-vmware>
+        <saim-vmware-recent-tasks [application]="application" ></saim-vmware-recent-tasks>
+      </div>
 
-    <!--<div ng-if="smB.showvCenter == true">
-	  <div ng-include="'templates/applications/vcenter-type-smanager.html'" include-replace></div>
-	</div>
-	<div ng-if="smB.showSnapshot == true">
-	  <div ng-include="'templates/applications/snapshot-type-smanager.html'" include-replace></div>
-	</div>
-	<div ng-if="smB.showVm == true || smB.showStandalone == true && smB.getActiveConnection().state != 'disconnected' && smB.getActiveConnection().so != 'snmp'">
-	  <div ng-include="'templates/applications/standalone-type-smanager.html'" include-replace></div>
-	</div>
-	<div ng-if="smB.getActiveConnection().so == 'snmp'">
-	  <div ng-include="'templates/applications/snmp-type-smanager.html'" include-replace></div>
-	</div>
-	<div ng-if="smB.showNewConnectionType == true">
-	  <div ng-include="'templates/applications/new-connection-type-smanager.html'" include-replace></div>
-	</div>
-	<div ng-if="smB.showNewConnection == true || smB.getActiveConnection().state == 'disconnected'">
-	  <div ng-include="'templates/applications/new-connection-smanager.html'" include-replace></div>
-	</div>
-	<div ng-if="smB.showConfigureConnection == true">
-	  <div ng-include="'templates/applications/configure-connection-smanager.html'" include-replace></div>
-	</div>-->
+      <saim-body-netapp *ngIf="activeView.type === 'netapp'"></saim-body-netapp>
+      <saim-body-netapp-vserver *ngIf="activeView.type === 'netapp-vserver'"></saim-body-netapp-vserver>
+      <saim-body-netapp-volume *ngIf="activeView.type === 'netapp-volume'"></saim-body-netapp-volume>
+      <saim-body-netapp-snapshot *ngIf="activeView.type === 'netapp-snapshot'"></saim-body-netapp-snapshot>
+
+    </ng-container>
+
   </div>
 </div>

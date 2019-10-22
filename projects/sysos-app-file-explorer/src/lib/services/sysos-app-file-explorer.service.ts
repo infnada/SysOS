@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
 
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
-import {SysosLibLoggerService} from '@sysos/lib-logger';
 
+import {SysosLibLoggerService} from '@sysos/lib-logger';
 import {SysosLibFileSystemService} from '@sysos/lib-file-system';
 import {SysOSFile} from '@sysos/lib-types';
 

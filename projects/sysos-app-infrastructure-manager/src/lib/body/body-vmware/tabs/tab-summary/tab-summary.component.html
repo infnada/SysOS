@@ -1,4 +1,4 @@
-<div class="container-fluid mt-2">
+<!--<div class="container-fluid mt-2">
   <div class="row">
     <div class="col-6">
       <saim-summary-info [vmwareObject]="vmwareObject"></saim-summary-info>
@@ -19,111 +19,65 @@
       </mat-card>
     </div>
   </div>
-</div>
-<div class="p-3">
-  <mat-chip-list aria-label="Tag selection">
-    <mat-chip color="accent">No tags</mat-chip>
-    <mat-chip *ngFor="let tag of tags" selected removable (removed)="remove(tag)" color="primary">{{tag.category}}: {{tag.name}}<mat-icon matChipRemove>cancel</mat-icon></mat-chip>
-    <mat-chip color="accent"><mat-icon>add</mat-icon></mat-chip>
-  </mat-chip-list>
-</div>
-<div>
-  <div class="mt-3 alert alert-danger" role="alert">Some alert text</div>
-</div>
-<div class="container">
-  <div class="row">
-    <div class="col-12">
+</div>-->
 
-      <!-- VirtualMachine -->
-      <ng-container *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'VirtualMachine'">
-        <div class="row">
-          <div class="col-6">
-            <mat-card>
-              <mat-card-title>
-                DRIVES <i class="far fa-plus-square text-primary float-right"></i>
-                <mat-divider></mat-divider>
-              </mat-card-title>
-              <mat-card-content>
-                <div class="p-2">
-                  <i class="fas fa-hdd fa-3x pr-3 float-left"></i>
-                  <div>100GB/200GB<br/>iSCSI</div>
-                  <mat-progress-bar mode="determinate" value="50"></mat-progress-bar>
-                </div>
-                <mat-divider></mat-divider>
-                <div class="p-2">
-                  <i class="fas fa-hdd fa-3x pr-3 float-left"></i>
-                  <div>50GB/75GB<br/>Paravirtual</div>
-                  <mat-progress-bar mode="determinate" value="67"></mat-progress-bar>
-                </div>
-              </mat-card-content>
-            </mat-card>
-          </div>
-          <div class="col-6">
-            <mat-card>
-              <mat-card-title>
-                NETWORK <i class="far fa-plus-square text-primary float-right"></i>
-                <mat-divider></mat-divider>
-              </mat-card-title>
-              <mat-card-content>
-                <div class="p-2">
-                  <i class="fas fa-network-wired fa-3x pr-3 float-left"></i>
-                  <div>vmx3<br/>VLAN: 200<i class="fas fa-check text-success float-right"></i></div>
-                </div>
-                <mat-divider></mat-divider>
-                <div class="p-2">
-                  <i class="fas fa-network-wired fa-3x pr-3 float-left"></i>
-                  <div>vmx3<br/>VLAN: 190<i class="fas fa-unlink text-danger float-right"></i></div>
-                </div>
-              </mat-card-content>
-            </mat-card>
+<slews-sysos-lib-ext-weavescope [nodes]="setWeaveScopeNodes()" (selectedNode)="selectedNodeChange($event)" [simpleLayout]="true">
 
-            <saim-custom-attributes></saim-custom-attributes>
-          </div>
-        </div>
-      </ng-container>
-
-      <!-- Datacenter -->
-      <ng-container *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'Datacenter'">
-        <saim-custom-attributes></saim-custom-attributes>
-      </ng-container>
-      <ng-container *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'ClusterComputeResource'">
-        <saim-vsphere-drs></saim-vsphere-drs>
-        <saim-custom-attributes></saim-custom-attributes>
-        <saim-cluster-resources></saim-cluster-resources>
-      </ng-container>
-      <ng-container *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'HostSystem'">
-        <saim-host-hardware></saim-host-hardware>
-        <saim-host-configuration></saim-host-configuration>
-        <saim-custom-attributes></saim-custom-attributes>
-      </ng-container>
-      <ng-container *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'Folder'">
-        <saim-custom-attributes></saim-custom-attributes>
-      </ng-container>
-      <ng-container *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'ResourcePool'">
-        <saim-resource-pool-settings></saim-resource-pool-settings>
-      </ng-container>
-      <ng-container *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'VirtualApp'">
-        <saim-vapp-status></saim-vapp-status>
-        <saim-custom-attributes></saim-custom-attributes>
-      </ng-container>
-      <ng-container *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'StoragePod'">
-        <saim-datastore-cluster-resources></saim-datastore-cluster-resources>
-        <saim-storage-drs></saim-storage-drs>
-        <saim-custom-attributes></saim-custom-attributes>
-      </ng-container>
-      <ng-container *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'Datastore'">
-        <saim-custom-attributes></saim-custom-attributes>
-      </ng-container>
-      <ng-container *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'Network'">
-        <saim-custom-attributes></saim-custom-attributes>
-      </ng-container>
-      <ng-container *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'VmwareDistributedVirtualSwitch'">
-        <saim-switch-features></saim-switch-features>
-        <saim-custom-attributes></saim-custom-attributes>
-      </ng-container>
-      <ng-container *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'DistributedVirtualPortgroup'">
-        <saim-custom-attributes></saim-custom-attributes>
-      </ng-container>
-    </div>
+  <div class="tags">
+    <mat-chip-list aria-label="Tag selection">
+      <mat-chip color="accent">No tags</mat-chip>
+      <mat-chip *ngFor="let tag of tags" selected removable (removed)="remove(tag)" color="primary">{{tag.category}}: {{tag.name}}<mat-icon matChipRemove>cancel</mat-icon></mat-chip>
+      <mat-chip color="accent"><mat-icon>add</mat-icon></mat-chip>
+    </mat-chip-list>
   </div>
-</div>
+
+  <div class="alerts">
+    <div class="mt-3 alert alert-danger" role="alert">Some alert text</div>
+  </div>
+
+  <!--<div class="col text-center" style="position: absolute;bottom: 90px;z-index: 1;">
+
+    <ng-container *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'Datacenter'">
+      <saim-custom-attributes></saim-custom-attributes>
+    </ng-container>
+    <ng-container *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'ClusterComputeResource'">
+      <saim-vsphere-drs></saim-vsphere-drs>
+      <saim-custom-attributes></saim-custom-attributes>
+      <saim-cluster-resources></saim-cluster-resources>
+    </ng-container>
+    <ng-container *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'HostSystem'">
+      <saim-host-hardware></saim-host-hardware>
+      <saim-host-configuration></saim-host-configuration>
+      <saim-custom-attributes></saim-custom-attributes>
+    </ng-container>
+    <ng-container *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'Folder'">
+      <saim-custom-attributes></saim-custom-attributes>
+    </ng-container>
+    <ng-container *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'ResourcePool'">
+      <saim-resource-pool-settings></saim-resource-pool-settings>
+    </ng-container>
+    <ng-container *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'VirtualApp'">
+      <saim-vapp-status></saim-vapp-status>
+      <saim-custom-attributes></saim-custom-attributes>
+    </ng-container>
+    <ng-container *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'StoragePod'">
+      <saim-datastore-cluster-resources></saim-datastore-cluster-resources>
+      <saim-storage-drs></saim-storage-drs>
+      <saim-custom-attributes></saim-custom-attributes>
+    </ng-container>
+    <ng-container *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'Datastore'">
+      <saim-custom-attributes></saim-custom-attributes>
+    </ng-container>
+    <ng-container *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'Network'">
+      <saim-custom-attributes></saim-custom-attributes>
+    </ng-container>
+    <ng-container *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'VmwareDistributedVirtualSwitch'">
+      <saim-switch-features></saim-switch-features>
+      <saim-custom-attributes></saim-custom-attributes>
+    </ng-container>
+    <ng-container *ngIf="VmwareTemplateHelpers.getObjectType(vmwareObject) === 'DistributedVirtualPortgroup'">
+      <saim-custom-attributes></saim-custom-attributes>
+    </ng-container>
+  </div>-->
+
+</slews-sysos-lib-ext-weavescope>

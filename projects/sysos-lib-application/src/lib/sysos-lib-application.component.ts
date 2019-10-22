@@ -53,13 +53,13 @@ export class SysosLibApplicationComponent implements OnInit, AfterViewInit {
      */
 
     // Called from Task Bar Context Menu
-    this.closeAppSubscription = this.Applications.getObserverCloseApplication().subscribe(application => {
+    this.closeAppSubscription = this.Applications.getObserverCloseApplication().subscribe((application: Application) => {
       this.logger.debug('Applications', `Closing application [${application.id}]`);
 
       if (application.id === this.application.id) this.close();
     });
 
-    this.togglingAppSubscription = this.Applications.getObserverToggleApplication().subscribe(id => {
+    this.togglingAppSubscription = this.Applications.getObserverToggleApplication().subscribe((id: string) => {
       this.logger.debug('Applications', `Toggling application [${id}]`);
 
       // Called to minimize all applications
@@ -138,38 +138,62 @@ export class SysosLibApplicationComponent implements OnInit, AfterViewInit {
           (statusComponentRef.instance as any).application = this.application;
         }
 
+        // Maximise if some portion of the app is outside of viewport
+        if (!this.isInViewport()) return this.maximize();
+
       });
   }
 
+  isInViewport(): boolean {
+    const bounding = this.appElement.nativeElement.getBoundingClientRect();
+
+    return (
+      bounding.top >= 0 &&
+      bounding.left >= 0 &&
+      bounding.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+      bounding.right <= (window.innerWidth || document.documentElement.clientWidth)
+    );
+  };
+
   onResize(event: ResizeEvent): void {
+    // TODO: pending https://github.com/mattlewis92/angular-resizable-element/pull/100
+
     // Set new element size
     this.currentHeight = `${event.rectangle.height}px`;
     this.currentWidth = `${event.rectangle.width}px`;
     this.currentTop = `${event.rectangle.top}px`;
     this.currentLeft = `${event.rectangle.left}px`;
+
+    // Maximise if some portion of the app is outside of viewport
+    if (!this.isInViewport()) {
+      return this.maximize();
+    } else {
+      if (this.isMaximized) this.isMaximized = false;
+    }
+
+  }
+
+  onWindowsResize(event): void {
+    this.fullHeight = event.target.innerHeight - 48 + 'px';
+    this.fullWidth = event.target.innerWidth + 'px';
+
+    if (this.isMaximized) {
+      this.currentHeight = this.fullHeight;
+      this.currentWidth = this.fullWidth;
+      this.currentTop = '0px';
+      this.currentLeft = '0px';
+    } else {
+
+      // Maximise if some portion of the app is outside of viewport
+      if (!this.isInViewport()) return this.maximize();
+    }
   }
 
   onDrop(event: CdkDragRelease<string[]>): void {
     this.logger.debug('Applications', 'onDrop event');
 
-    const bounding = this.appElement.nativeElement.getBoundingClientRect();
-
-    // Maximise if application is outside of viewport
-    const isInViewport = () => {
-      return (
-        bounding.top >= 0 &&
-        bounding.left >= 0 &&
-        bounding.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-        bounding.right <= (window.innerWidth || document.documentElement.clientWidth)
-      );
-    };
-
-    if (!isInViewport()) return this.maximize();
-
-    // Remove transform or resize will not work
-    this.currentTop = `${bounding.top}px`;
-    this.currentLeft = `${bounding.left}px`;
-    this.appElement.nativeElement.style.transform = 'none';
+    // Maximise if some portion of the app is outside of viewport
+    if (!this.isInViewport()) return this.maximize();
   }
 
   onDragStart(event: CdkDragStart<string[]>): void {
@@ -260,19 +284,7 @@ export class SysosLibApplicationComponent implements OnInit, AfterViewInit {
     this.isMenuOpened = !this.isMenuOpened;
   }
 
-  onWindowsResize(event): void {
-    this.fullHeight = event.target.innerHeight - 48 + 'px';
-    this.fullWidth = event.target.innerWidth + 'px';
-
-    if (this.isMaximized) {
-      this.currentHeight = this.fullHeight;
-      this.currentWidth = this.fullWidth;
-      this.currentTop = '0px';
-      this.currentLeft = '0px';
-    }
-  }
-
-  setCurrentHoverApplication(app: string) {
+  setCurrentHoverApplication(app: string): void {
     this.Applications.setCurrentHoverApplication(app);
   }
 

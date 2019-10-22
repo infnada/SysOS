@@ -80,13 +80,13 @@ router.post('/:type', multipartyMiddleware, (req: express.Request  & { files: Co
       createDirIfNotExists(file.path);
 
       // copy the data from the req.files.file.path and paste it to file.path
-      fs.writeFile(file.path, data, (err) => {
-        if (err && err.code) return apiGlobals.serverError(err.code);
-        if (err) return apiGlobals.serverError(err);
-
+      fs.writeFile(file.path, data).then(() => {
         logger.info(`[API File] -> Creating file -> Upload complete -> ${req.files.file.name} was saved to ${file.path}`);
 
         return apiGlobals.validResponse();
+      }).catch((err) => {
+        if (err && err.code) return apiGlobals.serverError(err.code);
+        if (err) return apiGlobals.serverError(err);
       });
     });
   }
@@ -135,7 +135,7 @@ router.post('/:type', multipartyMiddleware, (req: express.Request  & { files: Co
       }
 
       logger.info(`[API File] -> Creating file -> Downloading file from internet -> Upload complete \
-                  -> ${req.files.file.name} was saved to ${file.path}`);
+                  -> ${fileName} was saved to ${req.body.path}`);
       return apiGlobals.validResponse();
     });
   }
@@ -155,11 +155,20 @@ router.patch('/:type/:fileName(*)', (req: express.Request, res: express.Response
   const oldDirname = path.join(__dirname, '../../filesystem/') + req.params.fileName;
   const newDirname = path.join(__dirname, '../../filesystem') + req.body.dst;
 
-  if (req.params.type === 'copy') fs.copySync(oldDirname, newDirname);
-  if (req.params.type === 'move') fs.renameSync(oldDirname, newDirname);
-  if (req.params.type === 'rename') fs.renameSync(oldDirname, newDirname);
+  let currentPrmise;
 
-  apiGlobals.validResponse();
+  if (req.params.type === 'copy') currentPrmise = fs.copy(oldDirname, newDirname);
+  if (req.params.type === 'move') currentPrmise = fs.rename(oldDirname, newDirname);
+  if (req.params.type === 'rename') currentPrmise = fs.rename(oldDirname, newDirname);
+
+  Promise.resolve(currentPrmise).then(() => {
+    return apiGlobals.validResponse();
+  }).catch((err) => {
+    if (err && err.code) return apiGlobals.serverError(err.code);
+    if (err) return apiGlobals.serverError(err);
+  });
+
+
 });
 
 /**
@@ -171,10 +180,13 @@ router.delete('/:fileName(*)', (req: express.Request, res: express.Response) => 
   const apiGlobals = new ApiGlobalsModule(req, res);
 
   const dirName = path.join(__dirname, '../../filesystem') + req.params.fileName;
-  fs.removeSync(dirName);
 
-  apiGlobals.validResponse();
+  fs.remove(dirName).then(() =>{
+    return apiGlobals.validResponse();
+  }).catch((err) => {
+    if (err && err.code) return apiGlobals.serverError(err.code);
+    if (err) return apiGlobals.serverError(err);
+  });
 });
-
 
 export default router;

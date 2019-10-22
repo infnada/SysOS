@@ -15,6 +15,7 @@ export class LoginComponent implements OnInit {
   username: string = 'root';
   password: string;
   capsOn: boolean = false;
+  invalidLogin: boolean = false;
 
   loginExpanded: boolean = false;
 
@@ -28,7 +29,7 @@ export class LoginComponent implements OnInit {
 
   login(username: string, password: string): void {
     this.UserState.loginUser(username, password).subscribe(
-      (res: { status: string }) => {
+      (res: { status: string, data?: any }) => {
         if (res.status === 'ok') {
           this.UserState.setState({
             userLoggedIn: true,
@@ -36,6 +37,11 @@ export class LoginComponent implements OnInit {
           });
 
           return this.Main.init();
+        }
+
+        if (res.status === 'error') {
+          this.invalidLogin = res.data;
+          this.logger.error('Login', 'Error while login user', null, res.data);
         }
       },
       error => {

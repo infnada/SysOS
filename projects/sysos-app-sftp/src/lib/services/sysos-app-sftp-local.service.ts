@@ -74,8 +74,7 @@ export class SysosAppSftpLocalService {
         }
       },
       error => {
-        console.error('File Explorer -> Error while getting fileSystemPath -> ', error);
-        console.error(error);
+        this.logger.error('File Explorer -> Error while getting fileSystemPath -> ', error);
       });
   }
 

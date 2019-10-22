@@ -18,8 +18,8 @@
     <td *ngIf="f.exchange == 'upload'">SysOS to Server</td>
     <td *ngIf="f.exchange == 'download'">Server to SysOS</td>
     <td *ngIf="f.exchange == 'local'">Local device</td>
-    <td *ngIf="f.source" title="{{f.source}}">{{f.source}}</td>
-    <td *ngIf="f.path" title="{{f.path}}">{{f.path}}</td>
+    <td *ngIf="f.source" matTooltip="{{f.source}}">{{f.source}}</td>
+    <td *ngIf="f.path" matTooltip="{{f.path}}">{{f.path}}</td>
     <td>{{f.size}}</td>
     <td>
       <span class="progress" *ngIf="f.progress >= 0">

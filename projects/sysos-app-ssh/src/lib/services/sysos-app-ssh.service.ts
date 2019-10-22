@@ -5,7 +5,10 @@ import {v4 as uuidv4} from 'uuid';
 import {SysosLibLoggerService} from '@sysos/lib-logger';
 import {ToastrService} from 'ngx-toastr';
 import {Socket} from 'ngx-socket-io';
-import {Terminal} from 'xterm';
+
+import * as Terminal from 'xterm';
+import {FitAddon} from 'xterm-addon-fit';
+import {WebLinksAddon} from 'xterm-addon-web-links';
 
 import {SysosLibFileSystemService} from '@sysos/lib-file-system';
 import {SysosLibModalService} from '@sysos/lib-modal';
@@ -58,17 +61,24 @@ export class SysosAppSshService {
         } else if (data.prop === 'status' && data.text !== 'SSH CONNECTION ESTABLISHED') {
 
           // Error connecting
-          if (this.getConnectionByUuid(data.uuid).state === 'new') {
-            this.getConnectionByUuid(data.uuid).state = 'disconnected';
-          }
           this.getConnectionByUuid(data.uuid).error = data.text;
-          this.Toastr.error(data.text, 'Error (' + this.getConnectionByUuid(data.uuid).host + ')');
+
+          if (this.Modal.isModalOpened('.window--ssh .window__main')) {
+            this.Modal.changeModalType('danger', '.window--ssh .window__main');
+            this.Modal.changeModalText(data.text, '.window--ssh .window__main');
+          } else {
+            if (this.getActiveConnection().uuid === data.uuid) this.setActiveConnection(null);
+          }
 
           // CONN OK
         } else if (data.text === 'SSH CONNECTION ESTABLISHED') {
           this.getConnectionByUuid(data.uuid).state = 'connected';
           this.getConnectionByUuid(data.uuid).error = null;
-          this.Toastr.success(data.text, 'Connected (' + this.getConnectionByUuid(data.uuid).host + ')');
+
+          this.Modal.closeModal('.window--ssh .window__main');
+
+          // Set this connection as ActiveConnection
+          if (this.getActiveConnection() === null) this.setActiveConnection(data.uuid);
           // $('#server_body').focus();
         }
       });
@@ -87,6 +97,10 @@ export class SysosAppSshService {
 
         // broadcast data to subscribers
         this.$connections.next(Object.assign({}, this.dataStore).connections);
+
+        res.forEach((connection) => {
+          if (connection.autologin) this.sendConnect(connection);
+        });
       },
       error => {
         this.logger.error('Ssh', 'Error while getting credentials', null, error);
@@ -113,13 +127,11 @@ export class SysosAppSshService {
     this.$activeConnection.next(Object.assign({}, this.dataStore).activeConnection);
   }
 
-  getSshTerminal(uuid: string): Terminal {
+  getSshTerminal(uuid: string): Terminal.Terminal {
     return this.SshTerminals[uuid];
   }
 
-  connect(connection: SshConnection): void {
-    const loggerArgs = arguments;
-
+  connect(connection: SshConnection, saveOnly: boolean = false): void {
     if (!connection) throw new Error('connection_not_found');
 
     this.logger.debug('Ssh', 'Connect received', arguments);
@@ -134,30 +146,56 @@ export class SysosAppSshService {
       this.dataStore.connections[currentConnectionIndex] = connection;
 
     } else {
-      connection.uuid = uuidv4();
-
-      this.dataStore.connections.push({
-        uuid: connection.uuid,
+      connection = {
+        uuid: uuidv4(),
+        description: connection.description,
         host: connection.host,
         port: connection.port,
-        description: connection.description,
         credential: connection.credential,
+        hopping: connection.hopping,
+        hophost: connection.hophost,
+        hopport: connection.hopport,
+        hopcredential: connection.hopcredential,
         autologin: connection.autologin,
         save: connection.save,
         state: 'disconnected'
-      });
+      };
+
+      this.dataStore.connections.push(connection);
     }
 
     // broadcast data to subscribers
     this.$connections.next(Object.assign({}, this.dataStore).connections);
 
-    if (connection.save) this.saveConnection(connection);
+    if (connection.save) this.saveConnection(connection, saveOnly);
 
-    this.SshTerminals[connection.uuid] = new Terminal({
+    if (!saveOnly) this.sendConnect(connection);
+  }
+
+  sendConnect(connection: SshConnection) {
+    const loggerArgs = arguments;
+
+    this.SshTerminals[connection.uuid] = new (Terminal as any).default.Terminal({
       cursorBlink: true
     });
 
-    this.SshTerminals[connection.uuid].on('data', (data) => {
+    const fitAddon = new FitAddon();
+
+    this.SshTerminals[connection.uuid].loadAddon(new WebLinksAddon());
+    this.SshTerminals[connection.uuid].loadAddon(fitAddon);
+    this.SshTerminals[connection.uuid].fitAddon = fitAddon;
+
+    this.SshTerminals[connection.uuid].onResize((size: { cols: number, rows: number }) => {
+      console.log('resizing');
+
+      this.socket.emit('ssh_session__geometry', {
+        cols: size.cols,
+        rows: size.rows,
+        uuid: connection.uuid
+      });
+    });
+
+    this.SshTerminals[connection.uuid].onData((data) => {
       this.socket.emit('ssh_session__data', {
         data,
         uuid: connection.uuid
@@ -169,6 +207,9 @@ export class SysosAppSshService {
       host: connection.host,
       port: connection.port,
       credential: connection.credential,
+      hophost: connection.hophost,
+      hopport: connection.hopport,
+      hopcredential: connection.hopcredential,
       uuid: connection.uuid
     }, (e) => {
       this.logger.error('Ssh', 'Error while emitting [new-session]', loggerArgs, e);
@@ -177,7 +218,7 @@ export class SysosAppSshService {
     this.setActiveConnection(connection.uuid);
   }
 
-  saveConnection(connection: SshConnection): void {
+  saveConnection(connection: SshConnection, saveOnly: boolean = false): void {
     const loggerArgs = arguments;
 
     if (!connection) throw new Error('connection_not_found');
@@ -189,6 +230,8 @@ export class SysosAppSshService {
     this.FileSystem.saveConfigFile(connection, configFile, false).subscribe(
       () => {
         this.logger.debug('Ssh', 'Saved connection successfully', loggerArgs);
+
+        if (saveOnly) this.Modal.closeModal('.window--ssh .window__main');
       },
       error => {
         this.logger.error('Ssh', 'Error while saving connection', loggerArgs, error);

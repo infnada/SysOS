@@ -9,7 +9,8 @@
       "ngx-toastr": "ngx-toastr",
       "uuid": "uuid",
       "xterm": "xterm",
-      "xterm/lib/addons/fit/fit": "xterm.lib.addons.fit.fit",
+      "xterm-addon-fit": "xterm-addon-fit",
+      "xterm-addon-web-links": "xterm-addon-web-links",
       "@sysos/lib-angular-material": "sysos.lib-angular-material",
       "@sysos/lib-application": "sysos.lib-application",
       "@sysos/lib-file-system": "sysos.lib-file-system",
@@ -19,6 +20,8 @@
     }
   },
   "whitelistedNonPeerDependencies": [
-    "xterm"
+    "xterm",
+    "xterm-addon-fit",
+    "xterm-addon-web-links"
   ]
 }

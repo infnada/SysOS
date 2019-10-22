@@ -1,23 +1,23 @@
-import {Component, OnInit, ViewChild, ElementRef, AfterViewInit, Input} from '@angular/core';
+import {Component, OnInit, ViewChild, ElementRef, Input, OnDestroy} from '@angular/core';
 import {CdkDragStart} from '@angular/cdk/drag-drop';
 
-import {SysosLibLoggerService} from '@sysos/lib-logger';
+import {takeUntil} from "rxjs/operators";
+import {Subject} from "rxjs";
 
+import {SysosLibLoggerService} from '@sysos/lib-logger';
 import {MatMenuTrigger} from '@sysos/lib-angular-material';
 import {SysosLibSelectableService} from '@sysos/lib-selectable';
 import {SysosLibFileSystemService} from '@sysos/lib-file-system';
 import {SysosLibFileSystemUiService} from '@sysos/lib-file-system-ui';
 import {Application, SysosLibApplicationService} from '@sysos/lib-application';
-
 import {ContextMenuItem, IMConnection, SysOSFile} from '@sysos/lib-types';
-
 
 @Component({
   selector: 'slfolder-sysos-lib-folder',
   templateUrl: './sysos-lib-folder.component.html',
   styleUrls: ['./sysos-lib-folder.component.scss'],
 })
-export class SysosLibFolderComponent implements OnInit, AfterViewInit {
+export class SysosLibFolderComponent implements OnDestroy, OnInit {
   @ViewChild(MatMenuTrigger) contextMenuFolder: MatMenuTrigger;
   @ViewChild('selectableContainer') selectableContainer: ElementRef;
 
@@ -32,6 +32,8 @@ export class SysosLibFolderComponent implements OnInit, AfterViewInit {
 
   @Input() viewAsList: boolean = false;
   @Input() search: { filename: string } = null;
+
+  private destroySubject$: Subject<void> = new Subject();
 
   contextMenuPosition = {x: '0px', y: '0px'};
 
@@ -87,20 +89,17 @@ export class SysosLibFolderComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    this.FileSystemUi.copyFile.subscribe(data => this.copyFile = data);
-    this.FileSystemUi.cutFile.subscribe(data => this.cutFile = data);
-  }
+    this.FileSystemUi.copyFile.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.copyFile = data);
+    this.FileSystemUi.cutFile.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.cutFile = data);
 
-  ngAfterViewInit() {
     this.Selectable.init({
       appendTo: this.selectableContainer,
       ignore: 'a'
     });
+  }
 
-    /*this.selectable.on('start', (e, item) => {
-      console.log(e);
-      console.log(item);
-    })*/
+  ngOnDestroy() {
+    this.destroySubject$.next();
   }
 
   /**

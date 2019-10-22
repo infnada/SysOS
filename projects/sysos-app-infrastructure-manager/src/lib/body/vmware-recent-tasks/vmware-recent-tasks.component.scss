@@ -75,6 +75,10 @@ tr.mat-header-row {
     background: #fff;
   }
 
+  ::ng-deep .mat-tab-body-wrapper {
+    height: 100%;
+  }
+
   ::ng-deep .mat-tab-label {
     height: 38px;
   }

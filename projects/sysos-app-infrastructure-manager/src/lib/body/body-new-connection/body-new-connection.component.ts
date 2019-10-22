@@ -1,5 +1,7 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {takeUntil} from "rxjs/operators";
+import {Subject} from "rxjs";
 
 import {Application, SysosLibApplicationService} from '@sysos/lib-application';
 import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
@@ -13,9 +15,10 @@ import {SysosAppInfrastructureManagerService} from '../../services/sysos-app-inf
   templateUrl: './body-new-connection.component.html',
   styleUrls: ['./body-new-connection.component.scss']
 })
-export class BodyNewConnectionComponent implements OnInit {
+export class BodyNewConnectionComponent implements OnInit, OnDestroy {
   @Input() application: Application;
 
+  private destroySubject$: Subject<void> = new Subject();
   private CredentialsManager;
 
   credentials: Credential[];
@@ -29,7 +32,11 @@ export class BodyNewConnectionComponent implements OnInit {
               private InfrastructureManager: SysosAppInfrastructureManagerService) {
 
     this.CredentialsManager = this.serviceInjector.get('SysosAppCredentialsManagerService');
-    this.CredentialsManager.credentials.subscribe(credentials => this.credentials = credentials);
+    this.CredentialsManager.credentials.pipe(takeUntil(this.destroySubject$)).subscribe(credentials => this.credentials = credentials);
+  }
+
+  ngOnDestroy() {
+    this.destroySubject$.next();
   }
 
   ngOnInit() {
@@ -45,19 +52,19 @@ export class BodyNewConnectionComponent implements OnInit {
       uuid: [null]
     });
 
-    this.InfrastructureManager.activeConnection.subscribe((activeConnection: string) => {
+    this.InfrastructureManager.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe((activeConnection: string) => {
 
       if (!activeConnection) return;
 
-      (this.connectionForm.controls.description as FormControl).setValue(this.getActiveConnection().description);
-      (this.connectionForm.controls.host as FormControl).setValue(this.getActiveConnection().host);
-      (this.connectionForm.controls.port as FormControl).setValue(this.getActiveConnection().port);
-      (this.connectionForm.controls.credential as FormControl).setValue(this.getActiveConnection().credential);
-      (this.connectionForm.controls.type as FormControl).setValue(this.getActiveConnection().type);
-      (this.connectionForm.controls.community as FormControl).setValue(this.getActiveConnection().community);
-      (this.connectionForm.controls.save as FormControl).setValue(this.getActiveConnection().save);
-      (this.connectionForm.controls.autologin as FormControl).setValue(this.getActiveConnection().autologin);
-      (this.connectionForm.controls.uuid as FormControl).setValue(this.getActiveConnection().uuid);
+      (this.connectionForm.controls.description as FormControl).setValue(this.getActiveConnection(true).description);
+      (this.connectionForm.controls.host as FormControl).setValue(this.getActiveConnection(true).host);
+      (this.connectionForm.controls.port as FormControl).setValue(this.getActiveConnection(true).port);
+      (this.connectionForm.controls.credential as FormControl).setValue(this.getActiveConnection(true).credential);
+      (this.connectionForm.controls.type as FormControl).setValue(this.getActiveConnection(true).type);
+      (this.connectionForm.controls.community as FormControl).setValue(this.getActiveConnection(true).community);
+      (this.connectionForm.controls.save as FormControl).setValue(this.getActiveConnection(true).save);
+      (this.connectionForm.controls.autologin as FormControl).setValue(this.getActiveConnection(true).autologin);
+      (this.connectionForm.controls.uuid as FormControl).setValue(this.getActiveConnection(true).uuid);
     });
   }
 
@@ -88,7 +95,22 @@ export class BodyNewConnectionComponent implements OnInit {
     this.Applications.openApplication('credentials-manager');
   }
 
-  getActiveConnection(): IMConnection {
-    return this.InfrastructureManager.getActiveConnection();
+  getActiveConnection(returnMain): IMConnection {
+    return this.InfrastructureManager.getActiveConnection(returnMain);
+  }
+
+  /**
+   * Weavescope graph
+   */
+  scrollTo(): void {
+    document.getElementById('infrastructure-manager_main-body').scrollTo({top: document.getElementById('infrastructure-manager_main-body').scrollHeight, behavior: 'smooth'})
+  }
+
+  setWeaveScopeNodes() {
+    return this.InfrastructureManager.setWeaveScopeNodes();
+  }
+
+  selectedNodeChange($event) {
+    return this.InfrastructureManager.selectedNodeChange($event);
   }
 }

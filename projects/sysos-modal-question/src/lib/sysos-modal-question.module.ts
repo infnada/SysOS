@@ -4,6 +4,7 @@ import {CommonModule} from '@angular/common';
 import {NgbModalModule, NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 
 import {SysosLibModalService} from '@sysos/lib-modal';
+import {SysosLibAngularMaterialModule} from "@sysos/lib-angular-material";
 
 import {SysosModalQuestionComponent} from './sysos-modal-question.component';
 import {EntryComponent} from './question-entry/entry.component';
@@ -15,7 +16,8 @@ import {EntryComponent} from './question-entry/entry.component';
   ],
   imports: [
     CommonModule,
-    NgbModalModule
+    NgbModalModule,
+    SysosLibAngularMaterialModule
   ],
   exports: [],
   providers: [NgbActiveModal],

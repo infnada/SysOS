@@ -3,10 +3,12 @@ import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {ToastrService} from 'ngx-toastr';
 import {Socket} from 'ngx-socket-io';
-import {SysosLibLoggerService} from '@sysos/lib-logger';
 
-import {SysOSFile} from '@sysos/lib-types';
+import {SysosLibLoggerService} from '@sysos/lib-logger';
+import {SysosLibModalService} from '@sysos/lib-modal';
 import {SysosLibFileSystemService} from '@sysos/lib-file-system';
+import {SysOSFile} from '@sysos/lib-types';
+
 import {SysosAppSftpService} from './sysos-app-sftp.service';
 import {SftpConnection} from '../types/sftp-connection';
 
@@ -35,6 +37,7 @@ export class SysosAppSftpServerService {
   constructor(private logger: SysosLibLoggerService,
               private Toastr: ToastrService,
               private socket: Socket,
+              private Modal: SysosLibModalService,
               private FileSystem: SysosLibFileSystemService,
               private Sftp: SysosAppSftpService) {
     this.dataStore = {currentPath: '/', currentData: [], viewAsList: false, search: null};
@@ -50,7 +53,6 @@ export class SysosAppSftpServerService {
     this.socket
       .fromEvent('sftp__data')
       .subscribe((data: { uuid: string, path: string, text: SysOSFile[] }) => {
-        console.log(data);
         const currentConnection: SftpConnection = this.Sftp.getActiveConnection();
 
         if (currentConnection.uuid === data.uuid) {
@@ -78,17 +80,25 @@ export class SysosAppSftpServerService {
         } else if (data.prop === 'status' && data.text !== 'SSH CONNECTION ESTABLISHED') {
 
           // Error connecting
-          if (this.Sftp.getConnectionByUuid(data.uuid).state === 'new') {
-            this.Sftp.getConnectionByUuid(data.uuid).state = 'disconnected';
-          }
           this.Sftp.getConnectionByUuid(data.uuid).error = data.text;
-          this.Toastr.error(data.text, 'Error (' + this.Sftp.getConnectionByUuid(data.uuid).host + ')');
+
+          if (this.Modal.isModalOpened('.window--sftp .window__main')) {
+            this.Modal.changeModalType('danger', '.window--sftp .window__main');
+            this.Modal.changeModalText(data.text, '.window--sftp .window__main');
+          } else {
+            if (this.Sftp.getActiveConnection().uuid === data.uuid) this.Sftp.setActiveConnection(null);
+          }
 
           // CONN OK
         } else if (data.text === 'SSH CONNECTION ESTABLISHED') {
           this.Sftp.getConnectionByUuid(data.uuid).state = 'connected';
           this.Sftp.getConnectionByUuid(data.uuid).error = null;
-          this.Toastr.success(data.text, 'Connected (' + this.Sftp.getConnectionByUuid(data.uuid).host + ')');
+
+          this.Modal.closeModal('.window--sftp .window__main');
+
+          // Set this connection as ActiveConnection
+          if (this.Sftp.getActiveConnection() === null) this.Sftp.setActiveConnection(data.uuid);
+
           // $('#server_body').focus();
         }
       });
@@ -98,6 +108,28 @@ export class SysosAppSftpServerService {
       .fromEvent('sftp__progress')
       .subscribe(data => this.sendFileProgress(data));
 
+  }
+
+  initConnections(): void {
+    this.FileSystem.getConfigFile('applications/sftp/config.json').subscribe(
+      (res: SftpConnection[]) => {
+        this.logger.info('Sftp', 'Get connections successfully');
+
+        res.forEach((connection) => {
+          connection.state = 'disconnected';
+        });
+
+        this.Sftp.setInitialConnections(res);
+
+        res.forEach((connection) => {
+          if (connection.autologin) this.Sftp.sendConnect(connection);
+        });
+
+      },
+      error => {
+        this.logger.error('Sftp', 'Error while getting connections', null, error);
+        return this.Toastr.error('Error getting connections.', 'SFTP');
+      });
   }
 
   downloadFileToSysOS(src: string, dst: string, connectionUuid: string): void {

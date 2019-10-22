@@ -3,6 +3,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {MatChipInputEvent} from '@sysos/lib-angular-material';
 
 import {SysosAppInfrastructureVmwareTemplateHelpersService} from '../../../../services/vmware/sysos-app-infrastructure-vmware-template-helpers.service';
+import {SysosAppInfrastructureManagerService} from "../../../../services/sysos-app-infrastructure-manager.service";
 import {VMWareObject} from '../../../../types/vmware-object';
 
 export interface Tag {
@@ -24,7 +25,8 @@ export class TabSummaryComponent implements OnInit {
     {name: 'tag', category: 'category'},
   ];
 
-  constructor(public VmwareTemplateHelpers: SysosAppInfrastructureVmwareTemplateHelpersService) {
+  constructor(public VmwareTemplateHelpers: SysosAppInfrastructureVmwareTemplateHelpersService,
+              private InfrastructureManager: SysosAppInfrastructureManagerService) {
   }
 
   ngOnInit() {
@@ -54,5 +56,15 @@ export class TabSummaryComponent implements OnInit {
     }
   }
 
+  /**
+   * Weavescope graph
+   */
 
+  setWeaveScopeNodes() {
+    return this.InfrastructureManager.setWeaveScopeNodes();
+  }
+
+  selectedNodeChange($event) {
+    return this.InfrastructureManager.selectedNodeChange($event);
+  }
 }

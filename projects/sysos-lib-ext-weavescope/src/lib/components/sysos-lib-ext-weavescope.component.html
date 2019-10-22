@@ -1,7 +1,7 @@
 <div class="header">
   <div class="selectors">
     <slews-search class="float-left ml-5"></slews-search>
-    <slews-topologies class="float-left ml-5"></slews-topologies>
+    <slews-topologies class="float-left ml-5" *ngIf="!simpleLayout"></slews-topologies>
     <slews-metrics class="float-left ml-5"></slews-metrics>
   </div>
 </div>
@@ -25,6 +25,8 @@
     <slews-nodes-chart></slews-nodes-chart>
 </div>
 
-<div class="tour-step-anchor sidebar">
+<ng-content></ng-content>
+
+<div class="tour-step-anchor sidebar" *ngIf="!simpleLayout">
   <slews-topology-options></slews-topology-options>
 </div>

@@ -770,6 +770,20 @@ export class SelectorsService implements OnDestroy {
     }
   );
 
+  nodeIdDetailsSelector = createSelector(
+    [
+      () => this.state.get('selectedNodeId'),
+      () => this.state.get('nodes'),
+    ],
+    (selectedNodeId, nodes) => {
+      if (selectedNodeId) {
+       return nodes.getIn([selectedNodeId, 'nodeInfo']);
+      }
+
+      return '';
+    }
+  );
+
   getNodesFromEdgeId(edgeId) {
     return edgeId.split('---');
   }

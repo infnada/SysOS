@@ -1,4 +1,7 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+
+import {takeUntil} from "rxjs/operators";
+import {Subject} from "rxjs";
 
 import {Application} from '@sysos/lib-application';
 
@@ -10,15 +13,21 @@ import {SftpConnection} from '../types/sftp-connection';
   templateUrl: './actions.component.html',
   styleUrls: ['./actions.component.scss']
 })
-export class ActionsComponent implements OnInit {
+export class ActionsComponent implements OnDestroy, OnInit {
   @Input() application: Application;
+
+  private destroySubject$: Subject<void> = new Subject();
 
   activeConnection: string;
 
   constructor(private Sftp: SysosAppSftpService) { }
 
   ngOnInit() {
-    this.Sftp.activeConnection.subscribe(connection => this.activeConnection = connection);
+    this.Sftp.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe(connection => this.activeConnection = connection);
+  }
+
+  ngOnDestroy() {
+    this.destroySubject$.next();
   }
 
   getActiveConnection(): SftpConnection {

@@ -1,15 +1,19 @@
 <div class="modal-header">
   <div class="modal-title" id="modal-title">{{title}}</div>
   <div class="window__controls window__controls--right">
-    <a class="window__close" (click)="activeModal.dismiss(); $event.stopPropagation();">
+    <a class="window__close" (click)="activeModal.close(); $event.stopPropagation();">
       <i class="fas fa-times"></i>
     </a>
   </div>
 </div>
 <div class="modal-body" id="modal-body">
-  <input type="text" class="form-control" ngbAutofocus placeholder="{{text}}" [(ngModel)]="inputValue" />
+  <mat-form-field class="w-100">
+    <input matInput [(ngModel)]="inputValue" maxlength="256" placeholder="{{text}}" (keydown.enter)="activeModal.close(inputValue)">
+    <mat-hint align="start"><strong>Max length</strong> </mat-hint>
+    <mat-hint align="end">{{inputValue && inputValue.length}} / 256</mat-hint>
+  </mat-form-field>
 </div>
 <div class="modal-footer">
-  <button class="btn btn-primary" type="button" (click)="activeModal.dismiss()" autofocus>Cancel</button>
-  <button class="btn btn-default" type="button" (click)="activeModal.close(inputValue)">{{buttonText}}</button>
+  <button class="btn" type="button" (click)="activeModal.close()" mat-flat-button>Cancel</button>
+  <button class="btn" type="button" (click)="activeModal.close(inputValue)" mat-flat-button color="primary">{{buttonText}}</button>
 </div>

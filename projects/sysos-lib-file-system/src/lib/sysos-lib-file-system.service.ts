@@ -67,7 +67,7 @@ export class SysosLibFileSystemService {
     this.logger.debug('fileSystem', 'renameFile', arguments);
 
     if (connectionUuid) {
-      return this.http.patch(`/api/remote-file/rename/${connectionUuid}/${encodeURIComponent(path + oldName)}`, {
+      return this.http.patch(`/api/remote-file/${connectionUuid}/rename/${encodeURIComponent(path + oldName)}`, {
         dst: path + newName
       });
     }
@@ -81,7 +81,7 @@ export class SysosLibFileSystemService {
     this.logger.debug('fileSystem', 'copyFile', arguments);
 
     if (connectionUuid) {
-      return this.http.patch(`/api/remote-file/copy/${connectionUuid}/${encodeURIComponent(src)}`, {
+      return this.http.patch(`/api/remote-file/${connectionUuid}/copy/${encodeURIComponent(src)}`, {
         dst
       });
     }
@@ -95,7 +95,7 @@ export class SysosLibFileSystemService {
     this.logger.debug('fileSystem', 'moveFile', arguments);
 
     if (connectionUuid) {
-      return this.http.patch(`/api/remote-file/move/${connectionUuid}/${encodeURIComponent(src)}`, {
+      return this.http.patch(`/api/remote-file/${connectionUuid}/move/${encodeURIComponent(src)}`, {
         dst
       });
     }

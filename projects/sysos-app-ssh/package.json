@@ -17,9 +17,13 @@
     "@sysos/lib-service-injector": "~0.0.1"
   },
   "dependencies": {
-    "xterm": "^3.14.2"
+    "xterm": "^4.1.0",
+    "xterm-addon-fit": "^0.2.1",
+    "xterm-addon-web-links": "^0.2.1"
   },
   "bundledDependencies": [
-    "xterm"
+    "xterm",
+    "xterm-addon-fit",
+    "xterm-addon-web-links"
   ]
 }

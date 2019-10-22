@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {takeUntil} from 'rxjs/operators';
 import {Subject} from 'rxjs';
 import {includes, isEqual} from 'lodash-es';
@@ -14,7 +14,7 @@ import {TopologyUtilsService} from '../../services/utils/topology-utils.service'
   templateUrl: './topology-options.component.html',
   styleUrls: ['./topology-options.component.scss']
 })
-export class TopologyOptionsComponent implements OnInit {
+export class TopologyOptionsComponent {
 
   private destroySubject$: Subject<void> = new Subject();
   private state;
@@ -40,9 +40,6 @@ export class TopologyOptionsComponent implements OnInit {
       if (this.options) this.options = this.options.toIndexedSeq();
     });
 
-  }
-
-  ngOnInit() {
   }
 
   getActiveValue(option, value) {

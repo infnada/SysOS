@@ -1,6 +1,7 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 
-import {Subscription} from 'rxjs';
+import {Subject, Subscription} from 'rxjs';
+import {takeUntil} from "rxjs/operators";
 
 import {SysosLibSelectableService} from '@sysos/lib-selectable';
 import {SysosLibFileSystemService} from '@sysos/lib-file-system';
@@ -16,8 +17,10 @@ import {SysosAppSftpLocalService} from '../../services/sysos-app-sftp-local.serv
   styleUrls: ['./body-local.component.scss'],
   providers: [SysosLibSelectableService]
 })
-export class BodyLocalComponent implements OnInit {
+export class BodyLocalComponent implements OnDestroy, OnInit {
   @Input() application: Application;
+
+  private destroySubject$: Subject<void> = new Subject();
 
   reloadPathSubscription: Subscription;
 
@@ -36,25 +39,29 @@ export class BodyLocalComponent implements OnInit {
               private Applications: SysosLibApplicationService,
               private SftpLocal: SysosAppSftpLocalService) {
 
-    this.reloadPathSubscription = this.FileSystemUi.getObserverRefreshPath().subscribe(path => {
+    this.reloadPathSubscription = this.FileSystemUi.getObserverRefreshPath().pipe(takeUntil(this.destroySubject$)).subscribe(path => {
       if (path === this.currentPath) this.reloadPath();
     });
   }
 
   ngOnInit() {
-    this.SftpLocal.currentPath.subscribe(path => this.currentPath = path);
-    this.SftpLocal.currentData.subscribe(data => {
+    this.SftpLocal.currentPath.pipe(takeUntil(this.destroySubject$)).subscribe(path => this.currentPath = path);
+    this.SftpLocal.currentData.pipe(takeUntil(this.destroySubject$)).subscribe(data => {
       this.currentData = data;
       this.resetActive();
     });
-    this.SftpLocal.viewAsList.subscribe(data => this.viewAsList = data);
-    this.SftpLocal.search.subscribe(data => this.search = data);
+    this.SftpLocal.viewAsList.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.viewAsList = data);
+    this.SftpLocal.search.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.search = data);
 
     if (this.application.initData && this.application.initData.path) {
       return this.goToPath(this.application.initData.path);
     }
 
     this.goToPath('/');
+  }
+
+  ngOnDestroy() {
+    this.destroySubject$.next();
   }
 
   /**

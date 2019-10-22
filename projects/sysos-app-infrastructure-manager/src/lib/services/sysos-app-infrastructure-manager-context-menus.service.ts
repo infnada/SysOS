@@ -1022,7 +1022,7 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: '<i class="fas fa-play text-success"></i> Power On',
             action: (node: IMNode) => {
-              this.InfrastructureManagerVMWare.doWithVM(node.info.uuid, node, 'powerOn');
+              this.InfrastructureManagerVMWare.doWithVM(node.info.mainUuid, node, 'powerOn');
             },
             disabled: (node: IMNode) => {
               return node.info.data['runtime.powerState'] === 'poweredOn';
@@ -1032,7 +1032,7 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 1,
             text: '<i class="fas fa-stop text-danger"></i> Power Off',
             action: (node: IMNode) => {
-              this.InfrastructureManagerVMWare.doWithVM(node.info.uuid, node, 'powerOff');
+              this.InfrastructureManagerVMWare.doWithVM(node.info.mainUuid, node, 'powerOff');
             },
             disabled: (node: IMNode) => {
               return node.info.data['runtime.powerState'] === 'poweredOff';
@@ -1042,7 +1042,7 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 2,
             text: '<i class="fas fa-pause text-warning"></i> Suspend',
             action: (node: IMNode) => {
-              this.InfrastructureManagerVMWare.doWithVM(node.info.uuid, node, 'suspend');
+              this.InfrastructureManagerVMWare.doWithVM(node.info.mainUuid, node, 'suspend');
             },
             disabled: (node: IMNode) => {
               return node.info.data['runtime.powerState'] === 'suspended';
@@ -1052,7 +1052,7 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 4,
             text: '<i class="fas fa-sync-alt"></i> Reset',
             action: (node: IMNode) => {
-              this.InfrastructureManagerVMWare.doWithVM(node.info.uuid, node, 'reset');
+              this.InfrastructureManagerVMWare.doWithVM(node.info.mainUuid, node, 'reset');
             },
             disabled: (node: IMNode) => {
               return node.info.data['runtime.powerState'] === 'poweredOff';
@@ -1063,7 +1063,7 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 6,
             text: '<i class="fas fa-stop text-danger"></i> Shut Down Guest OS',
             action: (node: IMNode) => {
-              this.InfrastructureManagerVMWare.doWithVM(node.info.uuid, node, 'powerOffGuestOS');
+              this.InfrastructureManagerVMWare.doWithVM(node.info.mainUuid, node, 'powerOffGuestOS');
             },
             disabled: (node: IMNode) => {
               return node.info.data['runtime.powerState'] === 'poweredOff';
@@ -1073,7 +1073,7 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 7,
             text: '<i class="fas fa-sync-alt"></i> Restart Guest OS',
             action: (node: IMNode) => {
-              this.InfrastructureManagerVMWare.doWithVM(node.info.uuid, node, 'restartGuestOS');
+              this.InfrastructureManagerVMWare.doWithVM(node.info.mainUuid, node, 'restartGuestOS');
             },
             disabled: (node: IMNode) => {
               return node.info.data['runtime.powerState'] === 'poweredOff';
@@ -1160,7 +1160,7 @@ export class SysosAppInfrastructureManagerContextMenusService {
       },
       {
         id: 1, text: '<i class="fas fa-television text-primary"></i> Open Remote Console', action: (node: IMNode) => {
-          this.openRemoteConsole(node.info.uuid, node.info);
+          this.openRemoteConsole(node.info.mainUuid, node.info);
         }
       },
       {id: 1, text: 'divider'},
@@ -1448,14 +1448,14 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: '<i class="fas fa-server"></i> Instant VM',
             action: (node: IMNode) => {
-              this.InfrastructureManagerVMWareBackup.instantVM(node.info.uuid, node);
+              this.InfrastructureManagerVMWareBackup.instantVM(node.info.mainUuid, node);
             }
           },
           {
             id: 1,
             text: '<i class="fas fa-server"></i> Restore entire VM',
             action: (node: IMNode) => {
-              this.InfrastructureManagerVMWareBackup.restoreVM(node.info.uuid, node);
+              this.InfrastructureManagerVMWareBackup.restoreVM(node.info.mainUuid, node);
             }
           },
           {
@@ -1475,7 +1475,7 @@ export class SysosAppInfrastructureManagerContextMenusService {
       {id: 5, text: 'divider'},
       {
         id: 6, text: '<i class="fas fa-sync-alt text-primary"></i> Refresh', action: (node: IMNode) => {
-          this.InfrastructureManagerVMWare.doWithVM(node.info.uuid, node, 'refresh');
+          this.InfrastructureManagerVMWare.doWithVM(node.info.mainUuid, node, 'refresh');
         }
       },
     ];
@@ -1496,14 +1496,14 @@ export class SysosAppInfrastructureManagerContextMenusService {
       {
         id: 0, text: '<i class="fas fa-file"></i> Browse Files', action: (node: IMNode) => {
           console.log(node);
-          this.openDatastoreExplorer(node.info.uuid, 'vmware', {
+          this.openDatastoreExplorer(node.info.mainUuid, 'vmware', {
             datastore: node
           });
         }
       },
       {
         id: 0, text: 'Register VM...', action: (node: IMNode) => {
-          this.openDatastoreExplorer(node.info.uuid, 'vmware', {
+          this.openDatastoreExplorer(node.info.mainUuid, 'vmware', {
             datastore: node
           });
         }
@@ -1646,7 +1646,7 @@ export class SysosAppInfrastructureManagerContextMenusService {
       {
         id: 0, text: '<i class="fas fa-file"></i> Browse Files', action: (node: IMNode) => {
           console.log(node);
-          this.openDatastoreExplorer(node.info.uuid, 'vmware', {
+          this.openDatastoreExplorer(node.info.mainUuid, 'vmware', {
             datastore: node
           });
         }

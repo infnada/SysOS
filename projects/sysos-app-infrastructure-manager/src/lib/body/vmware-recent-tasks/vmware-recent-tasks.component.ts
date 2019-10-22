@@ -1,7 +1,6 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
 
 import {SysosLibLoggerService} from '@sysos/lib-logger';
-
 import {MatSort, MatTableDataSource} from '@sysos/lib-angular-material';
 import {Application} from '@sysos/lib-application';
 import {SysosLibModalService} from '@sysos/lib-modal';
@@ -20,7 +19,6 @@ export class VmwareRecentTasksComponent implements OnInit {
 
   displayedColumns: string[] = ['taskName', 'target', 'status', 'initiator', 'queuedFor', 'startTime', 'completionTime', 'server'];
   dataSource: MatTableDataSource<TaskInfo>;
-  activeConnection: string;
   viewRecentTasks: boolean = true;
 
   constructor(private logger: SysosLibLoggerService,
@@ -31,11 +29,9 @@ export class VmwareRecentTasksComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.InfrastructureManager.activeConnection.subscribe(activeConnection => this.activeConnection = activeConnection);
-
     this.Modal.openLittleModal('PLEASE WAIT', 'Getting VMware Tasks...', '.vmware-tasks', 'plain').then(() => {
 
-      return this.VMWare.connectvCenterSoap(this.InfrastructureManager.getConnectionByUuid(this.activeConnection));
+      return this.VMWare.connectvCenterSoap(this.InfrastructureManager.getActiveConnection(true));
     }).then((data) => {
       if (data.status === 'error') throw new Error('Failed to connect to vCenter');
 
@@ -43,7 +39,7 @@ export class VmwareRecentTasksComponent implements OnInit {
       date.setHours(date.getHours() - 2);
 
       return this.VMWare.CreateCollectorForTasks(
-        this.InfrastructureManager.getConnectionByUuid(this.activeConnection),
+        this.InfrastructureManager.getActiveConnection(true),
         {
           time: {
             timeType: 'queuedTime',
@@ -56,7 +52,7 @@ export class VmwareRecentTasksComponent implements OnInit {
       if (createCollectorResult.status === 'error') throw new Error('Failed to CreateCollectorForTasks to vCenter');
 
       return this.VMWare.ReadNextTasks(
-        this.InfrastructureManager.getConnectionByUuid(this.activeConnection),
+        this.InfrastructureManager.getActiveConnection(true),
         { $type: 'TaskHistoryCollector', _value: createCollectorResult.data.name },
         100
       );

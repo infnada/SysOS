@@ -1,9 +1,10 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {HttpResponse, HttpEvent} from '@angular/common/http';
 
-import {Subscription} from 'rxjs';
-import {SysosLibLoggerService} from '@sysos/lib-logger';
+import {Subject, Subscription} from 'rxjs';
+import {takeUntil} from "rxjs/operators";
 
+import {SysosLibLoggerService} from '@sysos/lib-logger';
 import {SysosLibSelectableService} from '@sysos/lib-selectable';
 import {SysosLibFileSystemService} from '@sysos/lib-file-system';
 import {SysosLibFileSystemUiService} from '@sysos/lib-file-system-ui';
@@ -18,8 +19,10 @@ import {SysosAppFileExplorerService} from '../services/sysos-app-file-explorer.s
   styleUrls: ['./body.component.scss'],
   providers: [SysosLibSelectableService]
 })
-export class BodyComponent implements OnInit {
+export class BodyComponent implements OnDestroy, OnInit {
   @Input() application: Application;
+
+  private destroySubject$: Subject<void> = new Subject();
 
   reloadPathSubscription: Subscription;
 
@@ -42,25 +45,29 @@ export class BodyComponent implements OnInit {
               private Applications: SysosLibApplicationService,
               private FileExplorer: SysosAppFileExplorerService) {
 
-    this.reloadPathSubscription = this.FileSystemUi.getObserverRefreshPath().subscribe(path => {
+    this.reloadPathSubscription = this.FileSystemUi.getObserverRefreshPath().pipe(takeUntil(this.destroySubject$)).subscribe(path => {
       if (path === this.currentPath) this.reloadPath();
     });
   }
 
   ngOnInit() {
-    this.FileExplorer.currentPath.subscribe(path => this.currentPath = path);
-    this.FileExplorer.currentData.subscribe(data => {
+    this.FileExplorer.currentPath.pipe(takeUntil(this.destroySubject$)).subscribe(path => this.currentPath = path);
+    this.FileExplorer.currentData.pipe(takeUntil(this.destroySubject$)).subscribe(data => {
       this.currentData = data;
       this.resetActive();
     });
-    this.FileExplorer.viewAsList.subscribe(data => this.viewAsList = data);
-    this.FileExplorer.search.subscribe(data => this.search = data);
+    this.FileExplorer.viewAsList.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.viewAsList = data);
+    this.FileExplorer.search.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.search = data);
 
     if (this.application.initData && this.application.initData.path) {
       return this.goToPath(this.application.initData.path);
     }
 
     this.goToPath('/');
+  }
+
+  ngOnDestroy() {
+    this.destroySubject$.next();
   }
 
   /**
@@ -109,6 +116,9 @@ export class BodyComponent implements OnInit {
     });
   }
 
+  /**
+   * Left sidebar
+   */
   toggleList($event): void {
     $event.currentTarget.parentElement.parentElement.classList.toggle('side__list--open');
   }

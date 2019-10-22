@@ -1,5 +1,5 @@
 <div style="margin: 0 8px;min-width: 160px;text-align: right;">
-  <div title="{{searchMatchesCount ? searchMatchesCount + ' matches' : undefined}}" class="weavescope-search">
+  <div matTooltip="{{searchMatchesCount ? searchMatchesCount + ' matches' : undefined}}" class="weavescope-search">
     <mat-form-field>
       <span matPrefix><i class="fas fa-search p-2" (click)="openHelp"></i></span>
       <mat-chip-list #chipList>

@@ -1,4 +1,13 @@
-<slews-sysos-lib-ext-weavescope></slews-sysos-lib-ext-weavescope>
+<slews-sysos-lib-ext-weavescope [nodes]="setWeaveScopeNodes()" (selectedNode)="selectedNodeChange($event)">
+
+  <div class="col text-center" style="
+    position: absolute;
+    bottom: 90px;
+    z-index: 1;">
+    <button class="btn" type="button" mat-flat-button color="primary" (click)="scrollTo()">Add new node</button>
+  </div>
+
+</slews-sysos-lib-ext-weavescope>
 
 <ng-container *ngIf="!newConnectionType">
   <div class="main_form">
@@ -6,23 +15,23 @@
     <table class="table table-hover m-t-xl">
       <tbody>
       <tr class="cursor-pointer" (click)="setConnectionType('vmware')">
-        <th class="w-25 p-m"><img src="/assets/img/vmware.png" width="75px"></th>
+        <th class="w-25 p-m"><img src="/assets/img/logos/vmware.png" width="75px"></th>
         <td class="lh-2">Adds vCenter Server (recommended), or standalone vSphere Hypervisor (ESX/ESXi)</td>
       </tr>
       <tr class="cursor-pointer" (click)="setConnectionType('netapp')">
-        <th class="w-25 p-m"><img src="/assets/img/netapp.png" width="75px"></th>
+        <th class="w-25 p-m"><img src="/assets/img/logos/netapp.png" width="75px"></th>
         <td class="lh-2">Adds NetApp FAS/AFF series. NFS, Fibre Channel (FC) and iSCSI connectivity is supported.</td>
       </tr>
       <tr class="cursor-pointer" (click)="setConnectionType('windows')">
-        <th class="w-25 p-m"><i class="fab fa-windows"></i></th>
+        <th class="w-25 p-m"><i class="fab fa-windows"></i> Windows</th>
         <td class="lh-2">Adds Microsoft Windows Server (Windows 2008 or later)</td>
       </tr>
       <tr class="cursor-pointer" (click)="setConnectionType('linux')">
-        <th class="w-25 p-m"><i class="fab fa-linux"></i></th>
+        <th class="w-25 p-m"><i class="fab fa-linux"></i> Linux</th>
         <td class="lh-2">Adds Linux server (must have SSH)</td>
       </tr>
       <tr class="cursor-pointer" (click)="setConnectionType('snmp')">
-        <th class="w-25 p-m"><i class="fas fa-server"></i></th>
+        <th class="w-25 p-m"><i class="fas fa-server"></i> SNMP</th>
         <td class="lh-2">Adds SNMP node for monitoring</td>
       </tr>
       </tbody>

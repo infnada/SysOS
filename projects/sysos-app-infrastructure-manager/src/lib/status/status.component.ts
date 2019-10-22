@@ -1,4 +1,6 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {takeUntil} from "rxjs/operators";
+import {Subject} from "rxjs";
 
 import {Application} from '@sysos/lib-application';
 
@@ -10,20 +12,25 @@ import {IMConnection} from '../types/imconnection';
   templateUrl: './status.component.html',
   styleUrls: ['./status.component.scss']
 })
-export class StatusComponent implements OnInit {
+export class StatusComponent implements OnInit, OnDestroy {
   @Input() application: Application;
 
+  private destroySubject$: Subject<void> = new Subject();
   activeConnection: string;
 
   constructor(private InfrastructureManager: SysosAppInfrastructureManagerService) {
   }
 
-  ngOnInit() {
-    this.InfrastructureManager.activeConnection.subscribe(activeConnection => this.activeConnection = activeConnection);
+  ngOnDestroy() {
+    this.destroySubject$.next();
   }
 
-  getActiveConnection(): IMConnection {
-    return this.InfrastructureManager.getActiveConnection();
+  ngOnInit() {
+    this.InfrastructureManager.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe(activeConnection => this.activeConnection = activeConnection);
+  }
+
+  getActiveConnection(returnMain): IMConnection {
+    return this.InfrastructureManager.getActiveConnection(returnMain);
   }
 
 }

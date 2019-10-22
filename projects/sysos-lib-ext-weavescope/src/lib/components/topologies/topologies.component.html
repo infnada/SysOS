@@ -5,7 +5,7 @@
       <div
         class="tour-step-anchor topologies-item-main topologies-item-{{topology.get('id')}}"
         [ngClass]="{'topologies-item-main-active': topology === currentTopology, 'topologies-item-main-matched': searchMatchCountByTopology.get(topology.get('id')) || 0}"
-        title="{{basicTopologyInfo(topology, searchMatchCountByTopology.get(topology.get('id')) || 0)}}"
+        matTooltip="{{basicTopologyInfo(topology, searchMatchCountByTopology.get(topology.get('id')) || 0)}}"
         [attr.rel]="topology.get('id')"
         (click)="onTopologyClick($event, topology)">
         <div class="topologies-item-label">
@@ -18,7 +18,7 @@
           <div
             class="topologies-sub-item topologies-item-{{subTopology.get('id')}}"
             [ngClass]="{'topologies-sub-item-active': subTopology === currentTopology, 'topologies-sub-item-matched': searchMatchCountByTopology.get(subTopology.get('id')) || 0}"
-            title="{{basicTopologyInfo(subTopology, searchMatchCountByTopology.get(subTopology.get('id')) || 0)}}"
+            matTooltip="{{basicTopologyInfo(subTopology, searchMatchCountByTopology.get(subTopology.get('id')) || 0)}}"
             [attr.key]="subTopology.get('id')"
             [attr.rel]="subTopology.get('id')"
             (click)="this.onTopologyClick($event, subTopology)"

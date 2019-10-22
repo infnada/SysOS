@@ -306,8 +306,8 @@ export class LayoutService {
     let nodes = imNodes;
     let edges = imEdges;
 
-    const ranksep = 2 * 100;
-    const nodesep = 100;
+    const ranksep = 2 * 200;
+    const nodesep = 200;
     const nodeWidth = 1.5 * 100;
     const nodeHeight = 1.5 * 100;
 
@@ -461,7 +461,7 @@ export class LayoutService {
 
     if (layout) {
       // Last line of defense - re-render everything if two nodes are too close to one another.
-      if (this.minEuclideanDistanceBetweenPoints(layout.nodes) < (1.5 * 100) + 100) {
+      if (this.minEuclideanDistanceBetweenPoints(layout.nodes) < (1.5 * 100) + 200) {
         layout = this.runLayoutEngine(cache.graph, nodesWithDegrees, immEdges, opts);
       }
 
