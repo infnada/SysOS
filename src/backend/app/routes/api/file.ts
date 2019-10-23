@@ -6,10 +6,10 @@ import * as url from 'url';
 import * as childProcess from 'child_process';
 import multiparty from 'connect-multiparty';
 import fs from 'fs-extra';
-import readConfig from 'read-config';
 
 import {ConnectFiles} from '../../interfaces/connect-file';
 import {ApiGlobalsModule} from './api-globals';
+import {CredentialsModule} from "../modules/credentials";
 
 const logger = getLogger('mainlog');
 const multipartyMiddleware = multiparty();
@@ -46,6 +46,7 @@ router.post('/:type', multipartyMiddleware, (req: express.Request  & { files: Co
   logger.info(`[API File] -> Creating file -> type [${req.params.type}]`);
 
   const apiGlobals = new ApiGlobalsModule(req, res);
+  const Credentials = new CredentialsModule();
 
   /**
    * Upload file
@@ -109,13 +110,9 @@ router.post('/:type', multipartyMiddleware, (req: express.Request  & { files: Co
     const DOWNLOAD_DIR = path.join(__dirname, '../../filesystem/' + req.body.path);
 
     if (req.body.credential && req.body.credential.length !== 0) {
-      const credentials = readConfig(path.join(__dirname, '../../../filesystem/root/credentials.json'));
-
-      const credential = credentials.filter((obj) =>  {
-        return obj.uuid === req.body.credentialial;
-      })[0];
-
-      curl = childProcess.spawn('curl', ['-k', '--user', credential.username + ':' + credential.password, fileUrl]);
+      Credentials.getCredential(req.session.uuid, req.body.credential).then((cred) => {
+        curl = childProcess.spawn('curl', ['-k', '--user', cred.fields.UserName + ':' + cred.fields.Password, fileUrl]);
+      });
     } else {
       curl = childProcess.spawn('curl', ['-k', fileUrl]);
     }

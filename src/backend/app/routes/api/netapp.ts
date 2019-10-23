@@ -22,8 +22,8 @@ router.post('/call', (req: express.Request, res: express.Response) => {
   const callPath = (req.body.path ? req.body.path : '/servlets/netapp.servlets.admin.XMLrequest_filer');
 
   // Get username and password from credential
-  return Credentials.getCredential(req.body.credential).then((cred) => {
-    return NetApp.callApi(req.body.host, req.body.port, cred.username, cred.password, callPath,
+  return Credentials.getCredential(req.session.uuid, req.body.credential).then((cred) => {
+    return NetApp.callApi(req.body.host, req.body.port, cred.fields.UserName, cred.fields.Password, callPath,
       '<?xml version=\'1.0\' encoding=\'utf-8\' ?><!DOCTYPE netapp SYSTEM \'file:/etc/netapp_filer.dtd\'>' + req.body.xml);
 
   }).then((body) => {

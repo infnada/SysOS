@@ -5,9 +5,9 @@ import * as express from 'express';
 import * as session from 'express-session';
 import * as path from 'path';
 import readConfig from 'read-config';
-import jsonfile from 'jsonfile';
 
 import {ApiGlobalsModule} from './api-globals';
+import {CredentialsModule} from "../modules/credentials";
 
 const logger = getLogger('mainlog');
 const router = Router();
@@ -19,104 +19,41 @@ router.get('/', (req: express.Request, res: express.Response) => {
   logger.info(`[API Credentials] -> Get credentials`);
 
   const apiGlobals = new ApiGlobalsModule(req, res);
+  const Credentials = new CredentialsModule();
 
-  let fileData = readConfig(path.join(__dirname, '../../filesystem/root/credentials.json'), {skipUnresolved: true});
-
-  fileData = fileData.filter((props) => {
-    delete props.password;
-    return true;
+  return Credentials.getCredentials(req.session.uuid).then((credentials) => {
+    return apiGlobals.responseJsonData(credentials);
   });
-
-  return apiGlobals.responseJsonData(fileData);
-});
-
-/**
- * Get credential
- */
-router.get('/:uuid', (req: express.Request, res: express.Response) => {
-  logger.info(`[API Credentials] -> Get credential -> uuid [${req.params.uuid}]`);
-
-  const apiGlobals = new ApiGlobalsModule(req, res);
-
-  const fileData = readConfig(path.join(__dirname, '../../filesystem/root/credentials.json'), {skipUnresolved: true});
-
-  const credential = fileData.find((obj) => {
-    return obj.uuid === req.params.uuid;
-  });
-
-  return apiGlobals.responseJsonData(credential);
 });
 
 /**
  * Save credentials
  */
 router.put('/', (req: express.Request, res: express.Response) => {
-  logger.info(`[API Credentials] -> Save credentials -> fullSave [${req.body.fullSave}]`);
+  logger.info(`[API Credentials] -> Save credentials`);
 
   const apiGlobals = new ApiGlobalsModule(req, res);
+  const Credentials = new CredentialsModule();
 
   const credential = req.body.credential;
-  const fullSave = req.body.fullSave;
 
   if (typeof credential === 'undefined') return apiGlobals.serverError('credential_undefined');
 
   /**
-   * Rewrite all config file with received data
-   */
-  if (fullSave) {
-    return jsonfile.writeFile(path.join(__dirname, '../../filesystem/root/credentials.json'), credential, {flag: 'w'}, (e) => {
-      if (e && e.code) return apiGlobals.serverError(e.code);
-      if (e) return apiGlobals.serverError(e);
-
-      logger.info(`[API Credentials] -> Save credentials -> fullSave [${req.body.fullSave}] -> Credential saved`);
-
-      return apiGlobals.validResponse();
-    });
-  }
-
-  /**
    * Save or Edit in config file by uuid
    */
-  const config = readConfig(path.join(__dirname, '../../filesystem/root/credentials.json'), {skipUnresolved: true});
 
   // Create new uuid (is new entry)
   if (!credential.hasOwnProperty('uuid')) {
     credential.uuid = uuidv4();
-    config.push(credential);
 
-    return jsonfile.writeFile(path.join(__dirname, '../../filesystem/root/credentials.json'), config, {flag: 'w'}, (err) => {
-      if (err && err.code) return apiGlobals.serverError(err.code);
-      if (err) return apiGlobals.serverError(err);
-
-      logger.info(`[API Credentials] -> Save credentials -> fullSave [${req.body.fullSave}] -> New credential saved \
-      with uuid [${credential.uuid}]`);
-
+    return Credentials.newCredential(req.session.uuid, credential).then(() => {
       return apiGlobals.responseJsonData(credential.uuid);
     });
   }
 
-  // Edit or New with uuid created by client
-  const objIndex = config.findIndex((obj) => {
-    return obj.uuid === credential.uuid;
-  });
-
-  if (objIndex !== -1) {
-
-    // Edit
-    config[objIndex] = credential;
-  } else {
-
-    // New
-    config.push(credential);
-  }
-
-  return jsonfile.writeFile(path.join(__dirname, '../../filesystem/root/credentials.json'), config, {flag: 'w'}, (e) => {
-    if (e && e.code) return apiGlobals.serverError(e.code);
-    if (e) return apiGlobals.serverError(e);
-
-    logger.info(`[API Credentials] -> Save credentials -> fullSave [${req.body.fullSave}] -> Credential saved \
-    with uuid [${credential.uuid}]`);
-
+  // Edit credential
+  return Credentials.editCredential(req.session.uuid, credential).then(() => {
     return apiGlobals.responseJsonData(credential.uuid);
   });
 });
@@ -128,17 +65,9 @@ router.delete('/:uuid', (req: express.Request, res: express.Response) => {
   logger.info(`[API Credentials] -> Delete credentials -> uuid [${req.params.uuid}]`);
 
   const apiGlobals = new ApiGlobalsModule(req, res);
+  const Credentials = new CredentialsModule();
 
-  let fileData = readConfig(path.join(__dirname, '../../filesystem/root/credentials.json'), {skipUnresolved: true});
-
-  fileData = fileData.filter((obj) => {
-    return obj.uuid !== req.params.uuid;
-  });
-
-  return jsonfile.writeFile(path.join(__dirname, '../../filesystem/root/credentials.json'), fileData, {flag: 'w'}, (e) => {
-    if (e && e.code) return apiGlobals.serverError(e.code);
-    if (e) return apiGlobals.serverError(e);
-
+  return Credentials.deleteCredential(req.session.uuid, req.params.uuid).then(() => {
     return apiGlobals.responseJsonData(req.params.uuid);
   });
 });
@@ -150,26 +79,31 @@ router.post('/login', (req: express.Request & { session: session.Store }, res: e
   logger.info(`[API Credentials] -> Login -> user [${req.body.username}]`);
 
   const apiGlobals = new ApiGlobalsModule(req, res);
+  const Credentials = new CredentialsModule();
 
-  const user = req.body.username;
+  // TODO: validate/sanitize inputs
+  const username = req.body.username;
   const password = req.body.password;
 
-  if (typeof user === 'undefined') return apiGlobals.serverError('username_undefined');
+  if (typeof username === 'undefined') return apiGlobals.serverError('username_undefined');
   if (typeof password === 'undefined') return apiGlobals.serverError('password_undefined');
 
   const config = readConfig(path.join(__dirname, '../../filesystem/etc/expressjs/config.json'));
-  let users = readConfig(path.join(__dirname, '../../filesystem/etc/shadow.json'));
-
-  users = users.filter((obj) => {
-    return obj.user === user && obj.password === password;
+  const users = readConfig(path.join(__dirname, '../../filesystem/etc/shadow.json'));
+  const user = users.find((obj) => {
+    return obj.username === username;
   });
 
-  if (users.length === 0) return apiGlobals.serverError('Invalid login credentials');
+  if (!user) return apiGlobals.serverError('invalid_username');
 
-  req.session.uuid = users[0].uuid;
+  return Credentials.loadCredentialDb(user.uuid, password, user.kdbxPath).then((successLoad) => {
+    if (!successLoad) return apiGlobals.serverError('Invalid login credentials');
 
-  res.cookie(config.uniqueCookie, users[0].uuid, {maxAge: 900000, signed: true});
-  return apiGlobals.validResponse();
+    req.session.uuid = user.uuid;
+
+    res.cookie(config.uniqueCookie, user.uuid, {maxAge: 900000, signed: true});
+    return apiGlobals.validResponse();
+  });
 });
 
 export default router;

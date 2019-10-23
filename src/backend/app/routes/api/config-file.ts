@@ -44,7 +44,6 @@ router.put(':fileName(*)', (req: express.Request, res: express.Response) => {
       if (e) return apiGlobals.serverError(e);
 
       return apiGlobals.validResponse();
-
     });
   }
 

@@ -1,8 +1,7 @@
 [
   {
-    "user": "root",
-    "password": "root",
+    "username": "root",
     "uuid": "4ea13e1b-398b-4a30-99df-28720b026d20",
-    "credentials": "/root/credentials.json"
+    "kdbxPath": "/home/root/credentials.kdbx"
   }
 ]

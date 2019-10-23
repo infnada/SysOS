@@ -1,7 +1,6 @@
 import {Router} from 'express';
 import {getLogger} from 'log4js';
 import * as express from 'express';
-import * as path from 'path';
 import * as url from 'url';
 
 import {ApiGlobalsModule} from './api-globals';

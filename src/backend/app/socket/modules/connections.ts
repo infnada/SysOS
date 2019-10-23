@@ -30,7 +30,7 @@ export class ConnectionsModule {
     if (data.so === 'snmp') { return this.SnmpSocketModule.newConnection(data.type, data.uuid, data.host, data.community); }
 
     // get username and password from credential
-    this.CredentialsModule.getCredential(data.credential).then((cred) => {
+    this.CredentialsModule.getCredential(this.socket.request.session.uuid, data.credential).then((cred) => {
 
       // linux connection
       if (data.so === 'linux' || data.type === 'ssh' || data.type === 'sftp') {
