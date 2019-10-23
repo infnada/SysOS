@@ -111,20 +111,16 @@ fs.readFile('dist/SysOS/filesystem/bin/libs/sysos-lib-ext-netdata.umd.js', 'utf8
   result = result.replace(/smoothPlotter/g, 'Dygraph.smoothPlotter');
 
   // Change url where to fetch server data
-  result = result.replace('data = NETDATA.xss.checkOptional(\'/api/v1/charts\', data);', 'data = NETDATA.xss.checkOptional(\'/api/v1/charts\', (!connection || connection.type === \'netdata\' || connection.type === \'snapshot\' ? data : data.data));');
-  result = result.replace('chart = NETDATA.xss.checkOptional(\'/api/v1/chart\', chart);', 'chart = NETDATA.xss.checkOptional(\'/api/v1/chart\', (!connection || connection.type === \'netdata\' || connection.type === \'snapshot\' ? chart : chart.data));');
-  result = result.replace('data = NETDATA.xss.checkData(\'/api/v1/data\', data, that.library.xssRegexIgnore);', 'data = NETDATA.xss.checkData(\'/api/v1/data\', (!connection || connection.type === \'netdata\' || connection.type === \'snapshot\' ? data : data.data), that.library.xssRegexIgnore);');
-  result = result.replace('data = NETDATA.xss.checkData(\'/api/v1/data\', data, this.library.xssRegexIgnore);', 'data = NETDATA.xss.checkData(\'/api/v1/data\', (!connection || connection.type === \'netdata\' || connection.type === \'snapshot\' ? data : data.data), this.library.xssRegexIgnore);');
+  result = result.replace('data = NETDATA.xss.checkOptional(\'/api/v1/charts\', data);', 'data = NETDATA.xss.checkOptional(\'/api/v1/charts\', (!connection || connection.type === \'netdata\' || connection.type === \'netdata-credential\' || connection.type === \'snapshot\' ? data : data.data));');
+  result = result.replace('chart = NETDATA.xss.checkOptional(\'/api/v1/chart\', chart);', 'chart = NETDATA.xss.checkOptional(\'/api/v1/chart\', (!connection || connection.type === \'netdata\' || connection.type === \'netdata-credential\' || connection.type === \'snapshot\' ? chart : chart.data));');
+  result = result.replace('data = NETDATA.xss.checkData(\'/api/v1/data\', data, that.library.xssRegexIgnore);', 'data = NETDATA.xss.checkData(\'/api/v1/data\', (!connection || connection.type === \'netdata\' || connection.type === \'netdata-credential\' || connection.type === \'snapshot\' ? data : data.data), that.library.xssRegexIgnore);');
+  result = result.replace('data = NETDATA.xss.checkData(\'/api/v1/data\', data, this.library.xssRegexIgnore);', 'data = NETDATA.xss.checkData(\'/api/v1/data\', (!connection || connection.type === \'netdata\' || connection.type === \'netdata-credential\' || connection.type === \'snapshot\' ? data : data.data), this.library.xssRegexIgnore);');
 
-  result = result.replace(/'\/api\/v1\/charts'/g, '(!connection || connection.type === \'netdata\' || connection.type === \'snapshot\' ? \'/api/v1/charts\' : \'/api/monitor/charts/\' + connection.uuid + \'/\')');
-  result = result.replace(/'\/api\/v1\/chart'/g, '(!connection || connection.type === \'netdata\' || connection.type === \'snapshot\' ? \'/api/v1/chart\' : \'/api/monitor/chart/\' + connection.uuid + \'/\')');
-  result = result.replace(/'\/api\/v1\/data'/g, '(!connection || connection.type === \'netdata\' || connection.type === \'snapshot\' ? \'/api/v1/data\' : \'/api/monitor/data/\' + connection.uuid + \'/\')');
+  result = result.replace(/'\/api\/v1\/charts'/g, '(!connection || connection.type === \'netdata\' || connection.type === \'snapshot\' ? \'/api/v1/charts\' : \'/api/monitor/charts/\' + connection.uuid + \'/\' + connection.type + \'/\')');
+  result = result.replace(/'\/api\/v1\/chart'/g, '(!connection || connection.type === \'netdata\' || connection.type === \'snapshot\' ? \'/api/v1/chart\' : \'/api/monitor/chart/\' + connection.uuid + \'/\' + connection.type + \'/\')');
+  result = result.replace(/'\/api\/v1\/data'/g, '(!connection || connection.type === \'netdata\' || connection.type === \'snapshot\' ? \'/api/v1/data\' : \'/api/monitor/data/\' + connection.uuid + \'/\' + connection.type + \'/\')');
 
-  result = result.replace(/\$\.ajax\({/g, '$.ajax({\n' +
-    '            beforeSend: function (xhr) {\n' +
-    '              if (connection && connection.credentialBtoa) xhr.setRequestHeader("Authorization", "Basic " + connection.credentialBtoa);\n' +
-    '            },');
-
+  result = result.replace('this.chart.data_url', '(!connection || connection.type === \'netdata\' || connection.type === \'snapshot\' ? this.chart.data_url : this.chart.data_url.replace(\'api/v1/data\', \'api/monitor/data/\' + connection.uuid + \'/\' + connection.type + \'/\'))');
 
   result = result.replace('key = key + \'.\' + _this.dataStore.netdataDashboard.sparklines_registry[key].count;', 'key = key + \'.\' + 1');
 

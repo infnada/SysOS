@@ -611,7 +611,7 @@ export class SysosAppMonitorDashboardService {
   initializeDynamicDashboard(chartsDiv) {
     this.chartsDiv = chartsDiv;
 
-    this.NETDATA.serverDefault = this.MonitorService.getActiveConnection().url;
+    this.NETDATA.serverDefault = (this.MonitorService.getActiveConnection().type === 'netdata-credential' ? window.location.origin : this.MonitorService.getActiveConnection().url);
 
     if (this.MonitorService.getActiveConnection().snapshotData) this.loadSnapshot();
 

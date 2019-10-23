@@ -1,4 +1,5 @@
 import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
 
 import {BehaviorSubject, Observable} from 'rxjs';
 import {v4 as uuidv4} from 'uuid';
@@ -10,6 +11,7 @@ import {SysosLibModalService} from '@sysos/lib-modal';
 import {SysosLibFileSystemService} from '@sysos/lib-file-system';
 
 import {Netdata} from '../types/netdata';
+
 
 @Injectable({
   providedIn: 'root'
@@ -29,7 +31,8 @@ export class SysosAppMonitorService {
   connections: Observable<any>;
   activeConnection: Observable<any>;
 
-  constructor(private logger: SysosLibLoggerService,
+  constructor(private http: HttpClient,
+              private logger: SysosLibLoggerService,
               private serviceInjector: SysosLibServiceInjectorService,
               private Modal: SysosLibModalService,
               private FileSystem: SysosLibFileSystemService,
@@ -52,38 +55,6 @@ export class SysosAppMonitorService {
     return this.NETDATA;
   }
 
-  async connect(data): Promise<void> {
-    const connectionData: Netdata = {
-      uuid: uuidv4(),
-      url: data.url,
-      description: data.description,
-      credential: data.credential,
-      autologin: data.autologin,
-      credentialBtoa: null,
-      save: data.save,
-      type: data.type,
-      state: 'connected',
-      snapshotData: data.snapshotData
-    };
-
-
-    if (connectionData.credential) {
-      let credential = await this.CredentialsManager.getCredential(connectionData.credential);
-
-      // TODO password sent by backend should be encrypted
-      connectionData.credentialBtoa = btoa(credential.username + ':' + credential.password);
-      credential = undefined;
-    }
-
-    this.dataStore.connections.push(connectionData);
-
-    this.dataStore.activeConnection = connectionData.uuid;
-
-    // broadcast data to subscribers
-    this.$activeConnection.next(Object.assign({}, this.dataStore).activeConnection);
-    this.$connections.next(Object.assign({}, this.dataStore).connections);
-  }
-
   getConnectionByUuid(uuid: string): Netdata {
     if (!uuid) throw new Error('uuid');
 
@@ -103,7 +74,87 @@ export class SysosAppMonitorService {
     this.$activeConnection.next(Object.assign({}, this.dataStore).activeConnection);
   }
 
-  saveConnection(connection: Netdata): void {
+  connect(connection: Netdata, saveOnly: boolean = false): void {
+    if (!connection) throw new Error('connection_not_found');
+
+    this.logger.debug('Monitor', 'Connect received', arguments);
+
+    if (connection.uuid) {
+      connection.state = 'disconnected';
+
+      const currentConnectionIndex = this.dataStore.connections.findIndex((obj) => {
+        return obj.uuid === connection.uuid;
+      });
+
+      this.dataStore.connections[currentConnectionIndex] = connection;
+
+    } else {
+      connection = {
+        uuid: uuidv4(),
+        url: connection.url,
+        description: connection.description,
+        credential: connection.credential,
+        withCredential: connection.withCredential,
+        autologin: connection.autologin,
+        save: connection.save,
+        type: (connection.type === 'netdata' && connection.withCredential ? 'netdata-credential' : connection.type),
+        state: 'disconnected',
+        snapshotData: connection.snapshotData
+      };
+
+      this.dataStore.connections.push(connection);
+    }
+
+    // broadcast data to subscribers
+    this.$connections.next(Object.assign({}, this.dataStore).connections);
+
+    if (connection.save) this.saveConnection(connection, saveOnly);
+
+    if (!saveOnly) this.sendConnect(connection);
+  }
+
+  setConnectionReady(connection: Netdata): void {
+    connection.state = 'connected';
+
+    // broadcast data to subscribers
+    this.$connections.next(Object.assign({}, this.dataStore).connections);
+  }
+
+  sendConnect(connection: Netdata): void {
+    const loggerArgs = arguments;
+
+    // Normal Netdata connection
+    if (['netdata', 'snapshot'].includes(connection.type)) {
+      this.setConnectionReady(connection);
+
+      this.Modal.closeModal('.window--monitor .window__main');
+      this.setActiveConnection(connection.uuid);
+
+    // TODO: race/catch condition on saveConnection() this will not work if connection info not exists on backend
+    // Internal or Netdata with credentials connection
+    } else {
+
+      this.http.get(`/api/monitor/connect/${connection.uuid}/${connection.type}`).subscribe(
+        (res) => {
+          this.logger.info('Monitor', 'Connected successfully', loggerArgs);
+
+          this.setConnectionReady(connection);
+
+          this.Modal.closeModal('.window--monitor .window__main');
+          this.setActiveConnection(connection.uuid);
+        },
+        error => {
+          if (this.Modal.isModalOpened('.window--monitor .window__main')) {
+            this.Modal.changeModalType('danger', '.window--monitor .window__main');
+            this.Modal.changeModalText(error, '.window--monitor .window__main');
+          }
+          this.logger.error('Monitor', 'Error while connecting', loggerArgs, error);
+        });
+    }
+
+  }
+
+  saveConnection(connection: Netdata, saveOnly: boolean = false): void {
     const loggerArgs = arguments;
 
     if (!connection) throw new Error('connection_not_found');
@@ -115,6 +166,8 @@ export class SysosAppMonitorService {
     this.FileSystem.saveConfigFile(connection, configFile, false).subscribe(
       () => {
         this.logger.debug('Monitor', 'Saved connection successfully', loggerArgs);
+
+        if (saveOnly) this.Modal.closeModal('.window--monitor .window__main');
       },
       error => {
         this.logger.error('Monitor', 'Error while saving connection', loggerArgs, error);

@@ -3,11 +3,11 @@ export interface Netdata {
   url: string;
   description: string;
   credential: string;
-  credentialBtoa?: string;
+  withCredential: boolean;
   autologin: boolean;
   save: boolean;
   state: string;
-  type: string;
+  type: 'netdata' | 'netdata-credential' | 'snapshot' | 'internal';
   error?: string;
   snapshotData?: any;
 }

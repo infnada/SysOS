@@ -1,4 +1,6 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
+
+import {Application} from '@sysos/lib-application';
 
 @Component({
   selector: 'samon-menu',
@@ -6,6 +8,8 @@ import {Component, OnInit} from '@angular/core';
   styleUrls: ['./menu.component.scss']
 })
 export class MenuComponent implements OnInit {
+  @Input() application: Application;
+  @Input() isMenuOpened: boolean;
 
   constructor() {
   }

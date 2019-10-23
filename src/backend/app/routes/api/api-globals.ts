@@ -40,6 +40,10 @@ export class ApiGlobalsModule {
     );
   }
 
+  responseAsIs(status: number, data: any): void {
+    this.res.status(status).send(data);
+  }
+
   responseData(uuid: string, type: string, data: string): void {
     this.res.json(
       {

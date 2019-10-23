@@ -20,7 +20,7 @@
   <div class="secondary-content__new__box__toggle toggle_left pointer visible-lg" *ngIf="!viewSide" (click)="toggleSide()">
     <i class="fas fa-arrow-right sidebar-open-font open-sidebar"></i>
   </div>
-  <div class="window__main no_padding">
+  <div id="monitor_main-body" class="window__main no_padding">
 
     <samon-body-new-connection [application]="application" *ngIf="activeConnection === null || getActiveConnection().state === 'disconnected'"></samon-body-new-connection>
 
