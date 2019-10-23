@@ -1,7 +1,3 @@
-'use strict';
-
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-
 import {configure, getLogger, connectLogger} from 'log4js';
 import {createServer, Server} from 'http';
 import {createServer as createServers, Server as Servers} from 'https';
@@ -23,7 +19,10 @@ import cors from 'cors';
 import {SocketModule} from './socket';
 import {RoutesModule} from './routes';
 
-export class Init {
+/**
+ * App class will create all the backend listeners HTTP/HTTPS/WSS
+ */
+export class App {
   public config = readConfig(path.join(__dirname, '/filesystem/etc/expressjs/config.json'));
   private app: express.Application;
   private server: Server;
@@ -62,7 +61,6 @@ export class Init {
   private sessionCookie = this.config.session.name;
   private sessionSecret = this.config.session.secret;
   private uniqueCookie = this.config.uniqueCookie;
-
 
   constructor() {
     this.createApp();
