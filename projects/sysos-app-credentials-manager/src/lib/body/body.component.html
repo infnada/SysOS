@@ -17,45 +17,45 @@
     <i class="fas fa-arrow-right sidebar-open-font open-sidebar"></i>
   </div>
   <div class="window__main row no_padding">
-    <div class="col">
-      <form class="main_form form-horizontal" [formGroup]="credentialForm" (ngSubmit)="sendSave()">
-        <div class="form-group">
-          <div class="col-12">
-            <input type="text" class="form-control" placeholder="Description" formControlName="description" [ngClass]="{ 'is-invalid': submitted && f.description.errors }">
-          </div>
-          <div class="col-12" *ngIf="submitted && f.description.errors">
-            <small class="text-danger pull-left" *ngIf="f.description.errors.required">Please insert a description</small>
-          </div>
-        </div>
-        <div class="form-group">
-          <div class="col-12">
-            <input type="text" class="form-control" placeholder="Username" formControlName="username" [ngClass]="{ 'is-invalid': submitted && f.username.errors }">
-          </div>
-          <div class="col-12" *ngIf="submitted && f.username.errors">
-            <small class="text-danger pull-left" *ngIf="f.username.errors.required">Please insert an username</small>
-          </div>
-        </div>
-        <div class="form-group">
-          <div class="col-12">
-            <input type="password" class="form-control" placeholder="Password" formControlName="password" [ngClass]="{ 'is-invalid': submitted && f.password.errors }">
-          </div>
-          <div class="col-12" *ngIf="submitted && f.password.errors">
-            <small class="text-danger pull-left" *ngIf="f.password.errors.required">Please insert a password</small>
-          </div>
-        </div>
-        <div class="form-group">
-          <div class="col-12">
-            <input type="password" class="form-control" placeholder="Password confirmation" formControlName="confirmPassword" [ngClass]="{ 'is-invalid': submitted && f.confirmPassword.errors }">
-          </div>
-          <div class="col-12" *ngIf="submitted && f.confirmPassword.errors">
-            <small class="text-danger pull-left" *ngIf="f.confirmPassword.errors.required">Confirm Password is required</small>
-            <small class="text-danger pull-left" *ngIf="f.confirmPassword.errors.mustMatch">Passwords must match</small>
-          </div>
-        </div>
-        <div>
-          <button class="btn mr-3" type="submit" mat-flat-button color="primary">Save</button>
-        </div>
-      </form>
-    </div>
+    <form class="main_form form-horizontal" [formGroup]="credentialForm" (ngSubmit)="sendSave()">
+
+      <mat-form-field class="w-100">
+        <input matInput maxlength="256" placeholder="Description" formControlName="description">
+        <mat-hint align="end">{{f.description.value && f.description.value.length}} / 256</mat-hint>
+        <mat-error *ngIf="f.description.invalid">Please insert a description</mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="w-100">
+        <input matInput placeholder="Credential Type" aria-label="Credential Type" [matAutocomplete]="auto" formControlName="type">
+        <mat-autocomplete #auto="matAutocomplete">
+          <mat-option value="basic"><span>Username and Password</span><small class="ml-3">Basic Username/Password credential</small></mat-option>
+          <mat-option value="token"><span>Secret text</span><small class="ml-3">A token such as an API token (e.g. a GitHub personal access token)</small></mat-option>
+          <mat-option value="file"><span>Secret file</span><small class="ml-3">Which is essentially secret content in a file</small></mat-option>
+          <mat-option value="key"><span>Username with private key</span><small class="ml-3">An SSH public/private key pair</small></mat-option>
+          <mat-option value="cert"><span>Certificate</span><small class="ml-3">A PKCS#12 certificate file and optional password</small></mat-option>
+        </mat-autocomplete>
+        <mat-error *ngIf="f.type.invalid">Please insert a credential type</mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="w-100">
+        <input matInput placeholder="Username" formControlName="username">
+        <mat-error *ngIf="submitted && f.username.invalid">Please insert a username</mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="w-100">
+        <input type="password" matInput placeholder="Password" formControlName="password">
+        <mat-error *ngIf="submitted && f.password.invalid">Please insert a password</mat-error>
+      </mat-form-field>
+
+      <mat-form-field class="w-100">
+        <input type="password" matInput placeholder="Password confirmation" formControlName="confirmPassword">
+        <mat-error *ngIf="submitted && f.confirmPassword.errors && f.confirmPassword.errors.required">Please confirm password</mat-error>
+        <mat-error *ngIf="submitted && f.confirmPassword.errors && f.confirmPassword.errors.mustMatch">Passwords must match</mat-error>
+      </mat-form-field>
+
+      <div>
+        <button class="btn mr-3" type="submit" mat-flat-button color="primary">Save</button>
+      </div>
+    </form>
   </div>
 </div>

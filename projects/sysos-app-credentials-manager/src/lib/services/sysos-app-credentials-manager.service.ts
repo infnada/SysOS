@@ -55,19 +55,6 @@ export class SysosAppCredentialsManagerService {
       });
   }
 
-  async getCredential(credentialUuid): Promise<any> {
-    return this.http.get('/api/credential/' + credentialUuid).pipe(map(
-      (res: { data: Credential }) => {
-        this.logger.info('Credentials Manager', 'Got credential successfully');
-
-        return res.data;
-      },
-      error => {
-        this.logger.error('Credentials Manager', 'Error while getting credentials', null, error);
-        return this.Toastr.error('Error getting credentials.', 'Credential Manager');
-      })).toPromise();
-  }
-
   deleteCredential(uuid: string): void {
     const loggerArgs = arguments;
 
@@ -111,6 +98,7 @@ export class SysosAppCredentialsManagerService {
             this.dataStore.credentials.push({
               uuid: res.data,
               description: credential.description,
+              type: credential.type,
               username: credential.username
             });
           }

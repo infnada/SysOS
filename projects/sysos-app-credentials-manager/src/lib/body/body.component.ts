@@ -54,6 +54,7 @@ export class BodyComponent implements OnInit {
   ngOnInit() {
     this.credentialForm = this.formBuilder.group({
       description: ['', Validators.required],
+      type: ['', Validators.required],
       username: ['', Validators.required],
       password: ['', [Validators.required]],
       confirmPassword: ['', Validators.required]
@@ -89,6 +90,7 @@ export class BodyComponent implements OnInit {
     this.CredentialsManager.setActiveCredential(credential.uuid);
 
     (this.credentialForm.controls.description as FormControl).setValue(credential.description);
+    (this.credentialForm.controls.type as FormControl).setValue(credential.type);
     (this.credentialForm.controls.username as FormControl).setValue(credential.username);
   }
 
