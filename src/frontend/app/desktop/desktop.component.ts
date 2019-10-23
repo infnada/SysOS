@@ -20,7 +20,7 @@ export class DesktopComponent implements OnInit {
   openedApplications: Application[];
   taskbarItemOpen: string;
 
-  currentPath: string = '/root/Desktop/';
+  currentPath: string = '/home/root/Desktop/';
   currentData: SysOSFile[] = [];
 
   currentActive: number = 0;
@@ -31,7 +31,7 @@ export class DesktopComponent implements OnInit {
               private Applications: SysosLibApplicationService) {
 
     this.reloadPathSubscription = this.FileSystemUi.getObserverRefreshPath().subscribe(path => {
-      if (path === '/root/Desktop/') this.reloadPath();
+      if (path === '/home/root/Desktop/') this.reloadPath();
     });
   }
 

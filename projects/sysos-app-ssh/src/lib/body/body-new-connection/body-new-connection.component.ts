@@ -103,10 +103,8 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
     if (this.connectionForm.invalid) return;
 
     this.Modal.openLittleModal('PLEASE WAIT', (saveOnly ? 'Saving connection...' : 'Connecting to server...'), '.window--ssh .window__main', 'plain').then(() => {
-      this.Ssh.connect(this.connectionForm.value);
+      this.Ssh.connect(this.connectionForm.value, saveOnly);
     });
-
-
   }
 
   manageCredentials() {

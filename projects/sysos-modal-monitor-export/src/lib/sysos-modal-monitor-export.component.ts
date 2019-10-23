@@ -326,7 +326,7 @@ export class SysosModalMonitorExportComponent implements OnInit {
       const file: File = new File([blob], filename);
 
       // Upload file to Downloads folder
-      return this.FileSystem.uploadFile('/root/Downloads/', file);
+      return this.FileSystem.uploadFile('/home/root/Downloads/', file);
     }
 
   }

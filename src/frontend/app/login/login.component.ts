@@ -1,7 +1,6 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 
 import {SysosLibLoggerService} from '@sysos/lib-logger';
-
 import {SysosLibUserService} from '@sysos/lib-user';
 
 import {MainService} from '../services/main.service';
@@ -11,7 +10,7 @@ import {MainService} from '../services/main.service';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent {
   username: string = 'root';
   password: string;
   capsOn: boolean = false;
@@ -22,9 +21,6 @@ export class LoginComponent implements OnInit {
   constructor(private logger: SysosLibLoggerService,
               private UserState: SysosLibUserService,
               private Main: MainService) {
-  }
-
-  ngOnInit() {
   }
 
   login(username: string, password: string): void {

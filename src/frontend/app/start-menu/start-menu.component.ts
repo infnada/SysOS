@@ -16,7 +16,6 @@ export class StartMenuComponent implements OnInit {
 
   openedMenu: string;
 
-
   constructor(private Applications: SysosLibApplicationService) {
   }
 
