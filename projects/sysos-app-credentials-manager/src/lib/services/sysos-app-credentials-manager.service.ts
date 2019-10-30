@@ -2,9 +2,10 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 
 import {BehaviorSubject, Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
 import {ToastrService} from 'ngx-toastr';
+
 import {SysosLibLoggerService} from '@sysos/lib-logger';
+import {SysosLibModalService} from '@sysos/lib-modal';
 
 import {Credential} from '../types/credential';
 
@@ -23,7 +24,8 @@ export class SysosAppCredentialsManagerService {
 
   constructor(private http: HttpClient,
               private logger: SysosLibLoggerService,
-              private Toastr: ToastrService) {
+              private Toastr: ToastrService,
+              private Modal: SysosLibModalService) {
 
     this.dataStore = { credentials: [], activeCredential: null };
     this.$credentials = new BehaviorSubject([]) as BehaviorSubject<Credential[]>;
@@ -37,6 +39,12 @@ export class SysosAppCredentialsManagerService {
 
     // broadcast data to subscribers
     this.$activeCredential.next(Object.assign({}, this.dataStore).activeCredential);
+  }
+
+  getCredentialByUuid(uuid: string): Credential {
+    if (!uuid) throw new Error('uuid');
+
+    return this.dataStore.credentials.find(obj => obj.uuid === uuid);
   }
 
   initCredentials(): void {
@@ -55,28 +63,43 @@ export class SysosAppCredentialsManagerService {
       });
   }
 
-  deleteCredential(uuid: string): void {
+  deleteCredential(uuid?: string): void {
     const loggerArgs = arguments;
 
-    this.http.delete(`/api/credential/${uuid}`).subscribe(
-      () => {
-        this.dataStore.activeCredential = null;
+    if (!uuid) uuid = this.dataStore.activeCredential;
 
-        this.dataStore.credentials = this.dataStore.credentials.filter((el) => {
-          return el.uuid !== uuid;
-        });
+    this.Modal.openRegisteredModal('question', '.window--credentials-manager .window__main',
+      {
+        title: 'Delete credential ' + this.getCredentialByUuid(uuid).description,
+        text: 'Remove the selected credential from the inventory?'
+      }
+    ).then((modalInstance) => {
+      modalInstance.result.then((result: boolean) => {
+        if (result === true) {
+          this.logger.debug('Credentials Manager', 'Deleting credential', loggerArgs);
 
-        // broadcast data to subscribers
-        this.$credentials.next(Object.assign({}, this.dataStore).credentials);
-        this.$activeCredential.next(Object.assign({}, this.dataStore).activeCredential);
+          this.http.delete(`/api/credential/${uuid}`).subscribe(
+            () => {
+              this.setActiveCredential(null);
 
-        this.logger.debug('Credentials Manager', 'Deleted credential successfully', loggerArgs);
-        return this.Toastr.success('Credential deleted.', 'Credential Manager');
-      },
-      error => {
-        this.logger.error('Credentials Manager', 'Error while deleting credentials', loggerArgs, error);
-        return this.Toastr.error('Error deleting credential.', 'Credential Manager');
+              this.dataStore.credentials = this.dataStore.credentials.filter((el) => {
+                return el.uuid !== uuid;
+              });
+
+              // broadcast data to subscribers
+              this.$credentials.next(Object.assign({}, this.dataStore).credentials);
+
+              this.logger.debug('Credentials Manager', 'Deleted credential successfully', loggerArgs);
+              return this.Toastr.success('Credential deleted.', 'Credential Manager');
+            },
+            error => {
+              this.logger.error('Credentials Manager', 'Error while deleting credentials', loggerArgs, error);
+              return this.Toastr.error('Error deleting credential.', 'Credential Manager');
+            });
+        }
       });
+    });
+
   }
 
   saveCredential(credential: Credential): Promise<null> {

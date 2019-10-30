@@ -2,7 +2,7 @@ import {ensureDir, pathExists} from 'fs-extra';
 import * as path from 'path';
 import readConfig from 'read-config';
 
-import {CredentialsModule} from "./routes/modules/credentials";
+import {CredentialsModule} from './routes/modules/credentials';
 
 export class Init {
 
@@ -65,7 +65,7 @@ export class Init {
   /**
    * Main function that launch all system checks
    */
-  public async initialize(): Promise<void>{
+  public async initialize(): Promise<void> {
     return Promise.all([
       this.checkSystemFolders(),
       this.checkHomeFolders(),

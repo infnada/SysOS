@@ -1,7 +1,7 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 
 import {Subject, Subscription} from 'rxjs';
-import {takeUntil} from "rxjs/operators";
+import {takeUntil} from 'rxjs/operators';
 
 import {SysosLibFileSystemUiService} from '@sysos/lib-file-system-ui';
 import {Application} from '@sysos/lib-application';

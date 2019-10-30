@@ -35,6 +35,7 @@ import * as SysOSLibSelectable from '@sysos/lib-selectable';
 import * as SysOSLibServiceInjector from '@sysos/lib-service-injector';
 import * as SysOSLibTypes from '@sysos/lib-types';
 import * as SysOSLibUser from '@sysos/lib-user';
+import * as SysOSLibUtils from '@sysos/lib-utils';
 import * as SysOSLibVMWare from '@sysos/lib-vmware';
 
 import * as NgxMonacoEditor from 'ngx-monaco-editor';
@@ -72,6 +73,7 @@ SystemJS.set('@sysos/lib-selectable', SystemJS.newModule(SysOSLibSelectable));
 SystemJS.set('@sysos/lib-service-injector', SystemJS.newModule(SysOSLibServiceInjector));
 SystemJS.set('@sysos/lib-types', SystemJS.newModule(SysOSLibTypes));
 SystemJS.set('@sysos/lib-user', SystemJS.newModule(SysOSLibUser));
+SystemJS.set('@sysos/lib-utils', SystemJS.newModule(SysOSLibUtils));
 SystemJS.set('@sysos/lib-vmware', SystemJS.newModule(SysOSLibVMWare));
 
 SystemJS.set('ngx-monaco-editor', SystemJS.newModule(NgxMonacoEditor));

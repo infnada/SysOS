@@ -1,7 +1,7 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 
 import {Subject, Subscription} from 'rxjs';
-import {takeUntil} from "rxjs/operators";
+import {takeUntil} from 'rxjs/operators';
 
 import {Application} from '@sysos/lib-application';
 import {SysOSFile} from '@sysos/lib-types';

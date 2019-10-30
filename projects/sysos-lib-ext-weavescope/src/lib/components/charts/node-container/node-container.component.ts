@@ -48,6 +48,8 @@ export class NodeContainerComponent implements OnDestroy {
   metricFormattedValue;
   labelOffset;
 
+  formatMetricSvg = this.makeFormatMetric(this.renderSvg);
+
   constructor(private State: StateService) {
     this.State.currentState.pipe(takeUntil(this.destroySubject$)).subscribe(state => {
       this.contrastMode = state.get('contrastMode');
@@ -135,8 +137,6 @@ export class NodeContainerComponent implements OnDestroy {
   renderSvg(text, unit) {
     return `${text}${unit}`;
   }
-
-  formatMetricSvg = this.makeFormatMetric(this.renderSvg);
 
   getMetricValue(metric) {
     if (!metric) {

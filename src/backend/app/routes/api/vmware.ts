@@ -47,7 +47,7 @@ router.post('/connect', (req: express.Request, res: express.Response) => {
 
   // Get username and password from credential
   return Credentials.getCredential(req.session.uuid, req.body.credential).then((cred) => {
-    return VMWare.connect(req.body.host, req.body.port, cred.fields.UserName, cred.fields.Password);
+    return VMWare.connect(req.body.host, req.body.port, cred.fields.UserName, cred.fields.Password.getText());
   }).then((response) => {
 
     console.log(response);
@@ -85,7 +85,7 @@ router.post('/connectSoap', (req: express.Request, res: express.Response) => {
 
   // Get username and password from credential
   return Credentials.getCredential(req.session.uuid, req.body.credential).then((cred) => {
-    return VMWare.connectSoap(req.body.host, req.body.port, cred.fields.UserName, cred.fields.Password);
+    return VMWare.connectSoap(req.body.host, req.body.port, cred.fields.UserName, cred.fields.Password.getText());
   }).then((response) => {
 
     if (response.ok) {
@@ -170,7 +170,10 @@ router.post('/upload-to-datastore', (req: express.Request, res: express.Response
 
   if (req.body.credential && req.body.credential.length !== 0) {
     Credentials.getCredential(req.session.uuid, req.body.credential).then((cred) => {
-      curl = childProcess.spawn('curl', ['-k', '-X', 'PUT', '--user', cred.fields.UserName + ':' + cred.fields.Password, fileUrl, '-T', UPLOAD_DIR]);
+      curl = childProcess.spawn('curl', ['-k', '-X', 'PUT', '--user', cred.fields.UserName + ':' + cred.fields.Password.getText(), fileUrl, '-T', UPLOAD_DIR]);
+    }).catch((e) => {
+      if (e && e.code) return apiGlobals.serverError(e.code);
+      if (e) return apiGlobals.serverError(e);
     });
   } else {
     curl = childProcess.spawn('curl', ['-k', '-X', 'PUT', fileUrl, '-T', UPLOAD_DIR]);

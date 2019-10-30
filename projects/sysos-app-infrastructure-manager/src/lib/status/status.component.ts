@@ -1,6 +1,6 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {takeUntil} from "rxjs/operators";
-import {Subject} from "rxjs";
+import {takeUntil} from 'rxjs/operators';
+import {Subject} from 'rxjs';
 
 import {Application} from '@sysos/lib-application';
 

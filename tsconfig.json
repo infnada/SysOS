@@ -121,6 +121,12 @@
       "@sysos/lib-service-injector/*": [
         "projects/sysos-lib-service-injector/*"
       ],
+      "@sysos/lib-utils": [
+        "projects/sysos-lib-utils/src/public-api"
+      ],
+      "@sysos/lib-utils/*": [
+        "projects/sysos-lib-utils/*"
+      ],
       "@sysos/lib-ext-dygraphs": [
         "projects/sysos-lib-ext-dygraphs/src/public-api"
       ],

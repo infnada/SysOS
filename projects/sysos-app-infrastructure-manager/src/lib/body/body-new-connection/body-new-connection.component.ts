@@ -1,14 +1,16 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {takeUntil} from "rxjs/operators";
-import {Subject} from "rxjs";
+import {takeUntil} from 'rxjs/operators';
+import {Subject} from 'rxjs';
 
 import {Application, SysosLibApplicationService} from '@sysos/lib-application';
 import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
+import {SysosLibModalService} from '@sysos/lib-modal';
+import {SysosLibUtilsService} from '@sysos/lib-utils';
 import {Credential} from '@sysos/app-credentials-manager';
 
-import {IMConnection} from '../../types/imconnection';
 import {SysosAppInfrastructureManagerService} from '../../services/sysos-app-infrastructure-manager.service';
+import {IMConnection} from '../../types/imconnection';
 
 @Component({
   selector: 'saim-body-new-connection',
@@ -29,6 +31,8 @@ export class BodyNewConnectionComponent implements OnInit, OnDestroy {
   constructor(private formBuilder: FormBuilder,
               private Applications: SysosLibApplicationService,
               private serviceInjector: SysosLibServiceInjectorService,
+              private Modal: SysosLibModalService,
+              private Utils: SysosLibUtilsService,
               private InfrastructureManager: SysosAppInfrastructureManagerService) {
 
     this.CredentialsManager = this.serviceInjector.get('SysosAppCredentialsManagerService');
@@ -36,6 +40,7 @@ export class BodyNewConnectionComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.connectionForm.reset();
     this.destroySubject$.next();
   }
 
@@ -53,8 +58,15 @@ export class BodyNewConnectionComponent implements OnInit, OnDestroy {
     });
 
     this.InfrastructureManager.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe((activeConnection: string) => {
+      if (!activeConnection) {
 
-      if (!activeConnection) return;
+        // Reset form if needed on 'New Connection'
+        // If valid is because user clicked on a connection with state 'disconnected' and then did 'New Connection'
+        if (this.connectionForm.touched || this.connectionForm.valid) this.connectionForm.reset();
+        return this.newConnectionType = null;
+      }
+
+      this.newConnectionType = this.getActiveConnection().type;
 
       (this.connectionForm.controls.description as FormControl).setValue(this.getActiveConnection(true).description);
       (this.connectionForm.controls.host as FormControl).setValue(this.getActiveConnection(true).host);
@@ -79,23 +91,25 @@ export class BodyNewConnectionComponent implements OnInit, OnDestroy {
     );
   }
 
-  sendConnect(): void {
+  sendConnect(saveOnly: boolean = false): void {
     this.submitted = true;
 
     // stop here if form is invalid
     if (this.connectionForm.invalid) return;
 
-    this.InfrastructureManager.connect(this.connectionForm.value);
+    this.Modal.openLittleModal('PLEASE WAIT', (saveOnly ? 'Saving connection...' : 'Connecting to server...'), '.window--monitor .window__main', 'plain').then(() => {
+      this.InfrastructureManager.connect(this.connectionForm.value, saveOnly);
+      this.submitted = false;
 
-    this.submitted = false;
-    this.connectionForm.reset();
+      if (saveOnly) this.connectionForm.reset();
+    });
   }
 
   manageCredentials() {
     this.Applications.openApplication('credentials-manager');
   }
 
-  getActiveConnection(returnMain): IMConnection {
+  getActiveConnection(returnMain: boolean = false): IMConnection {
     return this.InfrastructureManager.getActiveConnection(returnMain);
   }
 
@@ -103,7 +117,7 @@ export class BodyNewConnectionComponent implements OnInit, OnDestroy {
    * Weavescope graph
    */
   scrollTo(): void {
-    document.getElementById('infrastructure-manager_main-body').scrollTo({top: document.getElementById('infrastructure-manager_main-body').scrollHeight, behavior: 'smooth'})
+    this.Utils.scrollTo('infrastructure-manager_main-body', true);
   }
 
   setWeaveScopeNodes() {

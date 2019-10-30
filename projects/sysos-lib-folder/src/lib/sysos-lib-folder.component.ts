@@ -1,8 +1,8 @@
 import {Component, OnInit, ViewChild, ElementRef, Input, OnDestroy} from '@angular/core';
 import {CdkDragStart} from '@angular/cdk/drag-drop';
 
-import {takeUntil} from "rxjs/operators";
-import {Subject} from "rxjs";
+import {takeUntil} from 'rxjs/operators';
+import {Subject} from 'rxjs';
 
 import {SysosLibLoggerService} from '@sysos/lib-logger';
 import {MatMenuTrigger} from '@sysos/lib-angular-material';
@@ -217,15 +217,17 @@ export class SysosLibFolderComponent implements OnDestroy, OnInit {
     console.log(this.application.id);
     if (!this.Applications.isActiveApplication(this.application.id)) return;
 
+    let currentFile;
+
     // Do nothing if there is no active item unless its side arrows
     if (this.currentActive === null && keyEvent.code !== 'ArrowLeft' && keyEvent.code === 'ArrowRight') return;
 
     if (keyEvent.code === 'Delete') {
-      const currentFile = this.currentData[this.currentActive];
+      currentFile = this.currentData[this.currentActive];
 
       this.UIdeleteSelected(currentFile);
     } else if (keyEvent.code === 'F2') {
-      const currentFile = this.currentData[this.currentActive];
+      currentFile = this.currentData[this.currentActive];
 
       this.UIrenameFile(currentFile);
     } else if (keyEvent.code === 'ArrowRight') {
@@ -245,7 +247,7 @@ export class SysosLibFolderComponent implements OnDestroy, OnInit {
       }
 
     } else if (keyEvent.code === 'Enter') {
-      const currentFile = this.currentData[this.currentActive];
+      currentFile = this.currentData[this.currentActive];
 
       this.UIdoWithFile(currentFile);
     } else if (keyEvent.code === 'Backspace') {

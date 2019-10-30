@@ -9,9 +9,9 @@ import {SysosLibLoggerService} from '@sysos/lib-logger';
 import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
 import {SysosLibModalService} from '@sysos/lib-modal';
 import {SysosLibFileSystemService} from '@sysos/lib-file-system';
+import {SysosLibExtNetdataService} from '@sysos/lib-ext-netdata';
 
 import {Netdata} from '../types/netdata';
-
 
 @Injectable({
   providedIn: 'root'
@@ -36,7 +36,8 @@ export class SysosAppMonitorService {
               private serviceInjector: SysosLibServiceInjectorService,
               private Modal: SysosLibModalService,
               private FileSystem: SysosLibFileSystemService,
-              private Toastr: ToastrService) {
+              private Toastr: ToastrService,
+              private NetdataService: SysosLibExtNetdataService) {
 
     this.CredentialsManager = this.serviceInjector.get('SysosAppCredentialsManagerService');
 
@@ -45,14 +46,6 @@ export class SysosAppMonitorService {
     this.$activeConnection = new BehaviorSubject(null) as BehaviorSubject<string>;
     this.connections = this.$connections.asObservable();
     this.activeConnection = this.$activeConnection.asObservable();
-  }
-
-  setNetdata(NETDATA): void {
-    this.NETDATA = NETDATA;
-  }
-
-  getNetdata(): {} {
-    return this.NETDATA;
   }
 
   getConnectionByUuid(uuid: string): Netdata {
@@ -72,6 +65,30 @@ export class SysosAppMonitorService {
 
     // broadcast data to subscribers
     this.$activeConnection.next(Object.assign({}, this.dataStore).activeConnection);
+  }
+
+  initConnections(): void {
+    this.FileSystem.getConfigFile('applications/monitor/config.json').subscribe(
+      (res: Netdata[]) => {
+        this.logger.info('Monitor', 'Get connections successfully');
+
+        res.forEach((connection) => {
+          connection.state = 'disconnected';
+        });
+
+        this.dataStore.connections = res;
+
+        // broadcast data to subscribers
+        this.$connections.next(Object.assign({}, this.dataStore).connections);
+
+        res.forEach((connection) => {
+          if (connection.autologin) this.sendConnect(connection);
+        });
+      },
+      error => {
+        this.logger.error('Monitor', 'Error while getting credentials', null, error);
+        return this.Toastr.error('Error getting connections.', 'Monitor');
+      });
   }
 
   connect(connection: Netdata, saveOnly: boolean = false): void {
@@ -135,7 +152,18 @@ export class SysosAppMonitorService {
     } else {
 
       this.http.get(`/api/monitor/connect/${connection.uuid}/${connection.type}`).subscribe(
-        (res) => {
+        (res: { status: string, data?: any }) => {
+
+          // Error while connecting
+          if (res.status === 'error') {
+            this.logger.error('Monitor', 'sendConnect -> Error while connecting', loggerArgs, res.data);
+            if (this.Modal.isModalOpened('.window--monitor .window__main')) {
+              this.Modal.changeModalType('danger', '.window--monitor .window__main');
+              this.Modal.changeModalText(res.data, '.window--monitor .window__main');
+            }
+            return;
+          }
+
           this.logger.info('Monitor', 'Connected successfully', loggerArgs);
 
           this.setConnectionReady(connection);
@@ -183,6 +211,8 @@ export class SysosAppMonitorService {
     // TODO send to backend disconnect
 
     this.getConnectionByUuid(uuid).state = 'disconnected';
+
+    this.NetdataService.deleteDashboard(uuid);
 
     // broadcast data to subscribers
     this.$connections.next(Object.assign({}, this.dataStore).connections);
@@ -254,5 +284,4 @@ export class SysosAppMonitorService {
       });
     });
   }
-
 }

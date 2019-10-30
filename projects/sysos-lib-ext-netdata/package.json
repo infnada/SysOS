@@ -3,7 +3,17 @@
   "version": "0.0.1",
   "peerDependencies": {
     "@angular/common": "^7.2.0",
-    "@angular/core": "^7.2.0"
+    "@angular/core": "^7.2.0",
+    "rxjs": "~6.3.3",
+    "@sysos/lib-modal": "~0.0.1",
+    "@sysos/lib-logger": "~0.0.1",
+    "@sysos/lib-ext-jquery": "~0.0.1",
+    "@sysos/lib-ext-dygraphs": "~0.0.1",
+    "@sysos/lib-ext-easypiechart": "~0.0.1",
+    "@sysos/lib-ext-perfectscrollbar": "~0.0.1",
+    "@sysos/lib-ext-gaugejs": "~0.0.1",
+    "@sysos/lib-ext-pako": "~0.0.1",
+    "@sysos/lib-ext-lz-string": "~0.0.1"
   },
   "dependencies": {
     "netdata": "git+https://github.com/netdata/netdata.git"

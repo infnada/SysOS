@@ -1,8 +1,6 @@
-import {Component, OnInit, ViewEncapsulation} from '@angular/core';
+import {Component, Input, OnInit, ViewEncapsulation} from '@angular/core';
 
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-
-import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -11,8 +9,8 @@ import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
   styleUrls: ['./sysos-modal-monitor-options.component.scss']
 })
 export class SysosModalMonitorOptionsComponent implements OnInit {
+  @Input() connection: any;
 
-  private MonitorService;
   private NETDATA;
 
   stop_updates_when_focus_is_lost: boolean;
@@ -35,33 +33,35 @@ export class SysosModalMonitorOptionsComponent implements OnInit {
   seconds_as_time: boolean;
   local_timezone: boolean;
 
-  constructor(public activeModal: NgbActiveModal,
-              private serviceInjector: SysosLibServiceInjectorService) {
-
-    this.MonitorService = this.serviceInjector.get('SysosAppMonitorService');
-    this.NETDATA = this.MonitorService.getNetdata();
+  constructor(public activeModal: NgbActiveModal) {
   }
 
   ngOnInit() {
-    this.stop_updates_when_focus_is_lost = this.NETDATA.getOption('stop_updates_when_focus_is_lost');
-    this.eliminate_zero_dimensions = this.NETDATA.getOption('eliminate_zero_dimensions');
-    this.destroy_on_hide = this.NETDATA.getOption('destroy_on_hide');
-    this.async_on_scroll = this.NETDATA.getOption('async_on_scroll');
 
-    this.parallel_refresher = this.NETDATA.getOption('parallel_refresher');
-    this.concurrent_refreshes = this.NETDATA.getOption('concurrent_refreshes');
-    this.sync_selection = this.NETDATA.getOption('sync_selection');
-    this.sync_pan_and_zoom = this.NETDATA.getOption('sync_pan_and_zoom');
+    // https://github.com/anyOpsOS/anyOpsOS/issues/3
+    setTimeout(() => {
+      this.NETDATA = this.connection.NETDATA;
 
-    this.netdata_theme_control = this.NETDATA.netdataTheme === 'slate';
-    this.show_help = this.NETDATA.getOption('show_help');
-    this.pan_and_zoom_data_padding = this.NETDATA.getOption('pan_and_zoom_data_padding');
-    this.smooth_plot = this.NETDATA.getOption('smooth_plot');
+      this.stop_updates_when_focus_is_lost = this.NETDATA.getOption('stop_updates_when_focus_is_lost');
+      this.eliminate_zero_dimensions = this.NETDATA.getOption('eliminate_zero_dimensions');
+      this.destroy_on_hide = this.NETDATA.getOption('destroy_on_hide');
+      this.async_on_scroll = this.NETDATA.getOption('async_on_scroll');
 
-    this.units_conversion = this.NETDATA.getOption('units') === 'auto';
-    this.units_temp = this.NETDATA.getOption('temperature') === 'celsius';
-    this.seconds_as_time = this.NETDATA.getOption('seconds_as_time');
-    this.local_timezone = !this.NETDATA.dateTime.using_timezone;
+      this.parallel_refresher = this.NETDATA.getOption('parallel_refresher');
+      this.concurrent_refreshes = this.NETDATA.getOption('concurrent_refreshes');
+      this.sync_selection = this.NETDATA.getOption('sync_selection');
+      this.sync_pan_and_zoom = this.NETDATA.getOption('sync_pan_and_zoom');
+
+      this.netdata_theme_control = this.NETDATA.netdataTheme === 'slate';
+      this.show_help = this.NETDATA.getOption('show_help');
+      this.pan_and_zoom_data_padding = this.NETDATA.getOption('pan_and_zoom_data_padding');
+      this.smooth_plot = this.NETDATA.getOption('smooth_plot');
+
+      this.units_conversion = this.NETDATA.getOption('units') === 'auto';
+      this.units_temp = this.NETDATA.getOption('temperature') === 'celsius';
+      this.seconds_as_time = this.NETDATA.getOption('seconds_as_time');
+      this.local_timezone = !this.NETDATA.dateTime.using_timezone;
+    }, 0);
   }
 
   optionChanged(option, state) {

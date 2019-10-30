@@ -27,7 +27,7 @@ export class InitService implements OnDestroy {
 
   updateStateFromNodes() {
     // Apply pinned searches, filters nodes that dont match.
-    //this.state = applyPinnedSearches(state);
+    // this.state = applyPinnedSearches(state);
 
     // In case node or edge disappears before mouseleave event.
     const nodesIds = this.state.get('nodes').keySeq();
@@ -63,7 +63,6 @@ export class InitService implements OnDestroy {
       this.state = this.state.set('topologiesLoaded', true);
     }
 
-    this.state = this.state.set('timeTravelTransitioning', false);
     this.state = this.state.set('nodes', fromJS(nodes.nodes));
     this.state = this.state.set('nodesLoaded', true);
 

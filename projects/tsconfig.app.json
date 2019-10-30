@@ -50,6 +50,12 @@
       "@sysos/lib-user/*": [
         "dist/libs/sysos-lib-user/*"
       ],
+      "@sysos/lib-utils": [
+        "dist/libs/sysos-lib-utils"
+      ],
+      "@sysos/lib-utils/*": [
+        "dist/libs/sysos-lib-utils/*"
+      ],
       "@sysos/lib-types": [
         "dist/libs/sysos-lib-types"
       ],

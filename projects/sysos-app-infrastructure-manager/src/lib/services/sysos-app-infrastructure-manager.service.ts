@@ -56,7 +56,6 @@ export class SysosAppInfrastructureManagerService {
   }
 
   /**
-   * @description
    * Extract all connections data and prepares an object usable by MatTreeFlatDataSource
    */
   getTreeData(): IMNode[] {
@@ -234,7 +233,6 @@ export class SysosAppInfrastructureManagerService {
   }
 
   /**
-   * @description
    * Return all connections matching 'type' type
    */
   getConnectionsByType(type: string): IMConnection[] {
@@ -244,10 +242,9 @@ export class SysosAppInfrastructureManagerService {
   }
 
   /**
-   * @description
    * Get current connection full object or MAIN object
    */
-  getActiveConnection(returnMain = false): IMConnection {
+  getActiveConnection(returnMain: boolean = false): IMConnection {
     if (this.dataStore.activeConnection === null) return null;
 
     if (this.dataStore.activeConnection.includes(';')) {
@@ -264,7 +261,6 @@ export class SysosAppInfrastructureManagerService {
   }
 
   /**
-   * @description
    * Get connection full object matching 'uuid'
    */
   getConnectionByUuid(uuid: string): IMConnection {
@@ -274,7 +270,6 @@ export class SysosAppInfrastructureManagerService {
   }
 
   /**
-   * @description
    * Sets current/active connection
    */
   setActiveConnection(uuid: string): void {
@@ -291,7 +286,6 @@ export class SysosAppInfrastructureManagerService {
    */
 
   /**
-   * @Description
    * Called when application is initialized
    */
   initConnections(): void {
@@ -333,7 +327,7 @@ export class SysosAppInfrastructureManagerService {
    * @Description
    * Called when user starts a new connection
    */
-  connect(connection: IMConnection): void {
+  connect(connection: IMConnection, saveOnly: boolean = false): void {
     if (!connection) throw new Error('connection_not_found');
 
     this.logger.debug('Infrastructure Manager', 'Connect received', arguments);
@@ -370,7 +364,7 @@ export class SysosAppInfrastructureManagerService {
 
       return;
     }).then(() => {
-      this.initializeConnection(connection);
+      if (!saveOnly) this.initializeConnection(connection);
 
       this.setActiveConnection(connection.uuid);
     });
@@ -656,7 +650,6 @@ export class SysosAppInfrastructureManagerService {
   }
 
   /**
-   * @description
    * Return a link if found
    */
   getLinkByStorageJunctionPath(virtualUuid: string, volume: string, junctionPath: string): IMLink[] {
@@ -668,7 +661,6 @@ export class SysosAppInfrastructureManagerService {
   }
 
   /**
-   * @description
    * Return a link if found
    */
   getLinkByVMwareDatastore(virtualUuid: string, esxiDatastore: string): IMLink[] {
@@ -865,7 +857,7 @@ export class SysosAppInfrastructureManagerService {
   }
 
   /**
-   * @description We use this to bypass circular module dependency.
+   * We use this to bypass circular module dependency.
    * IM(component) -> IMS(this service) -> $(Obs) -> IM -> IMNetApp/IMVMWare (Since IMNetApp/IMVMWare already have IMS as dependency)
    * So we can't call IMNetApp/IMVMWare directly from IMS
    */
@@ -874,7 +866,6 @@ export class SysosAppInfrastructureManagerService {
   }
 
   /**
-   * @description
    * Called manually every time any property/value from this.dataStore.connections is modified.
    * This allows us to set new treeData for MatTreeFlatDataSource.
    */
@@ -913,7 +904,7 @@ export class SysosAppInfrastructureManagerService {
       type === 'DistributedVirtualPortgroup' ? 'dottedtriangle' :
       type === 'ResourcePool' ? 'pentagon' :
       'dottedcylinder'
-    )
+    );
   }
 
   setPseudoNodes(nodes) {
@@ -947,18 +938,17 @@ export class SysosAppInfrastructureManagerService {
   }
 
   /**
-   * @description
    * Gets adjacent Parents from a node
    */
   getAdjacentParent(objData) {
 
     // Is main object. Connect to pseudo
     if (!objData.info) {
-      return `pseudo:${(objData.type === 'vmware' ? 'virtual': '')}:`
+      return `pseudo:${(objData.type === 'vmware' ? 'virtual' : '')}:`;
 
       // Have parent connect to it
     } else if (objData.info.parent) {
-      return `${objData.info.mainUuid};\u003c${objData.info.parent.name}:${objData.info.parent.type}\u003e`
+      return `${objData.info.mainUuid};\u003c${objData.info.parent.name}:${objData.info.parent.type}\u003e`;
 
       // Don't have parent, connect to main object
     } else {
@@ -967,7 +957,6 @@ export class SysosAppInfrastructureManagerService {
   }
 
   /**
-   * @description
    * Gets adjacent Childrens from a node
    */
   getAdjacentChildrens(nodeId, objData, connectionNodes) {
@@ -985,7 +974,6 @@ export class SysosAppInfrastructureManagerService {
   }
 
   /**
-   * @description
    * Gets adjacent Datastores from a node
    */
   getAdjacentDatastores(objData) {
@@ -996,7 +984,7 @@ export class SysosAppInfrastructureManagerService {
       if (Array.isArray(objData.info.data.datastore.ManagedObjectReference)) {
         Array.isArray(objData.info.data.datastore.ManagedObjectReference.forEach((datastoreData) => {
           adjacentDatastores.push(`${objData.info.mainUuid};\u003c${datastoreData.name}:${datastoreData.type}\u003e`);
-        }))
+        }));
       } else {
         adjacentDatastores.push(`${objData.info.mainUuid};\u003c${objData.info.data.datastore.ManagedObjectReference.name}:${objData.info.data.datastore.ManagedObjectReference.type}\u003e`);
       }
@@ -1008,7 +996,6 @@ export class SysosAppInfrastructureManagerService {
   }
 
   /**
-   * @description
    * Special use/case
    * Since VM Disks are not connection objects, we inspect directly the VM to get the disks information.
    * Gets and returns nodes and adjacent Disks from VM object
@@ -1114,7 +1101,7 @@ export class SysosAppInfrastructureManagerService {
           };
 
           // Set Datastore node
-          let currentAdjacentNode = this.getConnectionByUuid(objData.info.mainUuid).data.Data.find(obj => obj.info.uuid === datastoreId);
+          const currentAdjacentNode = this.getConnectionByUuid(objData.info.mainUuid).data.Data.find(obj => obj.info.uuid === datastoreId);
 
           nodes = this.setNode(nodes, currentAdjacentNode);
         }
@@ -1130,12 +1117,11 @@ export class SysosAppInfrastructureManagerService {
   }
 
   /**
-   * @description
    * For each adjacent nodeId, get->set the node
    */
   getAdjacentNodes(nodes, nodeId, connectionNodes) {
     nodes.nodes[nodeId].adjacency.forEach((adjacentUuid) => {
-      let currentAdjacentNode = connectionNodes.find(obj => (obj.info && obj.info.uuid) === adjacentUuid);
+      const currentAdjacentNode = connectionNodes.find(obj => (obj.info && obj.info.uuid) === adjacentUuid);
 
       if (currentAdjacentNode) nodes = this.setNode(nodes, currentAdjacentNode);
     });
@@ -1254,7 +1240,7 @@ export class SysosAppInfrastructureManagerService {
     /**
      * ----------------------------
      */
-    if (detailed) {
+    if (detailed && objData.info) {
       const connectionNodes = this.getConnectionByUuid(objData.info.mainUuid).data.Data;
 
       // Childrens adjacent

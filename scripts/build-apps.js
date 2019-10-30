@@ -15,17 +15,34 @@ function onExit(child) {
   });
 }
 
-fs.readFile('angular.json', 'utf8', async (err, data) => {
-  const ngCli = JSON.parse(data);
+const projectInOrder = [
+  'sysos-app-credentials-manager',
+  'sysos-app-infrastructure-manager'
+];
 
-  for (const project of Object.keys(ngCli.projects)) {
+(async function main() {
 
-    // Perform build operation only on libraries
-    if (!project.startsWith('sysos-app-')) continue;
-
+  // Build projects in order
+  for (const project of projectInOrder) {
     let child = spawn('npm.cmd', ['run', 'ng', 'build', project]);
 
     await onExit(child);
   }
 
-});
+  // Build others
+  fs.readFile('angular.json', 'utf8', async (err, data) => {
+    const ngCli = JSON.parse(data);
+
+    for (const project of Object.keys(ngCli.projects)) {
+
+      // Perform build operation only on libraries not already built
+      if (!project.startsWith('sysos-app-')) continue;
+      if (projectInOrder.includes(project)) continue;
+
+      let child = spawn('npm.cmd', ['run', 'ng', 'build', project]);
+
+      await onExit(child);
+    }
+
+  });
+})();

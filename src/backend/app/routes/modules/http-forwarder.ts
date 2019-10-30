@@ -9,42 +9,46 @@ export class HttpForwarderModule {
 
   }
 
-  doCall(url: string, credentialUuid?: string): Promise<{resStatus: number, res: any}> {
+  doCall(url: string, credentialUuid?: string): Promise<{resStatus: number, contentType: string, data: any}> {
     const requestHeaders: any = new Headers();
+
+    console.log(url);
 
     if (!credentialUuid) return this.doRequest(url, requestHeaders);
 
     // Set credential headers
     const Credentials = new CredentialsModule();
     return Credentials.getCredential(this.req.session.uuid, credentialUuid).then((cred) => {
-      const requestHeaders: any = new Headers();
 
-      if (cred.type === 'basic') {
-        requestHeaders.append('Authorization', `Basic ${Buffer.from(cred.fields.UserName + ":" + cred.fields.Password).toString('base64')}`);
+      if (cred.fields.Type === 'basic') {
+        requestHeaders.append('Authorization', `Basic ${Buffer.from(cred.fields.UserName + ':' + cred.fields.Password.getText()).toString('base64')}`);
       }
 
       return this.doRequest(url, requestHeaders);
+    }).catch(e => {
+      throw e;
     });
   }
 
-  doRequest(url: string, requestHeaders: Headers) {
+  doRequest(url: string, requestHeaders: Headers): Promise<{resStatus: number, contentType: string, data: any}> {
     let resStatus;
-
-    console.log(url);
+    let contentType;
 
     return fetch(url, {
       method: 'GET',
       headers: requestHeaders
     }).then(res => {
       resStatus = res.status;
-      return (res.headers.get('content-type').includes('json') ? res.json() : res.text())
+      contentType = res.headers.get('content-type');
+      return (res.headers.get('content-type').includes('json') ? res.json() : res.text());
     }).then(res => {
 
       // Return data
       return {
         resStatus,
-        res
-      }
+        contentType,
+        data: res
+      };
 
     }).catch(e => {
       return e;

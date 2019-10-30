@@ -41,7 +41,8 @@
 
     <mat-form-field class="w-100">
       <input matInput placeholder="Url" formControlName="url">
-      <mat-error *ngIf="f.url.invalid">Please insert a url</mat-error>
+      <mat-error *ngIf="f.url.errors && f.url.errors.required">Please insert a url</mat-error>
+      <mat-error *ngIf="f.url.errors && f.url.errors.pattern">URL must include a scheme</mat-error>
     </mat-form-field>
 
     <mat-slide-toggle formControlName="withCredential">

@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 
@@ -10,6 +10,7 @@ import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
   styleUrls: ['./sysos-modal-monitor-import.component.scss']
 })
 export class SysosModalMonitorImportComponent implements OnInit {
+  @Input() connection: any;
 
   private MonitorService;
   NETDATA;
@@ -27,13 +28,15 @@ export class SysosModalMonitorImportComponent implements OnInit {
 
   constructor(public activeModal: NgbActiveModal,
               private serviceInjector: SysosLibServiceInjectorService) {
-
-    this.MonitorService = this.serviceInjector.get('SysosAppMonitorService');
-    this.NETDATA = this.MonitorService.getNetdata();
   }
 
   ngOnInit() {
+    this.MonitorService = this.serviceInjector.get('SysosAppMonitorService');
 
+    // https://github.com/anyOpsOS/anyOpsOS/issues/3
+    setTimeout(() => {
+      this.NETDATA = this.connection.NETDATA;
+    }, 0);
   }
 
   loadSnapshotPreflight(fileInput: any) {

@@ -1,4 +1,6 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy} from '@angular/core';
+import {takeUntil} from 'rxjs/operators';
+import {Subject} from 'rxjs';
 
 import {Application} from '@sysos/lib-application';
 
@@ -9,16 +11,19 @@ import {SysosAppCredentialsManagerService} from '../services/sysos-app-credentia
   templateUrl: './actions.component.html',
   styleUrls: ['./actions.component.scss']
 })
-export class ActionsComponent implements OnInit {
+export class ActionsComponent implements OnDestroy {
   @Input() application: Application;
+
+  private destroySubject$: Subject<void> = new Subject();
 
   activeCredential: string;
 
   constructor(private CredentialsManager: SysosAppCredentialsManagerService) {
-    this.CredentialsManager.activeCredential.subscribe(credential => this.activeCredential = credential);
+    this.CredentialsManager.activeCredential.pipe(takeUntil(this.destroySubject$)).subscribe(credential => this.activeCredential = credential);
   }
 
-  ngOnInit() {
+  ngOnDestroy() {
+    this.destroySubject$.next();
   }
 
   newCredential(): void {
@@ -30,7 +35,7 @@ export class ActionsComponent implements OnInit {
   deleteCredential(): void {
     if (this.activeCredential === null) return;
 
-    this.CredentialsManager.deleteCredential(this.activeCredential);
+    this.CredentialsManager.deleteCredential();
   }
 
 }

@@ -5,6 +5,7 @@ import {ReactiveFormsModule} from '@angular/forms';
 import {OrderModule} from 'ngx-order-pipe';
 import {ToastrModule} from 'ngx-toastr';
 
+import {SysosLibUtilsModule} from '@sysos/lib-utils';
 import {SysosLibAngularMaterialModule} from '@sysos/lib-angular-material';
 import {SysosLibApplicationService} from '@sysos/lib-application';
 import {SysosLibScrollSpyModule} from '@sysos/lib-scroll-spy';
@@ -17,9 +18,7 @@ import {BodyComponent} from './body/body.component';
 import {BodyNewConnectionComponent} from './body/body-new-connection/body-new-connection.component';
 import {BodyDashboardComponent} from './body/body-dashboard/body-dashboard.component';
 import {MenuComponent} from './menu/menu.component';
-import {NoCheckDirective} from './directives/no-check.directive';
 import {SysosAppMonitorService} from './services/sysos-app-monitor.service';
-import {SysosAppMonitorDashboardService} from './services/sysos-app-monitor-dashboard.service';
 
 @NgModule({
   declarations: [
@@ -27,8 +26,7 @@ import {SysosAppMonitorDashboardService} from './services/sysos-app-monitor-dash
     BodyComponent,
     BodyNewConnectionComponent,
     BodyDashboardComponent,
-    MenuComponent,
-    NoCheckDirective
+    MenuComponent
   ],
   imports: [
     CommonModule,
@@ -36,6 +34,7 @@ import {SysosAppMonitorDashboardService} from './services/sysos-app-monitor-dash
     OrderModule,
     ToastrModule.forRoot(),
     // Shared module import
+    SysosLibUtilsModule,
     SysosLibAngularMaterialModule,
     SysosLibScrollSpyModule,
     SysosLibSanitizeModule,
@@ -46,11 +45,9 @@ import {SysosAppMonitorDashboardService} from './services/sysos-app-monitor-dash
 export class SysosAppMonitorModule {
   constructor(private serviceInjector: SysosLibServiceInjectorService,
               private Applications: SysosLibApplicationService,
-              private Monitor: SysosAppMonitorService,
-              private MonitorDashboard: SysosAppMonitorDashboardService) {
+              private Monitor: SysosAppMonitorService) {
 
     this.serviceInjector.set('SysosAppMonitorService', this.Monitor);
-    this.serviceInjector.set('SysosAppMonitorDashboardService', this.MonitorDashboard);
 
     Applications.registerApplication({
       id: 'monitor',
@@ -61,5 +58,7 @@ export class SysosAppMonitorModule {
       status: false,
       style: {width: '1370px', height: '700px', top: '9%', left: '9%'}
     });
+
+    this.Monitor.initConnections();
   }
 }

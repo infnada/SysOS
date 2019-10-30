@@ -2,7 +2,7 @@ import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {HttpResponse, HttpEvent} from '@angular/common/http';
 
 import {Subject, Subscription} from 'rxjs';
-import {takeUntil} from "rxjs/operators";
+import {takeUntil} from 'rxjs/operators';
 
 import {SysosLibLoggerService} from '@sysos/lib-logger';
 import {SysosLibSelectableService} from '@sysos/lib-selectable';

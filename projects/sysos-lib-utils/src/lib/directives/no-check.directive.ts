@@ -3,13 +3,13 @@ import {Observable} from 'rxjs';
 import {Subscription} from 'rxjs';
 
 export interface NgNoCheckContext {
-  $implicit: NoCheckDirective;
+  $implicit: NgNoCheck;
 }
 
 @Directive({
-  selector: '[samonNoCheck]'
+  selector: '[ngNoCheck]',
 })
-export class NoCheckDirective implements AfterViewChecked {
+export class NgNoCheck implements AfterViewChecked {
   @Input() set ngNoCheck(value: boolean) {
     this.noCheck = value !== false;
 

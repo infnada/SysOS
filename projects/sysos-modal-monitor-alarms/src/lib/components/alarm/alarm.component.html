@@ -1,6 +1,6 @@
 <td class="text-center" style="vertical-align:middle" width="40%">
   <b>{{alarm.chart}}</b><br/>&nbsp;<br/>
-  <embed [src]="NETDATA.alarms.server + '/api/v1/badge.svg?chart=' + alarm.chart + '&alarm=' + alarm.name + '&refresh=auto' | sanitizeUrl" type="image/svg+xml" height="20"/>
+  <img [src]="NETDATA.alarms.server + (!NETDATA.connection || NETDATA.connection.type === 'netdata' || NETDATA.connection.type === 'snapshot' ? '/api/v1/badge.svg' : '/api/monitor/badge/' + NETDATA.connection.uuid + '/' + NETDATA.connection.type + '/') + '?chart=' + alarm.chart + '&alarm=' + alarm.name + '&refresh=auto' | sanitizeUrl" height="20"/>
   <br/><br/>
   <span style="font-size: 18px">{{alarm.info}}</span>
   <br/><br/>

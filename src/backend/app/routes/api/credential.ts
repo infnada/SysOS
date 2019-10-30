@@ -1,5 +1,4 @@
 import {Router} from 'express';
-import {v4 as uuidv4} from 'uuid';
 import {getLogger} from 'log4js';
 import * as express from 'express';
 import * as session from 'express-session';
@@ -7,7 +6,7 @@ import * as path from 'path';
 import readConfig from 'read-config';
 
 import {ApiGlobalsModule} from './api-globals';
-import {CredentialsModule} from "../modules/credentials";
+import {CredentialsModule} from '../modules/credentials';
 
 const logger = getLogger('mainlog');
 const router = Router();
@@ -45,10 +44,9 @@ router.put('/', (req: express.Request, res: express.Response) => {
 
   // Create new uuid (is new entry)
   if (!credential.hasOwnProperty('uuid')) {
-    credential.uuid = uuidv4();
 
-    return Credentials.newCredential(req.session.uuid, credential).then(() => {
-      return apiGlobals.responseJsonData(credential.uuid);
+    return Credentials.newCredential(req.session.uuid, credential).then((uuid) => {
+      return apiGlobals.responseJsonData(uuid);
     });
   }
 

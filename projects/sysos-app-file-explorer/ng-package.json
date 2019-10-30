@@ -11,6 +11,7 @@
       "@sysos/lib-file": "sysos.lib-file",
       "@sysos/lib-file-system": "sysos.lib-file-system",
       "@sysos/lib-file-system-ui": "sysos.lib-file-system-ui",
+      "@sysos/lib-folder": "sysos.lib-folder",
       "@sysos/lib-logger": "sysos.lib-logger",
       "@sysos/lib-selectable": "sysos.lib-selectable",
       "@sysos/lib-types": "sysos.lib-types"

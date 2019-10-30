@@ -1,6 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 
 import {Application} from '@sysos/lib-application';
+import {SysosLibUtilsService} from '@sysos/lib-utils';
 
 import {SysosAppMonitorService} from '../services/sysos-app-monitor.service';
 import {Netdata} from '../types/netdata';
@@ -18,12 +19,19 @@ export class BodyComponent implements OnInit {
 
   connections: Netdata[];
 
-  constructor(private Monitor: SysosAppMonitorService) {
+  constructor(private Utils: SysosLibUtilsService,
+              private Monitor: SysosAppMonitorService) {
   }
 
   ngOnInit() {
     this.Monitor.connections.subscribe(connections => this.connections = connections);
-    this.Monitor.activeConnection.subscribe(connection => this.activeConnection = connection);
+    this.Monitor.activeConnection.subscribe(connection => {
+      this.activeConnection = connection;
+
+      if (this.activeConnection !== null && this.getActiveConnection().state === 'disconnected') {
+        setTimeout(() => this.Utils.scrollTo('monitor_main-body', true), 100);
+      }
+    });
   }
 
   getActiveConnection(): Netdata {

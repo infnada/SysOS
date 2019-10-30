@@ -4,7 +4,13 @@
   "lib": {
     "entryFile": "src/public-api.ts",
     "umdModuleIds": {
-      "@sysos/lib-application": "sysos.lib-application"
+      "ngx-toastr": "ngx-toastr",
+      "@sysos/lib-application": "sysos.lib-application",
+      "@sysos/lib-file-system": "sysos.lib-file-system",
+      "@sysos/lib-logger": "sysos.lib-logger",
+      "@sysos/lib-modal": "sysos.lib-modal",
+      "@sysos/lib-netapp": "sysos.lib-netapp",
+      "@sysos/lib-vmware": "sysos.lib-vmware"
     }
   }
 }

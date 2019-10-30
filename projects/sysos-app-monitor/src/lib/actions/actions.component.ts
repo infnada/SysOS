@@ -1,9 +1,13 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy} from '@angular/core';
+import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 
 import {SysosLibModalService} from '@sysos/lib-modal';
+import {SysosLibUtilsService} from '@sysos/lib-utils';
+import {Application} from '@sysos/lib-application';
+import {SysosLibExtNetdataService} from '@sysos/lib-ext-netdata';
 
 import {SysosAppMonitorService} from '../services/sysos-app-monitor.service';
-import {SysosAppMonitorDashboardService} from '../services/sysos-app-monitor-dashboard.service';
 import {Netdata} from '../types/netdata';
 
 @Component({
@@ -11,111 +15,145 @@ import {Netdata} from '../types/netdata';
   templateUrl: './actions.component.html',
   styleUrls: ['./actions.component.scss']
 })
-export class ActionsComponent implements OnInit {
-  activeConnection: null;
+export class ActionsComponent implements OnDestroy {
+  @Input() application: Application;
 
+  private destroySubject$: Subject<void> = new Subject();
   private NETDATA;
 
-  returnFromHighlight;
-  urlOptions;
+  activeConnection: string;
+  connection;
 
   constructor(private Modal: SysosLibModalService,
+              private Utils: SysosLibUtilsService,
               private Monitor: SysosAppMonitorService,
-              private DashboardService: SysosAppMonitorDashboardService) {
+              private NetdataService: SysosLibExtNetdataService) {
 
-    this.DashboardService.returnFromHighlight.subscribe(returnFromHighlight => this.returnFromHighlight = returnFromHighlight);
-    this.urlOptions = this.DashboardService.urlOptions;
+    this.Monitor.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe(connection => this.activeConnection = connection);
+
+    this.NetdataService.connections.pipe(takeUntil(this.destroySubject$)).subscribe(connections => {
+      this.connection = connections[this.activeConnection];
+    });
+
+
   }
 
-  ngOnInit() {
-    this.Monitor.activeConnection.subscribe(connection => this.activeConnection = connection);
+  ngOnDestroy() {
+    this.destroySubject$.next();
   }
 
   getActiveConnection(): Netdata {
     return this.Monitor.getActiveConnection();
   }
 
-  openOptionsModal() {
-    this.NETDATA = this.Monitor.getNetdata();
-    if (this.NETDATA) this.NETDATA.pause(() => {});
-
-    if (!this.NETDATA) this.NETDATA = this.DashboardService.newDashboard();
-
-    this.Modal.openRegisteredModal('monitor-options', '.window--monitor .window__main', {}).then((modalInstance) => {
-      modalInstance.result.then(() => {
-        this.NETDATA.unpause();
-      });
-    });
-  }
-
-  openAlarmsModal() {
-    if (this.activeConnection === null || this.getActiveConnection().snapshotData) return;
-
-    this.NETDATA = this.Monitor.getNetdata();
-    this.NETDATA.pause(() => {});
-    this.Modal.openRegisteredModal('monitor-alarms', '.window--monitor .window__main', {}).then((modalInstance) => {
-      modalInstance.result.then(() => {
-        this.NETDATA.unpause();
-      });
-    });
-  }
-
-  async openImportModal() {
-    this.NETDATA = this.Monitor.getNetdata();
-    if (this.NETDATA) this.NETDATA.pause(() => {});
-
-    if (!this.NETDATA) this.NETDATA = this.DashboardService.newDashboard();
-
-    this.Modal.openRegisteredModal('monitor-import', '.window--monitor .window__main', {}).then((modalInstance) => {
-      modalInstance.result.then(() => {
-      });
-    });
-  }
-
-  openExportModal() {
-    if (this.activeConnection === null) return;
-
-    this.NETDATA = this.Monitor.getNetdata();
-    this.NETDATA.pause(() => {});
-
-    this.Modal.openRegisteredModal('monitor-export', '.window--monitor .window__main', {}).then((modalInstance) => {
-      modalInstance.result.then(() => {
-        this.NETDATA.unpause();
-      });
-    });
-  }
-
-  openHelpModal() {
-    this.NETDATA = this.Monitor.getNetdata();
-    if (this.NETDATA) this.NETDATA.pause(() => {});
-    this.Modal.openRegisteredModal('monitor-help', '.window--monitor .window__main', {}).then((modalInstance) => {
-      modalInstance.result.then(() => {
-        if (this.NETDATA) this.NETDATA.unpause();
-      });
-    });
-  }
-
-  newConnection() {
+  goHome(): void {
+    if (this.activeConnection === null || this.getActiveConnection().state === 'disconnected') this.Utils.scrollTo('monitor_main-body');
     if (this.activeConnection === null) return;
 
     this.Monitor.setActiveConnection(null);
   }
 
-  editConnection() {
+  newConnection(): void {
+    if (this.activeConnection === null) return this.Utils.scrollTo('monitor_main-body', true);
+
+    this.Monitor.setActiveConnection(null);
+    setTimeout(() => this.Utils.scrollTo('monitor_main-body', true), 100);
+  }
+
+  editConnection(): void {
     if (this.activeConnection === null) return;
 
     this.Monitor.editConnection();
+    setTimeout(() => this.Utils.scrollTo('monitor_main-body', true), 100);
   }
 
-  disconnectConnection() {
+  disconnectConnection(): void {
     if (this.activeConnection === null) return;
 
     this.Monitor.disconnectConnection();
+    setTimeout(() => this.Utils.scrollTo('monitor_main-body', true), 100);
   }
 
-  deleteConnection() {
+  deleteConnection(): void {
     if (this.activeConnection === null) return;
 
     this.Monitor.deleteConnection();
+  }
+
+  /**
+   * Modals
+   */
+  openOptionsModal(): void {
+    if (this.activeConnection === null) return;
+
+    this.NETDATA = this.connection.NETDATA;
+    this.NETDATA.pause(() => {});
+
+    this.Modal.openRegisteredModal('monitor-options', '.window--monitor .window__main', {
+      connection: this.connection
+    }).then((modalInstance) => {
+      modalInstance.result.then(() => {
+        this.NETDATA.unpause();
+      });
+    });
+  }
+
+  openAlarmsModal(): void {
+    if (this.activeConnection === null || this.getActiveConnection().snapshotData) return;
+
+    this.NETDATA = this.connection.NETDATA;
+    this.NETDATA.pause(() => {});
+
+    this.Modal.openRegisteredModal('monitor-alarms', '.window--monitor .window__main', {
+      connection: this.connection
+    }).then((modalInstance) => {
+      modalInstance.result.then(() => {
+        this.NETDATA.unpause();
+      });
+    });
+  }
+
+  openImportModal(): void {
+    if (this.connection) {
+      this.NETDATA = this.connection.NETDATA;
+      this.NETDATA.pause(() => {});
+    } else {
+      this.connection = this.NetdataService.newDashboard({uuid: null});
+    }
+
+    this.Modal.openRegisteredModal('monitor-import', '.window--monitor .window__main', {
+      connection: this.connection
+    }).then((modalInstance) => {
+      modalInstance.result.then(() => {
+      });
+    });
+  }
+
+  openExportModal(): void {
+    if (this.activeConnection === null) return;
+
+    this.NETDATA = this.connection.NETDATA;
+    this.NETDATA.pause(() => {});
+
+    this.Modal.openRegisteredModal('monitor-export', '.window--monitor .window__main', {
+      connection: this.connection
+    }).then((modalInstance) => {
+      modalInstance.result.then(() => {
+        this.NETDATA.unpause();
+      });
+    });
+  }
+
+  openHelpModal(): void {
+    if (this.connection) {
+      this.NETDATA = this.connection.NETDATA;
+      this.NETDATA.pause(() => {});
+    }
+
+    this.Modal.openRegisteredModal('monitor-help', '.window--monitor .window__main', {}).then((modalInstance) => {
+      modalInstance.result.then(() => {
+        if (this.NETDATA) this.NETDATA.unpause();
+      });
+    });
   }
 }

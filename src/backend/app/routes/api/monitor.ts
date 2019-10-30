@@ -1,7 +1,7 @@
 import {Router} from 'express';
 import {getLogger} from 'log4js';
 import * as express from 'express';
-import * as path from "path";
+import * as path from 'path';
 import readConfig from 'read-config';
 
 import {ApiGlobalsModule} from './api-globals';
@@ -15,7 +15,7 @@ import {HttpForwarderModule} from '../modules/http-forwarder';
 const logger = getLogger('mainlog');
 const router = Router();
 
-const forwardRequest = (urlSufix, req, res) => {
+const forwardRequest = (urlPath, req, res) => {
   const apiGlobals = new ApiGlobalsModule(req, res);
   const httpForwarder = new HttpForwarderModule(req);
 
@@ -26,19 +26,22 @@ const forwardRequest = (urlSufix, req, res) => {
   });
 
   return httpForwarder.doCall(
-    currentConnection.url + urlSufix + (Object.keys(req.query).length ? '?' + Object.keys(req.query).map(k => `${k}=${req.query[k]}`).join('&') : ''),
+    currentConnection.url + urlPath + (Object.keys(req.query).length ? '?' + Object.keys(req.query).map(k => `${k}${(req.query[k] ? '=' + req.query[k] : '')}`).join('&') : ''),
     currentConnection.credential
   ).then((data) => {
 
     // Handle 'connect' case
-    if (urlSufix === '' && data.resStatus === 200) {
+    if (urlPath === '' && data.resStatus === 200) {
       return apiGlobals.validResponse();
 
     // Handle normal case
     } else {
-      return apiGlobals.responseAsIs(data.resStatus, data.res);
+      return apiGlobals.responseAsIs(data.resStatus, data.contentType, data.data);
     }
 
+  }).catch((e) => {
+    if (e && e.code) return apiGlobals.serverError(e.code);
+    if (e) return apiGlobals.serverError(e);
   });
 };
 
@@ -48,7 +51,7 @@ const forwardRequest = (urlSufix, req, res) => {
 router.get('/charts/:uuid/:type/', (req: express.Request, res: express.Response) => {
   logger.info(`[API Monitor] -> getCharts -> connectionUuid [${req.params.uuid}], type [${req.params.type}]`);
 
-  if (req.params.type === 'netdata-credential') return forwardRequest('api/v1/charts', req, res);
+  if (req.params.type === 'netdata-credential') return forwardRequest('/api/v1/charts', req, res);
 
   const apiGlobals = new ApiGlobalsModule(req, res);
   const chartsDatabase = new DatabaseMonitorModule().getCharts();
@@ -62,7 +65,7 @@ router.get('/charts/:uuid/:type/', (req: express.Request, res: express.Response)
 router.get('/chart/:uuid/:type/', (req: express.Request, res: express.Response) => {
   logger.info(`[API Monitor] -> getChart -> connectionUuid [${req.params.uuid}], type [${req.params.type}], chart [${req.query.chart}]`);
 
-  if (req.params.type === 'netdata-credential') return forwardRequest('api/v1/chart', req, res);
+  if (req.params.type === 'netdata-credential') return forwardRequest('/api/v1/chart', req, res);
 
   const apiGlobals = new ApiGlobalsModule(req, res);
 
@@ -126,11 +129,41 @@ router.get('/chart/:uuid/:type/', (req: express.Request, res: express.Response) 
 router.get('/data/:uuid/:type/', (req: express.Request, res: express.Response) => {
   logger.info(`[API Monitor] -> getData -> connectionUuid [${req.params.uuid}], type [${req.params.type}], chart [${req.query.chart}]`);
 
-  if (req.params.type === 'netdata-credential') return forwardRequest('api/v1/data', req, res);
+  if (req.params.type === 'netdata-credential') return forwardRequest('/api/v1/data', req, res);
 
   if (!req.query.chart) console.log('no chart');
 
   return new QueryMonitorModule(req, res);
+});
+
+/**
+ * getAlarms
+ */
+router.get('/alarms/:uuid/:type/', (req: express.Request, res: express.Response) => {
+  logger.info(`[API Monitor] -> getAlarms -> connectionUuid [${req.params.uuid}], type [${req.params.type}], alarms-type [${req.query.type}]`);
+
+  if (req.params.type === 'netdata-credential') return forwardRequest('/api/v1/alarms', req, res);
+
+});
+
+/**
+ * getAlarmsLog
+ */
+router.get('/alarm_log/:uuid/:type/', (req: express.Request, res: express.Response) => {
+  logger.info(`[API Monitor] -> getAlarmsLog -> connectionUuid [${req.params.uuid}], type [${req.params.type}]`);
+
+  if (req.params.type === 'netdata-credential') return forwardRequest('/api/v1/alarm_log', req, res);
+
+});
+
+/**
+ * getBadge
+ */
+router.get('/badge/:uuid/:type/', (req: express.Request, res: express.Response) => {
+  logger.info(`[API Monitor] -> getBadge -> connectionUuid [${req.params.uuid}], type [${req.params.type}]`);
+
+  if (req.params.type === 'netdata-credential') return forwardRequest('/api/v1/badge.svg', req, res);
+
 });
 
 /**

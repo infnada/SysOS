@@ -3,6 +3,7 @@ import {CommonModule} from '@angular/common';
 
 import {SysosLibAngularMaterialModule} from '@sysos/lib-angular-material';
 
+import {SysosLibUtilsModule} from '@sysos/lib-utils';
 import {SysosLibSanitizeModule} from '@sysos/lib-sanitize';
 
 import {SysosLibExtWeavescopeComponent} from './components/sysos-lib-ext-weavescope.component';
@@ -46,6 +47,7 @@ import {TopologyOptionsComponent} from './components/topology-options/topology-o
   imports: [
     CommonModule,
     // Shared module import
+    SysosLibUtilsModule,
     SysosLibSanitizeModule,
     SysosLibAngularMaterialModule
   ],

@@ -15,13 +15,6 @@
       "@sysos/lib-scroll-spy": "sysos.lib-scroll-spy",
       "@sysos/lib-sanitize": "sysos.lib-sanitize",
       "@sysos/lib-service-injector": "sysos.lib-service-injector",
-      "@sysos/lib-ext-jquery": "sysos.lib-ext-jquery",
-      "@sysos/lib-ext-dygraphs": "sysos.lib-ext-dygraphs",
-      "@sysos/lib-ext-easypiechart": "sysos.lib-ext-easypiechart",
-      "@sysos/lib-ext-gaugejs": "sysos.lib-ext-gaugejs",
-      "@sysos/lib-ext-lz-string": "sysos.lib-ext-lz-string",
-      "@sysos/lib-ext-pako": "sysos.lib-ext-pako",
-      "@sysos/lib-ext-perfectscrollbar": "sysos.lib-ext-perfectscrollbar",
       "@sysos/lib-ext-netdata": "sysos.lib-ext-netdata"
     }
   }

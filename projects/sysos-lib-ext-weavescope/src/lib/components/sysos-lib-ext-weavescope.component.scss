@@ -222,10 +222,6 @@
   margin: 0 0.25em;
 }
 
-.footer-versionupdate {
-  margin-right: 0.5em;
-}
-
 .footer-tools {
   display: flex;
 }
@@ -1060,34 +1056,6 @@
   font-size: 16px;
   position: relative;
   top: 1px;
-}
-
-.plugins {
-  margin-right: 0.5em;
-}
-
-.plugins-label {
-  margin-right: 0.25em;
-}
-
-.plugins-plugin {
-  cursor: default;
-}
-
-.plugins-plugin + .plugins-plugin:before {
-  content: ', ';
-}
-
-.plugins-plugin-icon {
-  top: 1px;
-  position: relative;
-  font-size: 22px;
-  margin-right: 2px;
-}
-
-.plugins .error {
-  animation: blinking 2s 60 ease-in-out;
-  color: #5c5c8a;
 }
 
 .status {

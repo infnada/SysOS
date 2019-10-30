@@ -44,10 +44,12 @@ function createMappedSelectorCreator(memoize) {
 export class SelectorsService implements OnDestroy {
   private destroySubject$: Subject<void> = new Subject();
   private state;
+  private zoomState;
 
   constructor(private State: StateService,
               private Layout: LayoutService) {
     this.State.currentState.pipe(takeUntil(this.destroySubject$)).subscribe(state => this.state = state);
+    this.State.currentZoomCache.pipe(takeUntil(this.destroySubject$)).subscribe(zoomState => this.zoomState = zoomState);
   }
 
   ngOnDestroy() {
@@ -408,7 +410,7 @@ export class SelectorsService implements OnDestroy {
 
   activeLayoutCachedZoomSelector = createSelector(
     [
-      () => this.state.get('zoomCache'),
+      () => this.zoomState.get('zoomCache'),
       this.activeTopologyZoomCacheKeyPathSelector,
     ],
     (zoomCache, keyPath) => zoomCache.getIn(keyPath.slice(1), makeMap())

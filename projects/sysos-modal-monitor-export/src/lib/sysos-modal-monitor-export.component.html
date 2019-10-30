@@ -16,14 +16,14 @@
 
   <div *ngIf="!showProgress" id="saveSnapshotResolutionRadio" style="text-align: center;">
     <p>Select the desired resolution of the snapshot. This is the <b>seconds of data per point</b>.</p>
-    <mat-slider
-      [max]="this.slider.max"
-      [min]="this.slider.min"
-      [step]="this.slider.step"
+    <mat-slider *ngIf="slider"
+      [max]="slider.max"
+      [min]="slider.min"
+      [step]="slider.step"
       [thumbLabel]="true"
-      [displayWith]="this.slider.displayWith"
+      [displayWith]="slider.displayWith"
       [tickInterval]="'auto'"
-      [(ngModel)]="this.slider.value" class="m-3">
+      [(ngModel)]="slider.value" class="m-3">
     </mat-slider>
 
     <mat-form-field

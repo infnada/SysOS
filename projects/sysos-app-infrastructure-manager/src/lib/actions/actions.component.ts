@@ -1,23 +1,26 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {takeUntil} from "rxjs/operators";
-import {Subject} from "rxjs";
+import {Component, Input, OnDestroy} from '@angular/core';
+import {takeUntil} from 'rxjs/operators';
+import {Subject} from 'rxjs';
 
 import {Application} from '@sysos/lib-application';
+import {SysosLibUtilsService} from '@sysos/lib-utils';
 
 import {SysosAppInfrastructureManagerService} from '../services/sysos-app-infrastructure-manager.service';
+import {IMConnection} from "../types/imconnection";
 
 @Component({
   selector: 'saim-actions',
   templateUrl: './actions.component.html',
   styleUrls: ['./actions.component.scss']
 })
-export class ActionsComponent implements OnInit, OnDestroy {
+export class ActionsComponent implements OnDestroy {
   @Input() application: Application;
 
   private destroySubject$: Subject<void> = new Subject();
   activeConnection: string;
 
-  constructor(private InfrastructureManager: SysosAppInfrastructureManagerService) {
+  constructor(private Utils: SysosLibUtilsService,
+              private InfrastructureManager: SysosAppInfrastructureManagerService) {
     this.InfrastructureManager.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe(connection => this.activeConnection = connection);
   }
 
@@ -25,13 +28,22 @@ export class ActionsComponent implements OnInit, OnDestroy {
     this.destroySubject$.next();
   }
 
-  ngOnInit() {
+  getActiveConnection(): IMConnection {
+    return this.InfrastructureManager.getActiveConnection();
   }
 
-  newConnection(): void {
+  goHome(): void {
+    if (this.activeConnection === null || this.getActiveConnection().state === 'disconnected') this.Utils.scrollTo('infrastructure-manager_main-body');
     if (this.activeConnection === null) return;
 
     this.InfrastructureManager.setActiveConnection(null);
+  }
+
+  newConnection(): void {
+    if (this.activeConnection === null) return this.Utils.scrollTo('infrastructure-manager_main-body', true);
+
+    this.InfrastructureManager.setActiveConnection(null);
+    setTimeout(() => this.Utils.scrollTo('infrastructure-manager_main-body', true), 100);
   }
 
   editConnection(): void {

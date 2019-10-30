@@ -153,7 +153,7 @@ export class SysosLibApplicationComponent implements OnInit, AfterViewInit {
       bounding.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
       bounding.right <= (window.innerWidth || document.documentElement.clientWidth)
     );
-  };
+  }
 
   onResize(event: ResizeEvent): void {
     // TODO: pending https://github.com/mattlewis92/angular-resizable-element/pull/100

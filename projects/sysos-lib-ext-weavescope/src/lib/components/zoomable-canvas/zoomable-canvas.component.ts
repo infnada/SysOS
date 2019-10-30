@@ -26,6 +26,7 @@ export class ZoomableCanvasComponent implements AfterViewInit, OnDestroy {
 
   private destroySubject$: Subject<void> = new Subject();
   private state;
+  private zoomState;
 
   private debouncedCacheZoom = debounce(this.cacheZoom.bind(this), 500);
   private drag;
@@ -45,7 +46,7 @@ export class ZoomableCanvasComponent implements AfterViewInit, OnDestroy {
 
   selectedNodeId: string;
 
-  zoomState = {
+  zoomableState = {
     contentMaxX: 0,
     contentMaxY: 0,
     contentMinX: 0,
@@ -59,6 +60,8 @@ export class ZoomableCanvasComponent implements AfterViewInit, OnDestroy {
     translateY: 0,
   };
 
+  noCheckObservable$ = this.State.currentState;
+
   constructor(private State: StateService,
               private Selectors: SelectorsService,
               private NodeDetailsUtils: NodeDetailsUtilsService) {
@@ -68,6 +71,10 @@ export class ZoomableCanvasComponent implements AfterViewInit, OnDestroy {
     this.handlePanStart = this.handlePanStart.bind(this);
     this.handlePanEnd = this.handlePanEnd.bind(this);
     this.handlePan = this.handlePan.bind(this);
+
+    this.State.currentZoomCache.pipe(takeUntil(this.destroySubject$)).subscribe(zoomState => {
+      this.zoomState = zoomState;
+    });
 
     this.State.currentState.pipe(takeUntil(this.destroySubject$)).subscribe(state => {
       this.state = state;
@@ -153,19 +160,8 @@ export class ZoomableCanvasComponent implements AfterViewInit, OnDestroy {
 
   handleMouseClick() {
     if (this.selectedNodeId) {
-      if (this.state.get('showingHelp')) {
-        this.state = this.state.set('showingHelp', false);
-      }
-
-      if (this.state.get('showingTroubleshootingMenu')) {
-        this.state = this.state.set('showingTroubleshootingMenu', false);
-      }
-
       this.state = this.NodeDetailsUtils.closeAllNodeDetails(this.state);
       this.State.setState(this.state);
-
-      // TODO updateRoute(getState);
-
     }
   }
 
@@ -177,40 +173,40 @@ export class ZoomableCanvasComponent implements AfterViewInit, OnDestroy {
       y: (top + bottom) / 2,
     };
     // Zoom factor diff is obtained by dividing the new zoom scale with the old one.
-    this.zoomAtPositionByFactor(centerOfCanvas, scale / this.zoomState.scaleX);
+    this.zoomAtPositionByFactor(centerOfCanvas, scale / this.zoomableState.scaleX);
   }
 
   // Decides which part of the zoom state is cachable depending
   // on the horizontal/vertical degrees of freedom.
-  cachableState(zoomState = this.zoomState) {
+  cachableState(zoomableState = this.zoomableState) {
     const cachableFields = []
       .concat(this.fixHorizontal ? [] : ['scaleX', 'translateX'])
       .concat(this.fixVertical ? [] : ['scaleY', 'translateY']);
 
-    return pick(zoomState, cachableFields);
+    return pick(zoomableState, cachableFields);
   }
 
   cacheZoom() {
-    this.state = this.state.setIn(
+    this.zoomState = this.zoomState.setIn(
       this.Selectors.activeTopologyZoomCacheKeyPathSelector(this.state),
       fromJS(this.cachableState()).filter(value => !(window as any).isNaN(value))
     );
 
-    return this.State.setState(this.state);
+    return this.State.setZoomState(this.zoomState);
   }
 
   updateZoomLimits(props) {
     const layoutLimits = props.layoutLimits.toJS();
-    this.zoomState = {...this.zoomState, ...layoutLimits};
+    this.zoomableState = {...this.zoomableState, ...layoutLimits};
   }
 
   // Restore the zooming settings
   restoreZoomState(props) {
     if (!props.layoutZoomState.isEmpty()) {
-      const zoomState = props.layoutZoomState.toJS();
+      const zoomableState = props.layoutZoomState.toJS();
 
       // Update the state variables.
-      this.zoomState = {...this.zoomState, ...zoomState};
+      this.zoomableState = {...this.zoomableState, ...zoomableState};
       this.zoomRestored = true;
     }
   }
@@ -221,22 +217,22 @@ export class ZoomableCanvasComponent implements AfterViewInit, OnDestroy {
   }
 
   handlePanStart() {
-    this.zoomState.isPanning = true;
+    this.zoomableState.isPanning = true;
   }
 
   handlePanEnd() {
-    this.zoomState.isPanning = false;
+    this.zoomableState.isPanning = false;
   }
 
   handlePan() {
-    let {zoomState} = this;
+    let {zoomableState} = this;
     // Apply the translation respecting the boundaries.
-    zoomState = this.clampedTranslation({
-      ...zoomState,
-      translateX: this.zoomState.translateX + d3Event.dx,
-      translateY: this.zoomState.translateY + d3Event.dy,
+    zoomableState = this.clampedTranslation({
+      ...zoomableState,
+      translateX: this.zoomableState.translateX + d3Event.dx,
+      translateY: this.zoomableState.translateY + d3Event.dy,
     });
-    this.updateState(zoomState);
+    this.updateState(zoomableState);
   }
 
   handleZoom(ev) {
@@ -277,27 +273,27 @@ export class ZoomableCanvasComponent implements AfterViewInit, OnDestroy {
 
   zoomAtPositionByFactor(position, factor) {
     // Update the scales by the given factor, respecting the zoom limits.
-    const {minScale, maxScale} = this.zoomState;
-    const scaleX = clamp(this.zoomState.scaleX * factor, minScale, maxScale);
-    const scaleY = clamp(this.zoomState.scaleY * factor, minScale, maxScale);
-    let zoomState = {...this.zoomState, scaleX, scaleY};
+    const {minScale, maxScale} = this.zoomableState;
+    const scaleX = clamp(this.zoomableState.scaleX * factor, minScale, maxScale);
+    const scaleY = clamp(this.zoomableState.scaleY * factor, minScale, maxScale);
+    let zoomableState = {...this.zoomableState, scaleX, scaleY};
 
     // Get the position in the coordinates before the transition and use it
     // to adjust the translation part of the new transition (respecting the
     // translation limits). Adapted from:
     // https://github.com/d3/d3-zoom/blob/807f02c7a5fe496fbd08cc3417b62905a8ce95fa/src/zoom.js#L251
-    const inversePosition = this.inverseTransform(this.zoomState, position);
-    zoomState = this.clampedTranslation({
-      ...zoomState,
+    const inversePosition = this.inverseTransform(this.zoomableState, position);
+    zoomableState = this.clampedTranslation({
+      ...zoomableState,
       translateX: position.x - (inversePosition.x * scaleX),
       translateY: position.y - (inversePosition.y * scaleY),
     });
 
-    this.updateState(zoomState);
+    this.updateState(zoomableState);
   }
 
-  updateState(zoomState) {
-    this.zoomState = this.cachableState(zoomState);
+  updateState(zoomableState) {
+    this.zoomableState = this.cachableState(zoomableState);
     this.debouncedCacheZoom();
   }
 
@@ -314,7 +310,7 @@ export class ZoomableCanvasComponent implements AfterViewInit, OnDestroy {
   getSliderScale() {
     return scaleLog()
     // Zoom limits may vary between different views.
-      .domain([this.zoomState.minScale, this.zoomState.maxScale])
+      .domain([this.zoomableState.minScale, this.zoomableState.maxScale])
       // Taking the unit range for the slider ensures consistency
       // of the zoom button steps across different zoom domains.
       .range([0, 1])
@@ -324,7 +320,7 @@ export class ZoomableCanvasComponent implements AfterViewInit, OnDestroy {
 
   getSliderValue() {
     const toSliderValue = this.getSliderScale();
-    return toSliderValue(this.zoomState.scaleX);
+    return toSliderValue(this.zoomableState.scaleX);
   }
 
   toZoomScale(sliderValue) {

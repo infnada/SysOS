@@ -1,10 +1,11 @@
 import {Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {Subject, Subscription} from 'rxjs';
-import {takeUntil} from "rxjs/operators";
+import {takeUntil} from 'rxjs/operators';
 
 import {MatTreeFlatDataSource, MatTreeFlattener, MatMenuTrigger} from '@sysos/lib-angular-material';
 import {Application} from '@sysos/lib-application';
+import {SysosLibUtilsService} from '@sysos/lib-utils';
 import {ContextMenuItem} from '@sysos/lib-types';
 
 import {SysosAppInfrastructureManagerService} from '../services/sysos-app-infrastructure-manager.service';
@@ -53,7 +54,8 @@ export class BodyComponent implements OnInit, OnDestroy {
 
   hasChild = (_: number, node: InfrastructureManagerFlatNode) => node.expandable;
 
-  constructor(private InfrastructureManager: SysosAppInfrastructureManagerService,
+  constructor(private Utils: SysosLibUtilsService,
+              private InfrastructureManager: SysosAppInfrastructureManagerService,
               private InfrastructureContextMenus: SysosAppInfrastructureManagerContextMenusService,
               private InfrastructureManagerNetApp: SysosAppInfrastructureNetappService,
               private InfrastructureManagerVMWare: SysosAppInfrastructureVmwareService) {
@@ -74,7 +76,13 @@ export class BodyComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.InfrastructureManager.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe(activeConnection => this.activeConnection = activeConnection);
+    this.InfrastructureManager.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe(activeConnection => {
+      this.activeConnection = activeConnection;
+
+      if (this.activeConnection !== null && this.getActiveConnection(true).state === 'disconnected') {
+        setTimeout(() => this.Utils.scrollTo('monitor_main-body', true), 100);
+      }
+    });
     this.InfrastructureManager.treeData.pipe(takeUntil(this.destroySubject$)).subscribe(data => {
       this.dataSource.data = data;
       this.treeControl.expandAll();
@@ -161,7 +169,7 @@ export class BodyComponent implements OnInit, OnDestroy {
     this.InfrastructureManager.setActiveConnection(connection.uuid);
   }
 
-  getActiveConnection(returnMain): IMConnection {
+  getActiveConnection(returnMain: boolean = false): IMConnection {
     return this.InfrastructureManager.getActiveConnection(returnMain);
   }
 

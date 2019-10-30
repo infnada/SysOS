@@ -7,6 +7,7 @@ import {takeUntil} from 'rxjs/operators';
 import {Application, SysosLibApplicationService} from '@sysos/lib-application';
 import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
 import {SysosLibModalService} from '@sysos/lib-modal';
+import {SysosLibUtilsService} from '@sysos/lib-utils';
 import {Credential} from '@sysos/app-credentials-manager';
 
 import {SysosAppMonitorService} from '../../services/sysos-app-monitor.service';
@@ -25,7 +26,6 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
   private InfrastructureManager;
 
   credentials: Credential[];
-  connections: Netdata[] = [];
   connectionForm: FormGroup;
   submitted: boolean = false;
   newConnectionType: string = null;
@@ -34,6 +34,7 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
               private Applications: SysosLibApplicationService,
               private serviceInjector: SysosLibServiceInjectorService,
               private Modal: SysosLibModalService,
+              private Utils: SysosLibUtilsService,
               private Monitor: SysosAppMonitorService) {
 
     this.CredentialsManager = this.serviceInjector.get('SysosAppCredentialsManagerService');
@@ -44,7 +45,10 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
   ngOnInit() {
     this.connectionForm = this.formBuilder.group({
       description: ['', Validators.required],
-      url: ['', Validators.required],
+      url: ['', [
+        Validators.required,
+        Validators.pattern(/^([a-z0-9]+):\/\//)
+      ]],
       withCredential: [false],
       credential: [''],
       save: [true],
@@ -54,8 +58,15 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
     });
 
     this.Monitor.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe((activeConnection: string) => {
+      if (!activeConnection) {
 
-      if (!activeConnection) return;
+        // Reset form if needed on 'New Connection'
+        // If valid is because user clicked on a connection with state 'disconnected' and then did 'New Connection'
+        if (this.connectionForm.touched || this.connectionForm.valid) this.connectionForm.reset();
+        return this.newConnectionType = null;
+      }
+
+      this.newConnectionType = this.getActiveConnection().type;
 
       (this.connectionForm.controls.description as FormControl).setValue(this.getActiveConnection().description);
       (this.connectionForm.controls.url as FormControl).setValue(this.getActiveConnection().url);
@@ -90,6 +101,8 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
     this.Modal.openLittleModal('PLEASE WAIT', (saveOnly ? 'Saving connection...' : 'Connecting to server...'), '.window--monitor .window__main', 'plain').then(() => {
       this.Monitor.connect(this.connectionForm.value, saveOnly);
       this.submitted = false;
+
+      if (saveOnly) this.connectionForm.reset();
     });
   }
 
@@ -105,7 +118,7 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
    * Weavescope graph
    */
   scrollTo(): void {
-    document.getElementById('monitor_main-body').scrollTo({top: document.getElementById('monitor_main-body').scrollHeight, behavior: 'smooth'})
+    this.Utils.scrollTo('monitor_main-body', true);
   }
 
   setWeaveScopeNodes() {

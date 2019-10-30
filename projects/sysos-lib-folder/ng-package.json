@@ -2,6 +2,17 @@
   "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
   "dest": "../../dist/libs/sysos-lib-folder",
   "lib": {
-    "entryFile": "src/public-api.ts"
+    "entryFile": "src/public-api.ts",
+    "umdModuleIds": {
+      "ngx-filter-pipe": "ngx-filter-pipe",
+      "@sysos/lib-angular-material": "sysos.lib-angular-material",
+      "@sysos/lib-application": "sysos.lib-application",
+      "@sysos/lib-file": "sysos.lib-file",
+      "@sysos/lib-file-system": "sysos.lib-file-system",
+      "@sysos/lib-file-system-ui": "sysos.lib-file-system-ui",
+      "@sysos/lib-logger": "sysos.lib-logger",
+      "@sysos/lib-selectable": "sysos.lib-selectable",
+      "@sysos/lib-types": "sysos.lib-types"
+    }
   }
 }

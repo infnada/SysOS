@@ -40,7 +40,8 @@ export class ApiGlobalsModule {
     );
   }
 
-  responseAsIs(status: number, data: any): void {
+  responseAsIs(status: number, contentType: string, data: any): void {
+    this.res.set('Content-Type', contentType);
     this.res.status(status).send(data);
   }
 

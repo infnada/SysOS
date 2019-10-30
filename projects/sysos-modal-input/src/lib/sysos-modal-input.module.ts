@@ -5,7 +5,7 @@ import {FormsModule} from '@angular/forms';
 import {NgbModalModule, NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 
 import {SysosLibModalService} from '@sysos/lib-modal';
-import {SysosLibAngularMaterialModule} from "@sysos/lib-angular-material";
+import {SysosLibAngularMaterialModule} from '@sysos/lib-angular-material';
 
 import {SysosModalInputComponent} from './sysos-modal-input.component';
 import {EntryComponent} from './input-entry/entry.component';

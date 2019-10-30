@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
@@ -9,19 +9,16 @@ import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
   styleUrls: ['./sysos-modal-monitor-xss.component.scss']
 })
 export class SysosModalMonitorXssComponent implements OnInit {
+  @Input() serverUrl: any;
 
   private MonitorDashboardService;
 
-  initializeConfig;
-
   constructor(public activeModal: NgbActiveModal,
               private serviceInjector: SysosLibServiceInjectorService) {
-
-    this.MonitorDashboardService = this.serviceInjector.get('SysosAppMonitorDashboardService');
-    this.initializeConfig = this.MonitorDashboardService.initializeConfig;
   }
 
   ngOnInit() {
+    this.MonitorDashboardService = this.serviceInjector.get('SysosAppMonitorDashboardService');
   }
 
   xssModalKeepXss() {

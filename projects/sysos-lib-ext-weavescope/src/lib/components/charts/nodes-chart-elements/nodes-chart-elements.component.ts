@@ -48,7 +48,7 @@ export class NodesChartElementsComponent implements OnDestroy {
 
   constructor(private State: StateService,
               private Selectors: SelectorsService) {
-    let _this = this;
+    const _this = this;
 
     function getAdjacentNodes(state, originNodeId?) {
       let adjacentNodes = makeSet();

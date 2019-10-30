@@ -11,6 +11,20 @@ const topologyCaches = {};
 })
 export class LayoutService {
 
+  private localSessionStorage = {
+    clear() {
+      window.sessionStorage.clear();
+      window.localStorage.clear();
+    },
+    getItem(k) {
+      return window.sessionStorage.getItem(k) || window.localStorage.getItem(k);
+    },
+    setItem(k, v) {
+      window.sessionStorage.setItem(k, v);
+      window.localStorage.setItem(k, v);
+    }
+  };
+
   constructor() {
     this.doLayout = this.doLayout.bind(this);
   }
@@ -81,20 +95,6 @@ export class LayoutService {
     });
     return result;
   }
-
-  private localSessionStorage = {
-    clear() {
-      window.sessionStorage.clear();
-      window.localStorage.clear();
-    },
-    getItem(k) {
-      return window.sessionStorage.getItem(k) || window.localStorage.getItem(k);
-    },
-    setItem(k, v) {
-      window.sessionStorage.setItem(k, v);
-      window.localStorage.setItem(k, v);
-    }
-  };
 
   private storageGet(key, defaultValue?, storage = this.localSessionStorage) {
     if (!storage) {

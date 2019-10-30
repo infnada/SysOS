@@ -9,7 +9,7 @@ import fs from 'fs-extra';
 
 import {ConnectFiles} from '../../interfaces/connect-file';
 import {ApiGlobalsModule} from './api-globals';
-import {CredentialsModule} from "../modules/credentials";
+import {CredentialsModule} from '../modules/credentials';
 
 const logger = getLogger('mainlog');
 const multipartyMiddleware = multiparty();
@@ -111,7 +111,10 @@ router.post('/:type', multipartyMiddleware, (req: express.Request  & { files: Co
 
     if (req.body.credential && req.body.credential.length !== 0) {
       Credentials.getCredential(req.session.uuid, req.body.credential).then((cred) => {
-        curl = childProcess.spawn('curl', ['-k', '--user', cred.fields.UserName + ':' + cred.fields.Password, fileUrl]);
+        curl = childProcess.spawn('curl', ['-k', '--user', cred.fields.UserName + ':' + cred.fields.Password.getText(), fileUrl]);
+      }).catch((e) => {
+        if (e && e.code) return apiGlobals.serverError(e.code);
+        if (e) return apiGlobals.serverError(e);
       });
     } else {
       curl = childProcess.spawn('curl', ['-k', fileUrl]);
@@ -178,7 +181,7 @@ router.delete('/:fileName(*)', (req: express.Request, res: express.Response) => 
 
   const dirName = path.join(__dirname, '../../filesystem') + req.params.fileName;
 
-  fs.remove(dirName).then(() =>{
+  fs.remove(dirName).then(() => {
     return apiGlobals.validResponse();
   }).catch((err) => {
     if (err && err.code) return apiGlobals.serverError(err.code);

@@ -3,7 +3,7 @@ import {Component, Input, OnInit} from '@angular/core';
 import {MatChipInputEvent} from '@sysos/lib-angular-material';
 
 import {SysosAppInfrastructureVmwareTemplateHelpersService} from '../../../../services/vmware/sysos-app-infrastructure-vmware-template-helpers.service';
-import {SysosAppInfrastructureManagerService} from "../../../../services/sysos-app-infrastructure-manager.service";
+import {SysosAppInfrastructureManagerService} from '../../../../services/sysos-app-infrastructure-manager.service';
 import {VMWareObject} from '../../../../types/vmware-object';
 
 export interface Tag {

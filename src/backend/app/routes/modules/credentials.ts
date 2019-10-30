@@ -20,8 +20,6 @@ export class CredentialsModule {
       return obj.uuid === userUuid;
     });
 
-    console.log(path.join(__dirname, '../../filesystem' + user.kdbxPath));
-
     return db.save().then(dataAsArrayBuffer => {
       return outputFile(path.join(__dirname, '../../filesystem' + user.kdbxPath), Buffer.from(dataAsArrayBuffer));
     });
@@ -62,7 +60,7 @@ export class CredentialsModule {
   async getCredentials(userUuid: string): Promise<any> {
     const credentials = [];
 
-    loadedDbs[userUuid].getDefaultGroup().entries.forEach((credential) => {
+    await loadedDbs[userUuid].getDefaultGroup().entries.forEach((credential) => {
       credentials.push({
         uuid: credential.uuid.id,
         description: credential.fields.Title,
@@ -78,22 +76,26 @@ export class CredentialsModule {
    * Gets a credential by uuid
    */
   async getCredential(userUuid: string, credentialUuid: string): Promise<any> {
-    return loadedDbs[userUuid].getDefaultGroup().entries.find((credential: Entry) => {
-      return credential.uuid.id === credentialUuid;
+    const credential = loadedDbs[userUuid].getDefaultGroup().entries.find((cred: Entry) => {
+      return cred.uuid.id === credentialUuid;
     });
+
+    if (!credential) throw new Error('Credential not found');
+
+    return credential;
   }
 
   /**
    * Creates a credential
    */
-  async newCredential(userUuid: string, credential): Promise<void> {
+  async newCredential(userUuid: string, credential): Promise<string> {
     const group: Group = loadedDbs[userUuid].getDefaultGroup();
     const entry: Entry = loadedDbs[userUuid].createEntry(group);
 
-    entry.uuid.id = credential.uuid;
+    this.setEntryFields(entry, credential);
+    this.saveDb(loadedDbs[userUuid], userUuid);
 
-    CredentialsModule.setEntryFields(entry, credential);
-    return this.saveDb(loadedDbs[userUuid], userUuid);
+    return entry.uuid.id;
   }
 
   /**
@@ -102,14 +104,16 @@ export class CredentialsModule {
   async editCredential(userUuid: string, credential): Promise<void> {
     const entry: Entry = await this.getCredential(userUuid, credential.uuid);
 
-    CredentialsModule.setEntryFields(entry, credential);
+    if (!entry) throw new Error('Credential not found');
+
+    this.setEntryFields(entry, credential);
     return this.saveDb(loadedDbs[userUuid], userUuid);
   }
 
   /**
    * Sets field values for an entry
    */
-  private static setEntryFields(entry: Entry, credential) {
+  private setEntryFields(entry: Entry, credential) {
     entry.fields.Title = credential.description;
     entry.fields.UserName = credential.username;
     entry.fields.Password = ProtectedValue.fromString(credential.password);
@@ -121,6 +125,9 @@ export class CredentialsModule {
    */
   async deleteCredential(userUuid: string, credentialUuid: string): Promise<void> {
     const entry = await this.getCredential(userUuid, credentialUuid);
+
+    if (!entry) throw new Error('Credential not found');
+
     loadedDbs[userUuid].remove(entry);
 
     this.saveDb(loadedDbs[userUuid], userUuid);

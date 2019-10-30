@@ -1,5 +1,9 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {takeUntil} from 'rxjs/operators';
+import {Subject} from 'rxjs';
+
 import {Application} from '@sysos/lib-application';
+
 import {SysosAppSshService} from '../services/sysos-app-ssh.service';
 import {SshConnection} from '../types/ssh-connection';
 
@@ -8,15 +12,21 @@ import {SshConnection} from '../types/ssh-connection';
   templateUrl: './actions.component.html',
   styleUrls: ['./actions.component.scss']
 })
-export class ActionsComponent implements OnInit {
+export class ActionsComponent implements OnDestroy, OnInit {
   @Input() application: Application;
+
+  private destroySubject$: Subject<void> = new Subject();
 
   activeConnection: string;
 
   constructor(private Ssh: SysosAppSshService) { }
 
   ngOnInit() {
-    this.Ssh.activeConnection.subscribe(connection => this.activeConnection = connection);
+    this.Ssh.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe(connection => this.activeConnection = connection);
+  }
+
+  ngOnDestroy() {
+    this.destroySubject$.next();
   }
 
   getActiveConnection(): SshConnection {

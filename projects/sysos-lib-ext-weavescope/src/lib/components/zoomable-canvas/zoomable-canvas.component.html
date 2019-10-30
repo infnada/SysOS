@@ -1,7 +1,7 @@
 <div class="zoomable-canvas">
-  <svg id="canvas" [ngClass]="{'panning': zoomState.isPanning}" (click)="handleMouseClick()">
+  <svg id="canvas" [ngClass]="{'panning': zoomableState.isPanning}" (click)="handleMouseClick()">
     <g class="zoom-content">
-      <g [attr.transform]="transformToString(zoomState)">
+      <g [attr.transform]="transformToString(zoomableState)">
         <defs>
           <marker
             class="edge-marker"
@@ -15,7 +15,7 @@
             <polygon class="link" points="0 0, 10 3.5, 0 7" />
           </marker>
         </defs>
-        <g class="tour-step-anchor elements-chart-elements" slews-nodes-chart-elements></g>
+        <g class="tour-step-anchor elements-chart-elements" slews-nodes-chart-elements *ngNoCheck="true; notifier: noCheckObservable$"></g>
       </g>
     </g>
   </svg>
