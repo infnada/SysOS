@@ -56,6 +56,25 @@ export class ShapeComponent {
     sheet: `<path d="${this.UNIT_SHEET}" #ATTRS></path>`,
     square: `<rect width="1.8" height="1.8" rx="0.4" ry="0.4" x="-0.9" y="-0.9" #ATTRS></rect>`,
     triangle: `<path d="${this.curvedUnitPolygonPath(3)}" #ATTRS></path>`,
+    network: `<g #ATTRS>
+  <g transform="translate(-1.5)">
+    <g transform="translate(2.2)">
+        <path style="fill:#3999C6;" d="M 0.674 0 c 0.022 -0.022 0.017 -0.056 0 -0.078 l -0.104 -0.103 l -0.466 -0.454 c -0.022 -0.022 -0.052 -0.022 -0.074 0 c -0.021 0.021 -0.026 0.056 0 0.077 l 0.489 0.479 c 0.021 0.022 0.021 0.056 0 0.078 l -0.497 0.497 c -0.022 0.021 -0.022 0.056 0 0.078 c 0.021 0.022 0.056 0.018 0.073 0 l 0.462 -0.457 c 0 0 0 0 0.004 -0.004 L 0.674 0 z"/>
+    </g>
+    <g>
+        <path style="fill:#3999C6;" d="M 0.1 0 c -0.022 -0.022 -0.017 -0.056 0 -0.078 l 0.104 -0.103 l 0.466 -0.454 c 0.022 -0.022 0.052 -0.022 0.074 0 c 0.021 0.021 0.026 0.056 0 0.077 l -0.489 0.479 c -0.021 0.022 -0.021 0.056 0 0.078 l 0.497 0.497 c 0.022 0.021 0.022 0.056 0 0.078 c -0.021 0.022 -0.056 0.018 -0.073 0 l -0.462 -0.457 c 0 0 0 0 -0.004 -0.004 L 0.1 0 z"/>
+    </g>
+    <g transform="translate(1)">
+        <circle style="fill:#7FBA00;" r="0.2"/>
+    </g>
+    <g transform="translate(1.5)">
+        <circle style="fill:#7FBA00;" r="0.2"/>
+    </g>
+    <g transform="translate(2)">
+        <circle style="fill:#7FBA00;" r="0.2"/>
+    </g>
+  </g>
+</g>`
   };
 
   constructor() {

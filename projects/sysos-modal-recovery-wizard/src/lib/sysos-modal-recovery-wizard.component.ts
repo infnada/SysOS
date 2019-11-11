@@ -23,8 +23,9 @@ export class SysosModalRecoveryWizardComponent implements OnInit {
   @Input() title: string;
   @Input() data: VmInstantRecovery | RestoreVm;
 
-  private InfrastructureManager;
   private InfrastructureManagerVMWare;
+  private InfrastructureManagerNodeLink;
+  private InfrastructureManagerObjectHelper;
 
   mainLinkFound: boolean = true;
 
@@ -59,8 +60,11 @@ export class SysosModalRecoveryWizardComponent implements OnInit {
               private VMWare: SysosLibVmwareService,
               private NetApp: SysosLibNetappService) {
 
-    this.InfrastructureManager = this.serviceInjector.get('SysosAppInfrastructureManagerService');
     this.InfrastructureManagerVMWare = this.serviceInjector.get('SysosAppInfrastructureVmwareService');
+    this.InfrastructureManagerNodeLink = this.serviceInjector.get('SysosAppInfrastructureManagerNodeLinkService');
+    this.InfrastructureManagerObjectHelper = this.serviceInjector.get('SysosAppInfrastructureManagerObjectHelperService');
+
+
     this.ESXIHosts = this.InfrastructureManagerVMWare.getESXihosts();
   }
 
@@ -108,8 +112,8 @@ export class SysosModalRecoveryWizardComponent implements OnInit {
       // Get links for each VM datastore
       return this.data.vm.info.data.datastore.ManagedObjectReference.forEach((datastoreObj: { type: string; name: string; }) => {
 
-        const fullDatastoreObj: VMWareObject & { info: { data: VMWareDatastore } } = this.InfrastructureManagerVMWare.getObjectById(this.data.virtual.uuid, datastoreObj.name);
-        const datastoreLink: IMDatastoreLink[] = this.InfrastructureManager.checkDatastoreLinkWithManagedStorage(fullDatastoreObj);
+        const fullDatastoreObj: VMWareObject & { info: { data: VMWareDatastore } } = this.InfrastructureManagerObjectHelper.getObjectById(this.data.virtual.uuid, datastoreObj.name);
+        const datastoreLink: IMDatastoreLink[] = this.InfrastructureManagerNodeLink.checkDatastoreLinkWithManagedStorage(fullDatastoreObj);
 
         if (datastoreLink.length > 1) throw new Error('Multiple links found for this storage');
         if (fullDatastoreObj.name === mainDatastoreName && datastoreLink.length === 0) throw new Error('No main link found');

@@ -1,4 +1,4 @@
-export interface IMConnection {
+export interface ImConnection {
   uuid: string;
   host: string;
   port: number;

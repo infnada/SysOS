@@ -12,7 +12,7 @@ import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
 export class SysosModalMonitorImportComponent implements OnInit {
   @Input() connection: any;
 
-  private MonitorService;
+  private Monitor;
   NETDATA;
   Math = Math;
 
@@ -31,7 +31,7 @@ export class SysosModalMonitorImportComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.MonitorService = this.serviceInjector.get('SysosAppMonitorService');
+    this.Monitor = this.serviceInjector.get('SysosAppMonitorService');
 
     // https://github.com/anyOpsOS/anyOpsOS/issues/3
     setTimeout(() => {
@@ -97,7 +97,7 @@ export class SysosModalMonitorImportComponent implements OnInit {
 
     this.activeModal.close();
 
-    this.MonitorService.connect({
+    this.Monitor.connect({
       description: 'Netdata Snapshot',
       url: this.fileResult.server,
       credential: '',

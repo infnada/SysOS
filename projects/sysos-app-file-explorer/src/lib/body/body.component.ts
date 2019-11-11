@@ -24,8 +24,6 @@ export class BodyComponent implements OnDestroy, OnInit {
 
   private destroySubject$: Subject<void> = new Subject();
 
-  reloadPathSubscription: Subscription;
-
   currentPath: string;
   currentData: SysOSFile[];
 
@@ -45,7 +43,7 @@ export class BodyComponent implements OnDestroy, OnInit {
               private Applications: SysosLibApplicationService,
               private FileExplorer: SysosAppFileExplorerService) {
 
-    this.reloadPathSubscription = this.FileSystemUi.getObserverRefreshPath().pipe(takeUntil(this.destroySubject$)).subscribe(path => {
+    this.FileSystemUi.getObserverRefreshPath().pipe(takeUntil(this.destroySubject$)).subscribe(path => {
       if (path === this.currentPath) this.reloadPath();
     });
   }

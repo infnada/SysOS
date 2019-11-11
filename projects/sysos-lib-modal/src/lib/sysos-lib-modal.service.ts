@@ -159,7 +159,7 @@ export class SysosLibModalService {
    * Check if modal is opened
    */
   isModalOpened(selector: string) {
-    if (this.modalInstances[selector]._contentRef) return true;
+    if (this.modalInstances[selector] && this.modalInstances[selector]._contentRef) return true;
     return false;
   }
 

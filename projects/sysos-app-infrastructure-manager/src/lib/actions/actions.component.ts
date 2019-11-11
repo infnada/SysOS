@@ -6,7 +6,7 @@ import {Application} from '@sysos/lib-application';
 import {SysosLibUtilsService} from '@sysos/lib-utils';
 
 import {SysosAppInfrastructureManagerService} from '../services/sysos-app-infrastructure-manager.service';
-import {IMConnection} from "../types/imconnection";
+import {ImConnection} from "../types/im-connection";
 
 @Component({
   selector: 'saim-actions',
@@ -28,7 +28,7 @@ export class ActionsComponent implements OnDestroy {
     this.destroySubject$.next();
   }
 
-  getActiveConnection(): IMConnection {
+  getActiveConnection(): ImConnection {
     return this.InfrastructureManager.getActiveConnection();
   }
 

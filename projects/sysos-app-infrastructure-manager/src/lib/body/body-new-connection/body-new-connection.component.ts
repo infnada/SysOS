@@ -10,7 +10,8 @@ import {SysosLibUtilsService} from '@sysos/lib-utils';
 import {Credential} from '@sysos/app-credentials-manager';
 
 import {SysosAppInfrastructureManagerService} from '../../services/sysos-app-infrastructure-manager.service';
-import {IMConnection} from '../../types/imconnection';
+import {ImConnection} from '../../types/im-connection';
+import {SysosAppInfrastructureManagerNodeGraphService} from "../../services/sysos-app-infrastructure-manager-node-graph.service";
 
 @Component({
   selector: 'saim-body-new-connection',
@@ -33,7 +34,8 @@ export class BodyNewConnectionComponent implements OnInit, OnDestroy {
               private serviceInjector: SysosLibServiceInjectorService,
               private Modal: SysosLibModalService,
               private Utils: SysosLibUtilsService,
-              private InfrastructureManager: SysosAppInfrastructureManagerService) {
+              private InfrastructureManager: SysosAppInfrastructureManagerService,
+              private InfrastructureManagerNodeGraph: SysosAppInfrastructureManagerNodeGraphService) {
 
     this.CredentialsManager = this.serviceInjector.get('SysosAppCredentialsManagerService');
     this.CredentialsManager.credentials.pipe(takeUntil(this.destroySubject$)).subscribe(credentials => this.credentials = credentials);
@@ -97,7 +99,7 @@ export class BodyNewConnectionComponent implements OnInit, OnDestroy {
     // stop here if form is invalid
     if (this.connectionForm.invalid) return;
 
-    this.Modal.openLittleModal('PLEASE WAIT', (saveOnly ? 'Saving connection...' : 'Connecting to server...'), '.window--monitor .window__main', 'plain').then(() => {
+    this.Modal.openLittleModal('PLEASE WAIT', (saveOnly ? 'Saving connection...' : 'Connecting to server...'), '.window--infrastructure-manager .window__main', 'plain').then(() => {
       this.InfrastructureManager.connect(this.connectionForm.value, saveOnly);
       this.submitted = false;
 
@@ -109,7 +111,7 @@ export class BodyNewConnectionComponent implements OnInit, OnDestroy {
     this.Applications.openApplication('credentials-manager');
   }
 
-  getActiveConnection(returnMain: boolean = false): IMConnection {
+  getActiveConnection(returnMain: boolean = false): ImConnection {
     return this.InfrastructureManager.getActiveConnection(returnMain);
   }
 
@@ -120,11 +122,11 @@ export class BodyNewConnectionComponent implements OnInit, OnDestroy {
     this.Utils.scrollTo('infrastructure-manager_main-body', true);
   }
 
-  setWeaveScopeNodes() {
-    return this.InfrastructureManager.setWeaveScopeNodes();
+  setNodeGraphNodes() {
+    return this.InfrastructureManagerNodeGraph.setNodeGraphNodes();
   }
 
   selectedNodeChange($event) {
-    return this.InfrastructureManager.selectedNodeChange($event);
+    return this.InfrastructureManagerNodeGraph.selectedNodeChange($event);
   }
 }

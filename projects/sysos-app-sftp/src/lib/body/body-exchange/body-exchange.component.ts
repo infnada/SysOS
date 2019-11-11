@@ -1,6 +1,6 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 
-import {Subject, Subscription} from 'rxjs';
+import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
 import {SysosLibLoggerService} from '@sysos/lib-logger';
@@ -21,10 +21,6 @@ export class BodyExchangeComponent implements OnDestroy, OnInit {
 
   private destroySubject$: Subject<void> = new Subject();
 
-  private downloadRemoteFileSubscription: Subscription;
-  private uploadToRemoteSubscription: Subscription;
-  private uploadToSysOSSubscription: Subscription;
-  private fileProgressSubscription: Subscription;
   private activeConnection: string;
   private currentLocalPath: string;
   private currentRemotePath: string;
@@ -47,7 +43,7 @@ export class BodyExchangeComponent implements OnDestroy, OnInit {
               private SftpServer: SysosAppSftpServerService) {
 
     // Watcher sent by FileComponent
-    this.downloadRemoteFileSubscription = this.FileSystemUi.getObserverDownloadRemoteFile().pipe(takeUntil(this.destroySubject$)).subscribe((data) => {
+    this.FileSystemUi.getObserverDownloadRemoteFile().pipe(takeUntil(this.destroySubject$)).subscribe((data) => {
       if (data.applicationId === 'sftp#server') {
         this.filesExchange.push({
           uuid: data.connectionUuid,
@@ -68,7 +64,7 @@ export class BodyExchangeComponent implements OnDestroy, OnInit {
     });
 
     // Watcher sent by FileComponent
-    this.uploadToRemoteSubscription = this.FileSystemUi.getObserverUploadToRemote().pipe(takeUntil(this.destroySubject$)).subscribe((data) => {
+    this.FileSystemUi.getObserverUploadToRemote().pipe(takeUntil(this.destroySubject$)).subscribe((data) => {
       if (data.applicationId === 'sftp#server') {
         this.filesExchange.push({
           uuid: this.activeConnection,
@@ -89,7 +85,7 @@ export class BodyExchangeComponent implements OnDestroy, OnInit {
     });
 
     // Watcher sent by SftpBodyLocal
-    this.uploadToSysOSSubscription = this.FileSystemUi.getObserverUploadToSysOS().pipe(takeUntil(this.destroySubject$)).subscribe((data) => {
+    this.FileSystemUi.getObserverUploadToSysOS().pipe(takeUntil(this.destroySubject$)).subscribe((data) => {
       console.log(data.file);
       let percentage = 0;
 
@@ -128,7 +124,7 @@ export class BodyExchangeComponent implements OnDestroy, OnInit {
       }
     });
 
-    this.fileProgressSubscription = this.SftpServer.getObserverFileProgress().pipe(takeUntil(this.destroySubject$)).subscribe((data) => {
+    this.SftpServer.getObserverFileProgress().pipe(takeUntil(this.destroySubject$)).subscribe((data) => {
 
       // Get path without filename
       if (data.progress === 100 && data.exchange === 'download') {

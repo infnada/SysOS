@@ -15,20 +15,9 @@ import {SysosLibExtLzStringService} from '@sysos/lib-ext-lz-string';
 
 import {SysosLibLoggerService} from '@sysos/lib-logger';
 import {SysosLibModalService} from '@sysos/lib-modal';
+import {NetdataConnection} from "./types/netdata-connection";
 
 let NETDATA = null;
-
-interface NetdataConnection {
-    options: any;
-    netdataDashboard: any;
-    menus: any;
-    returnFromHighlight: any;
-    urlOptions: any;
-    snapshotOptions: any;
-    customInfo: boolean;
-    chartsDiv: ElementRef;
-    NETDATA: any;
-}
 
 @Injectable({
   providedIn: 'root'

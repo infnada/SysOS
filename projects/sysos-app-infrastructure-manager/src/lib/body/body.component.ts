@@ -1,6 +1,7 @@
 import {Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {FlatTreeControl} from '@angular/cdk/tree';
-import {Subject, Subscription} from 'rxjs';
+
+import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
 import {MatTreeFlatDataSource, MatTreeFlattener, MatMenuTrigger} from '@sysos/lib-angular-material';
@@ -12,8 +13,9 @@ import {SysosAppInfrastructureManagerService} from '../services/sysos-app-infras
 import {SysosAppInfrastructureManagerContextMenusService} from '../services/sysos-app-infrastructure-manager-context-menus.service';
 import {SysosAppInfrastructureNetappService} from '../services/netapp/sysos-app-infrastructure-netapp.service';
 import {SysosAppInfrastructureVmwareService} from '../services/vmware/sysos-app-infrastructure-vmware.service';
-import {IMConnection} from '../types/imconnection';
-import {IMNode} from '../types/imnode';
+import {SysosAppInfrastructureManagerTreeDataService} from "../services/sysos-app-infrastructure-manager-tree-data.service";
+import {ImConnection} from '../types/im-connection';
+import {ImTreeNode} from '../types/im-tree-node';
 
 interface InfrastructureManagerFlatNode {
   expandable: boolean;
@@ -32,7 +34,6 @@ export class BodyComponent implements OnInit, OnDestroy {
   @Input() application: Application;
 
   private destroySubject$: Subject<void> = new Subject();
-  private connectGetDataSubscription: Subscription;
 
   activeConnection: string;
   activeView: {
@@ -56,6 +57,7 @@ export class BodyComponent implements OnInit, OnDestroy {
 
   constructor(private Utils: SysosLibUtilsService,
               private InfrastructureManager: SysosAppInfrastructureManagerService,
+              private InfrastructureManagerTreeData: SysosAppInfrastructureManagerTreeDataService,
               private InfrastructureContextMenus: SysosAppInfrastructureManagerContextMenusService,
               private InfrastructureManagerNetApp: SysosAppInfrastructureNetappService,
               private InfrastructureManagerVMWare: SysosAppInfrastructureVmwareService) {
@@ -64,7 +66,7 @@ export class BodyComponent implements OnInit, OnDestroy {
      * @description Required to avoid circular dependency
      * @link{SysosAppInfrastructureManagerService#getObserverConnectGetData}
      */
-    this.connectGetDataSubscription = this.InfrastructureManager.getObserverConnectGetData().pipe(takeUntil(this.destroySubject$)).subscribe((connection) => {
+    this.InfrastructureManager.getObserverConnectGetData().pipe(takeUntil(this.destroySubject$)).subscribe((connection) => {
       if (connection.type === 'netapp') this.InfrastructureManagerNetApp.getNetAppData(connection);
       if (connection.type === 'vmware') this.InfrastructureManagerVMWare.getVMWareData(connection);
     });
@@ -80,10 +82,10 @@ export class BodyComponent implements OnInit, OnDestroy {
       this.activeConnection = activeConnection;
 
       if (this.activeConnection !== null && this.getActiveConnection(true).state === 'disconnected') {
-        setTimeout(() => this.Utils.scrollTo('monitor_main-body', true), 100);
+        setTimeout(() => this.Utils.scrollTo('infrastructure-manager_main-body', true), 100);
       }
     });
-    this.InfrastructureManager.treeData.pipe(takeUntil(this.destroySubject$)).subscribe(data => {
+    this.InfrastructureManagerTreeData.treeData.pipe(takeUntil(this.destroySubject$)).subscribe(data => {
       this.dataSource.data = data;
       this.treeControl.expandAll();
     });
@@ -109,7 +111,7 @@ export class BodyComponent implements OnInit, OnDestroy {
     };
   }
 
-  private transformer(node: IMNode, level: number)  {
+  private transformer(node: ImTreeNode, level: number)  {
     return {
       expandable: !!node.children && node.children.length > 0,
       name: node.name,
@@ -122,7 +124,7 @@ export class BodyComponent implements OnInit, OnDestroy {
   /**
    * ContextMenu
    */
-  treeContextMenuItems(item: IMNode) {
+  treeContextMenuItems(item: ImTreeNode) {
     if (item.type === 'netapp') return this.contextMenus.svContextMenu;
     if (item.type === 'volume') return this.contextMenus.volumeContextMenu;
     if (item.type === 'snapshot') return this.contextMenus.volumeSnapshotContextMenu;
@@ -140,7 +142,7 @@ export class BodyComponent implements OnInit, OnDestroy {
     if (item.type === 'ResourcePool') return this.contextMenus.resourcePoolContextMenu;
   }
 
-  onTreeContextMenu(event: MouseEvent, node: IMNode): void {
+  onTreeContextMenu(event: MouseEvent, node: ImTreeNode): void {
     event.preventDefault();
     event.stopPropagation();
     this.contextMenuPosition.x = event.clientX + 'px';
@@ -149,7 +151,7 @@ export class BodyComponent implements OnInit, OnDestroy {
     this.contextMenuTree.openMenu();
   }
 
-  checkIfDisabled(item: ContextMenuItem, node: IMNode): boolean {
+  checkIfDisabled(item: ContextMenuItem, node: ImTreeNode): boolean {
     if (item.disabled) return item.disabled(node);
     return false;
   }
@@ -164,12 +166,12 @@ export class BodyComponent implements OnInit, OnDestroy {
     this.viewSide = !this.viewSide;
   }
 
-  setActiveConnection(connection: IMConnection | string): void {
+  setActiveConnection(connection: ImConnection | string): void {
     if (typeof connection === 'string') return this.InfrastructureManager.setActiveConnection(connection);
     this.InfrastructureManager.setActiveConnection(connection.uuid);
   }
 
-  getActiveConnection(returnMain: boolean = false): IMConnection {
+  getActiveConnection(returnMain: boolean = false): ImConnection {
     return this.InfrastructureManager.getActiveConnection(returnMain);
   }
 

@@ -27,7 +27,7 @@
 
       <mat-form-field class="w-100">
         <input matInput placeholder="Credential Type" aria-label="Credential Type" [matAutocomplete]="auto" formControlName="type">
-        <mat-autocomplete #auto="matAutocomplete">
+        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
           <mat-option value="basic"><span>Username and Password</span><small class="ml-3">Basic Username/Password credential</small></mat-option>
           <mat-option value="token"><span>Secret text</span><small class="ml-3">A token such as an API token (e.g. a GitHub personal access token)</small></mat-option>
           <mat-option value="file"><span>Secret file</span><small class="ml-3">Which is essentially secret content in a file</small></mat-option>

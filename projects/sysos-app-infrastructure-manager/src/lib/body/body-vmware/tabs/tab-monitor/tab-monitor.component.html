@@ -1,34 +1,43 @@
-<div class="monitor_charts">
-  <section class="chart_panel">
-    <h5>CPU</h5>
-    <div data-netdata="system.cpu" data-chart-library="dygraph" data-width="100%" data-height="99"
-         data-after="-300" data-dygraph-drawaxis="false" data-host="https://atlanta.my-netdata.io"
-         data-dt-element-name="time203" class="netdata-container-with-legend"
-         style="width: 100%; height: 99px;"></div>
-    <div data-netdata="system.load" data-chart-library="dygraph" data-width="100%" data-height="99"
-         data-after="-300" data-dygraph-drawaxis="false" data-host="https://atlanta.my-netdata.io"
-         data-dt-element-name="time203" class="netdata-container-with-legend"
-         style="width: 100%; height: 99px;"></div>
-  </section>
-  <section class="chart_panel">
-    <h5>I/O</h5>
-    <div data-netdata="system.io" data-chart-library="dygraph" data-width="100%" data-height="99"
-         data-after="-300" data-dygraph-drawaxis="false" data-host="https://atlanta.my-netdata.io"
-         data-dt-element-name="time203" class="netdata-container-with-legend"
-         style="width: 100%; height: 99px;"></div>
-  </section>
-  <section class="chart_panel">
-    <h5>Memory</h5>
-    <div data-netdata="system.ram" data-chart-library="dygraph" data-width="100%" data-height="99"
-         data-after="-300" data-dygraph-drawaxis="false" data-host="https://atlanta.my-netdata.io"
-         data-dt-element-name="time203" class="netdata-container-with-legend"
-         style="width: 100%; height: 99px;"></div>
-  </section>
-  <section class="chart_panel">
-    <h5>Network</h5>
-    <div data-netdata="system.net" data-chart-library="dygraph" data-width="100%" data-height="99"
-         data-after="-300" data-dygraph-drawaxis="false" data-host="https://atlanta.my-netdata.io"
-         data-dt-element-name="time203" class="netdata-container-with-legend"
-         style="width: 100%; height: 99px;"></div>
-  </section>
-</div>
+<ng-container *ngIf="!monitorConnection">
+  <div class="col text-center mt-4">
+    <button class="btn" type="button" mat-flat-button color="primary" (click)="manageMonitors()">Enable advance monitor</button>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="monitorConnection">
+  <div class="monitor_charts">
+    <section class="chart_panel">
+      <h5>CPU</h5>
+      <div data-netdata="system.cpu" data-chart-library="dygraph" data-width="100%" data-height="99"
+           data-after="-300" data-dygraph-drawaxis="false"
+           data-dt-element-name="time203" class="netdata-container-with-legend"
+           style="width: 100%; height: 99px;"></div>
+      <div data-netdata="system.load" data-chart-library="dygraph" data-width="100%" data-height="99"
+           data-after="-300" data-dygraph-drawaxis="false"
+           data-dt-element-name="time203" class="netdata-container-with-legend"
+           style="width: 100%; height: 99px;"></div>
+    </section>
+    <section class="chart_panel">
+      <h5>I/O</h5>
+      <div data-netdata="system.io" data-chart-library="dygraph" data-width="100%" data-height="99"
+           data-after="-300" data-dygraph-drawaxis="false"
+           data-dt-element-name="time203" class="netdata-container-with-legend"
+           style="width: 100%; height: 99px;"></div>
+    </section>
+    <section class="chart_panel">
+      <h5>Memory</h5>
+      <div data-netdata="system.ram" data-chart-library="dygraph" data-width="100%" data-height="99"
+           data-after="-300" data-dygraph-drawaxis="false"
+           data-dt-element-name="time203" class="netdata-container-with-legend"
+           style="width: 100%; height: 99px;"></div>
+    </section>
+    <section class="chart_panel">
+      <h5>Network</h5>
+      <div data-netdata="system.net" data-chart-library="dygraph" data-width="100%" data-height="99"
+           data-after="-300" data-dygraph-drawaxis="false"
+           data-dt-element-name="time203" class="netdata-container-with-legend"
+           style="width: 100%; height: 99px;"></div>
+    </section>
+  </div>
+</ng-container>
+

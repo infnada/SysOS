@@ -5,17 +5,22 @@ import {ToastrService} from 'ngx-toastr';
 import {SysosLibLoggerService} from '@sysos/lib-logger';
 
 import {SysOSFile} from '@sysos/lib-types';
+import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
 import {SysosLibFileSystemService} from '@sysos/lib-file-system';
 import {SysosLibModalService} from '@sysos/lib-modal';
 import {SysosLibVmwareService} from '@sysos/lib-vmware';
 import {SysosLibNetappService} from '@sysos/lib-netapp';
+import {ImDataObject, NetAppVolume, NetAppVserver, VMWareDatastore} from '@sysos/app-infrastructure-manager';
 
 import {SysosAppDatastoreExplorerService} from './sysos-app-datastore-explorer.service';
+import {DatastoreExplorerConnection} from '../types/datastore-explorer-connection';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SysosAppDatastoreExplorerServerService {
+  private InfrastructureManagerObjectHelper;
+
   private subjectGoPathBack = new Subject<any>();
   private subjectFileProgress = new Subject<any>();
 
@@ -36,11 +41,14 @@ export class SysosAppDatastoreExplorerServerService {
 
   constructor(private logger: SysosLibLoggerService,
               private Toastr: ToastrService,
+              private serviceInjector: SysosLibServiceInjectorService,
               private FileSystem: SysosLibFileSystemService,
               private Modal: SysosLibModalService,
               private VMWare: SysosLibVmwareService,
               private NetApp: SysosLibNetappService,
               private DatastoreExplorer: SysosAppDatastoreExplorerService) {
+    this.InfrastructureManagerObjectHelper = this.serviceInjector.get('SysosAppInfrastructureManagerObjectHelperService');
+
     this.dataStore = {currentPath: '/', currentData: [], viewAsList: false, search: null};
     this.$currentPath = new BehaviorSubject('/') as BehaviorSubject<string>;
     this.$currentData = new BehaviorSubject([]) as BehaviorSubject<SysOSFile[]>;
@@ -50,7 +58,6 @@ export class SysosAppDatastoreExplorerServerService {
     this.currentData = this.$currentData.asObservable();
     this.viewAsList = this.$viewAsList.asObservable();
     this.search = this.$search.asObservable();
-
   }
 
   downloadFileToSysOS(src: string, dst: string, connectionUuid: string): void {
@@ -59,34 +66,42 @@ export class SysosAppDatastoreExplorerServerService {
   }
 
   reloadPath(connectionUuid: string, path?: string): void {
-    this.Modal.openLittleModal('PLEASE WAIT', 'Getting data...', '.window--datastore-explorer .window__main', 'plain');
+    const connection: DatastoreExplorerConnection = this.DatastoreExplorer.getConnectionByUuid(connectionUuid);
 
-    Promise.resolve().then(() => {
-      if (this.DatastoreExplorer.getConnectionByUuid(connectionUuid).type === 'vmware') {
+    this.Modal.openLittleModal('PLEASE WAIT', 'Getting data...', '.window--datastore-explorer .window__main', 'plain').then(() => {
+
+      if (connection.type === 'vmware') {
+        const datastore: ImDataObject & { info: { data: VMWareDatastore } } = connection.data.obj;
+
         return this.VMWare.getFilesDataFromDatastore(
-          this.DatastoreExplorer.getConnectionByUuid(connectionUuid),
-          `datastoreBrowser-${this.DatastoreExplorer.getConnectionByUuid(connectionUuid).data.datastore.info.obj.name}`,
-          this.DatastoreExplorer.getConnectionByUuid(connectionUuid).data.datastore.name,
+          connection,
+          `datastoreBrowser-${datastore.info.obj.name}`,
+          datastore.name,
           (path ? path : this.dataStore.currentPath)
         );
       }
-      if (this.DatastoreExplorer.getConnectionByUuid(connectionUuid).type === 'netapp') {
+
+      if (connection.type === 'netapp') {
+        const volume: ImDataObject & { info: { data: NetAppVolume } } = connection.data.obj;
+        const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(connectionUuid, 'vserver', volume.info.obj.name);
+
         return this.NetApp.getVolumeFiles(
-          this.DatastoreExplorer.getConnectionByUuid(connectionUuid).credential,
-          this.DatastoreExplorer.getConnectionByUuid(connectionUuid).host,
-          this.DatastoreExplorer.getConnectionByUuid(connectionUuid).port,
-          this.DatastoreExplorer.getConnectionByUuid(connectionUuid).data.volume['volume-id-attributes']['owning-vserver-name'],
-          this.DatastoreExplorer.getConnectionByUuid(connectionUuid).data.volume['volume-id-attributes'].name,
+          connection.credential,
+          connection.host,
+          connection.port,
+          vServer.name,
+          volume.name,
           (path ? path : this.dataStore.currentPath)
         );
       }
+
     }).then((FilesDataFromDatastoreResult) => {
       if (FilesDataFromDatastoreResult.status === 'error') throw new Error('Failed to get Datastore files');
 
       let obj;
       let returnData;
 
-      if (this.DatastoreExplorer.getConnectionByUuid(connectionUuid).type === 'vmware') {
+      if (connection.type === 'vmware') {
         obj = FilesDataFromDatastoreResult.data.data[0].propSet.info.result.file;
 
         delete obj.datastore;
@@ -111,7 +126,7 @@ export class SysosAppDatastoreExplorerServerService {
         });
       }
 
-      if (this.DatastoreExplorer.getConnectionByUuid(connectionUuid).type === 'netapp') {
+      if (connection.type === 'netapp') {
         obj = FilesDataFromDatastoreResult.data;
         returnData = Object.keys(obj).map((key) => {
           console.log(obj, key, obj[key]);

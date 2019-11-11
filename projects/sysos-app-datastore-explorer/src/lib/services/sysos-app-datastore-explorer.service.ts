@@ -69,10 +69,10 @@ export class SysosAppDatastoreExplorerService {
     this.$viewExchange.next(Object.assign({}, this.dataStore).viewExchange);
   }
 
-  initConnection(uuid): Promise<any> {
+  private initConnection(uuid): Promise<any> {
 
     if (this.getConnectionByUuid(uuid).type === 'vmware') {
-      this.Modal.openLittleModal('PLEASE WAIT', 'Connecting to Datastore...', '.window--datastore-explorer .window__main', 'plain');
+      this.Modal.changeModalText('Connecting to Datastore...', '.window--datastore-explorer .window__main');
       return this.VMWare.connectvCenterSoap(this.getConnectionByUuid(uuid)).then((data) => {
         if (data.status === 'error') throw new Error('Failed to connect to vCenter');
 
@@ -150,11 +150,7 @@ export class SysosAppDatastoreExplorerService {
 
     this.Modal.openRegisteredModal('question', '.window--datastore-explorer .window__main',
       {
-        title: `Delete connection ${this.getConnectionByUuid(uuid).type}` === 'vmware' ?
-          this.getConnectionByUuid(uuid).data.datastore.info.obj.name :
-          this.getConnectionByUuid(uuid).type === 'netapp' ?
-            this.getConnectionByUuid(uuid).data.volume['volume-id-attributes'].name :
-            null,
+        title: `Delete connection ${this.getConnectionByUuid(uuid).data.obj.info.obj.name}`,
         text: 'Remove the selected connection from the inventory?'
       }
     ).then((modalInstance) => {

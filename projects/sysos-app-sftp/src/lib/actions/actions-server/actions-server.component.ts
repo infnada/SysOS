@@ -1,6 +1,6 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 
-import {Subject, Subscription} from 'rxjs';
+import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
 import {Application} from '@sysos/lib-application';
@@ -21,9 +21,6 @@ export class ActionsServerComponent implements OnDestroy, OnInit {
 
   private destroySubject$: Subject<void> = new Subject();
 
-  goPathBackSubscription: Subscription;
-  goToPathSubscription: Subscription;
-
   currentPath: string;
   currentData: SysOSFile[];
   viewAsList: boolean;
@@ -36,11 +33,11 @@ export class ActionsServerComponent implements OnDestroy, OnInit {
               private Sftp: SysosAppSftpService,
               private SftpServer: SysosAppSftpServerService) {
 
-    this.goPathBackSubscription = this.SftpServer.getObserverGoPathBack().pipe(takeUntil(this.destroySubject$)).subscribe(() => {
+    this.SftpServer.getObserverGoPathBack().pipe(takeUntil(this.destroySubject$)).subscribe(() => {
       this.goPathBack();
     });
 
-    this.goToPathSubscription = this.FileSystemUi.getObserverGoToPath().pipe(takeUntil(this.destroySubject$)).subscribe((data) => {
+    this.FileSystemUi.getObserverGoToPath().pipe(takeUntil(this.destroySubject$)).subscribe((data) => {
       if (data.application === 'sftp#server') this.goToPath(data.path);
     });
   }

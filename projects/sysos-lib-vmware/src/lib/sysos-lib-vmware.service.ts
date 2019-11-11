@@ -2377,7 +2377,8 @@ export class SysosLibVmwareService {
           type: 'VirtualMachine',
           all: false,
           pathSet: ['name', 'parent', 'guest', 'runtime.powerState', 'runtime.connectionState', 'runtime.faultToleranceState',
-            'config.uuid', 'summary.config.vmPathName', 'summary.config.template', 'datastore', 'layout', 'config.files.logDirectory',
+            'config.uuid', 'summary.quickStats.guestMemoryUsage', 'summary.config.memorySizeMB', 'summary.quickStats.overallCpuUsage', 'summary.runtime.maxCpuUsage',
+            'summary.config.vmPathName', 'summary.config.template', 'datastore', 'layout', 'config.files.logDirectory',
             'config.hardware.device', 'resourcePool', 'runtime.host', 'config.version', 'config.changeTrackingEnabled', 'config.ftInfo',
             'config.hardware.numCPU', 'config.hardware.memoryMB', 'config.files.snapshotDirectory', 'config.extraConfig', 'storage.perDatastoreUsage',
             'snapshot', 'layoutEx', 'config.guestId', 'config.annotation', 'customValue', 'parentVApp', 'runtime.consolidationNeeded',
@@ -2397,15 +2398,15 @@ export class SysosLibVmwareService {
             'configManager.storageSystem', 'hardware.cpuInfo.numCpuCores', 'hardware.cpuInfo.numCpuThreads', 'runtime', 'config.vsanHostConfig.clusterInfo'
           ]
         },
-        {
+        /*{
           type: 'HostStorageSystem',
           all: false,
           pathSet: ['storageDeviceInfo', 'fileSystemVolumeInfo']
-        },
+        },*/
         {
           type: 'Datastore',
           all: false,
-          pathSet: ['info', 'host', 'summary.accessible', 'summary.capacity', 'summary.multipleHostAccess', 'vm', 'capability', 'summary.type']
+          pathSet: ['info', 'host', 'summary.accessible', 'summary.capacity', 'summary.freeSpace', 'summary.multipleHostAccess', 'vm', 'capability', 'summary.type']
         },
         {
           type: 'ResourcePool',

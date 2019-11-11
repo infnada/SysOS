@@ -222,7 +222,7 @@ export class SysosAppInfrastructureNetappBackupService {
     this.logger.debug('Infrastructure Manager', 'Launching VM Backup', arguments);
 
     // TODO: ManagedObjectReference is an array even if all VM files are in same datastore
-    if (!this.InfrastructureManager.getLinkByVMwareDatastore(connectionUuid, vm.info.data.datastore.ManagedObjectReference[0].name)) {
+    /*if (!this.InfrastructureManager.getLinkByVMwareDatastore(connectionUuid, vm.info.data.datastore.ManagedObjectReference[0].name)) {
       this.Modal.openLittleModal(
         'Error while creating Backup',
         'Not found any compatible NetApp storage. Make sure VMs that you want to backup are inside a NetApp volume and this is managed by SysOS.',
@@ -230,7 +230,7 @@ export class SysosAppInfrastructureNetappBackupService {
         'plain'
       ).then();
       return;
-    }
+    }*/
 
     this.InfrastructureManager.openBackupsManager(connectionUuid, 'backup_vm', {
       vm

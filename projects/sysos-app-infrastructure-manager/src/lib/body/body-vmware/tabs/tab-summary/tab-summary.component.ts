@@ -5,6 +5,7 @@ import {MatChipInputEvent} from '@sysos/lib-angular-material';
 import {SysosAppInfrastructureVmwareTemplateHelpersService} from '../../../../services/vmware/sysos-app-infrastructure-vmware-template-helpers.service';
 import {SysosAppInfrastructureManagerService} from '../../../../services/sysos-app-infrastructure-manager.service';
 import {VMWareObject} from '../../../../types/vmware-object';
+import {SysosAppInfrastructureManagerNodeGraphService} from "../../../../services/sysos-app-infrastructure-manager-node-graph.service";
 
 export interface Tag {
   name: string;
@@ -26,7 +27,8 @@ export class TabSummaryComponent implements OnInit {
   ];
 
   constructor(public VmwareTemplateHelpers: SysosAppInfrastructureVmwareTemplateHelpersService,
-              private InfrastructureManager: SysosAppInfrastructureManagerService) {
+              private InfrastructureManager: SysosAppInfrastructureManagerService,
+              private InfrastructureManagerNodeGraph: SysosAppInfrastructureManagerNodeGraphService) {
   }
 
   ngOnInit() {
@@ -60,11 +62,11 @@ export class TabSummaryComponent implements OnInit {
    * Weavescope graph
    */
 
-  setWeaveScopeNodes() {
-    return this.InfrastructureManager.setWeaveScopeNodes();
+  setNodeGraphNodes() {
+    return this.InfrastructureManagerNodeGraph.setNodeGraphNodes();
   }
 
   selectedNodeChange($event) {
-    return this.InfrastructureManager.selectedNodeChange($event);
+    return this.InfrastructureManagerNodeGraph.selectedNodeChange($event);
   }
 }

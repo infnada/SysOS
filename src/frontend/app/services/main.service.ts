@@ -2,11 +2,12 @@ import {Compiler, Injectable, Injector} from '@angular/core';
 
 import {BehaviorSubject} from 'rxjs';
 import {Socket} from 'ngx-socket-io';
-import {SysosLibLoggerService} from '@sysos/lib-logger';
 
+import {SysosLibLoggerService} from '@sysos/lib-logger';
 import {SysosLibModalService} from '@sysos/lib-modal';
 import {SysosLibApplicationService} from '@sysos/lib-application';
 import {SysosLibFileSystemService} from '@sysos/lib-file-system';
+import {SysOSFile} from '@sysos/lib-types';
 
 declare const SystemJS: any;
 
@@ -33,21 +34,28 @@ export class MainService {
               private socket: Socket) {
   }
 
-  getInstalledLibs(): Promise<null> {
+  getInstalledLibs(path = ''): Promise<null> {
     return new Promise((resolve, reject) => {
-      this.FileSystem.getFileSystemPath(null, '/bin/libs').subscribe(
-        (res: { data: { filename: string }[] }) => {
+      this.FileSystem.getFileSystemPath(null, '/bin/libs/' + path).subscribe(
+        (res: { data: SysOSFile[] }) => {
           this.logger.info('SysOs', 'Got Installed Libs successfully');
 
           const libPromises = [];
+          const libFolders = [];
 
           res.data.forEach((value) => {
-            if (value.filename.endsWith('.umd.js')) {
-              libPromises.push(this.loadLib(value));
+            if (this.FileSystem.getFileType(value.longname) === 'folder') {
+              libFolders.push(this.getInstalledLibs(value.filename + '/'));
+            } else {
+              if (value.filename.endsWith('.umd.js')) {
+                libPromises.push(this.loadLib(value, path));
+              }
             }
           });
 
           return Promise.all(libPromises).then(() => {
+            return Promise.all(libFolders);
+          }).then(() => {
             return resolve();
           });
 
@@ -59,9 +67,9 @@ export class MainService {
 
   }
 
-  loadLib(lib): Promise<null> {
+  loadLib(lib, path): Promise<null> {
     return new Promise((resolve) => {
-      SystemJS.import(`/api/file/${encodeURIComponent('/bin/libs/' + lib.filename)}`).then((moduleToCompile) => {
+      SystemJS.import(`/api/file/${encodeURIComponent('/bin/libs/' + path + lib.filename)}`).then(() => {
         return resolve();
       });
     });

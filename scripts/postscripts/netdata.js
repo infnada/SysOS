@@ -135,7 +135,7 @@ fs.readFile('dist/SysOS/filesystem/bin/libs/sysos-lib-ext-netdata.umd.js', 'utf8
 
   result = result.replace('this.chart.data_url', '(!NETDATA.connection || NETDATA.connection.type === \'netdata\' || NETDATA.connection.type === \'snapshot\' ? this.chart.data_url : this.chart.data_url.replace(\'api/v1/data\', \'api/monitor/data/\' + NETDATA.connection.uuid + \'/\' + NETDATA.connection.type + \'/\'))');
 
-  result = result.replace('key = key + \'.\' + _this.dataStore.netdataDashboard.sparklines_registry[key].count;', 'key = key + \'.\' + 1');
+  result = result.replace('key = key + \'.\' + _this_1.dataStore.connections[connection.uuid].netdataDashboard.sparklines_registry[key].count;', 'key = key + \'.\' + 1');
 
   result = result.replace(/this.timeoutId = undefined\$1;/g, 'NETDATA.globalSelectionSync.timeoutId = undefined$1;');
 

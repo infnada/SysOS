@@ -1,6 +1,7 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 
-import {Subscription} from 'rxjs';
+import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 
 import {Application} from '@sysos/lib-application';
 import {SysOSFile} from '@sysos/lib-types';
@@ -15,11 +16,10 @@ import {DatastoreExplorerConnection} from '../../types/datastore-explorer-connec
   templateUrl: './actions-server.component.html',
   styleUrls: ['./actions-server.component.scss']
 })
-export class ActionsServerComponent implements OnInit {
+export class ActionsServerComponent implements OnDestroy, OnInit {
   @Input() application: Application;
 
-  goPathBackSubscription: Subscription;
-  goToPathSubscription: Subscription;
+  private destroySubject$: Subject<void> = new Subject();
 
   currentPath: string;
   currentData: SysOSFile[];
@@ -33,20 +33,24 @@ export class ActionsServerComponent implements OnInit {
               private DatastoreExplorer: SysosAppDatastoreExplorerService,
               private DatastoreExplorerServer: SysosAppDatastoreExplorerServerService) {
 
-    this.goPathBackSubscription = this.DatastoreExplorerServer.getObserverGoPathBack().subscribe(() => {
+    this.DatastoreExplorerServer.getObserverGoPathBack().pipe(takeUntil(this.destroySubject$)).subscribe(() => {
       this.goPathBack();
     });
 
-    this.goToPathSubscription = this.FileSystemUi.getObserverGoToPath().subscribe((data) => {
+    this.FileSystemUi.getObserverGoToPath().pipe(takeUntil(this.destroySubject$)).subscribe((data) => {
       if (data.application === 'datastore-explorer#server') this.goToPath(data.path);
     });
   }
 
   ngOnInit(): void {
-    this.DatastoreExplorerServer.currentPath.subscribe(path => this.currentPath = path);
-    this.DatastoreExplorerServer.currentData.subscribe(data => this.currentData = data);
-    this.DatastoreExplorerServer.viewAsList.subscribe(data => this.viewAsList = data);
-    this.DatastoreExplorerServer.search.subscribe(data => this.search = data);
+    this.DatastoreExplorerServer.currentPath.pipe(takeUntil(this.destroySubject$)).subscribe(path => this.currentPath = path);
+    this.DatastoreExplorerServer.currentData.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.currentData = data);
+    this.DatastoreExplorerServer.viewAsList.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.viewAsList = data);
+    this.DatastoreExplorerServer.search.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.search = data);
+  }
+
+  ngOnDestroy() {
+    this.destroySubject$.next();
   }
 
   getActiveConnection(): DatastoreExplorerConnection {

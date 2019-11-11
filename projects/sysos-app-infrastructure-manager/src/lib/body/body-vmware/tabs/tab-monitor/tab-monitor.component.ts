@@ -1,5 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
 
+import {NetdataConnection} from '@sysos/lib-ext-netdata';
+import {SysosLibApplicationService} from '@sysos/lib-application';
+
 import {SysosAppInfrastructureVmwareTemplateHelpersService} from '../../../../services/vmware/sysos-app-infrastructure-vmware-template-helpers.service';
 import {VMWareObject} from '../../../../types/vmware-object';
 
@@ -10,11 +13,17 @@ import {VMWareObject} from '../../../../types/vmware-object';
 })
 export class TabMonitorComponent implements OnInit {
   @Input() vmwareObject: VMWareObject;
+  @Input() monitorConnection: NetdataConnection;
 
-  constructor(public VmwareTemplateHelpers: SysosAppInfrastructureVmwareTemplateHelpersService) {
+  constructor(private Applications: SysosLibApplicationService,
+              public VmwareTemplateHelpers: SysosAppInfrastructureVmwareTemplateHelpersService) {
   }
 
   ngOnInit() {
+  }
+
+  manageMonitors() {
+    this.Applications.openApplication('monitor');
   }
 
 }

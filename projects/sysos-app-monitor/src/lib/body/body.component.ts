@@ -1,4 +1,7 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+
+import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 
 import {Application} from '@sysos/lib-application';
 import {SysosLibUtilsService} from '@sysos/lib-utils';
@@ -11,8 +14,10 @@ import {Netdata} from '../types/netdata';
   templateUrl: './body.component.html',
   styleUrls: ['./body.component.scss']
 })
-export class BodyComponent implements OnInit {
+export class BodyComponent implements OnDestroy, OnInit {
   @Input() application: Application;
+
+  private destroySubject$: Subject<void> = new Subject();
 
   activeConnection: string;
   viewSide: boolean = true;
@@ -24,14 +29,18 @@ export class BodyComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.Monitor.connections.subscribe(connections => this.connections = connections);
-    this.Monitor.activeConnection.subscribe(connection => {
+    this.Monitor.connections.pipe(takeUntil(this.destroySubject$)).subscribe(connections => this.connections = connections);
+    this.Monitor.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe(connection => {
       this.activeConnection = connection;
 
       if (this.activeConnection !== null && this.getActiveConnection().state === 'disconnected') {
         setTimeout(() => this.Utils.scrollTo('monitor_main-body', true), 100);
       }
     });
+  }
+
+  ngOnDestroy() {
+    this.destroySubject$.next();
   }
 
   getActiveConnection(): Netdata {

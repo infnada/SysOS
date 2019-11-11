@@ -5,7 +5,7 @@ import {Subject} from 'rxjs';
 import {Application} from '@sysos/lib-application';
 
 import {SysosAppInfrastructureManagerService} from '../services/sysos-app-infrastructure-manager.service';
-import {IMConnection} from '../types/imconnection';
+import {ImConnection} from '../types/im-connection';
 
 @Component({
   selector: 'saim-status',
@@ -29,7 +29,7 @@ export class StatusComponent implements OnInit, OnDestroy {
     this.InfrastructureManager.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe(activeConnection => this.activeConnection = activeConnection);
   }
 
-  getActiveConnection(returnMain): IMConnection {
+  getActiveConnection(returnMain): ImConnection {
     return this.InfrastructureManager.getActiveConnection(returnMain);
   }
 

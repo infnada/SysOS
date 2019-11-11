@@ -27,11 +27,11 @@ export class ActionsComponent implements OnDestroy {
   constructor(private Modal: SysosLibModalService,
               private Utils: SysosLibUtilsService,
               private Monitor: SysosAppMonitorService,
-              private NetdataService: SysosLibExtNetdataService) {
+              private Netdata: SysosLibExtNetdataService) {
 
     this.Monitor.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe(connection => this.activeConnection = connection);
 
-    this.NetdataService.connections.pipe(takeUntil(this.destroySubject$)).subscribe(connections => {
+    this.Netdata.connections.pipe(takeUntil(this.destroySubject$)).subscribe(connections => {
       this.connection = connections[this.activeConnection];
     });
 
@@ -118,7 +118,7 @@ export class ActionsComponent implements OnDestroy {
       this.NETDATA = this.connection.NETDATA;
       this.NETDATA.pause(() => {});
     } else {
-      this.connection = this.NetdataService.newDashboard({uuid: null});
+      this.connection = this.Netdata.newDashboard({uuid: null});
     }
 
     this.Modal.openRegisteredModal('monitor-import', '.window--monitor .window__main', {

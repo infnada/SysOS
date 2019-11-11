@@ -1,6 +1,6 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 
-import {Subject, Subscription} from 'rxjs';
+import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
 import {SysosLibFileSystemUiService} from '@sysos/lib-file-system-ui';
@@ -19,9 +19,6 @@ export class ActionsBodyComponent implements OnDestroy, OnInit {
 
   private destroySubject$: Subject<void> = new Subject();
 
-  goPathBackSubscription: Subscription;
-  goToPathSubscription: Subscription;
-
   currentPath: string;
   currentData: SysOSFile[];
   viewAsList: boolean;
@@ -33,11 +30,11 @@ export class ActionsBodyComponent implements OnDestroy, OnInit {
   constructor(private FileSystemUi: SysosLibFileSystemUiService,
               private FileExplorer: SysosAppFileExplorerService) {
 
-    this.goPathBackSubscription = this.FileExplorer.getObserverGoPathBack().pipe(takeUntil(this.destroySubject$)).subscribe(() => {
+    this.FileExplorer.getObserverGoPathBack().pipe(takeUntil(this.destroySubject$)).subscribe(() => {
       this.goPathBack();
     });
 
-    this.goToPathSubscription = this.FileSystemUi.getObserverGoToPath().pipe(takeUntil(this.destroySubject$)).subscribe((data) => {
+    this.FileSystemUi.getObserverGoToPath().pipe(takeUntil(this.destroySubject$)).subscribe((data) => {
       if (data.application === 'file-explorer') this.goToPath(data.path);
     });
   }

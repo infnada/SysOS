@@ -1,6 +1,9 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {MatMenuTrigger} from '@angular/material';
+import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 
+import {takeUntil} from 'rxjs/operators';
+import {Subject} from 'rxjs';
+
+import {MatMenuTrigger} from '@sysos/lib-angular-material';
 import {Application, SysosLibApplicationService} from '@sysos/lib-application';
 
 @Component({
@@ -8,8 +11,10 @@ import {Application, SysosLibApplicationService} from '@sysos/lib-application';
   templateUrl: './start-menu.component.html',
   styleUrls: ['./start-menu.component.scss']
 })
-export class StartMenuComponent implements OnInit {
+export class StartMenuComponent implements OnDestroy, OnInit {
   @ViewChild(MatMenuTrigger) contextMenuApp: MatMenuTrigger;
+
+  private destroySubject$: Subject<void> = new Subject();
 
   applications: Application[];
   taskbarItemOpen: string;
@@ -20,8 +25,12 @@ export class StartMenuComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.Applications.applications.subscribe(applications => this.applications = applications);
-    this.Applications.taskbarItemOpen.subscribe(applications => this.taskbarItemOpen = applications);
+    this.Applications.applications.pipe(takeUntil(this.destroySubject$)).subscribe(applications => this.applications = applications);
+    this.Applications.taskbarItemOpen.pipe(takeUntil(this.destroySubject$)).subscribe(applications => this.taskbarItemOpen = applications);
+  }
+
+  ngOnDestroy() {
+    this.destroySubject$.next();
   }
 
   openMenu(menu: string) {

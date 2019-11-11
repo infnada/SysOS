@@ -1,6 +1,6 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
-import {MatMenuTrigger} from '@angular/material';
 
+import {MatMenuTrigger} from '@sysos/lib-angular-material';
 import {Application, SysosLibApplicationService} from '@sysos/lib-application';
 import {ContextMenuItem} from '@sysos/lib-types';
 

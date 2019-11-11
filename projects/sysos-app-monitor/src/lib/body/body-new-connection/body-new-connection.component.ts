@@ -1,17 +1,29 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 
-import {Subject} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
+import {Observable, Subject} from 'rxjs';
+import {map, startWith, takeUntil} from 'rxjs/operators';
 
 import {Application, SysosLibApplicationService} from '@sysos/lib-application';
 import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
 import {SysosLibModalService} from '@sysos/lib-modal';
 import {SysosLibUtilsService} from '@sysos/lib-utils';
 import {Credential} from '@sysos/app-credentials-manager';
+import {VMWareObject} from '@sysos/app-infrastructure-manager';
 
 import {SysosAppMonitorService} from '../../services/sysos-app-monitor.service';
 import {Netdata} from '../../types/netdata';
+
+interface linkTo {
+  type: string;
+  nodes: VMWareObject[];
+}
+
+const _filter = (opt: VMWareObject[], value: string | VMWareObject): VMWareObject[] => {
+  const filterValue = (typeof value === 'string' ? value.toLowerCase() : value.name.toLowerCase());
+
+  return opt.filter(item => item.name.toLowerCase().indexOf(filterValue) === 0);
+};
 
 @Component({
   selector: 'samon-body-new-connection',
@@ -23,12 +35,17 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
 
   private destroySubject$: Subject<void> = new Subject();
   private CredentialsManager;
-  private InfrastructureManager;
+  private InfrastructureManagerNodeGraph;
+  private InfrastructureManagerObjectHelper;
 
   credentials: Credential[];
   connectionForm: FormGroup;
   submitted: boolean = false;
   newConnectionType: string = null;
+
+  linkGroups: linkTo[];
+
+  linkToOptions: Observable<linkTo[]>;
 
   constructor(private formBuilder: FormBuilder,
               private Applications: SysosLibApplicationService,
@@ -39,7 +56,13 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
 
     this.CredentialsManager = this.serviceInjector.get('SysosAppCredentialsManagerService');
     this.CredentialsManager.credentials.pipe(takeUntil(this.destroySubject$)).subscribe(credentials => this.credentials = credentials);
-    this.InfrastructureManager = this.serviceInjector.get('SysosAppInfrastructureManagerService');
+    this.InfrastructureManagerNodeGraph = this.serviceInjector.get('SysosAppInfrastructureManagerNodeGraphService');
+    this.InfrastructureManagerObjectHelper = this.serviceInjector.get('SysosAppInfrastructureManagerObjectHelperService');
+
+    this.linkGroups = [{
+      type: 'Virtual Machines',
+      nodes: this.InfrastructureManagerObjectHelper.getObjectByType('VirtualMachine')
+    }];
   }
 
   ngOnInit() {
@@ -51,11 +74,18 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
       ]],
       withCredential: [false],
       credential: [''],
+      linkTo: '',
       save: [true],
       autologin: [false],
       uuid: [null],
       type: [null]
     });
+
+    this.linkToOptions = this.connectionForm.get('linkTo')!.valueChanges
+      .pipe(
+        startWith(''),
+        map(value => this._filterGroup(value))
+      );
 
     this.Monitor.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe((activeConnection: string) => {
       if (!activeConnection) {
@@ -83,6 +113,20 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
   ngOnDestroy() {
     this.connectionForm.reset();
     this.destroySubject$.next();
+  }
+
+  private _filterGroup(value: string): linkTo[] {
+    if (value) {
+      return this.linkGroups
+        .map(group => ({type: group.type, nodes: _filter(group.nodes, value)}))
+        .filter(group => group.nodes.length > 0);
+    }
+
+    return this.linkGroups;
+  }
+
+  displayFn(node?: VMWareObject): string | undefined {
+    return node ? node.name : undefined;
   }
 
   get f() { return this.connectionForm.controls; }
@@ -122,10 +166,10 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
   }
 
   setWeaveScopeNodes() {
-    return this.InfrastructureManager.setWeaveScopeNodes();
+    return this.InfrastructureManagerNodeGraph.setWeaveScopeNodes();
   }
 
   selectedNodeChange($event) {
-    return this.InfrastructureManager.selectedNodeChange($event);
+    return this.InfrastructureManagerNodeGraph.selectedNodeChange($event);
   }
 }

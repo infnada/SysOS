@@ -29,7 +29,7 @@
     <mat-tab-group mat-stretch-tabs>
 
       <mat-tab label="Monitor" *ngIf="haveMonitor()">
-        <saim-tab-monitor [vmwareObject]="vmwareObject"></saim-tab-monitor>
+        <saim-tab-monitor [vmwareObject]="vmwareObject" [monitorConnection]="monitorConnection"></saim-tab-monitor>
       </mat-tab>
 
       <mat-tab>

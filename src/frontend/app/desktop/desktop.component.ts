@@ -1,7 +1,5 @@
 import {Component, OnInit} from '@angular/core';
 
-import {Subscription} from 'rxjs';
-
 import {SysosLibLoggerService} from '@sysos/lib-logger';
 import {SysosLibFileSystemService} from '@sysos/lib-file-system';
 import {SysosLibFileSystemUiService} from '@sysos/lib-file-system-ui';
@@ -15,8 +13,6 @@ import {SysOSFile} from '@sysos/lib-types';
   styleUrls: ['./desktop.component.scss']
 })
 export class DesktopComponent implements OnInit {
-  reloadPathSubscription: Subscription;
-
   openedApplications: Application[];
   taskbarItemOpen: string;
 
@@ -30,7 +26,7 @@ export class DesktopComponent implements OnInit {
               private FileSystemUi: SysosLibFileSystemUiService,
               private Applications: SysosLibApplicationService) {
 
-    this.reloadPathSubscription = this.FileSystemUi.getObserverRefreshPath().subscribe(path => {
+    this.FileSystemUi.getObserverRefreshPath().subscribe(path => {
       if (path === '/home/root/Desktop/') this.reloadPath();
     });
   }

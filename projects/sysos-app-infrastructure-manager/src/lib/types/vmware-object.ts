@@ -1,6 +1,8 @@
 export interface VMWareObject {
   name: string;
   info: {
+    uuid: string;
+    mainUuid?: string;
     name: string;
     type: string;
     obj: {

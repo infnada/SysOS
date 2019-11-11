@@ -17,140 +17,94 @@ export class SysosLibVmwareHelperService {
   }
 
   parseVMwareObject(data) {
+    // String
+    if (typeof data === 'string') {
+      return (data === 'true' ? true : data === 'false' ? false : data);
+    }
 
-    let newObj: any = {};
+    // Array
+    if (Array.isArray(data)) {
+      let newObj = [];
+      // Non standard arrays
 
-    // Is an object
-    // Have 2 props
-    // Has prop 'name' and has prop 'val'
-    if (data === Object(data) && Object.keys(data).length === 2 && data.hasOwnProperty('name') && data.hasOwnProperty('val')) {
-
-      if (data[data.name[0]] === undefined) {
-        newObj[data.name[0]] = this.parseVMwareObject(data.val);
-      } else {
-        newObj[data[data.name[0]]] = this.parseVMwareObject(data.val);
+      // Case 1
+      if (data.length === 1 && typeof data[0] === 'string') {
+        return this.parseVMwareObject(data[0]);
       }
 
-      return newObj;
-
-      // Is an object
-      // Have 2 props
-      // Has prop 'obj' and has prop 'propSet'
-    } else if (data === Object(data) && Object.keys(data).length === 2 && data.hasOwnProperty('$') && data.hasOwnProperty('_')) {
-
-      if (data.$.type) {
-        newObj.type = data.$.type;
-        newObj.name = data._;
-      } else {
-        newObj = data._;
+      // Case 2
+      if (data.length === 1 && data[0] === Object(data[0]) && Object.keys(data[0]).length === 2 && data[0].hasOwnProperty('$') && data[0].hasOwnProperty('_')) {
+        if (data[0].$.type) {
+          return {
+            type: data[0].$.type,
+            name: this.parseVMwareObject(data[0]._)
+          };
+        } else {
+          return this.parseVMwareObject(data[0]._);
+        }
       }
+
+      // Parse as normal data array
+      data.forEach((value, key) => {
+        newObj[key] = this.parseVMwareObject(value);
+      });
 
       return newObj;
     }
 
-    Object.entries(data).forEach(([key, value]: any) => {
+    // Object
+    if (data === Object(data)) {
+      let newObj: any = {};
+      // Non standard objects
 
-      // Is an object
-      // Have 2 props
-      // Has prop '$' and has prop '_'
-      if (value === Object(value) && Object.keys(value).length === 2 && value.hasOwnProperty('$') && value.hasOwnProperty('_')) {
-        if (value.$.type) {
-          newObj.type = value.$.type;
-          newObj.name = value._;
+      // Case 1
+      if (Object.keys(data).length === 2 && data.hasOwnProperty('name') && data.hasOwnProperty('val')) {
+        if (data[data.name[0]] === undefined) {
+          newObj[data.name[0]] = this.parseVMwareObject(data.val);
         } else {
-          newObj = value._;
+          console.log('ejhe,');
+          newObj[data[data.name[0]]] = this.parseVMwareObject(data.val);
         }
 
         return newObj;
+      }
 
-        // Is an array of 1 value as string
-      } else if (Array.isArray(value) && value.length === 1 && value[0] !== Object(value[0])) {
-        newObj[key] = (value[0] === 'true' ? true : value[0] === 'false' ? false : value[0]);
+      // Case 2
+      if (Object.keys(data).length === 2 && data.hasOwnProperty('$') && data.hasOwnProperty('_')) {
+        if (data.$.type) {
+          newObj.type = data.$.type;
+          newObj.name = data._;
+        } else {
+          newObj = data._;
+        }
 
-        // Is an array of 1 value as object
-      } else if (Array.isArray(value) && value.length === 1 && value[0] === Object(value[0])) {
-        newObj[key] = this.parseVMwareObject(value[0]);
-      } else if (value === Object(value) && Object.keys(value).length === 1 && value.hasOwnProperty('xsi:type')) {
-        newObj.xsi_type = value['xsi:type'];
-        // Do nothing
-
-        // Is an object
-      } else if (value === Object(value)) {
-        Object.entries(value).forEach(([k, v]: any) => {
-
-          // Is an array of 1 value as string
-          if (Array.isArray(v) && v.length === 1 && v[0] !== Object(v[0])) {
-            newObj[k] = (v[0] === 'true' ? true : v[0] === 'false' ? false : v[0]);
-
-            // Is an array of 1 value as object
-          } else if (Array.isArray(v) && v.length === 1 && v[0] === Object(v[0])) {
-            newObj[k] = this.parseVMwareObject(v[0]);
-
-          } else if (k === '$' && v === Object(v) && Object.keys(v).length === 1 && v.hasOwnProperty('xsi:type')) {
-            // console.log(v);// do nothing
-
-
-            // Is an object
-            // Have 2 props
-            // Has prop 'name' and has prop 'val'
-          } else if (v === Object(v) && Object.keys(v).length === 2 && v.hasOwnProperty('name') && v.hasOwnProperty('val')) {
-            newObj[v.name[0]] = this.parseVMwareObject(v.val[0]);
-
-            // Is an object
-            // Have 3 props
-            // Has prop 'name' and has prop 'val' and has prop 'op'
-          } else if (v === Object(v) && Object.keys(v).length === 3 && v.hasOwnProperty('name') && v.hasOwnProperty('val') && v.hasOwnProperty('op')) {
-            newObj[v.name[0]] = this.parseVMwareObject(v.val[0]);
-
-            // Is an object
-            // Have 2 props
-            // Has prop 'name' and has prop 'op'
-          } else if (v === Object(v) && Object.keys(v).length === 2 && v.hasOwnProperty('name') && v.hasOwnProperty('op')) {
-            newObj[v.name[0]] = null;
-
-            // Is array
-            // More than 1 length
-            // Are objects
-          } else if (Array.isArray(v) && v.length > 1 && v[0] === Object(v[0])) {
-            newObj[k] = v;
-
-            Object.entries(v).forEach(([sk, sv]) => {
-              newObj[k][sk] = this.parseVMwareObject(sv);
-            });
-
-            // Is an object
-          } else if (v === Object(v)) {
-            if (!newObj[key]) newObj[key] = [];
-
-            newObj[key][k] = this.parseVMwareObject(v);
-
-            // Is array of strings
-          } else if (typeof v === 'string') {
-            if (!newObj[key]) newObj[key] = [];
-            newObj[key][k] = newObj[k] = (v === 'true' ? true : v === 'false' ? false : v);
-
-          } else {
-            newObj[k] = v;
-            console.log(value, v, k, v === Object(v), v.length, v.hasOwnProperty('xsi:type'), Array.isArray(v), 'errrrrr parsing');
-          }
-
-        });
-
-        return newObj;
-
-      } else if (typeof value === 'string') {
-        newObj[key] = (value === 'true' ? true : value === 'false' ? false : value);
-        return newObj;
-      } else {
-
-        console.log(value, key, 'errrrrr2 parsing');
-        newObj[key] = value;
         return newObj;
       }
 
-    });
+      // Case 5
+      if (Object.keys(data).length === 1 && data.hasOwnProperty('$') && Object.keys(data['$']).length === 1 && data['$'].hasOwnProperty('xsi:type')) {
+        newObj.xsi_type = data['$']['xsi:type'];
 
-    return newObj;
+        return newObj;
+      }
+
+      // Parse as normal data object
+      Object.entries(data).forEach(([key, value]) => {
+
+        // Sub special Case 1
+        if (key === '$' && value === Object(value) && Object.keys(value).length === 1 && value.hasOwnProperty('xsi:type')) {
+          newObj.xsi_type = value['xsi:type'];
+          return;
+        }
+
+        newObj[key] = this.parseVMwareObject(value);
+      });
+
+      return newObj;
+    }
+
+    // Any other data type (boolean, number...)
+    return data;
 
   }
 

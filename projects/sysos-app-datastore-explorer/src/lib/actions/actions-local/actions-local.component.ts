@@ -1,6 +1,7 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 
-import {Subscription} from 'rxjs';
+import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 
 import {SysosLibFileSystemUiService} from '@sysos/lib-file-system-ui';
 import {Application} from '@sysos/lib-application';
@@ -8,17 +9,15 @@ import {SysOSFile} from '@sysos/lib-types';
 
 import {SysosAppDatastoreExplorerLocalService} from '../../services/sysos-app-datastore-explorer-local.service';
 
-
 @Component({
   selector: 'sade-actions-local',
   templateUrl: './actions-local.component.html',
   styleUrls: ['./actions-local.component.scss']
 })
-export class ActionsLocalComponent implements OnInit {
+export class ActionsLocalComponent implements OnDestroy, OnInit {
   @Input() application: Application;
 
-  goPathBackSubscription: Subscription;
-  goToPathSubscription: Subscription;
+  private destroySubject$: Subject<void> = new Subject();
 
   currentPath: string;
   currentData: SysOSFile[];
@@ -31,20 +30,24 @@ export class ActionsLocalComponent implements OnInit {
   constructor(private FileSystemUi: SysosLibFileSystemUiService,
               private DatastoreExplorerLocal: SysosAppDatastoreExplorerLocalService) {
 
-    this.goPathBackSubscription = this.DatastoreExplorerLocal.getObserverGoPathBack().subscribe(() => {
+    this.DatastoreExplorerLocal.getObserverGoPathBack().pipe(takeUntil(this.destroySubject$)).subscribe(() => {
       this.goPathBack();
     });
 
-    this.goToPathSubscription = this.FileSystemUi.getObserverGoToPath().subscribe((data) => {
+    this.FileSystemUi.getObserverGoToPath().pipe(takeUntil(this.destroySubject$)).subscribe((data) => {
       if (data.application === 'datastore-explorer#local') this.goToPath(data.path);
     });
   }
 
   ngOnInit(): void {
-    this.DatastoreExplorerLocal.currentPath.subscribe(path => this.currentPath = path);
-    this.DatastoreExplorerLocal.currentData.subscribe(data => this.currentData = data);
-    this.DatastoreExplorerLocal.viewAsList.subscribe(data => this.viewAsList = data);
-    this.DatastoreExplorerLocal.search.subscribe(data => this.search = data);
+    this.DatastoreExplorerLocal.currentPath.pipe(takeUntil(this.destroySubject$)).subscribe(path => this.currentPath = path);
+    this.DatastoreExplorerLocal.currentData.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.currentData = data);
+    this.DatastoreExplorerLocal.viewAsList.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.viewAsList = data);
+    this.DatastoreExplorerLocal.search.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.search = data);
+  }
+
+  ngOnDestroy() {
+    this.destroySubject$.next();
   }
 
   /**

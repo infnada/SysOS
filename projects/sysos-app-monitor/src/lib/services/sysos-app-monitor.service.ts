@@ -37,7 +37,7 @@ export class SysosAppMonitorService {
               private Modal: SysosLibModalService,
               private FileSystem: SysosLibFileSystemService,
               private Toastr: ToastrService,
-              private NetdataService: SysosLibExtNetdataService) {
+              private Netdata: SysosLibExtNetdataService) {
 
     this.CredentialsManager = this.serviceInjector.get('SysosAppCredentialsManagerService');
 
@@ -52,6 +52,12 @@ export class SysosAppMonitorService {
     if (!uuid) throw new Error('uuid');
 
     return this.dataStore.connections.find(obj => obj.uuid === uuid);
+  }
+
+  getConnectionByLink(linkUuid: string): Netdata {
+    if (!linkUuid) throw new Error('linkUuid');
+
+    return this.dataStore.connections.find(obj => obj.linkTo && obj.linkTo.info.uuid === linkUuid);
   }
 
   getActiveConnection(): Netdata {
@@ -112,6 +118,7 @@ export class SysosAppMonitorService {
         description: connection.description,
         credential: connection.credential,
         withCredential: connection.withCredential,
+        linkTo: connection.linkTo,
         autologin: connection.autologin,
         save: connection.save,
         type: (connection.type === 'netdata' && connection.withCredential ? 'netdata-credential' : connection.type),
@@ -212,7 +219,7 @@ export class SysosAppMonitorService {
 
     this.getConnectionByUuid(uuid).state = 'disconnected';
 
-    this.NetdataService.deleteDashboard(uuid);
+    this.Netdata.deleteDashboard(uuid);
 
     // broadcast data to subscribers
     this.$connections.next(Object.assign({}, this.dataStore).connections);

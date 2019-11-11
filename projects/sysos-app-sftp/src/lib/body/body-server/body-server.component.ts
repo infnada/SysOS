@@ -1,6 +1,6 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 
-import {Subject, Subscription} from 'rxjs';
+import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
 import {SysosLibSelectableService} from '@sysos/lib-selectable';
@@ -24,8 +24,6 @@ export class BodyServerComponent implements OnDestroy, OnInit {
 
   private destroySubject$: Subject<void> = new Subject();
 
-  reloadPathSubscription: Subscription;
-
   currentPath: string;
   currentData: Array<SysOSFile>;
   viewAsList: boolean;
@@ -43,7 +41,7 @@ export class BodyServerComponent implements OnDestroy, OnInit {
               private Sftp: SysosAppSftpService,
               private SftpServer: SysosAppSftpServerService) {
 
-    this.reloadPathSubscription = this.FileSystemUi.getObserverRefreshPath().pipe(takeUntil(this.destroySubject$)).subscribe(path => {
+    this.FileSystemUi.getObserverRefreshPath().pipe(takeUntil(this.destroySubject$)).subscribe(path => {
       if (path === this.currentPath) this.reloadPath();
     });
   }

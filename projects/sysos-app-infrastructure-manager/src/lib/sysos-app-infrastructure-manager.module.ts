@@ -7,6 +7,7 @@ import {ToastrModule} from 'ngx-toastr';
 import {SysosLibAngularMaterialModule} from '@sysos/lib-angular-material';
 import {SysosLibApplicationService} from '@sysos/lib-application';
 import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
+import {SysosLibExtWeavescopeModule} from '@sysos/lib-ext-weavescope';
 
 import {ActionsComponent} from './actions/actions.component';
 import {BodyComponent} from './body/body.component';
@@ -17,6 +18,10 @@ import {StatusComponent} from './status/status.component';
 import {SysosAppInfrastructureManagerService} from './services/sysos-app-infrastructure-manager.service';
 import {SysosAppInfrastructureVmwareService} from './services/vmware/sysos-app-infrastructure-vmware.service';
 import {SysosAppInfrastructureNetappService} from './services/netapp/sysos-app-infrastructure-netapp.service';
+import {SysosAppInfrastructureManagerObjectHelperService} from "./services/sysos-app-infrastructure-manager-object-helper.service";
+import {SysosAppInfrastructureManagerNodeGraphService} from "./services/sysos-app-infrastructure-manager-node-graph.service";
+import {SysosAppInfrastructureManagerNodeLinkService} from "./services/sysos-app-infrastructure-manager-node-link.service";
+
 import {BodyVmwareComponent} from './body/body-vmware/body-vmware.component';
 import {BodyNetappComponent} from './body/body-netapp/body-netapp.component';
 import {BodyNetappVserverComponent} from './body/body-netapp-vserver/body-netapp-vserver.component';
@@ -48,7 +53,6 @@ import {VcenterHaComponent} from './body/body-vmware/tabs/tab-summary/vcenter-ha
 import {VersionInformationComponent} from './body/body-vmware/tabs/tab-summary/version-information/version-information.component';
 import {StorageDrsComponent} from './body/body-vmware/tabs/tab-summary/storage-drs/storage-drs.component';
 import {SwitchFeaturesComponent} from './body/body-vmware/tabs/tab-summary/switch-features/switch-features.component';
-import {SysosLibExtWeavescopeModule} from '@sysos/lib-ext-weavescope';
 
 @NgModule({
   declarations: [
@@ -103,11 +107,17 @@ export class SysosAppInfrastructureManagerModule {
   constructor(private serviceInjector: SysosLibServiceInjectorService,
               private Applications: SysosLibApplicationService,
               private InfrastructureManager: SysosAppInfrastructureManagerService,
-              private InfrastructureVmwareService: SysosAppInfrastructureVmwareService,
-              private InfrastructureNetAppService: SysosAppInfrastructureNetappService) {
+              private InfrastructureManagerObjectHelpers: SysosAppInfrastructureManagerObjectHelperService,
+              private InfrastructureManagerNodeLink: SysosAppInfrastructureManagerNodeLinkService,
+              private InfrastructureManagerNodeGraph: SysosAppInfrastructureManagerNodeGraphService,
+              private InfrastructureVmware: SysosAppInfrastructureVmwareService,
+              private InfrastructureNetApp: SysosAppInfrastructureNetappService) {
 
     this.serviceInjector.set('SysosAppInfrastructureManagerService', this.InfrastructureManager);
-    this.serviceInjector.set('SysosAppInfrastructureVmwareService', this.InfrastructureVmwareService);
+    this.serviceInjector.set('SysosAppInfrastructureManagerNodeLinkService', this.InfrastructureManagerNodeLink);
+    this.serviceInjector.set('SysosAppInfrastructureManagerNodeGraphService', this.InfrastructureManagerNodeGraph);
+    this.serviceInjector.set('SysosAppInfrastructureVmwareService', this.InfrastructureVmware);
+    this.serviceInjector.set('SysosAppInfrastructureManagerObjectHelperService', this.InfrastructureManagerObjectHelpers);
 
     Applications.registerApplication({
       id: 'infrastructure-manager',
@@ -121,7 +131,7 @@ export class SysosAppInfrastructureManagerModule {
 
     this.InfrastructureManager.initConnections();
     this.InfrastructureManager.initLinksMap();
-    this.InfrastructureVmwareService.registerFileSystemUiHandlers();
-    this.InfrastructureNetAppService.registerFileSystemUiHandlers();
+    this.InfrastructureVmware.registerFileSystemUiHandlers();
+    this.InfrastructureNetApp.registerFileSystemUiHandlers();
   }
 }

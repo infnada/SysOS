@@ -7,7 +7,7 @@
       <ng-container *ngFor="let menu of connection.menus | orderBy:['priority', 'id']; first as isFirst; trackBy: trackItemById">
         <div role="section" class="dashboard-section">
 
-          <ng-container *sluNoCheck>
+          <ng-container *ngNoCheck>
             <div role="sectionhead">
               <h1 id="menu_{{menu.id}}" role="heading" [innerHTML]="menu.icon + ' ' + menu.title"></h1>
             </div>
@@ -75,11 +75,11 @@
 
       <ng-container *ngIf="connection && connection.menus">
         <li *ngFor="let menu of connection.menus | orderBy:['priority', 'id']; trackBy: trackItemById" [ngClass]="{'active': currentSection.startsWith('menu_' + menu.id)}">
-          <a href="#" (click)="scrollToId('menu_' + menu.id);" [innerHTML]="menu.icon + ' ' + menu.title"></a>
+          <a href="#" (click)="scrollToId('menu_' + menu.id);" [innerHTML]="menu.icon + ' ' + menu.title" *ngNoCheck></a>
           <ul class="nav">
 
             <li *ngFor="let submenu of menu.submenus | orderBy:['priority', 'id']; trackBy: trackItemById" [ngClass]="{'active': currentSection === 'menu_' + menu.id + '_submenu_' + submenu.id}">
-              <a href="#" (click)="scrollToId('menu_' + menu.id + '_submenu_' + submenu.id);">{{submenu.title}}</a>
+              <a href="#" (click)="scrollToId('menu_' + menu.id + '_submenu_' + submenu.id);" *ngNoCheck>{{submenu.title}}</a>
             </li>
 
           </ul>
@@ -87,12 +87,14 @@
 
         <li style="margin:20px;color:#666;">
           <small *ngIf="connection && connection.options">
-            Every {{((connection.options.data.update_every === 1) ? 'second' : connection.options.data.update_every.toString() + ' seconds')}}, Netdata collects <b>
-            {{connection.options.data.dimensions_count.toLocaleString()}}</b> metrics, presents them in <b>
-            {{connection.options.data.charts_count.toLocaleString()}}</b> charts and monitors them with <b>
-            {{connection.options.data.alarms_count.toLocaleString()}}</b> alarms. Netdata is using {{memoryUsage()}} MB of memory on <b>
-            {{connection.options.data.hostname.toString()}}</b> for
-            {{connection.NETDATA.seconds4human(connection.options.data.update_every * connection.options.data.history, {minute: 'minute', minutes: 'minutes', second: 'second', seconds: 'seconds', space: '&nbsp;'})}} of real-time history.
+            <ng-container *ngNoCheck>
+              Every {{((connection.options.data.update_every === 1) ? 'second' : connection.options.data.update_every.toString() + ' seconds')}}, Netdata collects <b>
+              {{connection.options.data.dimensions_count.toLocaleString()}}</b> metrics, presents them in <b>
+              {{connection.options.data.charts_count.toLocaleString()}}</b> charts and monitors them with <b>
+              {{connection.options.data.alarms_count.toLocaleString()}}</b> alarms. Netdata is using {{memoryUsage()}} MB of memory on <b>
+              {{connection.options.data.hostname.toString()}}</b> for
+              {{connection.NETDATA.seconds4human(connection.options.data.update_every * connection.options.data.history, {minute: 'minute', minutes: 'minutes', second: 'second', seconds: 'seconds', space: '&nbsp;'})}} of real-time history.
+            </ng-container>
           </small>
         </li>
       </ng-container>

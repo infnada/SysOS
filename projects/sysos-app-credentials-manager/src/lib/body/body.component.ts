@@ -1,5 +1,8 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {FormBuilder, FormGroup, FormControl, Validators} from '@angular/forms';
+
+import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 
 import {Application} from '@sysos/lib-application';
 
@@ -11,8 +14,10 @@ import {Credential} from '../types/credential';
   templateUrl: './body.component.html',
   styleUrls: ['./body.component.scss']
 })
-export class BodyComponent implements OnInit {
+export class BodyComponent implements OnDestroy, OnInit {
   @Input() application: Application;
+
+  private destroySubject$: Subject<void> = new Subject();
 
   credentials: Credential[];
   activeCredential: string;
@@ -43,8 +48,8 @@ export class BodyComponent implements OnInit {
   constructor(private CredentialsManager: SysosAppCredentialsManagerService,
               private formBuilder: FormBuilder) {
 
-    this.CredentialsManager.credentials.subscribe(credentials => this.credentials = credentials);
-    this.CredentialsManager.activeCredential.subscribe(credential => {
+    this.CredentialsManager.credentials.pipe(takeUntil(this.destroySubject$)).subscribe(credentials => this.credentials = credentials);
+    this.CredentialsManager.activeCredential.pipe(takeUntil(this.destroySubject$)).subscribe(credential => {
 
       if (this.credentialForm) this.credentialForm.reset();
       this.activeCredential = credential;
@@ -61,6 +66,19 @@ export class BodyComponent implements OnInit {
     }, {
       validator: this.MustMatch('password', 'confirmPassword')
     });
+  }
+
+  ngOnDestroy() {
+    this.destroySubject$.next();
+  }
+
+  displayFn(type?: string): string | undefined {
+    if (type === 'basic') return 'Username and Password';
+    if (type === 'token') return 'Secret text';
+    if (type === 'file') return 'Secret file';
+    if (type === 'key') return 'Username with private keya';
+    if (type === 'cert') return 'Certificate';
+    return undefined;
   }
 
   get f() { return this.credentialForm.controls; }

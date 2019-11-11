@@ -1,9 +1,9 @@
-import {IMConnection} from './imconnection';
+import {ImConnection} from './im-connection';
 import {NetAppVserver} from './netapp-vserver';
 import {NetAppVolume} from './netapp-volume';
 
 export interface IMDatastoreLink {
-  storage: IMConnection;
+  storage: ImConnection;
   vserver: NetAppVserver;
   volume: NetAppVolume;
 }

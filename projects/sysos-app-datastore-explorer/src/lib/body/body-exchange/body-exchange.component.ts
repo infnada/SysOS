@@ -1,6 +1,7 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 
-import {Subscription} from 'rxjs';
+import {Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 
 import {Application} from '@sysos/lib-application';
 import {SysosLibFileSystemUiService} from '@sysos/lib-file-system-ui';
@@ -14,13 +15,11 @@ import {SysosAppDatastoreExplorerLocalService} from '../../services/sysos-app-da
   templateUrl: './body-exchange.component.html',
   styleUrls: ['./body-exchange.component.scss']
 })
-export class BodyExchangeComponent implements OnInit {
+export class BodyExchangeComponent implements OnDestroy, OnInit {
   @Input() application: Application;
 
-  private downloadRemoteFileSubscription: Subscription;
-  private uploadToRemoteSubscription: Subscription;
-  private uploadToSysOSSubscription: Subscription;
-  private fileProgressSubscription: Subscription;
+  private destroySubject$: Subject<void> = new Subject();
+
   private activeConnection: string;
   private currentLocalPath: string;
   private currentRemotePath: string;
@@ -42,7 +41,7 @@ export class BodyExchangeComponent implements OnInit {
               private DatastoreExplorerLocal: SysosAppDatastoreExplorerLocalService) {
 
     // Watcher sent by FileComponent
-    this.downloadRemoteFileSubscription = this.FileSystemUi.getObserverDownloadRemoteFile().subscribe((data) => {
+    this.FileSystemUi.getObserverDownloadRemoteFile().pipe(takeUntil(this.destroySubject$)).subscribe((data) => {
       if (data.applicationId === 'datastore-explorer#server') {
         this.filesExchange.push({
           uuid: data.connectionUuid,
@@ -63,7 +62,7 @@ export class BodyExchangeComponent implements OnInit {
     });
 
     // Watcher sent by FileComponent
-    this.uploadToRemoteSubscription = this.FileSystemUi.getObserverUploadToRemote().subscribe((data) => {
+    this.FileSystemUi.getObserverUploadToRemote().pipe(takeUntil(this.destroySubject$)).subscribe((data) => {
       if (data.applicationId === 'datastore-explorer') {
         this.filesExchange.push({
           uuid: this.activeConnection,
@@ -84,7 +83,7 @@ export class BodyExchangeComponent implements OnInit {
     });
 
     // Watcher sent by DatastoreExplorerBodyLocal
-    this.uploadToSysOSSubscription = this.FileSystemUi.getObserverUploadToSysOS().subscribe((data) => {
+    this.FileSystemUi.getObserverUploadToSysOS().pipe(takeUntil(this.destroySubject$)).subscribe((data) => {
       console.log(data.file);
       let percentage = 0;
 
@@ -123,7 +122,7 @@ export class BodyExchangeComponent implements OnInit {
       }
     });
 
-    this.fileProgressSubscription = this.DatastoreExplorerServer.getObserverFileProgress().subscribe((data) => {
+    this.DatastoreExplorerServer.getObserverFileProgress().pipe(takeUntil(this.destroySubject$)).subscribe((data) => {
 
       // Get path without filename
       if (data.progress === 100 && data.exchange === 'download') {
@@ -141,9 +140,13 @@ export class BodyExchangeComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.DatastoreExplorer.viewExchange.subscribe(view => this.viewExchange = view);
-    this.DatastoreExplorer.activeConnection.subscribe(connectionUuid => this.activeConnection = connectionUuid);
-    this.DatastoreExplorerLocal.currentPath.subscribe(path => this.currentLocalPath = path);
-    this.DatastoreExplorerServer.currentPath.subscribe(path => this.currentRemotePath = path);
+    this.DatastoreExplorer.viewExchange.pipe(takeUntil(this.destroySubject$)).subscribe(view => this.viewExchange = view);
+    this.DatastoreExplorer.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe(connectionUuid => this.activeConnection = connectionUuid);
+    this.DatastoreExplorerLocal.currentPath.pipe(takeUntil(this.destroySubject$)).subscribe(path => this.currentLocalPath = path);
+    this.DatastoreExplorerServer.currentPath.pipe(takeUntil(this.destroySubject$)).subscribe(path => this.currentRemotePath = path);
+  }
+
+  ngOnDestroy() {
+    this.destroySubject$.next();
   }
 }
