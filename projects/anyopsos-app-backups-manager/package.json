@@ -1,0 +1,16 @@
+{
+  "name": "@anyopsos/app-backups-manager",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@angular/common": "^7.2.0",
+    "@angular/core": "^7.2.0",
+    "ngx-toastr": "^10.0.4",
+    "rxjs": "~6.3.3",
+    "@anyopsos/lib-application": "~0.0.1",
+    "@anyopsos/lib-file-system": "~0.0.1",
+    "@anyopsos/lib-logger": "~0.0.1",
+    "@anyopsos/lib-modal": "~0.0.1",
+    "@anyopsos/lib-netapp": "~0.0.1",
+    "@anyopsos/lib-vmware": "~0.0.1"
+  }
+}

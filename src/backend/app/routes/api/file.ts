@@ -93,7 +93,7 @@ router.post('/:type', multipartyMiddleware, (req: express.Request  & { files: Co
   }
 
   /**
-   * Download file from url to SysOS
+   * Download file from url to anyOpsOS
    * req.body.path is required
    * req.body.url is required
    * req.body.credential is optional

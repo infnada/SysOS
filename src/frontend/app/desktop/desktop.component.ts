@@ -1,11 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 
-import {SysosLibLoggerService} from '@sysos/lib-logger';
-import {SysosLibFileSystemService} from '@sysos/lib-file-system';
-import {SysosLibFileSystemUiService} from '@sysos/lib-file-system-ui';
-import {Application, SysosLibApplicationService} from '@sysos/lib-application';
+import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
+import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
+import {AnyOpsOSLibFileSystemUiService} from '@anyopsos/lib-file-system-ui';
+import {Application, AnyOpsOSLibApplicationService} from '@anyopsos/lib-application';
 
-import {SysOSFile} from '@sysos/lib-types';
+import {AnyOpsOSFile} from '@anyopsos/lib-types';
 
 @Component({
   selector: 'app-desktop',
@@ -17,14 +17,14 @@ export class DesktopComponent implements OnInit {
   taskbarItemOpen: string;
 
   currentPath: string = '/home/root/Desktop/';
-  currentData: SysOSFile[] = [];
+  currentData: AnyOpsOSFile[] = [];
 
   currentActive: number = 0;
 
-  constructor(private logger: SysosLibLoggerService,
-              private FileSystem: SysosLibFileSystemService,
-              private FileSystemUi: SysosLibFileSystemUiService,
-              private Applications: SysosLibApplicationService) {
+  constructor(private logger: AnyOpsOSLibLoggerService,
+              private FileSystem: AnyOpsOSLibFileSystemService,
+              private FileSystemUi: AnyOpsOSLibFileSystemUiService,
+              private Applications: AnyOpsOSLibApplicationService) {
 
     this.FileSystemUi.getObserverRefreshPath().subscribe(path => {
       if (path === '/home/root/Desktop/') this.reloadPath();
@@ -51,7 +51,7 @@ export class DesktopComponent implements OnInit {
    */
   private reloadPath(): void {
     this.FileSystem.getFileSystemPath(null, this.currentPath).subscribe(
-      (res: { data: SysOSFile[] }) => {
+      (res: { data: AnyOpsOSFile[] }) => {
         this.currentData = res.data;
         this.resetActive();
       },

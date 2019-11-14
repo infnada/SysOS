@@ -1,0 +1,14 @@
+{
+  "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
+  "dest": "../../dist/libs/anyopsos-lib-file-system-ui",
+  "lib": {
+    "entryFile": "src/public-api.ts",
+    "umdModuleIds": {
+      "ngx-toastr": "ngx-toastr",
+      "@anyopsos/lib-application": "anyopsos.lib-application",
+      "@anyopsos/lib-file-system": "anyopsos.lib-file-system",
+      "@anyopsos/lib-logger": "anyopsos.lib-logger",
+      "@anyopsos/lib-modal": "anyopsos.lib-modal"
+    }
+  }
+}

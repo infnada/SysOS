@@ -1,0 +1,26 @@
+import {Injectable} from '@angular/core';
+
+import {map} from 'rxjs/operators';
+
+import {AnyOpsOSLibVmwareHelperService} from '../anyopsos-lib-vmware-helper.service';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AnyOpsOSLibVmwareGuestAuthManagerService {
+
+  constructor(private AnyOpsOSLibVmwareHelper: AnyOpsOSLibVmwareHelperService) {
+  }
+
+  AcquireCredentialsInGuest() {
+
+  }
+
+  ReleaseCredentialsInGuest() {
+
+  }
+
+  ValidateCredentialsInGuest() {
+
+  }
+}

@@ -16,22 +16,23 @@ function onExit(child) {
 }
 
 const projectInOrder = [
-  'sysos-lib-angular-material',
-  'sysos-lib-logger',
-  'sysos-lib-file-system',
-  'sysos-lib-application',
-  'sysos-lib-modal',
-  'sysos-lib-netapp',
-  'sysos-lib-selectable',
-  'sysos-lib-types',
-  'sysos-lib-user',
-  'sysos-lib-vmware',
-  'sysos-lib-file-system-ui',
-  'sysos-lib-file',
-  'sysos-lib-folder',
-  'sysos-lib-service-injector',
-  'sysos-lib-scroll-spy',
-  'sysos-lib-sanitize'
+  'anyopsos-lib-angular-material',
+  'anyopsos-lib-logger',
+  'anyopsos-lib-file-system',
+  'anyopsos-lib-application',
+  'anyopsos-lib-modal',
+  'anyopsos-lib-netapp',
+  'anyopsos-lib-selectable',
+  'anyopsos-lib-types',
+  'anyopsos-lib-user',
+  'anyopsos-lib-vmware',
+  'anyopsos-lib-file-system-ui',
+  'anyopsos-lib-file',
+  'anyopsos-lib-folder',
+  'anyopsos-lib-service-injector',
+  'anyopsos-lib-scroll-spy',
+  'anyopsos-lib-sanitize',
+  'anyopsos-lib-utils'
 ];
 
 (async function main() {
@@ -50,7 +51,7 @@ const projectInOrder = [
     for (const project of Object.keys(ngCli.projects)) {
 
       // Perform build operation only on libraries not already built
-      if (!project.startsWith('sysos-lib-')) continue;
+      if (!project.startsWith('anyopsos-lib-')) continue;
       if (projectInOrder.includes(project)) continue;
 
       let child = spawn('npm.cmd', ['run', 'ng', 'build', project]);

@@ -9,7 +9,7 @@ console.log('Running mxgraph.js');
 /**
  * mxGraph
  */
-fs.readFile('dist/SysOS/filesystem/bin/libs/sysos-lib-ext-mxgraph.umd.js', 'utf8', async function (err, data) {
+fs.readFile('dist/anyOpsOS/filesystem/bin/libs/anyopsos-lib-ext-mxgraph.umd.js', 'utf8', async function (err, data) {
   if (err) {
     return console.log(err);
   }
@@ -67,7 +67,7 @@ fs.readFile('dist/SysOS/filesystem/bin/libs/sysos-lib-ext-mxgraph.umd.js', 'utf8
 
   result = result.replace('var mx = {', 'return mx = {');
 
-  fs.writeFile('dist/SysOS/filesystem/bin/libs/sysos-lib-ext-mxgraph.umd.js', result, 'utf8', function (err) {
+  fs.writeFile('dist/anyOpsOS/filesystem/bin/libs/anyopsos-lib-ext-mxgraph.umd.js', result, 'utf8', function (err) {
     if (err) return console.log(err);
   });
 });

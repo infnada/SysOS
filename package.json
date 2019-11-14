@@ -1,12 +1,12 @@
 {
-  "name": "@sysos/sysos",
+  "name": "@anyopsos/anyopsos",
   "version": "0.0.1",
-  "homepage": "https://github.com/SysOS/SysOS#readme",
+  "homepage": "https://github.com/anyOpsOS/anyOpsOS#readme",
   "repository": {
     "type": "git",
-    "url": "https://github.com/SysOS/SysOS.git"
+    "url": "https://github.com/anyOpsOS/anyOpsOS.git"
   },
-  "bugs": "https://github.com/infnada/SysOS/issues",
+  "bugs": "https://github.com/anyOpsOS/anyOpsOS/issues",
   "keywords": [],
   "description": "Web based operating system for SysOps, DevOps, NetOps, SecOps... Monitor, manage, configure, backup & recovery your virtual and physical infrastructure.",
   "author": "Isart Navarro <contact@isartnavarro.io> (https://isartnavarro.io)",
@@ -16,7 +16,7 @@
   },
   "private": false,
   "scripts": {
-    "prod:start": "node dist/SysOS/index.js",
+    "prod:start": "node dist/anyOpsOS/index.js",
     "dev:start": "npm-run-all build dev:proxy",
     "dev:proxy": "ng serve --proxy-config proxy.conf.json",
     "copy-apps": "npm-run-all copy-umds move-umd-deps",
@@ -31,10 +31,10 @@
     "ng": "ng",
     "test": "ng test",
     "e2e": "ng e2e",
-    "clean": "rm -rf dist/SysOS/*",
-    "copy-extra": "cp -rf src/backend/app/ssl dist/SysOS/ && cp -rf src/backend/app/filesystem dist/SysOS/ && cp -rf node_modules/mxgraph/javascript/src/css dist/SysOS/filesystem/etc/applications/drawer && cp -rf node_modules/draw.io/drawio/src/main/webapp/resources dist/SysOS/filesystem/etc/applications/drawer && cp -rf node_modules/draw.io/drawio/src/main/webapp/stencils/* dist/SysOS/filesystem/etc/applications/drawer/stencils/ && cp -rf node_modules/draw.io/drawio/src/main/webapp/templates dist/SysOS/filesystem/etc/applications/drawer && cp -rf node_modules/draw.io/drawio/src/main/webapp/images dist/SysOS/filesystem/etc/applications/drawer && cp -rf node_modules/draw.io/drawio/src/main/webapp/shapes dist/SysOS/filesystem/etc/applications/drawer",
-    "copy-umds": "cp dist/applications/*/bundles/*.umd.js dist/SysOS/filesystem/bin/applications/ && cp dist/modals/*/bundles/*.umd.js dist/SysOS/filesystem/bin/modals/ && cp dist/libs/sysos-lib-ext-*/bundles/*.umd.js dist/SysOS/filesystem/bin/libs/ && npm run postscript",
-    "move-umd-deps": "mv dist/SysOS/filesystem/bin/libs/sysos-lib-ext-netdata.umd.js dist/SysOS/filesystem/bin/libs/deps/sysos-lib-ext-netdata.umd.js",
+    "clean": "rm -rf dist/anyOpsOS/*",
+    "copy-extra": "cp -rf src/backend/app/ssl dist/anyOpsOS/ && cp -rf src/backend/app/filesystem dist/anyOpsOS/ && cp -rf node_modules/mxgraph/javascript/src/css dist/anyOpsOS/filesystem/etc/applications/drawer && cp -rf node_modules/draw.io/drawio/src/main/webapp/resources dist/anyOpsOS/filesystem/etc/applications/drawer && cp -rf node_modules/draw.io/drawio/src/main/webapp/stencils/* dist/anyOpsOS/filesystem/etc/applications/drawer/stencils/ && cp -rf node_modules/draw.io/drawio/src/main/webapp/templates dist/anyOpsOS/filesystem/etc/applications/drawer && cp -rf node_modules/draw.io/drawio/src/main/webapp/images dist/anyOpsOS/filesystem/etc/applications/drawer && cp -rf node_modules/draw.io/drawio/src/main/webapp/shapes dist/anyOpsOS/filesystem/etc/applications/drawer",
+    "copy-umds": "cp dist/applications/*/bundles/*.umd.js dist/anyOpsOS/filesystem/bin/applications/ && cp dist/modals/*/bundles/*.umd.js dist/anyOpsOS/filesystem/bin/modals/ && cp dist/libs/anyopsos-lib-ext-*/bundles/*.umd.js dist/anyOpsOS/filesystem/bin/libs/ && npm run postscript",
+    "move-umd-deps": "mv dist/anyOpsOS/filesystem/bin/libs/anyopsos-lib-ext-netdata.umd.js dist/anyOpsOS/filesystem/bin/libs/deps/anyopsos-lib-ext-netdata.umd.js",
     "postscript": "node scripts/postscript.js",
     "postinstall": "node scripts/postinstall.js"
   },

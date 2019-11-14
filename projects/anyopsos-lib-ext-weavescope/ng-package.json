@@ -1,0 +1,27 @@
+{
+  "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
+  "dest": "../../dist/libs/anyopsos-lib-ext-weavescope",
+  "lib": {
+    "entryFile": "src/public-api.ts",
+    "umdModuleIds": {
+      "lodash-es": "lodash-es",
+      "@anyopsos/lib-angular-material": "anyopsos.lib-angular-material",
+      "@anyopsos/lib-sanitize": "anyopsos.lib-sanitize"
+    }
+  },
+  "whitelistedNonPeerDependencies": [
+    "d3-format",
+    "d3-scale",
+    "d3-scale-chromatic",
+    "d3-shape",
+    "dagre",
+    "filesize",
+    "immutable",
+    "json-stable-stringify",
+    "lodash-es",
+    "reselect",
+    "reselect-map",
+    "weavescope",
+    "weaveworks-ui-components"
+  ]
+}

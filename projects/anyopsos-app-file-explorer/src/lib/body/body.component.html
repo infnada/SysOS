@@ -1,0 +1,58 @@
+<div class="window__body" [ngClass]="{'with_status': application.status, 'with_actions': application.actions}">
+  <div class="window__side">
+    <ul class="side__list">
+      <li><a><i class="fas fa-home"></i> Home</a></li>
+      <li class="side__list--open">
+        <a>
+          <i class="fas fa-star"></i> Favorites
+          <span class="list__toggle" (click)="toggleList($event)"></span>
+        </a>
+        <ul class="side__list">
+          <li (click)="goToPath('/home/root/Desktop/')"><a><i class="fas fa-desktop"></i> Desktop</a></li>
+          <li (click)="goToPath('/home/root/Downloads/')"><a><i class="fas fa-cloud-download-alt"></i> Downloads</a></li>
+        </ul>
+      </li>
+      <li class="side__list--open">
+        <a>
+          <i class="fas fa-server"></i> This Device
+          <span class="list__toggle" (click)="toggleList($event)"></span>
+        </a>
+        <ul class="side__list">
+          <li (click)="goToPath('/home/root/Desktop/')"><a><i class="fas fa-desktop"></i> Desktop</a></li>
+          <li (click)="goToPath('/home/root/Documents/')"><a><i class="fas fa-copy"></i> Documents</a></li>
+          <li (click)="goToPath('/home/root/Downloads/')"><a><i class="fas fa-cloud-download-alt"></i> Downloads</a></li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+  <div class="window__main row no_padding">
+    <div class="col folders__body">
+
+      <safe-actions-body [application]="application"></safe-actions-body>
+
+      <div id="local_body">
+
+        <ngfUploadStatus
+          [(percent)] = "progress"
+          [httpEvent] = "httpEvent"
+        ></ngfUploadStatus>
+        <div class="dropzone" ngfDrop selectable="1" multiple="1"
+             [(files)]="files"
+             (filesChange)="uploadFiles($event)"
+        >
+          Drop files here (from local system) or click to upload.
+        </div>
+
+        <slfolder-anyopsos-lib-folder
+          [application]=application
+          [currentPath]=currentPath
+          [currentData]=currentData
+          [currentActive]=currentActive
+          [selector]="'.window--file-explorer .window__main'"
+          [viewAsList]=viewAsList
+          [search]=search></slfolder-anyopsos-lib-folder>
+
+      </div>
+    </div>
+  </div>
+</div>

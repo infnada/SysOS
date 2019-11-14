@@ -20,23 +20,23 @@ import * as NgxSocketIoService from 'ngx-socket-io/src/socket-io.service';
 import * as angularFile from 'angular-file';
 import * as uuid from 'uuid';
 
-import * as SysOSLibAngularMaterial from '@sysos/lib-angular-material';
-import * as SysOSLibApplications from '@sysos/lib-application';
-import * as SysOSLibFolder from '@sysos/lib-folder';
-import * as SysOSLibFile from '@sysos/lib-file';
-import * as SysOSLibFileSystem from '@sysos/lib-file-system';
-import * as SysOSLibFileSystemUi from '@sysos/lib-file-system-ui';
-import * as SysOSLibLogger from '@sysos/lib-logger';
-import * as SysOSLibModal from '@sysos/lib-modal';
-import * as SysOSLibNetApp from '@sysos/lib-netapp';
-import * as SysosLibSanitize from '@sysos/lib-sanitize';
-import * as SysOSLibScrollSpy from '@sysos/lib-scroll-spy';
-import * as SysOSLibSelectable from '@sysos/lib-selectable';
-import * as SysOSLibServiceInjector from '@sysos/lib-service-injector';
-import * as SysOSLibTypes from '@sysos/lib-types';
-import * as SysOSLibUser from '@sysos/lib-user';
-import * as SysOSLibUtils from '@sysos/lib-utils';
-import * as SysOSLibVMWare from '@sysos/lib-vmware';
+import * as AnyOpsOSLibAngularMaterial from '@anyopsos/lib-angular-material';
+import * as AnyOpsOSLibApplications from '@anyopsos/lib-application';
+import * as AnyOpsOSLibFolder from '@anyopsos/lib-folder';
+import * as AnyOpsOSLibFile from '@anyopsos/lib-file';
+import * as AnyOpsOSLibFileSystem from '@anyopsos/lib-file-system';
+import * as AnyOpsOSLibFileSystemUi from '@anyopsos/lib-file-system-ui';
+import * as AnyOpsOSLibLogger from '@anyopsos/lib-logger';
+import * as AnyOpsOSLibModal from '@anyopsos/lib-modal';
+import * as AnyOpsOSLibNetApp from '@anyopsos/lib-netapp';
+import * as AnyOpsOSLibSanitize from '@anyopsos/lib-sanitize';
+import * as AnyOpsOSLibScrollSpy from '@anyopsos/lib-scroll-spy';
+import * as AnyOpsOSLibSelectable from '@anyopsos/lib-selectable';
+import * as AnyOpsOSLibServiceInjector from '@anyopsos/lib-service-injector';
+import * as AnyOpsOSLibTypes from '@anyopsos/lib-types';
+import * as AnyOpsOSLibUser from '@anyopsos/lib-user';
+import * as AnyOpsOSLibUtils from '@anyopsos/lib-utils';
+import * as AnyOpsOSLibVMWare from '@anyopsos/lib-vmware';
 
 import * as NgxMonacoEditor from 'ngx-monaco-editor';
 
@@ -58,23 +58,23 @@ SystemJS.set('ngx-socket-io', SystemJS.newModule(ngxSocketIo));
 SystemJS.set('ngx-socket-io/src/socket-io.service', SystemJS.newModule(NgxSocketIoService));
 SystemJS.set('angular-file', SystemJS.newModule(angularFile));
 SystemJS.set('uuid', SystemJS.newModule(uuid));
-SystemJS.set('@sysos/lib-angular-material', SystemJS.newModule(SysOSLibAngularMaterial));
-SystemJS.set('@sysos/lib-application', SystemJS.newModule(SysOSLibApplications));
-SystemJS.set('@sysos/lib-folder', SystemJS.newModule(SysOSLibFolder));
-SystemJS.set('@sysos/lib-file', SystemJS.newModule(SysOSLibFile));
-SystemJS.set('@sysos/lib-file-system', SystemJS.newModule(SysOSLibFileSystem));
-SystemJS.set('@sysos/lib-file-system-ui', SystemJS.newModule(SysOSLibFileSystemUi));
-SystemJS.set('@sysos/lib-logger', SystemJS.newModule(SysOSLibLogger));
-SystemJS.set('@sysos/lib-modal', SystemJS.newModule(SysOSLibModal));
-SystemJS.set('@sysos/lib-netapp', SystemJS.newModule(SysOSLibNetApp));
-SystemJS.set('@sysos/lib-sanitize', SystemJS.newModule(SysosLibSanitize));
-SystemJS.set('@sysos/lib-scroll-spy', SystemJS.newModule(SysOSLibScrollSpy));
-SystemJS.set('@sysos/lib-selectable', SystemJS.newModule(SysOSLibSelectable));
-SystemJS.set('@sysos/lib-service-injector', SystemJS.newModule(SysOSLibServiceInjector));
-SystemJS.set('@sysos/lib-types', SystemJS.newModule(SysOSLibTypes));
-SystemJS.set('@sysos/lib-user', SystemJS.newModule(SysOSLibUser));
-SystemJS.set('@sysos/lib-utils', SystemJS.newModule(SysOSLibUtils));
-SystemJS.set('@sysos/lib-vmware', SystemJS.newModule(SysOSLibVMWare));
+SystemJS.set('@anyopsos/lib-angular-material', SystemJS.newModule(AnyOpsOSLibAngularMaterial));
+SystemJS.set('@anyopsos/lib-application', SystemJS.newModule(AnyOpsOSLibApplications));
+SystemJS.set('@anyopsos/lib-folder', SystemJS.newModule(AnyOpsOSLibFolder));
+SystemJS.set('@anyopsos/lib-file', SystemJS.newModule(AnyOpsOSLibFile));
+SystemJS.set('@anyopsos/lib-file-system', SystemJS.newModule(AnyOpsOSLibFileSystem));
+SystemJS.set('@anyopsos/lib-file-system-ui', SystemJS.newModule(AnyOpsOSLibFileSystemUi));
+SystemJS.set('@anyopsos/lib-logger', SystemJS.newModule(AnyOpsOSLibLogger));
+SystemJS.set('@anyopsos/lib-modal', SystemJS.newModule(AnyOpsOSLibModal));
+SystemJS.set('@anyopsos/lib-netapp', SystemJS.newModule(AnyOpsOSLibNetApp));
+SystemJS.set('@anyopsos/lib-sanitize', SystemJS.newModule(AnyOpsOSLibSanitize));
+SystemJS.set('@anyopsos/lib-scroll-spy', SystemJS.newModule(AnyOpsOSLibScrollSpy));
+SystemJS.set('@anyopsos/lib-selectable', SystemJS.newModule(AnyOpsOSLibSelectable));
+SystemJS.set('@anyopsos/lib-service-injector', SystemJS.newModule(AnyOpsOSLibServiceInjector));
+SystemJS.set('@anyopsos/lib-types', SystemJS.newModule(AnyOpsOSLibTypes));
+SystemJS.set('@anyopsos/lib-user', SystemJS.newModule(AnyOpsOSLibUser));
+SystemJS.set('@anyopsos/lib-utils', SystemJS.newModule(AnyOpsOSLibUtils));
+SystemJS.set('@anyopsos/lib-vmware', SystemJS.newModule(AnyOpsOSLibVMWare));
 
 SystemJS.set('ngx-monaco-editor', SystemJS.newModule(NgxMonacoEditor));
 
@@ -91,13 +91,13 @@ import {SocketIoModule, SocketIoConfig} from 'ngx-socket-io';
 import {OrderModule} from 'ngx-order-pipe';
 import {MonacoEditorModule} from 'ngx-monaco-editor'; // this is an application required module...
 
-import {SysosLibFileModule} from '@sysos/lib-file';
-import {SysosLibFolderModule} from '@sysos/lib-folder';
-import {SysosLibApplicationModule} from '@sysos/lib-application';
-import {SysosLibSelectableService} from '@sysos/lib-selectable';
-import {SysosLibServiceInjectorModule} from '@sysos/lib-service-injector';
-import {SysosLibLoggerModule} from '@sysos/lib-logger';
-import {SysosLibAngularMaterialModule} from '@sysos/lib-angular-material';
+import {AnyOpsOSLibFileModule} from '@anyopsos/lib-file';
+import {AnyOpsOSLibFolderModule} from '@anyopsos/lib-folder';
+import {AnyOpsOSLibApplicationModule} from '@anyopsos/lib-application';
+import {AnyOpsOSLibSelectableService} from '@anyopsos/lib-selectable';
+import {AnyOpsOSLibServiceInjectorModule} from '@anyopsos/lib-service-injector';
+import {AnyOpsOSLibLoggerModule} from '@anyopsos/lib-logger';
+import {AnyOpsOSLibAngularMaterialModule} from '@anyopsos/lib-angular-material';
 
 import {AppComponent} from './app.component';
 import {LoginComponent} from './login/login.component';
@@ -145,12 +145,12 @@ export function createCompiler(fn: CompilerFactory): Compiler {
     SocketIoModule.forRoot(config),
     OrderModule,
 
-    SysosLibApplicationModule,
-    SysosLibFileModule,
-    SysosLibFolderModule,
-    SysosLibServiceInjectorModule,
-    SysosLibLoggerModule,
-    SysosLibAngularMaterialModule,
+    AnyOpsOSLibApplicationModule,
+    AnyOpsOSLibFileModule,
+    AnyOpsOSLibFolderModule,
+    AnyOpsOSLibServiceInjectorModule,
+    AnyOpsOSLibLoggerModule,
+    AnyOpsOSLibAngularMaterialModule,
 
     MonacoEditorModule.forRoot()
   ],
@@ -171,7 +171,7 @@ export function createCompiler(fn: CompilerFactory): Compiler {
       deps: [CompilerFactory]
     },
     CookieService,
-    SysosLibSelectableService,
+    AnyOpsOSLibSelectableService,
   ],
   bootstrap: [AppComponent]
 })

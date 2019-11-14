@@ -5,7 +5,7 @@ console.log('Running monitor.js');
 /**
  * Netdata
  */
-fs.readFile('dist/SysOS/filesystem/bin/libs/sysos-lib-ext-netdata.umd.js', 'utf8', function (err, data) {
+fs.readFile('dist/anyOpsOS/filesystem/bin/libs/anyopsos-lib-ext-netdata.umd.js', 'utf8', function (err, data) {
   if (err) {
     return console.log(err);
   }
@@ -148,7 +148,7 @@ fs.readFile('dist/SysOS/filesystem/bin/libs/sysos-lib-ext-netdata.umd.js', 'utf8
   result = result.replace(/.*\$modal.*/g, '');
   result = result.replace(/.*\$collapse.*/g, '');
 
-  fs.writeFile('dist/SysOS/filesystem/bin/libs/sysos-lib-ext-netdata.umd.js', result, 'utf8', function (err) {
+  fs.writeFile('dist/anyOpsOS/filesystem/bin/libs/anyopsos-lib-ext-netdata.umd.js', result, 'utf8', function (err) {
     if (err) return console.log(err);
   });
 });

@@ -21,7 +21,7 @@ fs.readFile('angular.json', 'utf8', async (err, data) => {
   for (const project of Object.keys(ngCli.projects)) {
 
     // Perform build operation only on libraries
-    if (!project.startsWith('sysos-modal-')) continue;
+    if (!project.startsWith('anyopsos-modal-')) continue;
 
     let child = spawn('npm.cmd', ['run', 'ng', 'build', project]);
 

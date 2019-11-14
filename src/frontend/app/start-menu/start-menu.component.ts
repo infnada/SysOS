@@ -3,8 +3,8 @@ import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {takeUntil} from 'rxjs/operators';
 import {Subject} from 'rxjs';
 
-import {MatMenuTrigger} from '@sysos/lib-angular-material';
-import {Application, SysosLibApplicationService} from '@sysos/lib-application';
+import {MatMenuTrigger} from '@anyopsos/lib-angular-material';
+import {Application, AnyOpsOSLibApplicationService} from '@anyopsos/lib-application';
 
 @Component({
   selector: 'app-start-menu',
@@ -21,7 +21,7 @@ export class StartMenuComponent implements OnDestroy, OnInit {
 
   openedMenu: string;
 
-  constructor(private Applications: SysosLibApplicationService) {
+  constructor(private Applications: AnyOpsOSLibApplicationService) {
   }
 
   ngOnInit() {

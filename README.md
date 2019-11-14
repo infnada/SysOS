@@ -69,7 +69,7 @@ Don't hesitate to provide a Logo and Backgrounds :)
 
 ## Currently installed applications
 
-![alt text](https://isartnavarro.io/img/SysOS/smanager_app.png "Infrastructure Manager app")
+![alt text](https://isartnavarro.io/img/anyOpsOS/smanager_app.png "Infrastructure Manager app")
 
 - Credentials Manager
     - Manage all your `anyOpsOS` credentials to use in other installed applications.
@@ -114,7 +114,7 @@ Don't hesitate to provide a Logo and Backgrounds :)
 - Notepad
     - Full integration of `Atom`.
 
-![alt text](https://isartnavarro.io/img/SysOS/sftp_app.png "SFTP app")
+![alt text](https://isartnavarro.io/img/anyOpsOS/sftp_app.png "SFTP app")
 
 ## Built in libraries
 

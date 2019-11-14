@@ -1,0 +1,24 @@
+<div class="col folders__body" #selectableContainer>
+
+  <sade-body-new-connection [application]="application" *ngIf="activeConnection === null || getActiveConnection().state === 'disconnected'"></sade-body-new-connection>
+
+  <ng-container *ngIf="activeConnection !== null && getActiveConnection().state !== 'disconnected'">
+
+    <sade-actions-server [application]="application"></sade-actions-server>
+
+    <div id="local_body">
+
+      <slfolder-anyopsos-lib-folder
+        [application]=application
+        subApplication="server"
+        [currentPath]=currentPath
+        [currentData]=currentData
+        [currentActive]=currentActive
+        [selector]="'.window--datastore-explorer .window__main'"
+        [viewAsList]=viewAsList
+        [search]=search
+        [connection]="getActiveConnection()"></slfolder-anyopsos-lib-folder>
+
+    </div>
+  </ng-container>
+</div>

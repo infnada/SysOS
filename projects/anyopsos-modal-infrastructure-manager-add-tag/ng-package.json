@@ -1,0 +1,7 @@
+{
+  "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
+  "dest": "../../dist/modals/anyopsos-modal-infrastructure-manager-add-tag",
+  "lib": {
+    "entryFile": "src/public-api.ts"
+  }
+}

@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 
-import {SysosLibLoggerService} from '@sysos/lib-logger';
-import {SysosLibUserService} from '@sysos/lib-user';
+import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
+import {AnyOpsOSLibUserService} from '@anyopsos/lib-user';
 
 import {MainService} from '../services/main.service';
 
@@ -18,8 +18,8 @@ export class LoginComponent {
 
   loginExpanded: boolean = false;
 
-  constructor(private logger: SysosLibLoggerService,
-              private UserState: SysosLibUserService,
+  constructor(private logger: AnyOpsOSLibLoggerService,
+              private UserState: AnyOpsOSLibUserService,
               private Main: MainService) {
   }
 

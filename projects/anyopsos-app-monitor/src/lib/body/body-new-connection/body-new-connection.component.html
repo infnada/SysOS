@@ -1,0 +1,98 @@
+<slews-anyopsos-lib-ext-weavescope [nodes]="setWeaveScopeNodes()" (selectedNode)="selectedNodeChange($event)">
+
+  <div class="col text-center" style="
+    position: absolute;
+    bottom: 90px;
+    z-index: 1;">
+    <button class="btn" type="button" mat-flat-button color="primary" (click)="scrollTo()">Add new node</button>
+  </div>
+
+</slews-anyopsos-lib-ext-weavescope>
+
+<ng-container *ngIf="!newConnectionType">
+  <div class="main_form">
+    <p>Add a new node to monitor</p>
+    <table class="table table-hover m-t-xl">
+      <tbody>
+      <tr class="cursor-pointer" (click)="setConnectionType('netdata')">
+        <th class="w-25 p-m">
+          <img alt="NetData" class="mr-2" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz48c3ZnIHZlcnNpb249IjEuMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgaGVpZ2h0PSIyNy45MzAzMDIzNjQ3NDEyMzciIHdpZHRoPSIzNSI+ICA8ZGVmcz4gICAgPHBhdGggaWQ9InBhdGgtMSIgb3BhY2l0eT0iMSIgZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMjEuNTMyNjY2NjI3NjIwOTM0LDI3LjkzMDMwMjM2NDc0MTIxIEwxNC40NzE1MjgzNDcxOTQ1NTMsMjcuOTMwMzAyMzY0NzQxMjEgTDAsMCBMMjAuNTM3OTUyNDQyMzA5OTMsMCBDMjguNTEyMzIxMzY1ODE5MzU0LDAgMzQuOTk5OTk5OTk5OTk5OTcsNi40ODc3NzM2MjkxMDkwMTQ1IDM0Ljk5OTk5OTk5OTk5OTk3LDE0LjQ2MjI1OTMxNjIwMTc3OSBDMzQuOTk5OTk5OTk5OTk5OTcsMjEuODg4NjQ0ODQ5NTQ5NzU2IDI4Ljk1ODQzMDk0NzYzOTY2LDI3LjkzMDMwMjM2NDc0MTIxIDIxLjUzMjY2NjYyNzYyMDkzNCwyNy45MzAzMDIzNjQ3NDEyMVoiLz4gIDwvZGVmcz4gIDxnIG9wYWNpdHk9IjEiPiAgICA8ZyBvcGFjaXR5PSIxIj4gICAgICA8dXNlIHhsaW5rOmhyZWY9IiNwYXRoLTEiIGZpbGw9InJnYigwLDI1NSwwKSIgZmlsbC1vcGFjaXR5PSIxIi8+ICAgIDwvZz4gIDwvZz48L3N2Zz4=">
+          <img class="logo-text is-hidden-mobile" src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz48c3ZnIHdpZHRoPSI5N3B4IiBoZWlnaHQ9IjE0cHgiIHZpZXdCb3g9IjAgMCA5NyAxNCIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIj4gICAgICAgIDx0aXRsZT5sb2dvX3RleHRfcGl4ZWxfZmF0QDF4PC90aXRsZT4gICAgPGRlc2M+Q3JlYXRlZCB3aXRoIFNrZXRjaC48L2Rlc2M+ICAgIDxnIGlkPSJQYWdlLTEiIHN0cm9rZT0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIxIiBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPiAgICAgICAgPGcgaWQ9ImxvZ29fdGV4dF9waXhlbF9mYXQiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDEuMDAwMDAwLCAxLjAwMDAwMCkiIGZpbGw9IiMwMDAiIGZpbGwtcnVsZT0ibm9uemVybyIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjAuNSI+ICAgICAgICAgICAgPHBhdGggZD0iTTQ2LjgsMCBMNDQsMCBMNDQsMTEuOSBMNDcuMiwxMS45IEM1MC40LDExLjkgNTMsOS4zIDUzLDYuMSBDNTMsMi44IDUwLjIsMCA0Ni44LDAgWiBNNDcuMiwxMS4zIEw0NC43LDExLjMgTDQ0LjcsMC43IEw0Ni44LDAuNyBDNDkuOCwwLjcgNTIuMywzLjIgNTIuMyw2LjIgQzUyLjMsOSA1MCwxMS4zIDQ3LjIsMTEuMyBaIiBpZD0iU2hhcGUiPjwvcGF0aD4gICAgICAgICAgICA8cG9seWdvbiBpZD0icGF0aC0zIiBwb2ludHM9IjE2IDAgMjQgMCAyNCAwLjYgMTcgMC42IDE3IDUuNCAyMy43IDUuNCAyMy43IDYgMTcgNiAxNyAxMS4zIDI0IDExLjMgMjQgMTIgMTYuMSAxMiAxNi4xIDAiPjwvcG9seWdvbj4gICAgICAgICAgICA8cG9seWdvbiBpZD0icGF0aC00IiBwb2ludHM9IjI5IDAuNiAyOSAwIDM4LjIgMCAzOC4yIDAuNiAzNCAwLjYgMzQgMTIgMzMuMyAxMiAzMy4zIDAuNiI+PC9wb2x5Z29uPiAgICAgICAgICAgIDxwYXRoIGQ9Ik02My42LDAgTDYyLjgsMCBMNTgsMTIgTDU4LjgsMTIgTDYwLjMsOC4yIEw2Niw4LjIgTDY3LjUsMTIgTDY4LjMsMTIgTDYzLjYsMCBaIE02MC41LDcuNSBMNjMuMiwwLjcgTDY1LjgsNy41IEw2MC41LDcuNSBaIiBpZD0iU2hhcGUiPjwvcGF0aD4gICAgICAgICAgICA8cG9seWdvbiBpZD0icGF0aC02IiBwb2ludHM9IjcyIDAuNiA3MiAwIDgxLjIgMCA4MS4yIDAuNiA3NyAwLjYgNzcgMTIgNzYuMyAxMiA3Ni4zIDAuNiI+PC9wb2x5Z29uPiAgICAgICAgICAgIDxwb2x5Z29uIGlkPSJwYXRoLTciIHBvaW50cz0iOTAuNiAwIDg5LjggMCA4NSAxMiA4NS44IDEyIDg3LjMgOC4yIDkzIDguMiA5NC41IDEyIDk1LjMgMTIgOTAuNiAwIDkwLjIgMC43IDkyLjggNy41IDg3LjUgNy41IDkwLjIgMC43Ij48L3BvbHlnb24+ICAgICAgICAgICAgPHBvbHlnb24gaWQ9IlBhdGgiIHBvaW50cz0iOCAwIDggMTAuMyAxIDAgMCAwIDAgMTIgMSAxMiAxIDEuNyA4IDEyIDkgMTIgOSAwIj48L3BvbHlnb24+ICAgICAgICA8L2c+ICAgIDwvZz48L3N2Zz4=" alt="NetData">
+        </th>
+        <td class="lh-2">Integrate external NetData dashboards</td>
+      </tr>
+      <tr class="cursor-pointer" (click)="setConnectionType('internal')">
+        <th class="w-25 p-m"></th>
+        <td class="lh-2">Select any managed anyOpsOS node to integrate with NetData dashboard</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="newConnectionType">
+  <form class="main_form form-horizontal" [formGroup]="connectionForm" (ngSubmit)="sendConnect()">
+
+    <mat-form-field class="w-100">
+      <input matInput maxlength="256" placeholder="Description" formControlName="description" required>
+      <mat-hint align="end">{{f.description.value && f.description.value.length}} / 256</mat-hint>
+      <mat-error *ngIf="f.description.invalid">Please insert a description</mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="w-100">
+      <input matInput placeholder="Url" formControlName="url" required>
+      <mat-error *ngIf="f.url.errors && f.url.errors.required">Please insert a url</mat-error>
+      <mat-error *ngIf="f.url.errors && f.url.errors.pattern">URL must include a scheme</mat-error>
+    </mat-form-field>
+
+    <mat-slide-toggle formControlName="withCredential">
+      This connection requires an HTTP credential
+    </mat-slide-toggle>
+
+    <mat-form-field class="w-100" *ngIf="f.withCredential.value">
+      <mat-label>-- Select Credential --</mat-label>
+      <mat-select formControlName="credential" required>
+        <mat-option *ngFor="let credential of credentials" [value]="credential.uuid">
+          {{credential.description}} - {{credential.username}}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="f.credential.invalid">Please insert a credential</mat-error>
+    </mat-form-field>
+    <div class="mat-form-field-wrapper">
+      <div class="mat-form-field-subscript-wrapper">
+        <div class="mat-form-field-hint-wrapper" style="opacity: 1; transform: translateY(0%);" (click)="manageCredentials()">
+          <div class="mat-form-field-hint-spacer"></div><div class="text-primary cursor-pointer mat-hint mat-right">Manage Credentials</div>
+        </div>
+      </div>
+    </div>
+
+    <mat-form-field class="w-100">
+      <input type="text" matInput placeholder="Link to Node" formControlName="linkTo" [matAutocomplete]="autoGroup">
+      <mat-autocomplete #autoGroup="matAutocomplete" [displayWith]="displayFn">
+        <mat-optgroup *ngFor="let group of linkToOptions | async" [label]="group.type">
+          <mat-option *ngFor="let node of group.nodes" [value]="node">
+            {{node.name}}
+          </mat-option>
+        </mat-optgroup>
+      </mat-autocomplete>
+    </mat-form-field>
+
+    <mat-divider class="m-3"></mat-divider>
+
+    <mat-slide-toggle formControlName="save">
+      Save Connection in config file
+    </mat-slide-toggle>
+
+    <br />
+
+    <mat-slide-toggle formControlName="autologin" *ngIf="f.save">
+      Auto Login
+    </mat-slide-toggle>
+
+    <div class="mt-3">
+      <button class="btn mr-3" type="button" mat-flat-button color="accent" *ngIf="f.save.value" (click)="sendConnect(true)">Save</button>
+      <button class="btn" type="submit" mat-flat-button color="primary">Connect</button>
+    </div>
+  </form>
+
+</ng-container>

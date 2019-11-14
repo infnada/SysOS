@@ -148,7 +148,7 @@ h1, h2, h3, h4, h5, h6 {
   outline: none;
 }
 
-.folders > slf-sysos-lib-file > a, .folders > slf-sysos-lib-file > div > a {
+.folders > slf-anyopsos-lib-file > a, .folders > slf-anyopsos-lib-file > div > a {
   display: inline-block;
   margin: 4px;
   padding: 4px;
@@ -159,17 +159,17 @@ h1, h2, h3, h4, h5, h6 {
   color: #607D8B;
   cursor: pointer;
 }
-.folders > slf-sysos-lib-file > a:hover,.folders > slf-sysos-lib-file > a.active,.folders > slf-sysos-lib-file > a.ui-selected,.folders > slf-sysos-lib-file > a.ui-selecting,
-.folders > slf-sysos-lib-file > div > a:hover,.folders > slf-sysos-lib-file > div > a.active,.folders > slf-sysos-lib-file > div > a.ui-selected,.folders > slf-sysos-lib-file > div > a.ui-selecting{
+.folders > slf-anyopsos-lib-file > a:hover,.folders > slf-anyopsos-lib-file > a.active,.folders > slf-anyopsos-lib-file > a.ui-selected,.folders > slf-anyopsos-lib-file > a.ui-selecting,
+.folders > slf-anyopsos-lib-file > div > a:hover,.folders > slf-anyopsos-lib-file > div > a.active,.folders > slf-anyopsos-lib-file > div > a.ui-selected,.folders > slf-anyopsos-lib-file > div > a.ui-selecting{
   color: #1976D2;
   border: 1px solid rgba(124, 162, 239, 0.67);
   background-color: rgba(10, 28, 247, 0.17);
 }
-.folders > slf-sysos-lib-file > a > i, .folders > slf-sysos-lib-file > div > a > i {
+.folders > slf-anyopsos-lib-file > a > i, .folders > slf-anyopsos-lib-file > div > a > i {
   display: block;
   font-size: 32px;
 }
-.folders > slf-sysos-lib-file > a > span, .folders > slf-sysos-lib-file > div > a > span  {
+.folders > slf-anyopsos-lib-file > a > span, .folders > slf-anyopsos-lib-file > div > a > span  {
   display: block;
   white-space: nowrap;
   overflow: hidden;

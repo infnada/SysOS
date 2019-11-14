@@ -3,11 +3,11 @@ import {Compiler, Injectable, Injector} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
 import {Socket} from 'ngx-socket-io';
 
-import {SysosLibLoggerService} from '@sysos/lib-logger';
-import {SysosLibModalService} from '@sysos/lib-modal';
-import {SysosLibApplicationService} from '@sysos/lib-application';
-import {SysosLibFileSystemService} from '@sysos/lib-file-system';
-import {SysOSFile} from '@sysos/lib-types';
+import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
+import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
+import {AnyOpsOSLibApplicationService} from '@anyopsos/lib-application';
+import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
+import {AnyOpsOSFile} from '@anyopsos/lib-types';
 
 declare const SystemJS: any;
 
@@ -27,18 +27,18 @@ export class MainService {
 
   constructor(private compiler: Compiler,
               private injector: Injector,
-              private logger: SysosLibLoggerService,
-              private FileSystem: SysosLibFileSystemService,
-              private Applications: SysosLibApplicationService,
-              private Modal: SysosLibModalService,
+              private logger: AnyOpsOSLibLoggerService,
+              private FileSystem: AnyOpsOSLibFileSystemService,
+              private Applications: AnyOpsOSLibApplicationService,
+              private Modal: AnyOpsOSLibModalService,
               private socket: Socket) {
   }
 
   getInstalledLibs(path = ''): Promise<null> {
     return new Promise((resolve, reject) => {
       this.FileSystem.getFileSystemPath(null, '/bin/libs/' + path).subscribe(
-        (res: { data: SysOSFile[] }) => {
-          this.logger.info('SysOs', 'Got Installed Libs successfully');
+        (res: { data: AnyOpsOSFile[] }) => {
+          this.logger.info('anyOpsOS', 'Got Installed Libs successfully');
 
           const libPromises = [];
           const libFolders = [];
@@ -61,7 +61,7 @@ export class MainService {
 
         },
         error => {
-          this.logger.error('SysOs', 'Error while getting installed libs', null, error);
+          this.logger.error('anyOpsOS', 'Error while getting installed libs', null, error);
         });
     });
 
@@ -89,13 +89,13 @@ export class MainService {
     });
 
     this.socket.on('connect', () => {
-      this.logger.info('SysOs', 'Socket.io connected', null);
+      this.logger.info('anyOpsOS', 'Socket.io connected', null);
     });
     this.socket.on('disconnect', (err) => {
-      this.logger.fatal('SysOs', 'Socket.io disconnect', null, err);
+      this.logger.fatal('anyOpsOS', 'Socket.io disconnect', null, err);
     });
     this.socket.on('error', (err) => {
-      this.logger.fatal('SysOs', 'Socket.io error', null, err);
+      this.logger.fatal('anyOpsOS', 'Socket.io error', null, err);
     });
 
     this.getInstalledLibs().then(() => {

@@ -2,18 +2,18 @@
   <div class="col-xl-12 desktop__body">
 
     <div id="desktop_body" (mouseover)="setCurrentHoverApplication();">
-      <slfolder-sysos-lib-folder
+      <slfolder-anyopsos-lib-folder
         [application]="{id: null}"
         [currentPath]=currentPath
         [currentData]=currentData
         [currentActive]=currentActive
-        [selector]="'.desktop .desktop__body'"></slfolder-sysos-lib-folder>
+        [selector]="'.desktop .desktop__body'"></slfolder-anyopsos-lib-folder>
     </div>
 
     <app-task-bar></app-task-bar>
 
     <ng-container *ngFor="let application of openedApplications">
-      <slapp-sysos-lib-application *ngIf="application.id !== 'start'" [application]="application"></slapp-sysos-lib-application>
+      <slapp-anyopsos-lib-application *ngIf="application.id !== 'start'" [application]="application"></slapp-anyopsos-lib-application>
     </ng-container>
   </div>
 </div>

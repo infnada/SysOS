@@ -5,7 +5,7 @@
     "target": "es6",
     "moduleResolution": "node",
     "sourceMap": true,
-    "outDir": "../../dist/SysOS",
+    "outDir": "../../dist/anyOpsOS",
     "baseUrl": "./app",
     "paths": {
       "*": [

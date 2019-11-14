@@ -1,11 +1,11 @@
 import {Component, OnInit, ViewContainerRef} from '@angular/core';
 
 import {CookieService} from 'ngx-cookie-service';
-import {SysosLibLoggerService} from '@sysos/lib-logger';
+import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 
-import {SysosLibUserService} from '@sysos/lib-user';
-import {SysosLibModalService} from '@sysos/lib-modal';
-import {Application} from '@sysos/lib-application';
+import {AnyOpsOSLibUserService} from '@anyopsos/lib-user';
+import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
+import {Application} from '@anyopsos/lib-application';
 
 import {MainService} from './services/main.service';
 
@@ -21,26 +21,26 @@ export class AppComponent implements OnInit {
 
   constructor(private viewContainerRef: ViewContainerRef,
               private cookieService: CookieService,
-              private logger: SysosLibLoggerService,
+              private logger: AnyOpsOSLibLoggerService,
               private Main: MainService,
-              private Modal: SysosLibModalService,
-              private UserState: SysosLibUserService) {
+              private Modal: AnyOpsOSLibModalService,
+              private UserState: AnyOpsOSLibUserService) {
 
     this.Modal.setMainContainerRef(this.viewContainerRef);
   }
 
   ngOnInit() {
-    this.logger.info('SysOS', 'Initializing APP', null);
+    this.logger.info('anyOpsOS', 'Initializing APP', null);
     this.Main.currentBootstrapState.subscribe(state => this.appBootstrapped = state.appBootstrapped);
     this.UserState.currentState.subscribe(state => this.userLoggedIn = state.userLoggedIn);
 
     if (this.cookieService.check('uniqueId')) {
 
-      this.logger.debug('SysOS', 'Getting session', null);
+      this.logger.debug('anyOpsOS', 'Getting session', null);
       this.UserState.getSession().subscribe(
         (res: { status: string }) => {
           if (res.status === 'ok') {
-            this.logger.info('SysOS', 'Getting session -> User logged in', null);
+            this.logger.info('anyOpsOS', 'Getting session -> User logged in', null);
             this.UserState.setState({
               userLoggedIn: true,
               username: 'root'
@@ -53,12 +53,12 @@ export class AppComponent implements OnInit {
           }
 
           if (res.status === 'error') {
-            this.logger.debug('SysOS', 'Getting session -> Removing uniqueId cookie', null);
+            this.logger.debug('anyOpsOS', 'Getting session -> Removing uniqueId cookie', null);
             return this.cookieService.delete('uniqueId');
           }
         },
         error => {
-          this.logger.error('SysOS', 'Error while getting session', null, error);
+          this.logger.error('anyOpsOS', 'Error while getting session', null, error);
         });
 
     }

@@ -19,437 +19,431 @@
       "dom"
     ],
     "paths": {
-      "@sysos/lib-angular-material": [
-        "projects/sysos-lib-angular-material/src/public-api"
+      "@anyopsos/lib-angular-material": [
+        "projects/anyopsos-lib-angular-material/src/public-api"
       ],
-      "@sysos/lib-angular-material/*": [
-        "projects/sysos-lib-angular-material/*"
+      "@anyopsos/lib-angular-material/*": [
+        "projects/anyopsos-lib-angular-material/*"
       ],
-      "@sysos/lib-logger": [
-        "projects/sysos-lib-logger/src/public-api"
+      "@anyopsos/lib-logger": [
+        "projects/anyopsos-lib-logger/src/public-api"
       ],
-      "@sysos/lib-logger/*": [
-        "projects/sysos-lib-logger/*"
+      "@anyopsos/lib-logger/*": [
+        "projects/anyopsos-lib-logger/*"
       ],
-      "@sysos/lib-ext-mxgraph": [
-        "projects/sysos-lib-ext-mxgraph/src/public-api"
+      "@anyopsos/lib-ext-mxgraph": [
+        "projects/anyopsos-lib-ext-mxgraph/src/public-api"
       ],
-      "@sysos/lib-ext-mxgraph/*": [
-        "projects/sysos-lib-ext-mxgraph/*"
+      "@anyopsos/lib-ext-mxgraph/*": [
+        "projects/anyopsos-lib-ext-mxgraph/*"
       ],
-      "@sysos/lib-application": [
-        "projects/sysos-lib-application/src/public-api"
+      "@anyopsos/lib-application": [
+        "projects/anyopsos-lib-application/src/public-api"
       ],
-      "@sysos/lib-application/*": [
-        "projects/sysos-lib-application/*"
+      "@anyopsos/lib-application/*": [
+        "projects/anyopsos-lib-application/*"
       ],
-      "@sysos/lib-modal": [
-        "projects/sysos-lib-modal/src/public-api"
+      "@anyopsos/lib-modal": [
+        "projects/anyopsos-lib-modal/src/public-api"
       ],
-      "@sysos/lib-modal/*": [
-        "projects/sysos-lib-modal/*"
+      "@anyopsos/lib-modal/*": [
+        "projects/anyopsos-lib-modal/*"
       ],
-      "@sysos/lib-vmware": [
-        "projects/sysos-lib-vmware/src/public-api"
+      "@anyopsos/lib-vmware": [
+        "projects/anyopsos-lib-vmware/src/public-api"
       ],
-      "@sysos/lib-vmware/*": [
-        "projects/sysos-lib-vmware/*"
+      "@anyopsos/lib-vmware/*": [
+        "projects/anyopsos-lib-vmware/*"
       ],
-      "@sysos/lib-netapp": [
-        "projects/sysos-lib-netapp/src/public-api"
+      "@anyopsos/lib-netapp": [
+        "projects/anyopsos-lib-netapp/src/public-api"
       ],
-      "@sysos/lib-netapp/*": [
-        "projects/sysos-lib-netapp/*"
+      "@anyopsos/lib-netapp/*": [
+        "projects/anyopsos-lib-netapp/*"
       ],
-      "@sysos/lib-user": [
-        "projects/sysos-lib-user/src/public-api"
+      "@anyopsos/lib-user": [
+        "projects/anyopsos-lib-user/src/public-api"
       ],
-      "@sysos/lib-user/*": [
-        "projects/sysos-lib-user/*"
+      "@anyopsos/lib-user/*": [
+        "projects/anyopsos-lib-user/*"
       ],
-      "@sysos/lib-types": [
-        "projects/sysos-lib-types/src/public-api"
+      "@anyopsos/lib-types": [
+        "projects/anyopsos-lib-types/src/public-api"
       ],
-      "@sysos/lib-types/*": [
-        "projects/sysos-lib-types/*"
+      "@anyopsos/lib-types/*": [
+        "projects/anyopsos-lib-types/*"
       ],
-      "@sysos/lib-file-system-ui": [
-        "projects/sysos-lib-file-system-ui/src/public-api"
+      "@anyopsos/lib-file-system-ui": [
+        "projects/anyopsos-lib-file-system-ui/src/public-api"
       ],
-      "@sysos/lib-file-system-ui/*": [
-        "projects/sysos-lib-file-system-ui/*"
+      "@anyopsos/lib-file-system-ui/*": [
+        "projects/anyopsos-lib-file-system-ui/*"
       ],
-      "@sysos/lib-file-system": [
-        "projects/sysos-lib-file-system/src/public-api"
+      "@anyopsos/lib-file-system": [
+        "projects/anyopsos-lib-file-system/src/public-api"
       ],
-      "@sysos/lib-file-system/*": [
-        "projects/sysos-lib-file-system/*"
+      "@anyopsos/lib-file-system/*": [
+        "projects/anyopsos-lib-file-system/*"
       ],
-      "@sysos/lib-file": [
-        "projects/sysos-lib-file/src/public-api"
+      "@anyopsos/lib-file": [
+        "projects/anyopsos-lib-file/src/public-api"
       ],
-      "@sysos/lib-file/*": [
-        "projects/sysos-lib-file/*"
+      "@anyopsos/lib-file/*": [
+        "projects/anyopsos-lib-file/*"
       ],
-      "@sysos/lib-folder": [
-        "projects/sysos-lib-folder/src/public-api"
+      "@anyopsos/lib-folder": [
+        "projects/anyopsos-lib-folder/src/public-api"
       ],
-      "@sysos/lib-folder/*": [
-        "projects/sysos-lib-folder/*"
+      "@anyopsos/lib-folder/*": [
+        "projects/anyopsos-lib-folder/*"
       ],
-      "@sysos/lib-sanitize": [
-        "projects/sysos-lib-sanitize/src/public-api"
+      "@anyopsos/lib-sanitize": [
+        "projects/anyopsos-lib-sanitize/src/public-api"
       ],
-      "@sysos/lib-sanitize/*": [
-        "projects/sysos-lib-sanitize/*"
+      "@anyopsos/lib-sanitize/*": [
+        "projects/anyopsos-lib-sanitize/*"
       ],
-      "@sysos/lib-scroll-spy": [
-        "projects/sysos-lib-scroll-spy/src/public-api"
+      "@anyopsos/lib-scroll-spy": [
+        "projects/anyopsos-lib-scroll-spy/src/public-api"
       ],
-      "@sysos/lib-scroll-spy/*": [
-        "projects/sysos-lib-scroll-spy/*"
+      "@anyopsos/lib-scroll-spy/*": [
+        "projects/anyopsos-lib-scroll-spy/*"
       ],
-      "@sysos/lib-selectable": [
-        "projects/sysos-lib-selectable/src/public-api"
+      "@anyopsos/lib-selectable": [
+        "projects/anyopsos-lib-selectable/src/public-api"
       ],
-      "@sysos/lib-selectable/*": [
-        "projects/sysos-lib-selectable/*"
+      "@anyopsos/lib-selectable/*": [
+        "projects/anyopsos-lib-selectable/*"
       ],
-      "@sysos/lib-service-injector": [
-        "projects/sysos-lib-service-injector/src/public-api"
+      "@anyopsos/lib-service-injector": [
+        "projects/anyopsos-lib-service-injector/src/public-api"
       ],
-      "@sysos/lib-service-injector/*": [
-        "projects/sysos-lib-service-injector/*"
+      "@anyopsos/lib-service-injector/*": [
+        "projects/anyopsos-lib-service-injector/*"
       ],
-      "@sysos/lib-utils": [
-        "projects/sysos-lib-utils/src/public-api"
+      "@anyopsos/lib-utils": [
+        "projects/anyopsos-lib-utils/src/public-api"
       ],
-      "@sysos/lib-utils/*": [
-        "projects/sysos-lib-utils/*"
+      "@anyopsos/lib-utils/*": [
+        "projects/anyopsos-lib-utils/*"
       ],
-      "@sysos/lib-ext-dygraphs": [
-        "projects/sysos-lib-ext-dygraphs/src/public-api"
+      "@anyopsos/lib-ext-dygraphs": [
+        "projects/anyopsos-lib-ext-dygraphs/src/public-api"
       ],
-      "@sysos/lib-ext-dygraphs/*": [
-        "projects/sysos-lib-dygraphs/*"
+      "@anyopsos/lib-ext-dygraphs/*": [
+        "projects/anyopsos-lib-dygraphs/*"
       ],
-      "@sysos/lib-ext-easypiechart": [
-        "projects/sysos-lib-ext-easypiechart/src/public-api"
+      "@anyopsos/lib-ext-easypiechart": [
+        "projects/anyopsos-lib-ext-easypiechart/src/public-api"
       ],
-      "@sysos/lib-ext-easypiechart/*": [
-        "projects/sysos-lib-easypiechart/*"
+      "@anyopsos/lib-ext-easypiechart/*": [
+        "projects/anyopsos-lib-easypiechart/*"
       ],
-      "@sysos/lib-ext-gaugejs": [
-        "projects/sysos-lib-ext-gaugejs/src/public-api"
+      "@anyopsos/lib-ext-gaugejs": [
+        "projects/anyopsos-lib-ext-gaugejs/src/public-api"
       ],
-      "@sysos/lib-ext-gaugejs/*": [
-        "projects/sysos-lib-gauge/*"
+      "@anyopsos/lib-ext-gaugejs/*": [
+        "projects/anyopsos-lib-gauge/*"
       ],
-      "@sysos/lib-ext-jquery": [
-        "projects/sysos-lib-ext-jquery/src/public-api"
+      "@anyopsos/lib-ext-jquery": [
+        "projects/anyopsos-lib-ext-jquery/src/public-api"
       ],
-      "@sysos/lib-ext-jquery/*": [
-        "projects/sysos-lib-jquery/*"
+      "@anyopsos/lib-ext-jquery/*": [
+        "projects/anyopsos-lib-jquery/*"
       ],
-      "@sysos/lib-ext-lz-string": [
-        "projects/sysos-lib-ext-lz-string/src/public-api"
+      "@anyopsos/lib-ext-lz-string": [
+        "projects/anyopsos-lib-ext-lz-string/src/public-api"
       ],
-      "@sysos/lib-ext-lz-string/*": [
-        "projects/sysos-lib-lz-string/*"
+      "@anyopsos/lib-ext-lz-string/*": [
+        "projects/anyopsos-lib-lz-string/*"
       ],
-      "@sysos/lib-ext-netdata": [
-        "projects/sysos-lib-ext-netdata/src/public-api"
+      "@anyopsos/lib-ext-netdata": [
+        "projects/anyopsos-lib-ext-netdata/src/public-api"
       ],
-      "@sysos/lib-ext-netdata/*": [
-        "projects/sysos-lib-netdata/*"
+      "@anyopsos/lib-ext-netdata/*": [
+        "projects/anyopsos-lib-netdata/*"
       ],
-      "@sysos/lib-ext-perfectscrollbar": [
-        "projects/sysos-lib-ext-perfectscrollbar/src/public-api"
+      "@anyopsos/lib-ext-perfectscrollbar": [
+        "projects/anyopsos-lib-ext-perfectscrollbar/src/public-api"
       ],
-      "@sysos/lib-ext-perfectscrollbar/*": [
-        "projects/sysos-lib-perfectscrollbar/*"
+      "@anyopsos/lib-ext-perfectscrollbar/*": [
+        "projects/anyopsos-lib-perfectscrollbar/*"
       ],
-      "@sysos/lib-ext-pako": [
-        "projects/sysos-lib-ext-pako/src/public-api"
+      "@anyopsos/lib-ext-pako": [
+        "projects/anyopsos-lib-ext-pako/src/public-api"
       ],
-      "@sysos/lib-ext-pako/*": [
-        "projects/sysos-lib-pako/*"
+      "@anyopsos/lib-ext-pako/*": [
+        "projects/anyopsos-lib-pako/*"
       ],
-      "@sysos/lib-ext-weavescope": [
-        "projects/sysos-lib-ext-weavescope/src/public-api"
+      "@anyopsos/lib-ext-weavescope": [
+        "projects/anyopsos-lib-ext-weavescope/src/public-api"
       ],
-      "@sysos/lib-ext-weavescope/*": [
-        "projects/sysos-lib-weavescope/*"
+      "@anyopsos/lib-ext-weavescope/*": [
+        "projects/anyopsos-lib-weavescope/*"
       ],
-      "@sysos/app-backups-manager": [
-        "projects/sysos-app-backups-manager/src/public-api"
+      "@anyopsos/app-backups-manager": [
+        "projects/anyopsos-app-backups-manager/src/public-api"
       ],
-      "@sysos/app-backups-manager/*": [
-        "projects//sysos-app-backups-manager/*"
+      "@anyopsos/app-backups-manager/*": [
+        "projects//anyopsos-app-backups-manager/*"
       ],
-      "@sysos/app-datastore-explorer": [
-        "projects/sysos-app-datastore-explorer/src/public-api"
+      "@anyopsos/app-datastore-explorer": [
+        "projects/anyopsos-app-datastore-explorer/src/public-api"
       ],
-      "@sysos/app-datastore-explorer/*": [
-        "projects/sysos-app-datastore-explorer/*"
+      "@anyopsos/app-datastore-explorer/*": [
+        "projects/anyopsos-app-datastore-explorer/*"
       ],
-      "@sysos/app-drawer": [
-        "projects/sysos-app-drawer/src/public-api"
+      "@anyopsos/app-drawer": [
+        "projects/anyopsos-app-drawer/src/public-api"
       ],
-      "@sysos/app-drawer/*": [
-        "projects/sysos-app-drawer/*"
+      "@anyopsos/app-drawer/*": [
+        "projects/anyopsos-app-drawer/*"
       ],
-      "@sysos/app-file-explorer": [
-        "projects/sysos-app-file-explorer/src/public-api"
+      "@anyopsos/app-file-explorer": [
+        "projects/anyopsos-app-file-explorer/src/public-api"
       ],
-      "@sysos/app-file-explorer/*": [
-        "projects/sysos-app-file-explorer/*"
+      "@anyopsos/app-file-explorer/*": [
+        "projects/anyopsos-app-file-explorer/*"
       ],
-      "@sysos/app-infrastructure-manager": [
-        "projects/sysos-app-infrastructure-manager/src/public-api"
+      "@anyopsos/app-infrastructure-manager": [
+        "projects/anyopsos-app-infrastructure-manager/src/public-api"
       ],
-      "@sysos/app-infrastructure-manager/*": [
-        "projects/sysos-app-infrastructure-manager/*"
+      "@anyopsos/app-infrastructure-manager/*": [
+        "projects/anyopsos-app-infrastructure-manager/*"
       ],
-      "@sysos/app-monitor": [
-        "projects/sysos-app-monitor/src/public-api"
+      "@anyopsos/app-monitor": [
+        "projects/anyopsos-app-monitor/src/public-api"
       ],
-      "@sysos/app-monitor/*": [
-        "projects/sysos-app-monitor/*"
+      "@anyopsos/app-monitor/*": [
+        "projects/anyopsos-app-monitor/*"
       ],
-      "@sysos/app-notepad": [
-        "projects/sysos-app-notepad/src/public-api"
+      "@anyopsos/app-notepad": [
+        "projects/anyopsos-app-notepad/src/public-api"
       ],
-      "@sysos/app-notepad/*": [
-        "projects/sysos-app-notepad/*"
+      "@anyopsos/app-notepad/*": [
+        "projects/anyopsos-app-notepad/*"
       ],
-      "@sysos/app-sftp": [
-        "projects/sysos-app-sftp/src/public-api"
+      "@anyopsos/app-sftp": [
+        "projects/anyopsos-app-sftp/src/public-api"
       ],
-      "@sysos/app-sftp/*": [
-        "projects/sysos-app-sftp/*"
+      "@anyopsos/app-sftp/*": [
+        "projects/anyopsos-app-sftp/*"
       ],
-      "@sysos/app-ssh": [
-        "projects/sysos-app-ssh/src/public-api"
+      "@anyopsos/app-ssh": [
+        "projects/anyopsos-app-ssh/src/public-api"
       ],
-      "@sysos/app-ssh/*": [
-        "projects/sysos-app-ssh/*"
+      "@anyopsos/app-ssh/*": [
+        "projects/anyopsos-app-ssh/*"
       ],
-      "@sysos/app-credentials-manager": [
-        "projects/sysos-app-credentials-manager/src/public-api"
+      "@anyopsos/app-credentials-manager": [
+        "projects/anyopsos-app-credentials-manager/src/public-api"
       ],
-      "@sysos/app-credentials-manager/*": [
-        "projects/sysos-app-credentials-manager/*"
+      "@anyopsos/app-credentials-manager/*": [
+        "projects/anyopsos-app-credentials-manager/*"
       ],
-      "@sysos/app-wmks": [
-        "projects/sysos-app-wmks/src/public-api"
+      "@anyopsos/app-wmks": [
+        "projects/anyopsos-app-wmks/src/public-api"
       ],
-      "@sysos/app-wmks/*": [
-        "projects/sysos-app-wmks/*"
+      "@anyopsos/app-wmks/*": [
+        "projects/anyopsos-app-wmks/*"
       ],
-      "@sysos/modal-input": [
-        "projects/sysos-modal-input/src/public-api"
+      "@anyopsos/modal-input": [
+        "projects/anyopsos-modal-input/src/public-api"
       ],
-      "@sysos/modal-input/*": [
-        "projects/sysos-modal-input/*"
+      "@anyopsos/modal-input/*": [
+        "projects/anyopsos-modal-input/*"
       ],
-      "@sysos/modal-plain": [
-        "projects/sysos-modal-plain/src/public-api"
+      "@anyopsos/modal-plain": [
+        "projects/anyopsos-modal-plain/src/public-api"
       ],
-      "@sysos/modal-plain/*": [
-        "projects/sysos-modal-plain/*"
+      "@anyopsos/modal-plain/*": [
+        "projects/anyopsos-modal-plain/*"
       ],
-      "@sysos/modal-question": [
-        "projects/sysos-modal-question/src/public-api"
+      "@anyopsos/modal-question": [
+        "projects/anyopsos-modal-question/src/public-api"
       ],
-      "@sysos/modal-question/*": [
-        "projects/sysos-modal-question/*"
+      "@anyopsos/modal-question/*": [
+        "projects/anyopsos-modal-question/*"
       ],
-      "@sysos/modal-esxi-selectable": [
-        "projects/sysos-modal-esxi-selectable/src/public-api"
+      "@anyopsos/modal-backup-wizard": [
+        "projects/anyopsos-modal-backup-wizard/src/public-api"
       ],
-      "@sysos/modal-esxi-selectable/*": [
-        "projects/sysos-modal-esxi-selectable/*"
+      "@anyopsos/modal-backup-wizard/*": [
+        "projects/anyopsos-modal-backup-wizard/*"
       ],
-      "@sysos/modal-backup-wizard": [
-        "projects/sysos-modal-backup-wizard/src/public-api"
+      "@anyopsos/modal-recovery-wizard": [
+        "projects/anyopsos-modal-recovery-wizard/src/public-api"
       ],
-      "@sysos/modal-backup-wizard/*": [
-        "projects/sysos-modal-backup-wizard/*"
+      "@anyopsos/modal-recovery-wizard/*": [
+        "projects/anyopsos-modal-recovery-wizard/*"
       ],
-      "@sysos/modal-recovery-wizard": [
-        "projects/sysos-modal-recovery-wizard/src/public-api"
+      "@anyopsos/modal-monitor-options": [
+        "projects/anyopsos-modal-monitor-options/src/public-api"
       ],
-      "@sysos/modal-recovery-wizard/*": [
-        "projects/sysos-modal-recovery-wizard/*"
+      "@anyopsos/modal-monitor-options/*": [
+        "projects/anyopsos-modal-monitor-options/*"
       ],
-      "@sysos/modal-monitor-options": [
-        "projects/sysos-modal-monitor-options/src/public-api"
+      "@anyopsos/modal-monitor-alarms": [
+        "projects/anyopsos-modal-monitor-alarms/src/public-api"
       ],
-      "@sysos/modal-monitor-options/*": [
-        "projects/sysos-modal-monitor-options/*"
+      "@anyopsos/modal-monitor-alarms/*": [
+        "projects/anyopsos-modal-monitor-alarms/*"
       ],
-      "@sysos/modal-monitor-alarms": [
-        "projects/sysos-modal-monitor-alarms/src/public-api"
+      "@anyopsos/modal-monitor-export": [
+        "projects/anyopsos-modal-monitor-export/src/public-api"
       ],
-      "@sysos/modal-monitor-alarms/*": [
-        "projects/sysos-modal-monitor-alarms/*"
+      "@anyopsos/modal-monitor-export/*": [
+        "projects/anyopsos-modal-monitor-export/*"
       ],
-      "@sysos/modal-monitor-export": [
-        "projects/sysos-modal-monitor-export/src/public-api"
+      "@anyopsos/modal-monitor-import": [
+        "projects/anyopsos-modal-monitor-import/src/public-api"
       ],
-      "@sysos/modal-monitor-export/*": [
-        "projects/sysos-modal-monitor-export/*"
+      "@anyopsos/modal-monitor-import/*": [
+        "projects/anyopsos-modal-monitor-import/*"
       ],
-      "@sysos/modal-monitor-import": [
-        "projects/sysos-modal-monitor-import/src/public-api"
+      "@anyopsos/modal-monitor-xss": [
+        "projects/anyopsos-modal-monitor-xss/src/public-api"
       ],
-      "@sysos/modal-monitor-import/*": [
-        "projects/sysos-modal-monitor-import/*"
+      "@anyopsos/modal-monitor-xss/*": [
+        "projects/anyopsos-modal-monitor-xss/*"
       ],
-      "@sysos/modal-monitor-xss": [
-        "projects/sysos-modal-monitor-xss/src/public-api"
+      "@anyopsos/modal-monitor-help": [
+        "projects/anyopsos-modal-monitor-help/src/public-api"
       ],
-      "@sysos/modal-monitor-xss/*": [
-        "projects/sysos-modal-monitor-xss/*"
+      "@anyopsos/modal-monitor-help/*": [
+        "projects/anyopsos-modal-monitor-help/*"
       ],
-      "@sysos/modal-monitor-help": [
-        "projects/sysos-modal-monitor-help/src/public-api"
+      "@anyopsos/modal-infrastructure-manager-new-datacenter": [
+        "projects/anyopsos-modal-infrastructure-manager-new-datacenter/src/public-api"
       ],
-      "@sysos/modal-monitor-help/*": [
-        "projects/sysos-modal-monitor-help/*"
+      "@anyopsos/modal-infrastructure-manager-new-datacenter/*": [
+        "projects/anyopsos-modal-infrastructure-manager-new-datacenter/*"
       ],
-      "@sysos/modal-infrastructure-manager-new-datacenter": [
-        "projects/sysos-modal-infrastructure-manager-new-datacenter/src/public-api"
+      "@anyopsos/modal-infrastructure-manager-new-distributed-port-group": [
+        "projects/anyopsos-modal-infrastructure-manager-new-distributed-port-group/src/public-api"
       ],
-      "@sysos/modal-infrastructure-manager-new-datacenter/*": [
-        "projects/sysos-modal-infrastructure-manager-new-datacenter/*"
+      "@anyopsos/modal-infrastructure-manager-new-distributed-port-group/*": [
+        "projects/anyopsos-modal-infrastructure-manager-new-distributed-port-group/*"
       ],
-      "@sysos/modal-infrastructure-manager-new-distributed-port-group": [
-        "projects/sysos-modal-infrastructure-manager-new-distributed-port-group/src/public-api"
+      "@anyopsos/modal-infrastructure-manager-export-system-logs": [
+        "projects/anyopsos-modal-infrastructure-manager-export-system-logs/src/public-api"
       ],
-      "@sysos/modal-infrastructure-manager-new-distributed-port-group/*": [
-        "projects/sysos-modal-infrastructure-manager-new-distributed-port-group/*"
+      "@anyopsos/modal-infrastructure-manager-export-system-logs/*": [
+        "projects/anyopsos-modal-infrastructure-manager-export-system-logs/*"
       ],
-      "@sysos/modal-infrastructure-manager-export-system-logs": [
-        "projects/sysos-modal-infrastructure-manager-export-system-logs/src/public-api"
+      "@anyopsos/modal-infrastructure-manager-assign-license": [
+        "projects/anyopsos-modal-infrastructure-manager-assign-license/src/public-api"
       ],
-      "@sysos/modal-infrastructure-manager-export-system-logs/*": [
-        "projects/sysos-modal-infrastructure-manager-export-system-logs/*"
+      "@anyopsos/modal-infrastructure-manager-assign-license/*": [
+        "projects/anyopsos-modal-infrastructure-manager-assign-license/*"
       ],
-      "@sysos/modal-infrastructure-manager-assign-license": [
-        "projects/sysos-modal-infrastructure-manager-assign-license/src/public-api"
+      "@anyopsos/modal-infrastructure-manager-assign-tag": [
+        "projects/anyopsos-modal-infrastructure-manager-assign-tag/src/public-api"
       ],
-      "@sysos/modal-infrastructure-manager-assign-license/*": [
-        "projects/sysos-modal-infrastructure-manager-assign-license/*"
+      "@anyopsos/modal-infrastructure-manager-assign-tag/*": [
+        "projects/anyopsos-modal-infrastructure-manager-assign-tag/*"
       ],
-      "@sysos/modal-infrastructure-manager-assign-tag": [
-        "projects/sysos-modal-infrastructure-manager-assign-tag/src/public-api"
+      "@anyopsos/modal-infrastructure-manager-add-tag": [
+        "projects/anyopsos-modal-infrastructure-manager-add-tag/src/public-api"
       ],
-      "@sysos/modal-infrastructure-manager-assign-tag/*": [
-        "projects/sysos-modal-infrastructure-manager-assign-tag/*"
+      "@anyopsos/modal-infrastructure-manager-add-tag/*": [
+        "projects/anyopsos-modal-infrastructure-manager-add-tag/*"
       ],
-      "@sysos/modal-infrastructure-manager-add-tag": [
-        "projects/sysos-modal-infrastructure-manager-add-tag/src/public-api"
+      "@anyopsos/modal-infrastructure-manager-add-category": [
+        "projects/anyopsos-modal-infrastructure-manager-add-category/src/public-api"
       ],
-      "@sysos/modal-infrastructure-manager-add-tag/*": [
-        "projects/sysos-modal-infrastructure-manager-add-tag/*"
+      "@anyopsos/modal-infrastructure-manager-add-category/*": [
+        "projects/anyopsos-modal-infrastructure-manager-add-category/*"
       ],
-      "@sysos/modal-infrastructure-manager-add-category": [
-        "projects/sysos-modal-infrastructure-manager-add-category/src/public-api"
+      "@anyopsos/modal-infrastructure-manager-remove-tag": [
+        "projects/anyopsos-modal-infrastructure-manager-remove-tag/src/public-api"
       ],
-      "@sysos/modal-infrastructure-manager-add-category/*": [
-        "projects/sysos-modal-infrastructure-manager-add-category/*"
+      "@anyopsos/modal-infrastructure-manager-remove-tag/*": [
+        "projects/anyopsos-modal-infrastructure-manager-remove-tag/*"
       ],
-      "@sysos/modal-infrastructure-manager-remove-tag": [
-        "projects/sysos-modal-infrastructure-manager-remove-tag/src/public-api"
+      "@anyopsos/modal-infrastructure-manager-edit-custom-attributes": [
+        "projects/anyopsos-modal-infrastructure-manager-edit-custom-attributes/src/public-api"
       ],
-      "@sysos/modal-infrastructure-manager-remove-tag/*": [
-        "projects/sysos-modal-infrastructure-manager-remove-tag/*"
+      "@anyopsos/modal-infrastructure-manager-edit-custom-attributes/*": [
+        "projects/anyopsos-modal-infrastructure-manager-edit-custom-attributes/*"
       ],
-      "@sysos/modal-infrastructure-manager-edit-custom-attributes": [
-        "projects/sysos-modal-infrastructure-manager-edit-custom-attributes/src/public-api"
+      "@anyopsos/modal-infrastructure-manager-add-permission": [
+        "projects/anyopsos-modal-infrastructure-manager-add-permission/src/public-api"
       ],
-      "@sysos/modal-infrastructure-manager-edit-custom-attributes/*": [
-        "projects/sysos-modal-infrastructure-manager-edit-custom-attributes/*"
+      "@anyopsos/modal-infrastructure-manager-add-permission/*": [
+        "projects/anyopsos-modal-infrastructure-manager-add-permission/*"
       ],
-      "@sysos/modal-infrastructure-manager-add-permission": [
-        "projects/sysos-modal-infrastructure-manager-add-permission/src/public-api"
+      "@anyopsos/modal-infrastructure-manager-new-alarm-definition": [
+        "projects/anyopsos-modal-infrastructure-manager-new-alarm-definition/src/public-api"
       ],
-      "@sysos/modal-infrastructure-manager-add-permission/*": [
-        "projects/sysos-modal-infrastructure-manager-add-permission/*"
+      "@anyopsos/modal-infrastructure-manager-new-alarm-definition/*": [
+        "projects/anyopsos-modal-infrastructure-manager-new-alarm-definition/*"
       ],
-      "@sysos/modal-infrastructure-manager-new-alarm-definition": [
-        "projects/sysos-modal-infrastructure-manager-new-alarm-definition/src/public-api"
+      "@anyopsos/modal-infrastructure-manager-remediation-pre-check": [
+        "projects/anyopsos-modal-infrastructure-manager-remediation-pre-check/src/public-api"
       ],
-      "@sysos/modal-infrastructure-manager-new-alarm-definition/*": [
-        "projects/sysos-modal-infrastructure-manager-new-alarm-definition/*"
+      "@anyopsos/modal-infrastructure-manager-remediation-pre-check/*": [
+        "projects/anyopsos-modal-infrastructure-manager-remediation-pre-check/*"
       ],
-      "@sysos/modal-infrastructure-manager-remediation-pre-check": [
-        "projects/sysos-modal-infrastructure-manager-remediation-pre-check/src/public-api"
+      "@anyopsos/modal-infrastructure-manager-new-cluster": [
+        "projects/anyopsos-modal-infrastructure-manager-new-cluster/src/public-api"
       ],
-      "@sysos/modal-infrastructure-manager-remediation-pre-check/*": [
-        "projects/sysos-modal-infrastructure-manager-remediation-pre-check/*"
+      "@anyopsos/modal-infrastructure-manager-new-cluster/*": [
+        "projects/anyopsos-modal-infrastructure-manager-new-cluster/*"
       ],
-      "@sysos/modal-infrastructure-manager-new-cluster": [
-        "projects/sysos-modal-infrastructure-manager-new-cluster/src/public-api"
+      "@anyopsos/modal-infrastructure-manager-new-distributed-switch": [
+        "projects/anyopsos-modal-infrastructure-manager-new-distributed-switch/src/public-api"
       ],
-      "@sysos/modal-infrastructure-manager-new-cluster/*": [
-        "projects/sysos-modal-infrastructure-manager-new-cluster/*"
+      "@anyopsos/modal-infrastructure-manager-new-distributed-switch/*": [
+        "projects/anyopsos-modal-infrastructure-manager-new-distributed-switch/*"
       ],
-      "@sysos/modal-infrastructure-manager-new-distributed-switch": [
-        "projects/sysos-modal-infrastructure-manager-new-distributed-switch/src/public-api"
+      "@anyopsos/modal-infrastructure-manager-import-distributed-switch": [
+        "projects/anyopsos-modal-infrastructure-manager-import-distributed-switch/src/public-api"
       ],
-      "@sysos/modal-infrastructure-manager-new-distributed-switch/*": [
-        "projects/sysos-modal-infrastructure-manager-new-distributed-switch/*"
+      "@anyopsos/modal-infrastructure-manager-import-distributed-switch/*": [
+        "projects/anyopsos-modal-infrastructure-manager-import-distributed-switch/*"
       ],
-      "@sysos/modal-infrastructure-manager-import-distributed-switch": [
-        "projects/sysos-modal-infrastructure-manager-import-distributed-switch/src/public-api"
+      "@anyopsos/modal-infrastructure-manager-new-virtual-machine": [
+        "projects/anyopsos-modal-infrastructure-manager-new-virtual-machine/src/public-api"
       ],
-      "@sysos/modal-infrastructure-manager-import-distributed-switch/*": [
-        "projects/sysos-modal-infrastructure-manager-import-distributed-switch/*"
+      "@anyopsos/modal-infrastructure-manager-new-virtual-machine/*": [
+        "projects/anyopsos-modal-infrastructure-manager-new-virtual-machine/*"
       ],
-      "@sysos/modal-infrastructure-manager-new-virtual-machine": [
-        "projects/sysos-modal-infrastructure-manager-new-virtual-machine/src/public-api"
+      "@anyopsos/modal-infrastructure-manager-deploy-ovf-template": [
+        "projects/anyopsos-modal-infrastructure-manager-deploy-ovf-template/src/public-api"
       ],
-      "@sysos/modal-infrastructure-manager-new-virtual-machine/*": [
-        "projects/sysos-modal-infrastructure-manager-new-virtual-machine/*"
+      "@anyopsos/modal-infrastructure-manager-deploy-ovf-template/*": [
+        "projects/anyopsos-modal-infrastructure-manager-deploy-ovf-template/*"
       ],
-      "@sysos/modal-infrastructure-manager-deploy-ovf-template": [
-        "projects/sysos-modal-infrastructure-manager-deploy-ovf-template/src/public-api"
+      "@anyopsos/modal-infrastructure-manager-new-datastore": [
+        "projects/anyopsos-modal-infrastructure-manager-new-datastore/src/public-api"
       ],
-      "@sysos/modal-infrastructure-manager-deploy-ovf-template/*": [
-        "projects/sysos-modal-infrastructure-manager-deploy-ovf-template/*"
+      "@anyopsos/modal-infrastructure-manager-new-datastore/*": [
+        "projects/anyopsos-modal-infrastructure-manager-new-datastore/*"
       ],
-      "@sysos/modal-infrastructure-manager-new-datastore": [
-        "projects/sysos-modal-infrastructure-manager-new-datastore/src/public-api"
+      "@anyopsos/modal-infrastructure-manager-new-datastore-cluster": [
+        "projects/anyopsos-modal-infrastructure-manager-new-datastore-cluster/src/public-api"
       ],
-      "@sysos/modal-infrastructure-manager-new-datastore/*": [
-        "projects/sysos-modal-infrastructure-manager-new-datastore/*"
+      "@anyopsos/modal-infrastructure-manager-new-datastore-cluster/*": [
+        "projects/anyopsos-modal-infrastructure-manager-new-datastore-cluster/*"
       ],
-      "@sysos/modal-infrastructure-manager-new-datastore-cluster": [
-        "projects/sysos-modal-infrastructure-manager-new-datastore-cluster/src/public-api"
+      "@anyopsos/modal-infrastructure-manager-rescan-storage": [
+        "projects/anyopsos-modal-infrastructure-manager-rescan-storage/src/public-api"
       ],
-      "@sysos/modal-infrastructure-manager-new-datastore-cluster/*": [
-        "projects/sysos-modal-infrastructure-manager-new-datastore-cluster/*"
+      "@anyopsos/modal-infrastructure-manager-rescan-storage/*": [
+        "projects/anyopsos-modal-infrastructure-manager-rescan-storage/*"
       ],
-      "@sysos/modal-infrastructure-manager-rescan-storage": [
-        "projects/sysos-modal-infrastructure-manager-rescan-storage/src/public-api"
+      "@anyopsos/modal-infrastructure-manager-edit-default-vm-compatibility": [
+        "projects/anyopsos-modal-infrastructure-manager-edit-default-vm-compatibility/src/public-api"
       ],
-      "@sysos/modal-infrastructure-manager-rescan-storage/*": [
-        "projects/sysos-modal-infrastructure-manager-rescan-storage/*"
+      "@anyopsos/modal-infrastructure-manager-edit-default-vm-compatibility/*": [
+        "projects/anyopsos-modal-infrastructure-manager-edit-default-vm-compatibility/*"
       ],
-      "@sysos/modal-infrastructure-manager-edit-default-vm-compatibility": [
-        "projects/sysos-modal-infrastructure-manager-edit-default-vm-compatibility/src/public-api"
+      "@anyopsos/modal-infrastructure-manager-migrate-vms-another-network": [
+        "projects/anyopsos-modal-infrastructure-manager-migrate-vms-another-network/src/public-api"
       ],
-      "@sysos/modal-infrastructure-manager-edit-default-vm-compatibility/*": [
-        "projects/sysos-modal-infrastructure-manager-edit-default-vm-compatibility/*"
-      ],
-      "@sysos/modal-infrastructure-manager-migrate-vms-another-network": [
-        "projects/sysos-modal-infrastructure-manager-migrate-vms-another-network/src/public-api"
-      ],
-      "@sysos/modal-infrastructure-manager-migrate-vms-another-network/*": [
-        "projects/sysos-modal-infrastructure-manager-migrate-vms-another-network/*"
+      "@anyopsos/modal-infrastructure-manager-migrate-vms-another-network/*": [
+        "projects/anyopsos-modal-infrastructure-manager-migrate-vms-another-network/*"
       ]
     }
   }

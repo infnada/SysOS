@@ -1,8 +1,8 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
 
-import {MatMenuTrigger} from '@sysos/lib-angular-material';
-import {Application, SysosLibApplicationService} from '@sysos/lib-application';
-import {ContextMenuItem} from '@sysos/lib-types';
+import {MatMenuTrigger} from '@anyopsos/lib-angular-material';
+import {Application, AnyOpsOSLibApplicationService} from '@anyopsos/lib-application';
+import {ContextMenuItem} from '@anyopsos/lib-types';
 
 @Component({
   selector: 'app-task-bar-items',
@@ -70,7 +70,7 @@ export class TaskBarItemsComponent implements OnInit {
     if (typeof item.text === 'function') return item.text(application);
   }
 
-  constructor(private Applications: SysosLibApplicationService) { }
+  constructor(private Applications: AnyOpsOSLibApplicationService) { }
 
   ngOnInit() {
     this.Applications.taskbarItemOpen.subscribe(application => this.taskbarItemOpen = application);

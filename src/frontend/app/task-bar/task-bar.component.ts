@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {CdkDragDrop, moveItemInArray} from '@angular/cdk/drag-drop';
 
-import {Application, SysosLibApplicationService} from '@sysos/lib-application';
+import {Application, AnyOpsOSLibApplicationService} from '@anyopsos/lib-application';
 
 @Component({
   selector: 'app-task-bar',
@@ -19,7 +19,7 @@ export class TaskBarComponent implements OnInit {
     this.Applications.saveTaskBarApplicationsOrder();
   }
 
-  constructor(private Applications: SysosLibApplicationService) {
+  constructor(private Applications: AnyOpsOSLibApplicationService) {
     setInterval(() => {
       this.clock = new Date().toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit', hour12: true});
     }, 1000);

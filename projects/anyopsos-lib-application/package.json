@@ -1,0 +1,16 @@
+{
+  "name": "@anyopsos/lib-application",
+  "version": "0.0.1",
+  "license": "MIT",
+  "private": false,
+  "peerDependencies": {
+    "@angular/cdk": "^7.3.7",
+    "@angular/common": "^7.2.0",
+    "@angular/core": "^7.2.0",
+    "angular-resizable-element": "^3.2.4",
+    "ngx-toastr": "^10.0.4",
+    "rxjs": "~6.3.3",
+    "@anyopsos/lib-file-system": "~0.0.1",
+    "@anyopsos/lib-logger": "~0.0.1"
+  }
+}

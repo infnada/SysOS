@@ -129,7 +129,7 @@ async function insertContent() {
   return Editor + EditorUi + Sidebar + Graph + Format + Shapes + Actions + Menus + Toolbar + Dialogs + Sidebars + Utils + Draw + Base + Vsdx + MlCodec;
 }
 
-fs.readFile('dist/SysOS/filesystem/bin/applications/sysos-app-drawer.umd.js', 'utf8', async function (err, data) {
+fs.readFile('dist/anyOpsOS/filesystem/bin/applications/anyopsos-app-drawer.umd.js', 'utf8', async function (err, data) {
   if (err) {
     return console.log(err);
   }
@@ -248,7 +248,7 @@ fs.readFile('dist/SysOS/filesystem/bin/applications/sysos-app-drawer.umd.js', 'u
 
   result = result.replace(/document\.body/g, 'document.getElementById(\'graphContainer\')');
 
-  fs.writeFile('dist/SysOS/filesystem/bin/applications/sysos-app-drawer.umd.js', result, 'utf8', function (err) {
+  fs.writeFile('dist/anyOpsOS/filesystem/bin/applications/anyopsos-app-drawer.umd.js', result, 'utf8', function (err) {
     if (err) return console.log(err);
   });
 });

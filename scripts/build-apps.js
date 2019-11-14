@@ -16,8 +16,8 @@ function onExit(child) {
 }
 
 const projectInOrder = [
-  'sysos-app-credentials-manager',
-  'sysos-app-infrastructure-manager'
+  'anyopsos-app-credentials-manager',
+  'anyopsos-app-infrastructure-manager'
 ];
 
 (async function main() {
@@ -36,7 +36,7 @@ const projectInOrder = [
     for (const project of Object.keys(ngCli.projects)) {
 
       // Perform build operation only on libraries not already built
-      if (!project.startsWith('sysos-app-')) continue;
+      if (!project.startsWith('anyopsos-app-')) continue;
       if (projectInOrder.includes(project)) continue;
 
       let child = spawn('npm.cmd', ['run', 'ng', 'build', project]);
