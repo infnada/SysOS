@@ -9,9 +9,6 @@ import {SysosLibVmwareService} from '@sysos/lib-vmware';
 
 import {SysosAppInfrastructureManagerService} from '../sysos-app-infrastructure-manager.service';
 import {ImConnection} from '../../types/im-connection';
-import {IMESXiHost} from '../../types/imesxi-hosts';
-import {VMWareVM} from '../../types/vmware-vm';
-import {VMWareObject} from '../../types/vmware-object';
 import {ImDataObject} from '../../types/im-data-object';
 
 @Injectable({
@@ -99,7 +96,7 @@ export class SysosAppInfrastructureVmwareService {
 
       if (this.Modal.isModalOpened('.window--infrastructure-manager .window__main')) {
         this.Modal.changeModalType('danger', '.window--infrastructure-manager .window__main');
-        this.Modal.changeModalText(e.description, '.window--infrastructure-manager .window__main');
+        this.Modal.changeModalText((e.description ? e.description : e.message), '.window--infrastructure-manager .window__main');
       }
 
       this.InfrastructureManager.setActiveConnection(null);
@@ -154,17 +151,17 @@ export class SysosAppInfrastructureVmwareService {
   /**
    * Set each returned object in an anyOpsOS readable way
    */
-  private parseObjects(connection: ImConnection, objects): void {
+  private parseObjects(connection: ImConnection, objects: any[]): void {
     objects.forEach((obj) => {
       return this.parseObject(connection, obj);
     });
   }
 
-  private parseObject(connection: ImConnection, object): void {
+  private parseObject(connection: ImConnection, object: any): void {
 
     // Is a modification of existing object
     if (object.kind === 'modify') {
-      const existingObject: VMWareObject = this.InfrastructureManager.getConnectionByUuid(connection.uuid).data.Data.find((obj: VMWareObject) => {
+      const existingObject: ImDataObject = this.InfrastructureManager.getConnectionByUuid(connection.uuid).data.Data.find((obj: ImDataObject) => {
         return obj.info.uuid === `${connection.uuid};\u003c${object.obj.name}:${object.obj.type}\u003e`
       });
 
@@ -211,135 +208,6 @@ export class SysosAppInfrastructureVmwareService {
   }
 
   /**
-   * Gets all ESXi hosts from all existing vCenter connections
-   */
-  getESXihosts(): IMESXiHost[] {
-    const connections = this.InfrastructureManager.getConnectionsByType('vmware');
-    const ESXihosts: IMESXiHost[] = [];
-
-    connections.forEach((vCenter: ImConnection) => {
-
-      const hosts = vCenter.data.Data.filter(obj => {
-        return obj.type === 'HostSystem';
-      });
-
-      // TODO: create host type
-      hosts.forEach((host: VMWareObject & { info: { data: any } }) => {
-
-        // Setup basic connection information required for "Backups Manager" application
-        ESXihosts.push({
-          virtual: {
-            uuid: vCenter.uuid,
-            credential: vCenter.credential,
-            host: vCenter.host,
-            port: vCenter.port,
-          },
-          host: {
-            connectionState: host.info.data.runtime.connectionState,
-            host: host.info.obj.name,
-            name: host.info.name,
-            powerState: host.info.data.runtime.powerState
-          }
-        });
-
-      });
-    });
-
-    return ESXihosts;
-  }
-
-  /**
-   * Perform basic VM operations
-   */
-  doWithVM(connectionUuid: string, vm: VMWareObject & { info: { data: VMWareVM } }, action: 'powerOn'|'powerOff'|'suspend'|'reset'|'powerOffGuestOS'|'restartGuestOS'|'refresh'): void {
-
-    const connection = this.InfrastructureManager.getConnectionByUuid(connectionUuid);
-
-    this.VMWare.connectvCenterSoap(connection).then((connectSoapResult) => {
-      if (connectSoapResult.status === 'error') throw {error: connectSoapResult.error, description: 'Failed to connect to VMWare'};
-
-      return this.VMWare.getVMRuntime(
-        connection,
-        vm.info.obj.name
-      );
-    }).then((vmRuntimeResult) => {
-      if (vmRuntimeResult.status === 'error') throw {error: vmRuntimeResult.error, description: 'Failed to get VM runtime'};
-
-      // powerOn
-      if (action === 'powerOn') {
-        if (vmRuntimeResult.data.propSet.runtime.powerState === 'poweredOn') return vmRuntimeResult;
-        return this.VMWare.PowerOnVM_Task(
-          connection,
-          {$type: 'VirtualMachine', _value: vm.info.obj.name},
-          {$type: 'HostSystem', _value: vmRuntimeResult.data.propSet.runtime.host.name},
-          true
-        );
-      }
-
-      // powerOff
-      if (action === 'powerOff') {
-        if (vmRuntimeResult.data.propSet.runtime.powerState === 'poweredOff') return vmRuntimeResult;
-        return this.VMWare.PowerOffVM_Task(
-          connection,
-          {$type: 'VirtualMachine', _value: vm.info.obj.name},
-          true
-        );
-      }
-
-      // suspend
-      if (action === 'suspend') {
-        if (vmRuntimeResult.data.propSet.runtime.powerState !== 'poweredOn') return vmRuntimeResult;
-        return this.VMWare.SuspendVM_Task(
-          connection,
-          {$type: 'VirtualMachine', _value: vm.info.obj.name},
-          true
-        );
-      }
-
-      // reset
-      if (action === 'reset') {
-        if (vmRuntimeResult.data.propSet.runtime.powerState !== 'poweredOn') return vmRuntimeResult;
-        return this.VMWare.ResetVM_Task(
-          connection,
-          {$type: 'VirtualMachine', _value: vm.info.obj.name},
-          true
-        );
-      }
-
-      // powerOffGuestOS
-      if (action === 'powerOffGuestOS') {
-        if (vmRuntimeResult.data.propSet.runtime.powerState !== 'poweredOn') return vmRuntimeResult;
-        return this.VMWare.ShutdownGuest(
-          connection,
-          {$type: 'VirtualMachine', _value: vm.info.obj.name}
-        );
-      }
-
-      // restartGuestOS
-      if (action === 'restartGuestOS') {
-        if (vmRuntimeResult.data.propSet.runtime.powerState !== 'poweredOn') return vmRuntimeResult;
-        return this.VMWare.RebootGuest(
-          connection,
-          {$type: 'VirtualMachine', _value: vm.info.obj.name}
-        );
-      }
-
-      // refresh
-      if (action === 'refresh') {
-        // TODO: still needed?
-      }
-
-    }).then((vmActionResult) => {
-      if (vmActionResult.status === 'error') throw {error: vmActionResult.error, description: `Failed to ${action} off VM`};
-    }).catch((e) => {
-      this.Toastr.error((e.description ? e.description : e.message), `Error while ${action} on VMWare VM`);
-
-      throw e;
-    });
-
-  }
-
-  /**
    * Register File handlers. What to do when create/delate/rename file/folders.....
    */
   registerFileSystemUiHandlers(): void {
@@ -364,7 +232,7 @@ export class SysosAppInfrastructureVmwareService {
         this.logger.error('Infrastructure Manager', 'createFolderToDatastore', null, e.description);
 
         this.Modal.changeModalType('danger', data.selector);
-        this.Modal.changeModalText(e.description, data.selector);
+        this.Modal.changeModalText((e.description ? e.description : e.message), data.selector);
 
         throw e;
       });
@@ -395,7 +263,7 @@ export class SysosAppInfrastructureVmwareService {
         this.logger.error('Infrastructure Manager', 'moveFileFromDatastore', null, e.description);
 
         this.Modal.changeModalType('danger', data.selector);
-        this.Modal.changeModalText(e.description, data.selector);
+        this.Modal.changeModalText((e.description ? e.description : e.message), data.selector);
 
         throw e;
       });
@@ -422,7 +290,7 @@ export class SysosAppInfrastructureVmwareService {
         this.logger.error('Infrastructure Manager', 'deleteFileFromDatastore', null, e.description);
 
         this.Modal.changeModalType('danger', data.selector);
-        this.Modal.changeModalText(e.description, data.selector);
+        this.Modal.changeModalText((e.description ? e.description : e.message), data.selector);
 
         throw e;
       });

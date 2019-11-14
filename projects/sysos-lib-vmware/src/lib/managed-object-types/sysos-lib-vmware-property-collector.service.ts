@@ -60,9 +60,9 @@ export class SysosLibVmwarePropertyCollectorService {
   ) {
     const xml = `<RetrieveProperties xmlns='urn:vim25'>
       <_this type='PropertyCollector'>propertyCollector</_this>
-      ${specSet.forEach((spec: PropertyFilterSpec) => {
+      ${specSet.map((spec: PropertyFilterSpec) => {
         return `<specSet>${this.SysosLibVmwareHelper.setDynamicProperties(spec)}</specSet>`;
-      })}
+      }).join('')}
     </RetrieveProperties>`;
     return this.SysosLibVmwareHelper.doCallSoap(connectionData, xml).pipe(map((data: any) => {
       return this.SysosLibVmwareHelper.validResponse(data.RetrievePropertiesResponse[0]);

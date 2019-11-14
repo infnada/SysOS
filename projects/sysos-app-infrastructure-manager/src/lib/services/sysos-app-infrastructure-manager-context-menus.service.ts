@@ -10,6 +10,7 @@ import {SysosAppInfrastructureVmwareService} from './vmware/sysos-app-infrastruc
 import {SysosAppInfrastructureNetappBackupService} from './netapp/sysos-app-infrastructure-netapp-backup.service';
 import {SysosAppInfrastructureVmwareBackupService} from './vmware/sysos-app-infrastructure-vmware-backup.service';
 import {SysosAppInfrastructureNetappNodeActionsService} from './netapp/sysos-app-infrastructure-netapp-node-actions.service';
+import {SysosAppInfrastructureVmwareNodeActionsService} from './vmware/sysos-app-infrastructure-vmware-node-actions.service';
 
 import {ImTreeNode} from '../types/im-tree-node';
 
@@ -26,7 +27,8 @@ export class SysosAppInfrastructureManagerContextMenusService {
               private InfrastructureManagerVMWare: SysosAppInfrastructureVmwareService,
               private InfrastructureManagerNetAppBackup: SysosAppInfrastructureNetappBackupService,
               private InfrastructureManagerVMWareBackup: SysosAppInfrastructureVmwareBackupService,
-              private InfrastructureManagerNetappNodeActions: SysosAppInfrastructureNetappNodeActionsService) {
+              private InfrastructureManagerNetappNodeActions: SysosAppInfrastructureNetappNodeActionsService,
+              private InfrastructureManagerVMWareNodeActions: SysosAppInfrastructureVmwareNodeActionsService) {
   }
 
   // Storage & Virtual
@@ -60,14 +62,19 @@ export class SysosAppInfrastructureManagerContextMenusService {
         }
       },
       {
+        id: 1, text: '<i class="fas fa-file"></i> Restore Volume files', action: (node: ImTreeNode) => {
+          this.InfrastructureManagerNetAppBackup.restoreVolumeFiles(node);
+        }
+      },
+      {
         id: 2, text: '<i class="fas fa-database"></i> Create Storage Snapshot', action: (node: ImTreeNode) => {
-          this.InfrastructureManagerNetappNodeActions.createStorageSnapShot(node.info.uuid, node.info.volume);
+          this.InfrastructureManagerNetappNodeActions.createStorageSnapShot(node);
         }
       },
       {id: 3, text: 'divider'},
       {
         id: 4, text: '<i class="fas fa-file"></i> Rescan Volume', action: (node: ImTreeNode) => {
-          this.InfrastructureManagerNetApp.getVolumeData(node.info.uuid, node.info.volume);
+          this.InfrastructureManagerNetApp.getVolumeData(node);
         }
       }
     ];
@@ -77,17 +84,17 @@ export class SysosAppInfrastructureManagerContextMenusService {
     return [
       {
         id: 0, text: '<i class="fas fa-database"></i> Mount as Datastore', action: (node: ImTreeNode) => {
-          this.InfrastructureManagerNetAppBackup.mountSnapShotAsDatastore(node.info.uuid, node.info.vserver, node.info.volume, node.info.snapshot);
+          this.InfrastructureManagerNetAppBackup.mountSnapShotAsDatastore(node);
         }
       },
       {
         id: 1, text: '<i class="fas fa-file"></i> Restore Volume files', action: (node: ImTreeNode) => {
-          this.InfrastructureManagerNetAppBackup.restoreVolumeFiles(node.info.uuid, node.info.vserver, node.info.volume, node.info.snapshot);
+          this.InfrastructureManagerNetAppBackup.restoreVolumeFiles(node);
         }
       },
       {
         id: 2, text: '<i class="fas fa-trash"></i> Delete Storage SnapShot', action: (node: ImTreeNode) => {
-          this.InfrastructureManagerNetappNodeActions.deleteStorageSnapShot(node.info.uuid, node.info.volume, node.info.snapshot);
+          this.InfrastructureManagerNetappNodeActions.deleteStorageSnapShot(node);
         }
       }
     ];
@@ -97,17 +104,17 @@ export class SysosAppInfrastructureManagerContextMenusService {
     return [
       {
         id: 0, text: '<i class="fas fa-server"></i> Instant VM', action: (node: ImTreeNode) => {
-          this.InfrastructureManagerNetAppBackup.instantVM(node.info.uuid, null, node.info.vserver, node.info.volume, node.info.snapshot, node.info);
+          this.InfrastructureManagerNetAppBackup.instantVM(node, node);
         }
       },
       {
         id: 1, text: '<i class="fas fa-server"></i> Restore entire VM', action: (node: ImTreeNode) => {
-          this.InfrastructureManagerNetAppBackup.restoreVM(node.info.uuid, null, node.info.vserver, node.info.volume, node.info.snapshot, node.info);
+          this.InfrastructureManagerNetAppBackup.restoreVM(node, node);
         }
       },
       {
         id: 2, text: '<i class="fas fa-file-import"></i> Restore Guest files', action: (node: ImTreeNode) => {
-          this.InfrastructureManagerNetAppBackup.restoreGuestFiles(node.info.uuid, node.info.vserver, node.info.volume, node.info.snapshot, node.info);
+          this.InfrastructureManagerNetAppBackup.restoreGuestFiles(node, node);
         }
       }
     ];
@@ -1024,7 +1031,7 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: '<i class="fas fa-play text-success"></i> Power On',
             action: (node: ImTreeNode) => {
-              this.InfrastructureManagerVMWare.doWithVM(node.info.mainUuid, node, 'powerOn');
+              this.InfrastructureManagerVMWareNodeActions.doWithVM(node.info.mainUuid, node, 'powerOn');
             },
             disabled: (node: ImTreeNode) => {
               return node.info.data['runtime.powerState'] === 'poweredOn';
@@ -1034,7 +1041,7 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 1,
             text: '<i class="fas fa-stop text-danger"></i> Power Off',
             action: (node: ImTreeNode) => {
-              this.InfrastructureManagerVMWare.doWithVM(node.info.mainUuid, node, 'powerOff');
+              this.InfrastructureManagerVMWareNodeActions.doWithVM(node.info.mainUuid, node, 'powerOff');
             },
             disabled: (node: ImTreeNode) => {
               return node.info.data['runtime.powerState'] === 'poweredOff';
@@ -1044,7 +1051,7 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 2,
             text: '<i class="fas fa-pause text-warning"></i> Suspend',
             action: (node: ImTreeNode) => {
-              this.InfrastructureManagerVMWare.doWithVM(node.info.mainUuid, node, 'suspend');
+              this.InfrastructureManagerVMWareNodeActions.doWithVM(node.info.mainUuid, node, 'suspend');
             },
             disabled: (node: ImTreeNode) => {
               return node.info.data['runtime.powerState'] === 'suspended';
@@ -1054,7 +1061,7 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 4,
             text: '<i class="fas fa-sync-alt"></i> Reset',
             action: (node: ImTreeNode) => {
-              this.InfrastructureManagerVMWare.doWithVM(node.info.mainUuid, node, 'reset');
+              this.InfrastructureManagerVMWareNodeActions.doWithVM(node.info.mainUuid, node, 'reset');
             },
             disabled: (node: ImTreeNode) => {
               return node.info.data['runtime.powerState'] === 'poweredOff';
@@ -1065,7 +1072,7 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 6,
             text: '<i class="fas fa-stop text-danger"></i> Shut Down Guest OS',
             action: (node: ImTreeNode) => {
-              this.InfrastructureManagerVMWare.doWithVM(node.info.mainUuid, node, 'powerOffGuestOS');
+              this.InfrastructureManagerVMWareNodeActions.doWithVM(node.info.mainUuid, node, 'powerOffGuestOS');
             },
             disabled: (node: ImTreeNode) => {
               return node.info.data['runtime.powerState'] === 'poweredOff';
@@ -1075,7 +1082,7 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 7,
             text: '<i class="fas fa-sync-alt"></i> Restart Guest OS',
             action: (node: ImTreeNode) => {
-              this.InfrastructureManagerVMWare.doWithVM(node.info.mainUuid, node, 'restartGuestOS');
+              this.InfrastructureManagerVMWareNodeActions.doWithVM(node.info.mainUuid, node, 'restartGuestOS');
             },
             disabled: (node: ImTreeNode) => {
               return node.info.data['runtime.powerState'] === 'poweredOff';
@@ -1450,34 +1457,34 @@ export class SysosAppInfrastructureManagerContextMenusService {
             id: 0,
             text: '<i class="fas fa-server"></i> Instant VM',
             action: (node: ImTreeNode) => {
-              this.InfrastructureManagerVMWareBackup.instantVM(node.info.mainUuid, node);
+              this.InfrastructureManagerVMWareBackup.instantVM(node);
             }
           },
           {
             id: 1,
             text: '<i class="fas fa-server"></i> Restore entire VM',
             action: (node: ImTreeNode) => {
-              this.InfrastructureManagerVMWareBackup.restoreVM(node.info.mainUuid, node);
+              this.InfrastructureManagerVMWareBackup.restoreVM(node);
             }
           },
           {
             id: 2,
             text: '<i class="fas fa-server"></i> Restore Guest Files',
             action: (node: ImTreeNode) => {
-              this.InfrastructureManagerNetAppBackup.restoreGuestFiles(node.info.uuid, node.info.vserver, node.info.volume, node.info.snapshot, node.info);
+              this.InfrastructureManagerVMWareBackup.restoreGuestFiles(node);
             }
           }
         ]
       },
       {
         id: 4, text: '<i class="fas fa-server text-primary"></i> Backup', action: (node: ImTreeNode) => {
-          this.InfrastructureManagerNetAppBackup.backupVM(node.info.uuid, node.info);
+          this.InfrastructureManagerVMWareBackup.backupVM(node);
         }
       },
       {id: 5, text: 'divider'},
       {
         id: 6, text: '<i class="fas fa-sync-alt text-primary"></i> Refresh', action: (node: ImTreeNode) => {
-          this.InfrastructureManagerVMWare.doWithVM(node.info.mainUuid, node, 'refresh');
+          this.InfrastructureManagerVMWareNodeActions.doWithVM(node.info.mainUuid, node, 'refresh');
         }
       },
     ];

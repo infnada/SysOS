@@ -1,21 +1,21 @@
 import {Injectable} from '@angular/core';
 
-import {IMLink} from "../types/imlink";
-import {VMWareObject} from "../types/vmware-object";
-import {VMWareDatastore} from "../types/vmware-datastore";
-import {IMDatastoreLink} from "../types/im-datastore-link";
-import {ImConnection} from "../types/im-connection";
-import {NetAppIface} from "../types/netapp-iface";
-import {NetAppVserver} from "../types/netapp-vserver";
-import {NetAppVolume} from "../types/netapp-volume";
-import {SysosAppInfrastructureManagerService} from "./sysos-app-infrastructure-manager.service";
+import {SysosAppInfrastructureManagerService} from './sysos-app-infrastructure-manager.service';
+import {SysosAppInfrastructureManagerObjectHelperService} from './sysos-app-infrastructure-manager-object-helper.service';
+import {ImConnection} from '../types/im-connection';
+import {ImDataObject} from '../types/im-data-object';
+import {VMWareDatastore} from '../types/vmware-datastore';
+import {NetAppIface} from '../types/netapp-iface';
+import {NetAppVserver} from '../types/netapp-vserver';
+import {NetAppVolume} from '../types/netapp-volume';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SysosAppInfrastructureManagerNodeLinkService {
 
-  constructor(private InfrastructureManager: SysosAppInfrastructureManagerService) {
+  constructor(private InfrastructureManager: SysosAppInfrastructureManagerService,
+              private InfrastructureManagerObjectHelper: SysosAppInfrastructureManagerObjectHelperService,) {
   }
 
   /**
@@ -169,7 +169,7 @@ export class SysosAppInfrastructureManagerNodeLinkService {
   /**
    * Check if VMWare Datastore is linked to any managed storage
    */
-  checkDatastoreLinkWithManagedStorage(datastoreObj: VMWareObject & { info: { data: VMWareDatastore } }): IMDatastoreLink[] {
+  checkDatastoreLinkWithManagedStorage(datastoreObj: ImDataObject & { info: { data: VMWareDatastore } }): (ImDataObject & { info: { data: NetAppVolume } })[] {
     const results = [];
 
     this.InfrastructureManager.getConnectionsByType('netapp').forEach((storageObj: ImConnection) => {
@@ -178,44 +178,43 @@ export class SysosAppInfrastructureManagerNodeLinkService {
       if (storageObj.type === 'netapp') {
 
         // check if storage has any interface that match the datastore.remoteHost and datastore.type
-        const foundInterface = storageObj.data.Ifaces.netifaces.filter((ifaceObj: NetAppIface) => {
-          return ifaceObj.address ===  datastoreObj.info.data.info.nas.remoteHost &&
-            ifaceObj['data-protocols']['data-protocol'] === (
-              datastoreObj.info.data.info.nas.type === 'NFS41' ||
-              datastoreObj.info.data.info.nas.type === 'NFS' ? 'nfs' :
-                datastoreObj.info.data.info.nas.type
-            );
-        })[0];
+        const foundInterface: ImDataObject & { info: { data: NetAppIface } } = this.InfrastructureManagerObjectHelper.getObjectsByType(storageObj.uuid, 'netiface')
+          .filter((ifaceObj: ImDataObject & { info: { data: NetAppIface } }) => {
+            return ifaceObj.info.data.address ===  datastoreObj.info.data.info.nas.remoteHost &&
+              ifaceObj.info.data['data-protocols']['data-protocol'] === (
+                datastoreObj.info.data.info.nas.type === 'NFS41' ||
+                datastoreObj.info.data.info.nas.type === 'NFS' ? 'nfs' :
+                  datastoreObj.info.data.info.nas.type
+              );
+          })[0];
 
         // If not found any storage interface matching, return
         if (!foundInterface) return;
 
         // Search any Data Vservers with allowed protocol that match the datastore.type
-        const foundVserver = storageObj.data.Vservers.filter((vserverObj: NetAppVserver) => {
-          return vserverObj['vserver-type'] === 'data' &&
-            vserverObj['vserver-name'] === foundInterface.vserver &&
-            vserverObj['allowed-protocols'].protocol.includes(
-              (datastoreObj.info.data.info.nas.type === 'NFS41' || datastoreObj.info.data.info.nas.type === 'NFS' ? 'nfs' : datastoreObj.info.data.info.nas.type)
-            );
-        })[0];
+        const foundVserver: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getObjectsByType(storageObj.uuid, 'vserver')
+          .filter((vserverObj: ImDataObject & { info: { data: NetAppVserver } }) => {
+            return vserverObj.info.data['vserver-type'] === 'data' &&
+              vserverObj.name === foundInterface.info.data.vserver &&
+              vserverObj.info.data['allowed-protocols'].protocol.includes(
+                (datastoreObj.info.data.info.nas.type === 'NFS41' || datastoreObj.info.data.info.nas.type === 'NFS' ? 'nfs' : datastoreObj.info.data.info.nas.type)
+              );
+          })[0];
 
         if (!foundVserver) return;
 
         // Search for each Volume containing as a junction path the current datastore remotePath
-        const foundVolume = foundVserver.Volumes.filter((volumeObj: NetAppVolume) => {
-          return volumeObj['volume-id-attributes']['junction-path'] === datastoreObj.info.data.info.nas.remotePath;
-        })[0];
+        const foundVolume: ImDataObject & { info: { data: NetAppVolume } } = this.InfrastructureManagerObjectHelper.getChildObjectsByType(storageObj.uuid, 'volume', foundVserver.info.obj.name)
+          .filter((volumeObj: ImDataObject & { info: { data: NetAppVolume } }) => {
+            return volumeObj.info.data['volume-id-attributes']['junction-path'] === datastoreObj.info.data.info.nas.remotePath;
+          })[0];
 
         if (!foundVolume) return;
 
         // TODO: CHECK VOLUME EXPORTS that match ESXi host
 
         // Link found!
-        results.push({
-          storage: storageObj,
-          vserver: foundVserver,
-          volume: foundVolume
-        });
+        results.push(foundVolume);
 
       }
 

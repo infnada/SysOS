@@ -12,6 +12,10 @@ export class SysosAppInfrastructureManagerObjectHelperService {
   constructor(private InfrastructureManager: SysosAppInfrastructureManagerService) {
   }
 
+  private getConnectionData(connectionUuid: string): ImDataObject[] {
+    return this.InfrastructureManager.getConnectionByUuid(connectionUuid).data.Data;
+  }
+
   /**
    * Generates objectUuid
    */
@@ -20,9 +24,20 @@ export class SysosAppInfrastructureManagerObjectHelperService {
   }
 
   /**
+   * Extracts main uuid from objectUuid
+   */
+  extractMainUuidFromObjectUuid(objectUuid): string {
+    if (objectUuid.includes(';')) {
+      return objectUuid.substring(0, objectUuid.indexOf(';'));
+    }
+
+    return objectUuid;
+  }
+
+  /**
    * Returns all objects by specific type
    */
-  getObjectByType(connectionUuid: string = null, type: string): ImDataObject[] {
+  getObjectsByType(connectionUuid: string = null, type: string): ImDataObject[] {
     // Get objects on single connection
     if (connectionUuid) return this.getObjectByTypeInConnection(connectionUuid, type);
 
@@ -30,7 +45,7 @@ export class SysosAppInfrastructureManagerObjectHelperService {
 
     // Get objects on all connections
     this.InfrastructureManager.getConnections().forEach((connection: ImConnection) => {
-      this.getObjectByTypeInConnection(type, connection.uuid).forEach((imObj: ImDataObject) => {
+      this.getObjectByTypeInConnection(connection.uuid, type).forEach((imObj: ImDataObject) => {
         results.push(imObj);
       });
     });
@@ -42,7 +57,7 @@ export class SysosAppInfrastructureManagerObjectHelperService {
    * Returns all objects by specific type in specific connection
    */
   private getObjectByTypeInConnection(connectionUuid: string, type: string): ImDataObject[] {
-    return this.InfrastructureManager.getConnectionByUuid(connectionUuid).data.Data.filter((imObj: ImDataObject) => {
+    return this.getConnectionData(connectionUuid).filter((imObj: ImDataObject) => {
       return imObj.type === type;
     });
   }
@@ -50,9 +65,9 @@ export class SysosAppInfrastructureManagerObjectHelperService {
   /**
    * Get closest Parent object by object type
    */
-  getParentObjectByType(connectionUuid: string, type: string, ofParent: string): ImDataObject {
-    const parentObject: ImDataObject = this.InfrastructureManager.getConnectionByUuid(connectionUuid).data.Data.find((imObj: ImDataObject) => {
-      return imObj.info.obj.name === ofParent;
+  getParentObjectByType(connectionUuid: string, type: string, parentName: string): ImDataObject {
+    const parentObject: ImDataObject = this.getConnectionData(connectionUuid).find((imObj: ImDataObject) => {
+      return imObj.info.obj.name === parentName;
     });
 
     if (parentObject.type === type) return parentObject;
@@ -60,10 +75,19 @@ export class SysosAppInfrastructureManagerObjectHelperService {
   }
 
   /**
+   * Returns child objects of a parent by object type
+   */
+  getChildObjectsByType(connectionUuid: string, type: string, parentName: string): ImDataObject[] {
+    return this.getConnectionData(connectionUuid).filter((imObj: ImDataObject) => {
+      return imObj.info.parent && imObj.info.parent.name === parentName && imObj.type === type;
+    });
+  }
+
+  /**
    * Returns object by specific namedId
    */
   getObjectById(connectionUuid: string, namedId: string): ImDataObject {
-    return this.InfrastructureManager.getConnectionByUuid(connectionUuid).data.Data.find((imObj: ImDataObject) => {
+    return this.getConnectionData(connectionUuid).find((imObj: ImDataObject) => {
       return imObj.info.obj.name === namedId;
     });
   }
@@ -72,7 +96,7 @@ export class SysosAppInfrastructureManagerObjectHelperService {
    * Returns object by specific objectUuid
    */
   getObjectByUuid(connectionUuid: string, objectUuid: string): ImDataObject {
-    return this.InfrastructureManager.getConnectionByUuid(connectionUuid).data.Data.find((imObj: ImDataObject) => {
+    return this.getConnectionData(connectionUuid).find((imObj: ImDataObject) => {
       return imObj.info.uuid === objectUuid;
     });
   }

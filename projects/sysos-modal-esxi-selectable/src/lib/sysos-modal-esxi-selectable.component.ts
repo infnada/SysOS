@@ -1,14 +1,25 @@
 import {Component, Input} from '@angular/core';
 
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-import {SysosLibLoggerService} from '@sysos/lib-logger';
 import {ToastrService} from 'ngx-toastr';
 
+import {SysosLibLoggerService} from '@sysos/lib-logger';
 import {SysosLibServiceInjectorService} from '@sysos/lib-service-injector';
 import {SysosLibModalService} from '@sysos/lib-modal';
 import {SysosLibVmwareService} from '@sysos/lib-vmware';
 import {SysosLibNetappService} from '@sysos/lib-netapp';
-import {IMConnection, IMESXiHost, NetAppIface, NetAppVserver, NetAppVolume, VMWareFirewallRule} from '@sysos/app-infrastructure-manager';
+import {
+  SysosAppInfrastructureManagerUtilsService,
+  ImConnection,
+  ImDataObject,
+  VMWareVM,
+  VMWareHost,
+  VMWareFirewallRule,
+  NetAppIface,
+  NetAppVserver,
+  NetAppVolume
+} from '@sysos/app-infrastructure-manager';
+import {NetAppSnapshot} from "../../../sysos-app-infrastructure-manager/src/lib/types/netapp-snapshot";
 
 @Component({
   selector: 'smesx-sysos-modal-esxi-selectable',
@@ -16,21 +27,23 @@ import {IMConnection, IMESXiHost, NetAppIface, NetAppVserver, NetAppVolume, VMWa
   styleUrls: ['./sysos-modal-esxi-selectable.component.scss']
 })
 export class SysosModalEsxiSelectableComponent {
-  @Input() storage: IMConnection;
-  @Input() vserver: NetAppVserver;
-  @Input() volume: NetAppVolume;
+  @Input() type: string;
+  @Input() obj: ImDataObject & { info: { data: NetAppSnapshot | NetAppVolume | VMWareVM } };
 
+  private InfrastructureManager;
+  private InfrastructureManagerObjectHelper;
   private InfrastructureManagerVMWare;
 
-  selectedHost: IMESXiHost;
-  selectedIface: NetAppIface;
-  ESXIHosts: IMESXiHost[];
+  selectedHost: ImDataObject & { info: { data: VMWareHost } };
+  selectedIface: ImDataObject & { info: { data: NetAppIface } };
+  selectedSnapshot: ImDataObject & { info: { data: NetAppSnapshot } };
+  ESXIHosts: (ImDataObject & { info: { data: VMWareHost } })[];
 
   private hostData;
   finishLoading: boolean = false;
   foundIp: boolean = false;
-  foundIfaces: NetAppIface[];
-  sameSubnetIp: NetAppIface[] = [];
+  foundIfaces: (ImDataObject & { info: { data: NetAppIface } })[];
+  sameSubnetIp: (ImDataObject & { info: { data: NetAppIface } })[] = [];
   manualIp: boolean = false;
   forceManualIp: boolean = false;
   ifaceServiceData: {
@@ -44,13 +57,21 @@ export class SysosModalEsxiSelectableComponent {
               private serviceInjector: SysosLibServiceInjectorService,
               private Modal: SysosLibModalService,
               private VMWare: SysosLibVmwareService,
-              private NetApp: SysosLibNetappService) {
+              private NetApp: SysosLibNetappService,
+              private InfrastructureManagerUtils: SysosAppInfrastructureManagerUtilsService) {
 
+    this.InfrastructureManager = this.serviceInjector.get('SysosAppInfrastructureManagerService');
+    this.InfrastructureManagerObjectHelper = this.serviceInjector.get('SysosAppInfrastructureManagerObjectHelperService');
     this.InfrastructureManagerVMWare = this.serviceInjector.get('SysosAppInfrastructureVmwareService');
-    this.ESXIHosts = this.InfrastructureManagerVMWare.getESXihosts();
+
+    this.ESXIHosts = this.InfrastructureManagerObjectHelper.getObjectsByType(null, 'HostSystem');
   }
 
-  checkESXidata() {
+  getHostOfConnection(host: ImDataObject & { info: { data: VMWareHost } }): string {
+    return this.InfrastructureManager.getConnectionByUuid(host.info.mainUuid).host;
+  }
+
+  checkESXidata(): void {
     this.ifaceServiceData = null;
     this.foundIp = false;
     this.manualIp = false;
@@ -58,26 +79,34 @@ export class SysosModalEsxiSelectableComponent {
     this.finishLoading = false;
     this.sameSubnetIp = [];
 
+    const selectedHostConnection: ImConnection = this.InfrastructureManager.getConnectionByUuid(this.selectedHost.info.mainUuid);
+
     // Get Volume IP and Protocol
-    this.foundIfaces = this.storage.data.Ifaces.netifaces.filter((iface) => {
-      return iface.role === 'data' &&
-        iface.vserver === this.vserver['vserver-name'] &&
-        iface['operational-status'] === 'up' &&
-        iface['administrative-status'] === 'up' &&
-        iface['current-node'] === this.volume['volume-id-attributes'].node; // TODO: necessary this check?
+    this.foundIfaces = this.InfrastructureManagerObjectHelper.getObjectsByType(this.storage.uuid, 'netiface').filter((iface: ImDataObject & { info: { data: NetAppIface } }) => {
+      return iface.info.data.role === 'data' &&
+        iface.info.data.vserver === this.vserver.name &&
+        iface.info.data['operational-status'] === 'up' &&
+        iface.info.data['administrative-status'] === 'up' &&
+        iface.info.data['current-node'] === this.volume.info.data['volume-id-attributes'].node; // TODO: necessary this check?
     });
 
     this.Modal.openLittleModal('PLEASE WAIT', 'Connecting to vCenter...', '.modal-esxi-selectable', 'plain').then(() => {
 
-      return this.VMWare.connectvCenterSoap(this.selectedHost.virtual);
+      return this.VMWare.connectvCenterSoap(selectedHostConnection);
     }).then((connectSoapResult) => {
-      if (connectSoapResult.status === 'error') throw {error: connectSoapResult.error, description: 'Failed to connect to vCenter'};
+      if (connectSoapResult.status === 'error') throw {
+        error: connectSoapResult.error,
+        description: 'Failed to connect to vCenter'
+      };
 
       this.Modal.changeModalText('Getting data...', '.modal-esxi-selectable');
 
-      return this.VMWare.getHost(this.selectedHost.virtual, this.selectedHost.host.host);
+      return this.VMWare.getHost(selectedHostConnection, this.selectedHost.info.obj.name);
     }).then((hostResult) => {
-      if (hostResult.status === 'error') throw {error: hostResult.error, description: 'Failed to get Host data from vCenter'};
+      if (hostResult.status === 'error') throw {
+        error: hostResult.error,
+        description: 'Failed to get Host data from vCenter'
+      };
 
       console.log(hostResult.data);
 
@@ -90,8 +119,11 @@ export class SysosModalEsxiSelectableComponent {
 
       // Check if some of the datastores IPs match foundIfaces IP
       hostResult.data.datastore.ManagedObjectReference.forEach((datastoreObj) => {
-        this.VMWare.getDatastoreProps(this.selectedHost.virtual, datastoreObj.name).then((datastoreResult) => {
-          if (datastoreResult.status === 'error') throw {error: datastoreResult.error, description: 'Failed to get Datastore data from vCenter'};
+        this.VMWare.getDatastoreProps(selectedHostConnection, datastoreObj.name).then((datastoreResult) => {
+          if (datastoreResult.status === 'error') throw {
+            error: datastoreResult.error,
+            description: 'Failed to get Datastore data from vCenter'
+          };
 
           console.log(datastoreResult);
 
@@ -106,24 +138,12 @@ export class SysosModalEsxiSelectableComponent {
 
       // Check if one of foundIfaces IP is within same subnet of host network
       if (!this.foundIp) {
-        const ipInSameSubnet = (addr1: string, addr2: string, mask: string): boolean => {
-          const res1 = [];
-          const res2 = [];
-          const arr1 = addr1.split('.');
-          const arr2 = addr2.split('.');
-          const arrmask  = mask.split('.');
-
-          for (let i = 0; i < arr1.length; i++) {
-            res1.push(parseInt(arr1[i], 10) & parseInt(arrmask[i], 10));
-            res2.push(parseInt(arr2[i], 10) & parseInt(arrmask[i], 10));
-          }
-          return res1.join('.') === res2.join('.');
-        };
-
-        this.foundIfaces.forEach((iface) => {
+        this.foundIfaces.forEach((iface: ImDataObject & { info: { data: NetAppIface } }) => {
           // TODO: get correct ESXi address
           // TODO: choose the lowest netmask
-          if (ipInSameSubnet(hostResult.data.config.network.vnic.spec.ip.ipAddress, iface.address, iface.netmask)) this.sameSubnetIp.push(iface);
+          if (this.InfrastructureManagerUtils.ipInSameSubnet(hostResult.data.config.network.vnic.spec.ip.ipAddress, iface.info.data.address, iface.info.data.netmask)) {
+            this.sameSubnetIp.push(iface);
+          }
         });
 
         // Preselect 1st IP on same subnet
@@ -146,7 +166,7 @@ export class SysosModalEsxiSelectableComponent {
 
       if (this.Modal.isModalOpened('.modal-esxi-selectable')) {
         this.Modal.changeModalType('danger', '.modal-esxi-selectable');
-        this.Modal.changeModalText(e.description, '.modal-esxi-selectable');
+        this.Modal.changeModalText((e.description ? e.description : e.message), '.modal-esxi-selectable');
       }
 
       this.Toastr.error((e.description ? e.description : e.message), 'Error getting data from VMWare');
@@ -155,14 +175,17 @@ export class SysosModalEsxiSelectableComponent {
     });
   }
 
-  checkIface() {
+  checkIface(): void {
 
-    if (this.selectedIface['data-protocols']['data-protocol'] === 'nfs' && !this.ifaceServiceData) {
+    if (this.selectedIface.info.data['data-protocols']['data-protocol'] === 'nfs' && !this.ifaceServiceData) {
       this.Modal.openLittleModal('PLEASE WAIT', 'Checking storage service status...', '.modal-esxi-selectable', 'plain').then(() => {
 
-        return this.NetApp.getNFSService(this.storage.credential, this.storage.host, this.storage.port, this.vserver['vserver-name']);
+        return this.NetApp.getNFSService(this.storage.credential, this.storage.host, this.storage.port, this.vserver.name);
       }).then((nfsServiceResult) => {
-        if (nfsServiceResult.status === 'error') throw {error: nfsServiceResult.error, description: 'Failed to get NFS service status from Storage'};
+        if (nfsServiceResult.status === 'error') throw {
+          error: nfsServiceResult.error,
+          description: 'Failed to get NFS service status from Storage'
+        };
 
         this.ifaceServiceData = nfsServiceResult.data;
         this.Modal.closeModal('.modal-esxi-selectable');
@@ -171,7 +194,7 @@ export class SysosModalEsxiSelectableComponent {
 
         if (this.Modal.isModalOpened('.modal-esxi-selectable')) {
           this.Modal.changeModalType('danger', '.modal-esxi-selectable');
-          this.Modal.changeModalText(e.description, '.modal-esxi-selectable');
+          this.Modal.changeModalText((e.description ? e.description : e.message), '.modal-esxi-selectable');
         }
 
         this.Toastr.error((e.description ? e.description : e.message), 'Error getting data from NetApp');
@@ -182,10 +205,10 @@ export class SysosModalEsxiSelectableComponent {
 
   }
 
-  checkFirewallNFS(nfsVersion) {
+  checkFirewallNFS(nfsVersion: number): boolean {
     if (this.hostData.config.firewall.defaultPolicy.outgoingBlocked === false) return true;
 
-    const firewallRule = this.hostData.config.firewall.ruleset.find((rule: VMWareFirewallRule) => {
+    const firewallRule: VMWareFirewallRule = this.hostData.config.firewall.ruleset.find((rule: VMWareFirewallRule) => {
       return rule.key === (nfsVersion === 3 ? 'nfsClient' : 'nfs41Client');
     });
 
@@ -193,8 +216,8 @@ export class SysosModalEsxiSelectableComponent {
     if (!firewallRule) return false;
 
     if (firewallRule.allowedHosts.allIp === true) return true;
-    if (firewallRule.allowedHosts.ipAddress && typeof firewallRule.allowedHosts.ipAddress === 'string' && firewallRule.allowedHosts.ipAddress === this.selectedIface.address) return true;
-    if (firewallRule.allowedHosts.ipAddress && Array.isArray(firewallRule.allowedHosts.ipAddress) && firewallRule.allowedHosts.ipAddress.includes(this.selectedIface.address)) return true;
+    if (firewallRule.allowedHosts.ipAddress && typeof firewallRule.allowedHosts.ipAddress === 'string' && firewallRule.allowedHosts.ipAddress === this.selectedIface.info.data.address) return true;
+    if (firewallRule.allowedHosts.ipAddress && Array.isArray(firewallRule.allowedHosts.ipAddress) && firewallRule.allowedHosts.ipAddress.includes(this.selectedIface.info.data.address)) return true;
     // TODO check when is a network instead of an IP
 
     return false;

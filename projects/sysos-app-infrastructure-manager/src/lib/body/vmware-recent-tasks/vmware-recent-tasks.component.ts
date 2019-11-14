@@ -70,7 +70,7 @@ export class VmwareRecentTasksComponent implements OnInit {
 
       if (this.Modal.isModalOpened('.vmware-tasks')) {
         this.Modal.changeModalType('danger', '.vmware-tasks');
-        this.Modal.changeModalText(e.description, '.vmware-tasks');
+        this.Modal.changeModalText((e.description ? e.description : e.message), '.vmware-tasks');
       }
 
       throw e;

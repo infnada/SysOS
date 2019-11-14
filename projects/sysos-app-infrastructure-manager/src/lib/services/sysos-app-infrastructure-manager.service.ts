@@ -12,6 +12,7 @@ import {SysosLibFileSystemService} from '@sysos/lib-file-system';
 
 import {ImConnection} from '../types/im-connection';
 import {IMLink} from '../types/imlink';
+import {ImDataObject} from "../types/im-data-object";
 
 @Injectable({
   providedIn: 'root'
@@ -460,15 +461,13 @@ export class SysosAppInfrastructureManagerService {
   /**
    *
    */
-  openBackupsManager(connectionUuid: string, type: string, data: { [key: string]: any }) {
+  openBackupsManager(type: string, data: { [key: string]: ImDataObject }) {
     this.logger.debug('Infrastructure Manager', 'Opening Backups Manager APP');
 
-    this.Applications.openApplication('backups-manager', {
-      data,
+    this.Applications.openApplication('backups-manager',
+    {
       type,
-      credential: this.getConnectionByUuid(connectionUuid).credential,
-      host: this.getConnectionByUuid(connectionUuid).host,
-      port: this.getConnectionByUuid(connectionUuid).port
+      data
     });
   }
 

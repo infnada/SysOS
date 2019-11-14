@@ -1296,41 +1296,15 @@ export class SysosLibVmwareService {
    * BASIC
    */
   getClientVersion(connectionData: ConnectionData): Promise<any> {
-    return this.http.post('/api/vmware/getClientVersion', {
-      host: connectionData.host,
-      port: connectionData.port,
-    }).pipe(map((res: any) => {
-        return this.SysosLibVmwareHelper.validResponse(res.data.ConfigRoot.clientConnection[0]);
-      },
-      error => {
-        this.logger.error('[VMWare] -> getClientVersion -> Error while doing the call -> ', error);
-      })).toPromise();
+    return this.SysosLibVmwareHelper.getClientVersion(connectionData);
   }
 
   connectvCenter(connectionData: ConnectionData): Promise<any> {
-    return this.http.post('/api/vmware/connect', {
-      host: connectionData.host,
-      port: connectionData.port,
-      credential: connectionData.credential
-    }).pipe(map((data: any) => {
-        return this.SysosLibVmwareHelper.validResponse(data.data);
-      },
-      error => {
-        this.logger.error('[VMWare] -> connectvCenter -> Error while doing the call -> ', error);
-      })).toPromise();
+    return this.SysosLibVmwareHelper.connectvCenter(connectionData);
   }
 
   connectvCenterSoap(connectionData: ConnectionData): Promise<any> {
-    return this.http.post('/api/vmware/connectSoap', {
-      host: connectionData.host,
-      port: connectionData.port,
-      credential: connectionData.credential
-    }).pipe(map((data: any) => {
-        return this.SysosLibVmwareHelper.validResponse(data.data);
-      },
-      error => {
-        this.logger.error('[VMWare] -> connectvCenterSoap -> Error while doing the call -> ', error);
-      })).toPromise();
+    return this.SysosLibVmwareHelper.connectvCenterSoap(connectionData);
   }
 
   /**
@@ -1427,6 +1401,7 @@ export class SysosLibVmwareService {
         skip: false,
         selectSet: [
           ({
+            '$xsi:type': 'TraversalSpec',
             name: 'folderTraversalSpec',
             type: 'Folder',
             path: 'childEntity',
@@ -1462,6 +1437,7 @@ export class SysosLibVmwareService {
             ]
           } as TraversalSpec),
           ({
+            '$xsi:type': 'TraversalSpec',
             name: 'datacenterDatastoreTraversalSpec',
             type: 'Datacenter',
             path: 'datastoreFolder',
@@ -1473,6 +1449,7 @@ export class SysosLibVmwareService {
             ]
           } as TraversalSpec),
           ({
+            '$xsi:type': 'TraversalSpec',
             name: 'datacenterNetworkTraversalSpec',
             type: 'Datacenter',
             path: 'networkFolder',
@@ -1484,6 +1461,7 @@ export class SysosLibVmwareService {
             ]
           } as TraversalSpec),
           ({
+            '$xsi:type': 'TraversalSpec',
             name: 'datacenterVmTraversalSpec',
             type: 'Datacenter',
             path: 'vmFolder',
@@ -1495,6 +1473,7 @@ export class SysosLibVmwareService {
             ]
           } as TraversalSpec),
           ({
+            '$xsi:type': 'TraversalSpec',
             name: 'datacenterHostTraversalSpec',
             type: 'Datacenter',
             path: 'hostFolder',
@@ -1506,12 +1485,14 @@ export class SysosLibVmwareService {
             ]
           } as TraversalSpec),
           ({
+            '$xsi:type': 'TraversalSpec',
             name: 'computeResourceHostTraversalSpec',
             type: 'ComputeResource',
             path: 'host',
             skip: false
           } as TraversalSpec),
           ({
+            '$xsi:type': 'TraversalSpec',
             name: 'computeResourceRpTraversalSpec',
             type: 'ComputeResource',
             path: 'resourcePool',
@@ -1526,6 +1507,7 @@ export class SysosLibVmwareService {
             ]
           }as TraversalSpec),
           ({
+            '$xsi:type': 'TraversalSpec',
             name: 'resourcePoolTraversalSpec',
             type: 'ResourcePool',
             path: 'resourcePool',
@@ -1540,6 +1522,7 @@ export class SysosLibVmwareService {
             ]
           } as TraversalSpec),
           ({
+            '$xsi:type': 'TraversalSpec',
             name: 'hostVmTraversalSpec',
             type: 'HostSystem',
             path: 'vm',
@@ -1551,11 +1534,12 @@ export class SysosLibVmwareService {
             ]
           } as TraversalSpec),
           ({
+            '$xsi:type': 'TraversalSpec',
             name: 'resourcePoolVmTraversalSpec',
             type: 'ResourcePool',
             path: 'vm',
             skip: false
-          }as TraversalSpec)
+          } as TraversalSpec)
         ]
       }]
     }]).then((RetrievePropertiesResponse) => {
@@ -1584,6 +1568,7 @@ export class SysosLibVmwareService {
         skip: false,
         selectSet: [
           ({
+            '$xsi:type': 'TraversalSpec',
             name: 'folderTraversalSpec',
             type: 'Folder',
             path: 'childEntity',
@@ -1619,6 +1604,7 @@ export class SysosLibVmwareService {
             ]
           } as TraversalSpec),
           ({
+            '$xsi:type': 'TraversalSpec',
             name: 'datacenterDatastoreTraversalSpec',
             type: 'Datacenter',
             path: 'datastoreFolder',
@@ -1630,6 +1616,7 @@ export class SysosLibVmwareService {
             ]
           } as TraversalSpec),
           ({
+            '$xsi:type': 'TraversalSpec',
             name: 'datacenterNetworkTraversalSpec',
             type: 'Datacenter',
             path: 'networkFolder',
@@ -1641,6 +1628,7 @@ export class SysosLibVmwareService {
             ]
           } as TraversalSpec),
           ({
+            '$xsi:type': 'TraversalSpec',
             name: 'datacenterVmTraversalSpec',
             type: 'Datacenter',
             path: 'vmFolder',
@@ -1652,6 +1640,7 @@ export class SysosLibVmwareService {
             ]
           } as TraversalSpec),
           ({
+            '$xsi:type': 'TraversalSpec',
             name: 'datacenterHostTraversalSpec',
             type: 'Datacenter',
             path: 'hostFolder',
@@ -1663,12 +1652,14 @@ export class SysosLibVmwareService {
             ]
           } as TraversalSpec),
           ({
+            '$xsi:type': 'TraversalSpec',
             name: 'computeResourceHostTraversalSpec',
             type: 'ComputeResource',
             path: 'host',
             skip: false
           } as TraversalSpec),
           ({
+            '$xsi:type': 'TraversalSpec',
             name: 'computeResourceRpTraversalSpec',
             type: 'ComputeResource',
             path: 'resourcePool',
@@ -1683,6 +1674,7 @@ export class SysosLibVmwareService {
             ]
           } as TraversalSpec),
           ({
+            '$xsi:type': 'TraversalSpec',
             name: 'resourcePoolTraversalSpec',
             type: 'ResourcePool',
             path: 'resourcePool',
@@ -1697,6 +1689,7 @@ export class SysosLibVmwareService {
             ]
           } as TraversalSpec),
           ({
+            '$xsi:type': 'TraversalSpec',
             name: 'hostVmTraversalSpec',
             type: 'HostSystem',
             path: 'vm',
@@ -1708,6 +1701,7 @@ export class SysosLibVmwareService {
             ]
           } as TraversalSpec),
           ({
+            '$xsi:type': 'TraversalSpec',
             name: 'resourcePoolVmTraversalSpec',
             type: 'ResourcePool',
             path: 'vm',
@@ -2020,6 +2014,7 @@ export class SysosLibVmwareService {
         skip: true,
         selectSet: [
           ({
+            '$xsi:type': 'TraversalSpec',
             name: 'visitFolders',
             type: 'Folder',
             path: 'childEntity',
@@ -2121,6 +2116,7 @@ export class SysosLibVmwareService {
         skip: true,
         selectSet: [
           ({
+            '$xsi:type': 'TraversalSpec',
             name: 'visitFolders',
             type: 'Folder',
             path: 'childEntity',

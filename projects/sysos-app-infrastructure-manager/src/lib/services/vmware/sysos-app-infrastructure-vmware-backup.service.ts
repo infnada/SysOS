@@ -5,8 +5,8 @@ import {SysosLibModalService} from '@sysos/lib-modal';
 
 import {SysosAppInfrastructureManagerService} from '../sysos-app-infrastructure-manager.service';
 
-import {VMWareObject} from '../../types/vmware-object';
 import {VMWareVM} from '../../types/vmware-vm';
+import {ImDataObject} from '../../types/im-data-object';
 
 @Injectable({
   providedIn: 'root'
@@ -18,10 +18,35 @@ export class SysosAppInfrastructureVmwareBackupService {
               private InfrastructureManager: SysosAppInfrastructureManagerService) {
   }
 
+  restoreGuestFiles(obj: ImDataObject & { info: { data: VMWareVM } }): void {
+    const loggerArgs = arguments;
+
+    this.logger.debug('Infrastructure Manager', 'Ask for recovery VM Guest Files', arguments);
+
+    this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
+      {
+        title: 'Restore guest files',
+        text: `Do you want to perform a VM Guest Files recovery of ${obj.name}?`
+      }
+    ).then((modalInstance) => {
+      modalInstance.result.then((result: boolean) => {
+        if (result === true) {
+
+          this.logger.debug('Infrastructure Manager', 'Launching Backups Manager for restore entire VM', loggerArgs);
+
+          // Open Backups Manager Application
+          this.InfrastructureManager.openBackupsManager('restore_vm_guest_files', {
+            vm: obj
+          });
+        }
+      });
+    });
+  }
+
   /**
    * Performs an instant VM recovery from storage snapshot
    */
-  instantVM(virtualUuid: string, vm: VMWareObject & { info: { data: VMWareVM } }): void {
+  instantVM(obj: ImDataObject & { info: { data: VMWareVM } }): void {
     const loggerArgs = arguments;
 
     this.logger.debug('Infrastructure Manager', 'Ask for Instant VM recovery', arguments);
@@ -29,7 +54,7 @@ export class SysosAppInfrastructureVmwareBackupService {
     this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
       {
         title: 'Instant VM recovery',
-        text: `Do you want to perform an Instant VM recovery of ${vm.name}?`
+        text: `Do you want to perform an Instant VM recovery of ${obj.name}?`
       }
     ).then((modalInstance) => {
       modalInstance.result.then((result: boolean) => {
@@ -37,11 +62,9 @@ export class SysosAppInfrastructureVmwareBackupService {
 
           this.logger.debug('Infrastructure Manager', 'Launching Backups Manager for Instant VM recovery', loggerArgs);
 
-          this.InfrastructureManager.openBackupsManager(virtualUuid, 'vm_instant_recovery', {
-            virtual: this.InfrastructureManager.getConnectionByUuid(virtualUuid),
-            vm
+          this.InfrastructureManager.openBackupsManager('vm_instant_recovery', {
+            vm: obj
           });
-
         }
       });
     });
@@ -50,7 +73,7 @@ export class SysosAppInfrastructureVmwareBackupService {
   /**
    * Performs a full VM recovery from storage snapshot
    */
-  restoreVM(virtualUuid: string, vm: VMWareObject & { info: { data: VMWareVM } }): void {
+  restoreVM(obj: ImDataObject & { info: { data: VMWareVM } }): void {
     const loggerArgs = arguments;
 
     this.logger.debug('Infrastructure Manager', 'Ask for restore entire VM', arguments);
@@ -58,7 +81,7 @@ export class SysosAppInfrastructureVmwareBackupService {
     this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
       {
         title: 'Restore entire VM',
-        text: `Do you want to perform a entire VM restore of ${vm.name}?`
+        text: `Do you want to perform a entire VM restore of ${obj.name}?`
       }
     ).then((modalInstance) => {
       modalInstance.result.then((result: boolean) => {
@@ -66,13 +89,32 @@ export class SysosAppInfrastructureVmwareBackupService {
 
           this.logger.debug('Infrastructure Manager', 'Launching Backups Manager for restore entire VM', loggerArgs);
 
-          this.InfrastructureManager.openBackupsManager(virtualUuid, 'restore_vm', {
-            virtual: this.InfrastructureManager.getConnectionByUuid(virtualUuid),
-            vm
+          this.InfrastructureManager.openBackupsManager('restore_vm', {
+            vm: obj
           });
 
         }
       });
     });
+  }
+
+  backupVM(obj: ImDataObject & { info: { data: VMWareVM } }): void {
+    this.logger.debug('Infrastructure Manager', 'Launching VM Backup', arguments);
+
+    // TODO: ManagedObjectReference is an array even if all VM files are in same datastore
+    /*if (!this.InfrastructureManager.getLinkByVMwareDatastore(connectionUuid, vm.info.data.datastore.ManagedObjectReference[0].name)) {
+      this.Modal.openLittleModal(
+        'Error while creating Backup',
+        'Not found any compatible NetApp storage. Make sure VMs that you want to backup are inside a NetApp volume and this is managed by SysOS.',
+        '.window--infrastructure-manager .window__main',
+        'plain'
+      ).then();
+      return;
+    }*/
+
+    this.InfrastructureManager.openBackupsManager('backup_vm', {
+      vm: obj
+    });
+
   }
 }

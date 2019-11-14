@@ -64,7 +64,7 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
           port: initConnection.port,
           data: {
             obj: this.application.initData.data.datastore,
-            datacenter: this.InfrastructureManagerObjectHelper.getParentObjectByType(this.application.initData.connectionUuid, 'Datacenter', this.application.initData.data.datastore.info.obj.name)
+            datacenter: this.InfrastructureManagerObjectHelper.getParentObjectByType(this.application.initData.connectionUuid, 'Datacenter', this.application.initData.data.datastore.info.parent.name)
           },
           type: 'vmware'
         }).then(() => {
@@ -100,13 +100,13 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
 
     if (type === 'vmware') {
       this.datastores.push(
-        this.InfrastructureManagerObjectHelper.getObjectByType(null, 'Datastore') as ImDataObject & { info: { data: VMWareDatastore } }[]
+        this.InfrastructureManagerObjectHelper.getObjectsByType(null, 'Datastore') as ImDataObject & { info: { data: VMWareDatastore } }[]
       );
     }
 
     if (type === 'netapp') {
       this.datastores.push(
-        this.InfrastructureManagerObjectHelper.getObjectByType(null, 'volume') as ImDataObject & { info: { data: NetAppVolume } }[]
+        this.InfrastructureManagerObjectHelper.getObjectsByType(null, 'volume') as ImDataObject & { info: { data: NetAppVolume } }[]
       );
     }
 
@@ -130,7 +130,7 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
       data: {
         obj: selectedDatastore,
         datacenter: (this.newConnectionType === 'vmware' ?
-          this.InfrastructureManagerObjectHelper.getParentObjectByType(selectedDatastore.info.mainUuid, 'Datacenter', selectedDatastore.info.obj.name) as ImDataObject
+          this.InfrastructureManagerObjectHelper.getParentObjectByType(selectedDatastore.info.mainUuid, 'Datacenter', selectedDatastore.info.parent.name) as ImDataObject
         : null)
       },
       type: this.newConnectionType

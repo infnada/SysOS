@@ -5,26 +5,19 @@ import {
   NetAppVolume,
   NetAppVserver,
   NetAppIface,
-  VMWareHost,
-  VMWareResourcePool,
-  VMWareFolder,
-  VMWareVM,
+  VMWareHost
 } from '@sysos/app-infrastructure-manager';
 
-export interface VmInstantRecovery {
-  virtual: ImConnection;
-  vm: ImDataObject & { info: { data: VMWareVM } };
-  uuid: string;
+export interface RestoreVolumeFiles {
   storage: ImConnection;
   vserver: ImDataObject & { info: { data: NetAppVserver } };
   volume: ImDataObject & { info: { data: NetAppVolume } };
   snapshot: ImDataObject & { info: { data: NetAppSnapshot } };
+  uuid: string;
+  virtual: ImConnection;
   host: ImDataObject & { info: { data: VMWareHost } };
-  folder: ImDataObject & { info: { data: VMWareFolder } };
-  resourcePool: ImDataObject & { info: { data: VMWareResourcePool } };
   iface: ImDataObject & { info: { data: NetAppIface } };
-  vmName: string;
-  powerOnVm: boolean;
+  esxiDatastoreName: string;
   volumeName?: string;
   datastorePath?: string;
 }

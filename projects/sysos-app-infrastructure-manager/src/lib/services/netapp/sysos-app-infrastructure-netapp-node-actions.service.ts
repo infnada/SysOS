@@ -29,13 +29,13 @@ export class SysosAppInfrastructureNetappNodeActionsService {
   /**
    * Creates a NetApp Snapshot for a Volume
    */
-  createStorageSnapShot(connectionUuid: string, volume: ImDataObject & { info: { data: NetAppVolume } }): void {
+  createStorageSnapShot(volume: ImDataObject & { info: { data: NetAppVolume } }): void {
     const loggerArgs = arguments;
 
     this.logger.debug('Infrastructure Manager', 'Ask for create storage snapshot', arguments);
 
-    const connection: ImConnection = this.InfrastructureManager.getConnectionByUuid(connectionUuid);
-    const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(connectionUuid, 'vserver', volume.info.obj.name);
+    const connection: ImConnection = this.InfrastructureManager.getConnectionByUuid(volume.info.mainUuid);
+    const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(connection.uuid, 'vserver', volume.info.parent.name);
 
     this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
       {
@@ -70,7 +70,7 @@ export class SysosAppInfrastructureNetappNodeActionsService {
           this.Modal.changeModalText(`Snapshot created successfully for volume ${volume.name}`, '.window--infrastructure-manager .window__main');
 
           // Refresh volume data to fetch the new snapshot
-          return this.InfrastructureManagerNetApp.getVolumeData(connectionUuid, volume);
+          return this.InfrastructureManagerNetApp.getVolumeData(volume);
         });
 
       });
@@ -80,7 +80,7 @@ export class SysosAppInfrastructureNetappNodeActionsService {
 
       if (this.Modal.isModalOpened('.window--infrastructure-manager .window__main')) {
         this.Modal.changeModalType('danger', '.window--infrastructure-manager .window__main');
-        this.Modal.changeModalText(e.description, '.window--infrastructure-manager .window__main');
+        this.Modal.changeModalText((e.description ? e.description : e.message), '.window--infrastructure-manager .window__main');
       }
 
       throw e;
@@ -90,13 +90,14 @@ export class SysosAppInfrastructureNetappNodeActionsService {
   /**
    * Deletes a NetApp Snapshot from a Volume
    */
-  deleteStorageSnapShot(connectionUuid: string, volume: ImDataObject & { info: { data: NetAppVolume } }, snapshot: ImDataObject & { info: { data: NetAppSnapshot } }): void {
+  deleteStorageSnapShot(snapshot: ImDataObject & { info: { data: NetAppSnapshot } }): void {
     const loggerArgs = arguments;
 
     this.logger.debug('Infrastructure Manager', 'Ask for delete storage snapshot', arguments);
 
-    const connection: ImConnection = this.InfrastructureManager.getConnectionByUuid(connectionUuid);
-    const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(connectionUuid, 'vserver', volume.info.obj.name);
+    const connection: ImConnection = this.InfrastructureManager.getConnectionByUuid(snapshot.info.mainUuid);
+    const volume: ImDataObject & { info: { data: NetAppVolume } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(connection.uuid, 'volume', snapshot.info.parent.name);
+    const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(connection.uuid, 'vserver', volume.info.parent.name);
 
     this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
       {
@@ -133,7 +134,7 @@ export class SysosAppInfrastructureNetappNodeActionsService {
           this.Modal.changeModalText(`Snapshot ${snapshot.name} deleted successfully for volume ${volume.name}`, '.window--infrastructure-manager .window__main');
 
           // Refresh volume data to fetch the new snapshot
-          return this.InfrastructureManagerNetApp.getVolumeData(connectionUuid, volume);
+          return this.InfrastructureManagerNetApp.getVolumeData(volume);
         });
 
       });
@@ -143,7 +144,7 @@ export class SysosAppInfrastructureNetappNodeActionsService {
 
       if (this.Modal.isModalOpened('.window--infrastructure-manager .window__main')) {
         this.Modal.changeModalType('danger', '.window--infrastructure-manager .window__main');
-        this.Modal.changeModalText(e.description, '.window--infrastructure-manager .window__main');
+        this.Modal.changeModalText((e.description ? e.description : e.message), '.window--infrastructure-manager .window__main');
       }
 
       throw e;

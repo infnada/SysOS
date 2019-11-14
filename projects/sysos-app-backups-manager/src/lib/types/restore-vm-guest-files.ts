@@ -1,18 +1,26 @@
-import {IMESXiHost, IMConnection, NetAppSnapshot, NetAppVolume, NetAppVserver, NetAppIface, VMWareObject, VMWareVM} from '@sysos/app-infrastructure-manager';
+import {
+  ImConnection,
+  ImDataObject,
+  NetAppSnapshot,
+  NetAppVolume,
+  NetAppVserver,
+  NetAppIface,
+  VMWareVM,
+  VMWareHost, VMWareFolder, VMWareResourcePool
+} from '@sysos/app-infrastructure-manager';
 
 export interface RestoreVmGuestFiles {
-  storage: IMConnection;
-  vserver: NetAppVserver;
-  volume: NetAppVolume;
-  snapshot: NetAppSnapshot;
-  vm: VMWareObject & { info: { data: VMWareVM } };
-  uuid?: string;
-  virtual?: IMESXiHost['virtual'];
-  host?: IMESXiHost['host'] & {
-    folder: string;
-    resource_pool: string;
-  };
-  iface?: NetAppIface;
+  storage: ImConnection;
+  vserver: ImDataObject & { info: { data: NetAppVserver } };
+  volume: ImDataObject & { info: { data: NetAppVolume } };
+  snapshot: ImDataObject & { info: { data: NetAppSnapshot } };
+  vm: ImDataObject & { info: { data: VMWareVM } };
+  uuid: string;
+  virtual: ImConnection;
+  host: ImDataObject & { info: { data: VMWareHost } };
+  folder: ImDataObject & { info: { data: VMWareFolder } };
+  resourcePool: ImDataObject & { info: { data: VMWareResourcePool } };
+  iface: ImDataObject & { info: { data: NetAppIface } };
   volumeName?: string;
   datastorePath?: string;
 }

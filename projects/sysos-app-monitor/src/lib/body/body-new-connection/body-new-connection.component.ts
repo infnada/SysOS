@@ -61,7 +61,7 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
 
     this.linkGroups = [{
       type: 'Virtual Machines',
-      nodes: this.InfrastructureManagerObjectHelper.getObjectByType('VirtualMachine')
+      nodes: this.InfrastructureManagerObjectHelper.getObjectsByType('VirtualMachine')
     }];
   }
 

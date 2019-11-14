@@ -150,7 +150,7 @@ export class SysosAppDatastoreExplorerService {
 
     this.Modal.openRegisteredModal('question', '.window--datastore-explorer .window__main',
       {
-        title: `Delete connection ${this.getConnectionByUuid(uuid).data.obj.info.obj.name}`,
+        title: `Delete connection ${this.getConnectionByUuid(uuid).data.obj.name}`,
         text: 'Remove the selected connection from the inventory?'
       }
     ).then((modalInstance) => {

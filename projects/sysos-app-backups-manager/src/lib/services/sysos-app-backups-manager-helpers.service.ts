@@ -7,8 +7,8 @@ import {SysosLibNetappService} from '@sysos/lib-netapp';
 import {SysosLibVmwareService} from '@sysos/lib-vmware';
 import {VMWareFirewallRule} from '@sysos/app-infrastructure-manager';
 
-import {MountRestoreDatastore} from '../types/mount-restore-datastore';
-import {RestoreDatastoreFiles} from '../types/restore-datastore-files';
+import {MountVolumeSnapshot} from '../types/mount-volume-snapshot';
+import {RestoreVolumeFiles} from '../types/restore-volume-files';
 import {RestoreVmGuestFiles} from '../types/restore-vm-guest-files';
 import {VmInstantRecovery} from '../types/vm-instant-recovery';
 import {RestoreVm} from '../types/restore-vm';
@@ -47,7 +47,7 @@ export class SysosAppBackupsManagerHelpersService {
   /**
    * Main functions
    */
-  mountRestoreSnapshotDatastore(data: MountRestoreDatastore) {
+  mountRestoreSnapshotDatastore(data: MountVolumeSnapshot) {
     // Check for available licenses
     return this.checkLicenses(data).then((res) => {
       if (res instanceof Error) throw new Error('Failed to check licenses');
@@ -69,7 +69,7 @@ export class SysosAppBackupsManagerHelpersService {
     });
   }
 
-  restoreSnapshotDatastoreFiles(data: RestoreDatastoreFiles) {
+  restoreSnapshotDatastoreFiles(data: RestoreVolumeFiles) {
     // Check for available licenses
     return this.checkLicenses(data).then((res) => {
       if (res instanceof Error) throw new Error('Failed to check licenses');
@@ -145,13 +145,13 @@ export class SysosAppBackupsManagerHelpersService {
     }).then((res) => {
       if (res instanceof Error) throw new Error('Failed to register VM from snapshot to ESXi host');
 
-      if (data.vm.powerOn) {
+      if (data.powerOnVm) {
         // Power On VM
         this.logger.debug('Backups Manager', 'Powering on vm', loggerArgs);
         return this.VMWare.PowerOnVM_Task(
           data.virtual,
           {$type: 'VirtualMachine', _value: data.vm.info.obj.name},
-          {$type: 'HostSystem', _value: data.host.host},
+          {$type: 'HostSystem', _value: data.host.info.obj.name},
           true
         );
       }
@@ -180,13 +180,13 @@ export class SysosAppBackupsManagerHelpersService {
     // Restore to current location (override VM)
     return this.restoreVMfromSnapshotToCurrentLocation(data).then(() => {
 
-      if (data.vm.powerOn) {
+      if (data.powerOnVm) {
         // Power On VM
         this.logger.debug('Backups Manager', 'Powering on vm', loggerArgs);
         return this.VMWare.PowerOnVM_Task(
           data.virtual,
           {$type: 'VirtualMachine', _value: data.vm.info.obj.name},
-          {$type: 'HostSystem', _value: data.host.host},
+          {$type: 'HostSystem', _value: data.host.info.obj.name},
           true
         );
       }
@@ -488,7 +488,7 @@ export class SysosAppBackupsManagerHelpersService {
    * @description
    * Checks if NetApp storage have required licenses
    */
-  checkLicenses(data: MountRestoreDatastore | RestoreDatastoreFiles | RestoreVmGuestFiles | VmInstantRecovery) {
+  checkLicenses(data: MountVolumeSnapshot | RestoreVolumeFiles | RestoreVmGuestFiles | VmInstantRecovery) {
     this.logger.debug('Backups Manager', 'Check storage licenses', arguments);
 
     return this.NetApp.getLicenses(
@@ -514,16 +514,16 @@ export class SysosAppBackupsManagerHelpersService {
    * @description
    * Clones Storage Volume from Snapshot
    */
-  cloneVolumeFromSnapshot(data: MountRestoreDatastore | RestoreDatastoreFiles | RestoreVmGuestFiles | VmInstantRecovery, volumeNum: number = 0) {
+  cloneVolumeFromSnapshot(data: MountVolumeSnapshot | RestoreVolumeFiles | RestoreVmGuestFiles | VmInstantRecovery, volumeNum: number = 0) {
     const loggerArgs = arguments;
 
     // Set new volume name
     if (volumeNum !== 0) {
-      data.volumeName = 'SysOS_' + data.volume['volume-id-attributes'].name + '_Restore_' + volumeNum;
-      data.datastorePath = 'SysOS_' + data.volume['volume-id-attributes'].name + '_' + volumeNum;
+      data.volumeName = 'SysOS_' + data.volume.name + '_Restore_' + volumeNum;
+      data.datastorePath = 'SysOS_' + data.volume.name + '_' + volumeNum;
     } else {
-      data.volumeName = 'SysOS_' + data.volume['volume-id-attributes'].name + '_Restore';
-      data.datastorePath = 'SysOS_' + data.volume['volume-id-attributes'].name;
+      data.volumeName = 'SysOS_' + data.volume.name + '_Restore';
+      data.datastorePath = 'SysOS_' + data.volume.name;
     }
 
     // Create Volume Clone
@@ -532,8 +532,8 @@ export class SysosAppBackupsManagerHelpersService {
       data.storage.credential,
       data.storage.host,
       data.storage.port,
-      data.vserver['vserver-name'],
-      data.volume['volume-id-attributes'].name,
+      data.vserver.name,
+      data.volume.name,
       data.volumeName,
       data.snapshot.name
     ).then((res) => {
@@ -554,7 +554,7 @@ export class SysosAppBackupsManagerHelpersService {
         data.storage.credential,
         data.storage.host,
         data.storage.port,
-        data.vserver['vserver-name'],
+        data.vserver.name,
         data.volumeName,
         '/' + data.volumeName
       );
@@ -581,8 +581,8 @@ export class SysosAppBackupsManagerHelpersService {
    * @description
    * Checks ESXI firewall rules and adds new IP if needed
    */
-  checkESXiFirewallRule(firewallRulesData, ruleName: string, data: MountRestoreDatastore | RestoreDatastoreFiles | RestoreVmGuestFiles | VmInstantRecovery): Promise<any> {
-    const firewallRule = firewallRulesData.data.ruleset.find((rule: VMWareFirewallRule) => {
+  checkESXiFirewallRule(firewallRulesData, ruleName: string, data: MountVolumeSnapshot | RestoreVolumeFiles | RestoreVmGuestFiles | VmInstantRecovery): Promise<any> {
+    const firewallRule: VMWareFirewallRule = firewallRulesData.data.ruleset.find((rule: VMWareFirewallRule) => {
       return rule.key === ruleName;
     });
 
@@ -590,22 +590,22 @@ export class SysosAppBackupsManagerHelpersService {
 
     // IP Address already allowed by Firewall
     if (firewallRule.allowedHosts.allIp === true) return;
-    if (firewallRule.allowedHosts.ipAddress && typeof firewallRule.allowedHosts.ipAddress === 'string' && firewallRule.allowedHosts.ipAddress === data.iface.address) return;
-    if (firewallRule.allowedHosts.ipAddress && Array.isArray(firewallRule.allowedHosts.ipAddress) && firewallRule.allowedHosts.ipAddress.includes(data.iface.address)) return;
+    if (firewallRule.allowedHosts.ipAddress && typeof firewallRule.allowedHosts.ipAddress === 'string' && firewallRule.allowedHosts.ipAddress === data.iface.info.data.address) return;
+    if (firewallRule.allowedHosts.ipAddress && Array.isArray(firewallRule.allowedHosts.ipAddress) && firewallRule.allowedHosts.ipAddress.includes(data.iface.info.data.address)) return;
     // TODO check when is a network instead of an IP
 
     let ipsRule;
 
     // Create new string of ip for the firewall rule
-    if (firewallRule.allowedHosts.ipAddress && typeof firewallRule.allowedHosts.ipAddress === 'string' && firewallRule.allowedHosts.ipAddress === data.iface.address) {
-      ipsRule = `${firewallRule.allowedHosts.ipAddress}, ${data.iface.address}`;
+    if (firewallRule.allowedHosts.ipAddress && typeof firewallRule.allowedHosts.ipAddress === 'string' && firewallRule.allowedHosts.ipAddress === data.iface.info.data.address) {
+      ipsRule = `${firewallRule.allowedHosts.ipAddress}, ${data.iface.info.data.address}`;
     }
-    if (firewallRule.allowedHosts.ipAddress && Array.isArray(firewallRule.allowedHosts.ipAddress) && firewallRule.allowedHosts.ipAddress.includes(data.iface.address)) {
-      ipsRule = `${firewallRule.allowedHosts.ipAddress.join('', '')}, ${data.iface.address}`;
+    if (firewallRule.allowedHosts.ipAddress && Array.isArray(firewallRule.allowedHosts.ipAddress) && firewallRule.allowedHosts.ipAddress.includes(data.iface.info.data.address)) {
+      ipsRule = `${firewallRule.allowedHosts.ipAddress.join(', ')}, ${data.iface.info.data.address}`;
     }
 
     this.logger.debug('Backups Manager', 'Updating firewall rules', arguments);
-    return this.VMWare.getHostFirewallSystem(data.virtual, data.host.host).then((firewallSystem) => {
+    return this.VMWare.getHostFirewallSystem(data.virtual, data.host.info.obj.name).then((firewallSystem) => {
       if (firewallSystem.status === 'error') throw new Error('Failed to get Host firewallSystem from vCenter');
 
       return this.VMWare.UpdateRuleset(
@@ -623,9 +623,9 @@ export class SysosAppBackupsManagerHelpersService {
    * @description
    * Checks ESXI firewall rules and allows to mount a datastore
    */
-  checkESXiFirewall(data: MountRestoreDatastore | RestoreDatastoreFiles | RestoreVmGuestFiles | VmInstantRecovery): Promise<any> {
+  checkESXiFirewall(data: MountVolumeSnapshot | RestoreVolumeFiles | RestoreVmGuestFiles | VmInstantRecovery): Promise<any> {
 
-    return this.VMWare.getHostFirewallRules(data.virtual, data.host.host).then((firewallRulesData) => {
+    return this.VMWare.getHostFirewallRules(data.virtual, data.host.info.obj.name).then((firewallRulesData) => {
       if (firewallRulesData.status === 'error') throw new Error('Failed to get Host firewall rules from vCenter');
 
       console.log(firewallRulesData);
@@ -634,8 +634,8 @@ export class SysosAppBackupsManagerHelpersService {
       if (firewallRulesData.data.defaultPolicy.outgoingBlocked === false) return;
 
       // Check if storage interface is NFS and which protocol versions are enabled
-      if (data.iface['data-protocols']['data-protocol'] === 'nfs') {
-        return this.NetApp.getNFSService(data.storage.credential, data.storage.host, data.storage.port, data.vserver['vserver-name']).then((serviceData) => {
+      if (data.iface.info.data['data-protocols']['data-protocol'] === 'nfs') {
+        return this.NetApp.getNFSService(data.storage.credential, data.storage.host, data.storage.port, data.vserver.name).then((serviceData) => {
           if (serviceData.status === 'error') throw new Error('Failed to get NFS service status from Storage');
 
           // NFS v4.1
@@ -657,7 +657,7 @@ export class SysosAppBackupsManagerHelpersService {
    * @description
    * Checks Storage volume export rules and allows to mount it into an ESXi server
    */
-  checkStorageVolumeExports(data: MountRestoreDatastore | RestoreDatastoreFiles | RestoreVmGuestFiles | VmInstantRecovery): Promise<any> {
+  checkStorageVolumeExports(data: MountVolumeSnapshot | RestoreVolumeFiles | RestoreVmGuestFiles | VmInstantRecovery): Promise<any> {
     const loggerArgs = arguments;
 
     this.logger.debug('Backups Manager', 'Get Volume Exports', arguments);
@@ -666,7 +666,7 @@ export class SysosAppBackupsManagerHelpersService {
       data.storage.credential,
       data.storage.host,
       data.storage.port,
-      data.vserver['vserver-name'],
+      data.vserver.name,
       `/${data.volumeName}`
     ).then((res) => {
       if (res.status === 'error') throw new Error('Failed to get Volume Exports');
@@ -682,7 +682,7 @@ export class SysosAppBackupsManagerHelpersService {
 
         // TODO: check connectivity from NFS node
         this.logger.debug('Backups Manager', 'Getting network system', loggerArgs);
-        return this.VMWare.getHostConfigManagerNetworkSystem(data.virtual, data.host.host).then((networkSystemData) => {
+        return this.VMWare.getHostConfigManagerNetworkSystem(data.virtual, data.host.info.obj.name).then((networkSystemData) => {
           if (networkSystemData.status === 'error') throw new Error('Failed to get networkSystem from vCenter');
 
           const networkSystem = networkSystemData.data;
@@ -705,8 +705,8 @@ export class SysosAppBackupsManagerHelpersService {
               data.storage.credential,
               data.storage.host,
               data.storage.port,
-              data.vserver['vserver-name'],
-              data.volume['volume-export-attributes'].policy,
+              data.vserver.name,
+              data.volume.info.data['volume-export-attributes'].policy,
               esxiExportAddress // TODO
             );
           }
@@ -725,7 +725,7 @@ export class SysosAppBackupsManagerHelpersService {
    * @description
    * Mount storage Datastore to ESXi host
    */
-  mountVolumeToESXi(data: MountRestoreDatastore | RestoreDatastoreFiles | RestoreVmGuestFiles | VmInstantRecovery) {
+  mountVolumeToESXi(data: MountVolumeSnapshot | RestoreVolumeFiles | RestoreVmGuestFiles | VmInstantRecovery) {
     const loggerArgs = arguments;
 
     this.logger.debug('Backups Manager', 'Connection to vCenter using SOAP', arguments);
@@ -743,8 +743,8 @@ export class SysosAppBackupsManagerHelpersService {
       this.logger.debug('Backups Manager', 'Getting datastore system', loggerArgs);
 
       return Promise.all([
-        this.VMWare.getHostConfigManagerDatastoreSystem(data.virtual, data.host.host),
-        this.NetApp.getNFSService(data.storage.credential, data.storage.host, data.storage.port, data.vserver['vserver-name'])
+        this.VMWare.getHostConfigManagerDatastoreSystem(data.virtual, data.host.info.obj.name),
+        this.NetApp.getNFSService(data.storage.credential, data.storage.host, data.storage.port, data.vserver.name)
       ]);
     }).then((res) => {
       if (res[0].status === 'error') throw new Error('Failed to get datastoreSystem from vCenter');
@@ -759,7 +759,7 @@ export class SysosAppBackupsManagerHelpersService {
         {$type: 'HostDatastoreSystem', _value: datastoreSystem},
         {
           accessMode: 'readWrite',
-          remoteHost: data.iface.address,
+          remoteHost: data.iface.info.data.address,
           remotePath: data.datastorePath,
           localPath: `/${data.volumeName}/`,
           type: (res[1].data['is-nfsv41-enabled'] ? 'NFS41' : 'NFS')
@@ -811,12 +811,12 @@ export class SysosAppBackupsManagerHelpersService {
       this.logger.debug('Backups Manager', 'Register VM to ESXi', loggerArgs);
       return this.VMWare.RegisterVM_Task(
         data.virtual,
-        {$type: 'Folder', _value: data.host.folder},
+        {$type: 'Folder', _value: data.folder.info.obj.name},
         '[' + data.datastorePath + '] ' + data.vm['summary.config.vmPathName'].split(']').pop().substr(1),
         data.vm.name,
         false,
-        {$type: 'ResourcePool', _value: data.host.resource_pool},
-        {$type: 'HostSystem', _value: data.host.host},
+        {$type: 'ResourcePool', _value: data.resourcePool.info.obj.name},
+        {$type: 'HostSystem', _value: data.host.info.obj.name},
         true
 
       );
@@ -905,8 +905,8 @@ export class SysosAppBackupsManagerHelpersService {
         data.storage.credential,
         data.storage.host,
         data.storage.port,
-        data.vserver['vserver-name'],
-        data.volume['volume-id-attributes'].name,
+        data.vserver.name,
+        data.volume.name,
         data.snapshot.name,
         '/' + vmPath
       );
@@ -920,10 +920,10 @@ export class SysosAppBackupsManagerHelpersService {
           data.storage.credential,
           data.storage.host,
           data.storage.port,
-          data.vserver['vserver-name'],
-          data.volume['volume-id-attributes'].name,
+          data.vserver.name,
+          data.volume.name,
           data.snapshot.name,
-          '/vol/' + data.volume['volume-id-attributes'].name + '/' + vmPath + '/' + file.name
+          '/vol/' + data.volume.name + '/' + vmPath + '/' + file.name
         ).then((forRes) => {
           this.logger.debug('Backups Manager', 'Restoring file from storage snapshot', loggerArgs);
 

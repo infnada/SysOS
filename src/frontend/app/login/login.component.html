@@ -1,6 +1,13 @@
 <div id="login">
   <div class="container">
     <div class="profile" [ngClass]="{'profile--open': loginExpanded}">
+      <h1 style="
+          font-family: monospace;
+          font-weight: 700;
+          letter-spacing: 3px;
+          position: absolute;
+          margin-top: -100px;
+      ">anyOpsOS</h1>
       <button class="profile__avatar" id="toggleProfile" (click)="loginExpanded = !loginExpanded">
         <i class="fas fa-user fa-5x fa-user-login"></i>
       </button>

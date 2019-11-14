@@ -5,10 +5,9 @@ import {takeUntil} from 'rxjs/operators';
 
 import {SysosAppInfrastructureManagerService} from './sysos-app-infrastructure-manager.service';
 
-import {ImTreeNode} from "../types/im-tree-node";
-import {ImConnection} from "../types/im-connection";
-import {VMWareObject} from "../types/vmware-object";
-import {ImDataObject} from "../types/im-data-object";
+import {ImTreeNode} from '../types/im-tree-node';
+import {ImConnection} from '../types/im-connection';
+import {ImDataObject} from '../types/im-data-object';
 
 @Injectable({
   providedIn: 'root'
@@ -160,7 +159,7 @@ export class SysosAppInfrastructureManagerTreeDataService implements OnDestroy {
       }
 
       // Get 'new instance' of Main parent object and set it as Children of Virtual connection
-      const mainObj = virtual.data.Data.find((obj: VMWareObject) => {
+      const mainObj = virtual.data.Data.find((obj: ImDataObject) => {
         return obj.info.parent === null;
       });
       virtualObject.children = [JSON.parse(JSON.stringify(mainObj))];

@@ -115,7 +115,7 @@ export class SysosAppInfrastructureNetappService {
 
       this.Modal.changeModalText('Getting NetApp vServers data...', '.window--infrastructure-manager .window__main');
 
-      const vServers: (ImDataObject & { info: { data: NetAppVserver } })[] = this.InfrastructureManagerObjectHelper.getObjectByType(connection.uuid, 'vserver');
+      const vServers: (ImDataObject & { info: { data: NetAppVserver } })[] = this.InfrastructureManagerObjectHelper.getObjectsByType(connection.uuid, 'vserver');
       return Promise.all(vServers.map(async (vServer: ImDataObject & { info: { data: NetAppVserver } }) => {
 
         // This is the main vServer
@@ -141,7 +141,7 @@ export class SysosAppInfrastructureNetappService {
 
       if (this.Modal.isModalOpened('.window--infrastructure-manager .window__main')) {
         this.Modal.changeModalType('danger', '.window--infrastructure-manager .window__main');
-        this.Modal.changeModalText(e.description, '.window--infrastructure-manager .window__main');
+        this.Modal.changeModalText((e.description ? e.description : e.message), '.window--infrastructure-manager .window__main');
       }
 
       this.InfrastructureManager.setActiveConnection(null);
@@ -182,7 +182,7 @@ export class SysosAppInfrastructureNetappService {
       this.parseObjects(connection, 'volume', volumesResult.data, volumeParent);
 
       // Get Luns and Snapshots from each volume
-      const volumes: (ImDataObject & { info: { data: NetAppVolume } })[] = this.InfrastructureManagerObjectHelper.getObjectByType(connection.uuid, 'volume');
+      const volumes: (ImDataObject & { info: { data: NetAppVolume } })[] = this.InfrastructureManagerObjectHelper.getObjectsByType(connection.uuid, 'volume');
       await Promise.all(volumes.map(async (volume: ImDataObject & { info: { data: NetAppVolume } }) => {
 
         await Promise.all([
@@ -230,7 +230,7 @@ export class SysosAppInfrastructureNetappService {
       this.parseObjects(connection, 'snapshot', snapshotsResult.data, snapshotParent);
 
       // Get information of each snapshot
-      const snapshots: (ImDataObject & { info: { data: NetAppSnapshot } })[] = this.InfrastructureManagerObjectHelper.getObjectByType(connection.uuid, 'snapshot');
+      const snapshots: (ImDataObject & { info: { data: NetAppSnapshot } })[] = this.InfrastructureManagerObjectHelper.getObjectsByType(connection.uuid, 'snapshot');
       await Promise.all(snapshots.map(async (snapshot: ImDataObject & { info: { data: NetAppSnapshot } }) => {
 
         await this.NetApp.getSnapshotFileInfo(
@@ -335,11 +335,11 @@ export class SysosAppInfrastructureNetappService {
   /**
    * Refresh NetApp volume data. This is called from context-menu
    */
-  getVolumeData(connectionUuid: string, volume: ImDataObject & { info: { data: NetAppVolume } }): Promise<void> {
+  getVolumeData(volume: ImDataObject & { info: { data: NetAppVolume } }): Promise<void> {
     const loggerArgs = arguments;
 
-    const connection: ImConnection = this.InfrastructureManager.getConnectionByUuid(connectionUuid);
-    const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(connectionUuid, 'vserver', volume.info.obj.name);
+    const connection: ImConnection = this.InfrastructureManager.getConnectionByUuid(volume.info.mainUuid);
+    const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(connection.uuid, 'vserver', volume.info.parent.name);
 
     // Deleting or creating a Volume Snapshot will launch this function, and Modal will be already opened
     if (this.Modal.isModalOpened('.window--infrastructure-manager .window__main')) {
@@ -355,7 +355,7 @@ export class SysosAppInfrastructureNetappService {
 
       if (this.Modal.isModalOpened('.window--infrastructure-manager .window__main')) {
         this.Modal.changeModalType('danger', '.window--infrastructure-manager .window__main');
-        this.Modal.changeModalText(e.description, '.window--infrastructure-manager .window__main');
+        this.Modal.changeModalText((e.description ? e.description : e.message), '.window--infrastructure-manager .window__main');
       }
 
       this.Toastr.error((e.description ? e.description : e.message), 'Error getting data from NetApp');
@@ -488,7 +488,7 @@ export class SysosAppInfrastructureNetappService {
 
       if (this.Modal.isModalOpened('.window--infrastructure-manager .window__main')) {
         this.Modal.changeModalType('danger', '.window--infrastructure-manager .window__main');
-        this.Modal.changeModalText(e.description, '.window--infrastructure-manager .window__main');
+        this.Modal.changeModalText((e.description ? e.description : e.message), '.window--infrastructure-manager .window__main');
       }
 
       throw e;
@@ -518,7 +518,7 @@ export class SysosAppInfrastructureNetappService {
         this.logger.error('Infrastructure Manager', 'createFolderToDatastore', null, e.description);
 
         this.Modal.changeModalType('danger', data.selector);
-        this.Modal.changeModalText(e.description, data.selector);
+        this.Modal.changeModalText((e.description ? e.description : e.message), data.selector);
 
         throw e;
       });
@@ -549,7 +549,7 @@ export class SysosAppInfrastructureNetappService {
         this.logger.error('Infrastructure Manager', 'moveFileFromDatastore', null, e.description);
 
         this.Modal.changeModalType('danger', data.selector);
-        this.Modal.changeModalText(e.description, data.selector);
+        this.Modal.changeModalText((e.description ? e.description : e.message), data.selector);
 
         throw e;
       });
@@ -576,7 +576,7 @@ export class SysosAppInfrastructureNetappService {
         this.logger.error('Infrastructure Manager', 'deleteFileFromDatastore', null, e.description);
 
         this.Modal.changeModalType('danger', data.selector);
-        this.Modal.changeModalText(e.description, data.selector);
+        this.Modal.changeModalText((e.description ? e.description : e.message), data.selector);
 
         throw e;
       });
