@@ -9,17 +9,17 @@ import {AnyOpsOSLibServiceInjectorService} from '@anyopsos/lib-service-injector'
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
 import {AnyOpsOSLibUtilsService} from '@anyopsos/lib-utils';
 import {Credential} from '@anyopsos/app-credentials-manager';
-import {VMWareObject} from '@anyopsos/app-infrastructure-manager';
+import {ImDataObject} from '@anyopsos/app-infrastructure-manager';
 
 import {AnyOpsOSAppMonitorService} from '../../services/anyopsos-app-monitor.service';
 import {Netdata} from '../../types/netdata';
 
 interface linkTo {
   type: string;
-  nodes: VMWareObject[];
+  nodes: ImDataObject[];
 }
 
-const _filter = (opt: VMWareObject[], value: string | VMWareObject): VMWareObject[] => {
+const _filter = (opt: ImDataObject[], value: string | ImDataObject): ImDataObject[] => {
   const filterValue = (typeof value === 'string' ? value.toLowerCase() : value.name.toLowerCase());
 
   return opt.filter(item => item.name.toLowerCase().indexOf(filterValue) === 0);
@@ -90,8 +90,8 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
     this.Monitor.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe((activeConnection: string) => {
       if (!activeConnection) {
 
-        // Reset form if needed on 'New Connection'
-        // If valid is because user clicked on a connection with state 'disconnected' and then did 'New Connection'
+        // Reset form if needed on 'New ImConnection'
+        // If valid is because user clicked on a connection with state 'disconnected' and then did 'New ImConnection'
         if (this.connectionForm.touched || this.connectionForm.valid) this.connectionForm.reset();
         return this.newConnectionType = null;
       }
@@ -125,7 +125,7 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
     return this.linkGroups;
   }
 
-  displayFn(node?: VMWareObject): string | undefined {
+  displayFn(node?: ImDataObject): string | undefined {
     return node ? node.name : undefined;
   }
 

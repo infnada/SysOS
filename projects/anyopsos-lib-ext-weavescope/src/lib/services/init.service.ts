@@ -116,6 +116,33 @@ export class InitService implements OnDestroy {
     const topologies = [
       {
         hide_if_empty: false,
+        name: 'All',
+        rank: 0,
+        url: '/api/topology/all',
+        options: [
+          {
+            defaultValue: 'all',
+            id: 'all',
+            options: [
+              {
+                label: 'All',
+                value: 'all'
+              },
+              {
+                label: 'Virtual Nodes',
+                value: 'virtual'
+              },
+              {
+                label: 'Storage Nodes',
+                value: 'storage'
+              }
+            ]
+          }
+        ]
+      },
+
+      {
+        hide_if_empty: false,
         name: 'Containers',
         options: [
           {

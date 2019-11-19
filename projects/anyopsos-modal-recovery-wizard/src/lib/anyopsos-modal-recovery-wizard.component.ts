@@ -72,7 +72,6 @@ export class AnyOpsOSModalRecoveryWizardComponent implements OnInit {
   foundIfaces: (ImDataObject & { info: { data: NetAppIface } })[];
   sameSubnetIp: (ImDataObject & { info: { data: NetAppIface } })[] = [];
   manualIp: boolean = false;
-  forceManualIp: boolean = false;
   ifaceServiceData: {
     'is-nfsv3-enabled': boolean;
     'is-nfsv41-enabled': boolean;
@@ -129,14 +128,14 @@ export class AnyOpsOSModalRecoveryWizardComponent implements OnInit {
         snapshotFormControl: [(this.data.snapshot ? this.data.snapshot.info.uuid : ''), Validators.required]
       });
       this.secondFormGroup = this.formBuilder.group({
-        recoveryModeFormControl: [(this.type === 'vm_instant_recovery' ? 'new' : 'original'), Validators.required]
+        recoveryModeFormControl: [(this.type === 'vm_instant_recovery' ? 'new' : this.type === 'restore_vm' ? 'original' : ''), Validators.required]
       });
       this.thirdFormGroup = this.formBuilder.group({
         hostFormControl: ['', Validators.required],
         ifaceFormControl: ['', Validators.required],
-        folderFormControl: ['', Validators.required],
-        resourcePoolFormControl: ['', Validators.required],
-        vmNameFormControl: ['', Validators.required],
+        folderFormControl: ['', (this.type === 'restore_vm' || this.type === 'vm_instant_recovery' ? Validators.required : '')],
+        resourcePoolFormControl: ['', (this.type === 'restore_vm' || this.type === 'vm_instant_recovery' ? Validators.required : '')],
+        vmNameFormControl: ['', (this.type === 'restore_vm' || this.type === 'vm_instant_recovery' ? Validators.required : '')],
         powerVMFormControl: [false],
       });
 
@@ -254,7 +253,6 @@ export class AnyOpsOSModalRecoveryWizardComponent implements OnInit {
     this.ifaceServiceData = null;
     this.foundIp = false;
     this.manualIp = false;
-    this.forceManualIp = false;
     this.finishLoading = false;
     this.sameSubnetIp = [];
     this.selectedHost = this.f3.hostFormControl.value;
@@ -301,19 +299,19 @@ export class AnyOpsOSModalRecoveryWizardComponent implements OnInit {
       /**
        * Get Host/Cluster ComputeResource to Get Resource Pools
        */
-      if (this.hostData.parent.type === 'ClusterComputeResource') {
-        return this.VMWare.getClusterComputeResource(selectedHostConnection, this.hostData.parent.name);
+      if (this.hostData.propSet.parent.type === 'ClusterComputeResource') {
+        return this.VMWare.getClusterComputeResource(selectedHostConnection, this.hostData.propSet.parent.name);
       }
 
-      if (this.hostData.parent.type === 'ComputeResource') {
-        return this.VMWare.getComputeResource(selectedHostConnection, this.hostData.parent.name);
+      if (this.hostData.propSet.parent.type === 'ComputeResource') {
+        return this.VMWare.getComputeResource(selectedHostConnection, this.hostData.propSet.parent.name);
       }
 
     }).then((computeResourceResult) => {
       if (computeResourceResult.status === 'error') throw new Error('Failed to get Host computeResource from vCenter');
 
       // Get Host Resource Pools
-      return this.VMWare.getResourcePool(selectedHostConnection, computeResourceResult.data[0].resourcePool.name);
+      return this.VMWare.getResourcePool(selectedHostConnection, computeResourceResult.data[0].propSet.resourcePool.name);
     }).then((resourcePoolResult) => {
       if (resourcePoolResult.status === 'error') throw new Error('Failed to get Host resourcePool from vCenter');
 
@@ -328,12 +326,12 @@ export class AnyOpsOSModalRecoveryWizardComponent implements OnInit {
        * Check Storage IPs
        */
       // If it's an Object (only 1 managed datastore) convert to array
-      if (!Array.isArray(this.hostData.datastore.ManagedObjectReference)) {
-        this.hostData.datastore.ManagedObjectReference = [this.hostData.datastore.ManagedObjectReference];
+      if (!Array.isArray(this.hostData.propSet.datastore[0].ManagedObjectReference)) {
+        this.hostData.propSet.datastore[0].ManagedObjectReference = [this.hostData.propSet.datastore[0].ManagedObjectReference];
       }
 
       // Check if some of the datastores IPs match foundIfaces IP
-      this.hostData.datastore.ManagedObjectReference.forEach((datastoreObj) => {
+      this.hostData.propSet.datastore[0].ManagedObjectReference.forEach((datastoreObj) => {
         this.VMWare.getDatastoreProps(selectedHostConnection, datastoreObj.name).then((datastoreResult) => {
           if (datastoreResult.status === 'error') {
             throw {
@@ -358,19 +356,18 @@ export class AnyOpsOSModalRecoveryWizardComponent implements OnInit {
         this.foundIfaces.forEach((iface) => {
           // TODO: get correct ESXi address
           // TODO: choose the lowest netmask
-          if (this.InfrastructureManagerUtils.ipInSameSubnet(this.hostData.config.network.vnic.spec.ip.ipAddress, iface.info.data.address, iface.info.data.netmask)) {
+          if (this.InfrastructureManagerUtils.ipInSameSubnet(this.hostData.propSet.config[0].network[0].vnic[0].spec[0].ip[0].ipAddress, iface.info.data.address, iface.info.data.netmask)) {
             this.sameSubnetIp.push(iface);
           }
         });
 
         // Preselect 1st IP on same subnet
         if (this.sameSubnetIp.length > 0) {
-          this.selectedIface = this.sameSubnetIp[0];
+          this.f3.ifaceFormControl.setValue(this.sameSubnetIp[0]);
           this.checkIface();
         } else {
           // Ask user to select an IP
           this.manualIp = true;
-          this.forceManualIp = true;
         }
       }
 
@@ -395,6 +392,7 @@ export class AnyOpsOSModalRecoveryWizardComponent implements OnInit {
   }
 
   checkIface(): void {
+    this.selectedIface = this.f3.ifaceFormControl.value;
 
     if (this.selectedIface.info.data['data-protocols']['data-protocol'] === 'nfs' && !this.ifaceServiceData) {
       this.Modal.openLittleModal('PLEASE WAIT', 'Checking storage service status...', '.modal-recovery-wizard', 'plain').then(() => {
@@ -420,6 +418,8 @@ export class AnyOpsOSModalRecoveryWizardComponent implements OnInit {
 
         this.Toastr.error((e.description ? e.description : e.message), 'Error getting data from NetApp');
 
+        this.f3.ifaceFormControl.reset();
+
         throw e;
       });
     }
@@ -427,9 +427,9 @@ export class AnyOpsOSModalRecoveryWizardComponent implements OnInit {
   }
 
   checkFirewallNFS(nfsVersion: number): boolean {
-    if (this.hostData.config.firewall.defaultPolicy.outgoingBlocked === false) return true;
+    if (this.hostData.propSet.config[0].firewall[0].defaultPolicy[0].outgoingBlocked === false) return true;
 
-    const firewallRule = this.hostData.config.firewall.ruleset.find((rule: VMWareFirewallRule) => {
+    const firewallRule = this.hostData.propSet.config[0].firewall[0].ruleset.find((rule: VMWareFirewallRule) => {
       return rule.key === (nfsVersion === 3 ? 'nfsClient' : 'nfs41Client');
     });
 

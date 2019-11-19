@@ -2,7 +2,7 @@
  * Public API Surface of anyopsos-app-infrastructure-manager
  */
 
-export * from './lib/types/im-connection';
+export * from './lib/types/connections/im-connection';
 export * from './lib/types/im-data-object';
 export * from './lib/types/netapp-iface';
 export * from './lib/types/netapp-snapshot';

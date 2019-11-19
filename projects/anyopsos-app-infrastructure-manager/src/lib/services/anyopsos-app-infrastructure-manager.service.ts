@@ -10,24 +10,26 @@ import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
 import {AnyOpsOSLibApplicationService} from '@anyopsos/lib-application';
 import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
 
-import {ImConnection} from '../types/im-connection';
-import {IMLink} from '../types/imlink';
+import {ImConnection} from '../types/connections/im-connection';
 import {ImDataObject} from '../types/im-data-object';
+import {ConnectionKubernetes} from "../types/connections/connection-kubernetes";
+import {ConnectionLinux} from "../types/connections/connection-linux";
+import {ConnectionNetapp} from "../types/connections/connection-netapp";
+import {ConnectionSnmp} from "../types/connections/connection-snmp";
+import {ConnectionVmware} from "../types/connections/connection-vmware";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AnyOpsOSAppInfrastructureManagerService {
-  private linksMap: IMLink[];
-
   private subjectConnectGetData = new Subject<any>();
 
-  private $connections: BehaviorSubject<ImConnection[]>;
+  private $connections: BehaviorSubject<(ConnectionKubernetes | ConnectionLinux | ConnectionNetapp | ConnectionSnmp | ConnectionVmware)[]>;
   private $activeConnection: BehaviorSubject<string>;
 
   private dataStore: {  // This is where we will store our data in memory
-    connections: ImConnection[],
-    activeConnection: string
+    connections: (ConnectionKubernetes | ConnectionLinux | ConnectionNetapp | ConnectionSnmp | ConnectionVmware)[];
+    activeConnection: string;
   };
   connections: Observable<any>;
   activeConnection: Observable<any>;
@@ -38,9 +40,9 @@ export class AnyOpsOSAppInfrastructureManagerService {
               private Modal: AnyOpsOSLibModalService,
               private Applications: AnyOpsOSLibApplicationService,
               private FileSystem: AnyOpsOSLibFileSystemService) {
-    this.dataStore = {connections: [], activeConnection: null};
-    this.$connections = new BehaviorSubject([]) as BehaviorSubject<ImConnection[]>;
-    this.$activeConnection = new BehaviorSubject(null) as BehaviorSubject<string>;
+    this.dataStore = { connections: [], activeConnection: null };
+    this.$connections = new BehaviorSubject([]);
+    this.$activeConnection = new BehaviorSubject(null);
     this.connections = this.$connections.asObservable();
     this.activeConnection = this.$activeConnection.asObservable();
   }
@@ -48,14 +50,14 @@ export class AnyOpsOSAppInfrastructureManagerService {
   /**
    * Return all connections
    */
-  getConnections(): ImConnection[] {
+  getConnections(): (ConnectionKubernetes | ConnectionLinux | ConnectionNetapp | ConnectionSnmp | ConnectionVmware)[] {
     return this.dataStore.connections;
   }
 
   /**
    * Return all connections matching 'type' type
    */
-  getConnectionsByType(type: string): ImConnection[] {
+  getConnectionsByType(type: string): (ConnectionKubernetes | ConnectionLinux | ConnectionNetapp | ConnectionSnmp | ConnectionVmware)[] {
     return this.dataStore.connections.filter(obj => {
       return obj.type === type;
     });
@@ -64,7 +66,7 @@ export class AnyOpsOSAppInfrastructureManagerService {
   /**
    * Get current connection full object or MAIN object
    */
-  getActiveConnection(returnMain: boolean = false): ImConnection {
+  getActiveConnection(returnMain: boolean = false): ConnectionKubernetes | ConnectionLinux | ConnectionNetapp | ConnectionSnmp | ConnectionVmware {
     if (this.dataStore.activeConnection === null) return null;
 
     if (this.dataStore.activeConnection.includes(';')) {
@@ -83,7 +85,7 @@ export class AnyOpsOSAppInfrastructureManagerService {
   /**
    * Get connection full object matching 'uuid'
    */
-  getConnectionByUuid(uuid: string): ImConnection {
+  getConnectionByUuid(uuid: string): ConnectionKubernetes | ConnectionLinux | ConnectionNetapp | ConnectionSnmp | ConnectionVmware {
     if (!uuid) throw new Error('uuid');
 
     return this.dataStore.connections.find(obj => obj.uuid === uuid);
@@ -92,8 +94,8 @@ export class AnyOpsOSAppInfrastructureManagerService {
   /**
    * Sets current/active connection
    */
-  setActiveConnection(uuid: string): void {
-    this.dataStore.activeConnection = uuid;
+  setActiveConnection(connectionUuid: string): void {
+    this.dataStore.activeConnection = connectionUuid;
 
     // broadcast data to subscribers
     this.$activeConnection.next(Object.assign({}, this.dataStore).activeConnection);
@@ -110,7 +112,7 @@ export class AnyOpsOSAppInfrastructureManagerService {
    */
   initConnections(): void {
     this.FileSystem.getConfigFile('applications/infrastructure-manager/config.json').subscribe(
-      (res: ImConnection[]) => {
+      (res: (ConnectionKubernetes | ConnectionLinux | ConnectionNetapp | ConnectionSnmp | ConnectionVmware)[]) => {
         this.logger.info('Infrastructure Manager', 'Got connections successfully');
 
         res.forEach((connection) => {
@@ -130,24 +132,11 @@ export class AnyOpsOSAppInfrastructureManagerService {
       });
   }
 
-  initLinksMap(): void {
-    this.FileSystem.getConfigFile('applications/infrastructure-manager/links.json').subscribe(
-      (res: IMLink[]) => {
-        this.logger.info('Infrastructure Manager', 'Got linksMap successfully');
-
-        this.linksMap = res;
-      },
-      error => {
-        this.logger.error('Infrastructure Manager', 'Error while getting linksMap', null, error);
-        return this.Toastr.error('Error getting linksMap.', 'Infrastructure Manager');
-      });
-  }
-
   /**
    * @Description
    * Called when user starts a new connection
    */
-  connect(connection: ImConnection, saveOnly: boolean = false): void {
+  connect(connection: ConnectionKubernetes | ConnectionLinux | ConnectionNetapp | ConnectionSnmp | ConnectionVmware, saveOnly: boolean = false): void {
     if (!connection) throw new Error('connection_not_found');
 
     this.logger.debug('Infrastructure Manager', 'Connect received', arguments);
@@ -162,12 +151,19 @@ export class AnyOpsOSAppInfrastructureManagerService {
       this.dataStore.connections[currentConnectionIndex] = connection;
 
     } else {
+
       // Check if connection already exists
+
       if (this.dataStore.connections.filter(obj => {
-        return obj.type === connection.type && obj.host === connection.host;
+        if (connection.type === 'kubernetes') {
+          return obj.type === connection.type && obj.clusterServer === connection.clusterServer;
+        } else {
+          return obj.type === connection.type && obj.host === connection.host;
+        }
+
       }).length > 0) {
         this.logger.error('Infrastructure Manager', 'Error while setting new connection -> Connection already exists', arguments);
-        this.Toastr.error(`Node (${connection.host}) already exists. Please modify the existing connection properties or ReScan the node.`, 'Error creating connection');
+        this.Toastr.error(`Node (${(connection.type === 'kubernetes' ? connection.clusterServer : connection.host)}) already exists. Please modify the existing connection properties or ReScan the node.`, 'Error creating connection');
         return null;
       }
 
@@ -180,7 +176,7 @@ export class AnyOpsOSAppInfrastructureManagerService {
 
     // Save initial data then initialize
     Promise.resolve().then(() => {
-      if (connection.save) return this.saveConnection(connection);
+      if (connection.save) return this.saveConnection(this.getConnectionByUuid(connection.uuid));
 
       return;
     }).then(() => {
@@ -191,34 +187,25 @@ export class AnyOpsOSAppInfrastructureManagerService {
 
   }
 
-  private initializeConnection(connection: ImConnection): void {
-    if (connection.type === 'netapp') return this.subjectConnectGetData.next(connection);
-    if (connection.type === 'vmware') return this.subjectConnectGetData.next(connection);
-    if (connection.type === 'windows' || connection.type === 'linux' || connection.type === 'snmp') {
-      return this.socket.emit('[new-session]', {
-        type: 'smanager',
-        host: connection.host,
-        port: connection.port,
-        credential: connection.credential,
-        uuid: connection.uuid
-      });
-    }
+  private initializeConnection(connection: ConnectionKubernetes | ConnectionLinux | ConnectionNetapp | ConnectionSnmp | ConnectionVmware): void {
+    return this.subjectConnectGetData.next(connection);
   }
 
   /**
    * "dispatcher"
    */
-  private setConnectionByType(connection: ImConnection, initialized?: boolean): void {
-    if (connection.type === 'linux') return this.setNewConnectionLinux(connection, initialized);
-    if (connection.type === 'snmp') return this.setNewConnectionSNMP(connection, initialized);
+  private setConnectionByType(connection:ConnectionKubernetes | ConnectionLinux | ConnectionNetapp | ConnectionSnmp | ConnectionVmware, initialized?: boolean): void {
     if (connection.type === 'vmware') return this.setNewConnectionVirtual(connection, initialized);
     if (connection.type === 'netapp') return this.setNewConnectionNetApp(connection, initialized);
+    if (connection.type === 'kubernetes') return this.setNewConnectionKubernetes(connection, initialized);
+    if (connection.type === 'linux') return this.setNewConnectionLinux(connection, initialized);
+    if (connection.type === 'snmp') return this.setNewConnectionSNMP(connection, initialized);
   }
 
   /**
    * Add new Linux connection to connections array
    */
-  private setNewConnectionLinux(connection: ImConnection, initialized?: boolean): void {
+  private setNewConnectionLinux(connection: ConnectionLinux, initialized?: boolean): void {
     if (initialized) {
       this.dataStore.connections.push(connection);
     } else {
@@ -239,7 +226,7 @@ export class AnyOpsOSAppInfrastructureManagerService {
   /**
    * Add new SNMP connection to connections array
    */
-  private setNewConnectionSNMP(connection: ImConnection, initialized?: boolean): void {
+  private setNewConnectionSNMP(connection: ConnectionSnmp, initialized?: boolean): void {
     if (initialized) {
       this.dataStore.connections.push(connection);
     } else {
@@ -248,21 +235,21 @@ export class AnyOpsOSAppInfrastructureManagerService {
         host: connection.host,
         port: connection.port,
         description: connection.description,
-        credential: connection.credential,
         type: connection.type,
         autologin: connection.autologin,
         save: connection.save,
         state: 'disconnected',
-        oids: connection.oids,
         community: connection.community
       });
+      // so?
+      // oids: connection.oids,
     }
   }
 
   /**
    * Add new Virtual connection to connections array
    */
-  private setNewConnectionVirtual(connection: ImConnection, initialized?: boolean): void {
+  private setNewConnectionVirtual(connection: ConnectionVmware, initialized?: boolean): void {
     if (initialized) {
       // Reset nextVersion of WaitForUpdatesEx
       connection.data.nextVersion = null;
@@ -282,7 +269,8 @@ export class AnyOpsOSAppInfrastructureManagerService {
           nextVersion: null,
           Base: {
             name: connection.host
-          }
+          },
+          Data: []
         },
         state: 'disconnected'
       });
@@ -292,7 +280,7 @@ export class AnyOpsOSAppInfrastructureManagerService {
   /**
    * Add new NetApp connection to connections array
    */
-  private setNewConnectionNetApp(connection: ImConnection, initialized?: boolean): void {
+  private setNewConnectionNetApp(connection: ConnectionNetapp, initialized?: boolean): void {
     if (initialized) {
       this.dataStore.connections.push(connection);
     } else {
@@ -308,7 +296,8 @@ export class AnyOpsOSAppInfrastructureManagerService {
         data: {
           Base: {
             name: connection.host
-          }
+          },
+          Data: []
         },
         state: 'disconnected'
       });
@@ -316,30 +305,40 @@ export class AnyOpsOSAppInfrastructureManagerService {
   }
 
   /**
-   * Save node links to config file
+   * Add new Kubernetes connection to connections array
    */
-  private saveLinksMap(): void {
-    this.logger.debug('Infrastructure Manager', 'Saving linksMap');
-
-    const configFile = 'applications/infrastructure-manager/links.json';
-
-    this.FileSystem.saveConfigFile(this.linksMap, configFile, false).subscribe(
-      () => {
-        this.logger.debug('Infrastructure Manager', 'linksMap saved successfully');
-      },
-      error => {
-        this.logger.error('Infrastructure Manager', 'Error while saving linksMap', null, error);
-        this.Toastr.error('Error while saving linksMap.', 'Infrastructure Manager');
+  private setNewConnectionKubernetes(connection: ConnectionKubernetes, initialized?: boolean): void {
+    if (initialized) {
+      this.dataStore.connections.push(connection);
+    } else {
+      this.dataStore.connections.push({
+        uuid: connection.uuid,
+        clusterName: connection.clusterName,
+        clusterServer: connection.clusterServer,
+        clusterCa: connection.clusterCa,
+        description: connection.description,
+        credential: connection.credential,
+        type: connection.type,
+        autologin: connection.autologin,
+        save: connection.save,
+        data: {
+          Base: {
+            name: connection.clusterName
+          },
+          Data: []
+        },
+        state: 'disconnected'
       });
-
+    }
   }
+
 
   /**
    * -------------------------
    * Interact with connections
    * -------------------------
    */
-  saveConnection(connection: ImConnection): Promise<any> {
+  saveConnection(connection: ImConnection & (ConnectionKubernetes | ConnectionLinux | ConnectionNetapp | ConnectionSnmp | ConnectionVmware)): Promise<any> {
     const loggerArgs = arguments;
 
     if (!connection) throw new Error('connection_not_found');
@@ -407,7 +406,7 @@ export class AnyOpsOSAppInfrastructureManagerService {
               // broadcast data to subscribers
               this.connectionsUpdated();
 
-              this.logger.debug('Infrastructure Manager', 'Connection deleted successfully', loggerArgs);
+              this.logger.debug('Infrastructure Manager', 'ImConnection deleted successfully', loggerArgs);
             },
             error => {
               this.logger.error('Infrastructure Manager', 'Error while deleting connection', loggerArgs, error);

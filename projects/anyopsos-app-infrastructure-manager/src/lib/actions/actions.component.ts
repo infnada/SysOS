@@ -6,7 +6,7 @@ import {Application} from '@anyopsos/lib-application';
 import {AnyOpsOSLibUtilsService} from '@anyopsos/lib-utils';
 
 import {AnyOpsOSAppInfrastructureManagerService} from '../services/anyopsos-app-infrastructure-manager.service';
-import {ImConnection} from '../types/im-connection';
+import {ImConnection} from '../types/connections/im-connection';
 
 @Component({
   selector: 'saim-actions',

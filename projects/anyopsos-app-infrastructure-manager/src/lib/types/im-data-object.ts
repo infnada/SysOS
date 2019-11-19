@@ -3,7 +3,6 @@ export interface ImDataObject {
   info: {
     uuid: string;
     mainUuid?: string;
-    type: string;
     obj: {
       type: string;
       name: string;

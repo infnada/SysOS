@@ -61,7 +61,7 @@ export class AnyOpsOSLibExtNetdataService {
       console.log('popover');
     };
 
-    this.$connections = new BehaviorSubject([]) as BehaviorSubject<object>;
+    this.$connections = new BehaviorSubject([]);
     this.connections = this.$connections.asObservable();
   }
 

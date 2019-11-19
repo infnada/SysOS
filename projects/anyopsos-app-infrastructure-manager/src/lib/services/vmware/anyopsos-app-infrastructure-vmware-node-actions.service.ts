@@ -5,6 +5,8 @@ import {ToastrService} from 'ngx-toastr';
 import {AnyOpsOSLibVmwareService} from '@anyopsos/lib-vmware';
 
 import {AnyOpsOSAppInfrastructureManagerService} from '../anyopsos-app-infrastructure-manager.service';
+
+import {ConnectionVmware} from '../../types/connections/connection-vmware';
 import {ImDataObject} from '../../types/im-data-object';
 import {VMWareVM} from '../../types/vmware-vm';
 
@@ -23,7 +25,7 @@ export class AnyOpsOSAppInfrastructureVmwareNodeActionsService {
    */
   doWithVM(connectionUuid: string, vm: ImDataObject & { info: { data: VMWareVM } }, action: 'powerOn'|'powerOff'|'suspend'|'reset'|'powerOffGuestOS'|'restartGuestOS'|'refresh'): void {
 
-    const connection = this.InfrastructureManager.getConnectionByUuid(connectionUuid);
+    const connection: ConnectionVmware = this.InfrastructureManager.getConnectionByUuid(connectionUuid) as ConnectionVmware;
 
     this.VMWare.connectvCenterSoap(connection).then((connectSoapResult) => {
       if (connectSoapResult.status === 'error') throw {error: connectSoapResult.error, description: 'Failed to connect to VMWare'};

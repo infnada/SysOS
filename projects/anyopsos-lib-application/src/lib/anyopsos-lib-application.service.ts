@@ -43,10 +43,10 @@ export class AnyOpsOSLibApplicationService {
               private FileSystem: AnyOpsOSLibFileSystemService) {
 
     this.dataStore = {taskBarApplications: [], openedApplications: [], applications: [], taskbarItemOpen: null};
-    this.$applications = new BehaviorSubject([]) as BehaviorSubject<Application[]>;
-    this.$taskBarApplications = new BehaviorSubject([]) as BehaviorSubject<Application[]>;
-    this.$openedApplications = new BehaviorSubject([]) as BehaviorSubject<Application[]>;
-    this.$taskbarItemOpen = new BehaviorSubject(null) as BehaviorSubject<string>;
+    this.$applications = new BehaviorSubject([]);
+    this.$taskBarApplications = new BehaviorSubject([]);
+    this.$openedApplications = new BehaviorSubject([]);
+    this.$taskbarItemOpen = new BehaviorSubject(null);
     this.taskBarApplications = this.$taskBarApplications.asObservable();
     this.openedApplications = this.$openedApplications.asObservable();
     this.applications = this.$applications.asObservable();

@@ -1,7 +1,12 @@
 import {getLogger} from 'log4js';
 
 import {ConnectionsModule} from './modules/connections';
-import {Connection} from '../interfaces/connection';
+
+import {ConnectionSsh} from '../interfaces/socket-connections/connection-ssh';
+import {ConnectionSftp} from '../interfaces/socket-connections/connection-sftp';
+import {ConnectionLinux} from '../interfaces/socket-connections/connection-linux';
+import {ConnectionSnmp} from '../interfaces/socket-connections/connection-snmp';
+import {ConnectionKubernetes} from '../interfaces/socket-connections/connection-kubernetes';
 
 const logger = getLogger('mainlog');
 
@@ -42,9 +47,13 @@ export class SocketModule {
       this.ConnectionsModule.closeConnection(data.type, data.uuid);
     });
 
-    socket.on('[new-session]', (data: Connection) => {
+    socket.on('[new-session]', (data: ConnectionSsh | ConnectionSftp | ConnectionLinux | ConnectionSnmp | ConnectionKubernetes) => {
       logger.info(`[Socket] -> Received message [new-session]`);
-      this.ConnectionsModule.newConnection(data);
+
+      this.ConnectionsModule.newConnection(data).catch((e) => {
+        if (e && e.code) { return console.log(e.code); }
+        if (e) { return console.log(e); }
+      });
     });
 
   }

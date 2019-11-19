@@ -1,4 +1,4 @@
-import * as request from 'request';
+import {get} from 'request';
 
 export class DatabaseMonitorModule {
 
@@ -50,7 +50,7 @@ export class DatabaseMonitorModule {
   // TODO: this is temporal to check internal monitoring works OK
   initChartsDatabase() {
     setInterval(() => {
-      request({
+      get({
         url: 'https://frankfurt.my-netdata.io/api/v1/allmetrics?format=json&help=no&types=no&timestamps=yes&names=no&oldunits=no&hideunits=yes&data=as-collected',
         json: true,
       }, (error, response, body) => {
@@ -86,7 +86,7 @@ export class DatabaseMonitorModule {
       // TODO: this is temporal to check internal monitoring works OK
       this.initChartsDatabase();
 
-      request({
+      get({
         url: 'https://frankfurt.my-netdata.io/api/v1/charts',
         json: true,
       }, (error, response, body) => {

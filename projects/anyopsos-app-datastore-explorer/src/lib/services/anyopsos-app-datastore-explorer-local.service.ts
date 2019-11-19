@@ -34,10 +34,10 @@ export class AnyOpsOSAppDatastoreExplorerLocalService {
               private socket: Socket,
               private FileSystem: AnyOpsOSLibFileSystemService) {
     this.dataStore = {currentPath: '/', currentData: [], viewAsList: false, search: null};
-    this.$currentPath = new BehaviorSubject('/') as BehaviorSubject<string>;
-    this.$currentData = new BehaviorSubject([]) as BehaviorSubject<AnyOpsOSFile[]>;
-    this.$viewAsList = new BehaviorSubject(false) as BehaviorSubject<boolean>;
-    this.$search = new BehaviorSubject({filename: null}) as BehaviorSubject<object>;
+    this.$currentPath = new BehaviorSubject('/');
+    this.$currentData = new BehaviorSubject([]);
+    this.$viewAsList = new BehaviorSubject(false);
+    this.$search = new BehaviorSubject({filename: null});
     this.currentPath = this.$currentPath.asObservable();
     this.currentData = this.$currentData.asObservable();
     this.viewAsList = this.$viewAsList.asObservable();

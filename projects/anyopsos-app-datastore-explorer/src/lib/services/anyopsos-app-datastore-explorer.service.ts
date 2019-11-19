@@ -35,9 +35,9 @@ export class AnyOpsOSAppDatastoreExplorerService {
               private Modal: AnyOpsOSLibModalService,
               private VMWare: AnyOpsOSLibVmwareService) {
     this.dataStore = {connections: [], activeConnection: null, viewExchange: false};
-    this.$connections = new BehaviorSubject([]) as BehaviorSubject<DatastoreExplorerConnection[]>;
-    this.$activeConnection = new BehaviorSubject(null) as BehaviorSubject<string>;
-    this.$viewExchange = new BehaviorSubject(false) as BehaviorSubject<boolean>;
+    this.$connections = new BehaviorSubject([]);
+    this.$activeConnection = new BehaviorSubject(null);
+    this.$viewExchange = new BehaviorSubject(false);
     this.connections = this.$connections.asObservable();
     this.activeConnection = this.$activeConnection.asObservable();
     this.viewExchange = this.$viewExchange.asObservable();
@@ -171,7 +171,7 @@ export class AnyOpsOSAppDatastoreExplorerService {
               // broadcast data to subscribers
               this.$connections.next(Object.assign({}, this.dataStore).connections);
 
-              this.logger.debug('Datastore Explorer', 'Connection deleted successfully', loggerArgs);
+              this.logger.debug('Datastore Explorer', 'ImConnection deleted successfully', loggerArgs);
             },
             error => {
               this.logger.error('Datastore Explorer', 'Error while deleting connection', loggerArgs, error);

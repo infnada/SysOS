@@ -1,5 +1,5 @@
 <div class="window__status">
-  <span class="text-muted" *ngIf="activeConnection">{{getActiveConnection(true).host}} - {{getActiveConnection(true).description}}</span>
+  <span class="text-muted" *ngIf="activeConnection">{{getHostOrClusterName()}} - {{getActiveConnection(true).description}}</span>
   <span class="float-right text-danger" *ngIf="activeConnection && getActiveConnection(true).state === 'disconnected'">Disconnected</span>
   <span class="float-right text-success" *ngIf="activeConnection && !getActiveConnection(true).error">{{getActiveConnection(true).state}}</span>
 </div>

@@ -2,8 +2,10 @@ import * as path from 'path';
 import readConfig from 'read-config';
 import ssh2 from 'ssh2';
 
+import {SshServer} from '../../../interfaces/ssh-server';
+
 const config =  readConfig(path.join(__dirname, '../../../filesystem/etc/expressjs/config.json'));
-const sshSessions: {ssh: [], sftp: [], smanager: []} = {
+const sshSessions: { ssh: []; sftp: []; smanager: []; } = {
   ssh: [],
   sftp: [],
   smanager: []
@@ -18,19 +20,55 @@ export class SshSessionsModule {
 
   }
 
-  async createSession(type: string, uuid: string, host: string, port: number, username: string, password: string): ssh2.Client {
+  async createSession(type: string, uuid: string, mainServer: SshServer, hopServer: SshServer): ssh2.Client {
     sshSessions[type][uuid] = new this.SSH();
 
-    await sshSessions[type][uuid].connect({
-      host,
-      port,
-      username,
-      password,
-      tryKeyboard: true,
-      algorithms: this.algorithms
-    });
+    // Hop server connection
+    if (hopServer) {
+      await sshSessions[type][uuid + 'hop'].connect({
+        host: hopServer.host,
+        port: hopServer.port,
+        username: hopServer.credential.fields.UserName,
+        password: hopServer.credential.fields.Password.getText(),
+      });
 
-    return sshSessions[type][uuid];
+      sshSessions[type][uuid + 'hop'].on('ready', async () => {
+        console.log('FIRST :: connection ready');
+        // Alternatively, you could use netcat or socat with exec() instead of
+        // forwardOut()
+        await sshSessions[type][uuid + 'hop'].forwardOut('127.0.0.1', 12345, mainServer.host, mainServer.port, async (err, stream) => {
+          if (err) {
+            console.log('FIRST :: forwardOut error: ' + err);
+            return sshSessions[type][uuid + 'hop'].end();
+          }
+
+          await sshSessions[type][uuid].connect({
+            sock: stream,
+            username: mainServer.credential.fields.UserName,
+            password: mainServer.credential.fields.Password.getText(),
+            tryKeyboard: true,
+            algorithms: this.algorithms
+          });
+
+          return sshSessions[type][uuid];
+        });
+      });
+
+    // Normal connection
+    } else {
+      await sshSessions[type][uuid].connect({
+        host: mainServer.host,
+        port: mainServer.port,
+        username: mainServer.credential.fields.UserName,
+        password: mainServer.credential.fields.Password.getText(),
+        tryKeyboard: true,
+        algorithms: this.algorithms
+      });
+
+      return sshSessions[type][uuid];
+    }
+
+
   }
 
   closeSession(type: string, uuid: string): void {

@@ -41,10 +41,10 @@ export class AnyOpsOSAppSftpServerService {
               private FileSystem: AnyOpsOSLibFileSystemService,
               private Sftp: AnyOpsOSAppSftpService) {
     this.dataStore = {currentPath: '/', currentData: [], viewAsList: false, search: null};
-    this.$currentPath = new BehaviorSubject('/') as BehaviorSubject<string>;
-    this.$currentData = new BehaviorSubject([]) as BehaviorSubject<AnyOpsOSFile[]>;
-    this.$viewAsList = new BehaviorSubject(false) as BehaviorSubject<boolean>;
-    this.$search = new BehaviorSubject({filename: null}) as BehaviorSubject<object>;
+    this.$currentPath = new BehaviorSubject('/');
+    this.$currentData = new BehaviorSubject([]);
+    this.$viewAsList = new BehaviorSubject(false);
+    this.$search = new BehaviorSubject({filename: null});
     this.currentPath = this.$currentPath.asObservable();
     this.currentData = this.$currentData.asObservable();
     this.viewAsList = this.$viewAsList.asObservable();
@@ -52,12 +52,12 @@ export class AnyOpsOSAppSftpServerService {
 
     this.socket
       .fromEvent('sftp__data')
-      .subscribe((data: { uuid: string, path: string, text: AnyOpsOSFile[] }) => {
+      .subscribe((sockData: { uuid: string, data: { path: string; data: AnyOpsOSFile[]; } }) => {
         const currentConnection: SftpConnection = this.Sftp.getActiveConnection();
 
-        if (currentConnection.uuid === data.uuid) {
-          this.dataStore.currentData = data.text;
-          this.dataStore.currentPath = data.path;
+        if (currentConnection.uuid === sockData.uuid) {
+          this.dataStore.currentData = sockData.data.data;
+          this.dataStore.currentPath = sockData.data.path;
 
           // broadcast data to subscribers
           this.$currentPath.next(Object.assign({}, this.dataStore).currentPath);

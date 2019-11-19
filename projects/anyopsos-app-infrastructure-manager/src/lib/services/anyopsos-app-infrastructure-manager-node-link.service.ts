@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 
 import {AnyOpsOSAppInfrastructureManagerService} from './anyopsos-app-infrastructure-manager.service';
 import {AnyOpsOSAppInfrastructureManagerObjectHelperService} from './anyopsos-app-infrastructure-manager-object-helper.service';
-import {ImConnection} from '../types/im-connection';
+import {ImConnection} from '../types/connections/im-connection';
 import {ImDataObject} from '../types/im-data-object';
 import {VMWareDatastore} from '../types/vmware-datastore';
 import {NetAppIface} from '../types/netapp-iface';

@@ -4,18 +4,10 @@ export class SocketModule {
 
   }
 
-  emitData(type, data, uuid) {
+  emitData(type: string, uuid: string, data: any) {
     this.socket.emit(type + '__data', {
-      text: data.toString('utf-8'),
-      uuid
-    });
-  }
-
-  emitPath(type, data, uuid, path) {
-    this.socket.emit(type + '__data', {
-      path,
-      text: data,
-      uuid
+      uuid,
+      data
     });
   }
 

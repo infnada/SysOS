@@ -60,11 +60,23 @@ export class BodyComponent implements OnDestroy, OnInit {
     this.credentialForm = this.formBuilder.group({
       description: ['', Validators.required],
       type: ['', Validators.required],
-      username: ['', Validators.required],
-      password: ['', [Validators.required]],
+      username: [''],
+      password: ['', Validators.required],
       confirmPassword: ['', Validators.required]
     }, {
       validator: this.MustMatch('password', 'confirmPassword')
+    });
+
+    this.credentialForm.get('type').valueChanges
+      .pipe(takeUntil(this.destroySubject$)).subscribe(type => {
+
+      if (type === 'basic' || type === 'key') {
+        this.credentialForm.controls.username.setValidators([Validators.required]);
+        this.credentialForm.controls.username.updateValueAndValidity();
+      } else {
+        this.credentialForm.controls.username.setValidators([]);
+        this.credentialForm.controls.username.updateValueAndValidity();
+      }
     });
   }
 
@@ -107,9 +119,9 @@ export class BodyComponent implements OnDestroy, OnInit {
   setActiveCredential(credential: Credential): void {
     this.CredentialsManager.setActiveCredential(credential.uuid);
 
-    (this.credentialForm.controls.description as FormControl).setValue(credential.description);
-    (this.credentialForm.controls.type as FormControl).setValue(credential.type);
-    (this.credentialForm.controls.username as FormControl).setValue(credential.username);
+    this.credentialForm.controls.description.setValue(credential.description);
+    this.credentialForm.controls.type.setValue(credential.type);
+    this.credentialForm.controls.username.setValue(credential.username);
   }
 
 }

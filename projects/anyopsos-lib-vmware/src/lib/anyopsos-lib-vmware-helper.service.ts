@@ -27,7 +27,7 @@ export class AnyOpsOSLibVmwareHelperService {
 
     // Array
     if (Array.isArray(data)) {
-      const newObj = [];
+      let newObj = [];
       // Non standard arrays
 
       // Case 1
@@ -47,6 +47,24 @@ export class AnyOpsOSLibVmwareHelperService {
         }
       }
 
+      // Case 3
+      if (data.length > 1) {
+
+        const areAllObjectsWithKeyVal = data.every((el) => {
+          return el === Object(el) && Object.keys(el).length === 2 && el.hasOwnProperty('name') && el.hasOwnProperty('val');
+        });
+
+        if (areAllObjectsWithKeyVal) {
+          newObj = {} as any;
+          data.forEach((value) => {
+            if (newObj.hasOwnProperty(value.name[0])) console.log('should not happen');
+            newObj[value.name[0]] = this.parseVMwareObject(value.val);
+          });
+
+          return newObj;
+        }
+      }
+
       // Parse as normal data array
       data.forEach((value, key) => {
         newObj[key] = this.parseVMwareObject(value);
@@ -62,12 +80,8 @@ export class AnyOpsOSLibVmwareHelperService {
 
       // Case 1
       if (Object.keys(data).length === 2 && data.hasOwnProperty('name') && data.hasOwnProperty('val')) {
-        if (data[data.name[0]] === undefined) {
-          newObj[data.name[0]] = this.parseVMwareObject(data.val);
-        } else {
-          console.log('ejhe,');
-          newObj[data[data.name[0]]] = this.parseVMwareObject(data.val);
-        }
+        if (newObj.hasOwnProperty(data.name[0])) console.log('should not happen 2');
+        newObj[data.name[0]] = this.parseVMwareObject(data.val);
 
         return newObj;
       }

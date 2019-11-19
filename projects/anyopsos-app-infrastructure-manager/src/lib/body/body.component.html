@@ -19,11 +19,25 @@
         <ng-container *ngIf="node.type === 'windows'"><span><i class="mr-1 text-primary fab fa-windows"></i> {{node.name}}</span></ng-container>
         <ng-container *ngIf="node.type === 'snmp'"><span><i class="mr-1 text-primary fas fa-desktop"></i> {{node.name}}</span></ng-container>
 
+        <ng-container *ngIf="node.type === 'container'"><span><i class="mr-1 text-primary fas fa-box"></i> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'docker'"><span><i class="mr-1 text-primary fas fa-docker"></i> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'kubernetes'"><span (click)="setActiveView('kubernetes', node)"><img src="/assets/img/logos/Kubernetes-logo.png" width="16px" class="mr-1" /> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'Namespace'"><span (click)="setActiveView('kubernetes-namespace', node)"><img src="/assets/img/kubernetes/ns-128.png" width="16px" class="mr-1" /> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'DaemonSet'"><span (click)="setActiveView('kubernetes-daemonset', node)"><img src="/assets/img/kubernetes/ds-128.png" width="16px" class="mr-1" /> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'Deployment'"><span (click)="setActiveView('kubernetes-deployment', node)"><img src="/assets/img/kubernetes/deploy-128.png" width="16px" class="mr-1" /> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'StatefulSet'"><span (click)="setActiveView('kubernetes-statefulset', node)"><img src="/assets/img/kubernetes/sts-128.png" width="16px" class="mr-1" /> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'ReplicaSet'"><span (click)="setActiveView('kubernetes-replicaset', node)"><img src="/assets/img/kubernetes/rs-128.png" width="16px" class="mr-1" /> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'Pod'"><span (click)="setActiveView('kubernetes-pod', node)"><img src="/assets/img/kubernetes/pod-128.png" width="16px" class="mr-1" /> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'Node'"><span (click)="setActiveView('kubernetes-node', node)"><img src="/assets/img/kubernetes/node-128.png" width="16px" class="mr-1" /> {{node.name}}</span></ng-container>
+
+        <!-- NetApp -->
         <ng-container *ngIf="node.type === 'storage'"><span><i class="mr-1 text-primary fas fa-database"></i> {{node.name}}</span></ng-container>
         <ng-container *ngIf="node.type === 'netapp'"><span (click)="setActiveView('netapp', node);"><img src="/assets/img/logos/NetApp-logo.png" width="16px" class="mr-1" /> {{node.name}}</span></ng-container>
         <ng-container *ngIf="node.type === 'vserver'"><span (click)="setActiveView('netapp-vserver', node);"><i class="mr-1 fas fa-server"></i> {{node.name}}</span></ng-container>
         <ng-container *ngIf="node.type === 'volume'"><span (click)="setActiveView('netapp-volume', node);"><i class="vs-icon vsphere-icon-datastore"></i> {{node.name}}</span></ng-container>
         <ng-container *ngIf="node.type === 'snapshot'"><span (click)="setActiveView('netapp-snapshot', node);"><i class="mr-1 fas fa-camera"></i> {{node.name}}</span></ng-container>
+
+        <!-- VMWare -->
         <ng-container *ngIf="node.type === 'virtual'"><span><i class="mr-1 text-primary fas fa-cloud"></i> {{node.name}}</span></ng-container>
         <ng-container *ngIf="node.type === 'vmware'"><span (click)="setActiveView('vmware', node);"><i class="vs-icon vsphere-icon-vcenter"></i> {{node.name}}</span></ng-container>
         <ng-container *ngIf="node.type === 'Datacenter'"><span (click)="setActiveView('vmware-datacenter', node);"><i class="vs-icon vsphere-icon-datacenter"></i> {{node.name}}</span></ng-container>
@@ -67,11 +81,25 @@
         <ng-container *ngIf="node.type === 'windows'"><span><i class="mr-1 text-primary fab fa-windows"></i> {{node.name}}</span></ng-container>
         <ng-container *ngIf="node.type === 'snmp'"><span><i class="mr-1 text-primary fas fa-desktop"></i> {{node.name}}</span></ng-container>
 
+        <ng-container *ngIf="node.type === 'container'"><span><i class="mr-1 text-primary fas fa-box"></i> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'docker'"><span><i class="mr-1 text-primary fas fa-docker"></i> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'kubernetes'"><span (click)="setActiveView('kubernetes', node)"><img src="/assets/img/logos/Kubernetes-logo.png" width="16px" class="mr-1" /> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'Namespace'"><span (click)="setActiveView('kubernetes-namespace', node)"><img src="/assets/img/kubernetes/ns-128.png" width="16px" class="mr-1" /> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'DaemonSet'"><span (click)="setActiveView('kubernetes-daemonset', node)"><img src="/assets/img/kubernetes/ds-128.png" width="16px" class="mr-1" /> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'Deployment'"><span (click)="setActiveView('kubernetes-deployment', node)"><img src="/assets/img/kubernetes/deploy-128.png" width="16px" class="mr-1" /> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'StatefulSet'"><span (click)="setActiveView('kubernetes-statefulset', node)"><img src="/assets/img/kubernetes/sts-128.png" width="16px" class="mr-1" /> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'ReplicaSet'"><span (click)="setActiveView('kubernetes-replicaset', node)"><img src="/assets/img/kubernetes/rs-128.png" width="16px" class="mr-1" /> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'Pod'"><span (click)="setActiveView('kubernetes-pod', node)"><img src="/assets/img/kubernetes/pod-128.png" width="16px" class="mr-1" /> {{node.name}}</span></ng-container>
+        <ng-container *ngIf="node.type === 'Node'"><span (click)="setActiveView('kubernetes-node', node)"><img src="/assets/img/kubernetes/node-128.png" width="16px" class="mr-1" /> {{node.name}}</span></ng-container>
+
+        <!-- NetApp -->
         <ng-container *ngIf="node.type === 'storage'"><span><i class="mr-1 text-primary fas fa-database"></i> {{node.name}}</span></ng-container>
         <ng-container *ngIf="node.type === 'netapp'"><span (click)="setActiveView('netapp', node);"><img src="/assets/img/logos/NetApp-logo.png" width="16px" class="mr-1" /> {{node.name}}</span></ng-container>
         <ng-container *ngIf="node.type === 'vserver'"><span (click)="setActiveView('netapp-vserver', node);"><i class="mr-1 fas fa-server"></i> {{node.name}}</span></ng-container>
         <ng-container *ngIf="node.type === 'volume'"><span (click)="setActiveView('netapp-volume', node);"><i class="vs-icon vsphere-icon-datastore"></i> {{node.name}}</span></ng-container>
         <ng-container *ngIf="node.type === 'snapshot'"><span (click)="setActiveView('netapp-snapshot', node);"><i class="mr-1 fas fa-camera"></i> {{node.name}}</span></ng-container>
+
+        <!-- VMWare -->
         <ng-container *ngIf="node.type === 'virtual'"><span><i class="mr-1 text-primary fas fa-cloud"></i> {{node.name}}</span></ng-container>
         <ng-container *ngIf="node.type === 'vmware'"><span (click)="setActiveView('vmware', node);"><i class="vs-icon vsphere-icon-vcenter"></i> {{node.name}}</span></ng-container>
         <ng-container *ngIf="node.type === 'Datacenter'"><span (click)="setActiveView('vmware-datacenter', node);"><i class="vs-icon vsphere-icon-datacenter"></i> {{node.name}}</span></ng-container>
@@ -140,17 +168,18 @@
 
     <saim-body-new-connection [application]="application" *ngIf="activeConnection === null || (getActiveConnection(true) && getActiveConnection(true).state === 'disconnected')"></saim-body-new-connection>
 
-    <ng-container *ngIf="activeConnection !== null || (getActiveConnection(true) && getActiveConnection(true).state !== 'disconnected')">
-      <div *ngIf="activeView.type !== null && activeView.type.startsWith('vmware')" class="h-100">
-        <saim-body-vmware [application]="application" [vmwareObject]="activeView.data"></saim-body-vmware>
-        <saim-vmware-recent-tasks [application]="application" ></saim-vmware-recent-tasks>
+    <ng-container *ngIf="activeConnection !== null && (getActiveConnection(true) && getActiveConnection(true).state !== 'disconnected')">
+      <div class="h-100">
+        <ng-container *ngIf="activeView.type !== null && activeView.type.startsWith('vmware')">
+          <saim-body-vmware [application]="application" [vmwareObject]="activeView.data"></saim-body-vmware>
+          <saim-vmware-recent-tasks [application]="application" ></saim-vmware-recent-tasks>
+        </ng-container>
+        <saim-body-kubernetes [application]="application" [kubernetesObject]="activeView.data" *ngIf="activeView.type !== null && activeView.type.startsWith('kubernetes')"></saim-body-kubernetes>
+        <saim-body-docker [application]="application" [dockerObject]="activeView.data" *ngIf="activeView.type !== null && activeView.type.startsWith('docker')"></saim-body-docker>
+        <saim-body-netapp [application]="application" [netappObject]="activeView.data" *ngIf="activeView.type !== null && activeView.type.startsWith('netapp')"></saim-body-netapp>
+        <saim-body-linux [application]="application" [linuxObject]="activeView.data" *ngIf="activeView.type !== null && activeView.type.startsWith('linux')"></saim-body-linux>
+        <saim-body-snmp [application]="application" [snmpObject]="activeView.data" *ngIf="activeView.type !== null && activeView.type.startsWith('snmp')"></saim-body-snmp>
       </div>
-
-      <saim-body-netapp *ngIf="activeView.type === 'netapp'"></saim-body-netapp>
-      <saim-body-netapp-vserver *ngIf="activeView.type === 'netapp-vserver'"></saim-body-netapp-vserver>
-      <saim-body-netapp-volume *ngIf="activeView.type === 'netapp-volume'"></saim-body-netapp-volume>
-      <saim-body-netapp-snapshot *ngIf="activeView.type === 'netapp-snapshot'"></saim-body-netapp-snapshot>
-
     </ng-container>
 
   </div>

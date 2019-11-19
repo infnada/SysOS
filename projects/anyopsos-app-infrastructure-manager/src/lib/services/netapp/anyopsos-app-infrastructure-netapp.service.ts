@@ -11,7 +11,8 @@ import {AnyOpsOSLibFileSystemUiService} from '@anyopsos/lib-file-system-ui';
 import {AnyOpsOSAppInfrastructureManagerService} from '../anyopsos-app-infrastructure-manager.service';
 import {AnyOpsOSAppInfrastructureManagerObjectHelperService} from '../anyopsos-app-infrastructure-manager-object-helper.service';
 import {AnyOpsOSAppInfrastructureVmwareService} from '../vmware/anyopsos-app-infrastructure-vmware.service';
-import {ImConnection} from '../../types/im-connection';
+
+import {ConnectionNetapp} from '../../types/connections/connection-netapp';
 import {ImDataObject} from '../../types/im-data-object';
 import {NetAppVolume} from '../../types/netapp-volume';
 import {NetAppSnapshot} from '../../types/netapp-snapshot';
@@ -35,7 +36,7 @@ export class AnyOpsOSAppInfrastructureNetappService {
   /**
    * Get all data from NetApp node
    */
-  getNetAppData(connection: ImConnection): void {
+  getNetAppData(connection: ConnectionNetapp): void {
     const loggerArgs = arguments;
 
     /* TODO: GET netappinfo from SNMP OID:
@@ -142,7 +143,6 @@ export class AnyOpsOSAppInfrastructureNetappService {
       }
 
       this.InfrastructureManager.setActiveConnection(null);
-      this.InfrastructureManager.deleteConnection(connection.uuid);
 
       this.Toastr.error((e.description ? e.description : e.message), 'Error getting data from NetApp');
 
@@ -150,7 +150,7 @@ export class AnyOpsOSAppInfrastructureNetappService {
     });
   }
 
-  private saveNewData(connection: ImConnection): Promise<void> {
+  private saveNewData(connection: ConnectionNetapp): Promise<void> {
     this.Modal.changeModalText('Saving connection to file', '.window--infrastructure-manager .window__main');
 
     return this.InfrastructureManager.saveConnection(this.InfrastructureManager.getConnectionByUuid(connection.uuid)).then(() => {
@@ -161,7 +161,7 @@ export class AnyOpsOSAppInfrastructureNetappService {
     });
   }
 
-  private getVolumes(connection: ImConnection, vServer: ImDataObject & { info: { data: NetAppVserver } }): Promise<void> {
+  private getVolumes(connection: ConnectionNetapp, vServer: ImDataObject & { info: { data: NetAppVserver } }): Promise<void> {
 
     this.Modal.changeModalText('Getting NetApp Volume data...', '.window--infrastructure-manager .window__main');
 
@@ -192,7 +192,7 @@ export class AnyOpsOSAppInfrastructureNetappService {
     });
   }
 
-  private getVolumeLuns(connection: ImConnection, vServer: ImDataObject & { info: { data: NetAppVserver } }, volume: ImDataObject & { info: { data: NetAppVolume } }): Promise<void> {
+  private getVolumeLuns(connection: ConnectionNetapp, vServer: ImDataObject & { info: { data: NetAppVserver } }, volume: ImDataObject & { info: { data: NetAppVolume } }): Promise<void> {
 
     return this.NetApp.getLuns(
       connection.credential, connection.host, connection.port,
@@ -209,7 +209,7 @@ export class AnyOpsOSAppInfrastructureNetappService {
     });
   }
 
-  private getVolumeSnapshots(connection: ImConnection, vServer: ImDataObject & { info: { data: NetAppVserver } }, volume: ImDataObject & { info: { data: NetAppVolume } }): Promise<void> {
+  private getVolumeSnapshots(connection: ConnectionNetapp, vServer: ImDataObject & { info: { data: NetAppVserver } }, volume: ImDataObject & { info: { data: NetAppVolume } }): Promise<void> {
 
     this.Modal.changeModalText('Getting NetApp Volume Snapshot data...', '.window--infrastructure-manager .window__main');
 
@@ -246,7 +246,7 @@ export class AnyOpsOSAppInfrastructureNetappService {
     });
   }
 
-  private getQtrees(connection: ImConnection, vServer: ImDataObject): Promise<void> {
+  private getQtrees(connection: ConnectionNetapp, vServer: ImDataObject): Promise<void> {
 
     return this.NetApp.getQtrees(connection.credential, connection.host, connection.port, vServer.name).then((qtreesResult) => {
       if (qtreesResult.status === 'error') {
@@ -266,13 +266,13 @@ export class AnyOpsOSAppInfrastructureNetappService {
   /**
    * Set each returned object in an anyOpsOS readable way
    */
-  private parseObjects(connection: ImConnection, type: string, objects: any[], parent: { type: string; name: string; } = null): void {
+  private parseObjects(connection: ConnectionNetapp, type: string, objects: any[], parent: { type: string; name: string; } = null): void {
     objects.forEach((obj) => {
       return this.parseObject(connection, type, obj, parent);
     });
   }
 
-  private parseObject(connection: ImConnection, type: string, object: any, parent: { type: string; name: string; }): void {
+  private parseObject(connection: ConnectionNetapp, type: string, object: any, parent: { type: string; name: string; }): void {
     let name: string = '';
     let idName: string = '';
 
@@ -335,7 +335,7 @@ export class AnyOpsOSAppInfrastructureNetappService {
   getVolumeData(volume: ImDataObject & { info: { data: NetAppVolume } }): Promise<void> {
     const loggerArgs = arguments;
 
-    const connection: ImConnection = this.InfrastructureManager.getConnectionByUuid(volume.info.mainUuid);
+    const connection: ConnectionNetapp = this.InfrastructureManager.getConnectionByUuid(volume.info.mainUuid) as ConnectionNetapp;
     const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(connection.uuid, 'vserver', volume.info.parent.name);
 
     // Deleting or creating a Volume Snapshot will launch this function, and Modal will be already opened
@@ -369,6 +369,8 @@ export class AnyOpsOSAppInfrastructureNetappService {
 
     this.logger.debug('Infrastructure Manager', 'getSnapshotFiles', arguments);
 
+    const connection: ConnectionNetapp = this.InfrastructureManager.getConnectionByUuid(connectionUuid) as ConnectionNetapp;
+
     let link;
     let datastoreIndex;
     let datastoreVM;
@@ -391,9 +393,9 @@ export class AnyOpsOSAppInfrastructureNetappService {
     this.Modal.openLittleModal('PLEASE WAIT', 'Getting Snapshot data...', '.window--infrastructure-manager .window__main', 'plain').then(() => {
 
       return this.NetApp.getSnapshotFiles(
-        this.InfrastructureManager.getConnectionByUuid(connectionUuid).credential,
+        connection.credential,
         host,
-        this.InfrastructureManager.getConnectionByUuid(connectionUuid).port,
+        connection.port,
         vserver,
         volume,
         snapshot

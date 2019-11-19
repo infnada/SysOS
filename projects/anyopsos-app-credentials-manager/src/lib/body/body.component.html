@@ -37,8 +37,8 @@
         <mat-error *ngIf="f.type.invalid">Please insert a credential type</mat-error>
       </mat-form-field>
 
-      <mat-form-field class="w-100">
-        <input matInput placeholder="Username" formControlName="username">
+      <mat-form-field class="w-100" *ngIf="f.type.value === 'basic' || f.type.value === 'key'">
+        <input matInput placeholder="Username" formControlName="username" >
         <mat-error *ngIf="submitted && f.username.invalid">Please insert a username</mat-error>
       </mat-form-field>
 

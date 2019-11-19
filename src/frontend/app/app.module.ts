@@ -114,6 +114,7 @@ import {BootstrapComponent} from './bootstrap/bootstrap.component';
 const config: SocketIoConfig = {
   url: window.location.host,
   options: {
+    autoConnect : false,
     transports: ['websocket'],
     forceNew: true
   }

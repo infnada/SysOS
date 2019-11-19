@@ -24,35 +24,37 @@ import {AnyOpsOSAppInfrastructureManagerNodeLinkService} from './services/anyops
 
 import {BodyVmwareComponent} from './body/body-vmware/body-vmware.component';
 import {BodyNetappComponent} from './body/body-netapp/body-netapp.component';
-import {BodyNetappVserverComponent} from './body/body-netapp-vserver/body-netapp-vserver.component';
-import {BodyNetappVolumeComponent} from './body/body-netapp-volume/body-netapp-volume.component';
-import {BodyNetappSnapshotComponent} from './body/body-netapp-snapshot/body-netapp-snapshot.component';
-import {VmwareRecentTasksComponent} from './body/vmware-recent-tasks/vmware-recent-tasks.component';
-import {TagsComponent} from './body/body-vmware/tabs/tab-summary/tags/tags.component';
-import {RelatedObjectsComponent} from './body/body-vmware/tabs/tab-summary/related-objects/related-objects.component';
-import {CustomAttributesComponent} from './body/body-vmware/tabs/tab-summary/custom-attributes/custom-attributes.component';
-import {VmStoragePoliciesComponent} from './body/body-vmware/tabs/tab-summary/vm-storage-policies/vm-storage-policies.component';
-import {SummaryInfoComponent} from './body/body-vmware/tabs/tab-summary/summary-info/summary-info.component';
-import {HomeComponent} from './body/body-vmware/home/home.component';
-import {ObjectComponent} from './body/body-vmware/object/object.component';
-import {TabSummaryComponent} from './body/body-vmware/tabs/tab-summary/tab-summary.component';
-import {TabMonitorComponent} from './body/body-vmware/tabs/tab-monitor/tab-monitor.component';
-import {TabAlarmsComponent} from './body/body-vmware/tabs/tab-alarms/tab-alarms.component';
-import {TabUpdatesComponent} from './body/body-vmware/tabs/tab-updates/tab-updates.component';
-import {TabConfigureComponent} from './body/body-vmware/tabs/tab-configure/tab-configure.component';
+import {BodyKubernetesComponent} from './body/body-kubernetes/body-kubernetes.component';
+import {BodyDockerComponent} from './body/body-docker/body-docker.component';
+import {BodyLinuxComponent} from './body/body-linux/body-linux.component';
+import {BodySnmpComponent} from './body/body-snmp/body-snmp.component';
 
-import {DatastoreClusterResourcesComponent} from './body/body-vmware/tabs/tab-summary/datastore-cluster-resources/datastore-cluster-resources.component';
-import {VappStatusComponent} from './body/body-vmware/tabs/tab-summary/vapp-status/vapp-status.component';
-import {ResourcePoolSettingsComponent} from './body/body-vmware/tabs/tab-summary/resource-pool-settings/resource-pool-settings.component';
-import {HostHardwareComponent} from './body/body-vmware/tabs/tab-summary/host-hardware/host-hardware.component';
-import {HostConfigurationComponent} from './body/body-vmware/tabs/tab-summary/host-configuration/host-configuration.component';
-import {VsphereDrsComponent} from './body/body-vmware/tabs/tab-summary/vsphere-drs/vsphere-drs.component';
-import {ClusterResourcesComponent} from './body/body-vmware/tabs/tab-summary/cluster-resources/cluster-resources.component';
-import {ClusterConsumersComponent} from './body/body-vmware/tabs/tab-summary/cluster-consumers/cluster-consumers.component';
-import {VcenterHaComponent} from './body/body-vmware/tabs/tab-summary/vcenter-ha/vcenter-ha.component';
-import {VersionInformationComponent} from './body/body-vmware/tabs/tab-summary/version-information/version-information.component';
-import {StorageDrsComponent} from './body/body-vmware/tabs/tab-summary/storage-drs/storage-drs.component';
-import {SwitchFeaturesComponent} from './body/body-vmware/tabs/tab-summary/switch-features/switch-features.component';
+import {TabSummaryComponent} from './body/tabs/tab-summary/tab-summary.component';
+import {TabMonitorComponent} from './body/tabs/tab-monitor/tab-monitor.component';
+import {TabAlarmsComponent} from './body/tabs/tab-alarms/tab-alarms.component';
+import {TabUpdatesComponent} from './body/tabs/tab-updates/tab-updates.component';
+import {TabConfigureComponent} from './body/tabs/tab-configure/tab-configure.component';
+
+import {VmwareRecentTasksComponent} from './body/vmware-recent-tasks/vmware-recent-tasks.component';
+
+import {TagsComponent} from './body/tabs/tab-summary/tags/tags.component';
+import {RelatedObjectsComponent} from './body/tabs/tab-summary/related-objects/related-objects.component';
+import {CustomAttributesComponent} from './body/tabs/tab-summary/custom-attributes/custom-attributes.component';
+import {VmStoragePoliciesComponent} from './body/tabs/tab-summary/vm-storage-policies/vm-storage-policies.component';
+import {SummaryInfoComponent} from './body/tabs/tab-summary/summary-info/summary-info.component';
+
+import {DatastoreClusterResourcesComponent} from './body/tabs/tab-summary/datastore-cluster-resources/datastore-cluster-resources.component';
+import {VappStatusComponent} from './body/tabs/tab-summary/vapp-status/vapp-status.component';
+import {ResourcePoolSettingsComponent} from './body/tabs/tab-summary/resource-pool-settings/resource-pool-settings.component';
+import {HostHardwareComponent} from './body/tabs/tab-summary/host-hardware/host-hardware.component';
+import {HostConfigurationComponent} from './body/tabs/tab-summary/host-configuration/host-configuration.component';
+import {VsphereDrsComponent} from './body/tabs/tab-summary/vsphere-drs/vsphere-drs.component';
+import {ClusterResourcesComponent} from './body/tabs/tab-summary/cluster-resources/cluster-resources.component';
+import {ClusterConsumersComponent} from './body/tabs/tab-summary/cluster-consumers/cluster-consumers.component';
+import {VcenterHaComponent} from './body/tabs/tab-summary/vcenter-ha/vcenter-ha.component';
+import {VersionInformationComponent} from './body/tabs/tab-summary/version-information/version-information.component';
+import {StorageDrsComponent} from './body/tabs/tab-summary/storage-drs/storage-drs.component';
+import {SwitchFeaturesComponent} from './body/tabs/tab-summary/switch-features/switch-features.component';
 
 @NgModule({
   declarations: [
@@ -61,20 +63,28 @@ import {SwitchFeaturesComponent} from './body/body-vmware/tabs/tab-summary/switc
     BodyNewConnectionComponent,
     MenuComponent,
     StatusComponent,
+
     BodyVmwareComponent,
     BodyNetappComponent,
-    BodyNetappVserverComponent,
-    BodyNetappVolumeComponent,
-    BodyNetappSnapshotComponent,
+    BodyKubernetesComponent,
+    BodyDockerComponent,
+    BodyLinuxComponent,
+    BodySnmpComponent,
+
+    TabSummaryComponent,
+    TabMonitorComponent,
+    TabAlarmsComponent,
+    TabUpdatesComponent,
+    TabConfigureComponent,
+
     VmwareRecentTasksComponent,
+
     TagsComponent,
     RelatedObjectsComponent,
     CustomAttributesComponent,
     VmStoragePoliciesComponent,
     SummaryInfoComponent,
-    TabSummaryComponent,
-    HomeComponent,
-    ObjectComponent,
+
     DatastoreClusterResourcesComponent,
     VappStatusComponent,
     ResourcePoolSettingsComponent,
@@ -87,10 +97,6 @@ import {SwitchFeaturesComponent} from './body/body-vmware/tabs/tab-summary/switc
     VersionInformationComponent,
     StorageDrsComponent,
     SwitchFeaturesComponent,
-    TabMonitorComponent,
-    TabAlarmsComponent,
-    TabUpdatesComponent,
-    TabConfigureComponent
   ],
   imports: [
     CommonModule,
@@ -130,7 +136,6 @@ export class AnyOpsOSAppInfrastructureManagerModule {
     });
 
     this.InfrastructureManager.initConnections();
-    this.InfrastructureManager.initLinksMap();
     this.InfrastructureVmware.registerFileSystemUiHandlers();
     this.InfrastructureNetApp.registerFileSystemUiHandlers();
   }

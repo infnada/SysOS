@@ -36,15 +36,15 @@ export class AnyOpsOSAppSshService {
               private FileSystem: AnyOpsOSLibFileSystemService,
               private Modal: AnyOpsOSLibModalService) {
     this.dataStore = {connections: [], activeConnection: null};
-    this.$connections = new BehaviorSubject([]) as BehaviorSubject<SshConnection[]>;
-    this.$activeConnection = new BehaviorSubject(null) as BehaviorSubject<string>;
+    this.$connections = new BehaviorSubject([]);
+    this.$activeConnection = new BehaviorSubject(null);
     this.connections = this.$connections.asObservable();
     this.activeConnection = this.$activeConnection.asObservable();
 
     this.socket
       .fromEvent('ssh__data')
-      .subscribe((data: { uuid: string, prop: string, text: string }) => {
-        this.SshTerminals[data.uuid].write(data.text);
+      .subscribe((sockData: { uuid: string, data: any }) => {
+        this.SshTerminals[sockData.uuid].write(sockData.data);
       });
 
     this.socket
@@ -285,7 +285,7 @@ export class AnyOpsOSAppSshService {
               // broadcast data to subscribers
               this.$connections.next(Object.assign({}, this.dataStore).connections);
 
-              this.logger.debug('Ssh', 'Connection deleted successfully', loggerArgs);
+              this.logger.debug('Ssh', 'ImConnection deleted successfully', loggerArgs);
             },
             error => {
               this.logger.error('Ssh', 'Error while deleting connection', loggerArgs, error);

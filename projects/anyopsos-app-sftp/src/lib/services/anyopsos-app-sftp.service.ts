@@ -33,9 +33,9 @@ export class AnyOpsOSAppSftpService {
               private Modal: AnyOpsOSLibModalService,
               private FileSystem: AnyOpsOSLibFileSystemService) {
     this.dataStore = {connections: [], activeConnection: null, viewExchange: false};
-    this.$connections = new BehaviorSubject([]) as BehaviorSubject<SftpConnection[]>;
-    this.$activeConnection = new BehaviorSubject(null) as BehaviorSubject<string>;
-    this.$viewExchange = new BehaviorSubject(false) as BehaviorSubject<boolean>;
+    this.$connections = new BehaviorSubject([]);
+    this.$activeConnection = new BehaviorSubject(null);
+    this.$viewExchange = new BehaviorSubject(false);
     this.connections = this.$connections.asObservable();
     this.activeConnection = this.$activeConnection.asObservable();
     this.viewExchange = this.$viewExchange.asObservable();
@@ -206,7 +206,7 @@ export class AnyOpsOSAppSftpService {
               // broadcast data to subscribers
               this.$connections.next(Object.assign({}, this.dataStore).connections);
 
-              this.logger.debug('Sftp', 'Connection deleted successfully', loggerArgs);
+              this.logger.debug('Sftp', 'ImConnection deleted successfully', loggerArgs);
             },
             error => {
               this.logger.error('Sftp', 'Error while deleting connection', loggerArgs, error);

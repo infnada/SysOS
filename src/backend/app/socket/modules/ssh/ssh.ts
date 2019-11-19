@@ -4,6 +4,7 @@ import readConfig from 'read-config';
 
 import {SshSessionsModule} from './ssh-sessions';
 import {SocketModule} from '../socket';
+import {SshServer} from '../../../interfaces/ssh-server';
 
 const logger = getLogger('mainlog');
 const config =  readConfig(path.join(__dirname, '../../../filesystem/etc/expressjs/config.json'));
@@ -27,9 +28,9 @@ export class SshSocketModule {
     // this.SocketModule.emitProp(type, 'disconnected', uuid, 'state');
   }
 
-  newConnection(type: string, uuid: string, host: string, port: number, username: string, password: string): void {
+  newConnection(type: string, uuid: string, mainServer: SshServer, hopServer: SshServer): void {
 
-    this.SshSessionsModule.createSession(type, uuid, host, port, username, password).then((session: any) => {
+    this.SshSessionsModule.createSession(type, uuid, mainServer, hopServer).then((session: any) => {
       // session.on('end', function (err) { this.SocketModule.emitProp(type, "CONN END BY HOST " + err, uuid, 'status'); });
       session.on('close', () => {
         this.SocketModule.emitProp(type, 'CONN CLOSE', uuid, 'status');
@@ -41,15 +42,15 @@ export class SshSocketModule {
 
         // need to convert to cr/lf for proper formatting
         data = data.replace(/\r?\n/g, '\r\n');
-        this.SocketModule.emitData(type, data, uuid);
+        this.SocketModule.emitData(type, uuid, data);
       });
 
       if (type === 'ssh') {
-        session.on('keyboard-interactive', (name, instructions, instructionsLang, prompts, finish) => finish([password]));
+        // session.on('keyboard-interactive', (name, instructions, instructionsLang, prompts, finish) => finish([mainServer.credential.password]));
       }
 
       session.on('ready', () => {
-        this.SocketModule.emitProp(type, 'ssh://' + username + '@' + host + ':' + port, uuid, 'footer');
+        this.SocketModule.emitProp(type, 'ssh://' + mainServer.credential.fields.UserName + '@' + mainServer.host + ':' + mainServer.port, uuid, 'footer');
         this.SocketModule.emitProp(type, 'SSH CONNECTION ESTABLISHED', uuid, 'status');
 
         /**
@@ -70,7 +71,7 @@ export class SshSocketModule {
               stream.write(data.data);
             });
 
-            stream.on('data', (data) => this.SocketModule.emitData(type, data, uuid));
+            stream.on('data', (data) => this.SocketModule.emitData(type, uuid, data));
             stream.on('close', (code, signal) => {
               err = {
                 message: ((code || signal) ?
@@ -97,7 +98,10 @@ export class SshSocketModule {
             sftp.readdir('/', (e, data) => {
               if (e) return this.closeOnError(type, e, uuid);
 
-              this.SocketModule.emitPath(type, data, uuid, '/');
+              this.SocketModule.emitData(type, uuid, {
+                path: '/',
+                data
+              });
             });
 
             /**

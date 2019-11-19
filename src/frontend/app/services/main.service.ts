@@ -88,6 +88,8 @@ export class MainService {
       e.preventDefault();
     });
 
+    this.socket.connect();
+
     this.socket.on('connect', () => {
       this.logger.info('anyOpsOS', 'Socket.io connected', null);
     });

@@ -8,8 +8,8 @@ import {AnyOpsOSLibFileSystemUiService} from '@anyopsos/lib-file-system-ui';
 import {AnyOpsOSLibVmwareService} from '@anyopsos/lib-vmware';
 
 import {AnyOpsOSAppInfrastructureManagerService} from '../anyopsos-app-infrastructure-manager.service';
-import {ImConnection} from '../../types/im-connection';
 import {ImDataObject} from '../../types/im-data-object';
+import {ConnectionVmware} from '../../types/connections/connection-vmware';
 
 @Injectable({
   providedIn: 'root'
@@ -26,7 +26,7 @@ export class AnyOpsOSAppInfrastructureVmwareService {
   /**
    * Gets all data from a vCenter
    */
-  getVMWareData(connection: ImConnection): void {
+  getVMWareData(connection: ConnectionVmware): void {
     const loggerArgs = arguments;
 
     // On initial connection the modal will be already open, on connection Refresh, the modal will be closed
@@ -100,7 +100,6 @@ export class AnyOpsOSAppInfrastructureVmwareService {
       }
 
       this.InfrastructureManager.setActiveConnection(null);
-      this.InfrastructureManager.deleteConnection(connection.uuid);
 
       this.Toastr.error((e.description ? e.description : e.message), 'Error getting data from VMWare');
 
@@ -111,7 +110,7 @@ export class AnyOpsOSAppInfrastructureVmwareService {
   /**
    * Gets and prepares vmware objects data (VMs, Hosts, Networks....)
    */
-  private getWaitForUpdatesEx(connection: ImConnection): Promise<void> {
+  private getWaitForUpdatesEx(connection: ConnectionVmware): Promise<void> {
     this.logger.debug('Infrastructure Manager', 'Updating VMWare data', arguments);
 
     const haveNextVersion = this.InfrastructureManager.getConnectionByUuid(connection.uuid).data.nextVersion;
@@ -151,13 +150,13 @@ export class AnyOpsOSAppInfrastructureVmwareService {
   /**
    * Set each returned object in an anyOpsOS readable way
    */
-  private parseObjects(connection: ImConnection, objects: any[]): void {
+  private parseObjects(connection: ConnectionVmware, objects: any[]): void {
     objects.forEach((obj) => {
       return this.parseObject(connection, obj);
     });
   }
 
-  private parseObject(connection: ImConnection, object: any): void {
+  private parseObject(connection: ConnectionVmware, object: any): void {
 
     // Is a modification of existing object
     if (object.kind === 'modify') {

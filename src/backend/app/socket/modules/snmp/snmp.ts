@@ -1,6 +1,8 @@
 import {SnmpSessionsModule} from './snmp-sessions';
 import {SocketModule} from '../socket';
 
+import {ConnectionSnmp} from '../../../interfaces/socket-connections/connection-snmp';
+
 export class SnmpSocketModule {
 
   private SnmpSessionsModule: SnmpSessionsModule = new SnmpSessionsModule();
@@ -10,19 +12,19 @@ export class SnmpSocketModule {
 
   }
 
-  newConnection(type: string, uuid: string, host: string, community: string) {
+  newConnection(data: ConnectionSnmp) {
 
-    this.SnmpSessionsModule.createSession(type, uuid, host, community).then(session => {
+    this.SnmpSessionsModule.createSession(data.type, data.uuid, data.host, data.community).then(session => {
       session.on('close', (err) => {
-        this.SocketModule.emitProp(type, 'CONN CLOSE', uuid, 'status');
+        this.SocketModule.emitProp(data.type, 'CONN CLOSE', data.uuid, 'status');
       });
       session.on('error', (err) => {
-        this.SocketModule.emitProp(type, 'CONN ERROR ' + err, uuid, 'status');
+        this.SocketModule.emitProp(data.type, 'CONN ERROR ' + err, data.uuid, 'status');
       });
 
-      this.SocketModule.emitProp(type, 'snmp://public@' + host + ':161', uuid, 'footer');
-      this.SocketModule.emitProp(type, 'SNMP CONNECTION ESTABLISHED', uuid, 'status');
-      this.SocketModule.emitProp(type, 'connected', uuid, 'state');
+      this.SocketModule.emitProp(data.type, 'snmp://public@' + data.host + ':161', data.uuid, 'footer');
+      this.SocketModule.emitProp(data.type, 'SNMP CONNECTION ESTABLISHED', data.uuid, 'status');
+      this.SocketModule.emitProp(data.type, 'connected', data.uuid, 'state');
     });
 
   }

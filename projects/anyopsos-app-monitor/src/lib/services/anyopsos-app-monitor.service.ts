@@ -42,8 +42,8 @@ export class AnyOpsOSAppMonitorService {
     this.CredentialsManager = this.serviceInjector.get('AnyOpsOSAppCredentialsManagerService');
 
     this.dataStore = {connections: [], activeConnection: null};
-    this.$connections = new BehaviorSubject([]) as BehaviorSubject<Netdata[]>;
-    this.$activeConnection = new BehaviorSubject(null) as BehaviorSubject<string>;
+    this.$connections = new BehaviorSubject([]);
+    this.$activeConnection = new BehaviorSubject(null);
     this.connections = this.$connections.asObservable();
     this.activeConnection = this.$activeConnection.asObservable();
   }
@@ -255,7 +255,7 @@ export class AnyOpsOSAppMonitorService {
               // broadcast data to subscribers
               this.$connections.next(Object.assign({}, this.dataStore).connections);
 
-              this.logger.debug('Monitor', 'Connection deleted successfully', loggerArgs);
+              this.logger.debug('Monitor', 'ImConnection deleted successfully', loggerArgs);
             },
             error => {
               this.logger.error('Monitor', 'Error while deleting connection', loggerArgs, error);

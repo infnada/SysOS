@@ -10,8 +10,13 @@ import {AnyOpsOSLibUtilsService} from '@anyopsos/lib-utils';
 import {Credential} from '@anyopsos/app-credentials-manager';
 
 import {AnyOpsOSAppInfrastructureManagerService} from '../../services/anyopsos-app-infrastructure-manager.service';
-import {ImConnection} from '../../types/im-connection';
 import {AnyOpsOSAppInfrastructureManagerNodeGraphService} from '../../services/anyopsos-app-infrastructure-manager-node-graph.service';
+
+import {ConnectionKubernetes} from '../../types/connections/connection-kubernetes';
+import {ConnectionLinux} from '../../types/connections/connection-linux';
+import {ConnectionNetapp} from '../../types/connections/connection-netapp';
+import {ConnectionSnmp} from '../../types/connections/connection-snmp';
+import {ConnectionVmware} from '../../types/connections/connection-vmware';
 
 @Component({
   selector: 'saim-body-new-connection',
@@ -47,38 +52,90 @@ export class BodyNewConnectionComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+
+    /**
+     * Create basic form
+     */
     this.connectionForm = this.formBuilder.group({
       description: ['', Validators.required],
-      host: ['', Validators.required],
-      port: [0, Validators.required],
-      credential: ['', [Validators.required]],
-      type: ['', [Validators.required]],
-      community: ['public', [Validators.required]],
+      clusterName: [''],
+      clusterServer: [''],
+      clusterCa: [''],
+      host: [''],
+      port: [0],
+      credential: [''],
+      type: ['', Validators.required],
+      community: ['public'],
       save: [true],
       autologin: [true],
       uuid: [null]
     });
 
+    /**
+     * Update validators on type change
+     */
+    this.connectionForm.get('type').valueChanges
+      .pipe(takeUntil(this.destroySubject$)).subscribe(type => {
+
+        if (type === 'kubernetes') {
+          this.connectionForm.controls.clusterName.setValidators([Validators.required]);
+          this.connectionForm.controls.clusterServer.setValidators([Validators.required]);
+          this.connectionForm.controls.clusterCa.setValidators([Validators.required]);
+          this.connectionForm.controls.clusterName.updateValueAndValidity();
+          this.connectionForm.controls.clusterServer.updateValueAndValidity();
+          this.connectionForm.controls.clusterCa.updateValueAndValidity();
+        } else {
+          this.connectionForm.controls.host.setValidators([Validators.required]);
+          this.connectionForm.controls.port.setValidators([Validators.required]);
+          this.connectionForm.controls.host.updateValueAndValidity();
+          this.connectionForm.controls.port.updateValueAndValidity();
+        }
+
+        if (type === 'snmp') {
+          this.connectionForm.controls.community.setValidators([Validators.required]);
+          this.connectionForm.controls.community.updateValueAndValidity();
+        } else {
+          this.connectionForm.controls.credential.setValidators([Validators.required]);
+          this.connectionForm.controls.credential.updateValueAndValidity();
+        }
+    });
+
+    /**
+     * Set Form data on connection change
+     */
     this.InfrastructureManager.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe((activeConnection: string) => {
       if (!activeConnection) {
 
-        // Reset form if needed on 'New Connection'
-        // If valid is because user clicked on a connection with state 'disconnected' and then did 'New Connection'
+        // Reset form if needed on 'New ImConnection'
+        // If valid is because user clicked on a connection with state 'disconnected' and then did 'New ImConnection'
         if (this.connectionForm.touched || this.connectionForm.valid) this.connectionForm.reset();
         return this.newConnectionType = null;
       }
 
-      this.newConnectionType = this.getActiveConnection().type;
+      const currentConnection = this.getActiveConnection(true);
 
-      (this.connectionForm.controls.description as FormControl).setValue(this.getActiveConnection(true).description);
-      (this.connectionForm.controls.host as FormControl).setValue(this.getActiveConnection(true).host);
-      (this.connectionForm.controls.port as FormControl).setValue(this.getActiveConnection(true).port);
-      (this.connectionForm.controls.credential as FormControl).setValue(this.getActiveConnection(true).credential);
-      (this.connectionForm.controls.type as FormControl).setValue(this.getActiveConnection(true).type);
-      (this.connectionForm.controls.community as FormControl).setValue(this.getActiveConnection(true).community);
-      (this.connectionForm.controls.save as FormControl).setValue(this.getActiveConnection(true).save);
-      (this.connectionForm.controls.autologin as FormControl).setValue(this.getActiveConnection(true).autologin);
-      (this.connectionForm.controls.uuid as FormControl).setValue(this.getActiveConnection(true).uuid);
+      this.newConnectionType = currentConnection.type;
+
+      if (currentConnection.type === 'kubernetes') {
+        (this.f.clusterName as FormControl).setValue(currentConnection.clusterName);
+        (this.f.clusterServer as FormControl).setValue(currentConnection.clusterServer);
+        (this.f.clusterCa as FormControl).setValue(currentConnection.clusterCa);
+      } else {
+        (this.f.host as FormControl).setValue(currentConnection.host);
+        (this.f.port as FormControl).setValue(currentConnection.port);
+      }
+
+      if (currentConnection.type === 'snmp') {
+        (this.f.community as FormControl).setValue(currentConnection.community);
+      } else {
+        (this.f.credential as FormControl).setValue(currentConnection.credential);
+      }
+
+      (this.f.description as FormControl).setValue(currentConnection.description);
+      (this.f.type as FormControl).setValue(currentConnection.type);
+      (this.f.save as FormControl).setValue(currentConnection.save);
+      (this.f.autologin as FormControl).setValue(currentConnection.autologin);
+      (this.f.uuid as FormControl).setValue(currentConnection.uuid);
     });
   }
 
@@ -111,7 +168,7 @@ export class BodyNewConnectionComponent implements OnInit, OnDestroy {
     this.Applications.openApplication('credentials-manager');
   }
 
-  getActiveConnection(returnMain: boolean = false): ImConnection {
+  getActiveConnection(returnMain: boolean = false): ConnectionKubernetes | ConnectionLinux | ConnectionNetapp | ConnectionSnmp | ConnectionVmware {
     return this.InfrastructureManager.getActiveConnection(returnMain);
   }
 

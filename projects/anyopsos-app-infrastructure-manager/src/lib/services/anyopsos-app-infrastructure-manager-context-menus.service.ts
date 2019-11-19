@@ -13,6 +13,7 @@ import {AnyOpsOSAppInfrastructureNetappNodeActionsService} from './netapp/anyops
 import {AnyOpsOSAppInfrastructureVmwareNodeActionsService} from './vmware/anyopsos-app-infrastructure-vmware-node-actions.service';
 
 import {ImTreeNode} from '../types/im-tree-node';
+import {ConnectionVmware} from '../types/connections/connection-vmware';
 
 @Injectable({
   providedIn: 'root'
@@ -31,11 +32,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
               private InfrastructureManagerVMWareNodeActions: AnyOpsOSAppInfrastructureVmwareNodeActionsService) {
   }
 
-  // Storage & Virtual
-  get svContextMenu() {
+  // Kubernetes
+  get kubernetesContextMenu() {
     return [
       {
-        id: 0, text: '<i class="fas fa-pencil"></i> Edit Connection', action: (node: ImTreeNode) => {
+        id: 0, text: '<i class="fas fa-pencil"></i> Edit ImConnection', action: (node: ImTreeNode) => {
           this.InfrastructureManager.editConnection(node.info.uuid);
         }
       },
@@ -45,7 +46,28 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
         }
       },
       {
-        id: 2, text: '<i class="fas fa-trash text-danger"></i> Delete Connection', action: (node: ImTreeNode) => {
+        id: 2, text: '<i class="fas fa-trash text-danger"></i> Delete ImConnection', action: (node: ImTreeNode) => {
+          this.InfrastructureManager.deleteConnection(node.info.uuid);
+        }
+      }
+    ];
+  }
+
+  // Storage
+  get netappContextMenu() {
+    return [
+      {
+        id: 0, text: '<i class="fas fa-pencil"></i> Edit ImConnection', action: (node: ImTreeNode) => {
+          this.InfrastructureManager.editConnection(node.info.uuid);
+        }
+      },
+      {
+        id: 1, text: '<i class="fas fa-sync-alt"></i> Rescan', action: (node: ImTreeNode) => {
+          this.InfrastructureManager.refreshConnection(node.info.uuid);
+        }
+      },
+      {
+        id: 2, text: '<i class="fas fa-trash text-danger"></i> Delete ImConnection', action: (node: ImTreeNode) => {
           this.InfrastructureManager.deleteConnection(node.info.uuid);
         }
       }
@@ -123,7 +145,7 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
   get vmwareContextMenu() {
     return [
       {
-        id: 0, text: '<i class="fas fa-pencil"></i> Edit Connection', action: (node: ImTreeNode) => {
+        id: 0, text: '<i class="fas fa-pencil"></i> Edit ImConnection', action: (node: ImTreeNode) => {
           this.InfrastructureManager.editConnection(node.info.uuid);
         }
       },
@@ -133,7 +155,7 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
         }
       },
       {
-        id: 2, text: '<i class="fas fa-trash text-danger"></i> Delete Connection', action: (node: ImTreeNode) => {
+        id: 2, text: '<i class="fas fa-trash text-danger"></i> Delete ImConnection', action: (node: ImTreeNode) => {
           this.InfrastructureManager.deleteConnection(node.info.uuid);
         }
       },
@@ -2409,12 +2431,14 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
   private openRemoteConsole(connectionUuid: string, vm: any): void {
     this.logger.debug('Infrastructure Manager', 'Opening Remote Console APP', arguments);
 
+    const connection: ConnectionVmware = this.InfrastructureManager.getConnectionByUuid(connectionUuid) as ConnectionVmware;
+
     this.Applications.openApplication('wmks', {
       connectionUuid,
       vm: vm.vm,
-      credential: this.InfrastructureManager.getConnectionByUuid(connectionUuid).credential,
-      host: this.InfrastructureManager.getConnectionByUuid(connectionUuid).host,
-      port: this.InfrastructureManager.getConnectionByUuid(connectionUuid).port
+      credential: connection.credential,
+      host: connection.host,
+      port: connection.port
     });
   }
 

@@ -6,8 +6,11 @@ import {takeUntil} from 'rxjs/operators';
 import {AnyOpsOSAppInfrastructureManagerService} from './anyopsos-app-infrastructure-manager.service';
 
 import {ImTreeNode} from '../types/im-tree-node';
-import {ImConnection} from '../types/im-connection';
+import {ImConnection} from '../types/connections/im-connection';
+import {ConnectionNetapp} from '../types/connections/connection-netapp';
+import {ConnectionVmware} from '../types/connections/connection-vmware';
 import {ImDataObject} from '../types/im-data-object';
+import {ConnectionKubernetes} from "../types/connections/connection-kubernetes";
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +30,7 @@ export class AnyOpsOSAppInfrastructureManagerTreeDataService implements OnDestro
       treeData: []
     };
 
-    this.$treeData = new BehaviorSubject([]) as BehaviorSubject<ImTreeNode[]>;
+    this.$treeData = new BehaviorSubject([]);
     this.treeData = this.$treeData.asObservable();
 
     // Subscribe to Connections
@@ -53,14 +56,20 @@ export class AnyOpsOSAppInfrastructureManagerTreeDataService implements OnDestro
   getTreeData(): ImTreeNode[] {
     const treeData: ImTreeNode[] = [
       {
-        name: 'Storage',
-        type: 'storage',
+        name: 'Virtual',
+        type: 'virtual',
         info: null,
         children: []
       },
       {
-        name: 'Virtual',
-        type: 'virtual',
+        name: 'Container',
+        type: 'container',
+        info: null,
+        children: []
+      },
+      {
+        name: 'Storage',
+        type: 'storage',
         info: null,
         children: []
       },
@@ -91,6 +100,14 @@ export class AnyOpsOSAppInfrastructureManagerTreeDataService implements OnDestro
       }
     ];
 
+    this.setTreeDataByType(treeData, 'vmware', 'virtual');
+    this.setTreeDataByType(treeData, 'kubernetes', 'container');
+    this.setTreeDataByType(treeData, 'netapp', 'storage');
+
+    return treeData;
+  }
+
+  setTreeDataByType(treeData, connectionType: 'netapp' | 'vmware' | 'kubernetes', treeType: 'storage' | 'virtual' | 'container') {
     // Recursively for data
     const getChildren = (connection: ImConnection, current): void => {
       current.children = JSON.parse(JSON.stringify(
@@ -106,73 +123,67 @@ export class AnyOpsOSAppInfrastructureManagerTreeDataService implements OnDestro
 
     };
 
+    let mainObj;
+
     // Set treeData for storage
-    this.InfrastructureManager.getConnectionsByType('netapp').forEach((storage, sindex) => {
-      const storageObject: ImTreeNode = {
-        name: storage.host,
+    this.InfrastructureManager.getConnectionsByType(connectionType).forEach((conObj: ConnectionVmware | ConnectionKubernetes | ConnectionNetapp, sindex: number) => {
+      const name = (conObj.type === 'vmware' ? conObj.host : conObj.type === 'kubernetes' ? conObj.clusterName : conObj.type === 'netapp' ? conObj.host : '')
+      const connectionObject: ImTreeNode = {
+        name: name,
         info: {
-          uuid: storage.uuid
+          uuid: conObj.uuid
         },
-        type: 'netapp'
+        type: connectionType
       };
 
       // return if Storage connection not initialized. Nothing else to look for
-      if (!storage.data.Data || storage.data.Data.length === 0) {
+      if (!conObj.data.Data || conObj.data.Data.length === 0) {
         return treeData.find((obj) => {
-          return obj.type === 'storage';
-        }).children[sindex] = storageObject;
+          return obj.type === treeType;
+        }).children[sindex] = connectionObject;
       }
 
-      // Get 'new instance' of Main parent object/s and set it as Children of Storage connection
-      const mainObj = storage.data.Data.filter((obj: ImDataObject) => {
-        return obj.type === 'vserver';
-      });
-      storageObject.children = JSON.parse(JSON.stringify(mainObj));
+      // Get 'new instance' of Main parent object/s and set it as Children of Kubernetes connection
+      if (connectionType === 'vmware') {
+        mainObj = conObj.data.Data.find((obj: ImDataObject) => {
+          return obj.info.parent === null;
+        });
 
-      storageObject.children.forEach((obj: ImDataObject) => {
-
+        connectionObject.children = [JSON.parse(JSON.stringify(mainObj))];
         // Get all children in a loop
-        getChildren(storage, obj);
-      });
+        getChildren(conObj, connectionObject.children[0]);
+      }
+
+      if (connectionType === 'kubernetes') {
+        mainObj = conObj.data.Data.filter((obj: ImDataObject) => {
+          return obj.type === 'Namespace';
+        });
+
+        connectionObject.children = JSON.parse(JSON.stringify(mainObj));
+        connectionObject.children.forEach((obj: ImDataObject) => {
+
+          // Get all children in a loop
+          getChildren(conObj, obj);
+        });
+      }
+
+      if (connectionType === 'netapp') {
+        mainObj = conObj.data.Data.filter((obj: ImDataObject) => {
+          return obj.type === 'vserver';
+        });
+
+        connectionObject.children = JSON.parse(JSON.stringify(mainObj));
+        connectionObject.children.forEach((obj: ImDataObject) => {
+
+          // Get all children in a loop
+          getChildren(conObj, obj);
+        });
+      }
 
       // Set final results for Storage connection
       return treeData.find((obj) => {
-        return obj.type === 'storage';
-      }).children[sindex] = storageObject;
+        return obj.type === treeType;
+      }).children[sindex] = connectionObject;
     });
-
-    // Set treeData for virtual
-    this.InfrastructureManager.getConnectionsByType('vmware').forEach((virtual, vindex) => {
-      const virtualObject: ImTreeNode = {
-        name: virtual.host,
-        info: {
-          uuid: virtual.uuid
-        },
-        type: 'vmware'
-      };
-
-      // return if Virtual connection not initialized. Nothing else to look for
-      if (!virtual.data.Data || virtual.data.Data.length === 0) {
-        return treeData.find((obj) => {
-          return obj.type === 'virtual';
-        }).children[vindex] = virtualObject;
-      }
-
-      // Get 'new instance' of Main parent object and set it as Children of Virtual connection
-      const mainObj = virtual.data.Data.find((obj: ImDataObject) => {
-        return obj.info.parent === null;
-      });
-      virtualObject.children = [JSON.parse(JSON.stringify(mainObj))];
-
-      // Get all children in a loop
-      getChildren(virtual, virtualObject.children[0]);
-
-      // Set final results for Virtual connection
-      return treeData.find((obj) => {
-        return obj.type === 'virtual';
-      }).children[vindex] = virtualObject;
-    });
-
-    return treeData;
   }
 }

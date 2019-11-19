@@ -7,10 +7,11 @@ import {AnyOpsOSLibNetappService} from '@anyopsos/lib-netapp';
 import {AnyOpsOSAppInfrastructureManagerService} from '../anyopsos-app-infrastructure-manager.service';
 import {AnyOpsOSAppInfrastructureNetappService} from './anyopsos-app-infrastructure-netapp.service';
 import {AnyOpsOSAppInfrastructureManagerObjectHelperService} from '../anyopsos-app-infrastructure-manager-object-helper.service';
+
+import {ConnectionNetapp} from '../../types/connections/connection-netapp';
+import {ImDataObject} from '../../types/im-data-object';
 import {NetAppVolume} from '../../types/netapp-volume';
 import {NetAppSnapshot} from '../../types/netapp-snapshot';
-import {ImDataObject} from '../../types/im-data-object';
-import {ImConnection} from '../../types/im-connection';
 import {NetAppVserver} from '../../types/netapp-vserver';
 
 @Injectable({
@@ -34,7 +35,7 @@ export class AnyOpsOSAppInfrastructureNetappNodeActionsService {
 
     this.logger.debug('Infrastructure Manager', 'Ask for create storage snapshot', arguments);
 
-    const connection: ImConnection = this.InfrastructureManager.getConnectionByUuid(volume.info.mainUuid);
+    const connection: ConnectionNetapp = this.InfrastructureManager.getConnectionByUuid(volume.info.mainUuid) as ConnectionNetapp;
     const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(connection.uuid, 'vserver', volume.info.parent.name);
 
     this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
@@ -95,7 +96,7 @@ export class AnyOpsOSAppInfrastructureNetappNodeActionsService {
 
     this.logger.debug('Infrastructure Manager', 'Ask for delete storage snapshot', arguments);
 
-    const connection: ImConnection = this.InfrastructureManager.getConnectionByUuid(snapshot.info.mainUuid);
+    const connection: ConnectionNetapp = this.InfrastructureManager.getConnectionByUuid(snapshot.info.mainUuid) as ConnectionNetapp;
     const volume: ImDataObject & { info: { data: NetAppVolume } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(connection.uuid, 'volume', snapshot.info.parent.name);
     const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(connection.uuid, 'vserver', volume.info.parent.name);
 

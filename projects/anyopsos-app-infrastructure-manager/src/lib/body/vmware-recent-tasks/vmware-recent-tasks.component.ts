@@ -7,6 +7,7 @@ import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
 import {AnyOpsOSLibVmwareService, TaskInfo} from '@anyopsos/lib-vmware';
 
 import {AnyOpsOSAppInfrastructureManagerService} from '../../services/anyopsos-app-infrastructure-manager.service';
+import {ConnectionVmware} from '../../types/connections/connection-vmware';
 
 @Component({
   selector: 'saim-vmware-recent-tasks',
@@ -31,7 +32,7 @@ export class VmwareRecentTasksComponent implements OnInit {
   ngOnInit() {
     this.Modal.openLittleModal('PLEASE WAIT', 'Getting VMware Tasks...', '.vmware-tasks', 'plain').then(() => {
 
-      return this.VMWare.connectvCenterSoap(this.InfrastructureManager.getActiveConnection(true));
+      return this.VMWare.connectvCenterSoap(this.InfrastructureManager.getActiveConnection(true) as ConnectionVmware);
     }).then((data) => {
       if (data.status === 'error') throw new Error('Failed to connect to vCenter');
 
@@ -39,7 +40,7 @@ export class VmwareRecentTasksComponent implements OnInit {
       date.setHours(date.getHours() - 2);
 
       return this.VMWare.CreateCollectorForTasks(
-        this.InfrastructureManager.getActiveConnection(true),
+        this.InfrastructureManager.getActiveConnection(true) as ConnectionVmware,
         {
           time: {
             timeType: 'queuedTime',
@@ -52,7 +53,7 @@ export class VmwareRecentTasksComponent implements OnInit {
       if (createCollectorResult.status === 'error') throw new Error('Failed to CreateCollectorForTasks to vCenter');
 
       return this.VMWare.ReadNextTasks(
-        this.InfrastructureManager.getActiveConnection(true),
+        this.InfrastructureManager.getActiveConnection(true) as ConnectionVmware,
         { $type: 'TaskHistoryCollector', _value: createCollectorResult.data.name },
         100
       );

@@ -1,0 +1,45 @@
+<div class="panel-container">
+  <div class="panel-content">
+    <mat-tab-group selectedIndex="1">
+
+      <mat-tab disabled="true">
+        <ng-template matTabLabel>
+          <div class="object horizontal-flex-container">
+            <div role="titlebar-icon" [ngClass]="VmwareTemplateHelpers.getObjectIconClass(dockerObject)"></div>
+            <div role="titlebar-title" class="summary-name-label">{{dockerObject.name}}</div>
+          </div>
+        </ng-template>
+      </mat-tab>
+
+      <mat-tab label="Summary">
+        <saim-tab-summary [nmObject]="dockerObject"></saim-tab-summary>
+      </mat-tab>
+
+      <mat-tab label="Configure">
+        <saim-tab-configure [nmObject]="dockerObject"></saim-tab-configure>
+      </mat-tab>
+
+      <mat-tab label="Updates" class="p-2">
+        <saim-tab-updates [nmObject]="dockerObject"></saim-tab-updates>
+      </mat-tab>
+
+    </mat-tab-group>
+  </div>
+  <div class="panel-sidebar">
+    <mat-tab-group mat-stretch-tabs>
+
+      <mat-tab label="Monitor" *ngIf="haveMonitor()">
+        <saim-tab-monitor [nmObject]="dockerObject" [monitorConnection]="monitorConnection"></saim-tab-monitor>
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template matTabLabel>
+          <span matBadge="5" matBadgeOverlap="false" matBadgePosition="before"
+                matBadgeColor="accent">Alarms & Logs</span>
+        </ng-template>
+        <saim-tab-alarms [nmObject]="dockerObject"></saim-tab-alarms>
+      </mat-tab>
+
+    </mat-tab-group>
+  </div>
+</div>

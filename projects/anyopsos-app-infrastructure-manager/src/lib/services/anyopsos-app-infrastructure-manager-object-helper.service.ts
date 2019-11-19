@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 
 import {AnyOpsOSAppInfrastructureManagerService} from './anyopsos-app-infrastructure-manager.service';
 import {ImDataObject} from '../types/im-data-object';
-import {ImConnection} from '../types/im-connection';
+import {ImConnection} from '../types/connections/im-connection';
 
 @Injectable({
   providedIn: 'root'

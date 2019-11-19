@@ -48,8 +48,8 @@ export class AnyOpsOSLibFileSystemUiService {
               private Applications: AnyOpsOSLibApplicationService) {
 
     this.dataStore = {copyFile: null, cutFile: null};
-    this.$copyFile = new BehaviorSubject(null) as BehaviorSubject<object>;
-    this.$cutFile = new BehaviorSubject(null) as BehaviorSubject<object>;
+    this.$copyFile = new BehaviorSubject(null);
+    this.$cutFile = new BehaviorSubject(null);
     this.copyFile = this.$copyFile.asObservable();
     this.cutFile = this.$cutFile.asObservable();
 
