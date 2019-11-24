@@ -10,13 +10,15 @@ import {AnyOpsOSLibFileSystemUiService} from '@anyopsos/lib-file-system-ui';
 
 import {AnyOpsOSAppInfrastructureManagerService} from '../anyopsos-app-infrastructure-manager.service';
 import {AnyOpsOSAppInfrastructureManagerObjectHelperService} from '../anyopsos-app-infrastructure-manager-object-helper.service';
-import {AnyOpsOSAppInfrastructureVmwareService} from '../vmware/anyopsos-app-infrastructure-vmware.service';
+import {AnyOpsOSAppInfrastructureManagerNodeLinkService} from '../anyopsos-app-infrastructure-manager-node-link.service';
 
 import {ConnectionNetapp} from '../../types/connections/connection-netapp';
 import {ImDataObject} from '../../types/im-data-object';
 import {NetAppVolume} from '../../types/netapp-volume';
 import {NetAppSnapshot} from '../../types/netapp-snapshot';
 import {NetAppVserver} from '../../types/netapp-vserver';
+import {VMWareDatastore} from '../../types/vmware-datastore';
+import {VMWareVM} from '../../types/vmware-vm';
 
 @Injectable({
   providedIn: 'root'
@@ -30,7 +32,7 @@ export class AnyOpsOSAppInfrastructureNetappService {
               private VMWare: AnyOpsOSLibVmwareService,
               private InfrastructureManager: AnyOpsOSAppInfrastructureManagerService,
               private InfrastructureManagerObjectHelper: AnyOpsOSAppInfrastructureManagerObjectHelperService,
-              private InfrastructureManagerVmware: AnyOpsOSAppInfrastructureVmwareService) {
+              private InfrastructureManagerNodeLink: AnyOpsOSAppInfrastructureManagerNodeLinkService) {
   }
 
   /**
@@ -59,7 +61,8 @@ export class AnyOpsOSAppInfrastructureNetappService {
 
       // TODO: check if version is compatible with anyOpsOS
 
-      this.InfrastructureManager.getConnectionByUuid(connection.uuid).data.Base = {
+      (this.InfrastructureManager.getConnectionByUuid(connection.uuid) as ConnectionNetapp).data.Base = {
+        ...(this.InfrastructureManager.getConnectionByUuid(connection.uuid) as ConnectionNetapp).data.Base,
         buildtimestamp: systemVersionResult.data.build_timestamp,
         isclustered: systemVersionResult.data.is_clustered,
         version: systemVersionResult.data.version,
@@ -97,10 +100,10 @@ export class AnyOpsOSAppInfrastructureNetappService {
       this.parseObjects(connection, 'fcpadapter', res[2].data);
 
       // Set cluster data
-      this.InfrastructureManager.getConnectionByUuid(connection.uuid).data.Base.metrocluster = res[3].data;
-      this.InfrastructureManager.getConnectionByUuid(connection.uuid).data.Base.cluster = res[4].data;
-      this.InfrastructureManager.getConnectionByUuid(connection.uuid).data.Base.licenses = res[5].data;
-      this.InfrastructureManager.getConnectionByUuid(connection.uuid).data.Base.ontapi_version = res[6].data;
+      (this.InfrastructureManager.getConnectionByUuid(connection.uuid) as ConnectionNetapp).data.Base.metrocluster = res[3].data;
+      (this.InfrastructureManager.getConnectionByUuid(connection.uuid) as ConnectionNetapp).data.Base.cluster = res[4].data;
+      (this.InfrastructureManager.getConnectionByUuid(connection.uuid) as ConnectionNetapp).data.Base.licenses = res[5].data;
+      (this.InfrastructureManager.getConnectionByUuid(connection.uuid) as ConnectionNetapp).data.Base.ontapi_version = res[6].data;
 
       this.Modal.changeModalText('Getting NetApp vServers...', '.window--infrastructure-manager .window__main');
 
@@ -117,7 +120,7 @@ export class AnyOpsOSAppInfrastructureNetappService {
       return Promise.all(vServers.map(async (vServer: ImDataObject & { info: { data: NetAppVserver } }) => {
 
         // This is the main vServer
-        if (vServer.info.data['vserver-type'] === 'admin') this.InfrastructureManager.getConnectionByUuid(connection.uuid).data.Base.name = vServer.name;
+        if (vServer.info.data['vserver-type'] === 'admin') (this.InfrastructureManager.getConnectionByUuid(connection.uuid) as ConnectionNetapp).data.Base.name = vServer.name;
 
         // GET Volumes per vServer
         if (vServer.info.data['vserver-type'] === 'data') {
@@ -364,39 +367,27 @@ export class AnyOpsOSAppInfrastructureNetappService {
   /**
    * Fetch NetApp SnapShots
    */
-  getSnapshotFiles(connectionUuid: string, host: string, vserver: string, volume: string, snapshot: string) {
+  getSnapshotFiles(snapshot: ImDataObject & { info: { data: NetAppSnapshot } }) {
     const loggerArgs = arguments;
 
     this.logger.debug('Infrastructure Manager', 'getSnapshotFiles', arguments);
 
-    const connection: ConnectionNetapp = this.InfrastructureManager.getConnectionByUuid(connectionUuid) as ConnectionNetapp;
+    if (snapshot.info.data.Files) return;
+    snapshot.info.data.VMs = [];
 
-    let link;
-    let datastoreIndex;
-    let datastoreVM;
-    let esxiHost;
-
-    const vserverIndex = this.InfrastructureManager.getConnectionByUuid(connectionUuid).data.Vservers.findIndex((item) => {
-      return item['vserver-name'] === vserver;
-    });
-    const volumeIndex = this.InfrastructureManager.getConnectionByUuid(connectionUuid).data.Vservers[vserverIndex].Volumes.findIndex((item) => {
-      return item['volume-id-attributes'].name === volume;
-    });
-    const snapshotIndex = this.InfrastructureManager.getConnectionByUuid(connectionUuid).data.Vservers[vserverIndex].Volumes[volumeIndex].Snapshots.findIndex((item) => {
-      return item.name === snapshot;
-    });
-
-    // Already fetched files from storage, don't ask for it again
-    if (this.InfrastructureManager.getConnectionByUuid(connectionUuid).data.Vservers[vserverIndex].Volumes[volumeIndex].Snapshots[snapshotIndex].Files) return Promise.resolve();
-    this.InfrastructureManager.getConnectionByUuid(connectionUuid).data.Vservers[vserverIndex].Volumes[volumeIndex].Snapshots[snapshotIndex].VMs = [];
+    const connection: ConnectionNetapp = this.InfrastructureManager.getConnectionByUuid(snapshot.info.mainUuid) as ConnectionNetapp;
+    const volume: ImDataObject & { info: { data: NetAppVolume } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(connection.uuid, 'volume', snapshot.info.parent.name);
+    const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(connection.uuid, 'vserver', volume.info.parent.name);
+    const linkedDatastores: (ImDataObject & { info: { data: VMWareDatastore } })[] = this.InfrastructureManagerNodeLink.checkStorageVolumeLinkWithManagedVMWareDatastore(volume);
 
     this.Modal.openLittleModal('PLEASE WAIT', 'Getting Snapshot data...', '.window--infrastructure-manager .window__main', 'plain').then(() => {
 
+      // Get snapshot files on root path
       return this.NetApp.getSnapshotFiles(
         connection.credential,
-        host,
+        connection.host,
         connection.port,
-        vserver,
+        vServer,
         volume,
         snapshot
       );
@@ -409,88 +400,79 @@ export class AnyOpsOSAppInfrastructureNetappService {
         };
       }
 
-      this.InfrastructureManager.getConnectionByUuid(connectionUuid).data.Vservers[vserverIndex].Volumes[volumeIndex].Snapshots[snapshotIndex].Files = snapshotFilesResult.data;
+      snapshot.info.data.Files = snapshotFilesResult.data;
 
       // Check every file
       snapshotFilesResult.data.forEach(file => {
 
-        // VM found
-        if (!file.hasOwnProperty('name')) {
-          console.log(file);
-          return;
+        // Is not a VM
+        if (file.name.substr(file.name.length - 4) !== '.vmx') return;
+
+        // No link with Snapshot Volume found
+        if (linkedDatastores.length === 0) {
+          return snapshot.info.data.VMs.push({
+            path: file.path + '/' + file.name
+          });
         }
-        if (file.name.substr(file.name.length - 4) === '.vmx') {
 
-          // Reset esxiHost
-          esxiHost = '';
+        // Search VM matching vmx file in linked Datastores
+        linkedDatastores.forEach((datastoreObj) => {
 
-          /*TODO:// Get vCenter Link by Storage Junction Path
-          link = this.InfrastructureManager.getLinkByStorageJunctionPath(
-            connectionUuid,
-            this.InfrastructureManager.getConnectionByUuid(connectionUuid).data.Vservers[vserverIndex].Volumes[volumeIndex]['volume-id-attributes'].uuid,
-            this.InfrastructureManager.getConnectionByUuid(connectionUuid).data.Vservers[vserverIndex].Volumes[volumeIndex]['volume-id-attributes']['junction-path']
-          );
+          const matchingVMs = [];
 
-          if (link) {
+          // Get matching VMs on linkedDatastores
+          if (datastoreObj.info.data.vm && datastoreObj.info.data.vm[0].ManagedObjectReference) {
 
-            // Get datastoreIndex using returned link
-            datastoreIndex = this.InfrastructureManager.getConnectionByUuid(link.virtual).data.Datastores.findIndex((item) => {
-              return item.obj.name === link.esxi_datastore;
-            });
+            if (Array.isArray(datastoreObj.info.data.vm[0].ManagedObjectReference)) {
+              Array.isArray(datastoreObj.info.data.vm[0].ManagedObjectReference.forEach((vmData) => {
 
-            // Make the $filter only if VMs found in this datastore
-            if (this.InfrastructureManager.getConnectionByUuid(link.virtual).data.Datastores[datastoreIndex].vm.hasOwnProperty('ManagedObjectReference')) {
+                const currentVM: ImDataObject & { info: { data: VMWareVM } } = this.InfrastructureManagerObjectHelper.getObjectByUuid(
+                  datastoreObj.info.mainUuid,
+                  `${datastoreObj.info.mainUuid};\u003c${vmData.name}:${vmData.type}\u003e`
+                );
+                if (currentVM.info.data.files.vmPathName === `[${datastoreObj.name}] ${file.path.substring(1)}/${file.name}`) matchingVMs.push(currentVM);
 
-              // Search for VM using returned Storage file .vmx path
-              datastoreVM = this.InfrastructureManager.getConnectionByUuid(link.virtual).data.VMs.filter((obj) => {
-                return obj.vm === this.InfrastructureManager.getConnectionByUuid(link.virtual).data.Datastores[datastoreIndex].vm.ManagedObjectReference.name &&
-                  obj.datastore.ManagedObjectReference.name === link.esxi_datastore &&
-                  obj.files.vmPathName === '[' + this.InfrastructureManager.getConnectionByUuid(link.virtual).data.Datastores[datastoreIndex].name + '] ' +
-                  '' + file.path.substring(1) + '/' + file.name;
-              })[0];
+              }));
+            } else {
 
-              // if datastoreVM is undefinned means that VM no longer exists or is in other datastore
-              if (datastoreVM) {
-                // Get Host name by host Id
-                esxiHost = this.InfrastructureManagerVmware.getESXihosts().filter((obj) => {
-                  return obj.virtual.host === this.InfrastructureManager.getConnectionByUuid(link.virtual).host &&
-                    obj.host.host === datastoreVM.runtime.host.name;
-                })[0];
-              }
+              const currentVM: ImDataObject & { info: { data: VMWareVM } } = this.InfrastructureManagerObjectHelper.getObjectByUuid(
+                datastoreObj.info.mainUuid,
+                `${datastoreObj.info.mainUuid};\u003c${datastoreObj.info.data.vm[0].ManagedObjectReference.name}:${datastoreObj.info.data.vm[0].ManagedObjectReference.type}\u003e`
+              );
+              if (currentVM.info.data.files.vmPathName === `[${datastoreObj.name}] ${file.path.substring(1)}/${file.name}`) matchingVMs.push(currentVM);
 
             }
-          }*/
+          }
 
-          this.InfrastructureManager.getConnectionByUuid(connectionUuid).data.Vservers[vserverIndex].Volumes[volumeIndex].Snapshots[snapshotIndex].VMs.push({
-            name: (datastoreVM ? datastoreVM.name : file.name.slice(0, -4)),
-            host: (esxiHost ? esxiHost.name : 'Unknown'),
-            state: (datastoreVM ? datastoreVM.runtime.powerState : 'Unknown'),
-            size: (datastoreVM ? datastoreVM.storage.perDatastoreUsage.unshared : 'Unknown'),
-            path: file.path + '/' + file.name,
-            virtual: (link ? link.virtual : ''),
-            vm: (datastoreVM ? datastoreVM : null)
-          });
+          if (matchingVMs) {
+            snapshot.info.data.VMs.push(...matchingVMs);
 
+          // No matching VM found. VM not inside this Datastore anymore (erased or moved to another Datastore)
+          } else {
+            snapshot.info.data.VMs.push({
+              path: file.path + '/' + file.name
+            });
+          }
+        });
+
+        this.Modal.changeModalText('Saving connection to file', '.window--infrastructure-manager .window__main');
+        this.InfrastructureManager.saveConnection(this.InfrastructureManager.getConnectionByUuid(connection.uuid)).then(() => {
+          this.Modal.closeModal('.window--infrastructure-manager .window__main');
+        });
+
+        // Tell InfrastructureManager that we changed connections data
+        this.InfrastructureManager.connectionsUpdated();
+      }).catch((e) => {
+        this.logger.error('Infrastructure Manager', 'getSnapshotFiles', loggerArgs, e.description);
+
+        if (this.Modal.isModalOpened('.window--infrastructure-manager .window__main')) {
+          this.Modal.changeModalType('danger', '.window--infrastructure-manager .window__main');
+          this.Modal.changeModalText((e.description ? e.description : e.message), '.window--infrastructure-manager .window__main');
         }
 
+        throw e;
       });
 
-      this.Modal.changeModalText('Saving connection to file', '.window--infrastructure-manager .window__main');
-      this.InfrastructureManager.saveConnection(this.InfrastructureManager.getConnectionByUuid(connectionUuid)).then(() => {
-        this.Modal.closeModal('.window--infrastructure-manager .window__main');
-      });
-
-      // Tell InfrastructureManager that we changed connections data
-      this.InfrastructureManager.connectionsUpdated();
-    }).catch((e) => {
-      this.logger.error('Infrastructure Manager', 'getSnapshotFiles', loggerArgs, e.description);
-
-      if (this.Modal.isModalOpened('.window--infrastructure-manager .window__main')) {
-        this.Modal.changeModalType('danger', '.window--infrastructure-manager .window__main');
-        this.Modal.changeModalText((e.description ? e.description : e.message), '.window--infrastructure-manager .window__main');
-      }
-
-      throw e;
     });
   }
 

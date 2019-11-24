@@ -19,7 +19,7 @@ interface linkTo {
   nodes: ImDataObject[];
 }
 
-const _filter = (opt: ImDataObject[], value: string | ImDataObject): ImDataObject[] => {
+const nodesFilter = (opt: ImDataObject[], value: string | ImDataObject): ImDataObject[] => {
   const filterValue = (typeof value === 'string' ? value.toLowerCase() : value.name.toLowerCase());
 
   return opt.filter(item => item.name.toLowerCase().indexOf(filterValue) === 0);
@@ -81,7 +81,7 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
       type: [null]
     });
 
-    this.linkToOptions = this.connectionForm.get('linkTo')!.valueChanges
+    this.linkToOptions = this.connectionForm.get('linkTo').valueChanges
       .pipe(
         startWith(''),
         map(value => this._filterGroup(value))
@@ -90,8 +90,8 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
     this.Monitor.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe((activeConnection: string) => {
       if (!activeConnection) {
 
-        // Reset form if needed on 'New ImConnection'
-        // If valid is because user clicked on a connection with state 'disconnected' and then did 'New ImConnection'
+        // Reset form if needed on 'New Connection'
+        // If valid is because user clicked on a connection with state 'disconnected' and then did 'New Connection'
         if (this.connectionForm.touched || this.connectionForm.valid) this.connectionForm.reset();
         return this.newConnectionType = null;
       }
@@ -118,7 +118,7 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
   private _filterGroup(value: string): linkTo[] {
     if (value) {
       return this.linkGroups
-        .map(group => ({type: group.type, nodes: _filter(group.nodes, value)}))
+        .map(group => ({type: group.type, nodes: nodesFilter(group.nodes, value)}))
         .filter(group => group.nodes.length > 0);
     }
 

@@ -20,11 +20,8 @@ import {AnyopsosAppInfrastructureLinuxService} from '../services/linux/anyopsos-
 import {AnyopsosAppInfrastructureSnmpService} from '../services/snmp/anyopsos-app-infrastructure-snmp.service';
 
 import {ImTreeNode} from '../types/im-tree-node';
-import {ConnectionKubernetes} from '../types/connections/connection-kubernetes';
-import {ConnectionLinux} from '../types/connections/connection-linux';
-import {ConnectionNetapp} from '../types/connections/connection-netapp';
-import {ConnectionSnmp} from '../types/connections/connection-snmp';
-import {ConnectionVmware} from '../types/connections/connection-vmware';
+import {ImDataObject} from '../types/im-data-object';
+import {ConnectionTypes} from '../types/connections/connection-types';
 
 interface InfrastructureManagerFlatNode {
   expandable: boolean;
@@ -44,22 +41,16 @@ export class BodyComponent implements OnInit, OnDestroy {
 
   private destroySubject$: Subject<void> = new Subject();
 
-  activeConnection: string;
-  activeView: {
-    type: string;
-    data: {}
-  } = {
-    type: null,
-    data: {}
-  };
+  activeConnection: string = null;
+  activeObject: string = null;
 
   viewSide: boolean = true;
   contextMenuPosition = {x: '0px', y: '0px'};
 
-  contextMenus: {[s: string]: ContextMenuItem[]};
+  private contextMenus: {[s: string]: ContextMenuItem[]};
 
   treeControl = new FlatTreeControl<InfrastructureManagerFlatNode>(node => node.level, node => node.expandable);
-  treeFlattener = new MatTreeFlattener(this.transformer, node => node.level, node => node.expandable, node => node.children);
+  private treeFlattener = new MatTreeFlattener(this.transformer, node => node.level, node => node.expandable, node => node.children);
   dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
 
   hasChild = (_: number, node: InfrastructureManagerFlatNode) => node.expandable;
@@ -90,19 +81,22 @@ export class BodyComponent implements OnInit, OnDestroy {
 
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.destroySubject$.next();
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
+    this.InfrastructureManager.activeObject.pipe(takeUntil(this.destroySubject$)).subscribe(activeObject => this.activeObject = activeObject);
     this.InfrastructureManager.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe(activeConnection => {
       this.activeConnection = activeConnection;
 
-      if (this.activeConnection !== null && this.getActiveConnection(true).state === 'disconnected') {
+      if (this.activeConnection !== null && this.getActiveConnection().state === 'disconnected') {
         setTimeout(() => this.Utils.scrollTo('infrastructure-manager_main-body', true), 100);
       }
     });
     this.InfrastructureManagerTreeData.treeData.pipe(takeUntil(this.destroySubject$)).subscribe(data => {
+      console.log('treedata change');
+
       this.dataSource.data = data;
       this.treeControl.expandAll();
     });
@@ -142,7 +136,7 @@ export class BodyComponent implements OnInit, OnDestroy {
   /**
    * ContextMenu
    */
-  treeContextMenuItems(item: ImTreeNode) {
+  treeContextMenuItems(item: ImTreeNode): ContextMenuItem[] {
     // NetApp
     if (item.type === 'netapp') return this.contextMenus.netappContextMenu;
     if (item.type === 'volume') return this.contextMenus.volumeContextMenu;
@@ -151,9 +145,15 @@ export class BodyComponent implements OnInit, OnDestroy {
     // VMWare
     if (item.type === 'vmware') return this.contextMenus.vmwareContextMenu;
     if (item.type === 'Folder' && item.info.data.childType.string.includes('Datacenter')) return this.contextMenus.folderDatacenterContextMenu;
-    if (item.type === 'Folder' && (item.info.data.childType.string.includes('Datastore') || item.info.data.childType.string.includes('StoragePod'))) return this.contextMenus.folderDatastoreContextMenu;
-    if (item.type === 'Folder' && (item.info.data.childType.string.includes('VirtualMachine') || item.info.data.childType.string.includes('VirtualApp'))) return this.contextMenus.folderVMContextMenu;
-    if (item.type === 'Folder' && (item.info.data.childType.string.includes('Network') || item.info.data.childType.string.includes('DistributedVirtualSwitch'))) return this.contextMenus.folderNetworkContextMenu;
+    if (item.type === 'Folder' &&
+      (item.info.data.childType.string.includes('Datastore') || item.info.data.childType.string.includes('StoragePod'))
+    ) return this.contextMenus.folderDatastoreContextMenu;
+    if (item.type === 'Folder' &&
+      (item.info.data.childType.string.includes('VirtualMachine') || item.info.data.childType.string.includes('VirtualApp'))
+    ) return this.contextMenus.folderVMContextMenu;
+    if (item.type === 'Folder' &&
+      (item.info.data.childType.string.includes('Network') || item.info.data.childType.string.includes('DistributedVirtualSwitch'))
+    ) return this.contextMenus.folderNetworkContextMenu;
     if (item.type === 'Datacenter') return this.contextMenus.datacenterContextMenu;
     if (item.type === 'VirtualMachine') return this.contextMenus.VMContextMenu;
     if (item.type === 'Datastore') return this.contextMenus.datastoreContextMenu;
@@ -190,19 +190,23 @@ export class BodyComponent implements OnInit, OnDestroy {
     this.viewSide = !this.viewSide;
   }
 
-  setActiveConnection(connectionUuid: string): void {
-    return this.InfrastructureManager.setActiveConnection(connectionUuid);
+  /**
+   * Connections data
+   */
+  getActiveConnection(): ConnectionTypes {
+    return this.InfrastructureManager.getActiveConnection();
   }
 
-  getActiveConnection(returnMain: boolean = false): ConnectionKubernetes | ConnectionLinux | ConnectionNetapp | ConnectionSnmp | ConnectionVmware {
-    return this.InfrastructureManager.getActiveConnection(returnMain);
+  getActiveObject(): ImDataObject {
+    return this.InfrastructureManager.getActiveObject();
   }
 
-  setActiveView(type: string, data: any): void {
-    this.setActiveConnection(data.info.uuid);
-    this.activeView = {
-      type,
-      data
-    };
+  setActiveView(data: ImDataObject): void {
+    if (data.info.mainUuid) {
+      this.InfrastructureManager.setActiveConnection(data.info.mainUuid);
+      return this.InfrastructureManager.setActiveObject(data.info.uuid);
+    }
+
+    return this.InfrastructureManager.setActiveConnection(data.info.uuid);
   }
 }

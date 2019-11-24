@@ -63,6 +63,7 @@ export class AnyOpsOSModalMonitorExportComponent implements OnInit {
       }
 
       const startDate = new Date(startMs);
+      // tslint:disable-next-line:max-line-length
       const yyyymmddhhssmm = startDate.getFullYear() + this.NETDATA.zeropad(startDate.getMonth() + 1) + this.NETDATA.zeropad(startDate.getDate()) + '-' + this.NETDATA.zeropad(startDate.getHours()) + this.NETDATA.zeropad(startDate.getMinutes()) + this.NETDATA.zeropad(startDate.getSeconds());
 
       this.snapshotName = 'netdata-' + this.options.hostname.toString() + '-' + yyyymmddhhssmm.toString() + '-' + this.options.duration.toString() + '.snapshot';
@@ -131,12 +132,12 @@ export class AnyOpsOSModalMonitorExportComponent implements OnInit {
     this.showProgress = true;
 
     const saveOptions = {
-      stop_updates_when_focus_is_lost: false,
+      stopUpdatesWhenFocusIsLost: false,
       update_only_visible: false,
-      sync_selection: false,
-      eliminate_zero_dimensions: true,
-      pan_and_zoom_data_padding: false,
-      show_help: false,
+      syncSelection: false,
+      eliminateZeroDimensions: true,
+      panAndZoomDataPadding: false,
+      showHelp: false,
       legend_toolbox: false,
       resize_charts: false,
       pixels_per_point: 1
@@ -233,6 +234,7 @@ export class AnyOpsOSModalMonitorExportComponent implements OnInit {
         }
 
         if (this.chartsFailed) this.progressType = 'danger';
+        // tslint:disable-next-line:max-line-length
         this.progressText  = 'Current chart: ' + this.progressCurrentId + '. Generated snapshot data size <b>' + (Math.round(this.totalSnapshotSize * 100 / 1024 / 1024) / 100) + ' MB</b>. ' + ((this.chartsFailed) ? (this.chartsFailed + ' charts have failed to be downloaded') : '') + info;
 
         if (idx > 0) {

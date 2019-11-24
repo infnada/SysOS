@@ -15,7 +15,7 @@
   <a class="window__item" matTooltip="Delete" (click)="deleteConnection()">
     <i class="fas fa-trash" [ngClass]="{'text-danger': activeConnection !== null}"></i>
   </a>
-  <a class="window__item" matTooltip="ImConnection options" (click)="configureConnection()">
+  <a class="window__item" matTooltip="Connection options" (click)="configureConnection()">
     <i class="fas fa-cog" [ngClass]="{'text-primary': activeConnection !== null}"></i>
   </a>
   <a class="window__item separator"></a>
@@ -48,8 +48,8 @@
   </a>
   <a class="window__item separator"></a>
 
-  <!-- VM actions -->
-  <ng-container>
+  <!-- VMWare VM actions -->
+  <ng-container *ngIf="getActiveObjectType() === 'VirtualMachine'">
     <a class="window__item" matTooltip="Power On">
       <i class="vm-ui-icon-vmPowerOn"></i>
     </a>
@@ -64,6 +64,60 @@
     </a>
     <a class="window__item" matTooltip="Take Snapshot...">
       <i class="vm-ui-icon-snapshotTake"></i>
+    </a>
+  </ng-container>
+
+  <!-- Kubernetes Node actions -->
+  <ng-container *ngIf="getActiveObjectType() === 'Node'">
+    <a class="window__item" matTooltip="Exec Shell">
+      <i class="fas fa-terminal text-primary"></i>
+    </a>
+  </ng-container>
+
+  <!-- Kubernetes Pod actions -->
+  <ng-container *ngIf="getActiveObjectType() === 'Pod'">
+    <a class="window__item" matTooltip="Get Logs">
+      <i class="fas fa-desktop text-primary"></i>
+    </a>
+    <a class="window__item" matTooltip="Describe">
+      <i class="fas fa-file-text text-primary"></i>
+    </a>
+    <a class="window__item" matTooltip="Delete">
+      <i class="fas fa-trash-alt text-primary"></i>
+    </a>
+  </ng-container>
+
+  <!-- Kubernetes Container actions -->
+  <ng-container *ngIf="getActiveObjectType() === 'Container'">
+    <a class="window__item" matTooltip="Attach">
+      <i class="fas fa-desktop text-primary"></i>
+    </a>
+    <a class="window__item" matTooltip="Exec Shell">
+      <i class="fas fa-terminal text-primary"></i>
+    </a>
+    <a class="window__item" matTooltip="Restart">
+      <i class="fas fa-redo text-warning"></i>
+    </a>
+    <a class="window__item" matTooltip="Pause">
+      <i class="fas fa-pause text-warning"></i>
+    </a>
+    <a class="window__item" matTooltip="Stop">
+      <i class="fas fa-stop text-danger"></i>
+    </a>
+    <a class="window__item" matTooltip="Traffic speed: slow">
+      <i class="fas fa-hourglass-1 text-primary"></i>
+    </a>
+    <a class="window__item" matTooltip="Traffic speed: medium">
+      <i class="fas fa-hourglass-2 text-primary"></i>
+    </a>
+    <a class="window__item" matTooltip="Traffic speed: fast">
+      <i class="fas fa-hourglass-3 text-primary"></i>
+    </a>
+    <a class="window__item" matTooltip="Packet drop: low">
+      <i class="fas fa-cut text-primary"></i>
+    </a>
+    <a class="window__item" matTooltip="Clear traffic control settings">
+      <i class="fas fa-times-circle text-primary"></i>
     </a>
   </ng-container>
 </div>

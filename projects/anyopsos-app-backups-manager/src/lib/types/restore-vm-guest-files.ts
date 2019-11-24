@@ -1,5 +1,6 @@
 import {
-  ImConnection,
+  ConnectionVmware,
+  ConnectionNetapp,
   ImDataObject,
   NetAppSnapshot,
   NetAppVolume,
@@ -10,13 +11,13 @@ import {
 } from '@anyopsos/app-infrastructure-manager';
 
 export interface RestoreVmGuestFiles {
-  storage: ImConnection;
+  storage: ConnectionNetapp;
   vserver: ImDataObject & { info: { data: NetAppVserver } };
   volume: ImDataObject & { info: { data: NetAppVolume } };
   snapshot: ImDataObject & { info: { data: NetAppSnapshot } };
   vm: ImDataObject & { info: { data: VMWareVM } };
   uuid: string;
-  virtual: ImConnection;
+  virtual: ConnectionVmware;
   host: ImDataObject & { info: { data: VMWareHost } };
   folder: ImDataObject & { info: { data: VMWareFolder } };
   resourcePool: ImDataObject & { info: { data: VMWareResourcePool } };

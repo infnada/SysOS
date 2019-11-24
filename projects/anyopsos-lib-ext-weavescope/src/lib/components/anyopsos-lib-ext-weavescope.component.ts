@@ -30,8 +30,8 @@ import {NodeDetailsUtilsService} from '../services/utils/node-details-utils.serv
 })
 export class AnyOpsOSLibExtWeavescopeComponent implements OnChanges, AfterViewInit, OnDestroy {
   @ViewChild('weaveApp') weaveApp: ElementRef;
-  @Input('nodes') nodes;
-  @Input('simpleLayout') simpleLayout: boolean = false;
+  @Input() nodes;
+  @Input() simpleLayout: boolean = false;
   @Output() selectedNode = new EventEmitter<{}>();
 
   private destroySubject$: Subject<void> = new Subject();

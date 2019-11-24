@@ -1,5 +1,6 @@
 import {
-  ImConnection,
+  ConnectionVmware,
+  ConnectionNetapp,
   ImDataObject,
   NetAppSnapshot,
   NetAppVolume,
@@ -9,12 +10,12 @@ import {
 } from '@anyopsos/app-infrastructure-manager';
 
 export interface RestoreVolumeFiles {
-  storage: ImConnection;
+  storage: ConnectionNetapp;
   vserver: ImDataObject & { info: { data: NetAppVserver } };
   volume: ImDataObject & { info: { data: NetAppVolume } };
   snapshot: ImDataObject & { info: { data: NetAppSnapshot } };
   uuid: string;
-  virtual: ImConnection;
+  virtual: ConnectionVmware;
   host: ImDataObject & { info: { data: VMWareHost } };
   iface: ImDataObject & { info: { data: NetAppIface } };
   esxiDatastoreName: string;

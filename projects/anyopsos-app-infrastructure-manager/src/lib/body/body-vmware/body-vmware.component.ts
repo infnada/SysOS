@@ -1,10 +1,10 @@
 import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
 
 import {Application} from '@anyopsos/lib-application';
-import {AnyOpsOSLibServiceInjectorService} from "@anyopsos/lib-service-injector";
-import {AnyOpsOSLibExtNetdataService, NetdataConnection} from "@anyopsos/lib-ext-netdata";
+import {AnyOpsOSLibServiceInjectorService} from '@anyopsos/lib-service-injector';
+import {AnyOpsOSLibExtNetdataService, NetdataConnection} from '@anyopsos/lib-ext-netdata';
 
-import {AnyOpsOSAppInfrastructureVmwareTemplateHelpersService} from "../../services/vmware/anyopsos-app-infrastructure-vmware-template-helpers.service";
+import {AnyOpsOSAppInfrastructureVmwareTemplateHelpersService} from '../../services/vmware/anyopsos-app-infrastructure-vmware-template-helpers.service';
 import {ImDataObject} from '../../types/im-data-object';
 
 @Component({

@@ -6,7 +6,9 @@ import {Application} from '@anyopsos/lib-application';
 import {AnyOpsOSLibUtilsService} from '@anyopsos/lib-utils';
 
 import {AnyOpsOSAppInfrastructureManagerService} from '../services/anyopsos-app-infrastructure-manager.service';
-import {ImConnection} from '../types/connections/im-connection';
+
+import {ImDataObject} from '../types/im-data-object';
+import {ConnectionTypes} from '../types/connections/connection-types';
 
 @Component({
   selector: 'saim-actions',
@@ -28,10 +30,24 @@ export class ActionsComponent implements OnDestroy {
     this.destroySubject$.next();
   }
 
-  getActiveConnection(): ImConnection {
+  getActiveConnection(): ConnectionTypes {
     return this.InfrastructureManager.getActiveConnection();
   }
 
+  getActiveObject(): ImDataObject {
+    return this.InfrastructureManager.getActiveObject();
+  }
+
+  getActiveObjectType(): string {
+    const activeObject = this.getActiveObject();
+
+    if (activeObject) return activeObject.type;
+    return null;
+  }
+
+  /**
+   * Button actions
+   */
   goHome(): void {
     if (this.activeConnection === null || this.getActiveConnection().state === 'disconnected') this.Utils.scrollTo('infrastructure-manager_main-body');
     if (this.activeConnection === null) return;

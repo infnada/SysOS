@@ -56,6 +56,7 @@ export class ShapeComponent {
     sheet: `<path d="${this.UNIT_SHEET}" #ATTRS></path>`,
     square: `<rect width="1.8" height="1.8" rx="0.4" ry="0.4" x="-0.9" y="-0.9" #ATTRS></rect>`,
     triangle: `<path d="${this.curvedUnitPolygonPath(3)}" #ATTRS></path>`,
+    // tslint:disable-next-line:max-line-length
     network: `<g #ATTRS>
   <g transform="translate(-1.5)">
     <g transform="translate(2.2)">
@@ -157,23 +158,16 @@ export class ShapeComponent {
     return `<g transform="scale(${this.size})">
       ${highlighted ? `${this.renderTemplate('borderAttrs', false)}
       ${this.renderTemplate('shadowAttrs', false)}` : ''}
-    
       ${this.renderTemplate('backgroundAttrs')}
-    
       ${this.hasMetric() ? `<defs>
           <clipPath id="${this.getClipId()}" transform="scale(${2 * 0.48})">
             <rect width="2" height="2" x="-1" y="${1 - 2 * this.metricNumericValue}"></rect>
           </clipPath>
         </defs>
-  
         ${this.renderTemplate('metricFillAttrs')}` : ''}
-  
-    
       ${this.renderTemplate('nodeShadowAttrs')}
       ${this.renderTemplate('nodeBorderAttrs')}
-    
       ${this.hasMetric && highlighted ? `<text dominant-baseline="middle" text-anchor="middle" transform="scale(0.015)" fill="${this.contrastMode ? 'hsl(0, 0%, 10%)' : 'hsl(240, 20%, 30%)'}">${this.metricFormattedValue}</text>` : ''}
-    
       ${!this.hasMetric || !highlighted ? `<circle r="0.1" stroke-width="0.005" fill="${this.contrastMode ? 'hsl(0, 0%, 10%)' : 'hsl(240, 20%, 30%)'}" stroke="hsl(0, 0%, 100%)"></circle>
     </g>` : ''}`;
   }

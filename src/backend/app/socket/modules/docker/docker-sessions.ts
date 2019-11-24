@@ -17,7 +17,7 @@ export class DockerSessionsModule {
 
     const dockerode: Dockerode = new Dockerode({host: 'http://192.168.99.100', port: 2376});
 
-    //const credential = await this.CredentialsModule.getCredential(this.socket.request.session.uuid, data.credential);
+    // const credential = await this.CredentialsModule.getCredential(this.socket.request.session.uuid, data.credential);
 
     dockerSessions[data.uuid] = dockerode;
 

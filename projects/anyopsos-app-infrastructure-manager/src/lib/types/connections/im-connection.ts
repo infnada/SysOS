@@ -6,5 +6,4 @@ export interface ImConnection {
   save: boolean;
   state: string;
   error?: string;
-  data?: any;
 }

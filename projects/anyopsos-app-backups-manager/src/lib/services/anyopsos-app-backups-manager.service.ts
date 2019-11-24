@@ -9,7 +9,8 @@ import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
 import {AnyOpsOSLibServiceInjectorService} from '@anyopsos/lib-service-injector';
 import {AnyOpsOSLibApplicationService} from '@anyopsos/lib-application';
 import {
-  ImConnection,
+  ConnectionVmware,
+  ConnectionNetapp,
   ImDataObject,
   NetAppIface,
   NetAppVserver,
@@ -102,10 +103,18 @@ export class AnyOpsOSAppBackupsManagerService {
 
         this.logger.debug('Backups Manager', 'Received restore data from Modal', loggerArgs);
 
-        const virtual: ImConnection = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedHost.info.mainUuid);
-        const storage: ImConnection = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedSnapshot.info.mainUuid);
-        const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(storage.uuid, 'vserver', selectedData.selectedSnapshot.info.parent.name);
-        const volume: ImDataObject & { info: { data: NetAppVolume } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(storage.uuid, 'volume', selectedData.selectedSnapshot.info.parent.name);
+        const virtual: ConnectionVmware = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedHost.info.mainUuid);
+        const storage: ConnectionNetapp = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedSnapshot.info.mainUuid);
+        const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
+          storage.uuid,
+          'vserver',
+          selectedData.selectedSnapshot.info.parent.name
+        );
+        const volume: ImDataObject & { info: { data: NetAppVolume } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
+          storage.uuid,
+          'volume',
+          selectedData.selectedSnapshot.info.parent.name
+        );
 
         const data: MountVolumeSnapshot = {
           uuid: uuidv4(),
@@ -126,7 +135,12 @@ export class AnyOpsOSAppBackupsManagerService {
         });
         this.setActive(data.uuid);
 
-        return this.Modal.openLittleModal('PLEASE WAIT', `Mounting ${data.volume.name} from Snapshot...`, '.window--backups-manager .window__main', 'plain').then(() => {
+        return this.Modal.openLittleModal(
+          'PLEASE WAIT',
+          `Mounting ${data.volume.name} from Snapshot...`,
+          '.window--backups-manager .window__main',
+          'plain'
+        ).then(() => {
 
           return this.BackupManagerHelpers.mountRestoreSnapshotDatastore(data);
         }).then((res) => {
@@ -167,10 +181,18 @@ export class AnyOpsOSAppBackupsManagerService {
 
         this.logger.debug('Backups Manager', 'Received restore data from Modal', loggerArgs);
 
-        const virtual: ImConnection = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedHost.info.mainUuid);
-        const storage: ImConnection = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedSnapshot.info.mainUuid);
-        const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(storage.uuid, 'vserver', selectedData.selectedSnapshot.info.parent.name);
-        const volume: ImDataObject & { info: { data: NetAppVolume } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(storage.uuid, 'volume', selectedData.selectedSnapshot.info.parent.name);
+        const virtual: ConnectionVmware = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedHost.info.mainUuid);
+        const storage: ConnectionNetapp = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedSnapshot.info.mainUuid);
+        const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
+          storage.uuid,
+          'vserver',
+          selectedData.selectedSnapshot.info.parent.name
+        );
+        const volume: ImDataObject & { info: { data: NetAppVolume } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
+          storage.uuid,
+          'volume',
+          selectedData.selectedSnapshot.info.parent.name
+        );
 
         const data: RestoreVolumeFiles = {
           uuid: uuidv4(),
@@ -192,7 +214,12 @@ export class AnyOpsOSAppBackupsManagerService {
         });
         this.setActive(data.uuid);
 
-        this.Modal.openLittleModal('PLEASE WAIT', 'Restoring ' + data.volume.name + ' files from Snapshot...', '.window--backups-manager .window__main', 'plain').then(() => {
+        this.Modal.openLittleModal(
+          'PLEASE WAIT',
+          `Restoring ${data.volume.name} files from Snapshot...`,
+          '.window--backups-manager .window__main',
+          'plain'
+        ).then(() => {
 
           return this.BackupManagerHelpers.restoreSnapshotDatastoreFiles(data);
         }).then((res) => {
@@ -246,10 +273,18 @@ export class AnyOpsOSAppBackupsManagerService {
 
         this.logger.debug('Backups Manager', 'Received restore data from Modal', loggerArgs);
 
-        const virtual: ImConnection = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedHost.info.mainUuid);
-        const storage: ImConnection = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedSnapshot.info.mainUuid);
-        const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(storage.uuid, 'vserver', selectedData.selectedSnapshot.info.parent.name);
-        const volume: ImDataObject & { info: { data: NetAppVolume } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(storage.uuid, 'volume', selectedData.selectedSnapshot.info.parent.name);
+        const virtual: ConnectionVmware = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedHost.info.mainUuid);
+        const storage: ConnectionNetapp = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedSnapshot.info.mainUuid);
+        const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
+          storage.uuid,
+          'vserver',
+          selectedData.selectedSnapshot.info.parent.name
+        );
+        const volume: ImDataObject & { info: { data: NetAppVolume } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
+          storage.uuid,
+          'volume',
+          selectedData.selectedSnapshot.info.parent.name
+        );
 
         // TODO: folder.folder & resource_pool.resource_pool are required to publish the VM
         const data: RestoreVmGuestFiles = {
@@ -274,7 +309,12 @@ export class AnyOpsOSAppBackupsManagerService {
         });
         this.setActive(data.uuid);
 
-        this.Modal.openLittleModal('PLEASE WAIT', `Restoring ${data.vm.name} guest files from Snapshot...`, '.window--backups-manager .window__main', 'plain').then(() => {
+        this.Modal.openLittleModal(
+          'PLEASE WAIT',
+          `Restoring ${data.vm.name} guest files from Snapshot...`,
+          '.window--backups-manager .window__main',
+          'plain'
+        ).then(() => {
 
           return this.BackupManagerHelpers.restoreSnapshotVMGuestFiles(data);
         }).then((res) => {
@@ -318,10 +358,18 @@ export class AnyOpsOSAppBackupsManagerService {
         }) => {
         if (!selectedData) return;
 
-        const virtual: ImConnection = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedHost.info.mainUuid);
-        const storage: ImConnection = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedSnapshot.info.mainUuid);
-        const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(storage.uuid, 'vserver', selectedData.selectedSnapshot.info.parent.name);
-        const volume: ImDataObject & { info: { data: NetAppVolume } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(storage.uuid, 'volume', selectedData.selectedSnapshot.info.parent.name);
+        const virtual: ConnectionVmware = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedHost.info.mainUuid);
+        const storage: ConnectionNetapp = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedSnapshot.info.mainUuid);
+        const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
+          storage.uuid,
+          'vserver',
+          selectedData.selectedSnapshot.info.parent.name
+        );
+        const volume: ImDataObject & { info: { data: NetAppVolume } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
+          storage.uuid,
+          'volume',
+          selectedData.selectedSnapshot.info.parent.name
+        );
 
         const data: VmInstantRecovery = {
           uuid: uuidv4(),
@@ -349,7 +397,12 @@ export class AnyOpsOSAppBackupsManagerService {
 
         this.logger.debug('Backups Manager', 'Received restore data from Modal as new location', loggerArgs);
 
-        this.Modal.openLittleModal('PLEASE WAIT', `Restoring ${data.vm.name} from Snapshot...`, '.window--backups-manager .window__main', 'plain').then(() => {
+        this.Modal.openLittleModal(
+          'PLEASE WAIT',
+          `Restoring ${data.vm.name} from Snapshot...`,
+          '.window--backups-manager .window__main',
+          'plain'
+        ).then(() => {
 
           return this.BackupManagerHelpers.restoreSnapshotIntoInstantVM(data);
         }).then((res) => {
@@ -391,10 +444,18 @@ export class AnyOpsOSAppBackupsManagerService {
       }) => {
         if (!selectedData) return;
 
-        const virtual: ImConnection = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedHost.info.mainUuid);
-        const storage: ImConnection = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedSnapshot.info.mainUuid);
-        const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(storage.uuid, 'vserver', selectedData.selectedSnapshot.info.parent.name);
-        const volume: ImDataObject & { info: { data: NetAppVolume } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(storage.uuid, 'volume', selectedData.selectedSnapshot.info.parent.name);
+        const virtual: ConnectionVmware = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedHost.info.mainUuid);
+        const storage: ConnectionNetapp = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedSnapshot.info.mainUuid);
+        const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
+          storage.uuid,
+          'vserver',
+          selectedData.selectedSnapshot.info.parent.name
+        );
+        const volume: ImDataObject & { info: { data: NetAppVolume } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
+          storage.uuid,
+          'volume',
+          selectedData.selectedSnapshot.info.parent.name
+        );
 
         const data: RestoreVm = {
           uuid: uuidv4(),
@@ -420,7 +481,12 @@ export class AnyOpsOSAppBackupsManagerService {
 
         this.logger.debug('Backups Manager', 'Received restore data from Modal as Original location', loggerArgs);
 
-        this.Modal.openLittleModal('PLEASE WAIT', `Restoring ${data.vm.name} from Snapshot...`, '.window--backups-manager .window__main', 'plain').then(() => {
+        this.Modal.openLittleModal(
+          'PLEASE WAIT',
+          `Restoring ${data.vm.name} from Snapshot...`,
+          '.window--backups-manager .window__main',
+          'plain'
+        ).then(() => {
 
           return this.BackupManagerHelpers.restoreSnapshotIntoVM(data);
         }).then((res) => {
@@ -470,7 +536,12 @@ export class AnyOpsOSAppBackupsManagerService {
 
         this.logger.debug('Backups Manager', 'Received backup data from Modal', loggerArgs);
 
-        this.Modal.openLittleModal('PLEASE WAIT', `Backing up ${selectedData.backupName}...`, '.window--backups-manager .window__main', 'plain');
+        this.Modal.openLittleModal(
+          'PLEASE WAIT',
+          `Backing up ${selectedData.backupName}...`,
+          '.window--backups-manager .window__main',
+          'plain'
+        );
 
         return this.BackupManagerHelpers.startVMBackup(data).then((res) => {
           if (res instanceof Error) throw new Error('Failed to backup VM');

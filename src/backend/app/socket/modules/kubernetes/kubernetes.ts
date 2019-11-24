@@ -148,7 +148,7 @@ export class KubernetesSocketModule {
         });
 
       this.SocketModule.emitProp(data.type, 'kubernetes@' + data.clusterServer, data.uuid, 'footer');
-      this.SocketModule.emitProp(data.type, 'Kubernetes ImConnection Established', data.uuid, 'status');
+      this.SocketModule.emitProp(data.type, 'Kubernetes Connection Established', data.uuid, 'status');
       this.SocketModule.emitProp(data.type, 'connected', data.uuid, 'state');
     });
 

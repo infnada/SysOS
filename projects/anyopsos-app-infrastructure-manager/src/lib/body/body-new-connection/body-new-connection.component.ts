@@ -12,11 +12,8 @@ import {Credential} from '@anyopsos/app-credentials-manager';
 import {AnyOpsOSAppInfrastructureManagerService} from '../../services/anyopsos-app-infrastructure-manager.service';
 import {AnyOpsOSAppInfrastructureManagerNodeGraphService} from '../../services/anyopsos-app-infrastructure-manager-node-graph.service';
 
-import {ConnectionKubernetes} from '../../types/connections/connection-kubernetes';
-import {ConnectionLinux} from '../../types/connections/connection-linux';
-import {ConnectionNetapp} from '../../types/connections/connection-netapp';
-import {ConnectionSnmp} from '../../types/connections/connection-snmp';
-import {ConnectionVmware} from '../../types/connections/connection-vmware';
+import {ImConnection} from '../../types/connections/im-connection';
+import {ConnectionTypes} from '../../types/connections/connection-types';
 
 @Component({
   selector: 'saim-body-new-connection',
@@ -106,17 +103,17 @@ export class BodyNewConnectionComponent implements OnInit, OnDestroy {
     this.InfrastructureManager.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe((activeConnection: string) => {
       if (!activeConnection) {
 
-        // Reset form if needed on 'New ImConnection'
-        // If valid is because user clicked on a connection with state 'disconnected' and then did 'New ImConnection'
+        // Reset form if needed on 'New Connection'
+        // If valid is because user clicked on a connection with state 'disconnected' and then did 'New Connection'
         if (this.connectionForm.touched || this.connectionForm.valid) this.connectionForm.reset();
         return this.newConnectionType = null;
       }
 
-      const currentConnection = this.getActiveConnection(true);
+      const currentConnection = this.getActiveConnection();
 
       this.newConnectionType = currentConnection.type;
 
-      if (currentConnection.type === 'kubernetes') {
+      if (currentConnection.type === 'kubernetes' || currentConnection.type === 'docker') {
         (this.f.clusterName as FormControl).setValue(currentConnection.clusterName);
         (this.f.clusterServer as FormControl).setValue(currentConnection.clusterServer);
         (this.f.clusterCa as FormControl).setValue(currentConnection.clusterCa);
@@ -168,8 +165,8 @@ export class BodyNewConnectionComponent implements OnInit, OnDestroy {
     this.Applications.openApplication('credentials-manager');
   }
 
-  getActiveConnection(returnMain: boolean = false): ConnectionKubernetes | ConnectionLinux | ConnectionNetapp | ConnectionSnmp | ConnectionVmware {
-    return this.InfrastructureManager.getActiveConnection(returnMain);
+  getActiveConnection(): ConnectionTypes {
+    return this.InfrastructureManager.getActiveConnection();
   }
 
   /**

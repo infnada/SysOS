@@ -7,7 +7,7 @@ import {Subject} from 'rxjs';
 import {AnyOpsOSLibServiceInjectorService} from '@anyopsos/lib-service-injector';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
 import {Application} from '@anyopsos/lib-application';
-import {ImConnection, ImDataObject, NetAppVolume, VMWareDatastore} from '@anyopsos/app-infrastructure-manager';
+import {ImConnection, ConnectionVmware, ConnectionNetapp, ImDataObject, NetAppVolume, VMWareDatastore} from '@anyopsos/app-infrastructure-manager';
 
 import {DatastoreExplorerConnection} from '../../types/datastore-explorer-connection';
 import {AnyOpsOSAppDatastoreExplorerService} from '../../services/anyopsos-app-datastore-explorer.service';
@@ -112,7 +112,7 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
 
   }
 
-  getDatastoreConnection(datastore: ImDataObject): ImConnection {
+  getDatastoreConnection(datastore: ImDataObject): ImConnection & (ConnectionNetapp | ConnectionVmware) {
     return this.InfrastructureManager.getConnectionByUuid(datastore.info.mainUuid);
   }
 
@@ -121,7 +121,7 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
     if (this.connectionForm.invalid) return;
 
     const selectedDatastore: ImDataObject = this.connectionForm.value.datastore;
-    const connection: ImConnection = this.getDatastoreConnection(selectedDatastore);
+    const connection: ImConnection & (ConnectionNetapp | ConnectionVmware) = this.getDatastoreConnection(selectedDatastore);
 
     const datastoreConnection = {
       credential: connection.credential,

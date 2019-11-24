@@ -171,7 +171,7 @@ export class AnyOpsOSAppDatastoreExplorerService {
               // broadcast data to subscribers
               this.$connections.next(Object.assign({}, this.dataStore).connections);
 
-              this.logger.debug('Datastore Explorer', 'ImConnection deleted successfully', loggerArgs);
+              this.logger.debug('Datastore Explorer', 'Connection deleted successfully', loggerArgs);
             },
             error => {
               this.logger.error('Datastore Explorer', 'Error while deleting connection', loggerArgs, error);

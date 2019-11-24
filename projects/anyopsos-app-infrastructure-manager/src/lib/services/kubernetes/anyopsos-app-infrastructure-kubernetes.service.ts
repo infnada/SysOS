@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 
-import {timer} from "rxjs";
+import {timer} from 'rxjs';
 
 import {Socket} from 'ngx-socket-io';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
@@ -20,7 +20,7 @@ export class AnyopsosAppInfrastructureKubernetesService {
   constructor(private socket: Socket,
               private Modal: AnyOpsOSLibModalService,
               private InfrastructureManager: AnyOpsOSAppInfrastructureManagerService,
-              private InfrastructureManagerObjectHelper: AnyOpsOSAppInfrastructureManagerObjectHelperService,) {
+              private InfrastructureManagerObjectHelper: AnyOpsOSAppInfrastructureManagerObjectHelperService) {
 
     this.socket
       .fromEvent('kubernetes__data')
@@ -55,7 +55,7 @@ export class AnyopsosAppInfrastructureKubernetesService {
   }
 
   private parseObject(sockData: { uuid: string, data: any }) {
-    let object = sockData.data.obj;
+    const object = sockData.data.obj;
 
     // Set basic object data
     if (sockData.data.type === 'ADDED' || sockData.data.type === 'MODIFIED') {
@@ -67,7 +67,7 @@ export class AnyopsosAppInfrastructureKubernetesService {
       } : object.metadata.namespace ? {
         type: 'Namespace',
         name: object.metadata.namespace
-      }: null);
+      } : null);
 
       const newObj: ImDataObject = {
         name: object.metadata.name,

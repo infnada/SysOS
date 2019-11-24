@@ -48,6 +48,7 @@ export class NodesChartElementsComponent implements OnDestroy {
 
   constructor(private State: StateService,
               private Selectors: SelectorsService) {
+    // tslint:disable-next-line
     const _this = this;
 
     function getAdjacentNodes(state, originNodeId?) {

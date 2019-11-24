@@ -285,7 +285,7 @@ export class AnyOpsOSAppSshService {
               // broadcast data to subscribers
               this.$connections.next(Object.assign({}, this.dataStore).connections);
 
-              this.logger.debug('Ssh', 'ImConnection deleted successfully', loggerArgs);
+              this.logger.debug('Ssh', 'Connection deleted successfully', loggerArgs);
             },
             error => {
               this.logger.error('Ssh', 'Error while deleting connection', loggerArgs, error);

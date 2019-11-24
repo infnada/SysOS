@@ -1,4 +1,5 @@
-import {ImConnection} from "./im-connection";
+import {ImConnection} from './im-connection';
+import {ImDataObject} from '../im-data-object';
 
 export interface ConnectionDocker extends ImConnection {
   type: 'docker';
@@ -6,4 +7,7 @@ export interface ConnectionDocker extends ImConnection {
   clusterName: string;
   clusterServer: string;
   clusterCa: string;
+  data: {
+    Data: ImDataObject[]
+  }
 }

@@ -13,25 +13,25 @@ export class AnyOpsOSModalMonitorOptionsComponent implements OnInit {
 
   private NETDATA;
 
-  stop_updates_when_focus_is_lost: boolean;
-  eliminate_zero_dimensions: boolean;
-  destroy_on_hide: boolean;
-  async_on_scroll: boolean;
+  stopUpdatesWhenFocusIsLost: boolean;
+  eliminateZeroDimensions: boolean;
+  destroyOnHide: boolean;
+  asyncOnScroll: boolean;
 
-  parallel_refresher: boolean;
-  concurrent_refreshes: boolean;
-  sync_selection: boolean;
-  sync_pan_and_zoom: boolean;
+  parallelRefresher: boolean;
+  concurrentRefreshes: boolean;
+  syncSelection: boolean;
+  syncPanAndZoom: boolean;
 
-  netdata_theme_control: boolean;
-  show_help: boolean;
-  pan_and_zoom_data_padding: boolean;
-  smooth_plot: boolean;
+  netdataThemeControl: boolean;
+  showHelp: boolean;
+  panAndZoomDataPadding: boolean;
+  smoothPlot: boolean;
 
-  units_conversion: boolean;
-  units_temp: boolean;
-  seconds_as_time: boolean;
-  local_timezone: boolean;
+  unitsConversion: boolean;
+  unitsTemp: boolean;
+  secondsAsTime: boolean;
+  localTimezone: boolean;
 
   constructor(public activeModal: NgbActiveModal) {
   }
@@ -42,25 +42,25 @@ export class AnyOpsOSModalMonitorOptionsComponent implements OnInit {
     setTimeout(() => {
       this.NETDATA = this.connection.NETDATA;
 
-      this.stop_updates_when_focus_is_lost = this.NETDATA.getOption('stop_updates_when_focus_is_lost');
-      this.eliminate_zero_dimensions = this.NETDATA.getOption('eliminate_zero_dimensions');
-      this.destroy_on_hide = this.NETDATA.getOption('destroy_on_hide');
-      this.async_on_scroll = this.NETDATA.getOption('async_on_scroll');
+      this.stopUpdatesWhenFocusIsLost = this.NETDATA.getOption('stop_updates_when_focus_is_lost');
+      this.eliminateZeroDimensions = this.NETDATA.getOption('eliminate_zero_dimensions');
+      this.destroyOnHide = this.NETDATA.getOption('destroy_on_hide');
+      this.asyncOnScroll = this.NETDATA.getOption('async_on_scroll');
 
-      this.parallel_refresher = this.NETDATA.getOption('parallel_refresher');
-      this.concurrent_refreshes = this.NETDATA.getOption('concurrent_refreshes');
-      this.sync_selection = this.NETDATA.getOption('sync_selection');
-      this.sync_pan_and_zoom = this.NETDATA.getOption('sync_pan_and_zoom');
+      this.parallelRefresher = this.NETDATA.getOption('parallel_refresher');
+      this.concurrentRefreshes = this.NETDATA.getOption('concurrent_refreshes');
+      this.syncSelection = this.NETDATA.getOption('sync_selection');
+      this.syncPanAndZoom = this.NETDATA.getOption('sync_pan_and_zoom');
 
-      this.netdata_theme_control = this.NETDATA.netdataTheme === 'slate';
-      this.show_help = this.NETDATA.getOption('show_help');
-      this.pan_and_zoom_data_padding = this.NETDATA.getOption('pan_and_zoom_data_padding');
-      this.smooth_plot = this.NETDATA.getOption('smooth_plot');
+      this.netdataThemeControl = this.NETDATA.netdataTheme === 'slate';
+      this.showHelp = this.NETDATA.getOption('show_help');
+      this.panAndZoomDataPadding = this.NETDATA.getOption('pan_and_zoom_data_padding');
+      this.smoothPlot = this.NETDATA.getOption('smooth_plot');
 
-      this.units_conversion = this.NETDATA.getOption('units') === 'auto';
-      this.units_temp = this.NETDATA.getOption('temperature') === 'celsius';
-      this.seconds_as_time = this.NETDATA.getOption('seconds_as_time');
-      this.local_timezone = !this.NETDATA.dateTime.using_timezone;
+      this.unitsConversion = this.NETDATA.getOption('units') === 'auto';
+      this.unitsTemp = this.NETDATA.getOption('temperature') === 'celsius';
+      this.secondsAsTime = this.NETDATA.getOption('seconds_as_time');
+      this.localTimezone = !this.NETDATA.dateTime.using_timezone;
     }, 0);
   }
 

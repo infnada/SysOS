@@ -36,7 +36,7 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
   get kubernetesContextMenu() {
     return [
       {
-        id: 0, text: '<i class="fas fa-pencil"></i> Edit ImConnection', action: (node: ImTreeNode) => {
+        id: 0, text: '<i class="fas fa-pencil"></i> Edit Connection', action: (node: ImTreeNode) => {
           this.InfrastructureManager.editConnection(node.info.uuid);
         }
       },
@@ -46,7 +46,7 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
         }
       },
       {
-        id: 2, text: '<i class="fas fa-trash text-danger"></i> Delete ImConnection', action: (node: ImTreeNode) => {
+        id: 2, text: '<i class="fas fa-trash text-danger"></i> Delete Connection', action: (node: ImTreeNode) => {
           this.InfrastructureManager.deleteConnection(node.info.uuid);
         }
       }
@@ -57,7 +57,7 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
   get netappContextMenu() {
     return [
       {
-        id: 0, text: '<i class="fas fa-pencil"></i> Edit ImConnection', action: (node: ImTreeNode) => {
+        id: 0, text: '<i class="fas fa-pencil"></i> Edit Connection', action: (node: ImTreeNode) => {
           this.InfrastructureManager.editConnection(node.info.uuid);
         }
       },
@@ -67,7 +67,7 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
         }
       },
       {
-        id: 2, text: '<i class="fas fa-trash text-danger"></i> Delete ImConnection', action: (node: ImTreeNode) => {
+        id: 2, text: '<i class="fas fa-trash text-danger"></i> Delete Connection', action: (node: ImTreeNode) => {
           this.InfrastructureManager.deleteConnection(node.info.uuid);
         }
       }
@@ -145,7 +145,7 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
   get vmwareContextMenu() {
     return [
       {
-        id: 0, text: '<i class="fas fa-pencil"></i> Edit ImConnection', action: (node: ImTreeNode) => {
+        id: 0, text: '<i class="fas fa-pencil"></i> Edit Connection', action: (node: ImTreeNode) => {
           this.InfrastructureManager.editConnection(node.info.uuid);
         }
       },
@@ -155,7 +155,7 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
         }
       },
       {
-        id: 2, text: '<i class="fas fa-trash text-danger"></i> Delete ImConnection', action: (node: ImTreeNode) => {
+        id: 2, text: '<i class="fas fa-trash text-danger"></i> Delete Connection', action: (node: ImTreeNode) => {
           this.InfrastructureManager.deleteConnection(node.info.uuid);
         }
       },

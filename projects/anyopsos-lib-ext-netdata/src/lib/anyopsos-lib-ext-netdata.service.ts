@@ -44,15 +44,15 @@ export class AnyOpsOSLibExtNetdataService {
               private http: HttpClient,
               private logger: AnyOpsOSLibLoggerService,
               private Modal: AnyOpsOSLibModalService) {
-    const _this = this;
+    const classThis = this;
     // Set easyPieChart
     this.jQuery.$.fn.easyPieChart = function(options) {
       return this.each(function() {
         let instanceOptions;
 
-        if (!_this.jQuery.$.data(this, 'easyPieChart')) {
-          instanceOptions = _this.jQuery.$.extend({}, options, _this.jQuery.$(this).data());
-          _this.jQuery.$.data(this, 'easyPieChart', new _this.easyPieChart.easyPieChart(this, instanceOptions));
+        if (!classThis.jQuery.$.data(this, 'easyPieChart')) {
+          instanceOptions = classThis.jQuery.$.extend({}, options, classThis.jQuery.$(this).data());
+          classThis.jQuery.$.data(this, 'easyPieChart', new classThis.easyPieChart.easyPieChart(this, instanceOptions));
         }
       });
     };
@@ -82,7 +82,6 @@ export class AnyOpsOSLibExtNetdataService {
     const os = this.dataStore.connections[activeConnection].netdataDashboard.os;
     const charts = this.dataStore.connections[activeConnection].options.data.charts;
     const duration = this.dataStore.connections[activeConnection].options.duration;
-    void (os);
 
     let head = '';
 
@@ -411,7 +410,10 @@ export class AnyOpsOSLibExtNetdataService {
           }
 
           key = key + '.' + this.dataStore.connections[connection.uuid].netdataDashboard.sparklines_registry[key].count;
-          return prefix + '<div class="netdata-container" data-netdata="' + chart + '" data-after="-120" data-width="25%" data-height="15px" data-chart-library="dygraph" data-dygraph-theme="sparkline" data-dimensions="' + dimension + '" data-show-value-of-' + dimension + '-at="' + key + '"></div> (<span id="' + key + '" style="display: inline-block; min-width: 50px; text-align: right;">X</span>' + units + ')' + suffix;
+          return prefix + '<div class="netdata-container" data-netdata="' + chart + '" data-after="-120" data-width="25%" data-height="15px" ' +
+            'data-chart-library="dygraph" data-dygraph-theme="sparkline" data-dimensions="' + dimension + '" ' +
+            'data-show-value-of-' + dimension + '-at="' + key + '"></div> ' +
+            '(<span id="' + key + '" style="display: inline-block; min-width: 50px; text-align: right;">X</span>' + units + ')' + suffix;
         },
         gaugeChart: (title, width, dimensions, colors) => {
           if (typeof colors === 'undefined') colors = '';
@@ -828,9 +830,11 @@ export class AnyOpsOSLibExtNetdataService {
     const netdataDashboard = currentConnection.netdataDashboard;
 
     return JSON.parse(str, (key, value) => {
+      // tslint:disable-next-line
       if (typeof value != 'string') {
         return value;
       }
+      // tslint:disable-next-line:no-eval
       return (value.substring(0, 8) === 'function') ? eval('(' + value + ')') : value;
     });
   }
@@ -846,7 +850,7 @@ export class AnyOpsOSLibExtNetdataService {
       if (alarm.status === 'WARNING' || alarm.status === 'CRITICAL') count++;
     }
 
-    //this.currentConnection().options.activeAlarms = count;
+    // this.currentConnection().options.activeAlarms = count;
   }
 
   private loadSnapshot(connection) {

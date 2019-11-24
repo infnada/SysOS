@@ -127,10 +127,10 @@ export class ZoomableCanvasComponent implements AfterViewInit, OnDestroy {
   }
 
   applyTransform(transform, {width = 0, height = 0, x, y}) {
-    const applyTranslateX = ({scaleX = 1, translateX = 0}, x) => (x * scaleX) + translateX;
-    const applyTranslateY = ({scaleY = 1, translateY = 0}, y) => (y * scaleY) + translateY;
-    const applyScaleX = ({scaleX = 1}, width) => width * scaleX;
-    const applyScaleY = ({scaleY = 1}, height) => height * scaleY;
+    const applyTranslateX = ({scaleX = 1, translateX = 0}, parentx) => (parentx * scaleX) + translateX;
+    const applyTranslateY = ({scaleY = 1, translateY = 0}, parenty) => (parenty * scaleY) + translateY;
+    const applyScaleX = ({scaleX = 1}, parentwidth) => parentwidth * scaleX;
+    const applyScaleY = ({scaleY = 1}, parentheight) => parentheight * scaleY;
 
     return {
       height: applyScaleY(transform, height),
@@ -141,10 +141,10 @@ export class ZoomableCanvasComponent implements AfterViewInit, OnDestroy {
   }
 
   inverseTransform(transform, {width = 0, height = 0, x, y}) {
-    const inverseTranslateX = ({scaleX = 1, translateX = 0}, x) => (x - translateX) / scaleX;
-    const inverseTranslateY = ({scaleY = 1, translateY = 0}, y) => (y - translateY) / scaleY;
-    const inverseScaleX = ({scaleX = 1}, width) => width / scaleX;
-    const inverseScaleY = ({scaleY = 1}, height) => height / scaleY;
+    const inverseTranslateX = ({scaleX = 1, translateX = 0}, parentx) => (parentx - translateX) / scaleX;
+    const inverseTranslateY = ({scaleY = 1, translateY = 0}, parenty) => (parenty - translateY) / scaleY;
+    const inverseScaleX = ({scaleX = 1}, parentwidth) => parentwidth / scaleX;
+    const inverseScaleY = ({scaleY = 1}, parentheight) => parentheight / scaleY;
 
     return {
       height: inverseScaleY(transform, height),

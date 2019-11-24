@@ -6,11 +6,10 @@ import {takeUntil} from 'rxjs/operators';
 import {AnyOpsOSAppInfrastructureManagerService} from './anyopsos-app-infrastructure-manager.service';
 
 import {ImTreeNode} from '../types/im-tree-node';
-import {ImConnection} from '../types/connections/im-connection';
+import {ImDataObject} from '../types/im-data-object';
 import {ConnectionNetapp} from '../types/connections/connection-netapp';
 import {ConnectionVmware} from '../types/connections/connection-vmware';
-import {ImDataObject} from '../types/im-data-object';
-import {ConnectionKubernetes} from "../types/connections/connection-kubernetes";
+import {ConnectionKubernetes} from '../types/connections/connection-kubernetes';
 
 @Injectable({
   providedIn: 'root'
@@ -35,6 +34,8 @@ export class AnyOpsOSAppInfrastructureManagerTreeDataService implements OnDestro
 
     // Subscribe to Connections
     this.InfrastructureManager.connections.pipe(takeUntil(this.destroySubject$)).subscribe(() => {
+
+      console.log('new treedata');
 
       // Every time a connection is modified, check if new treeData has to be emitted
       if (JSON.stringify(this.dataStore.treeData) !== JSON.stringify(this.getTreeData())) {
@@ -109,10 +110,10 @@ export class AnyOpsOSAppInfrastructureManagerTreeDataService implements OnDestro
 
   setTreeDataByType(treeData, connectionType: 'netapp' | 'vmware' | 'kubernetes', treeType: 'storage' | 'virtual' | 'container') {
     // Recursively for data
-    const getChildren = (connection: ImConnection, current): void => {
+    const getChildren = (connection: ConnectionVmware | ConnectionKubernetes | ConnectionNetapp, current): void => {
       current.children = JSON.parse(JSON.stringify(
-        connection.data.Data.filter(obj => {
-          return obj.info.parent && obj.info.parent.name === current.info.obj.name || obj.info.data.parentVApp && obj.info.data.parentVApp.name === current.info.obj.name;
+        connection.data.Data.filter((obj: ImDataObject) => {
+          return (obj.info.parent && obj.info.parent.name === current.info.obj.name && obj.info.parent.type === current.info.obj.type) || (obj.info.data.parentVApp && obj.info.data.parentVApp.name === current.info.obj.name);
         })
       ));
 
@@ -125,25 +126,25 @@ export class AnyOpsOSAppInfrastructureManagerTreeDataService implements OnDestro
 
     let mainObj;
 
-    // Set treeData for storage
+    // Set treeData
     this.InfrastructureManager.getConnectionsByType(connectionType).forEach((conObj: ConnectionVmware | ConnectionKubernetes | ConnectionNetapp, sindex: number) => {
-      const name = (conObj.type === 'vmware' ? conObj.host : conObj.type === 'kubernetes' ? conObj.clusterName : conObj.type === 'netapp' ? conObj.host : '')
+      const name = (conObj.type === 'vmware' ? conObj.host : conObj.type === 'kubernetes' ? conObj.clusterName : conObj.type === 'netapp' ? conObj.host : '');
       const connectionObject: ImTreeNode = {
-        name: name,
+        name,
         info: {
           uuid: conObj.uuid
         },
         type: connectionType
       };
 
-      // return if Storage connection not initialized. Nothing else to look for
+      // return if connection not initialized. Nothing else to look for
       if (!conObj.data.Data || conObj.data.Data.length === 0) {
         return treeData.find((obj) => {
           return obj.type === treeType;
         }).children[sindex] = connectionObject;
       }
 
-      // Get 'new instance' of Main parent object/s and set it as Children of Kubernetes connection
+      // Get 'new instance' of Main parent object/s and set it as Children of connection
       if (connectionType === 'vmware') {
         mainObj = conObj.data.Data.find((obj: ImDataObject) => {
           return obj.info.parent === null;

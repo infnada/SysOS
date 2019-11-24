@@ -2,7 +2,8 @@ import {Injectable} from '@angular/core';
 
 import {AnyOpsOSAppInfrastructureManagerService} from './anyopsos-app-infrastructure-manager.service';
 import {AnyOpsOSAppInfrastructureManagerObjectHelperService} from './anyopsos-app-infrastructure-manager-object-helper.service';
-import {ImConnection} from '../types/connections/im-connection';
+
+import {ConnectionNetapp} from '../types/connections/connection-netapp';
 import {ImDataObject} from '../types/im-data-object';
 import {VMWareDatastore} from '../types/vmware-datastore';
 import {NetAppIface} from '../types/netapp-iface';
@@ -19,160 +20,29 @@ export class AnyOpsOSAppInfrastructureManagerNodeLinkService {
   }
 
   /**
-   * Return a link if found
+   * Check if Volume is linked to any managed VMWare Datastore
+   * Not perfect code but easier to maintain
    */
-  getLinkByStorageJunctionPath(virtualUuid: string, volume: string, junctionPath: string) { //: IMLink[] {
+  checkStorageVolumeLinkWithManagedVMWareDatastore(volumeObj: ImDataObject & { info: { data: NetAppVolume } }): (ImDataObject & { info: { data: VMWareDatastore } })[] {
+    const results = [];
 
-    // Get Datastore name by Junction Path
-    /*return this.linksMap.filter((obj) => {
-      return obj.storage === virtualUuid && obj.volume === volume && obj.junction_path === junctionPath;
-    });*/
-  }
+    this.InfrastructureManagerObjectHelper.getObjectsByType(null, 'Datastore').forEach((datastoreObj: ImDataObject & { info: { data: VMWareDatastore } }) => {
 
-  /**
-   * Return a link if found
-   */
-  getLinkByVMwareDatastore(virtualUuid: string, esxiDatastore: string) { //: IMLink[] {
-    /*return this.linksMap.filter((obj) => {
-      return obj.virtual === virtualUuid && obj.esxi_datastore === esxiDatastore;
-    });*/
-  }
+      const linkedWith = this.checkVMWareDatastoreLinkWithManagedStorageVolume(datastoreObj);
 
-  /**
-   * @description check link between storage and virtual nodes
-   */
-  // TODO: some storages could have the same LIF IP!!! and links will be wrong
-  checkLinkBetweenManagedNodes(type: string, uuid: string): void {
+      if (linkedWith && linkedWith.info.uuid === volumeObj.info.uuid) results.push(datastoreObj);
+    });
 
-    /*const connection = this.getConnectionByUuid(uuid);
-
-    if (type === 'vmware') {
-
-      // Get all connection datastores
-      this.InfrastructureManagerVMWare.getObjectByType('Datastore', uuid).forEach((datastore: VMWareDatastore) => {
-
-        if (datastore['summary.type'] === 'VMFS') return;
-
-        // Check if any storage volume contains the datastore remotePath as a volume junction path
-        this.getConnectionsByType('netapp').forEach((storage) => {
-
-          // Checking for NetApp storage
-          if (storage.type === 'netapp') {
-
-            // check if storage have any interface that match the datastore.remoteHost and datastore.type
-            const foundInterface = storage.data.Ifaces.netifaces.filter((obj) => {
-              return obj.address ===  datastore.info.nas.remoteHost &&
-                     obj['data-protocols']['data-protocols'] === (datastore.info.nas.type === 'NFS41' ? 'nfs' : datastore.info.nas.type);
-            })[0];
-
-            // If not found any storage interface matching, return
-            if (!foundInterface) return;
-
-            // Search any Data Vservers with allowed protocol that match the datastore.type
-            const foundVserver = storage.data.Vservers.filter((obj) => {
-              return obj['vserver-type'] === 'data' &&
-                     obj['vserver-name'] === foundInterface.vserver &&
-                     obj['allowed-protocols'].protocol === (datastore.info.nas.type === 'NFS41' ? 'nfs' : datastore.info.nas.type);
-            })[0];
-
-            if (!foundVserver) return;
-
-            // Search for each Volume containing as a junction path the current datastore remotePath
-            const foundVolume = foundVserver.Volumes.filter((obj) => {
-              return obj['volume-id-attributes']['junction-path'] === datastore.info.nas.remotePath;
-            })[0];
-
-            if (!foundVolume) return;
-
-            // TODO: CHECK VOLUME EXPORTS that match ESXi host
-
-            // Link found!
-            this.linksMap.push({
-              virtual: uuid,
-              esxi_datastore: datastore.obj.name,
-              storage: storage.uuid,
-              vserver: foundVserver.uuid,
-              volume: foundVolume['volume-id-attributes'].uuid,
-              junction_path: datastore.info.nas.remotePath
-            });
-
-            this.logger.debug('Infrastructure Manager [%s] -> New link found when scanning a vCenter node. -> datastore [%s], junction [%s]',
-              connection.uuid, datastore.name, datastore.info.nas.remotePath);
-
-          // end NetApp
-          }
-        // end storages
-        });
-      // end datastore
-      });
-    // end vmware
-    }
-
-    if (type === 'netapp') {
-
-      // Get all vmware connections
-      this.getConnectionsByType('vmware').forEach((virtual) => {
-
-        // Get all vmware datastores
-        virtual.data.Datastores.forEach((datastore) => {
-
-          if (datastore.summary.type === 'VMFS') return;
-
-          // check if connection have any interface that match the vmware datastore.remoteHost
-          // and datastore.type
-          const foundInterface = connection.data.Ifaces.netifaces.filter((obj) => {
-            return obj.address === datastore.info.nas.remoteHost &&
-                   obj['data-protocols']['data-protocol'] === (datastore.info.nas.type === 'NFS41' ? 'nfs' : datastore.info.nas.type);
-          })[0];
-
-          // If not found any storage interface matching, return
-          if (!foundInterface) return;
-
-          const foundVserver = connection.data.Vservers.filter((obj) => {
-            return obj['vserver-type'] === 'data' &&
-              obj['vserver-name'] === foundInterface.vserver &&
-              obj['allowed-protocols'].protocol === (datastore.info.nas.type === 'NFS41' ? 'nfs' : datastore.info.nas.type);
-          })[0];
-
-          if (!foundVserver) return;
-
-          // Search for each Volume containing as a junction path the current datastore remotePath
-          const foundVolume = foundVserver.Volumes.filter((obj) => {
-            return obj['volume-id-attributes']['junction-path'] === datastore.info.nas.remotePath;
-          })[0];
-
-          if (!foundVolume) return;
-
-          // Link found!
-          this.linksMap.push({
-            virtual: virtual.uuid,
-            esxi_datastore: datastore.obj.name,
-            storage: uuid,
-            vserver: foundVserver.uuid,
-            volume: foundVolume['volume-id-attributes'].uuid,
-            junction_path: datastore.info.nas.remotePath
-          });
-
-          this.logger.debug('Infrastructure Manager [%s] -> New link found when scanning a NetApp node. -> datastore [%s], junction [%s]',
-            connection.uuid, datastore.name, datastore.info.nas.remotePath);
-
-        // end datastore
-        });
-      // end virtual
-      });
-    // end netapp
-    }
-    this.saveLinksMap();*/
-
+    return results;
   }
 
   /**
    * Check if VMWare Datastore is linked to any managed storage
    */
-  checkDatastoreLinkWithManagedStorage(datastoreObj: ImDataObject & { info: { data: VMWareDatastore } }): (ImDataObject & { info: { data: NetAppVolume } })[] {
+  checkVMWareDatastoreLinkWithManagedStorageVolume(datastoreObj: ImDataObject & { info: { data: VMWareDatastore } }): (ImDataObject & { info: { data: NetAppVolume } }) {
     const results = [];
 
-    this.InfrastructureManager.getConnectionsByType('netapp').forEach((storageObj: ImConnection) => {
+    this.InfrastructureManager.getConnectionsByType('netapp').forEach((storageObj: ConnectionNetapp) => {
 
       // Checking for NetApp storage
       if (storageObj.type === 'netapp') {
@@ -215,12 +85,13 @@ export class AnyOpsOSAppInfrastructureManagerNodeLinkService {
 
         // Link found!
         results.push(foundVolume);
-
       }
 
     });
 
-    return results;
+    // If multiple links are found means this function is not working properly
+    if (results.length > 1) throw new Error('Multiple links found for this Datastore');
 
+    return results[0];
   }
 }

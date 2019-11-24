@@ -1,4 +1,5 @@
-import {ImConnection} from "./im-connection";
+import {ImConnection} from './im-connection';
+import {ImDataObject} from '../im-data-object';
 
 export interface ConnectionLinux extends ImConnection {
   type: 'linux';
@@ -8,4 +9,7 @@ export interface ConnectionLinux extends ImConnection {
   hophost?: string;
   hopport?: number;
   hopcredential?: string;
+  data: {
+    Data: ImDataObject[]
+  }
 }

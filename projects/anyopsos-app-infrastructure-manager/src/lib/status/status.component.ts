@@ -4,13 +4,8 @@ import {Subject} from 'rxjs';
 
 import {Application} from '@anyopsos/lib-application';
 
-import {AnyOpsOSAppInfrastructureManagerService} from '../services/anyopsos-app-infrastructure-manager.service';
-import {ImConnection} from '../types/connections/im-connection';
-import {ConnectionKubernetes} from "../types/connections/connection-kubernetes";
-import {ConnectionLinux} from "../types/connections/connection-linux";
-import {ConnectionNetapp} from "../types/connections/connection-netapp";
-import {ConnectionSnmp} from "../types/connections/connection-snmp";
-import {ConnectionVmware} from "../types/connections/connection-vmware";
+import {AnyOpsOSAppInfrastructureManagerService} from '../services/anyopsos-app-infrastructure-manager.service';;
+import {ConnectionTypes} from '../types/connections/connection-types';
 
 @Component({
   selector: 'saim-status',
@@ -34,14 +29,14 @@ export class StatusComponent implements OnInit, OnDestroy {
     this.InfrastructureManager.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe(activeConnection => this.activeConnection = activeConnection);
   }
 
-  getActiveConnection(returnMain): ConnectionKubernetes | ConnectionLinux | ConnectionNetapp | ConnectionSnmp | ConnectionVmware {
-    return this.InfrastructureManager.getActiveConnection(returnMain);
+  getActiveConnection(): ConnectionTypes {
+    return this.InfrastructureManager.getActiveConnection();
   }
 
   getHostOrClusterName(): string {
-    const connection = this.InfrastructureManager.getActiveConnection(true);
+    const connection = this.InfrastructureManager.getActiveConnection();
 
-    if (connection.type === 'kubernetes') return connection.clusterName;
+    if (connection.type === 'kubernetes' || connection.type === 'docker') return connection.clusterName;
     return connection.host;
   }
 

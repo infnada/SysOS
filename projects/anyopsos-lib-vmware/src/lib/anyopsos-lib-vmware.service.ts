@@ -1288,7 +1288,7 @@ export class AnyOpsOSLibVmwareService {
   WaitForUpdates() { return this.PropertyCollector.WaitForUpdates.apply( this, arguments ).catch(e => e); }
   WaitForUpdatesEx(connectionData: ConnectionData,
                    options?: WaitOptions,
-                   version?: string) { return this.PropertyCollector.WaitForUpdatesEx.apply( this, arguments ).catch(e => e); }
+                   version?: number) { return this.PropertyCollector.WaitForUpdatesEx.apply( this, arguments ).catch(e => e); }
   XmlToCustomizationSpecItem() { return this.CustomizationSpecManager.XmlToCustomizationSpecItem.apply( this, arguments ).catch(e => e); }
   ZeroFillVirtualDisk_Task() { return this.VirtualDiskManager.ZeroFillVirtualDisk_Task.apply( this, arguments ).catch(e => e); }
 

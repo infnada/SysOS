@@ -80,7 +80,7 @@ export class AnyOpsOSLibVmwarePropertyCollectorService {
   WaitForUpdatesEx(
     connectionData: ConnectionData,
     options?: WaitOptions,
-    version?: string
+    version?: number
   ) {
     const xml = `<WaitForUpdatesEx xmlns='urn:vim25'>
       <_this type='PropertyCollector'>propertyCollector</_this>

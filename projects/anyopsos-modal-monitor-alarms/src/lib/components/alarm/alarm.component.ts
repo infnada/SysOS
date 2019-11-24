@@ -68,6 +68,7 @@ export class AlarmComponent {
       }
     }
 
+    // tslint:disable-next-line:max-line-length
     return `<code>${alarm.lookup_method}</code> ${dimensions}, of chart <code>${alarm.chart}</code>, starting <code>${this.NETDATA.seconds4human(alarm.lookup_after + alarm.lookup_before, {space: '&nbsp;'})}</code> and up to <code>${this.NETDATA.seconds4human(alarm.lookup_before, {space: '&nbsp;'})}</code>${(alarm.lookup_options) ? (', with options <code>' + alarm.lookup_options.replace(/ /g, ',&nbsp;') + '</code>') : ''}.`;
   }
 

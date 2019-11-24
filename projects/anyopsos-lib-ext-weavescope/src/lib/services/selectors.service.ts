@@ -46,16 +46,6 @@ export class SelectorsService implements OnDestroy {
   private state;
   private zoomState;
 
-  constructor(private State: StateService,
-              private Layout: LayoutService) {
-    this.State.currentState.pipe(takeUntil(this.destroySubject$)).subscribe(state => this.state = state);
-    this.State.currentZoomCache.pipe(takeUntil(this.destroySubject$)).subscribe(zoomState => this.zoomState = zoomState);
-  }
-
-  ngOnDestroy() {
-    this.destroySubject$.next();
-  }
-
   graphExceedsComplexityThreshSelector = createSelector(
     [
       () => this.state.getIn(['currentTopology', 'stats', 'node_count']) || 0,
@@ -64,271 +54,12 @@ export class SelectorsService implements OnDestroy {
     (nodeCount: number, edgeCount: number) => (nodeCount + (2 * edgeCount)) > 500
   );
 
-  /**
-   * Returns the float of a metric value string, e.g. 2 KB -> 2048
-   */
-  parseValue(value) {
-    let parsed = parseFloat(value);
-    if ((/k/i).test(value)) {
-      parsed *= 1024;
-    } else if ((/m/i).test(value)) {
-      parsed *= 1024 * 1024;
-    } else if ((/g/i).test(value)) {
-      parsed *= 1024 * 1024 * 1024;
-    } else if ((/t/i).test(value)) {
-      parsed *= 1024 * 1024 * 1024 * 1024;
-    }
-    return parsed;
-  }
-
-  /**
-   * Returns an object with fields depending on the query:
-   * parseQuery('text') -> {query: 'text'}
-   * parseQuery('p:text') -> {query: 'text', prefix: 'p'}
-   * parseQuery('cpu > 1') -> {metric: 'cpu', value: '1', comp: 'gt'}
-   */
-  parseQuery(query) {
-    const COMPARISONS = makeMap({
-      '<': 'lt',
-      '=': 'eq',
-      '>': 'gt'
-    });
-    const COMPARISONS_REGEX = new RegExp(`[${COMPARISONS.keySeq().toJS().join('')}]`);
-
-    if (query) {
-      const prefixQuery = query.split(':');
-      const isPrefixQuery = prefixQuery && prefixQuery.length === 2;
-
-      if (isPrefixQuery) {
-        const prefix = prefixQuery[0].trim();
-        query = prefixQuery[1].trim();
-        if (prefix && query) {
-          return {
-            prefix,
-            query
-          };
-        }
-      } else if (COMPARISONS_REGEX.test(query)) {
-        // check for comparisons
-        let comparison;
-        COMPARISONS.forEach((comp, delim) => {
-          const comparisonQuery = query.split(delim);
-          if (comparisonQuery && comparisonQuery.length === 2) {
-            const value = this.parseValue(comparisonQuery[1]);
-            const metric = comparisonQuery[0].trim();
-            if (!(window as any).isNaN(value) && metric) {
-              comparison = {
-                comp,
-                metric,
-                value
-              };
-              return false; // dont look further
-            }
-          }
-          return true;
-        });
-        if (comparison) {
-          return comparison;
-        }
-      } else {
-        return {query};
-      }
-    }
-    return null;
-  }
-
   parsedSearchQuerySelector = createSelector(
     [
       () => this.state.get('searchQuery')
     ],
     searchQuery => this.parseQuery(searchQuery)
   );
-
-  /**
-   * Returns a RegExp from a given string. If the string is not a valid regexp,
-   * it is escaped. Returned regexp is case-insensitive.
-   */
-  makeRegExp(expression, options = 'i') {
-    try {
-      return new RegExp(expression, options);
-    } catch (e) {
-      return new RegExp(escapeRegExp(expression), options);
-    }
-  }
-
-  /**
-   * True if a prefix matches a field label
-   * Slugifies the label (removes all non-alphanumerical chars).
-   */
-  matchPrefix(label, prefix) {
-    if (label && prefix) {
-      return (this.makeRegExp(prefix)).test(this.slugify(label));
-    }
-    return false;
-  }
-
-  /**
-   * Adds a match to nodeMatches under the keyPath. The text is matched against
-   * the query. If a prefix is given, it is matched against the label (skip on
-   * no match).
-   * Returns a new instance of nodeMatches.
-   */
-  findNodeMatch(nodeMatches, keyPath, text, query, prefix?, label?, truncate?) {
-    if (!prefix || this.matchPrefix(label, prefix)) {
-      const queryRe = this.makeRegExp(query);
-      const matches = text.match(queryRe);
-      if (matches) {
-        const firstMatch = matches[0];
-        const index = text.search(queryRe);
-        nodeMatches = nodeMatches.setIn(
-          keyPath,
-          {
-            label, length: firstMatch.length, start: index, text, truncate
-          }
-        );
-      }
-    }
-    return nodeMatches;
-  }
-
-  isPropertyList(table) {
-    return (table.type || (table.get && table.get('type'))) === 'property-list';
-  }
-
-  isGenericTable(table) {
-    return (table.type || (table.get && table.get('type'))) === 'multicolumn-table';
-  }
-
-  genericTableEntryKey(row, column) {
-    const columnId = column.id || column.get('id');
-    const rowId = row.id || row.get('id');
-    return `${rowId}_${columnId}`;
-  }
-
-  slugify(label) {
-    const CLEAN_LABEL_REGEX = /[^A-Za-z0-9]/g;
-    return label.replace(CLEAN_LABEL_REGEX, '').toLowerCase();
-  }
-
-  /**
-   * If the metric matches the field's label and the value compares positively
-   * with the comp operator, a nodeMatch is added
-   */
-  findNodeMatchMetric(nodeMatches, keyPath, fieldValue, fieldLabel, metric, comp, value) {
-    if (this.slugify(metric) === this.slugify(fieldLabel)) {
-      let matched = false;
-      switch (comp) {
-        case 'gt': {
-          if (fieldValue > value) {
-            matched = true;
-          }
-          break;
-        }
-        case 'lt': {
-          if (fieldValue < value) {
-            matched = true;
-          }
-          break;
-        }
-        case 'eq': {
-          if (fieldValue === value) {
-            matched = true;
-          }
-          break;
-        }
-        default: {
-          break;
-        }
-      }
-      if (matched) {
-        nodeMatches = nodeMatches.setIn(
-          keyPath,
-          {fieldLabel, metric: true}
-        );
-      }
-    }
-    return nodeMatches;
-  }
-
-  searchNode(node, {prefix, query, metric, comp, value}) {
-    const SEARCH_FIELDS = makeMap({
-      label: 'label',
-      labelMinor: 'labelMinor'
-    });
-
-    let nodeMatches = makeMap();
-
-    if (query) {
-      // top level fields
-      SEARCH_FIELDS.forEach((field, label) => {
-        const keyPath = [label];
-        if (node.has(field)) {
-          nodeMatches = this.findNodeMatch(
-            nodeMatches, keyPath, node.get(field),
-            query, prefix, label
-          );
-        }
-      });
-
-      // metadata
-      if (node.get('metadata')) {
-        node.get('metadata').forEach((field) => {
-          const keyPath = ['metadata', field.get('id')];
-          nodeMatches = this.findNodeMatch(
-            nodeMatches, keyPath, field.get('value'),
-            query, prefix, field.get('label'), field.get('truncate')
-          );
-        });
-      }
-
-      // parents and relatives
-      if (node.get('parents')) {
-        node.get('parents').forEach((parent) => {
-          const keyPath = ['parents', parent.get('id')];
-          nodeMatches = this.findNodeMatch(
-            nodeMatches, keyPath, parent.get('label'),
-            query, prefix, parent.get('topologyId')
-          );
-        });
-      }
-
-      // property lists
-      (node.get('tables') || []).filter(this.isPropertyList).forEach((propertyList) => {
-        (propertyList.get('rows') || []).forEach((row) => {
-          const entries = row.get('entries');
-          const keyPath = ['property-lists', row.get('id')];
-          nodeMatches = this.findNodeMatch(
-            nodeMatches, keyPath, entries.get('value'),
-            query, prefix, entries.get('label')
-          );
-        });
-      });
-
-      // generic tables
-      (node.get('tables') || []).filter(this.isGenericTable).forEach((table) => {
-        (table.get('rows') || []).forEach((row) => {
-          table.get('columns').forEach((column) => {
-            const val = row.get('entries').get(column.get('id'));
-            const keyPath = ['tables', this.genericTableEntryKey(row, column)];
-            nodeMatches = this.findNodeMatch(nodeMatches, keyPath, val, query);
-          });
-        });
-      });
-    } else if (metric) {
-      const metrics = node.get('metrics');
-      if (metrics) {
-        metrics.forEach((field) => {
-          const keyPath = ['metrics', field.get('id')];
-          nodeMatches = this.findNodeMatchMetric(
-            nodeMatches, keyPath, field.get('value'),
-            field.get('label'), metric, comp, value
-          );
-        });
-      }
-    }
-
-    return nodeMatches;
-  }
 
   searchNodeMatchesSelector = createMapSelector(
     [
@@ -779,20 +510,12 @@ export class SelectorsService implements OnDestroy {
     ],
     (selectedNodeId, nodes) => {
       if (selectedNodeId) {
-       return nodes.getIn([selectedNodeId, 'nodeInfo']);
+        return nodes.getIn([selectedNodeId, 'nodeInfo']);
       }
 
       return '';
     }
   );
-
-  getNodesFromEdgeId(edgeId) {
-    return edgeId.split('---');
-  }
-
-  constructEdgeId(source, target) {
-    return [source, target].join('---');
-  }
 
   highlightedEdgeIdsSelector = createSelector(
     [
@@ -875,6 +598,291 @@ export class SelectorsService implements OnDestroy {
     }
   );
 
+  searchMatchCountByTopologySelector = createMapSelector(
+    [
+      () => this.state.get('nodesByTopology'),
+      this.parsedSearchQuerySelector,
+    ],
+    (nodes, parsed) => (parsed ? this.searchTopology(nodes, parsed).size : 0)
+  );
+
+  constructor(private State: StateService,
+              private Layout: LayoutService) {
+    this.State.currentState.pipe(takeUntil(this.destroySubject$)).subscribe(state => this.state = state);
+    this.State.currentZoomCache.pipe(takeUntil(this.destroySubject$)).subscribe(zoomState => this.zoomState = zoomState);
+  }
+
+  ngOnDestroy() {
+    this.destroySubject$.next();
+  }
+
+  /**
+   * Returns the float of a metric value string, e.g. 2 KB -> 2048
+   */
+  parseValue(value) {
+    let parsed = parseFloat(value);
+    if ((/k/i).test(value)) {
+      parsed *= 1024;
+    } else if ((/m/i).test(value)) {
+      parsed *= 1024 * 1024;
+    } else if ((/g/i).test(value)) {
+      parsed *= 1024 * 1024 * 1024;
+    } else if ((/t/i).test(value)) {
+      parsed *= 1024 * 1024 * 1024 * 1024;
+    }
+    return parsed;
+  }
+
+  /**
+   * Returns an object with fields depending on the query:
+   * parseQuery('text') -> {query: 'text'}
+   * parseQuery('p:text') -> {query: 'text', prefix: 'p'}
+   * parseQuery('cpu > 1') -> {metric: 'cpu', value: '1', comp: 'gt'}
+   */
+  parseQuery(query) {
+    const COMPARISONS = makeMap({
+      '<': 'lt',
+      '=': 'eq',
+      '>': 'gt'
+    });
+    const COMPARISONS_REGEX = new RegExp(`[${COMPARISONS.keySeq().toJS().join('')}]`);
+
+    if (query) {
+      const prefixQuery = query.split(':');
+      const isPrefixQuery = prefixQuery && prefixQuery.length === 2;
+
+      if (isPrefixQuery) {
+        const prefix = prefixQuery[0].trim();
+        query = prefixQuery[1].trim();
+        if (prefix && query) {
+          return {
+            prefix,
+            query
+          };
+        }
+      } else if (COMPARISONS_REGEX.test(query)) {
+        // check for comparisons
+        let comparison;
+        COMPARISONS.forEach((comp, delim) => {
+          const comparisonQuery = query.split(delim);
+          if (comparisonQuery && comparisonQuery.length === 2) {
+            const value = this.parseValue(comparisonQuery[1]);
+            const metric = comparisonQuery[0].trim();
+            if (!(window as any).isNaN(value) && metric) {
+              comparison = {
+                comp,
+                metric,
+                value
+              };
+              return false; // dont look further
+            }
+          }
+          return true;
+        });
+        if (comparison) {
+          return comparison;
+        }
+      } else {
+        return {query};
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Returns a RegExp from a given string. If the string is not a valid regexp,
+   * it is escaped. Returned regexp is case-insensitive.
+   */
+  makeRegExp(expression, options = 'i') {
+    try {
+      return new RegExp(expression, options);
+    } catch (e) {
+      return new RegExp(escapeRegExp(expression), options);
+    }
+  }
+
+  /**
+   * True if a prefix matches a field label
+   * Slugifies the label (removes all non-alphanumerical chars).
+   */
+  matchPrefix(label, prefix) {
+    if (label && prefix) {
+      return (this.makeRegExp(prefix)).test(this.slugify(label));
+    }
+    return false;
+  }
+
+  /**
+   * Adds a match to nodeMatches under the keyPath. The text is matched against
+   * the query. If a prefix is given, it is matched against the label (skip on
+   * no match).
+   * Returns a new instance of nodeMatches.
+   */
+  findNodeMatch(nodeMatches, keyPath, text, query, prefix?, label?, truncate?) {
+    if (!prefix || this.matchPrefix(label, prefix)) {
+      const queryRe = this.makeRegExp(query);
+      const matches = text.match(queryRe);
+      if (matches) {
+        const firstMatch = matches[0];
+        const index = text.search(queryRe);
+        nodeMatches = nodeMatches.setIn(
+          keyPath,
+          {
+            label, length: firstMatch.length, start: index, text, truncate
+          }
+        );
+      }
+    }
+    return nodeMatches;
+  }
+
+  isPropertyList(table) {
+    return (table.type || (table.get && table.get('type'))) === 'property-list';
+  }
+
+  isGenericTable(table) {
+    return (table.type || (table.get && table.get('type'))) === 'multicolumn-table';
+  }
+
+  genericTableEntryKey(row, column) {
+    const columnId = column.id || column.get('id');
+    const rowId = row.id || row.get('id');
+    return `${rowId}_${columnId}`;
+  }
+
+  slugify(label) {
+    const CLEAN_LABEL_REGEX = /[^A-Za-z0-9]/g;
+    return label.replace(CLEAN_LABEL_REGEX, '').toLowerCase();
+  }
+
+  /**
+   * If the metric matches the field's label and the value compares positively
+   * with the comp operator, a nodeMatch is added
+   */
+  findNodeMatchMetric(nodeMatches, keyPath, fieldValue, fieldLabel, metric, comp, value) {
+    if (this.slugify(metric) === this.slugify(fieldLabel)) {
+      let matched = false;
+      switch (comp) {
+        case 'gt': {
+          if (fieldValue > value) {
+            matched = true;
+          }
+          break;
+        }
+        case 'lt': {
+          if (fieldValue < value) {
+            matched = true;
+          }
+          break;
+        }
+        case 'eq': {
+          if (fieldValue === value) {
+            matched = true;
+          }
+          break;
+        }
+        default: {
+          break;
+        }
+      }
+      if (matched) {
+        nodeMatches = nodeMatches.setIn(
+          keyPath,
+          {fieldLabel, metric: true}
+        );
+      }
+    }
+    return nodeMatches;
+  }
+
+  searchNode(node, {prefix, query, metric, comp, value}) {
+    const SEARCH_FIELDS = makeMap({
+      label: 'label',
+      labelMinor: 'labelMinor'
+    });
+
+    let nodeMatches = makeMap();
+
+    if (query) {
+      // top level fields
+      SEARCH_FIELDS.forEach((field, label) => {
+        const keyPath = [label];
+        if (node.has(field)) {
+          nodeMatches = this.findNodeMatch(
+            nodeMatches, keyPath, node.get(field),
+            query, prefix, label
+          );
+        }
+      });
+
+      // metadata
+      if (node.get('metadata')) {
+        node.get('metadata').forEach((field) => {
+          const keyPath = ['metadata', field.get('id')];
+          nodeMatches = this.findNodeMatch(
+            nodeMatches, keyPath, field.get('value'),
+            query, prefix, field.get('label'), field.get('truncate')
+          );
+        });
+      }
+
+      // parents and relatives
+      if (node.get('parents')) {
+        node.get('parents').forEach((parent) => {
+          const keyPath = ['parents', parent.get('id')];
+          nodeMatches = this.findNodeMatch(
+            nodeMatches, keyPath, parent.get('label'),
+            query, prefix, parent.get('topologyId')
+          );
+        });
+      }
+
+      // property lists
+      (node.get('tables') || []).filter(this.isPropertyList).forEach((propertyList) => {
+        (propertyList.get('rows') || []).forEach((row) => {
+          const entries = row.get('entries');
+          const keyPath = ['property-lists', row.get('id')];
+          nodeMatches = this.findNodeMatch(
+            nodeMatches, keyPath, entries.get('value'),
+            query, prefix, entries.get('label')
+          );
+        });
+      });
+
+      // generic tables
+      (node.get('tables') || []).filter(this.isGenericTable).forEach((table) => {
+        (table.get('rows') || []).forEach((row) => {
+          table.get('columns').forEach((column) => {
+            const val = row.get('entries').get(column.get('id'));
+            const keyPath = ['tables', this.genericTableEntryKey(row, column)];
+            nodeMatches = this.findNodeMatch(nodeMatches, keyPath, val, query);
+          });
+        });
+      });
+    } else if (metric) {
+      const metrics = node.get('metrics');
+      if (metrics) {
+        metrics.forEach((field) => {
+          const keyPath = ['metrics', field.get('id')];
+          nodeMatches = this.findNodeMatchMetric(
+            nodeMatches, keyPath, field.get('value'),
+            field.get('label'), metric, comp, value
+          );
+        });
+      }
+    }
+
+    return nodeMatches;
+  }
+
+  getNodesFromEdgeId(edgeId) {
+    return edgeId.split('---');
+  }
+
+  constructEdgeId(source, target) {
+    return [source, target].join('---');
+  }
+
   searchTopology(nodes, parsedQuery) {
     let nodesMatches = makeMap();
     nodes.forEach((node, nodeId) => {
@@ -885,12 +893,4 @@ export class SelectorsService implements OnDestroy {
     });
     return nodesMatches;
   }
-
-  searchMatchCountByTopologySelector = createMapSelector(
-    [
-      () => this.state.get('nodesByTopology'),
-      this.parsedSearchQuerySelector,
-    ],
-    (nodes, parsed) => (parsed ? this.searchTopology(nodes, parsed).size : 0)
-  );
 }

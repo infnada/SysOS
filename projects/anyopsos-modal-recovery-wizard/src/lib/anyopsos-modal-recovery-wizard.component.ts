@@ -11,7 +11,8 @@ import {AnyOpsOSLibVmwareService} from '@anyopsos/lib-vmware';
 import {AnyOpsOSLibNetappService} from '@anyopsos/lib-netapp';
 import {
   AnyOpsOSAppInfrastructureManagerUtilsService,
-  ImConnection,
+  ConnectionVmware,
+  ConnectionNetapp,
   ImDataObject,
   NetAppVserver,
   NetAppVolume,
@@ -22,7 +23,7 @@ import {
   VMWareResourcePool,
   VMWareFirewallRule,
   VMWareDatastore,
-  VMWareVM,
+  VMWareVM
 } from '@anyopsos/app-infrastructure-manager';
 
 @Component({
@@ -62,7 +63,7 @@ export class AnyOpsOSModalRecoveryWizardComponent implements OnInit {
   hostFolders: { name: string; }[];
   hostResourcePools: { name: string; }[];
 
-  snapshotStorage: ImConnection;
+  snapshotStorage: ConnectionNetapp;
   snapshotVserver: ImDataObject & { info: { data: NetAppVserver } };
   snapshotVolume: ImDataObject & { info: { data: NetAppVolume } };
 
@@ -179,16 +180,14 @@ export class AnyOpsOSModalRecoveryWizardComponent implements OnInit {
           return Promise.all(this.data.vm.info.data.datastore[0].ManagedObjectReference.map(async (datastoreObj: { type: string; name: string; }) => {
 
             const fullDatastoreObj: ImDataObject & { info: { data: VMWareDatastore } } = this.InfrastructureManagerObjectHelper.getObjectById(this.data.vm.info.mainUuid, datastoreObj.name);
-            const datastoreLink: (ImDataObject & { info: { data: NetAppVolume } })[] = this.InfrastructureManagerNodeLink.checkDatastoreLinkWithManagedStorage(fullDatastoreObj);
+            const linkVolume: (ImDataObject & { info: { data: NetAppVolume } }) = this.InfrastructureManagerNodeLink.checkVMWareDatastoreLinkWithManagedStorageVolume(fullDatastoreObj);
 
-            if (datastoreLink.length > 1) throw new Error('Multiple links found for this storage');
-            if (fullDatastoreObj.name === mainDatastoreName && datastoreLink.length === 0) throw new Error('No main link found');
-            if (datastoreLink.length === 0) manageAllVmDatastores = false; // One or more VM datastores are not managed by anyOpsOS (full recovery may not be possible)
+            if (fullDatastoreObj.name === mainDatastoreName && !linkVolume) throw new Error('No main link found');
+            if (!linkVolume) manageAllVmDatastores = false; // One or more VM datastores are not managed by anyOpsOS (full recovery may not be possible)
 
             // True work
             if (fullDatastoreObj.name === mainDatastoreName) {
 
-              const linkVolume = datastoreLink[0];
               const linkVserver = this.InfrastructureManagerObjectHelper.getParentObjectByType(linkVolume.info.mainUuid, 'vserver', linkVolume.info.parent.name);
               const linkStorage = this.InfrastructureManager.getConnectionByUuid(linkVolume.info.mainUuid);
 
@@ -257,7 +256,7 @@ export class AnyOpsOSModalRecoveryWizardComponent implements OnInit {
     this.sameSubnetIp = [];
     this.selectedHost = this.f3.hostFormControl.value;
 
-    const selectedHostConnection: ImConnection = this.InfrastructureManager.getConnectionByUuid(this.selectedHost.info.mainUuid);
+    const selectedHostConnection: ConnectionVmware = this.InfrastructureManager.getConnectionByUuid(this.selectedHost.info.mainUuid);
 
     // Get Volume IP and Protocol
     this.foundIfaces = this.InfrastructureManagerObjectHelper.getObjectsByType(this.selectedSnapshot.info.mainUuid, 'netiface').filter((iface: ImDataObject & { info: { data: NetAppIface } }) => {

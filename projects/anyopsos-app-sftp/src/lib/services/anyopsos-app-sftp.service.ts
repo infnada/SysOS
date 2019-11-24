@@ -206,7 +206,7 @@ export class AnyOpsOSAppSftpService {
               // broadcast data to subscribers
               this.$connections.next(Object.assign({}, this.dataStore).connections);
 
-              this.logger.debug('Sftp', 'ImConnection deleted successfully', loggerArgs);
+              this.logger.debug('Sftp', 'Connection deleted successfully', loggerArgs);
             },
             error => {
               this.logger.error('Sftp', 'Error while deleting connection', loggerArgs, error);

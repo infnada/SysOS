@@ -22,4 +22,6 @@ export interface NetAppSnapshot {
   volume: string;
   'volume-provenance-uuid': string;
   vserver: string;
+  Files?: any;
+  VMs?: any;
 }

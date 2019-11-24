@@ -46,7 +46,8 @@ export class AnyOpsOSAppInfrastructureVmwareService {
 
       if (clientVersionResult.data.version[0] < 6) throw new Error('VMWare version not compatible');
 
-      this.InfrastructureManager.getConnectionByUuid(connection.uuid).data.Base = {
+      (this.InfrastructureManager.getConnectionByUuid(connection.uuid) as ConnectionVmware).data.Base = {
+        ...(this.InfrastructureManager.getConnectionByUuid(connection.uuid) as ConnectionVmware).data.Base,
         apiVersion: clientVersionResult.data.apiVersion[0],
         downloadUrl: clientVersionResult.data.downloadUrl[0],
         exactVersion: clientVersionResult.data.exactVersion[0],
@@ -113,19 +114,19 @@ export class AnyOpsOSAppInfrastructureVmwareService {
   private getWaitForUpdatesEx(connection: ConnectionVmware): Promise<void> {
     this.logger.debug('Infrastructure Manager', 'Updating VMWare data', arguments);
 
-    const haveNextVersion = this.InfrastructureManager.getConnectionByUuid(connection.uuid).data.nextVersion;
+    const haveNextVersion: number = (this.InfrastructureManager.getConnectionByUuid(connection.uuid) as ConnectionVmware).data.nextVersion;
 
     return this.VMWare.WaitForUpdatesEx(
       connection,
       { maxWaitSeconds: 0 },
-      (haveNextVersion ? haveNextVersion : '')
+      (haveNextVersion ? haveNextVersion : null)
     ).then((getWaitForUpdateResult) => {
       // TODO merge new data
       // Save connection
       console.log(getWaitForUpdateResult);
       if (getWaitForUpdateResult.status === 'error') throw {error: getWaitForUpdateResult.error, description: 'Failed to get data from VMWare'};
 
-      this.InfrastructureManager.getConnectionByUuid(connection.uuid).data.nextVersion = getWaitForUpdateResult.data.returnval[0].version;
+      (this.InfrastructureManager.getConnectionByUuid(connection.uuid) as ConnectionVmware).data.nextVersion = getWaitForUpdateResult.data.returnval[0].version;
 
       this.parseObjects(connection, getWaitForUpdateResult.data.returnval[0].filterSet[0].objectSet);
 

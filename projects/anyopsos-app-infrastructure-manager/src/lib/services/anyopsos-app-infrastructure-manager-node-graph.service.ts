@@ -2,9 +2,9 @@ import {Injectable} from '@angular/core';
 
 import {AnyOpsOSAppInfrastructureManagerService} from './anyopsos-app-infrastructure-manager.service';
 
-import {ImConnection} from '../types/connections/im-connection';
 import {ImDataObject} from '../types/im-data-object';
 import {ImTreeNode} from '../types/im-tree-node';
+import {ConnectionTypes} from '../types/connections/connection-types';
 
 @Injectable({
   providedIn: 'root'
@@ -133,7 +133,7 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
       return adjacentDatastores;
     }
 
-    return [];
+    return adjacentDatastores;
   }
 
   /**
@@ -155,7 +155,7 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
       return adjacentVMs;
     }
 
-    return [];
+    return adjacentVMs;
   }
 
   /**
@@ -179,7 +179,7 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
             return disk.key === device.key;
           }).chain[0].fileKey;
 
-          const diskUsage = objData.info.data.layoutEx[0].file.filter(file => diskChain.includes(file.key)).reduce((sum, { size } : { size: string } ) => {
+          const diskUsage = objData.info.data.layoutEx[0].file.filter(file => diskChain.includes(file.key)).reduce((sum, { size }: { size: string } ) => {
             return sum + parseInt(size, 10);
           }, 0);
 
@@ -341,7 +341,7 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
           min: 0,
           max: objData.info.data['summary.config.memorySizeMB'] * 1024 * 1024,
           url: 0
-        })
+        });
     }
 
     if (objData.type === 'ClusterComputeResource') {
@@ -349,7 +349,9 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
           id: 'cpu_total_usage',
           label: 'CPU',
           format: 'percent',
-          value: (objData.info.data.summary[0].usageSummary[0].totalCpuCapacityMhz === 0 ? 0 :(objData.info.data.summary[0].usageSummary[0].cpuDemandMhz * 100) / objData.info.data.summary[0].usageSummary[0].totalCpuCapacityMhz),
+          value: (objData.info.data.summary[0].usageSummary[0].totalCpuCapacityMhz === 0 ? 0 :
+            (objData.info.data.summary[0].usageSummary[0].cpuDemandMhz * 100) / objData.info.data.summary[0].usageSummary[0].totalCpuCapacityMhz
+          ),
           priority: 1,
           samples: null,
           min: 0,
@@ -366,7 +368,7 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
           min: 0,
           max: objData.info.data.summary[0].usageSummary[0].totalMemCapacityMB * 1024 * 1024,
           url: 0
-        })
+        });
     }
 
     if (objData.type === 'Datastore' || objData.type === 'StoragePod') {
@@ -380,7 +382,7 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
           min: 0,
           max: objData.info.data['summary.capacity'],
           url: 0
-        })
+        });
     }
 
     /**
@@ -457,13 +459,13 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
       nodes: {}
     };
 
-    const activeObject = this.InfrastructureManager.getActiveConnection();
+    const activeObject = this.InfrastructureManager.getActiveObject();
 
     // Return everything if no activeConnection. Set pseudo elements
     if (!activeObject)  {
       nodes = this.setPseudoNodes(nodes);
 
-      this.InfrastructureManager.getConnections().forEach((connection: ImConnection) => {
+      this.InfrastructureManager.getConnections().forEach((connection: ConnectionTypes) => {
         nodes = this.setNode(nodes, connection);
 
         // Get all object children

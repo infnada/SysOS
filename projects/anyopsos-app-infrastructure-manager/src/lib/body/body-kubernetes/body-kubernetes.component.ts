@@ -44,7 +44,7 @@ export class BodyKubernetesComponent implements OnChanges {
   }
 
   haveMonitor() {
-    return this.kubernetesObject.type === 'Pod';
+    return this.kubernetesObject && this.kubernetesObject.type === 'Pod';
   }
 
 }

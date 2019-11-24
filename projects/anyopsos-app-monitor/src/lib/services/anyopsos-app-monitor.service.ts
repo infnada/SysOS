@@ -255,7 +255,7 @@ export class AnyOpsOSAppMonitorService {
               // broadcast data to subscribers
               this.$connections.next(Object.assign({}, this.dataStore).connections);
 
-              this.logger.debug('Monitor', 'ImConnection deleted successfully', loggerArgs);
+              this.logger.debug('Monitor', 'Connection deleted successfully', loggerArgs);
             },
             error => {
               this.logger.error('Monitor', 'Error while deleting connection', loggerArgs, error);

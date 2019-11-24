@@ -728,7 +728,7 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
   mountVolumeToESXi(data: MountVolumeSnapshot | RestoreVolumeFiles | RestoreVmGuestFiles | VmInstantRecovery) {
     const loggerArgs = arguments;
 
-    this.logger.debug('Backups Manager', 'ImConnection to vCenter using SOAP', arguments);
+    this.logger.debug('Backups Manager', 'Connection to vCenter using SOAP', arguments);
 
     return this.VMWare.connectvCenterSoap(data.virtual).then((res) => {
       if (res.status === 'error') throw new Error('Failed to connect to vCenter');
@@ -865,7 +865,7 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
     const sfrPromises = [];
     let vmPath;
 
-    this.logger.debug('Backups Manager', 'ImConnection to vCenter using SOAP', arguments);
+    this.logger.debug('Backups Manager', 'Connection to vCenter using SOAP', arguments);
     return this.VMWare.connectvCenterSoap(data.virtual).then((res) => {
       if (res.status === 'error') throw new Error('Failed to connect to vCenter');
 

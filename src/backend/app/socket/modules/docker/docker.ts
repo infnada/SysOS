@@ -42,7 +42,7 @@ export class DockerSocketModule {
       ]);
 
       this.SocketModule.emitProp(data.type, 'docker@' + data.clusterServer, data.uuid, 'footer');
-      this.SocketModule.emitProp(data.type, 'Docker ImConnection Established', data.uuid, 'status');
+      this.SocketModule.emitProp(data.type, 'Docker Connection Established', data.uuid, 'status');
       this.SocketModule.emitProp(data.type, 'connected', data.uuid, 'state');
     });
 
