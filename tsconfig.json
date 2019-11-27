@@ -5,12 +5,12 @@
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,
-    "module": "es2015",
+    "module": "es6",
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "importHelpers": true,
-    "target": "es5",
+    "target": "esnext",
     "typeRoots": [
       "node_modules/@types"
     ],
@@ -60,6 +60,12 @@
       ],
       "@anyopsos/lib-netapp/*": [
         "projects/anyopsos-lib-netapp/*"
+      ],
+      "@anyopsos/lib-kubernetes": [
+        "projects/anyopsos-lib-kubernetes/src/public-api"
+      ],
+      "@anyopsos/lib-kubernetes/*": [
+        "projects/anyopsos-lib-kubernetes/*"
       ],
       "@anyopsos/lib-user": [
         "projects/anyopsos-lib-user/src/public-api"
@@ -444,6 +450,18 @@
       ],
       "@anyopsos/modal-infrastructure-manager-migrate-vms-another-network/*": [
         "projects/anyopsos-modal-infrastructure-manager-migrate-vms-another-network/*"
+      ],
+      "@anyopsos/modal-infrastructure-manager-edit-resource": [
+        "projects/anyopsos-modal-infrastructure-manager-edit-resource/src/public-api"
+      ],
+      "@anyopsos/modal-infrastructure-manager-edit-resource/*": [
+        "projects/anyopsos-modal-infrastructure-manager-edit-resource/*"
+      ],
+      "@anyopsos/modal-infrastructure-manager-json-textarea": [
+        "projects/anyopsos-modal-infrastructure-manager-json-textarea/src/public-api"
+      ],
+      "@anyopsos/modal-infrastructure-manager-json-textarea/*": [
+        "projects/anyopsos-modal-infrastructure-manager-json-textarea/*"
       ]
     }
   }

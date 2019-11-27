@@ -5,7 +5,10 @@
       <mat-tab disabled="true">
         <ng-template matTabLabel>
           <div class="object horizontal-flex-container">
-            <div role="titlebar-icon" [ngClass]="VmwareTemplateHelpers.getObjectIconClass(kubernetesObject)"></div>
+            <div role="titlebar-icon">
+              <i [ngClass]="InfrastructureManagerTemplateHelper.getObjectIcon(kubernetesObject).data" *ngIf="InfrastructureManagerTemplateHelper.getObjectIcon(kubernetesObject).type === 'class'"></i>
+              <img [src]="InfrastructureManagerTemplateHelper.getObjectIcon(kubernetesObject).data" width="25px" class="mr-1" *ngIf="InfrastructureManagerTemplateHelper.getObjectIcon(kubernetesObject).type === 'image'" />
+            </div>
             <div role="titlebar-title" class="summary-name-label">{{kubernetesObject.name}}</div>
           </div>
         </ng-template>

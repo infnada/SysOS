@@ -157,7 +157,7 @@ export class AnyOpsOSAppInfrastructureManagerTreeDataService implements OnDestro
 
       if (connectionType === 'kubernetes') {
         mainObj = conObj.data.Data.filter((obj: ImDataObject) => {
-          return obj.type === 'Namespace';
+          return obj.info.parent === null;
         });
 
         connectionObject.children = JSON.parse(JSON.stringify(mainObj));

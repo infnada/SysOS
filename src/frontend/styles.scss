@@ -20,8 +20,9 @@ body {
 }
 
 a {
+  color: #007bff !important;
   text-decoration: none;
-  cursor: default;
+  cursor: pointer;
 }
 a:focus, a:hover {
   text-decoration: none;

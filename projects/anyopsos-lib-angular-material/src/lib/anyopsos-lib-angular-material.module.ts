@@ -42,6 +42,7 @@ import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatTreeModule} from '@angular/material/tree';
 
 export {MatChipInputEvent} from '@angular/material/chips';
+export {MatButtonToggleGroup} from '@angular/material/button-toggle';
 export {MatSort} from '@angular/material/sort';
 export {MatTableDataSource} from '@angular/material/table';
 export {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';

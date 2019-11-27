@@ -76,14 +76,8 @@
 
   <!-- Kubernetes Pod actions -->
   <ng-container *ngIf="getActiveObjectType() === 'Pod'">
-    <a class="window__item" matTooltip="Get Logs">
-      <i class="fas fa-desktop text-primary"></i>
-    </a>
-    <a class="window__item" matTooltip="Describe">
-      <i class="fas fa-file-text text-primary"></i>
-    </a>
-    <a class="window__item" matTooltip="Delete">
-      <i class="fas fa-trash-alt text-primary"></i>
+    <a class="window__item" matTooltip="Exec Shell">
+      <i class="fas fa-terminal text-primary"></i>
     </a>
   </ng-container>
 
@@ -118,6 +112,24 @@
     </a>
     <a class="window__item" matTooltip="Clear traffic control settings">
       <i class="fas fa-times-circle text-primary"></i>
+    </a>
+  </ng-container>
+
+  <a class="window__item" matTooltip="Scale resource" *ngIf="getActiveObjectType() === 'Deployment' || getActiveObjectType() === 'ReplicaSet' || getActiveObjectType() === 'StetefulSet'">
+    <i class="fas fa-ellipsis-h-left text-primary"></i>
+  </a>
+
+  <a class="window__item" matTooltip="View Logs" *ngIf="getActiveObjectType() === 'DaemonSet' || getActiveObjectType() === 'ReplicaSet' || getActiveObjectType() === 'StetefulSet' || getActiveObjectType() === 'Pod'">
+    <i class="fas fa-align-left text-primary"></i>
+  </a>
+
+  <ng-container *ngIf="getActiveConnectionType() === 'kubernetes'">
+
+    <a class="window__item" matTooltip="Edit Resource">
+      <i class="fas fa-pen text-primary"></i>
+    </a>
+    <a class="window__item" matTooltip="Delete Resource">
+      <i class="fas fa-trash text-danger"></i>
     </a>
   </ng-container>
 </div>

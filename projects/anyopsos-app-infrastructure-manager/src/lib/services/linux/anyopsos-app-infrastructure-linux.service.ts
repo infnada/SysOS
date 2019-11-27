@@ -7,7 +7,7 @@ import {ConnectionLinux} from '../../types/connections/connection-linux';
 @Injectable({
   providedIn: 'root'
 })
-export class AnyopsosAppInfrastructureLinuxService {
+export class AnyOpsOSAppInfrastructureLinuxService {
 
   constructor(private socket: Socket) {
   }

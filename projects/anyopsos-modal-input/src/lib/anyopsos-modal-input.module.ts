@@ -19,6 +19,7 @@ import {EntryComponent} from './input-entry/entry.component';
     CommonModule,
     NgbModalModule,
     FormsModule,
+    // Shared module import
     AnyOpsOSLibAngularMaterialModule
   ],
   exports: [],

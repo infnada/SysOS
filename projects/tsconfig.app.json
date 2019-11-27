@@ -44,6 +44,12 @@
       "@anyopsos/lib-netapp/*": [
         "dist/libs/anyopsos-lib-netapp/*"
       ],
+      "@anyopsos/lib-kubernetes": [
+        "dist/libs/anyopsos-lib-kubernetes"
+      ],
+      "@anyopsos/lib-kubernetes/*": [
+        "dist/libs/anyopsos-lib-kubernetes/*"
+      ],
       "@anyopsos/lib-user": [
         "dist/libs/anyopsos-lib-user"
       ],
@@ -295,6 +301,18 @@
       ],
       "@anyopsos/modal-monitor-help/*": [
         "dist/anyopsos-modal-monitor-help/*"
+      ],
+      "@anyopsos/modal-infrastructure-manager-edit-resource": [
+        "dist/anyopsos-modal-infrastructure-manager-edit-resource"
+      ],
+      "@anyopsos/modal-infrastructure-manager-edit-resource/*": [
+        "dist/anyopsos-modal-infrastructure-manager-edit-resource/*"
+      ],
+      "@anyopsos/modal-infrastructure-manager-json-textarea": [
+        "dist/anyopsos-modal-infrastructure-manager-new-datacenter"
+      ],
+      "@anyopsos/modal-infrastructure-manager-json-textarea/*": [
+        "dist/anyopsos-modal-infrastructure-manager-new-datacenter/*"
       ],
       "@anyopsos/modal-infrastructure-manager-new-datacenter": [
         "dist/anyopsos-modal-infrastructure-manager-new-datacenter"

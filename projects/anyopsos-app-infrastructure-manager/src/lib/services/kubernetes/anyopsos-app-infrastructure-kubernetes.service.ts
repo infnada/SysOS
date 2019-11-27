@@ -13,7 +13,7 @@ import {ImDataObject} from '../../types/im-data-object';
 @Injectable({
   providedIn: 'root'
 })
-export class AnyopsosAppInfrastructureKubernetesService {
+export class AnyOpsOSAppInfrastructureKubernetesService {
 
   private subTimeout;
 
@@ -44,6 +44,9 @@ export class AnyopsosAppInfrastructureKubernetesService {
   }
 
   initConnection(connection: ConnectionKubernetes): void {
+
+    this.createConnectionFolders(connection.uuid);
+
     return this.socket.emit('[new-session]', {
       type: 'kubernetes',
       clusterName: connection.clusterName,
@@ -52,6 +55,70 @@ export class AnyopsosAppInfrastructureKubernetesService {
       credential: connection.credential,
       uuid: connection.uuid
     });
+  }
+
+  private createConnectionFolders(connectionUuid: string) {
+    const folders = [
+      'Nodes',
+      'Cluster Roles',
+      'Role Bindings',
+      'Persistent Volumes',
+      'Storage Classes',
+      'Namespaces',
+    ];
+
+    folders.forEach((folder: string) => {
+      const newObj: ImDataObject = {
+        name: folder,
+        type: 'Folder',
+        info: {
+          uuid: `${connectionUuid};\u003c${folder}:Folder\u003e`,
+          mainUuid: connectionUuid,
+          obj: {
+            type: 'Folder',
+            name: folder
+          },
+          parent: null,
+          data: {}
+        }
+      };
+
+      this.InfrastructureManager.getConnectionByUuid(connectionUuid).data.Data.push(newObj as ImDataObject);
+    });
+  }
+
+  private createNamespaceFolders(connectionUuid: string, object: ImDataObject) {
+
+    const parent = object.info.obj;
+    const folders = [
+      'Ingresses',
+      'Services',
+      'Config Maps',
+      'Secrets',
+      'Persistent Volume Claims',
+      'Service Accounts',
+      'Role Bindings'
+    ];
+
+    folders.forEach((folder: string) => {
+      const newObj: ImDataObject = {
+        name: folder,
+        type: 'Folder',
+        info: {
+          uuid: `${connectionUuid};\u003c${object.name}${folder}:Folder\u003e`,
+          mainUuid: connectionUuid,
+          obj: {
+            type: 'Folder',
+            name: object.name + folder
+          },
+          parent: parent,
+          data: {}
+        }
+      };
+
+      this.InfrastructureManager.getConnectionByUuid(connectionUuid).data.Data.push(newObj as ImDataObject);
+    });
+
   }
 
   private parseObject(sockData: { uuid: string, data: any }) {
@@ -64,11 +131,57 @@ export class AnyopsosAppInfrastructureKubernetesService {
       const objectParent = (object.metadata.ownerReferences ? {
         type: object.metadata.ownerReferences[0].kind,
         name: object.metadata.ownerReferences[0].name
-      } : object.metadata.namespace ? {
-        type: 'Namespace',
-        name: object.metadata.namespace
+      } :
+      object.metadata.namespace ?
+        object.kind === 'Endpoints' ? {
+          type: 'Folder',
+          name: object.metadata.namespace + 'Ingresses'
+        } : object.kind === 'Service' ? {
+          type: 'Folder',
+          name: object.metadata.namespace + 'Services'
+        } : object.kind === 'ConfigMap' ? {
+          type: 'Folder',
+          name: object.metadata.namespace + 'Config Maps'
+        } : object.kind === 'PersistentVolumeClaim' ? {
+          type: 'Folder',
+          name: object.metadata.namespace + 'Persistent Volume Claims'
+        } : object.kind === 'Secret' ? {
+          type: 'Folder',
+          name: object.metadata.namespace + 'Secrets'
+        } : object.kind === 'ServiceAccount' ? {
+          type: 'Folder',
+          name: object.metadata.namespace + 'Service Accounts'
+        } : object.kind === 'RoleBinding' ? {
+          type: 'Folder',
+          name: object.metadata.namespace + 'Role Bindings'
+        } : {
+          type: 'Namespace',
+          name: object.metadata.namespace
+        } :
+      object.kind === 'PersistentVolume' ? {
+        type: 'Folder',
+        name: 'Persistent Volumes'
+      } : object.kind === 'ClusterRole' ? {
+        type: 'Folder',
+        name: 'Cluster Roles'
+      } : object.kind === 'StorageClass' ? {
+        type: 'Folder',
+        name: 'Storage Classes'
+      } : object.kind === 'ClusterRoleBinding' ? {
+        type: 'Folder',
+        name: 'Role Bindings'
+      } : object.kind === 'Node' ? {
+        type: 'Folder',
+        name: 'Nodes'
+      } : object.kind === 'Namespace' ? {
+        type: 'Folder',
+        name: 'Namespaces'
       } : null);
 
+      // ControllerRevision
+      // VolumeAttachment
+      // Endpoints vs Ingresses
+      // Event
       const newObj: ImDataObject = {
         name: object.metadata.name,
         type: object.kind,
@@ -83,6 +196,11 @@ export class AnyopsosAppInfrastructureKubernetesService {
           data: object
         }
       };
+
+      // Create Namespaces folders
+      if (sockData.data.type === 'ADDED' && object.kind === 'Namespace') {
+        this.createNamespaceFolders(sockData.uuid, newObj);
+      }
 
       if (sockData.data.type === 'ADDED') {
         this.InfrastructureManager.getConnectionByUuid(sockData.uuid).data.Data.push(newObj as ImDataObject);

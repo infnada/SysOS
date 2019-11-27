@@ -1,14 +1,22 @@
 import {NgModule} from '@angular/core';
 
 import {NgNoCheck} from './directives/no-check.directive';
+import {TextInputComponent} from './components/text-input/text-input.component';
+import {MonacoEditorModule} from "ngx-monaco-editor";
+import {FormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
-    NgNoCheck
+    NgNoCheck,
+    TextInputComponent
   ],
-  imports: [],
+  imports: [
+    MonacoEditorModule,
+    FormsModule
+  ],
   exports: [
-    NgNoCheck
+    NgNoCheck,
+    TextInputComponent
   ]
 })
 export class AnyOpsOSLibUtilsModule {

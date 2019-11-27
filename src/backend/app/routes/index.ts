@@ -13,6 +13,7 @@ import remoteFolder from './api/remote-folder';
 import credential from './api/credential';
 import netapp from './api/netapp';
 import vmware from './api/vmware';
+import kubernetes from './api/kubernetes';
 import monitor from './api/monitor';
 
 const config = readConfig(path.join(__dirname, '../filesystem/etc/expressjs/config.json'));
@@ -95,6 +96,7 @@ export class RoutesModule {
     this.app.use('/api/credential/', credential);
     this.app.use('/api/netapp/', netapp);
     this.app.use('/api/vmware/', vmware);
+    this.app.use('/api/kubernetes/', kubernetes);
     this.app.use('/api/monitor/', monitor);
 
     // upload & download called from socket.io

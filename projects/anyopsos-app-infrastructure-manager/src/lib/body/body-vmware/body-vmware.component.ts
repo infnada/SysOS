@@ -4,8 +4,9 @@ import {Application} from '@anyopsos/lib-application';
 import {AnyOpsOSLibServiceInjectorService} from '@anyopsos/lib-service-injector';
 import {AnyOpsOSLibExtNetdataService, NetdataConnection} from '@anyopsos/lib-ext-netdata';
 
-import {AnyOpsOSAppInfrastructureVmwareTemplateHelpersService} from '../../services/vmware/anyopsos-app-infrastructure-vmware-template-helpers.service';
 import {ImDataObject} from '../../types/im-data-object';
+import {AnyOpsOSAppInfrastructureManagerTemplateHelperService} from '../../services/anyopsos-app-infrastructure-manager-template-helper.service';
+import {AnyOpsOSAppInfrastructureManagerNodeMonitorService} from '../../services/anyopsos-app-infrastructure-manager-node-monitor.service';
 
 @Component({
   selector: 'saim-body-vmware',
@@ -22,7 +23,8 @@ export class BodyVmwareComponent implements OnChanges {
 
   constructor(private serviceInjector: AnyOpsOSLibServiceInjectorService,
               private Netdata: AnyOpsOSLibExtNetdataService,
-              public VmwareTemplateHelpers: AnyOpsOSAppInfrastructureVmwareTemplateHelpersService) {
+              private InfrastructureManagerNodeMonitor: AnyOpsOSAppInfrastructureManagerNodeMonitorService,
+              public InfrastructureManagerTemplateHelper: AnyOpsOSAppInfrastructureManagerTemplateHelperService) {
 
     this.Monitor = this.serviceInjector.get('AnyOpsOSAppMonitorService');
   }
@@ -43,8 +45,8 @@ export class BodyVmwareComponent implements OnChanges {
     }
   }
 
-  haveMonitor() {
-    return this.VmwareTemplateHelpers.getObjectType(this.vmwareObject) === 'VirtualMachine';
+  haveMonitor(): boolean {
+    return this.InfrastructureManagerNodeMonitor.haveMonitor(this.vmwareObject);
   }
 
 }

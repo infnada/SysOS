@@ -1,8 +1,8 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 
 import {MatChipInputEvent} from '@anyopsos/lib-angular-material';
+import {AnyOpsOSLibUtilsService} from '@anyopsos/lib-utils';
 
-import {AnyOpsOSAppInfrastructureVmwareTemplateHelpersService} from '../../../services/vmware/anyopsos-app-infrastructure-vmware-template-helpers.service';
 import {AnyOpsOSAppInfrastructureManagerService} from '../../../services/anyopsos-app-infrastructure-manager.service';
 import {AnyOpsOSAppInfrastructureManagerNodeGraphService} from '../../../services/anyopsos-app-infrastructure-manager-node-graph.service';
 import {ImDataObject} from '../../../types/im-data-object';
@@ -18,6 +18,8 @@ export interface Tag {
   styleUrls: ['./tab-summary.component.scss']
 })
 export class TabSummaryComponent implements OnInit {
+  @ViewChild('scrollToElement') scrollToElement: ElementRef<HTMLInputElement>;
+
   @Input() nmObject: ImDataObject;
 
   tags: Tag[] = [
@@ -26,7 +28,7 @@ export class TabSummaryComponent implements OnInit {
     {name: 'tag', category: 'category'},
   ];
 
-  constructor(public VmwareTemplateHelpers: AnyOpsOSAppInfrastructureVmwareTemplateHelpersService,
+  constructor(private Utils: AnyOpsOSLibUtilsService,
               private InfrastructureManager: AnyOpsOSAppInfrastructureManagerService,
               private InfrastructureManagerNodeGraph: AnyOpsOSAppInfrastructureManagerNodeGraphService) {
   }
@@ -61,6 +63,11 @@ export class TabSummaryComponent implements OnInit {
   /**
    * Weavescope graph
    */
+  scrollTo(): void {
+    console.log(this.scrollToElement);
+    console.log(this.scrollToElement.nativeElement.parentElement.parentElement);
+    this.Utils.angularElementScrollTo(this.scrollToElement.nativeElement.parentElement.parentElement, true);
+  }
 
   setNodeGraphNodes() {
     return this.InfrastructureManagerNodeGraph.setNodeGraphNodes();

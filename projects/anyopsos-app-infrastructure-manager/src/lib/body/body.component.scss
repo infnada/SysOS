@@ -26,3 +26,14 @@ saim-vmware-recent-tasks {
   height: 200px;
   display: block;
 }
+
+::ng-deep .mat-chip.mat-standard-chip {
+  height: fit-content;
+  line-height: 14px;
+  min-height: unset;
+}
+
+::ng-deep mat-label {
+  color: rgba(0,0,0,.54);
+  font-size: 12px;
+}

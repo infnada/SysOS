@@ -1,10 +1,12 @@
-<div class="header">
+<div class="header" *ngIf="!simpleLayout">
   <div class="selectors">
     <slews-search class="float-left ml-5"></slews-search>
-    <slews-topologies class="float-left ml-5" *ngIf="!simpleLayout"></slews-topologies>
+    <slews-topologies class="float-left ml-5"></slews-topologies>
     <slews-metrics class="float-left ml-5"></slews-metrics>
   </div>
 </div>
+
+<slews-metrics class="float-left ml-5" *ngIf="simpleLayout"></slews-metrics>
 
 <div class="nodes-wrapper" #weaveApp>
 

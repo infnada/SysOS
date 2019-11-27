@@ -56,6 +56,8 @@ import {VersionInformationComponent} from './body/tabs/tab-summary/version-infor
 import {StorageDrsComponent} from './body/tabs/tab-summary/storage-drs/storage-drs.component';
 import {SwitchFeaturesComponent} from './body/tabs/tab-summary/switch-features/switch-features.component';
 
+import {ChipsDirective} from './directives/chips.directive';
+
 @NgModule({
   declarations: [
     ActionsComponent,
@@ -97,6 +99,8 @@ import {SwitchFeaturesComponent} from './body/tabs/tab-summary/switch-features/s
     VersionInformationComponent,
     StorageDrsComponent,
     SwitchFeaturesComponent,
+
+    ChipsDirective
   ],
   imports: [
     CommonModule,

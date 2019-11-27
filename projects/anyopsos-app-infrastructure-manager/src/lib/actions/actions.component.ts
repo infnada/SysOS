@@ -38,6 +38,13 @@ export class ActionsComponent implements OnDestroy {
     return this.InfrastructureManager.getActiveObject();
   }
 
+  getActiveConnectionType(): string {
+    const activeConnection = this.getActiveConnection();
+
+    if (activeConnection) return activeConnection.type;
+    return null;
+  }
+
   getActiveObjectType(): string {
     const activeObject = this.getActiveObject();
 

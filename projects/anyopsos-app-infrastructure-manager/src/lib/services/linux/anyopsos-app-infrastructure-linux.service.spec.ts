@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
-import { AnyopsosAppInfrastructureLinuxService } from './anyopsos-app-infrastructure-linux.service';
+import { AnyOpsOSAppInfrastructureLinuxService } from './anyopsos-app-infrastructure-linux.service';
 
-describe('AnyopsosAppInfrastructureLinuxService', () => {
+describe('AnyOpsOSAppInfrastructureLinuxService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: AnyopsosAppInfrastructureLinuxService = TestBed.get(AnyopsosAppInfrastructureLinuxService);
+    const service: AnyOpsOSAppInfrastructureLinuxService = TestBed.get(AnyOpsOSAppInfrastructureLinuxService);
     expect(service).toBeTruthy();
   });
 });

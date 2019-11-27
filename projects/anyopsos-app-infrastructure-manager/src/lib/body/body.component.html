@@ -8,50 +8,17 @@
         matTreeNodePadding
         matTreeNodePaddingIndent="10"
         (contextmenu)="onTreeContextMenu($event, node)"
-        [ngClass]="{'active-node': activeConnection === (node.info && node.info.uuid)}"
-
+        [ngClass]="{'active-node': activeConnection === (node.info && node.info.uuid) || activeObject === (node.info && node.info.uuid)}"
+        matTooltip="{{node.type}}"
       >
         <!-- use a disabled button to provide padding for tree leaf -->
         <button mat-icon-button disabled></button>
 
-        <ng-container *ngIf="node.type === 'standalone'"><span><i class="mr-1 text-primary fas fa-folder"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'linux'"><span><i class="mr-1 text-primary fab fa-linux"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'windows'"><span><i class="mr-1 text-primary fab fa-windows"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'snmp'"><span><i class="mr-1 text-primary fas fa-desktop"></i> {{node.name}}</span></ng-container>
-
-        <ng-container *ngIf="node.type === 'container'"><span><i class="mr-1 text-primary fas fa-box"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'docker'"><span><i class="mr-1 text-primary fas fa-docker"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'kubernetes'"><span (click)="setActiveView(node)"><img src="/assets/img/logos/Kubernetes-logo.png" width="28px" class="mr-1" /> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'Namespace'"><span (click)="setActiveView(node)"><img src="/assets/img/kubernetes/ns-128.png" width="28px" class="mr-1" /> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'DaemonSet'"><span (click)="setActiveView(node)"><img src="/assets/img/kubernetes/ds-128.png" width="28px" class="mr-1" /> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'Deployment'"><span (click)="setActiveView(node)"><img src="/assets/img/kubernetes/deploy-128.png" width="28px" class="mr-1" /> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'StatefulSet'"><span (click)="setActiveView(node)"><img src="/assets/img/kubernetes/sts-128.png" width="28px" class="mr-1" /> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'ReplicaSet'"><span (click)="setActiveView(node)"><img src="/assets/img/kubernetes/rs-128.png" width="28px" class="mr-1" /> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'Pod'"><span (click)="setActiveView(node)"><img src="/assets/img/kubernetes/pod-128.png" width="28px" class="mr-1" /> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'Node'"><span (click)="setActiveView(node)"><img src="/assets/img/kubernetes/node-128.png" width="28px" class="mr-1" /> {{node.name}}</span></ng-container>
-
-        <!-- NetApp -->
-        <ng-container *ngIf="node.type === 'storage'"><span><i class="mr-1 text-primary fas fa-database"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'netapp'"><span (click)="setActiveView(node)"><img src="/assets/img/logos/NetApp-logo.png" width="28px" class="mr-1" /> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'vserver'"><span (click)="setActiveView(node)"><i class="mr-1 fas fa-server"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'volume'"><span (click)="setActiveView(node)"><i class="vs-icon vsphere-icon-datastore"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'snapshot'"><span (click)="setActiveView(node)"><i class="mr-1 fas fa-camera"></i> {{node.name}}</span></ng-container>
-
-        <!-- VMWare -->
-        <ng-container *ngIf="node.type === 'virtual'"><span><i class="mr-1 text-primary fas fa-cloud"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'vmware'"><span (click)="setActiveView(node)"><i class="vs-icon vsphere-icon-vcenter"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'Datacenter'"><span (click)="setActiveView(node)"><i class="vs-icon vsphere-icon-datacenter"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'ClusterComputeResource'"><span (click)="setActiveView(node)"><i class="vs-icon vsphere-icon-cluster"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'HostSystem'"><span (click)="setActiveView(node)"><i class="vs-icon" [ngClass]="{'vsphere-icon-host-disconnected': node.info.data.runtime[0].powerState === 'poweredOff', 'vsphere-icon-host': node.info.data.runtime[0].powerState === 'poweredOn'}"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'Folder'"><span (click)="setActiveView(node)"><i class="vs-icon vsphere-icon-folder"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'ResourcePool'"><span (click)="setActiveView(node)"><i class="vs-icon vsphere-icon-resource-pool"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'VirtualApp'"><span (click)="setActiveView(node)"><i class="vs-icon vsphere-icon-vapp"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'VirtualMachine'"><span (click)="setActiveView(node)"><i class="vs-icon" [ngClass]="{'vsphere-icon-vm': node.info.data['runtime.powerState'] === 'poweredOff', 'vsphere-icon-vm-on': node.info.data['runtime.powerState'] === 'poweredOn', 'vsphere-icon-vm-suspended': node.info.data['runtime.powerState'] === 'suspended', 'vsphere-icon-vm-error': node.info.data['runtime.connectionState'] === 'inaccessible'}"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'StoragePod'"><span (click)="setActiveView(node)"><i class="vs-icon vsphere-icon-datastore-cluster"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'Datastore'"><span (click)="setActiveView(node)"><i class="vs-icon" [ngClass]="{'vsphere-icon-datastore': node.info.data['summary.accessible'] === true, 'vsphere-icon-datastore-inaccessible': node.info.data['summary.accessible'] === false}"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'Network'"><span (click)="setActiveView(node)"><i class="vs-icon vsphere-icon-network"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'VmwareDistributedVirtualSwitch'"><span (click)="setActiveView(node)"><i class="vs-icon vsphere-icon-dv-switch"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'DistributedVirtualPortgroup'"><span (click)="setActiveView(node)"><i class="vs-icon vsphere-icon-virtual-port-group"></i> {{node.name}}</span></ng-container>
+        <span (click)="setActiveView(node)">
+          <i [ngClass]="InfrastructureManagerTemplateHelper.getObjectIcon(node).data" *ngIf="InfrastructureManagerTemplateHelper.getObjectIcon(node).type === 'class'"></i>
+          <img [src]="InfrastructureManagerTemplateHelper.getObjectIcon(node).data" width="25px" class="mr-1" *ngIf="InfrastructureManagerTemplateHelper.getObjectIcon(node).type === 'image'" />
+          {{node.name}}
+        </span>
 
         <div style="position: fixed"
              [style.left]="contextMenuPosition.x"
@@ -67,8 +34,8 @@
         matTreeNodePadding
         matTreeNodePaddingIndent="10"
         (contextmenu)="onTreeContextMenu($event, node)"
-        [ngClass]="{'active-node': activeConnection === (node.info && node.info.uuid)}"
-
+        [ngClass]="{'active-node': activeConnection === (node.info && node.info.uuid) || activeObject === (node.info && node.info.uuid)}"
+        matTooltip="{{node.type}}"
       >
         <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'toggle ' + node.name">
           <mat-icon class="mat-icon-rtl-mirror">
@@ -76,44 +43,11 @@
           </mat-icon>
         </button>
 
-        <ng-container *ngIf="node.type === 'standalone'"><span><i class="mr-1 text-primary fas fa-folder"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'linux'"><span><i class="mr-1 text-primary fab fa-linux"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'windows'"><span><i class="mr-1 text-primary fab fa-windows"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'snmp'"><span><i class="mr-1 text-primary fas fa-desktop"></i> {{node.name}}</span></ng-container>
-
-        <ng-container *ngIf="node.type === 'container'"><span><i class="mr-1 text-primary fas fa-box"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'docker'"><span><i class="mr-1 text-primary fas fa-docker"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'kubernetes'"><span (click)="setActiveView(node)"><img src="/assets/img/logos/Kubernetes-logo.png" width="28px" class="mr-1" /> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'Namespace'"><span (click)="setActiveView(node)"><img src="/assets/img/kubernetes/ns-128.png" width="28px" class="mr-1" /> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'DaemonSet'"><span (click)="setActiveView(node)"><img src="/assets/img/kubernetes/ds-128.png" width="28px" class="mr-1" /> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'Deployment'"><span (click)="setActiveView(node)"><img src="/assets/img/kubernetes/deploy-128.png" width="28px" class="mr-1" /> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'StatefulSet'"><span (click)="setActiveView(node)"><img src="/assets/img/kubernetes/sts-128.png" width="28px" class="mr-1" /> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'ReplicaSet'"><span (click)="setActiveView(node)"><img src="/assets/img/kubernetes/rs-128.png" width="28px" class="mr-1" /> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'Pod'"><span (click)="setActiveView(node)"><img src="/assets/img/kubernetes/pod-128.png" width="28px" class="mr-1" /> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'Node'"><span (click)="setActiveView(node)"><img src="/assets/img/kubernetes/node-128.png" width="28px" class="mr-1" /> {{node.name}}</span></ng-container>
-
-        <!-- NetApp -->
-        <ng-container *ngIf="node.type === 'storage'"><span><i class="mr-1 text-primary fas fa-database"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'netapp'"><span (click)="setActiveView(node)"><img src="/assets/img/logos/NetApp-logo.png" width="28px" class="mr-1" /> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'vserver'"><span (click)="setActiveView(node)"><i class="mr-1 fas fa-server"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'volume'"><span (click)="setActiveView(node)"><i class="vs-icon vsphere-icon-datastore"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'snapshot'"><span (click)="setActiveView(node)"><i class="mr-1 fas fa-camera"></i> {{node.name}}</span></ng-container>
-
-        <!-- VMWare -->
-        <ng-container *ngIf="node.type === 'virtual'"><span><i class="mr-1 text-primary fas fa-cloud"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'vmware'"><span (click)="setActiveView(node)"><i class="vs-icon vsphere-icon-vcenter"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'Datacenter'"><span (click)="setActiveView(node)"><i class="vs-icon vsphere-icon-datacenter"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'ClusterComputeResource'"><span (click)="setActiveView(node)"><i class="vs-icon vsphere-icon-cluster"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'HostSystem'"><span (click)="setActiveView(node)"><i class="vs-icon" [ngClass]="{'vsphere-icon-host-disconnected': node.info.data.runtime[0].powerState === 'poweredOff', 'vsphere-icon-host': node.info.data.runtime[0].powerState === 'poweredOn'}"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'Folder'"><span (click)="setActiveView(node)"><i class="vs-icon vsphere-icon-folder"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'ResourcePool'"><span (click)="setActiveView(node)"><i class="vs-icon vsphere-icon-resource-pool"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'VirtualApp'"><span (click)="setActiveView(node)"><i class="vs-icon vsphere-icon-vapp"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'VirtualMachine'"><span (click)="setActiveView(node)"><i class="vs-icon" [ngClass]="{'vsphere-icon-vm': node.info.data['runtime.powerState'] === 'poweredOff', 'vsphere-icon-vm-on': node.info.data['runtime.powerState'] === 'poweredOn', 'vsphere-icon-vm-suspended': node.info.data['runtime.powerState'] === 'suspended', 'vsphere-icon-vm-error': node.info.data['runtime.connectionState'] === 'inaccessible'}"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'StoragePod'"><span (click)="setActiveView(node)"><i class="vs-icon vsphere-icon-datastore-cluster"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'Datastore'"><span (click)="setActiveView(node)"><i class="vs-icon" [ngClass]="{'vsphere-icon-datastore': node.info.data['summary.accessible'] === true, 'vsphere-icon-datastore-inaccessible': node.info.data['summary.accessible'] === false}"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'Network'"><span (click)="setActiveView(node)"><i class="vs-icon vsphere-icon-network"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'VmwareDistributedVirtualSwitch'"><span (click)="setActiveView(node)"><i class="vs-icon vsphere-icon-dv-switch"></i> {{node.name}}</span></ng-container>
-        <ng-container *ngIf="node.type === 'DistributedVirtualPortgroup'"><span (click)="setActiveView(node)"><i class="vs-icon vsphere-icon-virtual-port-group"></i> {{node.name}}</span></ng-container>
+        <span (click)="setActiveView(node)">
+          <i [ngClass]="InfrastructureManagerTemplateHelper.getObjectIcon(node).data" *ngIf="InfrastructureManagerTemplateHelper.getObjectIcon(node).type === 'class'"></i>
+          <img [src]="InfrastructureManagerTemplateHelper.getObjectIcon(node).data" width="25px" class="mr-1" *ngIf="InfrastructureManagerTemplateHelper.getObjectIcon(node).type === 'image'" />
+          {{node.name}}
+        </span>
 
         <div style="position: fixed"
              [style.left]="contextMenuPosition.x"

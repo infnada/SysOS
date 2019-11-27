@@ -1,12 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 
-import { AnyopsosAppInfrastructureDockerService } from './anyopsos-app-infrastructure-docker.service';
+import { AnyOpsOSAppInfrastructureDockerService } from './anyopsos-app-infrastructure-docker.service';
 
-describe('AnyopsosAppInfrastructureDockerService', () => {
+describe('AnyOpsOSAppInfrastructureDockerService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: AnyopsosAppInfrastructureDockerService = TestBed.get(AnyopsosAppInfrastructureDockerService);
+    const service: AnyOpsOSAppInfrastructureDockerService = TestBed.get(AnyOpsOSAppInfrastructureDockerService);
     expect(service).toBeTruthy();
   });
 });

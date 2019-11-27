@@ -7,7 +7,7 @@ import {ConnectionSnmp} from '../../types/connections/connection-snmp';
 @Injectable({
   providedIn: 'root'
 })
-export class AnyopsosAppInfrastructureSnmpService {
+export class AnyOpsOSAppInfrastructureSnmpService {
 
   constructor(private socket: Socket) {
   }

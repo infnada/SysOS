@@ -7,7 +7,7 @@ import {ConnectionDocker} from '../../types/connections/connection-docker';
 @Injectable({
   providedIn: 'root'
 })
-export class AnyopsosAppInfrastructureDockerService {
+export class AnyOpsOSAppInfrastructureDockerService {
 
   constructor(private socket: Socket) {
   }

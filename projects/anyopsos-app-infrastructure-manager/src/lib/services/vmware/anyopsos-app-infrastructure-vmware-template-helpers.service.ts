@@ -36,6 +36,11 @@ export class AnyOpsOSAppInfrastructureVmwareTemplateHelpersService {
     if (vmwareObject.type === 'Network') return 'vs-icon vsphere-icon-network';
     if (vmwareObject.type === 'VmwareDistributedVirtualSwitch') return 'vs-icon vsphere-icon-dv-switch';
     if (vmwareObject.type === 'DistributedVirtualPortgroup') return 'vs-icon vsphere-icon-virtual-port-group';
+
+
+
+
+
     return '';
   }
 

@@ -1,0 +1,27 @@
+<mat-chip-list>
+  <ng-container *ngFor="let key of keys; let i = index">
+    <mat-chip *ngIf="isVisible(i)" [disableRipple]="true">
+      <ng-container *ngIf="isTooLong(map[key])">
+        <a (click)="openChipDialog(key, map[key])">{{key}}</a>
+      </ng-container>
+
+      <!-- beautify ignore:start -->
+      <ng-container *ngIf="!isTooLong(map[key])">
+        {{key}}<ng-container *ngIf="map[key]">:&nbsp;</ng-container>
+        <ng-container *ngIf="map[key]">
+          <ng-container *ngIf="isHref(map[key])">
+            <a [href]="map[key]" target="_blank">{{map[key]}}</a>
+          </ng-container>
+          <ng-container *ngIf="!isHref(map[key])">{{map[key]}}</ng-container>
+        </ng-container>
+      </ng-container>
+      <!-- beautify ignore:end -->
+
+    </mat-chip>
+  </ng-container>
+  <div *ngIf="isAnythingHidden()" (click)="toggleView()" class="kd-chips-show-button">
+    <ng-container *ngIf="isShowingAll" i18n>Show less</ng-container>
+    <ng-container *ngIf="!isShowingAll" i18n>Show all</ng-container>
+  </div>
+  <ng-container *ngIf="keys.length === 0">-</ng-container>
+</mat-chip-list>

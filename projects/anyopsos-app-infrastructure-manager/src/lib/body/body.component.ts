@@ -14,10 +14,11 @@ import {AnyOpsOSAppInfrastructureManagerTreeDataService} from '../services/anyop
 import {AnyOpsOSAppInfrastructureManagerContextMenusService} from '../services/anyopsos-app-infrastructure-manager-context-menus.service';
 import {AnyOpsOSAppInfrastructureVmwareService} from '../services/vmware/anyopsos-app-infrastructure-vmware.service';
 import {AnyOpsOSAppInfrastructureNetappService} from '../services/netapp/anyopsos-app-infrastructure-netapp.service';
-import {AnyopsosAppInfrastructureKubernetesService} from '../services/kubernetes/anyopsos-app-infrastructure-kubernetes.service';
-import {AnyopsosAppInfrastructureDockerService} from '../services/docker/anyopsos-app-infrastructure-docker.service';
-import {AnyopsosAppInfrastructureLinuxService} from '../services/linux/anyopsos-app-infrastructure-linux.service';
-import {AnyopsosAppInfrastructureSnmpService} from '../services/snmp/anyopsos-app-infrastructure-snmp.service';
+import {AnyOpsOSAppInfrastructureKubernetesService} from '../services/kubernetes/anyopsos-app-infrastructure-kubernetes.service';
+import {AnyOpsOSAppInfrastructureDockerService} from '../services/docker/anyopsos-app-infrastructure-docker.service';
+import {AnyOpsOSAppInfrastructureLinuxService} from '../services/linux/anyopsos-app-infrastructure-linux.service';
+import {AnyOpsOSAppInfrastructureSnmpService} from '../services/snmp/anyopsos-app-infrastructure-snmp.service';
+import {AnyOpsOSAppInfrastructureManagerTemplateHelperService} from '../services/anyopsos-app-infrastructure-manager-template-helper.service';
 
 import {ImTreeNode} from '../types/im-tree-node';
 import {ImDataObject} from '../types/im-data-object';
@@ -61,10 +62,11 @@ export class BodyComponent implements OnInit, OnDestroy {
               private InfrastructureContextMenus: AnyOpsOSAppInfrastructureManagerContextMenusService,
               private InfrastructureManagerNetApp: AnyOpsOSAppInfrastructureNetappService,
               private InfrastructureManagerVMWare: AnyOpsOSAppInfrastructureVmwareService,
-              private InfrastructureManagerKubernetes: AnyopsosAppInfrastructureKubernetesService,
-              private InfrastructureManagerDocker: AnyopsosAppInfrastructureDockerService,
-              private InfrastructureManagerLinux: AnyopsosAppInfrastructureLinuxService,
-              private InfrastructureManagerSNMP: AnyopsosAppInfrastructureSnmpService) {
+              private InfrastructureManagerKubernetes: AnyOpsOSAppInfrastructureKubernetesService,
+              private InfrastructureManagerDocker: AnyOpsOSAppInfrastructureDockerService,
+              private InfrastructureManagerLinux: AnyOpsOSAppInfrastructureLinuxService,
+              private InfrastructureManagerSNMP: AnyOpsOSAppInfrastructureSnmpService,
+              public InfrastructureManagerTemplateHelper: AnyOpsOSAppInfrastructureManagerTemplateHelperService) {
 
     /**
      * @description Required to avoid circular dependency
