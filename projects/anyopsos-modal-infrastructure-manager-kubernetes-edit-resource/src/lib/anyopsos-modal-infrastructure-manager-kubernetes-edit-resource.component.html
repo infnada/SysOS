@@ -1,0 +1,28 @@
+<div class="modal-header">
+  <div class="modal-title" id="modal-title">Edit a resource</div>
+  <div class="window__controls window__controls--right">
+    <span class="window__close" (click)="activeModal.close(); $event.stopPropagation();">
+      <i class="fas fa-times"></i>
+    </span>
+  </div>
+</div>
+<div class="modal-body" id="modal-body">
+  <mat-button-toggle-group #group="matButtonToggleGroup">
+    <mat-button-toggle [value]="modes.YAML" [checked]="true">YAML</mat-button-toggle>
+    <mat-button-toggle [value]="modes.JSON">JSON</mat-button-toggle>
+  </mat-button-toggle-group>
+
+  <slu-text-input [text]="text" [readOnly]="false" [mode]="getSelectedMode()" *ngIf="text"></slu-text-input>
+
+  <div class="equivalent-block">
+    <mat-icon>info</mat-icon>
+    <div>
+      <span>This action is equivalent to: </span>
+      <code>kubectl apply -f &lt;spec.{{selectedMode}}&gt;</code>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+  <button class="btn" type="button" (click)="activeModal.close()" mat-flat-button>Close</button>
+  <button class="btn" type="button" (click)="activeModal.close(getJSON())" mat-flat-button color="primary">Update</button>
+</div>

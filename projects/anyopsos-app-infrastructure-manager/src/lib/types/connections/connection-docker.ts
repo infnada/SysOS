@@ -8,6 +8,6 @@ export interface ConnectionDocker extends ImConnection {
   clusterServer: string;
   clusterCa: string;
   data: {
-    Data: ImDataObject[]
-  }
+    Data: ImDataObject[];
+  };
 }

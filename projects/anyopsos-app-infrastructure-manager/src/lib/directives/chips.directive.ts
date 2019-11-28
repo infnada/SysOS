@@ -73,15 +73,12 @@ export class ChipsDirective implements OnInit {
 
   openChipDialog(key: string, value: string): void {
     this.Modal.openRegisteredModal(
-      'infrastructure-manager-json-textarea',
+      'json-textarea',
       '.window--infrastructure-manager .window__main',
       {
         title: key,
         data: value,
-      }).then((modalInstance) => {
-        modalInstance.result.then(() => {
-
-      });
-    });
+      }
+    );
   }
 }

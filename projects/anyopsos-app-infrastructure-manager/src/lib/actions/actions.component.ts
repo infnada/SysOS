@@ -4,6 +4,7 @@ import {Subject} from 'rxjs';
 
 import {Application} from '@anyopsos/lib-application';
 import {AnyOpsOSLibUtilsService} from '@anyopsos/lib-utils';
+import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
 
 import {AnyOpsOSAppInfrastructureManagerService} from '../services/anyopsos-app-infrastructure-manager.service';
 
@@ -22,6 +23,7 @@ export class ActionsComponent implements OnDestroy {
   activeConnection: string;
 
   constructor(private Utils: AnyOpsOSLibUtilsService,
+              private Modal: AnyOpsOSLibModalService,
               private InfrastructureManager: AnyOpsOSAppInfrastructureManagerService) {
     this.InfrastructureManager.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe(connection => this.activeConnection = connection);
   }
@@ -99,6 +101,63 @@ export class ActionsComponent implements OnDestroy {
   }
   runHIDS(): void {
 
+  }
+
+  /**
+   * Kubernetes
+   */
+  createResource() {
+    this.Modal.openRegisteredModal(
+      'infrastructure-manager-kubernetes-create-resource',
+      '.window--infrastructure-manager .window__main',
+      {}
+    ).then((modalInstance) => {
+      modalInstance.result.then((result) => {
+        console.log(result);
+      });
+    });
+  }
+
+  triggerResource() {
+    this.Modal.openRegisteredModal(
+      'infrastructure-manager-kubernetes-edit-resource',
+      '.window--infrastructure-manager .window__main',
+      {
+        object: this.getActiveObject()
+      }
+    ).then((modalInstance) => {
+      modalInstance.result.then((result) => {
+        console.log(result);
+      });
+    });
+  }
+
+  editResource() {
+    this.Modal.openRegisteredModal(
+      'infrastructure-manager-kubernetes-edit-resource',
+      '.window--infrastructure-manager .window__main',
+      {
+        object: this.getActiveObject()
+      }
+    ).then((modalInstance) => {
+      modalInstance.result.then((result) => {
+        console.log(result);
+      });
+    });
+  }
+
+  deleteResource() {
+    this.Modal.openRegisteredModal(
+      'infrastructure-manager-kubernetes-edit-resource',
+      '.window--infrastructure-manager .window__main',
+      {
+        object: this.getActiveObject()
+      }
+    ).then((modalInstance) => {
+      modalInstance.result.then((result) => {
+        console.log(result);
+      });
+    });
   }
 
 }

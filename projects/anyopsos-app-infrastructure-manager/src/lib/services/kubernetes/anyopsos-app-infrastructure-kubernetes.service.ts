@@ -93,6 +93,7 @@ export class AnyOpsOSAppInfrastructureKubernetesService {
     const folders = [
       'Ingresses',
       'Services',
+      'Endpoints',
       'Config Maps',
       'Secrets',
       'Persistent Volume Claims',
@@ -111,7 +112,7 @@ export class AnyOpsOSAppInfrastructureKubernetesService {
             type: 'Folder',
             name: object.name + folder
           },
-          parent: parent,
+          parent,
           data: {}
         }
       };
@@ -134,6 +135,9 @@ export class AnyOpsOSAppInfrastructureKubernetesService {
       } :
       object.metadata.namespace ?
         object.kind === 'Endpoints' ? {
+          type: 'Folder',
+          name: object.metadata.namespace + 'Endpoints'
+        } : object.kind === 'Ingress' ? {
           type: 'Folder',
           name: object.metadata.namespace + 'Ingresses'
         } : object.kind === 'Service' ? {
@@ -180,7 +184,6 @@ export class AnyOpsOSAppInfrastructureKubernetesService {
 
       // ControllerRevision
       // VolumeAttachment
-      // Endpoints vs Ingresses
       // Event
       const newObj: ImDataObject = {
         name: object.metadata.name,

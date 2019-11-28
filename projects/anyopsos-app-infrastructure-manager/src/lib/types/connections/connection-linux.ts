@@ -10,6 +10,6 @@ export interface ConnectionLinux extends ImConnection {
   hopport?: number;
   hopcredential?: string;
   data: {
-    Data: ImDataObject[]
-  }
+    Data: ImDataObject[];
+  };
 }

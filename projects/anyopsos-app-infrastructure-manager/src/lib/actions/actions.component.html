@@ -116,19 +116,28 @@
   </ng-container>
 
   <a class="window__item" matTooltip="Scale resource" *ngIf="getActiveObjectType() === 'Deployment' || getActiveObjectType() === 'ReplicaSet' || getActiveObjectType() === 'StetefulSet'">
-    <i class="fas fa-ellipsis-h-left text-primary"></i>
+    <i class="fas fa-ellipsis-h text-primary"></i>
   </a>
 
   <a class="window__item" matTooltip="View Logs" *ngIf="getActiveObjectType() === 'DaemonSet' || getActiveObjectType() === 'ReplicaSet' || getActiveObjectType() === 'StetefulSet' || getActiveObjectType() === 'Pod'">
     <i class="fas fa-align-left text-primary"></i>
   </a>
 
-  <ng-container *ngIf="getActiveConnectionType() === 'kubernetes'">
-
-    <a class="window__item" matTooltip="Edit Resource">
+  <!-- Kubernetes CronJob actions -->
+  <ng-container *ngIf="getActiveObjectType() === 'ConJob'">
+    <a class="window__item" matTooltip="Trigger Resource" (click)="triggerResource()">
       <i class="fas fa-pen text-primary"></i>
     </a>
-    <a class="window__item" matTooltip="Delete Resource">
+  </ng-container>
+
+  <ng-container *ngIf="getActiveConnectionType() === 'kubernetes'">
+    <a class="window__item" matTooltip="Create Resource" (click)="createResource()">
+      <i class="fas fa-plus text-primary"></i>
+    </a>
+    <a class="window__item" matTooltip="Edit Resource" (click)="editResource()">
+      <i class="fas fa-pen text-primary"></i>
+    </a>
+    <a class="window__item" matTooltip="Delete Resource" (click)="deleteResource()">
       <i class="fas fa-trash text-danger"></i>
     </a>
   </ng-container>

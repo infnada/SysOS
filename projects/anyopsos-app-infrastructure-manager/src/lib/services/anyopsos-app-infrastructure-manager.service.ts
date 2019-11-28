@@ -18,7 +18,7 @@ import {ConnectionLinux} from '../types/connections/connection-linux';
 import {ConnectionNetapp} from '../types/connections/connection-netapp';
 import {ConnectionSnmp} from '../types/connections/connection-snmp';
 import {ConnectionVmware} from '../types/connections/connection-vmware';
-import {ConnectionTypes} from "../types/connections/connection-types";
+import {ConnectionTypes} from '../types/connections/connection-types';
 
 @Injectable({
   providedIn: 'root'

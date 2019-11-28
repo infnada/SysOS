@@ -35,8 +35,6 @@ export class AnyOpsOSAppInfrastructureManagerTreeDataService implements OnDestro
     // Subscribe to Connections
     this.InfrastructureManager.connections.pipe(takeUntil(this.destroySubject$)).subscribe(() => {
 
-      console.log('new treedata');
-
       // Every time a connection is modified, check if new treeData has to be emitted
       if (JSON.stringify(this.dataStore.treeData) !== JSON.stringify(this.getTreeData())) {
         this.dataStore.treeData = this.getTreeData();
@@ -59,41 +57,48 @@ export class AnyOpsOSAppInfrastructureManagerTreeDataService implements OnDestro
       {
         name: 'Virtual',
         type: 'virtual',
+        uuid: 'virtual',
         info: null,
         children: []
       },
       {
         name: 'Container',
         type: 'container',
+        uuid: 'container',
         info: null,
         children: []
       },
       {
         name: 'Storage',
         type: 'storage',
+        uuid: 'storage',
         info: null,
         children: []
       },
       {
         name: 'Standalone',
         type: 'standalone',
+        uuid: 'standalone',
         info: null,
         children: [
           {
             name: 'Linux',
             type: 'linux',
+            uuid: 'linux',
             info: null,
             children: []
           },
           {
             name: 'Windows',
             type: 'windows',
+            uuid: 'windows',
             info: null,
             children: []
           },
           {
             name: 'SNMP',
             type: 'snmp',
+            uuid: 'snmp',
             info: null,
             children: []
           }
@@ -111,10 +116,11 @@ export class AnyOpsOSAppInfrastructureManagerTreeDataService implements OnDestro
   setTreeDataByType(treeData, connectionType: 'netapp' | 'vmware' | 'kubernetes', treeType: 'storage' | 'virtual' | 'container') {
     // Recursively for data
     const getChildren = (connection: ConnectionVmware | ConnectionKubernetes | ConnectionNetapp, current): void => {
+      current.uuid = current.info.uuid;
       current.children = JSON.parse(JSON.stringify(
         connection.data.Data.filter((obj: ImDataObject) => {
           return (obj.info.parent && obj.info.parent.name === current.info.obj.name && obj.info.parent.type === current.info.obj.type) || (obj.info.data.parentVApp && obj.info.data.parentVApp.name === current.info.obj.name);
-        })
+        }).sort((a, b) => a.type === 'Folder' ? -1 : 1)
       ));
 
       // Recursively get children
@@ -134,6 +140,7 @@ export class AnyOpsOSAppInfrastructureManagerTreeDataService implements OnDestro
         info: {
           uuid: conObj.uuid
         },
+        uuid: conObj.uuid,
         type: connectionType
       };
 
@@ -158,7 +165,7 @@ export class AnyOpsOSAppInfrastructureManagerTreeDataService implements OnDestro
       if (connectionType === 'kubernetes') {
         mainObj = conObj.data.Data.filter((obj: ImDataObject) => {
           return obj.info.parent === null;
-        });
+        }).sort((a, b) => a.type === 'Folder' ? -1 : 1);
 
         connectionObject.children = JSON.parse(JSON.stringify(mainObj));
         connectionObject.children.forEach((obj: ImDataObject) => {

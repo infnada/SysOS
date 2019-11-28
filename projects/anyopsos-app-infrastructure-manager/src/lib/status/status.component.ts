@@ -4,7 +4,7 @@ import {Subject} from 'rxjs';
 
 import {Application} from '@anyopsos/lib-application';
 
-import {AnyOpsOSAppInfrastructureManagerService} from '../services/anyopsos-app-infrastructure-manager.service';;
+import {AnyOpsOSAppInfrastructureManagerService} from '../services/anyopsos-app-infrastructure-manager.service';
 import {ConnectionTypes} from '../types/connections/connection-types';
 
 @Component({

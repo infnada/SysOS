@@ -18,7 +18,8 @@ router.get('/:uuid/:resourceLink(*)', (req: express.Request, res: express.Respon
   const Kubernetes = new KubernetesModule();
 
   Kubernetes.getResource(req.params.uuid, req.params.resourceLink).then((body) => {
-    return apiGlobals.responseJsonData(body);
+    console.log(body);
+    return apiGlobals.responseJsonData(JSON.parse(body));
   }).catch((e) => {
     if (e && e.code) return apiGlobals.serverError(e.code);
     if (e) return apiGlobals.serverError(e);

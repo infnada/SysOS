@@ -7,6 +7,6 @@ export interface ConnectionSnmp extends ImConnection {
   port: number;
   community: string;
   data: {
-    Data: ImDataObject[]
-  }
+    Data: ImDataObject[];
+  };
 }

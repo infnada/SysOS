@@ -86,7 +86,7 @@ export class AnyOpsOSAppBackupsManagerService {
 
     this.logger.debug('Backups Manager', 'Received event mountVolumeSnapshot -> Initializing mount of Volume', arguments);
 
-    this.Modal.openRegisteredModal('recovery-wizard', '.window--backups-manager .window__main',
+    this.Modal.openRegisteredModal('backups-manager-recovery-wizard', '.window--backups-manager .window__main',
       {
         type: 'mount_volume_snapshot',
         title: `Select required data to Mount a Volume Snapshot`,
@@ -164,7 +164,7 @@ export class AnyOpsOSAppBackupsManagerService {
 
     this.logger.debug('Backups Manager', 'Received event RestoreVolumeFiles -> Initializing restore of datastore files', arguments);
 
-    this.Modal.openRegisteredModal('recovery-wizard', '.window--backups-manager .window__main',
+    this.Modal.openRegisteredModal('backups-manager-recovery-wizard', '.window--backups-manager .window__main',
       {
         type: 'restore_volume_files',
         title: `Select required data to Restore Volume Files`,
@@ -254,7 +254,7 @@ export class AnyOpsOSAppBackupsManagerService {
 
     this.logger.debug('Backups Manager', `Received event restoreVmGuestFiles -> Initializing restore of VM guest files [${dataObj.vm.name}]`, arguments);
 
-    this.Modal.openRegisteredModal('recovery-wizard', '.window--backups-manager .window__main',
+    this.Modal.openRegisteredModal('backups-manager-recovery-wizard', '.window--backups-manager .window__main',
       {
         type: 'restore_vm_guest_files',
         title: `Select required data to Restore VM (${dataObj.vm.name}) Guest Files`,
@@ -339,7 +339,7 @@ export class AnyOpsOSAppBackupsManagerService {
 
     this.logger.debug('Backups Manager', `Received event vmInstantRecovery -> Initializing restore of VM [${dataObj.vm.name}]`, arguments);
 
-    this.Modal.openRegisteredModal('recovery-wizard', '.window--backups-manager .window__main',
+    this.Modal.openRegisteredModal('backups-manager-recovery-wizard', '.window--backups-manager .window__main',
       {
         type: 'vm_instant_recovery',
         title: `Select required data to perform an Instant VM (${dataObj.vm.name})`,
@@ -427,7 +427,7 @@ export class AnyOpsOSAppBackupsManagerService {
 
     this.logger.debug('Backups Manager', `Received event restoreVm -> Initializing restore of VM [${dataObj.vm.name}]`, arguments);
 
-    this.Modal.openRegisteredModal('recovery-wizard', '.window--backups-manager .window__main',
+    this.Modal.openRegisteredModal('backups-manager-recovery-wizard', '.window--backups-manager .window__main',
       {
         type: 'restore_vm',
         title: `Select required data to Restore VM (${dataObj.vm.name})`,
@@ -523,7 +523,7 @@ export class AnyOpsOSAppBackupsManagerService {
     });
     this.setActive(data.uuid);
 
-    this.Modal.openRegisteredModal('backup-wizard', '.window--backups-manager .window__main',
+    this.Modal.openRegisteredModal('backups-manager-backup-wizard', '.window--backups-manager .window__main',
       {
         title: 'Backup Wizard',
         backupObject: data.vm

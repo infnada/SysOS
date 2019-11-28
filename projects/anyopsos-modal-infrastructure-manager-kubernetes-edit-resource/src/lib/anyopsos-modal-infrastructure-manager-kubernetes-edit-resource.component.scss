@@ -1,0 +1,23 @@
+.equivalent-block {
+  border-radius: 2px;
+  font-size: 14px;
+  margin: 12px 0;
+  padding: 8px;
+  width: 100%;
+  place-content: center flex-start;
+  align-items: center;
+  flex-direction: row;
+  box-sizing: border-box;
+  display: flex;
+  background: #e2e2e2;
+  color: #848484;
+
+  mat-icon {
+    font-size: 24px;
+    height: 24px;
+    max-height: 24px;
+    max-width: 24px;
+    width: 24px;
+    margin-right: 8px;
+  }
+}

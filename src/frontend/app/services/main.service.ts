@@ -57,6 +57,8 @@ export class MainService {
             return Promise.all(libFolders);
           }).then(() => {
             return resolve();
+          }).catch((e: Error) => {
+            this.logger.error('anyOpsOS', 'Error while getting installed libs', null, e.message);
           });
 
         },
@@ -67,12 +69,8 @@ export class MainService {
 
   }
 
-  loadLib(lib, path): Promise<null> {
-    return new Promise((resolve) => {
-      SystemJS.import(`/api/file/${encodeURIComponent('/bin/libs/' + path + lib.filename)}`).then(() => {
-        return resolve();
-      });
-    });
+  async loadLib(lib, path): Promise<null> {
+    return await SystemJS.import(`/api/file/${encodeURIComponent('/bin/libs/' + path + lib.filename)}`);
   }
 
   init(): void {

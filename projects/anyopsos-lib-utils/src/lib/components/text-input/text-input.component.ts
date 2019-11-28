@@ -6,7 +6,7 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
   styleUrls: ['./text-input.component.scss'],
 })
 export class TextInputComponent implements OnInit {
-  @Output() textChange = new EventEmitter<string>();
+  @Output() textChange: EventEmitter<string> = new EventEmitter<string>();
   @Input() text: string;
   @Input() readOnly = false;
   @Input() mode = 'yaml';
@@ -32,7 +32,11 @@ export class TextInputComponent implements OnInit {
     }
   }
 
-  onTextChange(text: string): void {
+  onChange() {
+    this.onTextChange(this.text);
+  }
+
+  private onTextChange(text: string): void {
     this.textChange.emit(text);
   }
 

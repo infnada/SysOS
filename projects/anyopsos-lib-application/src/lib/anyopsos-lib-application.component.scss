@@ -91,7 +91,7 @@
   bottom: 0;
   z-index: 10;
 }
-.window__controls > a {
+.window__controls > span {
   display: block;
   float: left;
   height: 32px;
@@ -102,7 +102,7 @@
   cursor: default;
   color: rgba(0, 0, 0, 0.5);
 }
-.window__controls > a:hover {
+.window__controls > span:hover {
   background-color: rgba(255, 255, 255, 0.25);
 }
 .window__controls > .window__close {

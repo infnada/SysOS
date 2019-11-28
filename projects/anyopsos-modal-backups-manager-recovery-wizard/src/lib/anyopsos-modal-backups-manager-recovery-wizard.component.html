@@ -1,0 +1,162 @@
+<div class="modal-header">
+  <div class="modal-title" id="modal-title">{{title}}</div>
+  <div class="window__controls window__controls--right">
+    <span class="window__close" (click)="activeModal.close(); $event.stopPropagation();">
+      <i class="fas fa-times"></i>
+    </span>
+  </div>
+</div>
+<div class="modal-body modal-backups-manager-recovery-wizard" id="modal-body">
+  <div *ngIf="!mainVmLinkFound">
+    <p *ngIf="type === 'restore_vm_guest_files'">Can't proceed with the restore of {{data.vm.name}} Guest Files, it's data isn't in any anyOpsOS managed Storage System.</p>
+    <p *ngIf="type === 'restore_vm'">Can't proceed with the restore of {{data.vm.name}}, it's data isn't in any anyOpsOS managed Storage System.</p>
+    <p *ngIf="type === 'vm_instant_recovery'">Can't proceed with the restore of {{data.vm.name}} as InstantVM, it's data isn't in any anyOpsOS managed Storage System.</p>
+  </div>
+  <mat-horizontal-stepper linear #stepper *ngIf="volumeSnapshots">
+    <mat-step [stepControl]="firstFormGroup">
+      <form [formGroup]="firstFormGroup">
+        <ng-template matStepLabel>SnapShot</ng-template>
+        <hr class="hr-text" data-content="Select a backup Snapshot">
+        <mat-radio-group class="vertical-radio-group" aria-label="Select a snapshot" formControlName="snapshotFormControl">
+          <mat-radio-button class="vertical-radio-button" *ngFor="let snapshot of volumeSnapshots" [value]="snapshot.info.uuid" [disabled]="snapshot.info.data.disabled" (change)="checkSnapshotData($event)">{{getVolumeFromSnapshot(snapshot)}} - {{snapshot.name}}</mat-radio-button>
+        </mat-radio-group>
+        <div>
+          <button mat-button matStepperNext>Next</button>
+        </div>
+      </form>
+    </mat-step>
+    <mat-step [stepControl]="secondFormGroup" *ngIf="type === 'restore_vm' || type === 'vm_instant_recovery'">
+      <form [formGroup]="secondFormGroup">
+        <ng-template matStepLabel>Recovery mode</ng-template>
+        <hr class="hr-text" data-content="Select a restore location">
+        <mat-radio-group aria-label="Select a recovery mode" formControlName="recoveryModeFormControl">
+          <mat-radio-button value="original" disabled="type === 'vm_instant_recovery'">
+            <h5>Restore to the original location</h5>Quickly initiate restore of selected VMs to the original location, and with the original name and settings. This option minimizes the chance of user input error.<br/><i class="fas fa-exclamation text-warning"></i> This virtual machine will be powered down during the restore process.
+          </mat-radio-button>
+          <mat-radio-button value="new">
+            <h5>Restore to a new location, or with different settings</h5>Customize restored VM location, and change its settings. The wizard will automatically populate all controls with the original VM settings as the default settings.
+          </mat-radio-button>
+        </mat-radio-group>
+        <div>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button matStepperNext>Next</button>
+        </div>
+      </form>
+    </mat-step>
+    <mat-step [stepControl]="thirdFormGroup">
+      <form [formGroup]="thirdFormGroup">
+        <ng-template matStepLabel>Destination</ng-template>
+        <hr class="hr-text" data-content="Virtual Machine options">
+        <mat-form-field class="w-100">
+          <mat-label>Select a managed ESXi host</mat-label>
+          <mat-select (selectionChange)="checkESXidata()" formControlName="hostFormControl">
+            <mat-option *ngFor="let host of ESXIHosts" [value]="host">
+              {{getHostOfConnection(host)}} - {{host.name}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <ng-container *ngIf="finishLoading">
+          <p>Looking for best suitable IP to connect with <strong>{{snapshotVolume.name}}</strong> Snapshot.</p>
+
+          <p *ngIf="foundIp === false">This ESXi host has no previous mounted Datastores from <strong>{{snapshotVserver.name}}</strong>.</p>
+
+          <p *ngIf="foundIp === false && sameSubnetIp.length === 0 && !selectedIface"><span class="text-danger">Can't find any good suitable IP to connect with</span>. Please choose one manually.</p>
+
+          <ng-container *ngIf="selectedIface">
+            <p>Will use <strong>{{selectedIface.info.data.address}}</strong> over <strong>{{selectedIface.info.data['data-protocols']['data-protocol']}}</strong> to connect with <strong>{{snapshotVolume.name}}</strong> Snapshot.</p>
+            <ul *ngIf="selectedIface.info.data['data-protocols']['data-protocol'] === 'nfs' && ifaceServiceData">
+              <li>
+                Version 3 Support <i class="fas" [ngClass]="ifaceServiceData['is-nfsv3-enabled'] === true ? 'fa-check text-success' : 'fa-times text-danger'"></i><br />
+                <span *ngIf="ifaceServiceData['is-nfsv3-enabled'] === true && !checkFirewallNFS(3)" class="text-danger"><i class="fas fa-exclamation-triangle"></i> ESXi firewall rules will be permanently changed adding the selected storage IP.</span>
+              </li>
+              <li>
+                Version 4.1 Support <i class="fas" [ngClass]="ifaceServiceData['is-nfsv41-enabled'] === true ? 'fa-check text-success' : 'fa-times text-danger'"></i><br />
+                <span *ngIf="ifaceServiceData['is-nfsv41-enabled'] === true && !checkFirewallNFS(4)" class="text-danger"><i class="fas fa-exclamation-triangle"></i> ESXi firewall rules will be permanently changed adding the selected storage IP.</span>
+              </li>
+            </ul>
+          </ng-container>
+
+          <mat-slide-toggle class="mb-3" [(ngModel)]="manualIp" [ngModelOptions]="{standalone: true}" *ngIf="foundIfaces.length > 1">
+            Choose different IP
+          </mat-slide-toggle>
+
+          <mat-form-field class="w-100" *ngIf="foundIfaces.length > 0 && manualIp === true">
+            <mat-label>Select an IP to connect with Storage Volume</mat-label>
+            <mat-select (selectionChange)="checkIface()" formControlName="ifaceFormControl">
+              <mat-option *ngFor="let iface of foundIfaces" [value]="iface">
+                {{iface.info.data.address}} - {{iface.info.data['data-protocols']['data-protocol']}} - {{iface.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </ng-container>
+
+        <mat-divider></mat-divider>
+
+        <ng-container *ngIf="type === 'restore_vm_guest_files' || type === 'restore_vm' || type === 'vm_instant_recovery'">
+          <mat-form-field class="w-100">
+            <mat-label>Select a VM Folder</mat-label>
+            <mat-select formControlName="folderFormControl">
+              <mat-option *ngFor="let folder of hostFolders" [value]="folder">
+                {{folder.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-divider></mat-divider>
+
+          <mat-form-field class="w-100">
+            <mat-label>Select a Resource Pool</mat-label>
+            <mat-select formControlName="resourcePoolFormControl">
+              <mat-option *ngFor="let resourcePool of hostResourcePools" [value]="resourcePool">
+                {{resourcePool.propSet.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-divider></mat-divider>
+        </ng-container>
+
+        <ng-container *ngIf="type === 'vm_instant_recovery'">
+          <mat-form-field class="w-100">
+            <input matInput #vmName maxlength="256" placeholder="Type a VM name" formControlName="vmNameFormControl">
+            <mat-hint align="end">{{vmName.value.length}} / 256</mat-hint>
+          </mat-form-field>
+
+          <mat-divider></mat-divider>
+        </ng-container>
+
+        <mat-slide-toggle formControlName="powerVMFormControl" *ngIf="type === 'vm_instant_recovery' || type === 'restore_vm'">
+          Power ON restored VM
+        </mat-slide-toggle>
+        <div>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button matStepperNext>Next</button>
+        </div>
+      </form>
+    </mat-step>
+    <mat-step>
+      <ng-template matStepLabel>Ready to apply</ng-template>
+      <hr class="hr-text" data-content="Summary">
+      <ul *ngIf="thirdFormGroup.valid">
+        <li>VM: {{data.vm.name}} from <strong>{{selectedSnapshot.name}}</strong></li>
+        <li>Original Datastore: {{snapshotVolume.name}}</li>
+        <li *ngIf="f2.recoveryModeFormControl.value === 'new'">Host: {{f3.hostFormControl.value.host.name}}</li>
+        <li *ngIf="f2.recoveryModeFormControl.value === 'original'">Host: {{data.vm['runtime.host'].name}}</li>
+        <li>New VM name: {{f3.vmNameFormControl.value}}</li>
+        <li>Power ON VM: {{f3.powerVMFormControl.value}}</li>
+      </ul>
+      <p>
+        After you click Restore, the selected VM will be instantly recovered into your production environment. To finalize the recovery use Storage VMotion to move running VM to the production storage.<br/>
+        Alternatively, you can perform cold VM migration during your next maintenance window.
+      </p>
+      <p>
+        If you are performing manual recovery testing, remember to change VM network to non-production before powering on the VM.
+      </p>
+      <div>
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button (click)="activeModal.close()">Restore</button>
+      </div>
+    </mat-step>
+  </mat-horizontal-stepper>
+</div>

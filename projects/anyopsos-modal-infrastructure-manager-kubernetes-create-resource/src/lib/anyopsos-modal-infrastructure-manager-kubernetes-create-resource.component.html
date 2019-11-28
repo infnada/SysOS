@@ -1,0 +1,25 @@
+<div class="modal-header">
+  <div class="modal-title" id="modal-title">Edit a resource</div>
+  <div class="window__controls window__controls--right">
+    <span class="window__close" (click)="activeModal.close(); $event.stopPropagation();">
+      <i class="fas fa-times"></i>
+    </span>
+  </div>
+</div>
+<div class="modal-body" id="modal-body">
+  <mat-tab-group [@.disabled]="true">
+    <mat-tab label="Create from input">
+      <smimkcr-create-from-input [(inputData)]="inputData" (inputDataChange)="inputDataChanged($event)"></smimkcr-create-from-input>
+    </mat-tab>
+    <mat-tab label="Create from file">
+      <smimkcr-create-from-file></smimkcr-create-from-file>
+    </mat-tab>
+    <mat-tab label="Create from form">
+      <smimkcr-create-from-form></smimkcr-create-from-form>
+    </mat-tab>
+  </mat-tab-group>
+</div>
+<div class="modal-footer">
+  <button class="btn" type="button" (click)="activeModal.close()" mat-flat-button>Close</button>
+  <button class="btn" type="button" [disabled]="isCreateDisabled()" (click)="activeModal.close()" mat-flat-button color="primary">Create</button>
+</div>

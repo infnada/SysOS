@@ -11,6 +11,6 @@ export interface ConnectionKubernetes extends ImConnection {
     Base: {
       name: string;
     };
-    Data: ImDataObject[]
-  }
+    Data: ImDataObject[];
+  };
 }

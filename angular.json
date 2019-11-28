@@ -937,9 +937,9 @@
         }
       }
     },
-    "anyopsos-modal-input": {
-      "root": "projects/anyopsos-modal-input",
-      "sourceRoot": "projects/anyopsos-modal-input/src",
+    "anyopsos-modal-default-input": {
+      "root": "projects/anyopsos-modal-default-input",
+      "sourceRoot": "projects/anyopsos-modal-default-input/src",
       "projectType": "library",
       "prefix": "smin",
       "schematics": {
@@ -951,24 +951,24 @@
         "build": {
           "builder": "@angular-devkit/build-ng-packagr:build",
           "options": {
-            "tsConfig": "projects/anyopsos-modal-input/tsconfig.lib.json",
-            "project": "projects/anyopsos-modal-input/ng-package.json"
+            "tsConfig": "projects/anyopsos-modal-default-input/tsconfig.lib.json",
+            "project": "projects/anyopsos-modal-default-input/ng-package.json"
           }
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "main": "projects/anyopsos-modal-input/src/test.ts",
-            "tsConfig": "projects/anyopsos-modal-input/tsconfig.spec.json",
-            "karmaConfig": "projects/anyopsos-modal-input/karma.conf.js"
+            "main": "projects/anyopsos-modal-default-input/src/test.ts",
+            "tsConfig": "projects/anyopsos-modal-default-input/tsconfig.spec.json",
+            "karmaConfig": "projects/anyopsos-modal-default-input/karma.conf.js"
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": [
-              "projects/anyopsos-modal-input/tsconfig.lib.json",
-              "projects/anyopsos-modal-input/tsconfig.spec.json"
+              "projects/anyopsos-modal-default-input/tsconfig.lib.json",
+              "projects/anyopsos-modal-default-input/tsconfig.spec.json"
             ],
             "exclude": [
               "**/node_modules/**"
@@ -977,9 +977,9 @@
         }
       }
     },
-    "anyopsos-modal-plain": {
-      "root": "projects/anyopsos-modal-plain",
-      "sourceRoot": "projects/anyopsos-modal-plain/src",
+    "anyopsos-modal-default-plain": {
+      "root": "projects/anyopsos-modal-default-plain",
+      "sourceRoot": "projects/anyopsos-modal-default-plain/src",
       "projectType": "library",
       "prefix": "smpl",
       "schematics": {
@@ -991,24 +991,24 @@
         "build": {
           "builder": "@angular-devkit/build-ng-packagr:build",
           "options": {
-            "tsConfig": "projects/anyopsos-modal-plain/tsconfig.lib.json",
-            "project": "projects/anyopsos-modal-plain/ng-package.json"
+            "tsConfig": "projects/anyopsos-modal-default-plain/tsconfig.lib.json",
+            "project": "projects/anyopsos-modal-default-plain/ng-package.json"
           }
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "main": "projects/anyopsos-modal-plain/src/test.ts",
-            "tsConfig": "projects/anyopsos-modal-plain/tsconfig.spec.json",
-            "karmaConfig": "projects/anyopsos-modal-plain/karma.conf.js"
+            "main": "projects/anyopsos-modal-default-plain/src/test.ts",
+            "tsConfig": "projects/anyopsos-modal-default-plain/tsconfig.spec.json",
+            "karmaConfig": "projects/anyopsos-modal-default-plain/karma.conf.js"
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": [
-              "projects/anyopsos-modal-plain/tsconfig.lib.json",
-              "projects/anyopsos-modal-plain/tsconfig.spec.json"
+              "projects/anyopsos-modal-default-plain/tsconfig.lib.json",
+              "projects/anyopsos-modal-default-plain/tsconfig.spec.json"
             ],
             "exclude": [
               "**/node_modules/**"
@@ -1017,9 +1017,9 @@
         }
       }
     },
-    "anyopsos-modal-question": {
-      "root": "projects/anyopsos-modal-question",
-      "sourceRoot": "projects/anyopsos-modal-question/src",
+    "anyopsos-modal-default-question": {
+      "root": "projects/anyopsos-modal-default-question",
+      "sourceRoot": "projects/anyopsos-modal-default-question/src",
       "projectType": "library",
       "prefix": "smqu",
       "schematics": {
@@ -1031,24 +1031,24 @@
         "build": {
           "builder": "@angular-devkit/build-ng-packagr:build",
           "options": {
-            "tsConfig": "projects/anyopsos-modal-question/tsconfig.lib.json",
-            "project": "projects/anyopsos-modal-question/ng-package.json"
+            "tsConfig": "projects/anyopsos-modal-default-question/tsconfig.lib.json",
+            "project": "projects/anyopsos-modal-default-question/ng-package.json"
           }
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "main": "projects/anyopsos-modal-question/src/test.ts",
-            "tsConfig": "projects/anyopsos-modal-question/tsconfig.spec.json",
-            "karmaConfig": "projects/anyopsos-modal-question/karma.conf.js"
+            "main": "projects/anyopsos-modal-default-question/src/test.ts",
+            "tsConfig": "projects/anyopsos-modal-default-question/tsconfig.spec.json",
+            "karmaConfig": "projects/anyopsos-modal-default-question/karma.conf.js"
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": [
-              "projects/anyopsos-modal-question/tsconfig.lib.json",
-              "projects/anyopsos-modal-question/tsconfig.spec.json"
+              "projects/anyopsos-modal-default-question/tsconfig.lib.json",
+              "projects/anyopsos-modal-default-question/tsconfig.spec.json"
             ],
             "exclude": [
               "**/node_modules/**"
@@ -1057,9 +1057,9 @@
         }
       }
     },
-    "anyopsos-modal-backup-wizard": {
-      "root": "projects/anyopsos-modal-backup-wizard",
-      "sourceRoot": "projects/anyopsos-modal-backup-wizard/src",
+    "anyopsos-modal-backups-manager-backup-wizard": {
+      "root": "projects/anyopsos-modal-backups-manager-backup-wizard",
+      "sourceRoot": "projects/anyopsos-modal-backups-manager-backup-wizard/src",
       "projectType": "library",
       "prefix": "smbw",
       "schematics": {
@@ -1071,24 +1071,24 @@
         "build": {
           "builder": "@angular-devkit/build-ng-packagr:build",
           "options": {
-            "tsConfig": "projects/anyopsos-modal-backup-wizard/tsconfig.lib.json",
-            "project": "projects/anyopsos-modal-backup-wizard/ng-package.json"
+            "tsConfig": "projects/anyopsos-modal-backups-manager-backup-wizard/tsconfig.lib.json",
+            "project": "projects/anyopsos-modal-backups-manager-backup-wizard/ng-package.json"
           }
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "main": "projects/anyopsos-modal-backup-wizard/src/test.ts",
-            "tsConfig": "projects/anyopsos-modal-backup-wizard/tsconfig.spec.json",
-            "karmaConfig": "projects/anyopsos-modal-backup-wizard/karma.conf.js"
+            "main": "projects/anyopsos-modal-backups-manager-backup-wizard/src/test.ts",
+            "tsConfig": "projects/anyopsos-modal-backups-manager-backup-wizard/tsconfig.spec.json",
+            "karmaConfig": "projects/anyopsos-modal-backups-manager-backup-wizard/karma.conf.js"
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": [
-              "projects/anyopsos-modal-backup-wizard/tsconfig.lib.json",
-              "projects/anyopsos-modal-backup-wizard/tsconfig.spec.json"
+              "projects/anyopsos-modal-backups-manager-backup-wizard/tsconfig.lib.json",
+              "projects/anyopsos-modal-backups-manager-backup-wizard/tsconfig.spec.json"
             ],
             "exclude": [
               "**/node_modules/**"
@@ -1097,9 +1097,9 @@
         }
       }
     },
-    "anyopsos-modal-recovery-wizard": {
-      "root": "projects/anyopsos-modal-recovery-wizard",
-      "sourceRoot": "projects/anyopsos-modal-recovery-wizard/src",
+    "anyopsos-modal-backups-manager-recovery-wizard": {
+      "root": "projects/anyopsos-modal-backups-manager-recovery-wizard",
+      "sourceRoot": "projects/anyopsos-modal-backups-manager-recovery-wizard/src",
       "projectType": "library",
       "prefix": "smrw",
       "schematics": {
@@ -1111,24 +1111,24 @@
         "build": {
           "builder": "@angular-devkit/build-ng-packagr:build",
           "options": {
-            "tsConfig": "projects/anyopsos-modal-recovery-wizard/tsconfig.lib.json",
-            "project": "projects/anyopsos-modal-recovery-wizard/ng-package.json"
+            "tsConfig": "projects/anyopsos-modal-backups-manager-recovery-wizard/tsconfig.lib.json",
+            "project": "projects/anyopsos-modal-backups-manager-recovery-wizard/ng-package.json"
           }
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "main": "projects/anyopsos-modal-recovery-wizard/src/test.ts",
-            "tsConfig": "projects/anyopsos-modal-recovery-wizard/tsconfig.spec.json",
-            "karmaConfig": "projects/anyopsos-modal-recovery-wizard/karma.conf.js"
+            "main": "projects/anyopsos-modal-backups-manager-recovery-wizard/src/test.ts",
+            "tsConfig": "projects/anyopsos-modal-backups-manager-recovery-wizard/tsconfig.spec.json",
+            "karmaConfig": "projects/anyopsos-modal-backups-manager-recovery-wizard/karma.conf.js"
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": [
-              "projects/anyopsos-modal-recovery-wizard/tsconfig.lib.json",
-              "projects/anyopsos-modal-recovery-wizard/tsconfig.spec.json"
+              "projects/anyopsos-modal-backups-manager-recovery-wizard/tsconfig.lib.json",
+              "projects/anyopsos-modal-backups-manager-recovery-wizard/tsconfig.spec.json"
             ],
             "exclude": [
               "**/node_modules/**"
@@ -2767,33 +2767,33 @@
         }
       }
     },
-    "anyopsos-modal-infrastructure-manager-edit-resource": {
-      "root": "projects/anyopsos-modal-infrastructure-manager-edit-resource",
-      "sourceRoot": "projects/anyopsos-modal-infrastructure-manager-edit-resource/src",
+    "anyopsos-modal-infrastructure-manager-kubernetes-edit-resource": {
+      "root": "projects/anyopsos-modal-infrastructure-manager-kubernetes-edit-resource",
+      "sourceRoot": "projects/anyopsos-modal-infrastructure-manager-kubernetes-edit-resource/src",
       "projectType": "library",
-      "prefix": "smimer",
+      "prefix": "smimker",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-ng-packagr:build",
           "options": {
-            "tsConfig": "projects/anyopsos-modal-infrastructure-manager-edit-resource/tsconfig.lib.json",
-            "project": "projects/anyopsos-modal-infrastructure-manager-edit-resource/ng-package.json"
+            "tsConfig": "projects/anyopsos-modal-infrastructure-manager-kubernetes-edit-resource/tsconfig.lib.json",
+            "project": "projects/anyopsos-modal-infrastructure-manager-kubernetes-edit-resource/ng-package.json"
           }
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "main": "projects/anyopsos-modal-infrastructure-manager-edit-resource/src/test.ts",
-            "tsConfig": "projects/anyopsos-modal-infrastructure-manager-edit-resource/tsconfig.spec.json",
-            "karmaConfig": "projects/anyopsos-modal-infrastructure-manager-edit-resource/karma.conf.js"
+            "main": "projects/anyopsos-modal-infrastructure-manager-kubernetes-edit-resource/src/test.ts",
+            "tsConfig": "projects/anyopsos-modal-infrastructure-manager-kubernetes-edit-resource/tsconfig.spec.json",
+            "karmaConfig": "projects/anyopsos-modal-infrastructure-manager-kubernetes-edit-resource/karma.conf.js"
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": [
-              "projects/anyopsos-modal-infrastructure-manager-edit-resource/tsconfig.lib.json",
-              "projects/anyopsos-modal-infrastructure-manager-edit-resource/tsconfig.spec.json"
+              "projects/anyopsos-modal-infrastructure-manager-kubernetes-edit-resource/tsconfig.lib.json",
+              "projects/anyopsos-modal-infrastructure-manager-kubernetes-edit-resource/tsconfig.spec.json"
             ],
             "exclude": [
               "**/node_modules/**"
@@ -2802,33 +2802,33 @@
         }
       }
     },
-    "anyopsos-modal-infrastructure-manager-json-textarea": {
-      "root": "projects/anyopsos-modal-infrastructure-manager-json-textarea",
-      "sourceRoot": "projects/anyopsos-modal-infrastructure-manager-json-textarea/src",
+    "anyopsos-modal-default-json-textarea": {
+      "root": "projects/anyopsos-modal-default-json-textarea",
+      "sourceRoot": "projects/anyopsos-modal-default-json-textarea/src",
       "projectType": "library",
-      "prefix": "smimjt",
+      "prefix": "smjt",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-ng-packagr:build",
           "options": {
-            "tsConfig": "projects/anyopsos-modal-infrastructure-manager-json-textarea/tsconfig.lib.json",
-            "project": "projects/anyopsos-modal-infrastructure-manager-json-textarea/ng-package.json"
+            "tsConfig": "projects/anyopsos-modal-default-json-textarea/tsconfig.lib.json",
+            "project": "projects/anyopsos-modal-default-json-textarea/ng-package.json"
           }
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "main": "projects/anyopsos-modal-infrastructure-manager-json-textarea/src/test.ts",
-            "tsConfig": "projects/anyopsos-modal-infrastructure-manager-json-textarea/tsconfig.spec.json",
-            "karmaConfig": "projects/anyopsos-modal-infrastructure-manager-json-textarea/karma.conf.js"
+            "main": "projects/anyopsos-modal-default-json-textarea/src/test.ts",
+            "tsConfig": "projects/anyopsos-modal-default-json-textarea/tsconfig.spec.json",
+            "karmaConfig": "projects/anyopsos-modal-default-json-textarea/karma.conf.js"
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": [
-              "projects/anyopsos-modal-infrastructure-manager-json-textarea/tsconfig.lib.json",
-              "projects/anyopsos-modal-infrastructure-manager-json-textarea/tsconfig.spec.json"
+              "projects/anyopsos-modal-default-json-textarea/tsconfig.lib.json",
+              "projects/anyopsos-modal-default-json-textarea/tsconfig.spec.json"
             ],
             "exclude": [
               "**/node_modules/**"
@@ -2864,6 +2864,46 @@
             "tsConfig": [
               "projects/anyopsos-lib-kubernetes/tsconfig.lib.json",
               "projects/anyopsos-lib-kubernetes/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "anyopsos-modal-infrastructure-manager-kubernetes-create-resource": {
+      "root": "projects/anyopsos-modal-infrastructure-manager-kubernetes-create-resource",
+      "sourceRoot": "projects/anyopsos-modal-infrastructure-manager-kubernetes-create-resource/src",
+      "projectType": "library",
+      "prefix": "smimkcr",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/anyopsos-modal-infrastructure-manager-kubernetes-create-resource/tsconfig.lib.json",
+            "project": "projects/anyopsos-modal-infrastructure-manager-kubernetes-create-resource/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/anyopsos-modal-infrastructure-manager-kubernetes-create-resource/src/test.ts",
+            "tsConfig": "projects/anyopsos-modal-infrastructure-manager-kubernetes-create-resource/tsconfig.spec.json",
+            "karmaConfig": "projects/anyopsos-modal-infrastructure-manager-kubernetes-create-resource/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/anyopsos-modal-infrastructure-manager-kubernetes-create-resource/tsconfig.lib.json",
+              "projects/anyopsos-modal-infrastructure-manager-kubernetes-create-resource/tsconfig.spec.json"
             ],
             "exclude": [
               "**/node_modules/**"

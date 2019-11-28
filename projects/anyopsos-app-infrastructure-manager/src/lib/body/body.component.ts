@@ -27,6 +27,7 @@ import {ConnectionTypes} from '../types/connections/connection-types';
 interface InfrastructureManagerFlatNode {
   expandable: boolean;
   name: string;
+  uuid: string;
   level: number;
   type: string;
 }
@@ -50,11 +51,12 @@ export class BodyComponent implements OnInit, OnDestroy {
 
   private contextMenus: {[s: string]: ContextMenuItem[]};
 
-  treeControl = new FlatTreeControl<InfrastructureManagerFlatNode>(node => node.level, node => node.expandable);
-  private treeFlattener = new MatTreeFlattener(this.transformer, node => node.level, node => node.expandable, node => node.children);
-  dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
+  treeControl: FlatTreeControl<InfrastructureManagerFlatNode> = new FlatTreeControl(node => node.level, node => node.expandable);
+  private treeFlattener: MatTreeFlattener<ImTreeNode, InfrastructureManagerFlatNode> = new MatTreeFlattener(this.transformer, node => node.level, node => node.expandable, node => node.children);
+  dataSource: MatTreeFlatDataSource<ImTreeNode, InfrastructureManagerFlatNode> = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
 
   hasChild = (_: number, node: InfrastructureManagerFlatNode) => node.expandable;
+  treeTracker = (index, node) => node.uuid;
 
   constructor(private Utils: AnyOpsOSLibUtilsService,
               private InfrastructureManager: AnyOpsOSAppInfrastructureManagerService,
@@ -96,11 +98,27 @@ export class BodyComponent implements OnInit, OnDestroy {
         setTimeout(() => this.Utils.scrollTo('infrastructure-manager_main-body', true), 100);
       }
     });
-    this.InfrastructureManagerTreeData.treeData.pipe(takeUntil(this.destroySubject$)).subscribe(data => {
-      console.log('treedata change');
+    this.InfrastructureManagerTreeData.treeData.pipe(takeUntil(this.destroySubject$)).subscribe((data: ImTreeNode[]) => {
+
+      // Save expanded nodes
+      const expandedNodes = new Array<InfrastructureManagerFlatNode>();
+      if (this.treeControl.dataNodes) {
+        this.treeControl.dataNodes.forEach(node => {
+          if (node.expandable && this.treeControl.isExpanded(node)) {
+            expandedNodes.push(node);
+          }
+        });
+      }
 
       this.dataSource.data = data;
-      this.treeControl.expandAll();
+
+      // Set expanded nodes
+      if (expandedNodes) {
+        expandedNodes.forEach(node => {
+          this.treeControl.expand(this.treeControl.dataNodes.find(n => n.uuid === node.uuid));
+        });
+      }
+
     });
 
     // Set Context Menus
@@ -130,6 +148,7 @@ export class BodyComponent implements OnInit, OnDestroy {
       expandable: !!node.children && node.children.length > 0,
       name: node.name,
       type: node.type,
+      uuid: node.uuid,
       info: node.info,
       level
     };

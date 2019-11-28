@@ -10,7 +10,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "importHelpers": true,
-    "target": "esnext",
+    "target": "es5",
     "typeRoots": [
       "node_modules/@types"
     ],
@@ -19,6 +19,7 @@
       "dom"
     ],
     "paths": {
+      // Libraries
       "@anyopsos/lib-angular-material": [
         "projects/anyopsos-lib-angular-material/src/public-api"
       ],
@@ -30,12 +31,6 @@
       ],
       "@anyopsos/lib-logger/*": [
         "projects/anyopsos-lib-logger/*"
-      ],
-      "@anyopsos/lib-ext-mxgraph": [
-        "projects/anyopsos-lib-ext-mxgraph/src/public-api"
-      ],
-      "@anyopsos/lib-ext-mxgraph/*": [
-        "projects/anyopsos-lib-ext-mxgraph/*"
       ],
       "@anyopsos/lib-application": [
         "projects/anyopsos-lib-application/src/public-api"
@@ -133,6 +128,13 @@
       "@anyopsos/lib-utils/*": [
         "projects/anyopsos-lib-utils/*"
       ],
+      // External Libraries
+      "@anyopsos/lib-ext-mxgraph": [
+        "projects/anyopsos-lib-ext-mxgraph/src/public-api"
+      ],
+      "@anyopsos/lib-ext-mxgraph/*": [
+        "projects/anyopsos-lib-ext-mxgraph/*"
+      ],
       "@anyopsos/lib-ext-dygraphs": [
         "projects/anyopsos-lib-ext-dygraphs/src/public-api"
       ],
@@ -187,6 +189,7 @@
       "@anyopsos/lib-ext-weavescope/*": [
         "projects/anyopsos-lib-weavescope/*"
       ],
+      // Applications
       "@anyopsos/app-backups-manager": [
         "projects/anyopsos-app-backups-manager/src/public-api"
       ],
@@ -253,35 +256,42 @@
       "@anyopsos/app-wmks/*": [
         "projects/anyopsos-app-wmks/*"
       ],
-      "@anyopsos/modal-input": [
-        "projects/anyopsos-modal-input/src/public-api"
+      // Modals
+      "@anyopsos/modal-default-input": [
+        "projects/anyopsos-modal-default-input/src/public-api"
       ],
-      "@anyopsos/modal-input/*": [
-        "projects/anyopsos-modal-input/*"
+      "@anyopsos/modal-default-input/*": [
+        "projects/anyopsos-modal-default-input/*"
       ],
-      "@anyopsos/modal-plain": [
-        "projects/anyopsos-modal-plain/src/public-api"
+      "@anyopsos/modal-default-plain": [
+        "projects/anyopsos-modal-default-plain/src/public-api"
       ],
-      "@anyopsos/modal-plain/*": [
-        "projects/anyopsos-modal-plain/*"
+      "@anyopsos/modal-default-plain/*": [
+        "projects/anyopsos-modal-default-plain/*"
       ],
-      "@anyopsos/modal-question": [
-        "projects/anyopsos-modal-question/src/public-api"
+      "@anyopsos/modal-default-question": [
+        "projects/anyopsos-modal-default-question/src/public-api"
       ],
-      "@anyopsos/modal-question/*": [
-        "projects/anyopsos-modal-question/*"
+      "@anyopsos/modal-default-question/*": [
+        "projects/anyopsos-modal-default-question/*"
       ],
-      "@anyopsos/modal-backup-wizard": [
-        "projects/anyopsos-modal-backup-wizard/src/public-api"
+      "@anyopsos/modal-default-json-textarea": [
+        "projects/anyopsos-modal-default-json-textarea/src/public-api"
       ],
-      "@anyopsos/modal-backup-wizard/*": [
-        "projects/anyopsos-modal-backup-wizard/*"
+      "@anyopsos/modal-default-json-textarea/*": [
+        "projects/anyopsos-modal-default-json-textarea/*"
       ],
-      "@anyopsos/modal-recovery-wizard": [
-        "projects/anyopsos-modal-recovery-wizard/src/public-api"
+      "@anyopsos/modal-backups-manager-backup-wizard": [
+        "projects/anyopsos-modal-backups-manager-backup-wizard/src/public-api"
       ],
-      "@anyopsos/modal-recovery-wizard/*": [
-        "projects/anyopsos-modal-recovery-wizard/*"
+      "@anyopsos/modal-backups-manager-backup-wizard/*": [
+        "projects/anyopsos-modal-backups-manager-backup-wizard/*"
+      ],
+      "@anyopsos/modal-backups-manager-recovery-wizard": [
+        "projects/anyopsos-modal-backups-manager-recovery-wizard/src/public-api"
+      ],
+      "@anyopsos/modal-backups-manager-recovery-wizard/*": [
+        "projects/anyopsos-modal-backups-manager-recovery-wizard/*"
       ],
       "@anyopsos/modal-monitor-options": [
         "projects/anyopsos-modal-monitor-options/src/public-api"
@@ -451,17 +461,17 @@
       "@anyopsos/modal-infrastructure-manager-migrate-vms-another-network/*": [
         "projects/anyopsos-modal-infrastructure-manager-migrate-vms-another-network/*"
       ],
-      "@anyopsos/modal-infrastructure-manager-edit-resource": [
-        "projects/anyopsos-modal-infrastructure-manager-edit-resource/src/public-api"
+      "@anyopsos/modal-infrastructure-manager-kubernetes-create-resource": [
+        "projects/anyopsos-modal-infrastructure-manager-kubernetes-create-resource/src/public-api"
       ],
-      "@anyopsos/modal-infrastructure-manager-edit-resource/*": [
-        "projects/anyopsos-modal-infrastructure-manager-edit-resource/*"
+      "@anyopsos/modal-infrastructure-manager-kubernetes-create-resource/*": [
+        "projects/anyopsos-modal-infrastructure-manager-kubernetes-create-resource/*"
       ],
-      "@anyopsos/modal-infrastructure-manager-json-textarea": [
-        "projects/anyopsos-modal-infrastructure-manager-json-textarea/src/public-api"
+      "@anyopsos/modal-infrastructure-manager-kubernetes-edit-resource": [
+        "projects/anyopsos-modal-infrastructure-manager-kubernetes-edit-resource/src/public-api"
       ],
-      "@anyopsos/modal-infrastructure-manager-json-textarea/*": [
-        "projects/anyopsos-modal-infrastructure-manager-json-textarea/*"
+      "@anyopsos/modal-infrastructure-manager-kubernetes-edit-resource/*": [
+        "projects/anyopsos-modal-infrastructure-manager-kubernetes-edit-resource/*"
       ]
     }
   }

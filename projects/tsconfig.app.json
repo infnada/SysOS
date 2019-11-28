@@ -236,35 +236,35 @@
       "@anyopsos/app-wmks/*": [
         "dist/applications/anyopsos-app-wmks/*"
       ],
-      "@anyopsos/modal-input": [
-        "dist/anyopsos-modal-input"
+      "@anyopsos/modal-default-input": [
+        "dist/anyopsos-modal-default-input"
       ],
-      "@anyopsos/modal-input/*": [
-        "dist/anyopsos-modal-input/*"
+      "@anyopsos/modal-default-input/*": [
+        "dist/anyopsos-modal-default-input/*"
       ],
-      "@anyopsos/modal-plain": [
-        "dist/anyopsos-modal-plain"
+      "@anyopsos/modal-default-plain": [
+        "dist/anyopsos-modal-default-plain"
       ],
-      "@anyopsos/modal-plain/*": [
-        "dist/anyopsos-modal-plain/*"
+      "@anyopsos/modal-default-plain/*": [
+        "dist/anyopsos-modal-default-plain/*"
       ],
-      "@anyopsos/modal-question": [
-        "dist/anyopsos-modal-question"
+      "@anyopsos/modal-default-question": [
+        "dist/anyopsos-modal-default-question"
       ],
-      "@anyopsos/modal-question/*": [
-        "dist/anyopsos-modal-question/*"
+      "@anyopsos/modal-default-question/*": [
+        "dist/anyopsos-modal-default-question/*"
       ],
-      "@anyopsos/modal-backup-wizard": [
-        "dist/anyopsos-modal-backup-wizard"
+      "@anyopsos/modal-backups-manager-backup-wizard": [
+        "dist/anyopsos-modal-backups-manager-backup-wizard"
       ],
-      "@anyopsos/modal-backup-wizard/*": [
-        "dist/anyopsos-modal-backup-wizard/*"
+      "@anyopsos/modal-backups-manager-backup-wizard/*": [
+        "dist/anyopsos-modal-backups-manager-backup-wizard/*"
       ],
-      "@anyopsos/modal-recovery-wizard": [
-        "dist/anyopsos-modal-recovery-wizard"
+      "@anyopsos/modal-backups-manager-recovery-wizard": [
+        "dist/anyopsos-modal-backups-manager-recovery-wizard"
       ],
-      "@anyopsos/modal-recovery-wizard/*": [
-        "dist/anyopsos-modal-recovery-wizard/*"
+      "@anyopsos/modal-backups-manager-recovery-wizard/*": [
+        "dist/anyopsos-modal-backups-manager-recovery-wizard/*"
       ],
       "@anyopsos/modal-monitor-options": [
         "dist/anyopsos-modal-monitor-options"
@@ -302,16 +302,22 @@
       "@anyopsos/modal-monitor-help/*": [
         "dist/anyopsos-modal-monitor-help/*"
       ],
-      "@anyopsos/modal-infrastructure-manager-edit-resource": [
-        "dist/anyopsos-modal-infrastructure-manager-edit-resource"
+      "@anyopsos/modal-infrastructure-manager-kubernetes-edit-resource": [
+        "dist/anyopsos-modal-infrastructure-manager-kubernetes-edit-resource"
       ],
-      "@anyopsos/modal-infrastructure-manager-edit-resource/*": [
-        "dist/anyopsos-modal-infrastructure-manager-edit-resource/*"
+      "@anyopsos/modal-infrastructure-manager-kubernetes-edit-resource/*": [
+        "dist/anyopsos-modal-infrastructure-manager-kubernetes-edit-resource/*"
       ],
-      "@anyopsos/modal-infrastructure-manager-json-textarea": [
+      "@anyopsos/modal-infrastructure-manager-kubernetes-create-resource": [
+        "dist/anyopsos-modal-infrastructure-manager-kubernetes-create-resource"
+      ],
+      "@anyopsos/modal-infrastructure-manager-kubernetes-create-resource/*": [
+        "dist/anyopsos-modal-infrastructure-manager-kubernetes-create-resource/*"
+      ],
+      "@anyopsos/modal-default-json-textarea": [
         "dist/anyopsos-modal-infrastructure-manager-new-datacenter"
       ],
-      "@anyopsos/modal-infrastructure-manager-json-textarea/*": [
+      "@anyopsos/modal-default-json-textarea/*": [
         "dist/anyopsos-modal-infrastructure-manager-new-datacenter/*"
       ],
       "@anyopsos/modal-infrastructure-manager-new-datacenter": [

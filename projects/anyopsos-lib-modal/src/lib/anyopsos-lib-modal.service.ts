@@ -52,7 +52,9 @@ export class AnyOpsOSLibModalService {
   }
 
   loadModal(modal: { filename: string }) {
-    const module = modal.filename.replace('anyopsos-modal-', '').replace('.umd.js', '');
+    const loggerArgs = arguments;
+
+    const module = modal.filename.replace(/^anyopsos-modal-(default-)?/, '').replace('.umd.js', '');
     let moduleCamel = modal.filename
       .toLowerCase()
       .replace('.umd.js', '')
@@ -65,12 +67,13 @@ export class AnyOpsOSLibModalService {
     SystemJS.import(`/api/file/${encodeURIComponent('/bin/modals/' + modal.filename)}`).then((moduleToCompile) => {
 
       // compile module
-      this.compiler.compileModuleAsync(moduleToCompile[moduleCamel.replace('Anyopsos', 'AnyOpsOS') + 'Module'])
-      .then((modFac: NgModuleFactory<any>) => {
+      return this.compiler.compileModuleAsync(moduleToCompile[moduleCamel.replace('Anyopsos', 'AnyOpsOS') + 'Module']);
 
-        // need to instantiate the Module so we can use it as the provider for the new component
-        return this.compiler.compileModuleAndAllComponentsAsync<any>(modFac.moduleType).then(
-          (factory: ModuleWithComponentFactories<any>) => {
+    }).then((modFac: NgModuleFactory<any>) => {
+
+      // need to instantiate the Module so we can use it as the provider for the new component
+      return this.compiler.compileModuleAndAllComponentsAsync<any>(modFac.moduleType).then(
+        (factory: ModuleWithComponentFactories<any>) => {
 
           const modRef = modFac.create(this.injector);
 
@@ -80,8 +83,8 @@ export class AnyOpsOSLibModalService {
 
         });
 
-      });
-
+    }).catch((e: Error) => {
+      this.logger.error('Library Modal', 'loadModal', loggerArgs, e.message);
     });
 
   }
