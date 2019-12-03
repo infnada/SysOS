@@ -3,7 +3,7 @@ import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
 // Required to be available inside generateHeadCharts
-let NETDATA = null;
+const NETDATA = null;
 
 import {Application} from '@anyopsos/lib-application';
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';

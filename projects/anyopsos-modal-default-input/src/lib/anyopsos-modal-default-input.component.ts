@@ -11,7 +11,10 @@ export class AnyOpsOSModalDefaultInputComponent {
   @Input() title: string;
   @Input() text: string;
   @Input() buttonText: string;
+  @Input() inputPlaceholder: string;
   @Input() inputValue: string;
+  @Input() inputType: string = 'text';
+  @Input() inputMaxLength: number = 255;
 
   constructor(public activeModal: NgbActiveModal) {
   }

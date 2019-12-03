@@ -26,7 +26,9 @@ export class AnyOpsOSAppInfrastructureVmwareBackupService {
     this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
       {
         title: 'Restore guest files',
-        text: `Do you want to perform a VM Guest Files recovery of ${obj.name}?`
+        text: `Do you want to perform a VM Guest Files recovery of ${obj.name}?`,
+        yes: 'Restore',
+        no: 'Cancel'
       }
     ).then((modalInstance) => {
       modalInstance.result.then((result: boolean) => {
@@ -54,7 +56,9 @@ export class AnyOpsOSAppInfrastructureVmwareBackupService {
     this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
       {
         title: 'Instant VM recovery',
-        text: `Do you want to perform an Instant VM recovery of ${obj.name}?`
+        text: `Do you want to perform an Instant VM recovery of ${obj.name}?`,
+        yes: 'Restore',
+        no: 'Cancel'
       }
     ).then((modalInstance) => {
       modalInstance.result.then((result: boolean) => {
@@ -81,7 +85,9 @@ export class AnyOpsOSAppInfrastructureVmwareBackupService {
     this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
       {
         title: 'Restore entire VM',
-        text: `Do you want to perform a entire VM restore of ${obj.name}?`
+        text: `Do you want to perform a entire VM restore of ${obj.name}?`,
+        yes: 'Restore',
+        no: 'Cancel'
       }
     ).then((modalInstance) => {
       modalInstance.result.then((result: boolean) => {

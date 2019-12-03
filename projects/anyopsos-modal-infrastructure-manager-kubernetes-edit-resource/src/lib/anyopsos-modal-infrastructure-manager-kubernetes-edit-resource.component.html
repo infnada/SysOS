@@ -14,13 +14,7 @@
 
   <slu-text-input [text]="text" [readOnly]="false" [mode]="getSelectedMode()" *ngIf="text"></slu-text-input>
 
-  <div class="equivalent-block">
-    <mat-icon>info</mat-icon>
-    <div>
-      <span>This action is equivalent to: </span>
-      <code>kubectl apply -f &lt;spec.{{selectedMode}}&gt;</code>
-    </div>
-  </div>
+  <slu-notice-box [icon]="'info'" [content]="noticeContent()"></slu-notice-box>
 </div>
 <div class="modal-footer">
   <button class="btn" type="button" (click)="activeModal.close()" mat-flat-button>Close</button>

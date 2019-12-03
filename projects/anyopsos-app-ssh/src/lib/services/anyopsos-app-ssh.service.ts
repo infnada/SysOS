@@ -265,7 +265,13 @@ export class AnyOpsOSAppSshService {
     this.Modal.openRegisteredModal('question', '.window--ssh .window__main',
       {
         title: 'Delete connection ' + this.getConnectionByUuid(uuid).description,
-        text: 'Remove the selected connection from the inventory?'
+        text: 'Remove the selected connection from the inventory?',
+        yes: 'Delete',
+        yesClass: 'warn',
+        no: 'Cancel',
+        boxContent: 'This action is permanent.',
+        boxClass: 'text-danger',
+        boxIcon: 'warning'
       }
     ).then((modalInstance) => {
       modalInstance.result.then((result: boolean) => {
@@ -308,7 +314,9 @@ export class AnyOpsOSAppSshService {
     this.Modal.openRegisteredModal('question', '.window--ssh .window__main',
       {
         title: 'Edit connection ' + this.getConnectionByUuid(uuid).description,
-        text: 'Your connection will be disconnected before editing it. Continue?'
+        text: 'Your connection will be disconnected before editing it. Continue?',
+        yes: 'Continue',
+        no: 'Cancel'
       }
     ).then((modalInstance) => {
       modalInstance.result.then((result: boolean) => {

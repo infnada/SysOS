@@ -339,7 +339,7 @@ export class AnyOpsOSAppInfrastructureNetappService {
     const loggerArgs = arguments;
 
     const connection: ConnectionNetapp = this.InfrastructureManager.getConnectionByUuid(volume.info.mainUuid) as ConnectionNetapp;
-    const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(connection.uuid, 'vserver', volume.info.parent.name);
+    const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(connection.uuid, 'vserver', volume.info.parent);
 
     // Deleting or creating a Volume Snapshot will launch this function, and Modal will be already opened
     if (this.Modal.isModalOpened('.window--infrastructure-manager .window__main')) {
@@ -376,8 +376,8 @@ export class AnyOpsOSAppInfrastructureNetappService {
     snapshot.info.data.VMs = [];
 
     const connection: ConnectionNetapp = this.InfrastructureManager.getConnectionByUuid(snapshot.info.mainUuid) as ConnectionNetapp;
-    const volume: ImDataObject & { info: { data: NetAppVolume } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(connection.uuid, 'volume', snapshot.info.parent.name);
-    const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(connection.uuid, 'vserver', volume.info.parent.name);
+    const volume: ImDataObject & { info: { data: NetAppVolume } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(connection.uuid, 'volume', snapshot.info.parent);
+    const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(connection.uuid, 'vserver', volume.info.parent);
     const linkedDatastores: (ImDataObject & { info: { data: VMWareDatastore } })[] = this.InfrastructureManagerNodeLink.checkStorageVolumeLinkWithManagedVMWareDatastore(volume);
 
     this.Modal.openLittleModal('PLEASE WAIT', 'Getting Snapshot data...', '.window--infrastructure-manager .window__main', 'plain').then(() => {

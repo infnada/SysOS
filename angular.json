@@ -2911,6 +2911,146 @@
           }
         }
       }
+    },
+    "anyopsos-modal-infrastructure-manager-kubernetes-logs": {
+      "root": "projects/anyopsos-modal-infrastructure-manager-kubernetes-logs",
+      "sourceRoot": "projects/anyopsos-modal-infrastructure-manager-kubernetes-logs/src",
+      "projectType": "library",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/anyopsos-modal-infrastructure-manager-kubernetes-logs/tsconfig.lib.json",
+            "project": "projects/anyopsos-modal-infrastructure-manager-kubernetes-logs/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/anyopsos-modal-infrastructure-manager-kubernetes-logs/src/test.ts",
+            "tsConfig": "projects/anyopsos-modal-infrastructure-manager-kubernetes-logs/tsconfig.spec.json",
+            "karmaConfig": "projects/anyopsos-modal-infrastructure-manager-kubernetes-logs/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/anyopsos-modal-infrastructure-manager-kubernetes-logs/tsconfig.lib.json",
+              "projects/anyopsos-modal-infrastructure-manager-kubernetes-logs/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "anyopsos-modal-infrastructure-manager-kubernetes-shell": {
+      "root": "projects/anyopsos-modal-infrastructure-manager-kubernetes-shell",
+      "sourceRoot": "projects/anyopsos-modal-infrastructure-manager-kubernetes-shell/src",
+      "projectType": "library",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/anyopsos-modal-infrastructure-manager-kubernetes-shell/tsconfig.lib.json",
+            "project": "projects/anyopsos-modal-infrastructure-manager-kubernetes-shell/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/anyopsos-modal-infrastructure-manager-kubernetes-shell/src/test.ts",
+            "tsConfig": "projects/anyopsos-modal-infrastructure-manager-kubernetes-shell/tsconfig.spec.json",
+            "karmaConfig": "projects/anyopsos-modal-infrastructure-manager-kubernetes-shell/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/anyopsos-modal-infrastructure-manager-kubernetes-shell/tsconfig.lib.json",
+              "projects/anyopsos-modal-infrastructure-manager-kubernetes-shell/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "anyopsos-lib-terminal": {
+      "root": "projects/anyopsos-lib-terminal",
+      "sourceRoot": "projects/anyopsos-lib-terminal/src",
+      "projectType": "library",
+      "prefix": "slterm",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/anyopsos-lib-terminal/tsconfig.lib.json",
+            "project": "projects/anyopsos-lib-terminal/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/anyopsos-lib-terminal/src/test.ts",
+            "tsConfig": "projects/anyopsos-lib-terminal/tsconfig.spec.json",
+            "karmaConfig": "projects/anyopsos-lib-terminal/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/anyopsos-lib-terminal/tsconfig.lib.json",
+              "projects/anyopsos-lib-terminal/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "anyopsos-modal-infrastructure-manager-kubernetes-scale-resource": {
+      "root": "projects/anyopsos-modal-infrastructure-manager-kubernetes-scale-resource",
+      "sourceRoot": "projects/anyopsos-modal-infrastructure-manager-kubernetes-scale-resource/src",
+      "projectType": "library",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/anyopsos-modal-infrastructure-manager-kubernetes-scale-resource/tsconfig.lib.json",
+            "project": "projects/anyopsos-modal-infrastructure-manager-kubernetes-scale-resource/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/anyopsos-modal-infrastructure-manager-kubernetes-scale-resource/src/test.ts",
+            "tsConfig": "projects/anyopsos-modal-infrastructure-manager-kubernetes-scale-resource/tsconfig.spec.json",
+            "karmaConfig": "projects/anyopsos-modal-infrastructure-manager-kubernetes-scale-resource/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/anyopsos-modal-infrastructure-manager-kubernetes-scale-resource/tsconfig.lib.json",
+              "projects/anyopsos-modal-infrastructure-manager-kubernetes-scale-resource/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }
   },
   "defaultProject": "anyOpsOS",

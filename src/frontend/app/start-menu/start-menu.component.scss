@@ -55,6 +55,8 @@
       }
 
       .user-info__name {
+        cursor: pointer;
+        padding-left: 5px;
         font-size: 20px;
         font-weight: 200;
         align-self: center;
@@ -68,7 +70,7 @@
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
       transition: all 250ms;
     }
-    .menu > a {
+    .menu > span {
       display: block;
       width: 200px;
       padding: 10px 15px;
@@ -76,11 +78,12 @@
       color: #455A64;
       transition: all 100ms;
     }
-    .menu > a:hover {
+    .menu > span:hover {
       background-color: #ECEFF1;
     }
 
     .user-info__power {
+      cursor: pointer;
       margin-left: auto;
       width: 60px;
       height: 60px;
@@ -142,6 +145,7 @@
     }
 
     .start-screen__tile {
+      cursor: pointer;
       position: relative;
       display: block;
       float: left;

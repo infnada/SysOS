@@ -1,11 +1,11 @@
 import * as path from 'path';
 import readConfig from 'read-config';
-import ssh2 from 'ssh2';
+import {Client} from 'ssh2';
 
 import {SshServer} from '../../../interfaces/ssh-server';
 
 const config =  readConfig(path.join(__dirname, '../../../filesystem/etc/expressjs/config.json'));
-const sshSessions: { ssh: []; sftp: []; smanager: []; } = {
+const sshSessions: { ssh: Client[]; sftp: []; smanager: []; } = {
   ssh: [],
   sftp: [],
   smanager: []
@@ -13,15 +13,14 @@ const sshSessions: { ssh: []; sftp: []; smanager: []; } = {
 
 export class SshSessionsModule {
 
-  private SSH = ssh2.Client;
   private algorithms = config.algorithms;
 
   constructor() {
 
   }
 
-  async createSession(type: string, uuid: string, mainServer: SshServer, hopServer: SshServer): ssh2.Client {
-    sshSessions[type][uuid] = new this.SSH();
+  async createSession(type: string, uuid: string, mainServer: SshServer, hopServer: SshServer): Promise<Client & { sftpSession: any }> {
+    sshSessions[type][uuid] = new Client();
 
     // Hop server connection
     if (hopServer) {
@@ -79,7 +78,7 @@ export class SshSessionsModule {
     return sshSessions;
   }
 
-  getSession(type: string, uuid: string): ssh2.Client {
+  getSession(type: string, uuid: string): Client & { sftpSession: any } {
     return sshSessions[type][uuid];
   }
 

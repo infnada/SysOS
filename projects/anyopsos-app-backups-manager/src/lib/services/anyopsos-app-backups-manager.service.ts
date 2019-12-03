@@ -108,12 +108,12 @@ export class AnyOpsOSAppBackupsManagerService {
         const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
           storage.uuid,
           'vserver',
-          selectedData.selectedSnapshot.info.parent.name
+          selectedData.selectedSnapshot.info.parent
         );
         const volume: ImDataObject & { info: { data: NetAppVolume } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
           storage.uuid,
           'volume',
-          selectedData.selectedSnapshot.info.parent.name
+          selectedData.selectedSnapshot.info.parent
         );
 
         const data: MountVolumeSnapshot = {
@@ -186,12 +186,12 @@ export class AnyOpsOSAppBackupsManagerService {
         const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
           storage.uuid,
           'vserver',
-          selectedData.selectedSnapshot.info.parent.name
+          selectedData.selectedSnapshot.info.parent
         );
         const volume: ImDataObject & { info: { data: NetAppVolume } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
           storage.uuid,
           'volume',
-          selectedData.selectedSnapshot.info.parent.name
+          selectedData.selectedSnapshot.info.parent
         );
 
         const data: RestoreVolumeFiles = {
@@ -278,12 +278,12 @@ export class AnyOpsOSAppBackupsManagerService {
         const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
           storage.uuid,
           'vserver',
-          selectedData.selectedSnapshot.info.parent.name
+          selectedData.selectedSnapshot.info.parent
         );
         const volume: ImDataObject & { info: { data: NetAppVolume } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
           storage.uuid,
           'volume',
-          selectedData.selectedSnapshot.info.parent.name
+          selectedData.selectedSnapshot.info.parent
         );
 
         // TODO: folder.folder & resource_pool.resource_pool are required to publish the VM
@@ -363,12 +363,12 @@ export class AnyOpsOSAppBackupsManagerService {
         const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
           storage.uuid,
           'vserver',
-          selectedData.selectedSnapshot.info.parent.name
+          selectedData.selectedSnapshot.info.parent
         );
         const volume: ImDataObject & { info: { data: NetAppVolume } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
           storage.uuid,
           'volume',
-          selectedData.selectedSnapshot.info.parent.name
+          selectedData.selectedSnapshot.info.parent
         );
 
         const data: VmInstantRecovery = {
@@ -449,12 +449,12 @@ export class AnyOpsOSAppBackupsManagerService {
         const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
           storage.uuid,
           'vserver',
-          selectedData.selectedSnapshot.info.parent.name
+          selectedData.selectedSnapshot.info.parent
         );
         const volume: ImDataObject & { info: { data: NetAppVolume } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
           storage.uuid,
           'volume',
-          selectedData.selectedSnapshot.info.parent.name
+          selectedData.selectedSnapshot.info.parent
         );
 
         const data: RestoreVm = {

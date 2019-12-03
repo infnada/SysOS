@@ -441,7 +441,13 @@ export class AnyOpsOSAppInfrastructureManagerService {
     this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
       {
         title: `Delete connection ${this.getConnectionByUuid(connectionUuid).description}`,
-        text: 'Remove the selected connection from the inventory?'
+        text: 'Remove the selected connection from the inventory?',
+        yes: 'Delete',
+        yesClass: 'warn',
+        no: 'Cancel',
+        boxContent: 'This action is permanent.',
+        boxClass: 'text-danger',
+        boxIcon: 'warning'
       }
     ).then((modalInstance) => {
       modalInstance.result.then((result: boolean) => {
@@ -485,7 +491,9 @@ export class AnyOpsOSAppInfrastructureManagerService {
     this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
       {
         title: `Edit connection ${this.getConnectionByUuid(connectionUuid).description}`,
-        text: 'Your connection will be disconnected before editing it. Continue?'
+        text: 'Your connection will be disconnected before editing it. Continue?',
+        yes: 'Continue',
+        no: 'Cancel'
       }
     ).then((modalInstance) => {
       modalInstance.result.then((result: boolean) => {

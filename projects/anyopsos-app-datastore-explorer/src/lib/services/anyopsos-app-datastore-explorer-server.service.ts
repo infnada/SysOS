@@ -83,7 +83,7 @@ export class AnyOpsOSAppDatastoreExplorerServerService {
 
       if (connection.type === 'netapp') {
         const volume: ImDataObject & { info: { data: NetAppVolume } } = connection.data.obj;
-        const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(connectionUuid, 'vserver', volume.info.parent.name);
+        const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(connectionUuid, 'vserver', volume.info.parent);
 
         return this.NetApp.getVolumeFiles(
           connection.credential,

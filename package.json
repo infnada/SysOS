@@ -105,6 +105,7 @@
     "@types/node-fetch": "^2.3.7",
     "@types/request": "^2.48.3",
     "@types/socket.io": "^2.1.2",
+    "@types/ssh2": "^0.5.39",
     "@types/xml2js": "^0.4.4",
     "angular-file": "^1.2.2",
     "angular-resizable-element": "^3.2.4",

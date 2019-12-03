@@ -10,7 +10,7 @@ export class KubernetesSessionsModule {
 
   private CredentialsModule: CredentialsModule = new CredentialsModule();
 
-  constructor(private socket?: any) {
+  constructor(private socket: any) {
 
   }
 
@@ -55,7 +55,7 @@ export class KubernetesSessionsModule {
     return kubernetesSessions;
   }
 
-  getSession(uuid: string): KubeConfig {
+  async getSession(uuid: string): Promise<KubeConfig> {
     return kubernetesSessions[uuid];
   }
 

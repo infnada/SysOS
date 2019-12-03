@@ -7,9 +7,11 @@
   </div>
 </div>
 <div class="modal-body" id="modal-body">
-  {{text}}
+  <span [innerHTML]="text"></span>
+
+  <slu-notice-box [icon]="boxIcon" [content]="boxContent" [class]="boxClass" *ngIf="boxContent"></slu-notice-box>
 </div>
 <div class="modal-footer">
-  <button class="btn" type="button" (click)="activeModal.close()" mat-flat-button color="primary">No</button>
-  <button class="btn" type="button" (click)="activeModal.close(true)" mat-flat-button>Yes</button>
+  <button class="btn" type="button" (click)="activeModal.close()" mat-flat-button>{{no}}</button>
+  <button class="btn" type="button" (click)="activeModal.close(true)" mat-flat-button color="{{yesClass}}">{{yes}}</button>
 </div>

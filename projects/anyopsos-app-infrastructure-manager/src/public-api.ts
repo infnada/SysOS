@@ -6,6 +6,7 @@ export * from './lib/types/connections/im-connection';
 export * from './lib/types/connections/connection-vmware';
 export * from './lib/types/connections/connection-netapp';
 export * from './lib/types/im-data-object';
+export * from './lib/types/kubernetes-pod';
 export * from './lib/types/netapp-iface';
 export * from './lib/types/netapp-snapshot';
 export * from './lib/types/netapp-volume';

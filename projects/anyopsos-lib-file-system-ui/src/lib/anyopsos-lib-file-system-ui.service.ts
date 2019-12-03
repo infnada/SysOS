@@ -88,8 +88,8 @@ export class AnyOpsOSLibFileSystemUiService {
     this.Modal.openRegisteredModal('input', selector,
       {
         title: 'Create new folder',
-        text: 'Folder name',
         buttonText: 'Create',
+        inputPlaceholder: 'Folder name',
         inputValue: 'NewFolder'
       }
     ).then((modalInstance) => {
@@ -128,8 +128,8 @@ export class AnyOpsOSLibFileSystemUiService {
     this.Modal.openRegisteredModal('input', selector,
       {
         title: 'Rename file',
-        text: 'File name',
         buttonText: 'Rename',
+        inputPlaceholder: 'File name',
         inputValue: file.filename
       }
     ).then((modalInstance) => {
@@ -173,7 +173,13 @@ export class AnyOpsOSLibFileSystemUiService {
           type === null ? 'anyOpsOS' :
           type === 'linux' ? `${data.connection.host} Server` :
           (data.typeText ? data.typeText : type)
-        }?`
+        }?`,
+        yes: 'Delete',
+        yesClass: 'warn',
+        no: 'Cancel',
+        boxContent: 'This action is permanent.',
+        boxClass: 'text-danger',
+        boxIcon: 'warning'
       }
     ).then((modalInstance) => {
       modalInstance.result.then((result: boolean) => {
@@ -212,8 +218,8 @@ export class AnyOpsOSLibFileSystemUiService {
     this.Modal.openRegisteredModal('input', selector,
       {
         title: 'Download file from URL',
-        text: 'File URL',
         buttonText: 'Download',
+        inputPlaceholder: 'File URL',
         inputValue: ''
       }
     ).then((modalInstance) => {

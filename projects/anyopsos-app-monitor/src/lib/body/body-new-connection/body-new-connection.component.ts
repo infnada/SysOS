@@ -14,7 +14,7 @@ import {ImDataObject} from '@anyopsos/app-infrastructure-manager';
 import {AnyOpsOSAppMonitorService} from '../../services/anyopsos-app-monitor.service';
 import {Netdata} from '../../types/netdata';
 
-interface linkTo {
+interface LinkTo {
   type: string;
   nodes: ImDataObject[];
 }
@@ -43,9 +43,9 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
   submitted: boolean = false;
   newConnectionType: string = null;
 
-  linkGroups: linkTo[];
+  linkGroups: LinkTo[];
 
-  linkToOptions: Observable<linkTo[]>;
+  linkToOptions: Observable<LinkTo[]>;
 
   constructor(private formBuilder: FormBuilder,
               private Applications: AnyOpsOSLibApplicationService,
@@ -115,7 +115,7 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
     this.destroySubject$.next();
   }
 
-  private _filterGroup(value: string): linkTo[] {
+  private _filterGroup(value: string): LinkTo[] {
     if (value) {
       return this.linkGroups
         .map(group => ({type: group.type, nodes: nodesFilter(group.nodes, value)}))

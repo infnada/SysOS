@@ -118,7 +118,7 @@ export class AnyOpsOSModalBackupsManagerRecoveryWizardComponent implements OnIni
   }
 
   getVolumeFromSnapshot(snapshot: ImDataObject & { info: { data: NetAppSnapshot } }): string {
-    return this.InfrastructureManagerObjectHelper.getParentObjectByType(snapshot.info.mainUuid, 'volume', snapshot.info.parent.name).name;
+    return this.InfrastructureManagerObjectHelper.getParentObjectByType(snapshot.info.mainUuid, 'volume', snapshot.info.parent).name;
   }
 
   ngOnInit(): void {
@@ -148,12 +148,12 @@ export class AnyOpsOSModalBackupsManagerRecoveryWizardComponent implements OnIni
        */
       // If Volume already provided (means no initial Snapshot is provided)
       if (this.data.volume) {
-        this.volumeSnapshots = this.InfrastructureManagerObjectHelper.getChildObjectsByType(this.data.volume.info.mainUuid, 'snapshot', this.data.volume.info.obj.name);
+        this.volumeSnapshots = this.InfrastructureManagerObjectHelper.getChildObjectsByType(this.data.volume.info.mainUuid, 'snapshot', this.data.volume.info.obj);
 
       // If we have a snapshot, get all snapshots from it's Volume. If a VM is provided, some checks are required
       } else if (this.data.snapshot && !this.data.vm) {
-        const volume = this.InfrastructureManagerObjectHelper.getParentObjectByType(this.data.snapshot.info.mainUuid, 'volume', this.data.snapshot.info.parent.name);
-        this.volumeSnapshots = this.InfrastructureManagerObjectHelper.getChildObjectsByType(volume.info.mainUuid, 'snapshot', volume.info.obj.name);
+        const volume = this.InfrastructureManagerObjectHelper.getParentObjectByType(this.data.snapshot.info.mainUuid, 'volume', this.data.snapshot.info.parent);
+        this.volumeSnapshots = this.InfrastructureManagerObjectHelper.getChildObjectsByType(volume.info.mainUuid, 'snapshot', volume.info.obj);
 
       // A VM is provided
       } else {
@@ -188,11 +188,11 @@ export class AnyOpsOSModalBackupsManagerRecoveryWizardComponent implements OnIni
             // True work
             if (fullDatastoreObj.name === mainDatastoreName) {
 
-              const linkVserver = this.InfrastructureManagerObjectHelper.getParentObjectByType(linkVolume.info.mainUuid, 'vserver', linkVolume.info.parent.name);
+              const linkVserver = this.InfrastructureManagerObjectHelper.getParentObjectByType(linkVolume.info.mainUuid, 'vserver', linkVolume.info.parent);
               const linkStorage = this.InfrastructureManager.getConnectionByUuid(linkVolume.info.mainUuid);
 
               this.volumeSnapshots = JSON.parse(JSON.stringify(
-                this.InfrastructureManagerObjectHelper.getChildObjectsByType(linkStorage.uuid, 'snapshot', linkVolume.info.obj.name)
+                this.InfrastructureManagerObjectHelper.getChildObjectsByType(linkStorage.uuid, 'snapshot', linkVolume.info.obj)
               ));
 
               this.logger.debug('Recovery Wizard', 'Check VM from storage snapshot');
@@ -243,8 +243,8 @@ export class AnyOpsOSModalBackupsManagerRecoveryWizardComponent implements OnIni
     const snapshotMainUuid = this.InfrastructureManagerObjectHelper.extractMainUuidFromObjectUuid($event.value);
     this.selectedSnapshot = this.InfrastructureManagerObjectHelper.getObjectByUuid(snapshotMainUuid, $event.value);
 
-    this.snapshotVolume = this.InfrastructureManagerObjectHelper.getParentObjectByType(this.selectedSnapshot.info.mainUuid, 'volume', this.selectedSnapshot.info.parent.name);
-    this.snapshotVserver = this.InfrastructureManagerObjectHelper.getParentObjectByType(this.selectedSnapshot.info.mainUuid, 'vserver', this.selectedSnapshot.info.parent.name);
+    this.snapshotVolume = this.InfrastructureManagerObjectHelper.getParentObjectByType(this.selectedSnapshot.info.mainUuid, 'volume', this.selectedSnapshot.info.parent);
+    this.snapshotVserver = this.InfrastructureManagerObjectHelper.getParentObjectByType(this.selectedSnapshot.info.mainUuid, 'vserver', this.selectedSnapshot.info.parent);
     this.snapshotStorage = this.InfrastructureManager.getConnectionByUuid(this.selectedSnapshot.info.mainUuid);
   }
 

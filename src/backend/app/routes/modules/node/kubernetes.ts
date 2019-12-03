@@ -1,28 +1,34 @@
+import {KubeConfig} from '@kubernetes/client-node';
 import {get} from 'request';
+import * as express from 'express';
 
+import {Io} from '../../../app';
 import {KubernetesSessionsModule} from '../../../socket/modules/kubernetes/kubernetes-sessions';
 
 export class KubernetesModule {
 
-  private KubernetesSessionsModule: KubernetesSessionsModule = new KubernetesSessionsModule();
+  private socketId = this.req.session.socketId;
+  private socket = Io.clients().sockets[this.socketId];
+  private KubernetesSessionsModule: KubernetesSessionsModule = new KubernetesSessionsModule(this.socket);
 
-  constructor() {
-
+  constructor(private req: express.Request) {
   }
 
-  getResource(uuid, resourceUrl): Promise<any> {
-    const kc = this.KubernetesSessionsModule.getSession(uuid);
-    const opts = {
-      url: kc.getCurrentCluster().server + resourceUrl
-    };
+  getResource(connectionUuid: string, resourceUrl: string): Promise<any> {
 
-    kc.applyToRequest(opts);
+    return this.KubernetesSessionsModule.getSession(connectionUuid).then((kc: KubeConfig) => {
+      const opts = {
+        url: kc.getCurrentCluster().server + resourceUrl
+      };
 
-    return new Promise((resolve, reject) => {
-      get(kc.getCurrentCluster().server + resourceUrl, opts, async (error, response, body) => {
-        if (error) return reject(error);
+      kc.applyToRequest(opts);
 
-        return resolve(body);
+      return new Promise((resolve, reject) => {
+        get(kc.getCurrentCluster().server + resourceUrl, opts, (error, response, body) => {
+          if (error) return reject(error);
+
+          return resolve(body);
+        });
       });
     });
   }

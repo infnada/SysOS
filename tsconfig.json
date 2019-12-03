@@ -19,7 +19,6 @@
       "dom"
     ],
     "paths": {
-      // Libraries
       "@anyopsos/lib-angular-material": [
         "projects/anyopsos-lib-angular-material/src/public-api"
       ],
@@ -67,6 +66,12 @@
       ],
       "@anyopsos/lib-user/*": [
         "projects/anyopsos-lib-user/*"
+      ],
+      "@anyopsos/lib-terminal": [
+        "projects/anyopsos-lib-terminal/src/public-api"
+      ],
+      "@anyopsos/lib-terminal/*": [
+        "projects/anyopsos-lib-terminal/*"
       ],
       "@anyopsos/lib-types": [
         "projects/anyopsos-lib-types/src/public-api"
@@ -128,7 +133,6 @@
       "@anyopsos/lib-utils/*": [
         "projects/anyopsos-lib-utils/*"
       ],
-      // External Libraries
       "@anyopsos/lib-ext-mxgraph": [
         "projects/anyopsos-lib-ext-mxgraph/src/public-api"
       ],
@@ -189,7 +193,6 @@
       "@anyopsos/lib-ext-weavescope/*": [
         "projects/anyopsos-lib-weavescope/*"
       ],
-      // Applications
       "@anyopsos/app-backups-manager": [
         "projects/anyopsos-app-backups-manager/src/public-api"
       ],
@@ -256,7 +259,6 @@
       "@anyopsos/app-wmks/*": [
         "projects/anyopsos-app-wmks/*"
       ],
-      // Modals
       "@anyopsos/modal-default-input": [
         "projects/anyopsos-modal-default-input/src/public-api"
       ],
@@ -472,6 +474,36 @@
       ],
       "@anyopsos/modal-infrastructure-manager-kubernetes-edit-resource/*": [
         "projects/anyopsos-modal-infrastructure-manager-kubernetes-edit-resource/*"
+      ],
+      "@anyopsos/modal-infrastructure-manager-kubernetes-scale-resource": [
+        "projects/anyopsos-modal-infrastructure-manager-kubernetes-scale-resource/src/public-api"
+      ],
+      "@anyopsos/modal-infrastructure-manager-kubernetes-scale-resource/*": [
+        "projects/anyopsos-modal-infrastructure-manager-kubernetes-scale-resource/*"
+      ],
+      "@anyopsos/modal-infrastructure-manager-kubernetes-logs": [
+        "projects/anyopsos-modal-infrastructure-manager-kubernetes-logs/src/public-api"
+      ],
+      "@anyopsos/modal-infrastructure-manager-kubernetes-logs/*": [
+        "projects/anyopsos-modal-infrastructure-manager-kubernetes-logs/*"
+      ],
+      "@anyopsos/modal-infrastructure-manager-kubernetes-shell": [
+        "projects/anyopsos-modal-infrastructure-manager-kubernetes-shell/src/public-api"
+      ],
+      "@anyopsos/modal-infrastructure-manager-kubernetes-shell/*": [
+        "projects/anyopsos-modal-infrastructure-manager-kubernetes-shell/*"
+      ],
+      "anyopsos-lib-terminal": [
+        "dist/anyopsos-lib-terminal"
+      ],
+      "anyopsos-lib-terminal/*": [
+        "dist/anyopsos-lib-terminal/*"
+      ],
+      "anyopsos-modal-infrastructure-manager-kubernetes-scale-resource": [
+        "dist/anyopsos-modal-infrastructure-manager-kubernetes-scale-resource"
+      ],
+      "anyopsos-modal-infrastructure-manager-kubernetes-scale-resource/*": [
+        "dist/anyopsos-modal-infrastructure-manager-kubernetes-scale-resource/*"
       ]
     }
   }

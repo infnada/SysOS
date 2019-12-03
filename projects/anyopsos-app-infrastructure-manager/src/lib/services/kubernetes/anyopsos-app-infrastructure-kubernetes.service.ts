@@ -26,7 +26,6 @@ export class AnyOpsOSAppInfrastructureKubernetesService {
       .fromEvent('kubernetes__data')
       .subscribe((sockData: { uuid: string, data: any }) => {
         this.parseObject(sockData);
-        console.log(sockData);
       });
 
     this.socket
@@ -61,7 +60,7 @@ export class AnyOpsOSAppInfrastructureKubernetesService {
     const folders = [
       'Nodes',
       'Cluster Roles',
-      'Role Bindings',
+      'Cluster Role Bindings',
       'Persistent Volumes',
       'Storage Classes',
       'Namespaces',
@@ -98,6 +97,7 @@ export class AnyOpsOSAppInfrastructureKubernetesService {
       'Secrets',
       'Persistent Volume Claims',
       'Service Accounts',
+      'Roles',
       'Role Bindings'
     ];
 
@@ -125,6 +125,16 @@ export class AnyOpsOSAppInfrastructureKubernetesService {
   private parseObject(sockData: { uuid: string, data: any }) {
     const object = sockData.data.obj;
 
+    if (sockData.data.type === 'DELETED') {
+      const objectUuid = `${sockData.uuid};\u003c${object.metadata.name}:${object.kind}\u003e`;
+
+      this.InfrastructureManager.getConnectionByUuid(sockData.uuid).data.Data.splice(
+        this.InfrastructureManager.getConnectionByUuid(sockData.uuid).data.Data.findIndex((i) => {
+          return i.info.uuid === objectUuid;
+        }
+      ), 1);
+    }
+
     // Set basic object data
     if (sockData.data.type === 'ADDED' || sockData.data.type === 'MODIFIED') {
       if (object.metadata.ownerReferences && object.metadata.ownerReferences.length !== 1) console.log('multiple', object.metadata.ownerReferences);
@@ -133,7 +143,14 @@ export class AnyOpsOSAppInfrastructureKubernetesService {
         type: object.metadata.ownerReferences[0].kind,
         name: object.metadata.ownerReferences[0].name
       } :
+
+      object.kind === 'Event' ? {
+        type: object.involvedObject.kind,
+        name: object.involvedObject.name,
+      } :
+
       object.metadata.namespace ?
+
         object.kind === 'Endpoints' ? {
           type: 'Folder',
           name: object.metadata.namespace + 'Endpoints'
@@ -158,10 +175,14 @@ export class AnyOpsOSAppInfrastructureKubernetesService {
         } : object.kind === 'RoleBinding' ? {
           type: 'Folder',
           name: object.metadata.namespace + 'Role Bindings'
+        } : object.kind === 'Role' ? {
+          type: 'Folder',
+          name: object.metadata.namespace + 'Roles'
         } : {
           type: 'Namespace',
           name: object.metadata.namespace
         } :
+
       object.kind === 'PersistentVolume' ? {
         type: 'Folder',
         name: 'Persistent Volumes'
@@ -173,7 +194,7 @@ export class AnyOpsOSAppInfrastructureKubernetesService {
         name: 'Storage Classes'
       } : object.kind === 'ClusterRoleBinding' ? {
         type: 'Folder',
-        name: 'Role Bindings'
+        name: 'Cluster Role Bindings'
       } : object.kind === 'Node' ? {
         type: 'Folder',
         name: 'Nodes'
@@ -211,12 +232,14 @@ export class AnyOpsOSAppInfrastructureKubernetesService {
         let oldObj = this.InfrastructureManagerObjectHelper.getObjectByUuid(sockData.uuid, newObj.info.uuid);
         oldObj = newObj;
       }
-
-      // Tell InfrastructureManager that we changed connections data
-      if (this.subTimeout) this.subTimeout.unsubscribe();
-      this.subTimeout = timer(1000).subscribe(() => {
-        this.InfrastructureManager.connectionsUpdated();
-      });
     }
+
+    // Tell InfrastructureManager that we changed connections data
+    if (this.subTimeout) this.subTimeout.unsubscribe();
+    this.subTimeout = timer(1000).subscribe(() => {
+      this.InfrastructureManager.connectionsUpdated();
+    });
+
+    if (sockData.data.type !== 'ADDED' && sockData.data.type !== 'MODIFIED' && sockData.data.type !== 'DELETED') console.log(sockData);
   }
 }

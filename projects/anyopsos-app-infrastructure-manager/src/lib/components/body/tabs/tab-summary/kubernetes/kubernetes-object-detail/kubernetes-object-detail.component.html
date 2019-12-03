@@ -1,0 +1,98 @@
+
+<!-- Main info -->
+<mat-form-field *ngIf="nmObject.info.data.metadata?.namespace">
+  <input matInput placeholder="Namespace" value="{{nmObject.info.data.metadata.namespace}}" aria-label="Namespace" disabled>
+</mat-form-field>
+
+<mat-form-field *ngIf="nmObject.info.data.metadata?.creationTimestamp">
+  <input matInput placeholder="Creation time" value="{{nmObject.info.data.metadata.creationTimestamp | date:'medium'}}" aria-label="Creation time" disabled>
+</mat-form-field>
+
+<mat-form-field *ngIf="nmObject.info.data.metadata?.creationTimestamp">
+  <input matInput placeholder="Age" value="{{nmObject.info.data.metadata.creationTimestamp | relatimeTime}}" aria-label="Age" disabled>
+</mat-form-field>
+
+<mat-form-field *ngIf="nmObject.info.data.metadata?.uid">
+  <input matInput placeholder="UID" value="{{nmObject.info.data.metadata.uid}}" aria-label="UID" disabled>
+</mat-form-field>
+
+<div class="clearfix"></div>
+
+<!-- Labels & Annotations -->
+<ng-container *ngIf="nmObject.info.data.metadata?.labels">
+  <mat-label>Labels</mat-label>
+  <saim-chips [map]="nmObject.info.data.metadata.labels"></saim-chips>
+</ng-container>
+
+<ng-container *ngIf="nmObject.info.data.metadata?.annotations">
+  <mat-label>Annotations</mat-label>
+  <saim-chips [map]="nmObject.info.data.metadata.annotations"></saim-chips>
+</ng-container>
+
+<!-- Selectors & Images -->
+<ng-container *ngIf="nmObject.info.data.spec?.selector?.matchLabels">
+  <mat-label>Selectors</mat-label>
+  <saim-chips [map]="nmObject.info.data.spec.selector.matchLabels"></saim-chips>
+</ng-container>
+
+<ng-container *ngIf="nmObject.info.data.spec?.template?.spec?.containers">
+  <mat-label>Images</mat-label>
+  <saim-chips [map]="nmObject.info.data.spec.template.spec.containers"></saim-chips>
+</ng-container>
+
+<div class="clearfix"></div>
+
+<!-- Pod Status -->
+<ng-container *ngIf="nmObject.type === 'DaemonSet' || nmObject.type === 'Deployment' || nmObject.type === 'ReplicaSet' || nmObject.type === 'StatefulSet'">
+  <h5 class="mt-3">Pod status</h5>
+
+  <!-- DaemonSet -->
+  <ng-container *ngIf="nmObject.type === 'DaemonSet'">
+    <mat-form-field *ngIf="nmObject.info.data.status?.currentNumberScheduled">
+      <input matInput placeholder="Running" value="{{nmObject.info.data.status.currentNumberScheduled}}" aria-label="Running" disabled>
+    </mat-form-field>
+    <mat-form-field *ngIf="nmObject.info.data.status?.desiredNumberScheduled">
+      <input matInput placeholder="Desired" value="{{nmObject.info.data.status.desiredNumberScheduled}}" aria-label="Desired" disabled>
+    </mat-form-field>
+    <mat-form-field *ngIf="nmObject.info.data.status?.numberReady">
+      <input matInput placeholder="Ready" value="{{nmObject.info.data.status.numberReady}}" aria-label="Ready" disabled>
+    </mat-form-field>
+  </ng-container>
+
+  <!-- Deployment -->
+  <ng-container *ngIf="nmObject.type === 'Deployment'">
+    <mat-form-field *ngIf="nmObject.info.data.status?.updatedReplicas">
+      <input matInput placeholder="Updated" value="{{nmObject.info.data.status.updatedReplicas}}" aria-label="Updated" disabled>
+    </mat-form-field>
+    <mat-form-field *ngIf="nmObject.info.data.status?.replicas">
+      <input matInput placeholder="Total" value="{{nmObject.info.data.spec.replicas}}" aria-label="Total" disabled>
+    </mat-form-field>
+    <mat-form-field *ngIf="nmObject.info.data.status?.availableReplicas">
+      <input matInput placeholder="Available" value="{{nmObject.info.data.status.availableReplicas}}" aria-label="Available" disabled>
+    </mat-form-field>
+    <mat-form-field *ngIf="nmObject.info.data.status?.unavailableReplicas">
+      <input matInput placeholder="Unavailable" value="{{nmObject.info.data.status.unavailableReplicas}}" aria-label="Unavailable" disabled>
+    </mat-form-field>
+  </ng-container>
+
+  <!-- ReplicaSet & StatefulSet-->
+  <ng-container *ngIf="nmObject.type === 'ReplicaSet' || nmObject.type === 'StatefulSet'">
+    <mat-form-field *ngIf="nmObject.info.data.status?.readyReplicas">
+      <input matInput placeholder="Running" value="{{nmObject.info.data.status.readyReplicas}}" aria-label="Running" disabled>
+    </mat-form-field>
+
+    <mat-form-field *ngIf="nmObject.info.data.status?.replicas">
+      <input matInput placeholder="Desired" value="{{nmObject.info.data.spec.replicas}}" aria-label="Desired" disabled>
+    </mat-form-field>
+    <mat-form-field *ngIf="!nmObject.info.data.status?.replicas">
+      <input matInput placeholder="Desired" value="0" aria-label="Desired" disabled>
+    </mat-form-field>
+
+    <mat-form-field *ngIf="!nmObject.info.data.status?.readyReplicas && nmObject.info.data.spec?.replicas">
+      <input matInput placeholder="Pending" value="{{nmObject.info.data.spec.replicas}}" aria-label="Pending" disabled>
+    </mat-form-field>
+    <mat-form-field *ngIf="nmObject.info.data.status?.readyReplicas && nmObject.info.data.status?.replicas && (nmObject.info.data.status.readyReplicas - nmObject.info.data.spec.replicas !== 0)">
+      <input matInput placeholder="Pending" value="{{nmObject.info.data.status.readyReplicas - nmObject.info.data.spec.replicas}}" aria-label="Pending" disabled>
+    </mat-form-field>
+  </ng-container>
+</ng-container>

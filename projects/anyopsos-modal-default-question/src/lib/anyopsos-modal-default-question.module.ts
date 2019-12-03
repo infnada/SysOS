@@ -5,6 +5,7 @@ import {NgbModalModule, NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
 import {AnyOpsOSLibAngularMaterialModule} from '@anyopsos/lib-angular-material';
+import {AnyOpsOSLibUtilsModule} from '@anyopsos/lib-utils';
 
 import {AnyOpsOSModalDefaultQuestionComponent} from './anyopsos-modal-default-question.component';
 import {EntryComponent} from './default-question-entry/entry.component';
@@ -17,7 +18,8 @@ import {EntryComponent} from './default-question-entry/entry.component';
   imports: [
     CommonModule,
     NgbModalModule,
-    AnyOpsOSLibAngularMaterialModule
+    AnyOpsOSLibAngularMaterialModule,
+    AnyOpsOSLibUtilsModule
   ],
   exports: [],
   providers: [NgbActiveModal],

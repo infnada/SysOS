@@ -7,10 +7,16 @@
   </div>
 </div>
 <div class="modal-body" id="modal-body">
+
+  <span [innerHTML]="text" *ngIf="text"></span>
+
   <mat-form-field class="w-100">
-    <input matInput [(ngModel)]="inputValue" maxlength="256" placeholder="{{text}}" (keydown.enter)="activeModal.close(inputValue)">
-    <mat-hint align="start"><strong>Max length</strong> </mat-hint>
-    <mat-hint align="end">{{inputValue && inputValue.length}} / 256</mat-hint>
+    <input type="{{inputType}}" matInput [(ngModel)]="inputValue" maxlength="{{inputMaxLength}}" placeholder="{{inputPlaceholder}}" (keydown.enter)="activeModal.close(inputValue)">
+
+    <ng-container *ngIf="inputMaxLength && inputType === 'text'">
+      <mat-hint align="start"><strong>Max length</strong> </mat-hint>
+      <mat-hint align="end">{{inputValue && inputValue.length}} / {{inputMaxLength}}</mat-hint>
+    </ng-container>
   </mat-form-field>
 </div>
 <div class="modal-footer">

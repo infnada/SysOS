@@ -50,6 +50,12 @@
       "@anyopsos/lib-kubernetes/*": [
         "dist/libs/anyopsos-lib-kubernetes/*"
       ],
+      "@anyopsos/lib-terminal": [
+        "dist/libs/anyopsos-lib-terminal"
+      ],
+      "@anyopsos/lib-terminal/*": [
+        "dist/libs/anyopsos-lib-terminal/*"
+      ],
       "@anyopsos/lib-user": [
         "dist/libs/anyopsos-lib-user"
       ],
@@ -302,6 +308,12 @@
       "@anyopsos/modal-monitor-help/*": [
         "dist/anyopsos-modal-monitor-help/*"
       ],
+      "@anyopsos/modal-infrastructure-manager-kubernetes-scale-resource": [
+        "dist/anyopsos-modal-infrastructure-manager-kubernetes-scale-resource"
+      ],
+      "@anyopsos/modal-infrastructure-manager-kubernetes-scale-resource/*": [
+        "dist/anyopsos-modal-infrastructure-manager-kubernetes-scale-resource/*"
+      ],
       "@anyopsos/modal-infrastructure-manager-kubernetes-edit-resource": [
         "dist/anyopsos-modal-infrastructure-manager-kubernetes-edit-resource"
       ],
@@ -313,6 +325,18 @@
       ],
       "@anyopsos/modal-infrastructure-manager-kubernetes-create-resource/*": [
         "dist/anyopsos-modal-infrastructure-manager-kubernetes-create-resource/*"
+      ],
+      "@anyopsos/modal-infrastructure-manager-kubernetes-logs": [
+        "dist/anyopsos-modal-infrastructure-manager-kubernetes-logs"
+      ],
+      "@anyopsos/modal-infrastructure-manager-kubernetes-logs/*": [
+        "dist/anyopsos-modal-infrastructure-manager-kubernetes-logs/*"
+      ],
+      "@anyopsos/modal-infrastructure-manager-kubernetes-shell": [
+        "dist/anyopsos-modal-infrastructure-manager-kubernetes-shell"
+      ],
+      "@anyopsos/modal-infrastructure-manager-kubernetes-shell/*": [
+        "dist/anyopsos-modal-infrastructure-manager-kubernetes-shell/*"
       ],
       "@anyopsos/modal-default-json-textarea": [
         "dist/anyopsos-modal-infrastructure-manager-new-datacenter"

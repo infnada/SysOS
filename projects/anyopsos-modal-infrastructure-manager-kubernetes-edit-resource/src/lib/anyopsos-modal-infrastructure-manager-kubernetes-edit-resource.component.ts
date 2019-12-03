@@ -60,6 +60,11 @@ export class AnyOpsOSModalInfrastructureManagerKubernetesEditResourceComponent i
     return this.buttonToggleGroup.value;
   }
 
+  noticeContent(): string {
+    return `<span>This action is equivalent to: </span>
+      <code>kubectl apply -f &lt;spec.${this.selectedMode}&gt;</code>`;
+  }
+
   private updateText(): void {
     if (this.selectedMode === EditorMode.YAML) {
       this.text = toYaml(JSON.parse(this.text));

@@ -71,7 +71,13 @@ export class AnyOpsOSAppCredentialsManagerService {
     this.Modal.openRegisteredModal('question', '.window--credentials-manager .window__main',
       {
         title: 'Delete credential ' + this.getCredentialByUuid(uuid).description,
-        text: 'Remove the selected credential from the inventory?'
+        text: 'Remove the selected credential from the inventory?',
+        yes: 'Delete',
+        yesClass: 'warn',
+        no: 'Cancel',
+        boxContent: 'This action is permanent.',
+        boxClass: 'text-danger',
+        boxIcon: 'warning'
       }
     ).then((modalInstance) => {
       modalInstance.result.then((result: boolean) => {

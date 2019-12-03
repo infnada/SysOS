@@ -1,0 +1,37 @@
+<div class="modal-header">
+  <div class="modal-title" id="modal-title">Container Log</div>
+  <div class="window__controls window__controls--right">
+    <span class="window__close" (click)="activeModal.close(); $event.stopPropagation();">
+      <i class="fas fa-times"></i>
+    </span>
+  </div>
+</div>
+<div class="modal-body p-0" id="modal-body">
+  <div *ngIf="foundPods.length === 0" class="text-center p-3">No Containers found</div>
+
+  <ng-container *ngIf="foundPods.length !== 0">
+    <mat-form-field class="w-100 p-3">
+      <mat-label>Containers</mat-label>
+      <mat-select placeholder="Toppings" [formControl]="containerForm" multiple>
+        <mat-select-trigger>
+          {{containerForm.value[0] ? containerForm.value[0].pod.name + ' - ' + containerForm.value[0].container.name : ''}}
+          <span *ngIf="containerForm.value.length > 1" class="additional-selection">
+            (+{{containerForm.value.length - 1}} {{containerForm.value?.length === 2 ? 'other' : 'others'}})
+          </span>
+        </mat-select-trigger>
+        <mat-optgroup *ngFor="let pod of foundPods" [label]="pod.name">
+          <mat-option *ngFor="let container of pod.info.data.spec.containers" [value]="{pod: pod, container: container}">{{container.name}}</mat-option>
+          <mat-option *ngFor="let container of pod.info.data.spec.initContainers" [value]="{pod: pod, container: container}">Init: {{container.name}}</mat-option>
+        </mat-optgroup>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-checkbox class="pl-3" [(ngModel)]="showContainersName" (ngModelChange)="showContainersNameChanged()">Show Containers name in logs</mat-checkbox>
+
+    <slterm-terminal [terminalType]="'container_logs'" [terminalUuid]="terminalUuid" (terminalUuidChange)="terminalUuidChanged($event)"></slterm-terminal>
+  </ng-container>
+
+</div>
+<div class="modal-footer">
+  <button class="btn" type="button" (click)="activeModal.close()" mat-flat-button>Close</button>
+</div>

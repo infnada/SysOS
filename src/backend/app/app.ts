@@ -1,6 +1,8 @@
-import {configure, getLogger, connectLogger} from 'log4js';
+import {configure, getLogger, connectLogger, Logger} from 'log4js';
 import {createServer, Server} from 'http';
-import {createServer as createServers, Server as Servers} from 'https';
+import {createServer as createServers, Server as Servers, ServerOptions} from 'https';
+import {ServeStaticOptions} from 'serve-static';
+import {Application, Request, Response, RequestHandler, static as expressStatic, NextFunction} from 'express';
 import * as fs from 'fs';
 import * as bodyParser from 'body-parser';
 import * as helmet from 'helmet';
@@ -19,21 +21,23 @@ import cors from 'cors';
 import {SocketModule} from './socket';
 import {RoutesModule} from './routes';
 
+export declare let Io: socketIo.Server;
+
 /**
  * App class will create all the backend listeners HTTP/HTTPS/WSS
  */
 export class App {
   public config = readConfig(path.join(__dirname, '/filesystem/etc/expressjs/config.json'));
-  private app: express.Application;
+  private app: Application;
   private server: Server;
   private servers: Servers;
   private io: socketIo.Server;
-  private logger;
-  private options = {
+  private logger: Logger;
+  private options: ServerOptions = {
     key: fs.readFileSync(__dirname + '/ssl/key.pem'),
     cert: fs.readFileSync(__dirname + '/ssl/cert.pem')
   };
-  private expressOptions = {
+  private expressOptions: ServeStaticOptions = {
     dotfiles: 'ignore',
     etag: false,
     extensions: ['htm', 'html'],
@@ -41,14 +45,14 @@ export class App {
     maxAge: '1s',
     redirect: false,
     setHeaders: (res) => {
-      res.set('x-timestamp', Date.now());
+      res.set('x-timestamp', Date.now().toString());
     }
   };
   private MemoryStore = MemoryStore(session);
   private sessionStore = new this.MemoryStore({
     checkPeriod: 86400000 // prune expired entries every 24h
   });
-  private Session = session({
+  private Session: RequestHandler = session({
     store: this.sessionStore,
     secret: this.config.session.secret,
     name: this.config.session.name,
@@ -58,9 +62,9 @@ export class App {
       expires: new Date(Date.now() + 8 * 60 * 60 * 1000)
     }
   });
-  private sessionCookie = this.config.session.name;
-  private sessionSecret = this.config.session.secret;
-  private uniqueCookie = this.config.uniqueCookie;
+  private sessionCookie: string = this.config.session.name;
+  private sessionSecret: string = this.config.session.secret;
+  private uniqueCookie: string = this.config.uniqueCookie;
 
   constructor() {
     this.createApp();
@@ -76,7 +80,7 @@ export class App {
     this.app = express();
     this.app.use(this.Session);
     this.app.use(compress({
-        filter: (req: express.Request, res: express.Response) => {
+        filter: (req: Request, res: Response) => {
           return (/json|text|javascript|css/).test((res.getHeader('Content-Type') as string));
         },
         level: 9
@@ -99,7 +103,7 @@ export class App {
     this.app.disable('x-powered-by');
     this.app.use(cors());
     this.app.use(favicon(__dirname + '/public/favicon.ico'));
-    this.app.use(express.static(path.join(__dirname, '/public'), this.expressOptions));
+    this.app.use(expressStatic(path.join(__dirname, '/public'), this.expressOptions));
     /*app.use(csrf());
 
     // Set cookie "XSRF-TOKEN" the new token for csrf
@@ -141,7 +145,7 @@ export class App {
 
   private createServer(): void {
 
-    this.server = createServer((req: express.Request, res: express.Response) => {
+    this.server = createServer((req: Request, res: Response) => {
       res.writeHead(301, {Location: 'https://' + req.headers.host + ':' + this.config.listen.ports + req.url});
       res.end();
     });
@@ -151,7 +155,10 @@ export class App {
   private sockets(): void {
     this.io = socketIo(this.servers);
 
-    this.io.use((socket: socketIo.Socket, next: express.NextFunction) => {
+    // Make this a global and exportable variable from this module
+    Io = this.io;
+
+    this.io.use((socket: socketIo.Socket, next: NextFunction) => {
 
       if (socket.handshake.headers.cookie) {
 
@@ -173,6 +180,11 @@ export class App {
             if (err) {
               this.logger.error('[APP] Get Session -> ' + err.code);
               return next(new Error(err));
+            }
+
+            if (sockSession) {
+              sockSession.socketId = socket.id;
+              this.sessionStore.set(sessionID, sockSession);
             }
 
             socket.client.request.session = sockSession;
@@ -215,7 +227,7 @@ export class App {
     new RoutesModule(this.app, this.io).init();
   }
 
-  public getApp(): express.Application {
+  public getApp(): Application {
     return this.app;
   }
 }

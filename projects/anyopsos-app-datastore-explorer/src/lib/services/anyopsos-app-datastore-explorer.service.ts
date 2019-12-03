@@ -151,7 +151,13 @@ export class AnyOpsOSAppDatastoreExplorerService {
     this.Modal.openRegisteredModal('question', '.window--datastore-explorer .window__main',
       {
         title: `Delete connection ${this.getConnectionByUuid(uuid).data.obj.name}`,
-        text: 'Remove the selected connection from the inventory?'
+        text: 'Remove the selected connection from the inventory?',
+        yes: 'Delete',
+        yesClass: 'warn',
+        no: 'Cancel',
+        boxContent: 'This action is permanent.',
+        boxClass: 'text-danger',
+        boxIcon: 'warning'
       }
     ).then((modalInstance) => {
       modalInstance.result.then((result: boolean) => {

@@ -28,7 +28,7 @@ export class AnyOpsOSAppInfrastructureNetappBackupService {
    * Checks if the vServers have allowed any of the available protocols
    */
   private checkProtocols(obj: ImDataObject & { info: { data: NetAppSnapshot | NetAppVolume } }): boolean {
-    const vServer = this.InfrastructureManagerObjectHelper.getParentObjectByType(obj.info.mainUuid, 'vserver', obj.info.parent.name);
+    const vServer = this.InfrastructureManagerObjectHelper.getParentObjectByType(obj.info.mainUuid, 'vserver', obj.info.parent);
 
     if (!Array.isArray(vServer.info.data['allowed-protocols'].protocol) ||
       (!vServer.info.data['allowed-protocols'].protocol.includes('nfs') &&
@@ -60,7 +60,9 @@ export class AnyOpsOSAppInfrastructureNetappBackupService {
     this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
       {
         title: 'Mount Snapshot as Datastore',
-        text: 'Do you want to mount the Storage Snapshot to an ESXi host?'
+        text: 'Do you want to mount the Storage Snapshot to an ESXi host?',
+        yes: 'Mount',
+        no: 'Cancel'
       }
     ).then((modalInstance) => {
       modalInstance.result.then((result: boolean) => {
@@ -87,7 +89,9 @@ export class AnyOpsOSAppInfrastructureNetappBackupService {
     this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
       {
         title: 'Restore Datastore Files',
-        text: 'Do you want to mount the Storage Snapshot to an ESXi host and restore Volume files?'
+        text: 'Do you want to mount the Storage Snapshot to an ESXi host and restore Volume files?',
+        yes: 'Restore',
+        no: 'Cancel'
       }
     ).then((modalInstance) => {
       modalInstance.result.then((result: boolean) => {
@@ -114,7 +118,9 @@ export class AnyOpsOSAppInfrastructureNetappBackupService {
     this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
       {
         title: 'Restore guest files',
-        text: `Do you want to perform a VM Guest Files recovery of ${vm.name}?`
+        text: `Do you want to perform a VM Guest Files recovery of ${vm.name}?`,
+        yes: 'Restore',
+        no: 'Cancel'
       }
     ).then((modalInstance) => {
       modalInstance.result.then((result: boolean) => {
@@ -153,7 +159,9 @@ export class AnyOpsOSAppInfrastructureNetappBackupService {
     this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
       {
         title: 'Instant VM recovery',
-        text: `Do you want to perform an Instant VM recovery of ${vm.name}?`
+        text: `Do you want to perform an Instant VM recovery of ${vm.name}?`,
+        yes: 'Restore',
+        no: 'Cancel'
       }
     ).then((modalInstance) => {
       modalInstance.result.then((result: boolean) => {
@@ -189,7 +197,9 @@ export class AnyOpsOSAppInfrastructureNetappBackupService {
     this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
       {
         title: 'Restore entire VM',
-        text: `Do you want to perform a entire VM restore of ${vm.name}?`
+        text: `Do you want to perform a entire VM restore of ${vm.name}?`,
+        yes: 'Restore',
+        no: 'Cancel'
       }
     ).then((modalInstance) => {
       modalInstance.result.then((result: boolean) => {

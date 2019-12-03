@@ -64,7 +64,7 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
           port: initConnection.port,
           data: {
             obj: this.application.initData.data.datastore,
-            datacenter: this.InfrastructureManagerObjectHelper.getParentObjectByType(this.application.initData.connectionUuid, 'Datacenter', this.application.initData.data.datastore.info.parent.name)
+            datacenter: this.InfrastructureManagerObjectHelper.getParentObjectByType(this.application.initData.connectionUuid, 'Datacenter', this.application.initData.data.datastore.info.parent)
           },
           type: 'vmware'
         }).then(() => {
@@ -130,7 +130,7 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
       data: {
         obj: selectedDatastore,
         datacenter: (this.newConnectionType === 'vmware' ?
-          this.InfrastructureManagerObjectHelper.getParentObjectByType(selectedDatastore.info.mainUuid, 'Datacenter', selectedDatastore.info.parent.name) as ImDataObject
+          this.InfrastructureManagerObjectHelper.getParentObjectByType(selectedDatastore.info.mainUuid, 'Datacenter', selectedDatastore.info.parent)
         : null)
       },
       type: this.newConnectionType

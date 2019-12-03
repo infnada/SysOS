@@ -5,7 +5,7 @@ import {NgbActiveModal, NgbModalModule} from '@ng-bootstrap/ng-bootstrap';
 
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
 import {AnyOpsOSLibAngularMaterialModule} from '@anyopsos/lib-angular-material';
-import {AnyOpsOSLibUtilsModule} from "@anyopsos/lib-utils";
+import {AnyOpsOSLibUtilsModule} from '@anyopsos/lib-utils';
 
 import {AnyOpsOSModalInfrastructureManagerKubernetesEditResourceComponent} from './anyopsos-modal-infrastructure-manager-kubernetes-edit-resource.component';
 import {EntryComponent} from './infrastructure-manager-kubernetes-edit-resource-entry/entry.component';

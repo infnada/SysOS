@@ -74,7 +74,7 @@ export class AnyOpsOSAppInfrastructureManagerNodeLinkService {
         if (!foundVserver) return;
 
         // Search for each Volume containing as a junction path the current datastore remotePath
-        const foundVolume: ImDataObject & { info: { data: NetAppVolume } } = this.InfrastructureManagerObjectHelper.getChildObjectsByType(storageObj.uuid, 'volume', foundVserver.info.obj.name)
+        const foundVolume: ImDataObject & { info: { data: NetAppVolume } } = this.InfrastructureManagerObjectHelper.getChildObjectsByType(storageObj.uuid, 'volume', foundVserver.info.obj)
           .filter((volumeObj: ImDataObject & { info: { data: NetAppVolume } }) => {
             return volumeObj.info.data['volume-id-attributes']['junction-path'] === datastoreObj.info.data.info.nas.remotePath;
           })[0];

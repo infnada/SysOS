@@ -1,0 +1,80 @@
+<!--<kd-graph-metrics [metrics]="cumulativeMetrics" *ngIf="showMetrics"></kd-graph-metrics>
+
+<kd-card role="table" [hidden]="isHidden()">
+  <div title fxLayout="row" i18n>Cron Jobs</div>
+  <div description><span class="kd-muted-light" i18n>Items:&nbsp;</span>{{getChildObjectsByType(this.listType).length}}</div>
+  <div actions>
+    <kd-card-list-filter></kd-card-list-filter>
+  </div>
+
+  <div content [hidden]="showZeroState()">
+    <mat-table [dataSource]="dataSource" matSort matSortActive="age" matSortDisableClear matSortDirection="asc">
+      <ng-container matColumnDef="statusicon">
+        <mat-header-cell *matHeaderCellDef></mat-header-cell>
+        <mat-cell *matCellDef="let kubeObj">
+          <mat-icon [ngClass]="getStatus(kubeObj).iconClass">{{getStatus(kubeObj).iconName}}</mat-icon>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="name">
+        <mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true" i18n>Name</mat-header-cell>
+        <mat-cell *matCellDef="let kubeObj">
+          <a (click)="setActiveObject(kubeObj)">{{kubeObj.info.data.metadata.name}}</a>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="namespace">
+        <mat-header-cell *matHeaderCellDef i18n>Namespace</mat-header-cell>
+        <mat-cell *matCellDef="let kubeObj">{{kubeObj.info.data.metadata.namespace}}</mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="labels">
+        <mat-header-cell *matHeaderCellDef i18n>Labels</mat-header-cell>
+        <mat-cell *matCellDef="let kubeObj">
+          <kd-chips [map]="kubeObj.info.data.metadata.labels"></kd-chips>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="schedule">
+        <mat-header-cell *matHeaderCellDef i18n>Schedule</mat-header-cell>
+        <mat-cell *matCellDef="let kubeObj">
+          <span>{{kubeObj.schedule}}</span>
+          <span *ngIf="!kubeObj.schedule">-</span>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="suspend">
+        <mat-header-cell *matHeaderCellDef i18n>Suspend</mat-header-cell>
+        <mat-cell *matCellDef="let kubeObj">{{!!kubeObj.suspend}}</mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="active">
+        <mat-header-cell *matHeaderCellDef mat-sort-header disableClear="true" i18n>Active</mat-header-cell>
+        <mat-cell *matCellDef="let kubeObj">{{kubeObj.active}}</mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="lastschedule">
+        <mat-header-cell *matHeaderCellDef i18n>Last Schedule</mat-header-cell>
+        <mat-cell *matCellDef="let kubeObj">
+          <kd-date [date]="kubeObj.lastSchedule" relative></kd-date>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="age">
+        <mat-header-cell *matHeaderCellDef i18n>Age</mat-header-cell>
+        <mat-cell *matCellDef="let kubeObj">
+          <kd-date [date]="kubeObj.info.data.metadata.creationTimestamp" relative></kd-date>
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
+
+    <mat-paginator [length]="getChildObjectsByType(this.listType).length" [pageSize]="10" [hidePageSize]="true" [showFirstLastButtons]="true"></mat-paginator>
+  </div>
+
+  <div content [hidden]="!showZeroState()">
+    <kd-list-zero-state></kd-list-zero-state>
+  </div>
+</kd-card>-->

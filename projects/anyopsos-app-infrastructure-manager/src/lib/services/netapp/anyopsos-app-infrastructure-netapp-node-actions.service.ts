@@ -36,12 +36,14 @@ export class AnyOpsOSAppInfrastructureNetappNodeActionsService {
     this.logger.debug('Infrastructure Manager', 'Ask for create storage snapshot', arguments);
 
     const connection: ConnectionNetapp = this.InfrastructureManager.getConnectionByUuid(volume.info.mainUuid) as ConnectionNetapp;
-    const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(connection.uuid, 'vserver', volume.info.parent.name);
+    const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(connection.uuid, 'vserver', volume.info.parent);
 
     this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
       {
         title: 'Create storage snapshot',
-        text: `Do you want to create a Storage snapshot for ${volume['volume-id-attributes'].name} volume?`
+        text: `Do you want to create a Storage snapshot for ${volume['volume-id-attributes'].name} volume?`,
+        yes: 'Create',
+        no: 'Cancel'
       }
     ).then((modalInstance) => {
       modalInstance.result.then((result: boolean) => {
@@ -97,13 +99,19 @@ export class AnyOpsOSAppInfrastructureNetappNodeActionsService {
     this.logger.debug('Infrastructure Manager', 'Ask for delete storage snapshot', arguments);
 
     const connection: ConnectionNetapp = this.InfrastructureManager.getConnectionByUuid(snapshot.info.mainUuid) as ConnectionNetapp;
-    const volume: ImDataObject & { info: { data: NetAppVolume } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(connection.uuid, 'volume', snapshot.info.parent.name);
-    const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(connection.uuid, 'vserver', volume.info.parent.name);
+    const volume: ImDataObject & { info: { data: NetAppVolume } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(connection.uuid, 'volume', snapshot.info.parent);
+    const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(connection.uuid, 'vserver', volume.info.parent);
 
     this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
       {
         title: 'Delete storage snapshot',
-        text: `Do you want to delete the storage snapshot ${snapshot.name}?`
+        text: `Do you want to delete the storage snapshot ${snapshot.name}?`,
+        yes: 'Delete',
+        yesClass: 'warn',
+        no: 'Cancel',
+        boxContent: 'This action is permanent.',
+        boxClass: 'text-danger',
+        boxIcon: 'warning'
       }
     ).then((modalInstance) => {
       modalInstance.result.then((result: boolean) => {

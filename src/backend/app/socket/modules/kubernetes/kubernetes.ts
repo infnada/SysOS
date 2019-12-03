@@ -1,20 +1,35 @@
-import {Watch, KubeConfig} from '@kubernetes/client-node';
-import {KubernetesSessionsModule} from './kubernetes-sessions';
-import {SocketModule} from '../socket';
-
+import {V1Status, Watch, KubeConfig, Log, Exec, Attach} from '@kubernetes/client-node';
+import {Writable} from 'stream';
+import {Request} from 'request';
+import WebSocket from 'isomorphic-ws';
+import uuid from 'uuid';
 
 import {ConnectionKubernetes} from '../../../interfaces/socket-connections/connection-kubernetes';
+import {KubernetesSessionsModule} from './kubernetes-sessions';
+import {TerminalsModule} from '../terminals';
+import {SocketModule} from '../socket';
+
+const logsRequests: {
+  terminalUuid: string;
+  logUuid: string;
+  request: Request
+}[] = [];
+
+const shellWebSockets: {
+  terminalUuid: string;
+  websocket: WebSocket
+}[] = [];
 
 export class KubernetesSocketModule {
 
+  private TerminalsModule: TerminalsModule = new TerminalsModule(this.socket);
   private KubernetesSessionsModule: KubernetesSessionsModule = new KubernetesSessionsModule(this.socket);
   private SocketModule: SocketModule = new SocketModule(this.socket);
 
   constructor(private socket) {
-
   }
 
-  newConnection(data: ConnectionKubernetes) {
+  newConnection(data: ConnectionKubernetes): void {
 
     // https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.16
     const apiUrls = [
@@ -73,9 +88,9 @@ export class KubernetesSocketModule {
     ];
 
     this.KubernetesSessionsModule.createSession(data).then((kc: KubeConfig) => {
-      const watch = new Watch(kc);
+      const watch: Watch = new Watch(kc);
 
-      apiUrls.forEach(url => {
+      apiUrls.forEach((url: string) => {
         watch.watch(url,
           {},
           (type, obj) => {
@@ -95,5 +110,118 @@ export class KubernetesSocketModule {
       this.SocketModule.emitProp(data.type, 'connected', data.uuid, 'state');
     });
 
+  }
+
+  /**
+   * Container Logs managements
+   */
+  getContainerLogs(connectionUuid: string, terminalUuid: string, namespace: string, pod: string, container: string, showContainerName: boolean): Promise<string> {
+    return this.KubernetesSessionsModule.getSession(connectionUuid).then(async (kc: KubeConfig) => {
+
+      let timeout;
+      let currentData = '';
+
+      const log: Log = new Log(kc);
+      const id = await uuid();
+
+      const emitData = () => {
+        if (!this.socket) return;
+
+        this.TerminalsModule.terminalStout({
+          uuid: terminalUuid,
+          data: currentData
+        });
+
+        currentData = '';
+      };
+
+      // Don't use default terminal.stdout stream because we need the container name
+      const logStream: Writable = new Writable({
+        write(chunk, encoding, callback) {
+
+          currentData += (showContainerName ? `\u001b[94m${pod} - ${container}:\u001b[39m ` : '') + chunk.toString() + '\r';
+
+          clearTimeout(timeout);
+          timeout = setTimeout(emitData, 250);
+
+          callback();
+        }
+      });
+
+      const logRequest = log.log(namespace, pod, container, logStream, (err: any) => {
+        console.log(err);
+      }, {
+        follow: true
+      });
+
+      logsRequests.push({
+        terminalUuid,
+        logUuid: id,
+        request: logRequest
+      });
+
+      return id;
+    });
+  }
+
+  async finishContainerLogRequest(logUuid: string): Promise<void> {
+    const currentRequest = logsRequests.find((log) => {
+      return log.logUuid === logUuid;
+    });
+
+    if (currentRequest) currentRequest.request.abort();
+  }
+
+  async finishAllContainersLogRequestByTerminalUuid(terminalUuid: string): Promise<void> {
+    await logsRequests.filter((log) => {
+      return log.terminalUuid === terminalUuid;
+    }).map(logRequest => logRequest.request.abort());
+  }
+
+  execToTerminal(connectionUuid: string, terminalUuid: string, namespace: string, pod: string, container: string, command: string|string[] = '/bin/sh') {
+    const currentTerminal = this.TerminalsModule.getTerminalByUuid(terminalUuid);
+
+    return this.KubernetesSessionsModule.getSession(connectionUuid).then((kc: KubeConfig) => {
+      const exec: Exec = new Exec(kc);
+
+      exec.exec(namespace, pod, container, command, currentTerminal.stdout, currentTerminal.stdout, currentTerminal.stdin, true, (status: V1Status) => {
+        // tslint:disable-next-line:no-console
+        console.log('Exited with status:');
+        // tslint:disable-next-line:no-console
+        console.log(JSON.stringify(status, null, 2));
+      }).then((websocket: WebSocket) => {
+        shellWebSockets.push({
+          terminalUuid,
+          websocket
+        });
+      }).catch((e) => {
+        console.log(e);
+      });
+    });
+  }
+
+  attachToTerminal(connectionUuid: string, terminalUuid: string, namespace: string, pod: string, container: string) {
+    const currentTerminal = this.TerminalsModule.getTerminalByUuid(terminalUuid);
+
+    return this.KubernetesSessionsModule.getSession(connectionUuid).then((kc: KubeConfig) => {
+      const attach: Attach = new Attach(kc);
+
+      attach.attach(namespace, pod, container, currentTerminal.stdout, currentTerminal.stdout, currentTerminal.stdin, true).then((websocket: WebSocket) => {
+        shellWebSockets.push({
+          terminalUuid,
+          websocket
+        });
+      }).catch((e) => {
+        console.log(e);
+      });
+    });
+  }
+
+  async finishTerminalShellRequest(terminalUuid: string): Promise<void> {
+    const currentWebSocket = shellWebSockets.find((shell) => {
+      return shell.terminalUuid === terminalUuid;
+    });
+
+    if (currentWebSocket) currentWebSocket.websocket.close();
   }
 }
