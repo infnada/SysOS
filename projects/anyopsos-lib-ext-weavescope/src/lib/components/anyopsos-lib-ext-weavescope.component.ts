@@ -33,6 +33,7 @@ export class AnyOpsOSLibExtWeavescopeComponent implements OnChanges, AfterViewIn
   @Input() nodes;
   @Input() simpleLayout: boolean = false;
   @Output() selectedNode = new EventEmitter<{}>();
+  @Output() selectedTopology = new EventEmitter<{}>();
 
   private destroySubject$: Subject<void> = new Subject();
   private state;
@@ -73,6 +74,11 @@ export class AnyOpsOSLibExtWeavescopeComponent implements OnChanges, AfterViewIn
       this.topologiesLoaded = this.state.get('topologiesLoaded');
       this.topologyNodeCountZero = this.TopologyUtils.isTopologyNodeCountZero(state);
 
+      // Send currentTopology as @Output
+      if (this.state && this.state.get('currentTopology')) {
+        this.selectedTopology.emit(state.get('currentTopology').toJS());
+      }
+
       // Send selectedNodeId as @Output
       const selectedNode = this.Selectors.nodeIdDetailsSelector(this.state);
       if (selectedNode) this.selectedNode.emit(selectedNode.toJS());
@@ -86,7 +92,7 @@ export class AnyOpsOSLibExtWeavescopeComponent implements OnChanges, AfterViewIn
       this.state = this.NodeDetailsUtils.closeAllNodeDetails(this.state);
       this.state = this.NodeDetailsUtils.clearNodes(this.state);
 
-      this.state = this.state.set('nodes', fromJS(nextProps.nodes.currentValue.nodes));
+      this.state = this.state.set('nodes', fromJS(nextProps.nodes.currentValue));
       this.state = this.state.set('nodesLoaded', true);
       this.state = this.state.set('forceRelayout', true);
       this.State.setState(this.state);

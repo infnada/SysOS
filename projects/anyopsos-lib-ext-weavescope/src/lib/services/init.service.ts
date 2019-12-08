@@ -63,7 +63,7 @@ export class InitService implements OnDestroy {
       this.state = this.state.set('topologiesLoaded', true);
     }
 
-    this.state = this.state.set('nodes', fromJS(nodes.nodes));
+    this.state = this.state.set('nodes', fromJS(nodes));
     this.state = this.state.set('nodesLoaded', true);
 
     const nodesForCurrentTopologyKey = ['nodesByTopology', this.state.get('currentTopologyId')];

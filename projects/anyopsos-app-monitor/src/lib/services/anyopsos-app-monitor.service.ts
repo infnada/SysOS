@@ -42,8 +42,8 @@ export class AnyOpsOSAppMonitorService {
     this.CredentialsManager = this.serviceInjector.get('AnyOpsOSAppCredentialsManagerService');
 
     this.dataStore = {connections: [], activeConnection: null};
-    this.$connections = new BehaviorSubject([]);
-    this.$activeConnection = new BehaviorSubject(null);
+    this.$connections = new BehaviorSubject(this.dataStore.connections);
+    this.$activeConnection = new BehaviorSubject(this.dataStore.activeConnection);
     this.connections = this.$connections.asObservable();
     this.activeConnection = this.$activeConnection.asObservable();
   }

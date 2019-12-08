@@ -29,18 +29,10 @@ export class ConnectionsModule {
 
   }
 
-  async newConnection(data: ConnectionSsh | ConnectionSftp | ConnectionLinux | ConnectionSnmp | ConnectionKubernetes | ConnectionDocker): Promise<void> {
-    let hopServer = null;
+  async newConnection(data: ConnectionSsh | ConnectionSftp | ConnectionLinux | ConnectionSnmp | ConnectionKubernetes | ConnectionDocker): Promise<any> {
 
-    /**
-     * KUBERNETES
-     */
-    if (data.type === 'kubernetes') return this.KubernetesSocketModule.newConnection(data as ConnectionKubernetes);
-
-    /**
-     * DOCKER
-     */
-    if (data.type === 'docker') return this.DockerSocketModule.newConnection(data as ConnectionDocker);
+    if (data.type === 'kubernetes') return this.KubernetesSocketModule.newConnection(data);
+    if (data.type === 'docker') return this.DockerSocketModule.newConnection(data);
 
     data.host = (
       validator.isIP(data.host + '') && data.host) ||
@@ -48,31 +40,8 @@ export class ConnectionsModule {
       (/^(([a-z]|[A-Z]|[0-9]|[!^(){}\-_~])+)?\w$/.test(data.host) && data.host
     );
 
-    /**
-     * SNMP
-     */
-    if (data.type === 'snmp') return this.SnmpSocketModule.newConnection(data as ConnectionSnmp);
-
-    /**
-     * SSH, SFTP, LINUX
-     */
-
+    if (data.type === 'snmp') return this.SnmpSocketModule.newConnection(data);
     if (data.type === 'linux' || data.type === 'ssh' || data.type === 'sftp') {
-      // Check if hop server
-      if (data.hophost) {
-        data.hophost = (
-          validator.isIP(data.hophost + '') && data.hophost) ||
-          (validator.isFQDN(data.hophost) && data.hophost) ||
-          (/^(([a-z]|[A-Z]|[0-9]|[!^(){}\-_~])+)?\w$/.test(data.hophost) && data.hophost
-          );
-
-        hopServer = {
-          host: data.hophost,
-          port: (validator.isInt(data.hopport + '', {min: 1, max: 65535}) && data.hopport) || config.ssh.port,
-          credential: await this.CredentialsModule.getCredential(this.socket.request.session.uuid, data.hopcredential)
-        };
-
-      }
 
       const mainServer = {
         host: data.host,
@@ -80,14 +49,13 @@ export class ConnectionsModule {
         credential: await this.CredentialsModule.getCredential(this.socket.request.session.uuid, data.credential)
       };
 
-
-      this.SshSocketModule.newConnection(data.type, data.uuid, mainServer, hopServer);
+      return this.SshSocketModule.newConnection(data.type, data.uuid, mainServer, data.hopServerUuid);
     }
 
   }
 
   closeConnection(type: string, uuid: string): void {
-    this.SshSocketModule.closeConnection(type, uuid);
+    if (type === 'ssh') this.SshSocketModule.closeConnection(uuid);
   }
 
 }

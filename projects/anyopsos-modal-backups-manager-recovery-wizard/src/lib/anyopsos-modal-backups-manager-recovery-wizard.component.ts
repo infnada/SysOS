@@ -1,5 +1,5 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
 import {ToastrService} from 'ngx-toastr';
@@ -101,15 +101,15 @@ export class AnyOpsOSModalBackupsManagerRecoveryWizardComponent implements OnIni
     this.ESXIHosts = this.InfrastructureManagerObjectHelper.getObjectsByType(null, 'HostSystem');
   }
 
-  get f1() {
+  get f1(): { [key: string]: AbstractControl } {
     return this.firstFormGroup.controls;
   }
 
-  get f2() {
+  get f2(): { [key: string]: AbstractControl } {
     return this.secondFormGroup.controls;
   }
 
-  get f3() {
+  get f3(): { [key: string]: AbstractControl } {
     return this.thirdFormGroup.controls;
   }
 

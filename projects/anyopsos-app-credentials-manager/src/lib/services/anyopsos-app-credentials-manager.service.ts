@@ -28,8 +28,8 @@ export class AnyOpsOSAppCredentialsManagerService {
               private Modal: AnyOpsOSLibModalService) {
 
     this.dataStore = { credentials: [], activeCredential: null };
-    this.$credentials = new BehaviorSubject([]);
-    this.$activeCredential = new BehaviorSubject(null);
+    this.$credentials = new BehaviorSubject(this.dataStore.credentials);
+    this.$activeCredential = new BehaviorSubject(this.dataStore.activeCredential);
     this.credentials = this.$credentials.asObservable();
     this.activeCredential = this.$activeCredential.asObservable();
   }

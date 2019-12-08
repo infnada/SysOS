@@ -92,7 +92,7 @@ export class AnyOpsOSModalInfrastructureManagerKubernetesLogsComponent implement
     }, 0);
   }
 
-  terminalUuidChanged(terminalUuid) {
+  terminalUuidChanged(terminalUuid: string): void {
     this.terminalUuid = terminalUuid;
   }
 

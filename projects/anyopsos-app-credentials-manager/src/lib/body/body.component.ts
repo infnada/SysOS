@@ -1,5 +1,5 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, FormControl, Validators} from '@angular/forms';
+import {FormBuilder, FormGroup, FormControl, Validators, AbstractControl} from '@angular/forms';
 
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
@@ -93,7 +93,7 @@ export class BodyComponent implements OnDestroy, OnInit {
     return undefined;
   }
 
-  get f() { return this.credentialForm.controls; }
+  get f(): { [key: string]: AbstractControl } { return this.credentialForm.controls; }
 
   toggleSide(): void {
     this.viewSide = !this.viewSide;
@@ -103,9 +103,7 @@ export class BodyComponent implements OnDestroy, OnInit {
     this.submitted = true;
 
     // stop here if form is invalid
-    if (this.credentialForm.invalid) {
-      return;
-    }
+    if (this.credentialForm.invalid) return;
 
     if (this.activeCredential !== null) this.credentialForm.value.uuid = this.activeCredential;
     delete this.credentialForm.value.confirmPassword;

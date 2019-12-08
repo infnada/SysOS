@@ -338,16 +338,19 @@ export class AnyOpsOSLibExtNetdataService {
    */
 
   deleteDashboard(uuid) {
-    this.dataStore.connections[uuid].NETDATA.abortAllRefreshes();
-    this.dataStore.connections[uuid].NETDATA.globalReset();
-    this.dataStore.connections[uuid].NETDATA.netdataShowAlarms = false;
+    const currentConnection = this.dataStore.connections[uuid];
+    if (!currentConnection) return;
 
-    if (this.dataStore.connections[uuid].NETDATA.chartRefresherTimeoutId) {
-      this.dataStore.connections[uuid].NETDATA.timeout.clear(this.dataStore.connections[uuid].NETDATA.chartRefresherTimeoutId);
+    currentConnection.NETDATA.abortAllRefreshes();
+    currentConnection.NETDATA.globalReset();
+    currentConnection.NETDATA.netdataShowAlarms = false;
+
+    if (currentConnection.NETDATA.chartRefresherTimeoutId) {
+      currentConnection.NETDATA.timeout.clear(currentConnection.NETDATA.chartRefresherTimeoutId);
     }
 
     // Remove connection references making sure no more alarm calls will be made
-    const updateEvery = this.dataStore.connections[uuid].NETDATA.alarms.update_every;
+    const updateEvery = currentConnection.NETDATA.alarms.update_every;
     setTimeout(this.dataStore.connections[uuid] = undefined, updateEvery);
   }
 

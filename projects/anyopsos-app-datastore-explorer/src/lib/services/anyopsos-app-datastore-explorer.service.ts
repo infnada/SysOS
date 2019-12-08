@@ -35,9 +35,9 @@ export class AnyOpsOSAppDatastoreExplorerService {
               private Modal: AnyOpsOSLibModalService,
               private VMWare: AnyOpsOSLibVmwareService) {
     this.dataStore = {connections: [], activeConnection: null, viewExchange: false};
-    this.$connections = new BehaviorSubject([]);
-    this.$activeConnection = new BehaviorSubject(null);
-    this.$viewExchange = new BehaviorSubject(false);
+    this.$connections = new BehaviorSubject(this.dataStore.connections);
+    this.$activeConnection = new BehaviorSubject(this.dataStore.activeConnection);
+    this.$viewExchange = new BehaviorSubject(this.dataStore.viewExchange);
     this.connections = this.$connections.asObservable();
     this.activeConnection = this.$activeConnection.asObservable();
     this.viewExchange = this.$viewExchange.asObservable();
@@ -130,7 +130,7 @@ export class AnyOpsOSAppDatastoreExplorerService {
 
     this.logger.debug('Datastore Explorer', 'Disconnecting connection', arguments);
 
-    this.socket.emit('[disconnect-session]', {
+    this.socket.emit('[session-disconnect]', {
       type: 'datastore-explorer',
       uuid
     });

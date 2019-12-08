@@ -6,13 +6,14 @@ import {ToastrModule} from 'ngx-toastr';
 
 import {AnyOpsOSLibAngularMaterialModule} from '@anyopsos/lib-angular-material';
 import {AnyOpsOSLibApplicationService} from '@anyopsos/lib-application';
+import {AnyOpsOSLibTerminalModule} from '@anyopsos/lib-terminal';
 
-import {ActionsComponent} from './actions/actions.component';
-import {BodyComponent} from './body/body.component';
-import {MenuComponent} from './menu/menu.component';
+import {ActionsComponent} from './components/actions/actions.component';
+import {BodyComponent} from './components/body/body.component';
+import {MenuComponent} from './components/menu/menu.component';
 import {AnyOpsOSAppSshService} from './services/anyopsos-app-ssh.service';
-import {BodyNewConnectionComponent} from './body/body-new-connection/body-new-connection.component';
-import {StatusComponent} from './status/status.component';
+import {BodyNewConnectionComponent} from './components/body/body-new-connection/body-new-connection.component';
+import {StatusComponent} from './components/status/status.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import {StatusComponent} from './status/status.component';
     ReactiveFormsModule,
     ToastrModule.forRoot(),
     // Shared module import
-    AnyOpsOSLibAngularMaterialModule
+    AnyOpsOSLibAngularMaterialModule,
+    AnyOpsOSLibTerminalModule
   ],
   exports: []
 })
@@ -42,7 +44,7 @@ export class AnyOpsOSAppSshModule {
       menu: true,
       actions: true,
       status: true,
-      style: {width: '870px', height: '600px', top: '7%', left: '10%'}
+      style: {width: '900px', height: '686px', top: '7%', left: '10%'}
     });
 
     this.Ssh.initConnections();

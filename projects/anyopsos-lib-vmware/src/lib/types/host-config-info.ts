@@ -1,5 +1,4 @@
 import {DynamicData} from './dynamic-data';
-
 import {HostDiagnosticPartition} from './host-diagnostic-partition';
 import {HostAuthenticationManagerInfo} from './host-authentication-manager-info';
 import {HostAutoStartManagerConfig} from './host-auto-start-manager-config';
@@ -34,7 +33,6 @@ import {HostServiceInfo} from './host-service-info';
 import {HostSharedGpuCapabilities} from './host-shared-gpu-capabilities';
 import {HostSriovDevicePoolInfo} from './host-sriov-device-pool-info';
 import {HostSslThumbprintInfo} from './host-ssl-thumbprint-info';
-import {HostSslThumbprintInfo} from './host-ssl-thumbprint-info';
 import {HostStorageDeviceInfo} from './host-storage-device-info';
 import {HostSystemResourceInfo} from './host-system-resource-info';
 import {HostSystemSwapConfiguration} from './host-system-swap-configuration';
@@ -44,6 +42,7 @@ import {HostVirtualNicManagerInfo} from './host-virtual-nic-manager-info';
 import {HostVMotionInfo} from './host-v-motion-info';
 import {VsanHostConfigInfo} from './vsan-host-config-info';
 import {Byte} from './byte';
+
 export interface HostConfigInfo extends DynamicData {
   activeDiagnosticPartition?: HostDiagnosticPartition;
   adminDisabled?: boolean;

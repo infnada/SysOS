@@ -1,12 +1,13 @@
 import {DynamicData} from './dynamic-data';
 import {Int} from './int';
+import {Double} from './double';
 
 export interface StoragePerformanceSummary extends DynamicData {
-  datastoreReadIops: double[];
-  datastoreReadLatency: double[];
-  datastoreVmLatency: double[];
-  datastoreWriteIops: double[];
-  datastoreWriteLatency: double[];
+  datastoreReadIops: Double[];
+  datastoreReadLatency: Double[];
+  datastoreVmLatency: Double[];
+  datastoreWriteIops: Double[];
+  datastoreWriteLatency: Double[];
   interval: Int;
   percentile: Int[];
   siocActivityDuration: Int;

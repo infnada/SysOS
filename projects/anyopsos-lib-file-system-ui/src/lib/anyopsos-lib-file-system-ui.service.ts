@@ -7,18 +7,18 @@ import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
 import {AnyOpsOSLibApplicationService} from '@anyopsos/lib-application';
 import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
-import {AnyOpsOSFile} from '@anyopsos/lib-types';
+import {AnyOpsOSFile} from '@anyopsos/lib-file';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AnyOpsOSLibFileSystemUiService {
 
-  private subjectRefreshPath = new Subject<any>();
-  private subjectGoToPath = new Subject<any>();
-  private subjectDownloadRemoteFile = new Subject<any>();
-  private subjectUploadFileToRemote = new Subject<any>();
-  private subjectUploadFileToanyOpsOS = new Subject<any>();
+  private subjectRefreshPath: Subject<string> = new Subject();
+  private subjectGoToPath: Subject<{ application: string; path: string; }> = new Subject();
+  private subjectDownloadRemoteFile: Subject<{ path: string; fileName: string; connectionUuid: string; applicationId: string; }> = new Subject();
+  private subjectUploadFileToRemote: Subject<{ path: string; fileName: string; applicationId: string; }> = new Subject();
+  private subjectUploadFileToanyOpsOS: Subject<{ dst: string; file: File; applicationId: string; }> = new Subject();
 
   private $copyFile: BehaviorSubject<object>;
   private $cutFile: BehaviorSubject<object>;
@@ -48,8 +48,8 @@ export class AnyOpsOSLibFileSystemUiService {
               private Applications: AnyOpsOSLibApplicationService) {
 
     this.dataStore = {copyFile: null, cutFile: null};
-    this.$copyFile = new BehaviorSubject(null);
-    this.$cutFile = new BehaviorSubject(null);
+    this.$copyFile = new BehaviorSubject(this.dataStore.copyFile);
+    this.$cutFile = new BehaviorSubject(this.dataStore.cutFile);
     this.copyFile = this.$copyFile.asObservable();
     this.cutFile = this.$cutFile.asObservable();
 
@@ -68,7 +68,7 @@ export class AnyOpsOSLibFileSystemUiService {
   /**
    * Called by custom Applications
    */
-  createHandler(handlerType: 'folder'|'rename'|'delete'|'download'|'move'|'copy', type: string, fn: (data?) => any) {
+  createHandler(handlerType: 'folder' | 'rename' | 'delete' | 'download' | 'move' | 'copy', type: string, fn: (data?) => any) {
 
     if (handlerType === 'folder') this.createFolderHandlers[type] = {fn};
     if (handlerType === 'rename') this.renameFileHandlers[type] = {fn};
@@ -452,39 +452,39 @@ export class AnyOpsOSLibFileSystemUiService {
   /**
    * Observers
    */
-  getObserverRefreshPath(): Observable<any> {
+  getObserverRefreshPath(): Observable<string> {
     return this.subjectRefreshPath.asObservable();
   }
 
-  sendGoToPath(data: { application: string, path: string }): void {
+  sendGoToPath(data: { application: string; path: string; }): void {
     this.subjectGoToPath.next(data);
   }
 
-  getObserverGoToPath(): Observable<any> {
+  getObserverGoToPath(): Observable<{ application: string; path: string; }> {
     return this.subjectGoToPath.asObservable();
   }
 
-  sendDownloadRemoteFile(data: { path: string, fileName: string, connectionUuid: string, applicationId: string }): void {
+  sendDownloadRemoteFile(data: { path: string; fileName: string; connectionUuid: string; applicationId: string; }): void {
     this.subjectDownloadRemoteFile.next(data);
   }
 
-  getObserverDownloadRemoteFile(): Observable<any> {
+  getObserverDownloadRemoteFile(): Observable<{ path: string; fileName: string; connectionUuid: string; applicationId: string; }> {
     return this.subjectDownloadRemoteFile.asObservable();
   }
 
-  sendUploadToRemote(data: { path: string, fileName: string, applicationId: string }): void {
+  sendUploadToRemote(data: { path: string; fileName: string; applicationId: string; }): void {
     this.subjectUploadFileToRemote.next(data);
   }
 
-  getObserverUploadToRemote(): Observable<any> {
+  getObserverUploadToRemote(): Observable<{ path: string; fileName: string; applicationId: string; }> {
     return this.subjectUploadFileToRemote.asObservable();
   }
 
-  sendUploadToanyOpsOS(data: { dst: string, file: File, applicationId: string }): void {
+  sendUploadToanyOpsOS(data: { dst: string; file: File; applicationId: string; }): void {
     this.subjectUploadFileToanyOpsOS.next(data);
   }
 
-  getObserverUploadToanyOpsOS(): Observable<any> {
+  getObserverUploadToanyOpsOS(): Observable<{ dst: string; file: File; applicationId: string; }> {
     return this.subjectUploadFileToanyOpsOS.asObservable();
   }
 }

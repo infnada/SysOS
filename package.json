@@ -17,7 +17,8 @@
   "private": false,
   "scripts": {
     "prod:start": "node dist/anyOpsOS/index.js",
-    "dev:start": "npm-run-all build dev:proxy",
+    "back:dev:start": "node --stack-size=1024 --stack-trace-limit=1000 dist/anyOpsOS/index.js",
+    "front:dev:start": "npm-run-all build dev:proxy",
     "dev:proxy": "ng serve --proxy-config proxy.conf.json",
     "copy-apps": "npm-run-all copy-umds move-umd-deps",
     "build": "npm-run-all clean lint-backend lint-frontend build-backend build-libs build-apps build-modals build-frontend copy-extra copy-apps",

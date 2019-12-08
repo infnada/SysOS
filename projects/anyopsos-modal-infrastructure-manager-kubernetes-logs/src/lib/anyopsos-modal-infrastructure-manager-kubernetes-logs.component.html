@@ -28,7 +28,7 @@
 
     <mat-checkbox class="pl-3" [(ngModel)]="showContainersName" (ngModelChange)="showContainersNameChanged()">Show Containers name in logs</mat-checkbox>
 
-    <slterm-terminal [terminalType]="'container_logs'" [terminalUuid]="terminalUuid" (terminalUuidChange)="terminalUuidChanged($event)"></slterm-terminal>
+    <slterm-terminal class="w-100 h-100" [terminalType]="'container_logs'" [terminalUuid]="terminalUuid" (terminalUuidChange)="terminalUuidChanged($event)"></slterm-terminal>
   </ng-container>
 
 </div>

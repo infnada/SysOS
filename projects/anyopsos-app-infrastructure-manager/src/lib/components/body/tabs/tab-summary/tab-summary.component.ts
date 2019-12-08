@@ -19,8 +19,9 @@ export interface Tag {
 })
 export class TabSummaryComponent implements OnInit {
   @ViewChild('scrollToElement') scrollToElement: ElementRef<HTMLInputElement>;
-
   @Input() nmObject: ImDataObject;
+
+  private currentGraphTopology: string = null;
 
   tags: Tag[] = [
     {name: 'tag', category: 'category'},
@@ -61,16 +62,18 @@ export class TabSummaryComponent implements OnInit {
   }
 
   /**
-   * Weavescope graph
+   * NodeGraph
    */
   scrollTo(): void {
-    console.log(this.scrollToElement);
-    console.log(this.scrollToElement.nativeElement.parentElement.parentElement);
     this.Utils.angularElementScrollTo(this.scrollToElement.nativeElement.parentElement.parentElement, true);
   }
 
   setNodeGraphNodes() {
-    return this.InfrastructureManagerNodeGraph.setNodeGraphNodes();
+    return this.InfrastructureManagerNodeGraph.setNodeGraphNodes(this.currentGraphTopology, this.InfrastructureManager.getActiveObject());
+  }
+
+  selectedTopologyChange($event) {
+    this.currentGraphTopology = $event;
   }
 
   selectedNodeChange($event) {

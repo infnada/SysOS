@@ -1,5 +1,5 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {Component, ElementRef, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {AbstractControl, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {takeUntil} from 'rxjs/operators';
 import {Subject} from 'rxjs';
 
@@ -12,7 +12,6 @@ import {Credential} from '@anyopsos/app-credentials-manager';
 import {AnyOpsOSAppInfrastructureManagerService} from '../../../services/anyopsos-app-infrastructure-manager.service';
 import {AnyOpsOSAppInfrastructureManagerNodeGraphService} from '../../../services/anyopsos-app-infrastructure-manager-node-graph.service';
 
-import {ImConnection} from '../../../types/connections/im-connection';
 import {ConnectionTypes} from '../../../types/connections/connection-types';
 
 @Component({
@@ -21,10 +20,12 @@ import {ConnectionTypes} from '../../../types/connections/connection-types';
   styleUrls: ['./body-new-connection.component.scss']
 })
 export class BodyNewConnectionComponent implements OnInit, OnDestroy {
+  @ViewChild('scrollToElement') scrollToElement: ElementRef<HTMLInputElement>;
   @Input() application: Application;
 
   private destroySubject$: Subject<void> = new Subject();
   private CredentialsManager;
+  private currentGraphTopology: string = null;
 
   credentials: Credential[];
   connectionForm: FormGroup;
@@ -102,10 +103,7 @@ export class BodyNewConnectionComponent implements OnInit, OnDestroy {
      */
     this.InfrastructureManager.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe((activeConnection: string) => {
       if (!activeConnection) {
-
-        // Reset form if needed on 'New Connection'
-        // If valid is because user clicked on a connection with state 'disconnected' and then did 'New Connection'
-        if (this.connectionForm.touched || this.connectionForm.valid) this.connectionForm.reset();
+        this.connectionForm.reset();
         return this.newConnectionType = null;
       }
 
@@ -136,7 +134,7 @@ export class BodyNewConnectionComponent implements OnInit, OnDestroy {
     });
   }
 
-  get f() { return this.connectionForm.controls; }
+  get f(): { [key: string]: AbstractControl } { return this.connectionForm.controls; }
 
   setConnectionType(type: string): void {
     this.newConnectionType = type;
@@ -170,14 +168,22 @@ export class BodyNewConnectionComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Weavescope graph
+   * NodeGraph
    */
   scrollTo(): void {
-    this.Utils.scrollTo('infrastructure-manager_main-body', true);
+    console.log(this.scrollToElement);
+    console.log(this.scrollToElement.nativeElement);
+    console.log(this.scrollToElement.nativeElement.parentElement);
+    console.log(this.scrollToElement.nativeElement.parentElement.parentElement);
+    this.Utils.angularElementScrollTo(this.scrollToElement.nativeElement.parentElement.parentElement, true);
   }
 
   setNodeGraphNodes() {
-    return this.InfrastructureManagerNodeGraph.setNodeGraphNodes();
+    return this.InfrastructureManagerNodeGraph.setNodeGraphNodes(this.currentGraphTopology);
+  }
+
+  selectedTopologyChange($event) {
+    this.currentGraphTopology = $event;
   }
 
   selectedNodeChange($event) {

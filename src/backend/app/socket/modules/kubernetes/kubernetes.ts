@@ -4,10 +4,10 @@ import {Request} from 'request';
 import WebSocket from 'isomorphic-ws';
 import uuid from 'uuid';
 
-import {ConnectionKubernetes} from '../../../interfaces/socket-connections/connection-kubernetes';
-import {KubernetesSessionsModule} from './kubernetes-sessions';
 import {TerminalsModule} from '../terminals';
+import {KubernetesSessionsModule} from './kubernetes-sessions';
 import {SocketModule} from '../socket';
+import {ConnectionKubernetes} from '../../../interfaces/socket-connections/connection-kubernetes';
 
 const logsRequests: {
   terminalUuid: string;
@@ -127,10 +127,7 @@ export class KubernetesSocketModule {
       const emitData = () => {
         if (!this.socket) return;
 
-        this.TerminalsModule.terminalStout({
-          uuid: terminalUuid,
-          data: currentData
-        });
+        this.TerminalsModule.terminalStout(terminalUuid, currentData);
 
         currentData = '';
       };

@@ -24,7 +24,7 @@ import {ConnectionTypes} from '../types/connections/connection-types';
   providedIn: 'root'
 })
 export class AnyOpsOSAppInfrastructureManagerService {
-  private subjectConnectGetData = new Subject<any>();
+  private subjectConnectGetData: Subject<ConnectionTypes> = new Subject();
 
   private $connections: BehaviorSubject<ConnectionTypes[]>;
   private $activeConnection: BehaviorSubject<string>;
@@ -419,9 +419,9 @@ export class AnyOpsOSAppInfrastructureManagerService {
     this.logger.debug('Infrastructure Manager', 'Disconnecting connection');
 
     if (this.getConnectionByUuid(connectionUuid).type === 'linux') {
-      this.socket.emit('[disconnect-session]', {
+      this.socket.emit('[session-disconnect]', {
         type: 'linux',
-        connectionUuid
+        uuid: connectionUuid
       });
     }
 

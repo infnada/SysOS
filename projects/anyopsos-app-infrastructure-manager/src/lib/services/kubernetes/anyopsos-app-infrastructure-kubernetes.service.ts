@@ -46,7 +46,7 @@ export class AnyOpsOSAppInfrastructureKubernetesService {
 
     this.createConnectionFolders(connection.uuid);
 
-    return this.socket.emit('[new-session]', {
+    return this.socket.emit('[session-new]', {
       type: 'kubernetes',
       clusterName: connection.clusterName,
       clusterServer: connection.clusterServer,
@@ -86,9 +86,9 @@ export class AnyOpsOSAppInfrastructureKubernetesService {
     });
   }
 
-  private createNamespaceFolders(connectionUuid: string, object: ImDataObject) {
+  private createNamespaceFolders(connectionUuid: string, namespaceObj: ImDataObject) {
 
-    const parent = object.info.obj;
+    const parent = namespaceObj.info.obj;
     const folders = [
       'Ingresses',
       'Services',
@@ -106,11 +106,11 @@ export class AnyOpsOSAppInfrastructureKubernetesService {
         name: folder,
         type: 'Folder',
         info: {
-          uuid: `${connectionUuid};\u003c${object.name}${folder}:Folder\u003e`,
+          uuid: `${connectionUuid};\u003c${namespaceObj.name}-${folder}:Folder\u003e`,
           mainUuid: connectionUuid,
           obj: {
             type: 'Folder',
-            name: object.name + folder
+            name: `${namespaceObj.name}-${folder}`
           },
           parent,
           data: {}
@@ -141,43 +141,43 @@ export class AnyOpsOSAppInfrastructureKubernetesService {
 
       const objectParent = (object.metadata.ownerReferences ? {
         type: object.metadata.ownerReferences[0].kind,
-        name: object.metadata.ownerReferences[0].name
+        name: object.metadata.ownerReferences[0].uid
       } :
 
       object.kind === 'Event' ? {
         type: object.involvedObject.kind,
-        name: object.involvedObject.name,
+        name: object.involvedObject.uid,
       } :
 
       object.metadata.namespace ?
 
         object.kind === 'Endpoints' ? {
           type: 'Folder',
-          name: object.metadata.namespace + 'Endpoints'
+          name: object.metadata.namespace + '-Endpoints'
         } : object.kind === 'Ingress' ? {
           type: 'Folder',
-          name: object.metadata.namespace + 'Ingresses'
+          name: object.metadata.namespace + '-Ingresses'
         } : object.kind === 'Service' ? {
           type: 'Folder',
-          name: object.metadata.namespace + 'Services'
+          name: object.metadata.namespace + '-Services'
         } : object.kind === 'ConfigMap' ? {
           type: 'Folder',
-          name: object.metadata.namespace + 'Config Maps'
+          name: object.metadata.namespace + '-Config Maps'
         } : object.kind === 'PersistentVolumeClaim' ? {
           type: 'Folder',
-          name: object.metadata.namespace + 'Persistent Volume Claims'
+          name: object.metadata.namespace + '-Persistent Volume Claims'
         } : object.kind === 'Secret' ? {
           type: 'Folder',
-          name: object.metadata.namespace + 'Secrets'
+          name: object.metadata.namespace + '-Secrets'
         } : object.kind === 'ServiceAccount' ? {
           type: 'Folder',
-          name: object.metadata.namespace + 'Service Accounts'
+          name: object.metadata.namespace + '-Service Accounts'
         } : object.kind === 'RoleBinding' ? {
           type: 'Folder',
-          name: object.metadata.namespace + 'Role Bindings'
+          name: object.metadata.namespace + '-Role Bindings'
         } : object.kind === 'Role' ? {
           type: 'Folder',
-          name: object.metadata.namespace + 'Roles'
+          name: object.metadata.namespace + '-Roles'
         } : {
           type: 'Namespace',
           name: object.metadata.namespace
@@ -206,15 +206,18 @@ export class AnyOpsOSAppInfrastructureKubernetesService {
       // ControllerRevision
       // VolumeAttachment
       // Event
+
+      // Cause the way top nodes (DaemonSet, StatefulSet...) are handled (without ownerReferences), the obj.name for a
+      // namespace is based on namespace name instead of namespace uid
       const newObj: ImDataObject = {
         name: object.metadata.name,
         type: object.kind,
         info: {
-          uuid: `${sockData.uuid};\u003c${object.metadata.name}:${object.kind}\u003e`,
+          uuid: `${sockData.uuid};\u003c${object.metadata.uid}:${object.kind}\u003e`,
           mainUuid: sockData.uuid,
           obj: {
             type: object.kind,
-            name: object.metadata.name
+            name: object.kind === 'Namespace' ? object.metadata.name : object.metadata.uid
           },
           parent: objectParent,
           data: object

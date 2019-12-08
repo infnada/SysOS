@@ -1,5 +1,5 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {AbstractControl, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 
 import {takeUntil} from 'rxjs/operators';
 import {Subject} from 'rxjs';
@@ -46,9 +46,9 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
 
     this.DatastoreExplorer.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe((activeConnection: string) => {
 
-      if (!activeConnection) return;
+      if (!activeConnection) return this.connectionForm.reset();
 
-      (this.connectionForm.controls.datastore as FormControl).setValue(this.getActiveConnection());
+      this.connectionForm.controls.datastore.setValue(this.getActiveConnection());
     });
 
     /**
@@ -93,7 +93,7 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
     this.destroySubject$.next();
   }
 
-  get f() { return this.connectionForm.controls; }
+  get f(): { [key: string]: AbstractControl } { return this.connectionForm.controls; }
 
   setConnectionType(type: string): void {
     this.newConnectionType = type;

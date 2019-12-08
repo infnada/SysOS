@@ -16,7 +16,7 @@ import {AnyOpsOSLibKubernetesService} from '@anyopsos/lib-kubernetes';
 })
 export class AnyOpsOSModalInfrastructureManagerKubernetesShellComponent implements OnInit {
   @Input() object: ImDataObject;
-  @Input() shellType: 'exec'|'attach' = 'attach';
+  @Input() shellType: 'exec' | 'attach' = 'attach';
 
   private InfrastructureManagerObjectHelper;
 
@@ -62,7 +62,7 @@ export class AnyOpsOSModalInfrastructureManagerKubernetesShellComponent implemen
     }, 0);
   }
 
-  terminalUuidChanged(terminalUuid) {
+  terminalUuidChanged(terminalUuid: string): void {
     this.terminalUuid = terminalUuid;
   }
 }

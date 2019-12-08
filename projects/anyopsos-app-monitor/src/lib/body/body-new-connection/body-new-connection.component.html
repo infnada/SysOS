@@ -1,4 +1,4 @@
-<slews-anyopsos-lib-ext-weavescope [nodes]="setWeaveScopeNodes()" (selectedNode)="selectedNodeChange($event)">
+<slews-anyopsos-lib-ext-weavescope [nodes]="setNodeGraphNodes()" (selectedNode)="selectedNodeChange($event)">
 
   <div class="col text-center" style="
     position: absolute;
@@ -66,7 +66,7 @@
       </div>
     </div>
 
-    <mat-form-field class="w-100">
+    <mat-form-field class="w-100" *ngIf="linkGroups">
       <input type="text" matInput placeholder="Link to Node" formControlName="linkTo" [matAutocomplete]="autoGroup">
       <mat-autocomplete #autoGroup="matAutocomplete" [displayWith]="displayFn">
         <mat-optgroup *ngFor="let group of linkToOptions | async" [label]="group.type">

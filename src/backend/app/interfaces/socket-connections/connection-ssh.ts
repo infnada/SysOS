@@ -5,7 +5,5 @@ export interface ConnectionSsh extends Connection {
   host: string;
   port: number;
   credential: string;
-  hophost?: string;
-  hopport?: number;
-  hopcredential?: string;
+  hopServerUuid: string;
 }

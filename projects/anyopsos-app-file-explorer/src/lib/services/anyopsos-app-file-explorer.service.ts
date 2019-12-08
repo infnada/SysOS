@@ -4,13 +4,13 @@ import {BehaviorSubject, Observable, Subject} from 'rxjs';
 
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
-import {AnyOpsOSFile} from '@anyopsos/lib-types';
+import {AnyOpsOSFile} from '@anyopsos/lib-file';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AnyOpsOSAppFileExplorerService {
-  private subjectGoPathBack = new Subject<any>();
+  private subjectGoPathBack: Subject<void> = new Subject();
 
   private $currentPath: BehaviorSubject<string>;
   private $currentData: BehaviorSubject<AnyOpsOSFile[]>;
@@ -29,11 +29,11 @@ export class AnyOpsOSAppFileExplorerService {
 
   constructor(private logger: AnyOpsOSLibLoggerService,
               private FileSystem: AnyOpsOSLibFileSystemService) {
-    this.dataStore = {currentPath: '/', currentData: [], viewAsList: false, search: null};
-    this.$currentPath = new BehaviorSubject('/');
-    this.$currentData = new BehaviorSubject([]);
-    this.$viewAsList = new BehaviorSubject(false);
-    this.$search = new BehaviorSubject({filename: null});
+    this.dataStore = {currentPath: '/', currentData: [], viewAsList: false, search: {filename: null}};
+    this.$currentPath = new BehaviorSubject(this.dataStore.currentPath);
+    this.$currentData = new BehaviorSubject(this.dataStore.currentData);
+    this.$viewAsList = new BehaviorSubject(this.dataStore.viewAsList);
+    this.$search = new BehaviorSubject(this.dataStore.search);
     this.currentPath = this.$currentPath.asObservable();
     this.currentData = this.$currentData.asObservable();
     this.viewAsList = this.$viewAsList.asObservable();

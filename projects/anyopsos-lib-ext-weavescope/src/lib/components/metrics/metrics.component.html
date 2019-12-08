@@ -1,5 +1,5 @@
 <div class="metric-selector">
-  <div class="metric-selector-wrapper" (mouseleave)="onMouseOut" *ngIf="!availableMetrics.isEmpty()">
+  <div class="metric-selector-wrapper" (mouseleave)="onMouseOut" *ngIf="availableMetrics && !availableMetrics.isEmpty()">
 
     <div
       *ngFor="let metric of availableMetrics"
@@ -11,5 +11,6 @@
         {{metric.get('label')}}
         <i class="fas fa-thumbtack" *ngIf="metric.get('label') === pinnedMetricType"></i>
     </div>
+  </div>
 
 </div>

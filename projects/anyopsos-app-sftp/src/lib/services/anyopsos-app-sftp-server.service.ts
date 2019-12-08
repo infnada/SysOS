@@ -7,7 +7,7 @@ import {Socket} from 'ngx-socket-io';
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
 import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
-import {AnyOpsOSFile} from '@anyopsos/lib-types';
+import {AnyOpsOSFile} from '@anyopsos/lib-file';
 
 import {AnyOpsOSAppSftpService} from './anyopsos-app-sftp.service';
 import {SftpConnection} from '../types/sftp-connection';
@@ -16,8 +16,8 @@ import {SftpConnection} from '../types/sftp-connection';
   providedIn: 'root'
 })
 export class AnyOpsOSAppSftpServerService {
-  private subjectGoPathBack = new Subject<any>();
-  private subjectFileProgress = new Subject<any>();
+  private subjectGoPathBack: Subject<void> = new Subject();
+  private subjectFileProgress: Subject<void> = new Subject();
 
   private $currentPath: BehaviorSubject<string>;
   private $currentData: BehaviorSubject<AnyOpsOSFile[]>;
@@ -40,11 +40,11 @@ export class AnyOpsOSAppSftpServerService {
               private Modal: AnyOpsOSLibModalService,
               private FileSystem: AnyOpsOSLibFileSystemService,
               private Sftp: AnyOpsOSAppSftpService) {
-    this.dataStore = {currentPath: '/', currentData: [], viewAsList: false, search: null};
-    this.$currentPath = new BehaviorSubject('/');
-    this.$currentData = new BehaviorSubject([]);
-    this.$viewAsList = new BehaviorSubject(false);
-    this.$search = new BehaviorSubject({filename: null});
+    this.dataStore = {currentPath: '/', currentData: [], viewAsList: false, search: {filename: null}};
+    this.$currentPath = new BehaviorSubject(this.dataStore.currentPath);
+    this.$currentData = new BehaviorSubject(this.dataStore.currentData);
+    this.$viewAsList = new BehaviorSubject(this.dataStore.viewAsList);
+    this.$search = new BehaviorSubject(this.dataStore.search);
     this.currentPath = this.$currentPath.asObservable();
     this.currentData = this.$currentData.asObservable();
     this.viewAsList = this.$viewAsList.asObservable();

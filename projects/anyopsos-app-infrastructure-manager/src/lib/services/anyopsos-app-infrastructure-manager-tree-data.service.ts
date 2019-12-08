@@ -29,7 +29,7 @@ export class AnyOpsOSAppInfrastructureManagerTreeDataService implements OnDestro
       treeData: []
     };
 
-    this.$treeData = new BehaviorSubject([]);
+    this.$treeData = new BehaviorSubject(this.dataStore.treeData);
     this.treeData = this.$treeData.asObservable();
 
     // Subscribe to Connections

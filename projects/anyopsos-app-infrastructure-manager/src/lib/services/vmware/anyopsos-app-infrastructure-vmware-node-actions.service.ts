@@ -23,7 +23,7 @@ export class AnyOpsOSAppInfrastructureVmwareNodeActionsService {
   /**
    * Perform basic VM operations
    */
-  doWithVM(connectionUuid: string, vm: ImDataObject & { info: { data: VMWareVM } }, action: 'powerOn'|'powerOff'|'suspend'|'reset'|'powerOffGuestOS'|'restartGuestOS'|'refresh'): void {
+  doWithVM(connectionUuid: string, vm: ImDataObject & { info: { data: VMWareVM } }, action: 'powerOn' | 'powerOff' | 'suspend' | 'reset' | 'powerOffGuestOS' | 'restartGuestOS' | 'refresh'): void {
 
     const connection: ConnectionVmware = this.InfrastructureManager.getConnectionByUuid(connectionUuid) as ConnectionVmware;
 

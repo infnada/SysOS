@@ -12,16 +12,16 @@ import {AnyOpsOSLibApplicationService} from '@anyopsos/lib-application';
 import {AnyOpsOSLibFileModule} from '@anyopsos/lib-file';
 import {AnyOpsOSLibFolderModule} from '@anyopsos/lib-folder';
 
-import {ActionsComponent} from './actions/actions.component';
-import {ActionsLocalComponent} from './actions/actions-local/actions-local.component';
-import {ActionsServerComponent} from './actions/actions-server/actions-server.component';
-import {BodyComponent} from './body/body.component';
-import {BodyLocalComponent} from './body/body-local/body-local.component';
-import {BodyServerComponent} from './body/body-server/body-server.component';
-import {BodyExchangeComponent} from './body/body-exchange/body-exchange.component';
-import {BodyNewConnectionComponent} from './body/body-new-connection/body-new-connection.component';
-import {MenuComponent} from './menu/menu.component';
-import {StatusComponent} from './status/status.component';
+import {ActionsComponent} from './components/actions/actions.component';
+import {ActionsLocalComponent} from './components/actions/actions-local/actions-local.component';
+import {ActionsServerComponent} from './components/actions/actions-server/actions-server.component';
+import {BodyComponent} from './components/body/body.component';
+import {BodyLocalComponent} from './components/body/body-local/body-local.component';
+import {BodyServerComponent} from './components/body/body-server/body-server.component';
+import {BodyExchangeComponent} from './components/body/body-exchange/body-exchange.component';
+import {BodyNewConnectionComponent} from './components/body/body-new-connection/body-new-connection.component';
+import {MenuComponent} from './components/menu/menu.component';
+import {StatusComponent} from './components/status/status.component';
 import {AnyOpsOSAppSftpServerService} from './services/anyopsos-app-sftp-server.service';
 
 @NgModule({

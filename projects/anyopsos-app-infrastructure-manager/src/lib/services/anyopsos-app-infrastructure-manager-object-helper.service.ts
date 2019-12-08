@@ -120,9 +120,18 @@ export class AnyOpsOSAppInfrastructureManagerObjectHelperService {
   /**
    * Returns object by specific objectUuid
    */
-  getObjectByUuid(connectionUuid: string, objectUuid: string): ImDataObject {
+  getObjectByUuid(connectionUuid: string = null, objectUuid: string): ImDataObject {
+    if (!connectionUuid) connectionUuid = this.extractMainUuidFromObjectUuid(objectUuid);
+
     return this.getConnectionData(connectionUuid).find((imObj: ImDataObject) => {
       return imObj.info.uuid === objectUuid;
     });
+  }
+
+  /**
+   * Returns object by by custom filter
+   */
+  getObjectByCustomFilter(connectionUuid: string, customFilter: (imObj) => boolean): ImDataObject[] {
+    return this.getConnectionData(connectionUuid).filter(customFilter);
   }
 }

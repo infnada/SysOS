@@ -67,6 +67,7 @@ export class ActionsComponent implements OnDestroy {
   newConnection(): void {
     if (this.activeConnection === null) return this.Utils.scrollTo('infrastructure-manager_main-body', true);
 
+    // even if activeConnection === null, set it again to reset possible Form changes
     this.InfrastructureManager.setActiveConnection(null);
     setTimeout(() => this.Utils.scrollTo('infrastructure-manager_main-body', true), 100);
   }

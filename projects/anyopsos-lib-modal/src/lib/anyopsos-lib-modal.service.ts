@@ -147,7 +147,7 @@ export class AnyOpsOSLibModalService {
   /**
    * Change type of already created modal
    */
-  changeModalType(type: 'primary'|'secondary'|'success'|'danger'|'warning'|'info'|'light'|'dark'|'white', selector: string) {
+  changeModalType(type: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark' | 'white', selector: string) {
     this.modalInstances[selector].componentInstance.type = type;
   }
 

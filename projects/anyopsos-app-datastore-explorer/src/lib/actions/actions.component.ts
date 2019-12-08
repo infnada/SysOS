@@ -39,9 +39,9 @@ export class ActionsComponent implements OnDestroy, OnInit {
     this.DatastoreExplorer.toggleExchange();
   }
 
-  newConnection() {
-    if (this.activeConnection === null) return;
+  newConnection(): void {
 
+    // even if activeConnection === null, set it again to reset possible Form changes
     this.DatastoreExplorer.setActiveConnection(null);
   }
 

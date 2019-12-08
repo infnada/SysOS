@@ -4,7 +4,7 @@ import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
 import {Application} from '@anyopsos/lib-application';
-import {AnyOpsOSFile} from '@anyopsos/lib-types';
+import {AnyOpsOSFile} from '@anyopsos/lib-file';
 import {AnyOpsOSLibFileSystemUiService} from '@anyopsos/lib-file-system-ui';
 
 import {AnyOpsOSAppDatastoreExplorerService} from '../../services/anyopsos-app-datastore-explorer.service';
@@ -108,7 +108,7 @@ export class ActionsServerComponent implements OnDestroy, OnInit {
   /**
    * Go to any folders by a given path
    */
-  goToPath(path: string|number): void {
+  goToPath(path: string | number): void {
     const newPath = (typeof path === 'string' ? path : this.currentPath.split('/').splice(0, path + 1).join('/') + '/');
 
     // Push the actual path to lastPath array (used by goPathBack()) when currentPath exists.

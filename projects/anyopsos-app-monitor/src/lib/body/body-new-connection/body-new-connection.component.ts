@@ -1,5 +1,5 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+import {AbstractControl, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 
 import {Observable, Subject} from 'rxjs';
 import {map, startWith, takeUntil} from 'rxjs/operators';
@@ -58,11 +58,6 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
     this.CredentialsManager.credentials.pipe(takeUntil(this.destroySubject$)).subscribe(credentials => this.credentials = credentials);
     this.InfrastructureManagerNodeGraph = this.serviceInjector.get('AnyOpsOSAppInfrastructureManagerNodeGraphService');
     this.InfrastructureManagerObjectHelper = this.serviceInjector.get('AnyOpsOSAppInfrastructureManagerObjectHelperService');
-
-    this.linkGroups = [{
-      type: 'Virtual Machines',
-      nodes: this.InfrastructureManagerObjectHelper.getObjectsByType('VirtualMachine')
-    }];
   }
 
   ngOnInit() {
@@ -81,6 +76,28 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
       type: [null]
     });
 
+    // Create linkGroups with VMs, Nodes, Pods...
+    const linkVirtualMachines = this.InfrastructureManagerObjectHelper.getObjectsByType(null, 'VirtualMachine');
+    const linkPods = this.InfrastructureManagerObjectHelper.getObjectsByType(null, 'Pod');
+    const linkNodes = this.InfrastructureManagerObjectHelper.getObjectsByType(null, 'Node');
+    if (linkVirtualMachines.length !== 0 || linkPods.length !== 0 || linkNodes.length !== 0) {
+      // TODO: Make this private
+      this.linkGroups = [
+        {
+          type: 'Virtual Machines',
+          nodes: linkVirtualMachines
+        },
+        {
+          type: 'Pods',
+          nodes: linkPods
+        },
+        {
+          type: 'Nodes',
+          nodes: linkNodes
+        }
+      ];
+    }
+
     this.linkToOptions = this.connectionForm.get('linkTo').valueChanges
       .pipe(
         startWith(''),
@@ -89,23 +106,20 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
 
     this.Monitor.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe((activeConnection: string) => {
       if (!activeConnection) {
-
-        // Reset form if needed on 'New Connection'
-        // If valid is because user clicked on a connection with state 'disconnected' and then did 'New Connection'
-        if (this.connectionForm.touched || this.connectionForm.valid) this.connectionForm.reset();
+        this.connectionForm.reset();
         return this.newConnectionType = null;
       }
 
       this.newConnectionType = this.getActiveConnection().type;
 
-      (this.connectionForm.controls.description as FormControl).setValue(this.getActiveConnection().description);
-      (this.connectionForm.controls.url as FormControl).setValue(this.getActiveConnection().url);
-      (this.connectionForm.controls.withCredential as FormControl).setValue(this.getActiveConnection().withCredential);
-      (this.connectionForm.controls.credential as FormControl).setValue(this.getActiveConnection().credential);
-      (this.connectionForm.controls.save as FormControl).setValue(this.getActiveConnection().save);
-      (this.connectionForm.controls.autologin as FormControl).setValue(this.getActiveConnection().autologin);
-      (this.connectionForm.controls.uuid as FormControl).setValue(this.getActiveConnection().uuid);
-      (this.connectionForm.controls.type as FormControl).setValue(this.getActiveConnection().type);
+      this.connectionForm.controls.description.setValue(this.getActiveConnection().description);
+      this.connectionForm.controls.url.setValue(this.getActiveConnection().url);
+      this.connectionForm.controls.withCredential.setValue(this.getActiveConnection().withCredential);
+      this.connectionForm.controls.credential.setValue(this.getActiveConnection().credential);
+      this.connectionForm.controls.save.setValue(this.getActiveConnection().save);
+      this.connectionForm.controls.autologin.setValue(this.getActiveConnection().autologin);
+      this.connectionForm.controls.uuid.setValue(this.getActiveConnection().uuid);
+      this.connectionForm.controls.type.setValue(this.getActiveConnection().type);
     });
 
   }
@@ -129,7 +143,7 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
     return node ? node.name : undefined;
   }
 
-  get f() { return this.connectionForm.controls; }
+  get f(): { [key: string]: AbstractControl } { return this.connectionForm.controls; }
 
   setConnectionType(type: string): void {
     this.newConnectionType = type;
@@ -165,8 +179,8 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
     this.Utils.scrollTo('monitor_main-body', true);
   }
 
-  setWeaveScopeNodes() {
-    return this.InfrastructureManagerNodeGraph.setWeaveScopeNodes();
+  setNodeGraphNodes() {
+    return this.InfrastructureManagerNodeGraph.setNodeGraphNodes();
   }
 
   selectedNodeChange($event) {

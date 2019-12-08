@@ -4,20 +4,20 @@ import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {Socket} from 'ngx-socket-io';
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 
-import {AnyOpsOSFile} from '@anyopsos/lib-types';
+import {AnyOpsOSFile} from '@anyopsos/lib-file';
 import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AnyOpsOSAppSftpLocalService {
-  private subjectGoPathBack = new Subject<any>();
+  private subjectGoPathBack: Subject<void> = new Subject();
 
   private $currentPath: BehaviorSubject<string>;
   private $currentData: BehaviorSubject<AnyOpsOSFile[]>;
   private $viewAsList: BehaviorSubject<boolean>;
   private $search: BehaviorSubject<object>;
-  private dataStore: {  // This is where we will store our data in memory
+  private dataStore: { // This is where we will store our data in memory
     currentPath: string,
     currentData: AnyOpsOSFile[],
     viewAsList: boolean,
@@ -33,11 +33,11 @@ export class AnyOpsOSAppSftpLocalService {
   constructor(private logger: AnyOpsOSLibLoggerService,
               private socket: Socket,
               private FileSystem: AnyOpsOSLibFileSystemService) {
-    this.dataStore = {currentPath: '/', currentData: [], viewAsList: false, search: null};
-    this.$currentPath = new BehaviorSubject('/');
-    this.$currentData = new BehaviorSubject([]);
-    this.$viewAsList = new BehaviorSubject(false);
-    this.$search = new BehaviorSubject({filename: null});
+    this.dataStore = {currentPath: '/', currentData: [], viewAsList: false, search: {filename: null}};
+    this.$currentPath = new BehaviorSubject(this.dataStore.currentPath);
+    this.$currentData = new BehaviorSubject(this.dataStore.currentData);
+    this.$viewAsList = new BehaviorSubject(this.dataStore.viewAsList);
+    this.$search = new BehaviorSubject(this.dataStore.search);
     this.currentPath = this.$currentPath.asObservable();
     this.currentData = this.$currentData.asObservable();
     this.viewAsList = this.$viewAsList.asObservable();

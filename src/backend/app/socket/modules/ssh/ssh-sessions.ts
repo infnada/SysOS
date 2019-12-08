@@ -1,15 +1,13 @@
 import * as path from 'path';
 import readConfig from 'read-config';
-import {Client} from 'ssh2';
+import {Client, SFTPWrapper} from 'ssh2';
 
 import {SshServer} from '../../../interfaces/ssh-server';
 
 const config =  readConfig(path.join(__dirname, '../../../filesystem/etc/expressjs/config.json'));
-const sshSessions: { ssh: Client[]; sftp: []; smanager: []; } = {
-  ssh: [],
-  sftp: [],
-  smanager: []
-};
+
+const sshSessions: Client[] = [];
+const SFTPWrappers: SFTPWrapper[] = [];
 
 export class SshSessionsModule {
 
@@ -19,43 +17,28 @@ export class SshSessionsModule {
 
   }
 
-  async createSession(type: string, uuid: string, mainServer: SshServer, hopServer: SshServer): Promise<Client & { sftpSession: any }> {
-    sshSessions[type][uuid] = new Client();
+  async createSession(type: string, uuid: string, mainServer: SshServer, hopServerUuid: string): Promise<Client> {
+    sshSessions[uuid] = new Client();
 
     // Hop server connection
-    if (hopServer) {
-      await sshSessions[type][uuid + 'hop'].connect({
-        host: hopServer.host,
-        port: hopServer.port,
-        username: hopServer.credential.fields.UserName,
-        password: hopServer.credential.fields.Password.getText(),
-      });
+    if (hopServerUuid) {
 
-      sshSessions[type][uuid + 'hop'].on('ready', async () => {
-        console.log('FIRST :: connection ready');
-        // Alternatively, you could use netcat or socat with exec() instead of
-        // forwardOut()
-        await sshSessions[type][uuid + 'hop'].forwardOut('127.0.0.1', 12345, mainServer.host, mainServer.port, async (err, stream) => {
-          if (err) {
-            console.log('FIRST :: forwardOut error: ' + err);
-            return sshSessions[type][uuid + 'hop'].end();
-          }
+      await sshSessions[hopServerUuid].forwardOut('127.0.0.1', 12345, mainServer.host, mainServer.port, async (err, stream) => {
+        if (err) throw err;
 
-          await sshSessions[type][uuid].connect({
-            sock: stream,
-            username: mainServer.credential.fields.UserName,
-            password: mainServer.credential.fields.Password.getText(),
-            tryKeyboard: true,
-            algorithms: this.algorithms
-          });
-
-          return sshSessions[type][uuid];
+        await sshSessions[type][uuid].connect({
+          sock: stream,
+          username: mainServer.credential.fields.UserName,
+          password: mainServer.credential.fields.Password.getText(),
+          tryKeyboard: true,
+          algorithms: this.algorithms
         });
       });
 
     // Normal connection
     } else {
-      await sshSessions[type][uuid].connect({
+
+      await sshSessions[uuid].connect({
         host: mainServer.host,
         port: mainServer.port,
         username: mainServer.credential.fields.UserName,
@@ -64,22 +47,29 @@ export class SshSessionsModule {
         algorithms: this.algorithms
       });
 
-      return sshSessions[type][uuid];
     }
 
-
+    return sshSessions[uuid];
   }
 
-  closeSession(type: string, uuid: string): void {
-    sshSessions[type][uuid].end();
+  setSFTPWrapper(uuid: string, sftp: SFTPWrapper) {
+    SFTPWrappers[uuid] = sftp;
   }
 
-  async getAllSessions(): Promise<any> {
+  closeSession(uuid: string): void {
+    if (sshSessions[uuid]) sshSessions[uuid].end();
+  }
+
+  async getAllSessions(): Promise<Client[]> {
     return sshSessions;
   }
 
-  getSession(type: string, uuid: string): Client & { sftpSession: any } {
-    return sshSessions[type][uuid];
+  async getSession(uuid: string): Promise<Client> {
+    return sshSessions[uuid];
+  }
+
+  async getSFTPWrapper(uuid: string): Promise<SFTPWrapper> {
+    return SFTPWrappers[uuid];
   }
 
 }

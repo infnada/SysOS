@@ -8,7 +8,7 @@ import {AnyOpsOSModalBackupsManagerRecoveryWizardComponent} from '../anyopsos-mo
   template: ''
 })
 export class EntryComponent {
-  @Input() size: 'sm'|'lg';
+  @Input() size: 'sm' | 'lg';
   @Input() selector: string;
   @Output() OutputNgbModalRef: NgbModalRef;
 

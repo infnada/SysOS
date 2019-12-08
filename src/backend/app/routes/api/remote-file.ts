@@ -18,7 +18,7 @@ const sshSessions: SshSessionsModule = new SshSessionsModule();
  * req.body.url is required
  * req.body.credential is optional
  */
-router.post('/:uuid', (req: express.Request  & { files: ConnectFiles }, res: express.Response) => {
+router.post('/:uuid', async (req: express.Request  & { files: ConnectFiles }, res: express.Response) => {
   logger.info(`[API RemoteFile] -> Creating file -> uuid [${req.params.uuid}]`);
 
   const apiGlobals = new ApiGlobalsModule(req, res);
@@ -29,7 +29,7 @@ router.post('/:uuid', (req: express.Request  & { files: ConnectFiles }, res: exp
   logger.info(`[API Remote File] -> Creating file -> Downloading file from internet -> uuid [${req.params.uuid}], \
   path [${req.body.path}], url [${req.body.url}]`);
 
-  const sshSession = sshSessions.getSession('sftp', req.params.uuid);
+  const sshSession = await sshSessions.getSession(req.params.uuid);
   const Globals: GlobalsModule = new GlobalsModule(sshSession);
 
   const fileUrl = url.parse(req.body.url).href;
@@ -47,7 +47,7 @@ router.post('/:uuid', (req: express.Request  & { files: ConnectFiles }, res: exp
  * Rename/Move/Copy/Chmod file
  * req.body.dst or req.body.permissions is required
  */
-router.patch('/:uuid/:type/:fileName(*)', (req: express.Request, res: express.Response) => {
+router.patch('/:uuid/:type/:fileName(*)', async (req: express.Request, res: express.Response) => {
   logger.info(`[API RemoteFile] -> Rename/Move/Copy file -> uuid [${req.params.uuid}], type [${req.params.type}], \
   file [${req.params.fileName}], dst [${req.body.dst}]`);
 
@@ -57,19 +57,20 @@ router.patch('/:uuid/:type/:fileName(*)', (req: express.Request, res: express.Re
     return apiGlobals.serverError('dst_or_permissions_undefined');
   }
 
-  const sshSession = sshSessions.getSession('sftp', req.params.uuid);
+  const sshSession = await sshSessions.getSession(req.params.uuid);
+  const SFTPWrapper = await sshSessions.getSFTPWrapper(req.params.uuid);
   const Globals: GlobalsModule = new GlobalsModule(sshSession);
   let currentPromise;
 
   if (req.params.type === 'copy') currentPromise = Globals.execAsync(`cp -r ${req.params.fileName} ${req.body.dst}`);
   if (req.params.type === 'move') {
-    currentPromise = Promise.resolve(sshSession.sftpSession.rename(req.params.fileName, req.body.dst, (e) => { if (e) throw e; }));
+    currentPromise = Promise.resolve(SFTPWrapper.rename(req.params.fileName, req.body.dst, (e) => { if (e) throw e; }));
   }
   if (req.params.type === 'rename') {
-    currentPromise = Promise.resolve(sshSession.sftpSession.rename(req.params.fileName, req.body.dst, (e) => { if (e) throw e; }));
+    currentPromise = Promise.resolve(SFTPWrapper.rename(req.params.fileName, req.body.dst, (e) => { if (e) throw e; }));
   }
   if (req.params.type === 'chmod') {
-    currentPromise = Promise.resolve(sshSession.sftpSession.chmod(req.params.fileName, req.body.permissions, (e) => { if (e) throw e; }));
+    currentPromise = Promise.resolve(SFTPWrapper.chmod(req.params.fileName, req.body.permissions, (e) => { if (e) throw e; }));
   }
 
   currentPromise.then(() => {
@@ -83,19 +84,19 @@ router.patch('/:uuid/:type/:fileName(*)', (req: express.Request, res: express.Re
 /**
  * Delete file
  */
-router.delete('/:uuid/:fileName(*)', (req: express.Request, res: express.Response) => {
+router.delete('/:uuid/:fileName(*)', async (req: express.Request, res: express.Response) => {
   logger.info(`[API RemoteFile] -> Delete file -> uuid [${req.params.uuid}], file [${req.params.fileName}]`);
 
   const apiGlobals = new ApiGlobalsModule(req, res);
-  const sshSession = sshSessions.getSession('sftp', req.params.uuid);
+  const SFTPWrapper = await sshSessions.getSFTPWrapper(req.params.uuid);
 
-  sshSession.sftpSession.stat(req.params.fileName, (e, stats) => {
+  SFTPWrapper.stat(req.params.fileName, (e, stats) => {
     if (e && e.code) return apiGlobals.serverError(e.code);
     if (e) return apiGlobals.serverError(e);
 
     if (stats.isDirectory()) {
 
-      sshSession.sftpSession.rmdir(req.params.fileName, (err) => {
+      SFTPWrapper.rmdir(req.params.fileName, (err) => {
         if (err && err.code) return apiGlobals.serverError(err.code);
         if (err) return apiGlobals.serverError(err);
 
@@ -104,7 +105,7 @@ router.delete('/:uuid/:fileName(*)', (req: express.Request, res: express.Respons
 
     } else {
 
-      sshSession.sftpSession.unlink(req.params.fileName, (err) => {
+      SFTPWrapper.unlink(req.params.fileName, (err) => {
         if (err && err.code) return apiGlobals.serverError(err.code);
         if (err) return apiGlobals.serverError(err);
 

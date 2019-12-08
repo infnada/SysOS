@@ -13,7 +13,7 @@ export class AnyOpsOSAppInfrastructureLinuxService {
   }
 
   initConnection(connection: ConnectionLinux): void {
-    return this.socket.emit('[new-session]', {
+    return this.socket.emit('[session-new]', {
       type: 'linux',
       host: connection.host,
       port: connection.port,

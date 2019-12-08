@@ -51,7 +51,7 @@ export class KubernetesSessionsModule {
     return kubernetesSessions[uuid].close();
   }
 
-  async getAllSessions(): Promise<any> {
+  async getAllSessions(): Promise<KubeConfig[]> {
     return kubernetesSessions;
   }
 

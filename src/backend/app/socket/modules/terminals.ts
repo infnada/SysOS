@@ -1,4 +1,5 @@
 import {Readable, Writable} from 'stream';
+import {ClientChannel} from 'ssh2';
 import uuid from 'uuid';
 
 import {KubernetesSocketModule} from './kubernetes/kubernetes';
@@ -8,6 +9,7 @@ export interface Terminal {
   cols: number;
   rows: number;
   type: 'container_logs'|'container_shell'|'ssh';
+  stream?: ClientChannel;
   stdin?: Readable;
   stdout?: Writable;
 }
@@ -31,10 +33,7 @@ export class TerminalsModule {
     const emitData = (terminalUuid: string, data: string) => {
       if (!this.socket) return;
 
-      this.terminalStout({
-        uuid: terminalUuid,
-        data
-      });
+      this.terminalStout(terminalUuid, data);
     };
 
     const currentTerminal: Terminal = {
@@ -63,50 +62,93 @@ export class TerminalsModule {
   }
 
   // Delete terminal by uuid
-  deleteTerminal(data: { uuid: string; }): void {
-    const currentTerminal = terminals.find(term => term.uuid === data.uuid);
+  deleteTerminal(data: { uuid: string; }): Promise<void> {
 
-    terminals.splice(
-      terminals.findIndex((i) => {
-          return i.uuid === data.uuid;
-        }
-      ), 1);
+    return new Promise(resolve => {
+      const currentTerminal = this.getTerminalByUuid(data.uuid);
 
-    if (currentTerminal && currentTerminal.type === 'container_logs') {
+      terminals.splice(
+        terminals.findIndex((i) => {
+            return i.uuid === data.uuid;
+          }
+        ), 1);
 
-      // Prevent Circular Dependency
-      const KubernetesSocket: KubernetesSocketModule = new KubernetesSocketModule(this.socket);
-      KubernetesSocket.finishAllContainersLogRequestByTerminalUuid(data.uuid);
-    }
+      if (currentTerminal && currentTerminal.type === 'container_logs') {
 
-    if (currentTerminal && currentTerminal.type === 'container_shell') {
+        // Prevent Circular Dependency
+        const KubernetesSocket: KubernetesSocketModule = new KubernetesSocketModule(this.socket);
+        KubernetesSocket.finishAllContainersLogRequestByTerminalUuid(data.uuid).then(() => this.terminalDisconnected(data.uuid, null));
+      }
 
-      // Prevent Circular Dependency
-      const KubernetesSocket: KubernetesSocketModule = new KubernetesSocketModule(this.socket);
-      KubernetesSocket.finishTerminalShellRequest(data.uuid);
-    }
+      if (currentTerminal && currentTerminal.type === 'container_shell') {
+
+        // Prevent Circular Dependency
+        const KubernetesSocket: KubernetesSocketModule = new KubernetesSocketModule(this.socket);
+        KubernetesSocket.finishTerminalShellRequest(data.uuid).then(() => this.terminalDisconnected(data.uuid, null));
+      }
+
+      if (currentTerminal && currentTerminal.type === 'ssh') {
+        currentTerminal.stream.end();
+        this.terminalDisconnected(data.uuid, null);
+      }
+
+      return resolve();
+    });
+  }
+
+  // Set Terminal SSH stream
+  setTerminalStream(terminalUuid: string, stream: ClientChannel): void {
+    const currentTerminal = this.getTerminalByUuid(terminalUuid);
+
+    currentTerminal.stream = stream;
+
+    currentTerminal.stream.stderr.on('data', (chunk: Buffer | string) => this.terminalStout(terminalUuid, chunk.toString()));
+    currentTerminal.stream.on('data', (data: Buffer | string) => this.terminalStout(terminalUuid, data.toString()));
+    currentTerminal.stream.on('close', (code: number | null, signal: string) => this.terminalDisconnected(terminalUuid, {code, signal}));
   }
 
   // Set Terminal columns and rows
-  setTerminalGeometry(data: { uuid: string; cols: number; rows: number; }): void {
-    const currentTerminal = this.getTerminalByUuid(data.uuid);
+  setTerminalGeometry(data: { uuid: string; cols: number; rows: number; }): Promise<void> {
 
-    currentTerminal.cols = data.cols;
-    currentTerminal.rows = data.rows;
+    return new Promise(resolve => {
+      const currentTerminal = this.getTerminalByUuid(data.uuid);
+
+      currentTerminal.cols = data.cols;
+      currentTerminal.rows = data.rows;
+
+      if (currentTerminal.type === 'ssh') currentTerminal.stream.setWindow(data.rows, data.cols, null, null);
+
+      return resolve();
+    });
   }
 
   // Input from Client to stream
-  terminalStdin(data: { uuid: string; data: string; }): void {
-    const currentTerminal = this.getTerminalByUuid(data.uuid);
+  terminalStdin(data: { uuid: string; data: string; }): Promise<void> {
 
-    if (currentTerminal && currentTerminal.type === 'container_logs' || currentTerminal.type === 'container_shell') {
-      currentTerminal.stdin.push(data.data, 'utf8');
-    }
+    return new Promise(resolve => {
+      const currentTerminal = this.getTerminalByUuid(data.uuid);
+
+      if (currentTerminal && currentTerminal.type === 'container_logs' || currentTerminal.type === 'container_shell') {
+        currentTerminal.stdin.push(data.data, 'utf8');
+      }
+
+      if (currentTerminal && currentTerminal.type === 'ssh') {
+        currentTerminal.stream.write(data.data);
+      }
+
+      return resolve();
+    });
+
   }
 
   // Output stream data to Client
-  terminalStout(data: { uuid: string; data: any }): void {
-    this.socket.emit('[terminal-stdout]', data);
+  terminalStout(terminalUuid: string, data: any): void {
+    this.socket.emit('[terminal-stdout]', {uuid: terminalUuid, data});
+  }
+
+  // Output disconnected to Client
+  terminalDisconnected(terminalUuid: string, data: any): void {
+    this.socket.emit('[terminal-disconnected]', {uuid: terminalUuid, data});
   }
 
 }

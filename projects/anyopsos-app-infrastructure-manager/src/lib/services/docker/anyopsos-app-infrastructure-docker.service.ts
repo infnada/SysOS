@@ -13,7 +13,7 @@ export class AnyOpsOSAppInfrastructureDockerService {
   }
 
   initConnection(connection: ConnectionDocker): void {
-    return this.socket.emit('[new-session]', {
+    return this.socket.emit('[session-new]', {
       type: 'docker',
       clusterName: connection.clusterName,
       clusterServer: connection.clusterServer,

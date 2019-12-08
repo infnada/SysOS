@@ -7,7 +7,7 @@ import {AnyOpsOSLibSelectableService} from '@anyopsos/lib-selectable';
 import {AnyOpsOSLibApplicationService, Application} from '@anyopsos/lib-application';
 import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
 import {AnyOpsOSLibFileSystemUiService} from '@anyopsos/lib-file-system-ui';
-import {AnyOpsOSFile} from '@anyopsos/lib-types';
+import {AnyOpsOSFile} from '@anyopsos/lib-file';
 
 import {AnyOpsOSAppDatastoreExplorerLocalService} from '../../services/anyopsos-app-datastore-explorer-local.service';
 

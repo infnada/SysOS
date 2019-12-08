@@ -13,7 +13,7 @@ export class AnyOpsOSAppInfrastructureSnmpService {
   }
 
   initConnection(connection: ConnectionSnmp): void {
-    return this.socket.emit('[new-session]', {
+    return this.socket.emit('[session-new]', {
       type: 'linux',
       host: connection.host,
       port: connection.port,

@@ -985,19 +985,6 @@
   top: 0;
 }
 
-.terminal-inner {
-  cursor: text;
-  font-family: "Roboto Mono", monospace;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: #1a1a1a;
-  padding: 8px;
-  box-sizing: content-box;
-  border-bottom-left-radius: 2px;
-}
-
 .terminal-inner .terminal {
   background-color: transparent !important;
 }

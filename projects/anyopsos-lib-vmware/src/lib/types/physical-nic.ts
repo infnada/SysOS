@@ -1,9 +1,8 @@
 import {DynamicData} from './dynamic-data';
-
 import {FcoeConfig} from './fcoe-config';
 import {PhysicalNicLinkInfo} from './physical-nic-link-info';
 import {PhysicalNicSpec} from './physical-nic-spec';
-import {PhysicalNicLinkInfo} from './physical-nic-link-info';
+
 export interface PhysicalNic extends DynamicData {
   autoNegotiateSupported?: boolean;
   device: string;

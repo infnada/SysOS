@@ -15,8 +15,8 @@ declare const SystemJS: any;
   providedIn: 'root'
 })
 export class AnyOpsOSLibApplicationService {
-  private subjectCloseApplication = new Subject<any>();
-  private subjectToggleApplication = new Subject<any>();
+  private subjectCloseApplication: Subject<Application> = new Subject();
+  private subjectToggleApplication: Subject<string> = new Subject();
 
   private $applications: BehaviorSubject<Application[]>;
   private $taskBarApplications: BehaviorSubject<Application[]>;
@@ -43,10 +43,10 @@ export class AnyOpsOSLibApplicationService {
               private FileSystem: AnyOpsOSLibFileSystemService) {
 
     this.dataStore = {taskBarApplications: [], openedApplications: [], applications: [], taskbarItemOpen: null};
-    this.$applications = new BehaviorSubject([]);
-    this.$taskBarApplications = new BehaviorSubject([]);
-    this.$openedApplications = new BehaviorSubject([]);
-    this.$taskbarItemOpen = new BehaviorSubject(null);
+    this.$applications = new BehaviorSubject(this.dataStore.taskBarApplications);
+    this.$taskBarApplications = new BehaviorSubject(this.dataStore.openedApplications);
+    this.$openedApplications = new BehaviorSubject(this.dataStore.applications);
+    this.$taskbarItemOpen = new BehaviorSubject(this.dataStore.taskbarItemOpen);
     this.taskBarApplications = this.$taskBarApplications.asObservable();
     this.openedApplications = this.$openedApplications.asObservable();
     this.applications = this.$applications.asObservable();
@@ -409,7 +409,7 @@ export class AnyOpsOSLibApplicationService {
     this.subjectCloseApplication.next(application);
   }
 
-  getObserverCloseApplication(): Observable<any> {
+  getObserverCloseApplication(): Observable<Application> {
     return this.subjectCloseApplication.asObservable();
   }
 

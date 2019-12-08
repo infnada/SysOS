@@ -56,6 +56,7 @@ export class ActionsComponent implements OnDestroy {
   newConnection(): void {
     if (this.activeConnection === null) return this.Utils.scrollTo('monitor_main-body', true);
 
+    // even if activeConnection === null, set it again to reset possible Form changes
     this.Monitor.setActiveConnection(null);
     setTimeout(() => this.Utils.scrollTo('monitor_main-body', true), 100);
   }

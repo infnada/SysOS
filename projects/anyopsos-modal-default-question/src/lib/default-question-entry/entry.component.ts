@@ -8,7 +8,7 @@ import {AnyOpsOSModalDefaultQuestionComponent} from '../anyopsos-modal-default-q
   template: ''
 })
 export class EntryComponent {
-  @Input() size: 'sm'|'lg';
+  @Input() size: 'sm' | 'lg';
   @Input() selector: string;
   @Output() OutputNgbModalRef: NgbModalRef;
 

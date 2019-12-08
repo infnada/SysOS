@@ -9,7 +9,7 @@ import {AnyOpsOSLibSelectableService} from '@anyopsos/lib-selectable';
 import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
 import {AnyOpsOSLibFileSystemUiService} from '@anyopsos/lib-file-system-ui';
 import {AnyOpsOSLibApplicationService, Application} from '@anyopsos/lib-application';
-import {AnyOpsOSFile} from '@anyopsos/lib-types';
+import {AnyOpsOSFile} from '@anyopsos/lib-file';
 
 import {AnyOpsOSAppFileExplorerService} from '../services/anyopsos-app-file-explorer.service';
 
