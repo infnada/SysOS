@@ -32,7 +32,7 @@ export class MetricsComponent implements OnInit {
     });
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
   onMouseOut() {

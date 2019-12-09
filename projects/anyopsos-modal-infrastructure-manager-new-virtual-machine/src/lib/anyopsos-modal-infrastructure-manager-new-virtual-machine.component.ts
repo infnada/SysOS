@@ -11,7 +11,7 @@ export class AnyOpsOSModalInfrastructureManagerNewVirtualMachineComponent implem
 
   constructor(public activeModal: NgbActiveModal) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
 }

@@ -8,6 +8,7 @@ import {AnyOpsOSLibApplicationService, Application} from '@anyopsos/lib-applicat
 import {AnyOpsOSLibServiceInjectorService} from '@anyopsos/lib-service-injector';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
 import {Credential} from '@anyopsos/app-credentials-manager';
+import {SshConnection} from '@anyopsos/app-ssh';
 
 import {AnyOpsOSAppSftpService} from '../../../services/anyopsos-app-sftp.service';
 import {SftpConnection} from '../../../types/sftp-connection';
@@ -22,9 +23,10 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
 
   private destroySubject$: Subject<void> = new Subject();
   private CredentialsManager;
+  private Ssh;
 
   credentials: Credential[];
-  connections: SftpConnection[];
+  sshConnections: SshConnection[];
   connectionForm: FormGroup;
 
   constructor(private formBuilder: FormBuilder,
@@ -34,31 +36,41 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
               private Sftp: AnyOpsOSAppSftpService) {
 
     this.CredentialsManager = this.serviceInjector.get('AnyOpsOSAppCredentialsManagerService');
+    this.Ssh = this.serviceInjector.get('AnyOpsOSAppSshService');
     this.CredentialsManager.credentials.pipe(takeUntil(this.destroySubject$)).subscribe(credentials => this.credentials = credentials);
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.connectionForm = this.formBuilder.group({
       description: ['', Validators.required],
       host: ['', Validators.required],
       port: [22, Validators.required],
-      credential: ['', [Validators.required]],
-      hopServerUuid: [],
+      credential: ['', Validators.required],
+      hopServerUuid: [null],
       save: [true],
       autologin: [false],
       uuid: [null]
     });
 
-    this.Sftp.connections.pipe(takeUntil(this.destroySubject$)).subscribe(connections => {
-      this.connections = connections;
+    this.Ssh.connections.pipe(takeUntil(this.destroySubject$)).subscribe(connections => {
+      this.sshConnections = connections;
 
-      if (this.connections.length === 0) return this.connectionForm.controls.hopServerUuid.disable();
+      if (this.sshConnections.length === 0) return this.connectionForm.controls.hopServerUuid.disable();
       this.connectionForm.controls.hopServerUuid.enable();
     });
 
     this.Sftp.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe((activeConnection: string) => {
 
-      if (!activeConnection) return this.connectionForm.reset();
+      if (!activeConnection) {
+        this.connectionForm.reset({
+          port: 22,
+          save: true,
+          autologin: false,
+          hopServerUuid: null,
+          uuid: null
+        });
+        return;
+      }
 
       // Set Form controls with currentConnection data
       const currentConnection = this.getActiveConnection();
@@ -68,7 +80,7 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
     });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.connectionForm.reset();
     this.destroySubject$.next();
   }
@@ -84,8 +96,12 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
     });
   }
 
-  manageCredentials() {
+  manageCredentials(): void {
     this.Applications.openApplication('credentials-manager');
+  }
+
+  manageSshConnections(): void {
+    this.Applications.openApplication('ssh');
   }
 
   getActiveConnection(): SftpConnection {

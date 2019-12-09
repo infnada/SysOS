@@ -16,7 +16,7 @@ export class StatusComponent implements OnInit {
   constructor(private DatastoreExplorer: AnyOpsOSAppDatastoreExplorerService) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
   getActiveConnection(): DatastoreExplorerConnection {

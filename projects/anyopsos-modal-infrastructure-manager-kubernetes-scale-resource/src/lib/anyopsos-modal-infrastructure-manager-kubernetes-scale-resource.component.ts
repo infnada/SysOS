@@ -25,7 +25,7 @@ export class AnyOpsOSModalInfrastructureManagerKubernetesScaleResourceComponent 
     }, 0);
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
   noticeContent(): string {

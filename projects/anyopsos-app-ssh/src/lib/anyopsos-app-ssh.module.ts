@@ -7,6 +7,7 @@ import {ToastrModule} from 'ngx-toastr';
 import {AnyOpsOSLibAngularMaterialModule} from '@anyopsos/lib-angular-material';
 import {AnyOpsOSLibApplicationService} from '@anyopsos/lib-application';
 import {AnyOpsOSLibTerminalModule} from '@anyopsos/lib-terminal';
+import {AnyOpsOSLibServiceInjectorService} from '@anyopsos/lib-service-injector';
 
 import {ActionsComponent} from './components/actions/actions.component';
 import {BodyComponent} from './components/body/body.component';
@@ -35,8 +36,12 @@ import {StatusComponent} from './components/status/status.component';
   exports: []
 })
 export class AnyOpsOSAppSshModule {
-  constructor(private Applications: AnyOpsOSLibApplicationService,
+  constructor(private serviceInjector: AnyOpsOSLibServiceInjectorService,
+              private Applications: AnyOpsOSLibApplicationService,
               private Ssh: AnyOpsOSAppSshService) {
+
+    this.serviceInjector.set('AnyOpsOSAppSshService', this.Ssh);
+
     Applications.registerApplication({
       id: 'ssh',
       ico: 'fas fa-terminal',

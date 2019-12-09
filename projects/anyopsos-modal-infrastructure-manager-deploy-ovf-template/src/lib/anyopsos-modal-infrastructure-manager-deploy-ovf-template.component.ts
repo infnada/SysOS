@@ -11,7 +11,7 @@ export class AnyOpsOSModalInfrastructureManagerDeployOvfTemplateComponent implem
 
   constructor(public activeModal: NgbActiveModal) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
 }

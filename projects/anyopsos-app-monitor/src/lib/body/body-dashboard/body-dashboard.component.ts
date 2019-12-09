@@ -46,7 +46,7 @@ export class BodyDashboardComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.destroySubject$.next();
   }
 

@@ -39,18 +39,18 @@
 
       <mat-form-field class="w-100" *ngIf="f.type.value === 'basic' || f.type.value === 'key'">
         <input matInput placeholder="Username" formControlName="username" >
-        <mat-error *ngIf="submitted && f.username.invalid">Please insert a username</mat-error>
+        <mat-error *ngIf="f.username.invalid">Please insert a username</mat-error>
       </mat-form-field>
 
       <mat-form-field class="w-100">
         <input type="password" matInput placeholder="Password" formControlName="password">
-        <mat-error *ngIf="submitted && f.password.invalid">Please insert a password</mat-error>
+        <mat-error *ngIf="f.password.invalid">Please insert a password</mat-error>
       </mat-form-field>
 
       <mat-form-field class="w-100">
         <input type="password" matInput placeholder="Password confirmation" formControlName="confirmPassword">
-        <mat-error *ngIf="submitted && f.confirmPassword.errors && f.confirmPassword.errors.required">Please confirm password</mat-error>
-        <mat-error *ngIf="submitted && f.confirmPassword.errors && f.confirmPassword.errors.mustMatch">Passwords must match</mat-error>
+        <mat-error *ngIf="f.confirmPassword.errors && f.confirmPassword.errors.required">Please confirm password</mat-error>
+        <mat-error *ngIf="f.confirmPassword.errors && f.confirmPassword.errors.mustMatch">Passwords must match</mat-error>
       </mat-form-field>
 
       <div>

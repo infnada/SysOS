@@ -21,7 +21,7 @@ export class InitService implements OnDestroy {
     this.updateStateFromNodes = this.updateStateFromNodes.bind(this);
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.destroySubject$.next();
   }
 

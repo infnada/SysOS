@@ -7,6 +7,14 @@
      (contextmenu)="onFolderContextMenu($event)"
 >
 
+  <div class="content-loading" *ngIf="loadingData">
+    <mat-spinner class="loading-spinner"></mat-spinner>
+  </div>
+
+  <div class="p-3 text-center" *ngIf="currentData.length === 0">
+    This folder is empty.
+  </div>
+
   <ng-container *ngIf="viewAsList === false">
     <slf-anyopsos-lib-file *ngFor="let file of currentData | filterBy: search; index as $index"
                         cdkDrag

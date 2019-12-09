@@ -13,7 +13,7 @@ export class CreateFromFileComponent implements OnInit {
   constructor(private formBuilder: FormBuilder) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.newObjectForm = this.formBuilder.group({
       objectFile: [null, [Validators.required]]
     });

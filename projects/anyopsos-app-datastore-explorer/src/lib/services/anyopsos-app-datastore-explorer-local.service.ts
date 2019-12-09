@@ -4,7 +4,7 @@ import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {Socket} from 'ngx-socket-io';
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 
-import {AnyOpsOSFile} from '@anyopsos/lib-file';
+import {AnyOpsOSFile} from '@anyopsos/lib-types';
 import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
 
 @Injectable({
@@ -12,6 +12,7 @@ import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
 })
 export class AnyOpsOSAppDatastoreExplorerLocalService {
   private subjectGoPathBack: Subject<void> = new Subject();
+  private subjectLoadingData: Subject<boolean> = new Subject();
 
   private $currentPath: BehaviorSubject<string>;
   private $currentData: BehaviorSubject<AnyOpsOSFile[]>;
@@ -44,8 +45,8 @@ export class AnyOpsOSAppDatastoreExplorerLocalService {
     this.search = this.$search.asObservable();
   }
 
-  uploadFileToanyOpsOS(dst: string, file: File): Observable<any> {
-    this.logger.debug('Datastore Explorer', 'uploadFileToanyOpsOS', arguments);
+  uploadFileToAnyOpsOS(dst: string, file: File): Observable<any> {
+    this.logger.debug('Datastore Explorer', 'uploadFileToAnyOpsOS', arguments);
     return this.FileSystem.uploadFile(dst, file);
   }
 
@@ -59,6 +60,10 @@ export class AnyOpsOSAppDatastoreExplorerLocalService {
   }
 
   reloadPath(path?: string): void {
+    const loggerArgs = arguments;
+
+    this.subjectLoadingData.next(true);
+
     this.FileSystem.getFileSystemPath(null, (path ? path : this.dataStore.currentPath)).subscribe(
       (res: { data: AnyOpsOSFile[] }) => {
         this.dataStore.currentData = res.data;
@@ -72,10 +77,12 @@ export class AnyOpsOSAppDatastoreExplorerLocalService {
           // broadcast data to subscribers
           this.$currentPath.next(Object.assign({}, this.dataStore).currentPath);
         }
+
+        this.subjectLoadingData.next(false);
       },
       error => {
-        console.error('File Explorer -> Error while getting fileSystemPath -> ', error);
-        console.error(error);
+        this.logger.error('Datastore Explorer', 'Error while getting fileSystemPath', loggerArgs, error);
+        this.subjectLoadingData.next(false);
       });
   }
 
@@ -97,7 +104,11 @@ export class AnyOpsOSAppDatastoreExplorerLocalService {
     this.subjectGoPathBack.next();
   }
 
-  getObserverGoPathBack(): Observable<any> {
+  getObserverGoPathBack(): Observable<void> {
     return this.subjectGoPathBack.asObservable();
+  }
+
+  getObserverLoadingData(): Observable<boolean> {
+    return this.subjectLoadingData.asObservable();
   }
 }

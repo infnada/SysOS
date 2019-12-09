@@ -11,7 +11,7 @@ export class AnyOpsOSModalInfrastructureManagerEditDefaultVmCompatibilityCompone
 
   constructor(public activeModal: NgbActiveModal) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
 }

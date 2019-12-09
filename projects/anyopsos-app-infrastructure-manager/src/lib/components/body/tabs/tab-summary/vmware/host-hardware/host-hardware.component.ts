@@ -9,7 +9,7 @@ export class HostHardwareComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
 }

@@ -9,7 +9,7 @@ export class VcenterHaComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
 }

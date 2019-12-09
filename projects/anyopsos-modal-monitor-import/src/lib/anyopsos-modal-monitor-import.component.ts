@@ -30,7 +30,7 @@ export class AnyOpsOSModalMonitorImportComponent implements OnInit {
               private serviceInjector: AnyOpsOSLibServiceInjectorService) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.Monitor = this.serviceInjector.get('AnyOpsOSAppMonitorService');
 
     // https://github.com/anyOpsOS/anyOpsOS/issues/3

@@ -11,7 +11,7 @@ export class AnyOpsOSModalInfrastructureManagerMigrateVmsAnotherNetworkComponent
 
   constructor(public activeModal: NgbActiveModal) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
 }

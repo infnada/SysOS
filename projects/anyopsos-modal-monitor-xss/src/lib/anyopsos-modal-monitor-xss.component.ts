@@ -17,7 +17,7 @@ export class AnyOpsOSModalMonitorXssComponent implements OnInit {
               private serviceInjector: AnyOpsOSLibServiceInjectorService) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.MonitorDashboardService = this.serviceInjector.get('AnyOpsOSAppMonitorDashboardService');
   }
 

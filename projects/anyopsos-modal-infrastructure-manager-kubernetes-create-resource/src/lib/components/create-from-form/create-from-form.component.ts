@@ -9,7 +9,7 @@ export class CreateFromFormComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
 }

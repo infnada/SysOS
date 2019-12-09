@@ -147,7 +147,7 @@ export class AnyOpsOSAppInfrastructureManagerModule {
       menu: true,
       actions: true,
       status: true,
-      style: {width: '1700px', height: '750px', top: '8%', left: '7%'}
+      style: {width: '1700px', height: '800px', top: '4%', left: '7%'}
     });
 
     this.InfrastructureManager.initConnections();

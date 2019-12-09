@@ -34,7 +34,7 @@ export class TabSummaryComponent implements OnInit {
               private InfrastructureManagerNodeGraph: AnyOpsOSAppInfrastructureManagerNodeGraphService) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
   // Tags

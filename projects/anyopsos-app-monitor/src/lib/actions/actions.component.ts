@@ -38,7 +38,7 @@ export class ActionsComponent implements OnDestroy {
 
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.destroySubject$.next();
   }
 

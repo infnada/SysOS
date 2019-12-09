@@ -1,4 +1,11 @@
-import {Component, OnInit, ViewChild, ElementRef, Input, OnDestroy} from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  Input,
+  OnDestroy
+} from '@angular/core';
 import {CdkDragStart} from '@angular/cdk/drag-drop';
 
 import {takeUntil} from 'rxjs/operators';
@@ -22,15 +29,20 @@ export class AnyOpsOSLibFolderComponent implements OnDestroy, OnInit {
   @ViewChild('selectableContainer') selectableContainer: ElementRef;
 
   @Input() application: Application;
+
   // Some applications like SFTP, DatastoreBrowser have 2 file windows. We use this value to know which window this file belongs
   @Input() subApplication: string;
   @Input() connection: IMConnection = null;
+
   @Input() currentPath: string;
   @Input() currentData: AnyOpsOSFile[];
   @Input() currentActive: number;
+
+  // Modal selector
   @Input() selector: string;
 
   @Input() viewAsList: boolean = false;
+  @Input() loadingData: boolean = false;
   @Input() search: { filename: string } = null;
 
   private destroySubject$: Subject<void> = new Subject();
@@ -88,7 +100,7 @@ export class AnyOpsOSLibFolderComponent implements OnDestroy, OnInit {
               public Selectable: AnyOpsOSLibSelectableService) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.FileSystemUi.copyFile.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.copyFile = data);
     this.FileSystemUi.cutFile.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.cutFile = data);
 
@@ -98,7 +110,7 @@ export class AnyOpsOSLibFolderComponent implements OnDestroy, OnInit {
     });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.destroySubject$.next();
   }
 
@@ -107,7 +119,7 @@ export class AnyOpsOSLibFolderComponent implements OnDestroy, OnInit {
    */
   private reloadPath(): void {
     this.FileSystemUi.sendGoToPath({
-      application: this.application.id,
+      application: this.application.id + (this.subApplication ? '#' + this.subApplication : ''),
       path: this.currentPath
     });
   }

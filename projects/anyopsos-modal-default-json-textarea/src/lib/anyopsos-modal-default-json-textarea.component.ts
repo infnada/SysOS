@@ -14,7 +14,7 @@ export class AnyOpsOSModalDefaultJsonTextareaComponent implements OnInit {
   constructor(public activeModal: NgbActiveModal) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
 }

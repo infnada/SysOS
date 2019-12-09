@@ -7,7 +7,7 @@ import {AnyOpsOSLibSelectableService} from '@anyopsos/lib-selectable';
 import {AnyOpsOSLibApplicationService, Application} from '@anyopsos/lib-application';
 import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
 import {AnyOpsOSLibFileSystemUiService} from '@anyopsos/lib-file-system-ui';
-import {AnyOpsOSFile} from '@anyopsos/lib-file';
+import {AnyOpsOSFile} from '@anyopsos/lib-types';
 
 import {AnyOpsOSAppDatastoreExplorerLocalService} from '../../services/anyopsos-app-datastore-explorer-local.service';
 
@@ -22,8 +22,11 @@ export class BodyLocalComponent implements OnDestroy, OnInit {
 
   private destroySubject$: Subject<void> = new Subject();
 
+  loadingData: boolean;
+
   currentPath: string;
   currentData: AnyOpsOSFile[];
+
   viewAsList: boolean;
   search: { filename: string } = null;
 
@@ -42,7 +45,10 @@ export class BodyLocalComponent implements OnDestroy, OnInit {
     });
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
+    // Is loading data from Backend?
+    this.DatastoreExplorerLocal.getObserverLoadingData().pipe(takeUntil(this.destroySubject$)).subscribe(loadingData => this.loadingData = loadingData);
+
     this.DatastoreExplorerLocal.currentPath.pipe(takeUntil(this.destroySubject$)).subscribe(path => this.currentPath = path);
     this.DatastoreExplorerLocal.currentData.pipe(takeUntil(this.destroySubject$)).subscribe(data => {
       this.currentData = data;
@@ -58,7 +64,7 @@ export class BodyLocalComponent implements OnDestroy, OnInit {
     this.goToPath('/');
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.destroySubject$.next();
   }
 
@@ -83,7 +89,7 @@ export class BodyLocalComponent implements OnDestroy, OnInit {
   uploadFiles(files: File[]): void {
 
     files.forEach((file: File, i: number) => {
-      this.FileSystemUi.sendUploadToanyOpsOS({
+      this.FileSystemUi.sendUploadToAnyOpsOS({
         dst: this.currentPath,
         file,
         applicationId: this.application.id

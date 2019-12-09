@@ -60,7 +60,7 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
     this.InfrastructureManagerObjectHelper = this.serviceInjector.get('AnyOpsOSAppInfrastructureManagerObjectHelperService');
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.connectionForm = this.formBuilder.group({
       description: ['', Validators.required],
       url: ['', [
@@ -124,7 +124,7 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
 
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.connectionForm.reset();
     this.destroySubject$.next();
   }

@@ -13,7 +13,7 @@ export class KubernetesObjectDetailComponent implements OnInit {
   constructor() {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
 }

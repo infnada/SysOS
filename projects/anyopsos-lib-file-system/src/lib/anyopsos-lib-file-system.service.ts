@@ -161,7 +161,7 @@ export class AnyOpsOSLibFileSystemService {
     if (longname.substr(-5) === '.vmxf') return 'file';
     if (longname.substr(-5) === '.vmtm') return 'file';
     if (longname.substr(-5) === '.iso') return 'file-archive-o';
-    if (longname.charAt(0) === '-' && (longname.charAt(3) === 'x')) return 'file-code-o';
+    if (longname.charAt(0) === '-' && (longname.charAt(3) === 'x')) return 'file-code';
     if (longname.charAt(0) === '-') return 'file';
     return 'file';
   }

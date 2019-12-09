@@ -36,7 +36,7 @@ export class AnyOpsOSModalMonitorOptionsComponent implements OnInit {
   constructor(public activeModal: NgbActiveModal) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
 
     // https://github.com/anyOpsOS/anyOpsOS/issues/3
     setTimeout(() => {

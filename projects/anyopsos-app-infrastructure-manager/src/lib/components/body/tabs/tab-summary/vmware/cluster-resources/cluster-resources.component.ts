@@ -9,7 +9,7 @@ export class ClusterResourcesComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
 }

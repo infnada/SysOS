@@ -9,7 +9,7 @@ export class SwitchFeaturesComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
 }

@@ -23,11 +23,11 @@ export class ActionsComponent implements OnDestroy, OnInit {
   constructor(private DatastoreExplorer: AnyOpsOSAppDatastoreExplorerService) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.DatastoreExplorer.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe(connection => this.activeConnection = connection);
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.destroySubject$.next();
   }
 

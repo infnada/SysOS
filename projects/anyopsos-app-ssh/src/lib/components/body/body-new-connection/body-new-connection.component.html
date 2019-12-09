@@ -38,6 +38,7 @@
   <mat-form-field class="w-100">
     <mat-label>-- Select a Hopping Server --</mat-label>
     <mat-select formControlName="hopServerUuid">
+      <mat-option>None</mat-option>
       <mat-option *ngFor="let connection of connections" [value]="connection.uuid">
         {{connection.description}} - {{connection.host}}
       </mat-option>

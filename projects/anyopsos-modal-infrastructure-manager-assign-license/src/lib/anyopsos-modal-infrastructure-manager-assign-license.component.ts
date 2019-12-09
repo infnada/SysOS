@@ -11,7 +11,7 @@ export class AnyOpsOSModalInfrastructureManagerAssignLicenseComponent implements
 
   constructor(public activeModal: NgbActiveModal) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
 }

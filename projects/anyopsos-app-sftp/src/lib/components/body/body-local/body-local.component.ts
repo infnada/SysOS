@@ -7,7 +7,7 @@ import {AnyOpsOSLibSelectableService} from '@anyopsos/lib-selectable';
 import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
 import {AnyOpsOSLibFileSystemUiService} from '@anyopsos/lib-file-system-ui';
 import {AnyOpsOSLibApplicationService, Application} from '@anyopsos/lib-application';
-import {AnyOpsOSFile} from '@anyopsos/lib-file';
+import {AnyOpsOSFile} from '@anyopsos/lib-types';
 
 import {AnyOpsOSAppSftpLocalService} from '../../../services/anyopsos-app-sftp-local.service';
 
@@ -21,6 +21,8 @@ export class BodyLocalComponent implements OnDestroy, OnInit {
   @Input() application: Application;
 
   private destroySubject$: Subject<void> = new Subject();
+
+  loadingData: boolean;
 
   currentPath: string;
   currentData: AnyOpsOSFile[];
@@ -42,7 +44,10 @@ export class BodyLocalComponent implements OnDestroy, OnInit {
     });
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
+    // Is loading data from Backend?
+    this.SftpLocal.getObserverLoadingData().pipe(takeUntil(this.destroySubject$)).subscribe(loadingData => this.loadingData = loadingData);
+
     this.SftpLocal.currentPath.pipe(takeUntil(this.destroySubject$)).subscribe(path => this.currentPath = path);
     this.SftpLocal.currentData.pipe(takeUntil(this.destroySubject$)).subscribe(data => {
       this.currentData = data;
@@ -58,7 +63,7 @@ export class BodyLocalComponent implements OnDestroy, OnInit {
     this.goToPath('/');
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.destroySubject$.next();
   }
 
@@ -77,13 +82,20 @@ export class BodyLocalComponent implements OnDestroy, OnInit {
     this.SftpLocal.reloadPath();
   }
 
+  goToPath(path: string): void {
+    this.FileSystemUi.sendGoToPath({
+      application: 'sftp#local',
+      path
+    });
+  }
+
   /**
    * ngfUpload
    */
   uploadFiles(files: File[]): void {
 
     files.forEach((file: File, i: number) => {
-      this.FileSystemUi.sendUploadToanyOpsOS({
+      this.FileSystemUi.sendUploadToAnyOpsOS({
         dst: this.currentPath,
         file,
         applicationId: this.application.id
@@ -92,13 +104,6 @@ export class BodyLocalComponent implements OnDestroy, OnInit {
       files.splice(i, 1);
     });
 
-  }
-
-  goToPath(path: string): void {
-    this.FileSystemUi.sendGoToPath({
-      application: 'sftp#local',
-      path
-    });
   }
 
 }

@@ -118,7 +118,7 @@ export class ZoomableCanvasComponent implements AfterViewInit, OnDestroy {
       .addEventListener('wheel', this.handleZoom, {passive: false});
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.destroySubject$.next();
     this.debouncedCacheZoom.cancel();
     document

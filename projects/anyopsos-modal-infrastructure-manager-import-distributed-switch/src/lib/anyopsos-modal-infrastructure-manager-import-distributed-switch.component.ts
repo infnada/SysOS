@@ -11,7 +11,7 @@ export class AnyOpsOSModalInfrastructureManagerImportDistributedSwitchComponent 
 
   constructor(public activeModal: NgbActiveModal) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
 }

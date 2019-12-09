@@ -37,7 +37,7 @@ export class TopologiesComponent implements OnInit {
     });
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
   basicTopologyInfo(topology, searchMatchCount) {

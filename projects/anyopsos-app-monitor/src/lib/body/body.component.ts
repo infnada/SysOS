@@ -28,7 +28,7 @@ export class BodyComponent implements OnDestroy, OnInit {
               private Monitor: AnyOpsOSAppMonitorService) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.Monitor.connections.pipe(takeUntil(this.destroySubject$)).subscribe(connections => this.connections = connections);
     this.Monitor.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe(connection => {
       this.activeConnection = connection;
@@ -39,7 +39,7 @@ export class BodyComponent implements OnDestroy, OnInit {
     });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.destroySubject$.next();
   }
 

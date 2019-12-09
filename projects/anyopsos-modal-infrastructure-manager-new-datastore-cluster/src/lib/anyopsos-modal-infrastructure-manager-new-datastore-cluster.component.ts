@@ -11,7 +11,7 @@ export class AnyOpsOSModalInfrastructureManagerNewDatastoreClusterComponent impl
 
   constructor(public activeModal: NgbActiveModal) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
 }

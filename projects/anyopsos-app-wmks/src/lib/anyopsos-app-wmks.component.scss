@@ -1,0 +1,40 @@
+#bar {
+  height: 60px;
+  overflow: hidden;
+  padding: 12px;
+}
+
+#buttonBar {
+  float: right;
+}
+
+#vmName {
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+#container {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  position: absolute;
+  text-align: center;
+  background: #000;
+}
+
+#container canvas:focus {
+  outline: none;
+}
+
+
+.loading-spinner {
+  width: 100px;
+  height: 100px;
+  position: absolute;
+  margin: auto;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}

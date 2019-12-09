@@ -1,5 +1,5 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, FormControl, Validators, AbstractControl} from '@angular/forms';
+import {FormBuilder, FormGroup, Validators, AbstractControl} from '@angular/forms';
 
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
@@ -24,7 +24,6 @@ export class BodyComponent implements OnDestroy, OnInit {
   viewSide: boolean = true;
 
   credentialForm: FormGroup;
-  submitted: boolean = false;
 
   private MustMatch(controlName: string, matchingControlName: string) {
     return (formGroup: FormGroup) => {
@@ -48,21 +47,17 @@ export class BodyComponent implements OnDestroy, OnInit {
   constructor(private CredentialsManager: AnyOpsOSAppCredentialsManagerService,
               private formBuilder: FormBuilder) {
 
-    this.CredentialsManager.credentials.pipe(takeUntil(this.destroySubject$)).subscribe(credentials => this.credentials = credentials);
-    this.CredentialsManager.activeCredential.pipe(takeUntil(this.destroySubject$)).subscribe(credential => {
-
-      if (this.credentialForm) this.credentialForm.reset();
-      this.activeCredential = credential;
-    });
+    this.CredentialsManager.credentials.pipe(takeUntil(this.destroySubject$)).subscribe((credentials: Credential[]) => this.credentials = credentials);
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.credentialForm = this.formBuilder.group({
       description: ['', Validators.required],
       type: ['', Validators.required],
       username: [''],
       password: ['', Validators.required],
-      confirmPassword: ['', Validators.required]
+      confirmPassword: ['', Validators.required],
+      uuid: [null]
     }, {
       validator: this.MustMatch('password', 'confirmPassword')
     });
@@ -78,9 +73,21 @@ export class BodyComponent implements OnDestroy, OnInit {
         this.credentialForm.controls.username.updateValueAndValidity();
       }
     });
+
+    this.CredentialsManager.activeCredential.pipe(takeUntil(this.destroySubject$)).subscribe((activeCredentialUuid: string) => {
+
+      this.activeCredential = activeCredentialUuid;
+      if (!activeCredentialUuid) return this.credentialForm.reset();
+
+      // Set Form controls with currentCredential data
+      const currentCredential = this.CredentialsManager.getCredentialByUuid(activeCredentialUuid);
+      Object.keys(currentCredential).forEach((item) => {
+        if (this.credentialForm.controls[item]) this.credentialForm.controls[item].setValue(currentCredential[item]);
+      });
+    });
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.destroySubject$.next();
   }
 
@@ -100,26 +107,21 @@ export class BodyComponent implements OnDestroy, OnInit {
   }
 
   sendSave(): void {
-    this.submitted = true;
 
     // stop here if form is invalid
     if (this.credentialForm.invalid) return;
 
-    if (this.activeCredential !== null) this.credentialForm.value.uuid = this.activeCredential;
-    delete this.credentialForm.value.confirmPassword;
+    const formCredential = Object.assign({}, this.credentialForm.value);
+    delete formCredential.confirmPassword;
+    if (formCredential.uuid === null) delete formCredential.uuid;
 
-    this.CredentialsManager.saveCredential(this.credentialForm.value).then(() => {
-      this.submitted = false;
+    this.CredentialsManager.saveCredential(formCredential).then(() => {
       this.credentialForm.reset();
     });
   }
 
   setActiveCredential(credential: Credential): void {
     this.CredentialsManager.setActiveCredential(credential.uuid);
-
-    this.credentialForm.controls.description.setValue(credential.description);
-    this.credentialForm.controls.type.setValue(credential.type);
-    this.credentialForm.controls.username.setValue(credential.username);
   }
 
 }

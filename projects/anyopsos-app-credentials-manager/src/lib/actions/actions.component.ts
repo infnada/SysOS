@@ -22,13 +22,13 @@ export class ActionsComponent implements OnDestroy {
     this.CredentialsManager.activeCredential.pipe(takeUntil(this.destroySubject$)).subscribe(credential => this.activeCredential = credential);
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.destroySubject$.next();
   }
 
   newCredential(): void {
-    if (this.activeCredential === null) return;
 
+    // even if activeCredential === null, set it again to reset possible Form changes
     this.CredentialsManager.setActiveCredential(null);
   }
 

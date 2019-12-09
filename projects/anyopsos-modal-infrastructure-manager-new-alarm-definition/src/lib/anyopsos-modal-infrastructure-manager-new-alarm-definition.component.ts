@@ -11,7 +11,7 @@ export class AnyOpsOSModalInfrastructureManagerNewAlarmDefinitionComponent imple
 
   constructor(public activeModal: NgbActiveModal) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
 }

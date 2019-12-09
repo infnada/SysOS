@@ -7,6 +7,6 @@ export interface SftpConnection {
   hopServerUuid: string;
   autologin: boolean;
   save: boolean;
-  state: string;
+  state: 'disconnected' | 'connected' | 'ready';
   error?: string;
 }

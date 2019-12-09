@@ -7,7 +7,7 @@ import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
 import {AnyOpsOSLibApplicationService} from '@anyopsos/lib-application';
 import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
-import {AnyOpsOSFile} from '@anyopsos/lib-file';
+import {AnyOpsOSFile} from '@anyopsos/lib-types';
 
 @Injectable({
   providedIn: 'root'
@@ -480,11 +480,11 @@ export class AnyOpsOSLibFileSystemUiService {
     return this.subjectUploadFileToRemote.asObservable();
   }
 
-  sendUploadToanyOpsOS(data: { dst: string; file: File; applicationId: string; }): void {
+  sendUploadToAnyOpsOS(data: { dst: string; file: File; applicationId: string; }): void {
     this.subjectUploadFileToanyOpsOS.next(data);
   }
 
-  getObserverUploadToanyOpsOS(): Observable<{ dst: string; file: File; applicationId: string; }> {
+  getObserverUploadToAnyOpsOS(): Observable<{ dst: string; file: File; applicationId: string; }> {
     return this.subjectUploadFileToanyOpsOS.asObservable();
   }
 }

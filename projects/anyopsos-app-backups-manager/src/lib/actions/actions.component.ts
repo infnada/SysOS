@@ -10,7 +10,7 @@ export class ActionsComponent implements OnInit {
   constructor() {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
   newRestore() {

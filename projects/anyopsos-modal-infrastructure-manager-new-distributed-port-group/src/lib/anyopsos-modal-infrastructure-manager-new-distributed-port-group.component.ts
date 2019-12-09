@@ -11,7 +11,7 @@ export class AnyOpsOSModalInfrastructureManagerNewDistributedPortGroupComponent 
 
   constructor(public activeModal: NgbActiveModal) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
 }

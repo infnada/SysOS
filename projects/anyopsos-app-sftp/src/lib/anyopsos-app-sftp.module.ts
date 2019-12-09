@@ -62,7 +62,7 @@ export class AnyOpsOSAppSftpModule {
       menu: true,
       actions: true,
       status: true,
-      style: {width: '1275px', height: '600px', top: '9%', left: '10%'}
+      style: {width: '1275px', height: '686px', top: '9%', left: '10%'}
     });
 
     this.SftpServer.initConnections();

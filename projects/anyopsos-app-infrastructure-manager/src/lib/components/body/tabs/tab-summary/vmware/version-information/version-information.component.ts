@@ -9,7 +9,7 @@ export class VersionInformationComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
 }

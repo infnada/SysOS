@@ -14,7 +14,7 @@ export class TabUpdatesComponent implements OnInit {
   constructor(public VmwareTemplateHelpers: AnyOpsOSAppInfrastructureVmwareTemplateHelpersService) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
 }

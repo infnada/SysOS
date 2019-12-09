@@ -29,7 +29,7 @@ export class AnyOpsOSModalInfrastructureManagerKubernetesEditResourceComponent i
               private Kubernetes: AnyOpsOSLibKubernetesService) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     // https://github.com/anyOpsOS/anyOpsOS/issues/3
     setTimeout(() => {
 

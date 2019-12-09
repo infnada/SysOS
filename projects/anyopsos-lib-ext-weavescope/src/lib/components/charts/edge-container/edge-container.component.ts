@@ -30,7 +30,7 @@ export class EdgeContainerComponent implements OnChanges, OnInit {
   constructor() {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.prepareWaypointsForMotion();
   }
 

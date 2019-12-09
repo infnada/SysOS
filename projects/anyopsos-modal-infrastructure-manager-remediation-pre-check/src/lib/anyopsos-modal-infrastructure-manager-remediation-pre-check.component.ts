@@ -11,7 +11,7 @@ export class AnyOpsOSModalInfrastructureManagerRemediationPreCheckComponent impl
 
   constructor(public activeModal: NgbActiveModal) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
 }

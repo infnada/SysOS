@@ -28,7 +28,7 @@ export class ActionsComponent implements OnDestroy {
     this.InfrastructureManager.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe(connection => this.activeConnection = connection);
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.destroySubject$.next();
   }
 

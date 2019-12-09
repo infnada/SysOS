@@ -11,7 +11,7 @@ export class AnyOpsOSModalInfrastructureManagerEditCustomAttributesComponent imp
 
   constructor(public activeModal: NgbActiveModal) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
 }

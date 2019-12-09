@@ -38,13 +38,21 @@
   <mat-form-field class="w-100">
     <mat-label>-- Select a Hopping Server --</mat-label>
     <mat-select formControlName="hopServerUuid">
-      <mat-option *ngFor="let connection of connections" [value]="connection.uuid">
+      <mat-option>None</mat-option>
+      <mat-option *ngFor="let connection of sshConnections" [value]="connection.uuid">
         {{connection.description}} - {{connection.host}}
       </mat-option>
     </mat-select>
   </mat-form-field>
+  <div class="mat-form-field-wrapper">
+    <div class="mat-form-field-subscript-wrapper">
+      <div class="mat-form-field-hint-wrapper" style="opacity: 1; transform: translateY(0%);" (click)="manageSshConnections()">
+        <div class="mat-form-field-hint-spacer"></div><div class="text-primary cursor-pointer mat-hint mat-right">Manage SSH Connections</div>
+      </div>
+    </div>
+  </div>
 
-  <span *ngIf="connections.length === 0">Hopping servers are extracted from current list of SSH connections. Please add a connection to be able to select one.</span>
+  <span *ngIf="sshConnections.length === 0">Hopping servers are extracted from current list of SSH connections. Please add a connection to be able to select one.</span>
 
   <mat-divider class="m-3"></mat-divider>
 

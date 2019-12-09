@@ -9,7 +9,7 @@ export class HostConfigurationComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
 }

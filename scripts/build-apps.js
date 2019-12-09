@@ -17,6 +17,7 @@ function onExit(child) {
 
 const projectInOrder = [
   'anyopsos-app-credentials-manager',
+  'anyopsos-app-ssh',
   'anyopsos-app-infrastructure-manager'
 ];
 

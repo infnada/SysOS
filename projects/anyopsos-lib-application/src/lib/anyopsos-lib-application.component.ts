@@ -83,7 +83,7 @@ export class AnyOpsOSLibApplicationComponent implements OnInit, AfterViewInit {
     });
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.isOpening = false;
 
     this.currentHeight = this.application.style.height;

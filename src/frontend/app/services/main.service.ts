@@ -34,7 +34,7 @@ export class MainService {
               private socket: Socket) {
   }
 
-  getInstalledLibs(path = ''): Promise<null> {
+  getInstalledLibs(path = ''): Promise<void> {
     return new Promise((resolve, reject) => {
       this.FileSystem.getFileSystemPath(null, '/bin/libs/' + path).subscribe(
         (res: { data: AnyOpsOSFile[] }) => {
@@ -69,7 +69,7 @@ export class MainService {
 
   }
 
-  async loadLib(lib, path): Promise<null> {
+  async loadLib(lib, path): Promise<void> {
     return await SystemJS.import(`/api/file/${encodeURIComponent('/bin/libs/' + path + lib.filename)}`);
   }
 

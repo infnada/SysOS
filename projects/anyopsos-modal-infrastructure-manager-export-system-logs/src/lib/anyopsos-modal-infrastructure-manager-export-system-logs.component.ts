@@ -11,7 +11,7 @@ export class AnyOpsOSModalInfrastructureManagerExportSystemLogsComponent impleme
 
   constructor(public activeModal: NgbActiveModal) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
 }

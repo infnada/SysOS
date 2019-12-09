@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {Socket} from 'ngx-socket-io';
-import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 
-import {AnyOpsOSFile} from '@anyopsos/lib-file';
+import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
+import {AnyOpsOSFile} from '@anyopsos/lib-types';
 import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
 
 @Injectable({
@@ -12,6 +12,7 @@ import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
 })
 export class AnyOpsOSAppSftpLocalService {
   private subjectGoPathBack: Subject<void> = new Subject();
+  private subjectLoadingData: Subject<boolean> = new Subject();
 
   private $currentPath: BehaviorSubject<string>;
   private $currentData: BehaviorSubject<AnyOpsOSFile[]>;
@@ -28,8 +29,6 @@ export class AnyOpsOSAppSftpLocalService {
   viewAsList: Observable<any>;
   search: Observable<any>;
 
-
-
   constructor(private logger: AnyOpsOSLibLoggerService,
               private socket: Socket,
               private FileSystem: AnyOpsOSLibFileSystemService) {
@@ -44,8 +43,8 @@ export class AnyOpsOSAppSftpLocalService {
     this.search = this.$search.asObservable();
   }
 
-  uploadFileToanyOpsOS(dst: string, file: File): Observable<any> {
-    this.logger.debug('Sftp', 'uploadFileToanyOpsOS', arguments);
+  uploadFileToAnyOpsOS(dst: string, file: File): Observable<any> {
+    this.logger.debug('Sftp', 'uploadFileToAnyOpsOS', arguments);
     return this.FileSystem.uploadFile(dst, file);
   }
 
@@ -59,6 +58,10 @@ export class AnyOpsOSAppSftpLocalService {
   }
 
   reloadPath(path?: string): void {
+    const loggerArgs = arguments;
+
+    this.subjectLoadingData.next(true);
+
     this.FileSystem.getFileSystemPath(null, (path ? path : this.dataStore.currentPath)).subscribe(
       (res: { data: AnyOpsOSFile[] }) => {
         this.dataStore.currentData = res.data;
@@ -72,9 +75,12 @@ export class AnyOpsOSAppSftpLocalService {
           // broadcast data to subscribers
           this.$currentPath.next(Object.assign({}, this.dataStore).currentPath);
         }
+
+        this.subjectLoadingData.next(false);
       },
       error => {
-        this.logger.error('File Explorer -> Error while getting fileSystemPath -> ', error);
+        this.logger.error('Sftp', 'Error while getting fileSystemPath', loggerArgs, error);
+        this.subjectLoadingData.next(false);
       });
   }
 
@@ -96,7 +102,11 @@ export class AnyOpsOSAppSftpLocalService {
     this.subjectGoPathBack.next();
   }
 
-  getObserverGoPathBack(): Observable<any> {
+  getObserverGoPathBack(): Observable<void> {
     return this.subjectGoPathBack.asObservable();
+  }
+
+  getObserverLoadingData(): Observable<boolean> {
+    return this.subjectLoadingData.asObservable();
   }
 }

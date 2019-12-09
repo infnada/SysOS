@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TerminalComponent } from './anyopsos-lib-terminal.component';
+import { TerminalComponent } from './terminal.component';
 
 describe('TerminalComponent', () => {
   let component: TerminalComponent;

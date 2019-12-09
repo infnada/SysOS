@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { AnyOpsOSAppWmksComponent } from './anyopsos-app-wmks.component';
+import { BodyComponent } from './anyopsos-app-wmks.component';
 
 describe('AnyOpsOSAppWmksComponent', () => {
-  let component: AnyOpsOSAppWmksComponent;
-  let fixture: ComponentFixture<AnyOpsOSAppWmksComponent>;
+  let component: BodyComponent;
+  let fixture: ComponentFixture<BodyComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AnyOpsOSAppWmksComponent ]
+      declarations: [ BodyComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(AnyOpsOSAppWmksComponent);
+    fixture = TestBed.createComponent(BodyComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

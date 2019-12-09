@@ -11,7 +11,7 @@ export class AnyOpsOSModalInfrastructureManagerAddCategoryComponent implements O
 
   constructor(public activeModal: NgbActiveModal) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
 }

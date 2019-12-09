@@ -9,7 +9,7 @@ export class ClusterConsumersComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
 }

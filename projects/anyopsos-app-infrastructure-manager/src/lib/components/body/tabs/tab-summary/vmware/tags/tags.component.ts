@@ -26,7 +26,7 @@ export class TagsComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.dataSource.sort = this.sort;
   }
 

@@ -48,7 +48,7 @@ export class ObjectListComponent implements OnInit {
               private InfrastructureManagerObjectHelper: AnyOpsOSAppInfrastructureManagerObjectHelperService) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
   showZeroState() {

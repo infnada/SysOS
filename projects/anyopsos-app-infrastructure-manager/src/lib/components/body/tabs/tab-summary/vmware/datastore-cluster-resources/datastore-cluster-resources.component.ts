@@ -9,7 +9,7 @@ export class DatastoreClusterResourcesComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
 }

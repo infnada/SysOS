@@ -27,13 +27,13 @@ export class BodyComponent implements OnDestroy, OnInit {
   constructor(private DatastoreExplorer: AnyOpsOSAppDatastoreExplorerService) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.DatastoreExplorer.connections.pipe(takeUntil(this.destroySubject$)).subscribe(connections => this.connections = connections);
     this.DatastoreExplorer.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe(connection => this.activeConnection = connection);
     this.DatastoreExplorer.viewExchange.pipe(takeUntil(this.destroySubject$)).subscribe(view => this.viewExchange = view);
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.destroySubject$.next();
   }
 

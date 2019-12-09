@@ -4,7 +4,7 @@ import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {ToastrService} from 'ngx-toastr';
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 
-import {AnyOpsOSFile} from '@anyopsos/lib-file';
+import {AnyOpsOSFile} from '@anyopsos/lib-types';
 import {AnyOpsOSLibServiceInjectorService} from '@anyopsos/lib-service-injector';
 import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
@@ -23,6 +23,7 @@ export class AnyOpsOSAppDatastoreExplorerServerService {
 
   private subjectGoPathBack: Subject<void> = new Subject();
   private subjectFileProgress: Subject<void> = new Subject();
+  private subjectLoadingData: Subject<boolean> = new Subject();
 
   private $currentPath: BehaviorSubject<string>;
   private $currentData: BehaviorSubject<AnyOpsOSFile[]>;
@@ -66,6 +67,10 @@ export class AnyOpsOSAppDatastoreExplorerServerService {
   }
 
   reloadPath(connectionUuid: string, path?: string): void {
+    const loggerArgs = arguments;
+
+    this.subjectLoadingData.next(true);
+
     const connection: DatastoreExplorerConnection = this.DatastoreExplorer.getConnectionByUuid(connectionUuid);
 
     this.Modal.openLittleModal('PLEASE WAIT', 'Getting data...', '.window--datastore-explorer .window__main', 'plain').then(() => {
@@ -156,10 +161,11 @@ export class AnyOpsOSAppDatastoreExplorerServerService {
         this.$currentPath.next(Object.assign({}, this.dataStore).currentPath);
       }
 
+      this.subjectLoadingData.next(false);
       this.Modal.closeModal('.window--datastore-explorer .window__main');
 
     }).catch(error => {
-      this.logger.error('DatastoreExplorer -> Error while getting fileSystemPath -> ', error);
+      this.logger.error('DatastoreExplorer', 'Error while getting fileSystemPath -> ', loggerArgs, error);
       this.Modal.closeModal('.window--datastore-explorer .window__main');
     });
 
@@ -183,8 +189,12 @@ export class AnyOpsOSAppDatastoreExplorerServerService {
     this.subjectGoPathBack.next();
   }
 
-  getObserverGoPathBack(): Observable<any> {
+  getObserverGoPathBack(): Observable<void> {
     return this.subjectGoPathBack.asObservable();
+  }
+
+  getObserverLoadingData(): Observable<boolean> {
+    return this.subjectLoadingData.asObservable();
   }
 
   sendFileProgress(data): void {

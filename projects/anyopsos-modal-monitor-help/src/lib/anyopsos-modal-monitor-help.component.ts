@@ -12,7 +12,7 @@ export class AnyOpsOSModalMonitorHelpComponent implements OnInit {
   constructor(public activeModal: NgbActiveModal) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
 }

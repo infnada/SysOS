@@ -9,7 +9,7 @@ export class VmStoragePoliciesComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
 }

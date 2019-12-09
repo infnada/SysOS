@@ -9,7 +9,7 @@ export class RelatedObjectsComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
 }

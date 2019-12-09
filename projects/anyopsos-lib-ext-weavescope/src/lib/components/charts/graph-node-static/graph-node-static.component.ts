@@ -70,7 +70,7 @@ export class GraphNodeStaticComponent implements OnDestroy {
 
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.destroySubject$.next();
   }
 

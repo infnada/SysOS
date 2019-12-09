@@ -12,11 +12,7 @@
 
   <mat-form-field class="w-100">
     <input type="{{inputType}}" matInput [(ngModel)]="inputValue" maxlength="{{inputMaxLength}}" placeholder="{{inputPlaceholder}}" (keydown.enter)="activeModal.close(inputValue)">
-
-    <ng-container *ngIf="inputMaxLength && inputType === 'text'">
-      <mat-hint align="start"><strong>Max length</strong> </mat-hint>
-      <mat-hint align="end">{{inputValue && inputValue.length}} / {{inputMaxLength}}</mat-hint>
-    </ng-container>
+    <mat-hint align="end" *ngIf="inputMaxLength && inputType === 'text'">{{inputValue && inputValue.length}} / {{inputMaxLength}}</mat-hint>
   </mat-form-field>
 </div>
 <div class="modal-footer">

@@ -13,7 +13,7 @@ export class AnyOpsOSModalInfrastructureManagerKubernetesCreateResourceComponent
   constructor(public activeModal: NgbActiveModal) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
   isCreateDisabled(): boolean {

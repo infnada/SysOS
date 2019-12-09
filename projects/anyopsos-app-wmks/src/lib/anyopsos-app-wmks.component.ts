@@ -1,26 +1,95 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {AfterViewInit, Component, Input} from '@angular/core';
 
 import {Application} from '@anyopsos/lib-application';
 import {AnyOpsOSLibVmwareService} from '@anyopsos/lib-vmware';
 
+import {AnyOpsOSLibExtJqueryService} from '@anyopsos/lib-ext-jquery';
+
+import {WmksLib} from './trdParty/wmks';
+
 @Component({
   selector: 'sawmks-anyopsos-app-wmks',
-  template: `
-    <p>
-      anyopsos-app-wmks works!
-    </p>
-  `,
-  styles: []
+  templateUrl: './anyopsos-app-wmks.component.html',
+  styleUrls: ['./anyopsos-app-wmks.component.scss']
 })
-export class AnyOpsOSAppWmksComponent implements OnInit {
+export class BodyComponent implements AfterViewInit {
   @Input() application: Application;
 
-  constructor(private VMWare: AnyOpsOSLibVmwareService) { }
+  private WMKS: any;
+  private wmks;
+  isEnforcingKeyboard: boolean = false;
+  isFullScreen: boolean = false;
+  hideFullScreen: boolean = true;
+  message: string;
+  hideSpinner: boolean;
 
-  ngOnInit() {
+  constructor(private jQuery: AnyOpsOSLibExtJqueryService,
+              private VMWare: AnyOpsOSLibVmwareService) {
+
+    this.WMKS = WmksLib(jQuery.$);
+
+    console.log(this.WMKS);
+  }
+
+  layout(): void {
+    this.isFullScreen = this.wmks.isFullScreen();
+  }
+
+  private showMessage(message: string): void {
+    this.message = message;
+  }
+
+  private getKeyboardLayout(): string {
+    const locale = "ca-ES".replace("-", "_");
+    switch (locale) {
+      case "de":
+      case "de_DE":
+        return "de-DE";
+      case "de_CH":
+        return "de-CH";
+      case "ja":
+      case "ja_JP":
+        return "ja-JP_106/109";
+      case "it":
+      case "it_IT":
+        return "it-IT";
+      case "es":
+      case "es_ES":
+        return "es-ES";
+      case "pt":
+      case "pt_PT":
+        return "pt-PT";
+      case "fr":
+      case "fr_FR":
+        return "fr-FR";
+      case "fr_CH":
+        return "fr-CH";
+      default:
+        return "en-US";
+    }
+  }
+
+  sendCad() {
+    this.wmks.sendCAD();
+  }
+
+  enterFullScreen() {
+    this.wmks.enterFullScreen();
+  }
+
+  toggleEnforce() {
+    this.isEnforcingKeyboard = !this.isEnforcingKeyboard;
+    this.wmks.setOption("fixANSIEquivalentKeys", this.isEnforcingKeyboard);
+  }
+
+  ngAfterViewInit() {
     if (this.application.initData) {
-      return this.VMWare.connectvCenterSoap(this.application.initData.connection).then((connectSoapResult) => {
-        if (connectSoapResult.status === 'error') throw {error: connectSoapResult.error, description: 'Failed to connect to vCenter'};
+      console.log(this.application.initData);
+      this.VMWare.connectvCenterSoap(this.application.initData.connection).then((connectSoapResult) => {
+        if (connectSoapResult.status === 'error') throw {
+          error: connectSoapResult.error,
+          description: 'Failed to connect to vCenter'
+        };
 
         return this.VMWare.AcquireTicket(
           this.application.initData.connection,
@@ -29,167 +98,62 @@ export class AnyOpsOSAppWmksComponent implements OnInit {
         );
 
       }).then((acquireTicketResult) => {
-        if (acquireTicketResult.status === 'error') throw {error: acquireTicketResult.error, description: 'Failed to acquire VM ticket'};
+        if (acquireTicketResult.status === 'error') throw {
+          error: acquireTicketResult.error,
+          description: 'Failed to acquire VM ticket'
+        };
 
-
-        /*$(function() {
-
-          function layout() {
-            var w = $(window).width();
-            var h = $(window).height();
-            if(!wmks.isFullScreen()) {
-              container.css({
-                top: bar.outerHeight() + "px"
-              });
-              container.width(w).height(h - bar.outerHeight());
-              wmks.updateScreen();
-            } else {
-              container.css({
-                top: 0,
-                left: 0
-              });
-              container.width(w).height(h);
-            }
-          }
-
-          function showMessage(message) {
-            container.html(message);
-            bar.slideDown("fast", layout);
-            spinner.hide();
-          }
-
-          function getKeyboardLayout() {
-            var locale = "ca-ES".
-            replace("-", "_");
-            switch (locale) {
-              case "de": case "de_DE":
-                return "de-DE";
-              case "de_CH":
-                return "de-CH";
-              case "ja": case "ja_JP":
-                return "ja-JP_106/109";
-              case "it": case "it_IT":
-                return "it-IT";
-              case "es": case "es_ES":
-                return "es-ES";
-              case "pt": case "pt_PT":
-                return "pt-PT";
-              case "fr": case "fr_FR":
-                return "fr-FR";
-              case "fr_CH":
-                return "fr-CH";
-              default:
-                return "en-US";
-            }
-          }
-
-          var bar = $("#bar");
-          var cad = $("#cad");
-          var container = $("#container");
-          var fullscreen = $("#fullscreen");
-          var keyboard = $("#keyboard");
-          var spinner = $("#spinner");
-
-          var wmks = WMKS.createWMKS("container", {
-            keyboardLayoutId: getKeyboardLayout()
-          });
-          wmks.register(WMKS.CONST.Events.CONNECTION_STATE_CHANGE, function(evt, data) {
-            switch (data.state) {
-              case WMKS.CONST.ConnectionState.CONNECTING:
-                console.log("The console is connecting");
-                bar.slideUp("slow", layout);
-                break;
-              case WMKS.CONST.ConnectionState.CONNECTED:
-                console.log("The console has been connected");
-                spinner.hide();
-                bar.slideDown("fast", layout);
-                break;
-              case WMKS.CONST.ConnectionState.DISCONNECTED:
-                console.log("The console has been disconnected");
-                showMessage("The console has been disconnected. Close this window and re-launch the console to reconnect.");
-                break;
-            }
-          });
-          wmks.register(WMKS.CONST.Events.ERROR, function(evt, data) {
-            console.log("Error: " + data.errorType);
-          });
-          wmks.register(WMKS.CONST.Events.REMOTE_SCREEN_SIZE_CHANGE, function(evt, data) {
-            layout();
-          });
-
-          cad.on("click", function() {
-            wmks.sendCAD();
-          });
-
-          if (wmks.canFullScreen()) {
-            fullscreen.on("click", function (evt) {
-              wmks.enterFullScreen();
-            });
-          } else {
-            fullscreen.hide();
-          }
-
-          keyboard.on("click", function (evt) {
-            var fixANSIEquivalentKeys = keyboard.data("toggle") === "true";
-            var label = keyboard.html();
-            wmks.setOption("fixANSIEquivalentKeys", !fixANSIEquivalentKeys);
-            keyboard.html(keyboard.data("alt"));
-            keyboard.data("toggle", !fixANSIEquivalentKeys);
-            keyboard.data("alt", label);
-          });
-
-          //listen for window events
-          $(window).on("resize", layout);
-
-          // if params are provided, no need to show chrome
-          if (location.search) {
-            var loc = document.location;
-            var path = loc.host + loc.pathname.replace(/\.html$/, "");
-            wmks.connect("wss://" + path + "/authd?" +
-              "host=192.168.1.2" +
-              "&port=902" +
-              "&cfgFile=%2Fvmfs%2Fvolumes%2F5c8e34e7-6ec9bcbb-ab32-000c293c7458%2Frh7%2Frh7.vmx" +
-              "&thumbprint=31:14:CF:A6:C4:E1:1B:74:88:2E:55:A3:68:76:26:C6:21:22:E3:4E" +
-              "&ticket=52a194e9-0db2-057b-d556-eb3196f3b859" +
-              "&vmId=vm-121" +
-              "&encoding=UTF-8");
-            layout();
-            spinner.show();
-          }
+        this.wmks = this.WMKS.createWMKS("container", {
+          keyboardLayoutId: this.getKeyboardLayout()
         });
 
+        console.log(this.wmks);
+        this.wmks.register(this.WMKS.CONST.Events.CONNECTION_STATE_CHANGE, (evt, data) => {
+          switch (data.state) {
+            case this.WMKS.CONST.ConnectionState.CONNECTING:
+              console.log("The console is connecting");
+              break;
+            case this.WMKS.CONST.ConnectionState.CONNECTED:
+              console.log("The console has been connected");
+              this.hideSpinner = true;
+              break;
+            case this.WMKS.CONST.ConnectionState.DISCONNECTED:
+              console.log("The console has been disconnected");
+              this.showMessage("The console has been disconnected. Close this window and re-launch the console to reconnect.");
+              break;
+          }
+        });
+        this.wmks.register(this.WMKS.CONST.Events.ERROR, (evt, data) => {
+          console.log("Error: " + data.errorType);
+        });
+        this.wmks.register(this.WMKS.CONST.Events.REMOTE_SCREEN_SIZE_CHANGE, (evt, data) => {
+          this.layout();
+        });
 
-        var _wmks = $('#wmksContainer')
-          .wmks({'useVNCHandshake': false, 'sendProperMouseWheelDeltas': true, 'fitToParent': true})
-          .bind('wmksconnecting', function () {
-            console.log('The console is connecting');
-          })
-          .bind('wmksconnected', function () {
-            console.log('The console has been connected');
-          })
-          .bind('wmksdisconnected', function (evt, info) {
-            console.log('The console has been disconnected');
-            console.log(evt, info);
-          })
-          .bind('wmkserror', function (evt, errObj) {
-            console.log('Error!');
-            console.log(evt, errObj);
-            toastr.error('Make sure that you have access to ESXi host (' + res.data.host[0] + ':' + res.data.port[0] + ') and it\'s certificate is trusted',
-            'Unable to open remote console to VM (' + wmksData.vm + ')');
-          })
-          .bind('wmksiniterror', function (evt, customData) {
-            console.log(evt);
-            console.log(customData);
-          })
-          .bind('wmksresolutionchanged', function (canvas) {
-            console.log('Resolution has changed!');
-          });
+        if (this.wmks.canFullScreen()) this.hideFullScreen = false;
 
-        _this.url = 'wss://' + res.data.host[0] + ':' + res.data.port[0] + '/ticket/' + res.data.ticket[0];
-        _wmks.wmks('connect', _this.url);*/
+        const url = 'wss://' + acquireTicketResult.data.host[0] + ':' + acquireTicketResult.data.port[0] + '/ticket/' + acquireTicketResult.data.ticket[0];
+        this.wmks.connect(url);
+        this.layout();
+        this.hideSpinner = false;
+
+        // if params are provided, no need to show chrome
+        /*if (location.search) {
+          var loc = document.location;
+          var path = loc.host + loc.pathname.replace(/\.html$/, "");
+          this.wmks.connect("wss://" + path + "/authd?" +
+            "host=192.168.1.2" +
+            "&port=902" +
+            "&cfgFile=%2Fvmfs%2Fvolumes%2F5c8e34e7-6ec9bcbb-ab32-000c293c7458%2Flabvcenter01%2Flabvcenter01.vmx" +
+            "&thumbprint=31:14:CF:A6:C4:E1:1B:74:88:2E:55:A3:68:76:26:C6:21:22:E3:4E" +
+            "&ticket=52fa975c-9b68-a541-3671-a64b5eb6cb51" +
+            "&vmId=vm-18" +
+            "&encoding=UTF-8");
+        }*/
 
       });
     }
+
   }
 
 }

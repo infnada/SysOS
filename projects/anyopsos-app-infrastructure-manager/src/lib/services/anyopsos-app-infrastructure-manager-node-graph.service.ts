@@ -646,12 +646,29 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
   }
 
   private isTypeStacked(type: string): boolean {
-    return ['vmware', 'storage', 'Datacenter', 'ClusterComputeResource', 'StoragePod', 'VirtualApp'].includes(type);
+    return [
+      'vmware',
+      'storage',
+      // VMWARE
+      'Datacenter',
+      'ClusterComputeResource',
+      'StoragePod',
+      'VirtualApp',
+      // KUBERNETES
+      'Namespace',
+      'Node',
+      'DaemonSet',
+      'StatefulSet',
+      'Deployment',
+      'ReplicaSet',
+      'CronJob'
+    ].includes(type);
   }
 
   private getShapeByType(type: string): string {
     return (
       type === 'vmware' || type === 'netapp' ? 'octagon' :
+        // VMWARE
         type === 'Datacenter' || type === 'vserver' ? 'heptagon' :
           type === 'ClusterComputeResource' || type === 'HostSystem' ? 'hexagon' :
             type === 'Folder' ? 'sheet' :
@@ -662,7 +679,23 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
                       type === 'Network' ? 'network' :
                         type === 'VirtualVmxnet3' ? 'dottedtriangle' :
                           type === 'ResourcePool' ? 'pentagon' :
-                            'dottedcylinder'
+                            // KUBERNETES
+                            type === 'Namespace' ? 'octagon' :
+                              type === 'Node' ? 'octagon' :
+                                type === 'DaemonSet' ? 'heptagon' :
+                                  type === 'StatefulSet' ? 'heptagon' :
+                                    type === 'Deployment' ? 'heptagon' :
+                                      type === 'ReplicaSet' ? 'heptagon' :
+                                        type === 'CronJob' ? 'triangle' :
+                                          type === 'Job' ? 'dottedtriangle' :
+                                            type === 'Pod' ? 'hexagon' :
+                                              type === 'Endpoints' ? 'pentagon' :
+                                                type === 'Service' ? 'pentagon' :
+                                                  type === 'Ingress' ? 'pentagon' :
+                                                    type === 'ConfigMap' ? 'square' :
+                                                      type === 'PersistentVolumeClaim' ? 'dottedcylinder' :
+                                                        type === 'PersistentVolume' ? 'cylinder' :
+                                                          'dottedcylinder'
     );
   }
 

@@ -13,7 +13,7 @@ export class SummaryInfoComponent implements OnInit {
 
   constructor(public VmwareTemplateHelpers: AnyOpsOSAppInfrastructureVmwareTemplateHelpersService) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
 }

@@ -119,4 +119,9 @@ export class ActionsServerComponent implements OnDestroy, OnInit {
   searchChange(event: string): void {
     this.SftpServer.setSearch(event);
   }
+
+  // TODO
+  getSshShell() {
+
+  }
 }

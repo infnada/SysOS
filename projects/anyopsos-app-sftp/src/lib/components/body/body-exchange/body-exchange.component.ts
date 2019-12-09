@@ -31,7 +31,7 @@ export class BodyExchangeComponent implements OnDestroy, OnInit {
     name: string,
     source: string,
     path: string,
-    size: string,
+    size: number,
     progress: number,
     exchange: string
   }[] = [];
@@ -47,17 +47,17 @@ export class BodyExchangeComponent implements OnDestroy, OnInit {
       if (data.applicationId === 'sftp#server') {
         this.filesExchange.push({
           uuid: data.connectionUuid,
-          name: data.file.filename,
-          source: data.path + data.file.filename,
-          path: this.currentLocalPath + data.file.filename,
-          size: data.file.attrs.size,
+          name: data.fileName,
+          source: data.path + data.fileName,
+          path: this.currentLocalPath + data.fileName,
+          size: 0, //data.file.attrs.size,
           progress: 0,
           exchange: 'download'
         });
 
         this.SftpServer.downloadFileToanyOpsOS(
-          data.path + data.file.filename,
-          this.currentLocalPath + data.file.filename,
+          data.path + data.fileName,
+          this.currentLocalPath + data.fileName,
           data.connectionUuid
         );
       }
@@ -68,24 +68,24 @@ export class BodyExchangeComponent implements OnDestroy, OnInit {
       if (data.applicationId === 'sftp#server') {
         this.filesExchange.push({
           uuid: this.activeConnection,
-          name: data.file.filename,
-          source: data.path + data.file.filename,
-          path: this.currentRemotePath + data.file.filename,
-          size: data.file.attrs.size,
+          name: data.fileName,
+          source: data.path + data.fileName,
+          path: this.currentRemotePath + data.fileName,
+          size: 0, //data.file.attrs.size,
           progress: 0,
           exchange: 'upload'
         });
 
         this.SftpLocal.uploadFileToRemote(
-          data.path + data.file.filename,
-          this.currentRemotePath + data.file.filename,
+          data.path + data.fileName,
+          this.currentRemotePath + data.fileName,
           this.activeConnection
         );
       }
     });
 
     // Watcher sent by SftpBodyLocal
-    this.FileSystemUi.getObserverUploadToanyOpsOS().pipe(takeUntil(this.destroySubject$)).subscribe((data) => {
+    this.FileSystemUi.getObserverUploadToAnyOpsOS().pipe(takeUntil(this.destroySubject$)).subscribe((data) => {
       console.log(data.file);
       let percentage = 0;
 
@@ -100,7 +100,7 @@ export class BodyExchangeComponent implements OnDestroy, OnInit {
           exchange: 'local'
         });
 
-        this.SftpLocal.uploadFileToanyOpsOS(
+        this.SftpLocal.uploadFileToAnyOpsOS(
           data.dst,
           data.file
         ).subscribe(
@@ -141,14 +141,14 @@ export class BodyExchangeComponent implements OnDestroy, OnInit {
 
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.Sftp.viewExchange.pipe(takeUntil(this.destroySubject$)).subscribe(view => this.viewExchange = view);
     this.Sftp.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe(connectionUuid => this.activeConnection = connectionUuid);
     this.SftpLocal.currentPath.pipe(takeUntil(this.destroySubject$)).subscribe(path => this.currentLocalPath = path);
     this.SftpServer.currentPath.pipe(takeUntil(this.destroySubject$)).subscribe(path => this.currentRemotePath = path);
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.destroySubject$.next();
   }
 }

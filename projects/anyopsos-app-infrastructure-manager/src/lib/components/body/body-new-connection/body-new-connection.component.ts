@@ -44,12 +44,12 @@ export class BodyNewConnectionComponent implements OnInit, OnDestroy {
     this.CredentialsManager.credentials.pipe(takeUntil(this.destroySubject$)).subscribe(credentials => this.credentials = credentials);
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.connectionForm.reset();
     this.destroySubject$.next();
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
 
     /**
      * Create basic form
@@ -103,7 +103,11 @@ export class BodyNewConnectionComponent implements OnInit, OnDestroy {
      */
     this.InfrastructureManager.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe((activeConnection: string) => {
       if (!activeConnection) {
-        this.connectionForm.reset();
+        this.connectionForm.reset({
+          save: true,
+          autologin: true,
+          uuid: null
+        });
         return this.newConnectionType = null;
       }
 
@@ -155,7 +159,11 @@ export class BodyNewConnectionComponent implements OnInit, OnDestroy {
       this.InfrastructureManager.connect(this.connectionForm.value, saveOnly);
       this.submitted = false;
 
-      if (saveOnly) this.connectionForm.reset();
+      if (saveOnly) this.connectionForm.reset({
+        save: true,
+        autologin: true,
+        uuid: null
+      });
     });
   }
 

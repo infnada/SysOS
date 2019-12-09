@@ -6,7 +6,7 @@
       <div class="menu__item" *ngIf="connection != undefined" [ngClass]="{'active': connection.uuid === activeConnection}" (click)="setActiveConnection(connection)">
         <h5 class="position-relative">
           {{connection.description}} <small class="d-block">({{connection.host}})</small>
-          <i class="fas fa-circle connection-state" [ngClass]="{'text-danger': connection.state == 'disconnected', 'text-success': connection.state == 'connected'}"></i>
+          <i class="fas fa-circle connection-state" [ngClass]="{'text-danger': connection.state === 'disconnected', 'text-warning': connection.state === 'connected', 'text-success': connection.state === 'ready'}"></i>
         </h5>
       </div>
     </ng-container>

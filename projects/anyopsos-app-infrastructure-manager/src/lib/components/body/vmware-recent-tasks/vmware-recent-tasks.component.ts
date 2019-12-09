@@ -29,7 +29,7 @@ export class VmwareRecentTasksComponent implements OnInit {
 
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.Modal.openLittleModal('PLEASE WAIT', 'Getting VMware Tasks...', '.vmware-tasks', 'plain').then(() => {
 
       return this.VMWare.connectvCenterSoap(this.InfrastructureManager.getActiveConnection() as ConnectionVmware);

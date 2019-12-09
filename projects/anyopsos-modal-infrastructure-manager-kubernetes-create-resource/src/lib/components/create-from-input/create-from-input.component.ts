@@ -12,7 +12,7 @@ export class CreateFromInputComponent implements OnInit {
   constructor() {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
   inputDataChanged() {

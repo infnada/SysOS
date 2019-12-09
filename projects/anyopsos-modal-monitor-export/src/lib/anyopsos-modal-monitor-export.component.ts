@@ -46,7 +46,7 @@ export class AnyOpsOSModalMonitorExportComponent implements OnInit {
               private FileSystem: AnyOpsOSLibFileSystemService) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
 
     // https://github.com/anyOpsOS/anyOpsOS/issues/3
     setTimeout(() => {

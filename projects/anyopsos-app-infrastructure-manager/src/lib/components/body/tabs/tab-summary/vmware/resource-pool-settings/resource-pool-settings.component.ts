@@ -9,7 +9,7 @@ export class ResourcePoolSettingsComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
 }

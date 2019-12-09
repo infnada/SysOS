@@ -7,7 +7,7 @@ import {Socket} from 'ngx-socket-io';
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
 import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
-import {AnyOpsOSFile} from '@anyopsos/lib-file';
+import {AnyOpsOSFile} from '@anyopsos/lib-types';
 
 import {AnyOpsOSAppSftpService} from './anyopsos-app-sftp.service';
 import {SftpConnection} from '../types/sftp-connection';
@@ -18,6 +18,7 @@ import {SftpConnection} from '../types/sftp-connection';
 export class AnyOpsOSAppSftpServerService {
   private subjectGoPathBack: Subject<void> = new Subject();
   private subjectFileProgress: Subject<void> = new Subject();
+  private subjectLoadingData: Subject<boolean> = new Subject();
 
   private $currentPath: BehaviorSubject<string>;
   private $currentData: BehaviorSubject<AnyOpsOSFile[]>;
@@ -142,6 +143,10 @@ export class AnyOpsOSAppSftpServerService {
   }
 
   reloadPath(connectionUuid: string, path?: string): void {
+    const loggerArgs = arguments;
+
+    this.subjectLoadingData.next(true);
+
     this.FileSystem.getFileSystemPath(connectionUuid, (path ? path : this.dataStore.currentPath)).subscribe(
       (res: { data: AnyOpsOSFile[] }) => {
         this.dataStore.currentData = res.data;
@@ -155,9 +160,12 @@ export class AnyOpsOSAppSftpServerService {
           // broadcast data to subscribers
           this.$currentPath.next(Object.assign({}, this.dataStore).currentPath);
         }
+
+        this.subjectLoadingData.next(false);
       },
       error => {
-        this.logger.error('Sftp -> Error while getting fileSystemPath -> ', error);
+        this.logger.error('Sftp', 'Error while getting fileSystemPath -> ', loggerArgs, error);
+        this.subjectLoadingData.next(false);
       });
   }
 
@@ -179,8 +187,12 @@ export class AnyOpsOSAppSftpServerService {
     this.subjectGoPathBack.next();
   }
 
-  getObserverGoPathBack(): Observable<any> {
+  getObserverGoPathBack(): Observable<void> {
     return this.subjectGoPathBack.asObservable();
+  }
+
+  getObserverLoadingData(): Observable<boolean> {
+    return this.subjectLoadingData.asObservable();
   }
 
   sendFileProgress(data): void {

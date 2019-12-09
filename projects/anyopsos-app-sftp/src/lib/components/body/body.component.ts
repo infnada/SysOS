@@ -27,13 +27,13 @@ export class BodyComponent implements OnDestroy, OnInit {
   constructor(private Sftp: AnyOpsOSAppSftpService) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.Sftp.connections.pipe(takeUntil(this.destroySubject$)).subscribe(connections => this.connections = connections);
     this.Sftp.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe(connection => this.activeConnection = connection);
     this.Sftp.viewExchange.pipe(takeUntil(this.destroySubject$)).subscribe(view => this.viewExchange = view);
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.destroySubject$.next();
   }
 

@@ -82,7 +82,7 @@ export class SshSocketModule {
     });
   }
 
-  createSftpClient(connectionUuid: string): Promise<string> {
+  createSftpClient(connectionUuid: string): Promise<any> {
 
     return new Promise((resolve, reject) => {
 
@@ -182,7 +182,7 @@ export class SshSocketModule {
             }, connectionUuid);
           });
 
-          return resolve('connected');
+          return resolve({status: 'ok', data: 'connected'});
         });
 
       }).catch((e: Error) => {

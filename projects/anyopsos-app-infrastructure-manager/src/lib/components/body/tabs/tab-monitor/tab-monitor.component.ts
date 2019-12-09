@@ -19,7 +19,7 @@ export class TabMonitorComponent implements OnInit {
               public VmwareTemplateHelpers: AnyOpsOSAppInfrastructureVmwareTemplateHelpersService) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
   manageMonitors() {

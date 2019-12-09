@@ -1,22 +1,22 @@
 <div class="window__actions">
-  <span class="fa-stack" (click)="UIcreateFolder();">
+  <a class="fa-stack" (click)="UIcreateFolder();" matTooltip="Create folder">
     <i class="fas fa-folder fa-stack-1x"></i>
     <i class="fas fa-plus fa-pull-right fa-stack-1x text-success"></i>
-  </span>
-  <a class="window__item" (click)="toggleView()">
+  </a>
+  <a class="window__item" (click)="toggleView()" matTooltip="Change View">
     <i class="fas fa-list"></i>
   </a>
-  <a class="window__item">
+  <a class="window__item" (click)="getSshShell()" matTooltip="Start SSH Shell">
     <i class="fas fa-terminal"></i>
   </a>
   <a class="window__item separator"></a>
-  <a class="window__back" (click)="goPathBack()">
+  <a class="window__back" (click)="goPathBack()" matTooltip="Go back">
     <i class="fas fa-arrow-left"></i>
   </a>
-  <a class="window__forward" (click)="goPathForward()">
+  <a class="window__forward" (click)="goPathForward()" matTooltip="Go forward">
     <i class="fas fa-arrow-right"></i>
   </a>
-  <a class="window__item" (click)="reloadPath()">
+  <a class="window__item" (click)="reloadPath()" matTooltip="Refresh">
     <i class="fas fa-sync-alt"></i>
   </a>
   <div class="window__path" matTooltip="{{currentPath}}">

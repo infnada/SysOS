@@ -26,7 +26,7 @@ export class SshSessionsModule {
       await sshSessions[hopServerUuid].forwardOut('127.0.0.1', 12345, mainServer.host, mainServer.port, async (err, stream) => {
         if (err) throw err;
 
-        await sshSessions[type][uuid].connect({
+        await sshSessions[uuid].connect({
           sock: stream,
           username: mainServer.credential.fields.UserName,
           password: mainServer.credential.fields.Password.getText(),

@@ -12,7 +12,7 @@ export class NoticeBoxComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
 }

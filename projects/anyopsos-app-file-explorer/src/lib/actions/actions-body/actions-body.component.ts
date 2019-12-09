@@ -5,7 +5,7 @@ import {takeUntil} from 'rxjs/operators';
 
 import {AnyOpsOSLibFileSystemUiService} from '@anyopsos/lib-file-system-ui';
 import {Application} from '@anyopsos/lib-application';
-import {AnyOpsOSFile} from '@anyopsos/lib-file';
+import {AnyOpsOSFile} from '@anyopsos/lib-types';
 
 import {AnyOpsOSAppFileExplorerService} from '../../services/anyopsos-app-file-explorer.service';
 
@@ -46,7 +46,7 @@ export class ActionsBodyComponent implements OnDestroy, OnInit {
     this.FileExplorer.search.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.search = data);
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.destroySubject$.next();
   }
 

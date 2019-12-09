@@ -9,7 +9,7 @@ export class VsphereDrsComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
 }

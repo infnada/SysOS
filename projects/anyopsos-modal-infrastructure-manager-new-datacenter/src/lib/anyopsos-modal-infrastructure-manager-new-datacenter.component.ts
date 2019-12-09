@@ -11,7 +11,7 @@ export class AnyOpsOSModalInfrastructureManagerNewDatacenterComponent implements
 
   constructor(public activeModal: NgbActiveModal) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
 }

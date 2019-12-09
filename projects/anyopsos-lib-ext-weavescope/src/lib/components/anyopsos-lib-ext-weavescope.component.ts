@@ -101,7 +101,7 @@ export class AnyOpsOSLibExtWeavescopeComponent implements OnChanges, AfterViewIn
     }
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.destroySubject$.next();
   }
 

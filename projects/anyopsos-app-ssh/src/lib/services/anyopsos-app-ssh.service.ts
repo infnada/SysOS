@@ -195,7 +195,7 @@ export class AnyOpsOSAppSshService {
   /**
    * Send a message to Backend and setups the connection
    */
-  private socketConnectServer(connection: SshConnection): Promise<any> {
+  socketConnectServer(connection: SshConnection): Promise<any> {
     const loggerArgs = arguments;
 
     this.logger.info('ssh', 'Connecting to server', loggerArgs);

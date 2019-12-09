@@ -9,7 +9,7 @@ import {AnyOpsOSLibSelectableService} from '@anyopsos/lib-selectable';
 import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
 import {AnyOpsOSLibFileSystemUiService} from '@anyopsos/lib-file-system-ui';
 import {AnyOpsOSLibApplicationService, Application} from '@anyopsos/lib-application';
-import {AnyOpsOSFile} from '@anyopsos/lib-file';
+import {AnyOpsOSFile} from '@anyopsos/lib-types';
 
 import {AnyOpsOSAppFileExplorerService} from '../services/anyopsos-app-file-explorer.service';
 
@@ -23,6 +23,8 @@ export class BodyComponent implements OnDestroy, OnInit {
   @Input() application: Application;
 
   private destroySubject$: Subject<void> = new Subject();
+
+  loadingData: boolean;
 
   currentPath: string;
   currentData: AnyOpsOSFile[];
@@ -48,7 +50,10 @@ export class BodyComponent implements OnDestroy, OnInit {
     });
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
+    // Is loading data from Backend?
+    this.FileExplorer.getObserverLoadingData().pipe(takeUntil(this.destroySubject$)).subscribe(loadingData => this.loadingData = loadingData);
+
     this.FileExplorer.currentPath.pipe(takeUntil(this.destroySubject$)).subscribe(path => this.currentPath = path);
     this.FileExplorer.currentData.pipe(takeUntil(this.destroySubject$)).subscribe(data => {
       this.currentData = data;
@@ -64,7 +69,7 @@ export class BodyComponent implements OnDestroy, OnInit {
     this.goToPath('/');
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.destroySubject$.next();
   }
 
@@ -81,6 +86,13 @@ export class BodyComponent implements OnDestroy, OnInit {
    */
   private reloadPath(): void {
     this.FileExplorer.reloadPath();
+  }
+
+  goToPath(path: string): void {
+    this.FileSystemUi.sendGoToPath({
+      application: 'file-explorer',
+      path
+    });
   }
 
   /**
@@ -105,13 +117,6 @@ export class BodyComponent implements OnDestroy, OnInit {
       files.splice(i, 1);
     });
 
-  }
-
-  goToPath(path: string): void {
-    this.FileSystemUi.sendGoToPath({
-      application: 'file-explorer',
-      path
-    });
   }
 
   /**

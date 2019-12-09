@@ -58,7 +58,15 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
 
     this.Ssh.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe((activeConnection: string) => {
 
-      if (!activeConnection) return this.connectionForm.reset();
+      if (!activeConnection) {
+        return this.connectionForm.reset({
+          port: 22,
+          save: true,
+          autologin: false,
+          hopServerUuid: null,
+          uuid: null
+        });
+      }
 
       // Set Form controls with currentConnection data
       const currentConnection = this.getActiveConnection();

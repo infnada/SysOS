@@ -1,4 +1,4 @@
-import {V1Status, Watch, KubeConfig, Log, Exec, Attach} from '@kubernetes/client-node';
+import {V1Status, Watch, KubeConfig, Log, Exec, Attach, } from '@kubernetes/client-node';
 import {Writable} from 'stream';
 import {Request} from 'request';
 import WebSocket from 'isomorphic-ws';

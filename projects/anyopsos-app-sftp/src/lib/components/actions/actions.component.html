@@ -7,7 +7,7 @@
     <i class="fas fa-edit" [ngClass]="{'text-primary': activeConnection !== null}"></i>
   </a>
   <a class="window__item" matTooltip="Disconnect" (click)="disconnectConnection()">
-    <i class="fas fa-times" [ngClass]="{'text-danger': activeConnection !== null && getActiveConnection().state === 'connected'}"></i>
+    <i class="fas fa-times" [ngClass]="{'text-danger': activeConnection !== null && (getActiveConnection().state === 'connected' || getActiveConnection().state === 'ready')}"></i>
   </a>
   <a class="window__item" matTooltip="Delete" (click)="deleteConnection()">
     <i class="fas fa-trash" [ngClass]="{'text-danger': activeConnection !== null}"></i>

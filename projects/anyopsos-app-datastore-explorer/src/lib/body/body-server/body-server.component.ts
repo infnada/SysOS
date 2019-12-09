@@ -7,7 +7,7 @@ import {AnyOpsOSLibSelectableService} from '@anyopsos/lib-selectable';
 import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
 import {AnyOpsOSLibFileSystemUiService} from '@anyopsos/lib-file-system-ui';
 import {AnyOpsOSLibApplicationService, Application} from '@anyopsos/lib-application';
-import {AnyOpsOSFile} from '@anyopsos/lib-file';
+import {AnyOpsOSFile} from '@anyopsos/lib-types';
 
 import {AnyOpsOSAppDatastoreExplorerService} from '../../services/anyopsos-app-datastore-explorer.service';
 import {AnyOpsOSAppDatastoreExplorerServerService} from '../../services/anyopsos-app-datastore-explorer-server.service';
@@ -24,11 +24,14 @@ export class BodyServerComponent implements OnDestroy, OnInit {
 
   private destroySubject$: Subject<void> = new Subject();
 
+  activeConnection: string;
+  loadingData: boolean;
+
   currentPath: string;
   currentData: AnyOpsOSFile[];
+
   viewAsList: boolean;
   search: { filename: string } = null;
-  activeConnection: string;
 
   currentActive: number = 0;
 
@@ -46,7 +49,10 @@ export class BodyServerComponent implements OnDestroy, OnInit {
     });
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
+    // Is loading data from Backend?
+    this.DatastoreExplorerServer.getObserverLoadingData().pipe(takeUntil(this.destroySubject$)).subscribe(loadingData => this.loadingData = loadingData);
+
     this.DatastoreExplorerServer.currentPath.pipe(takeUntil(this.destroySubject$)).subscribe(path => this.currentPath = path);
     this.DatastoreExplorerServer.currentData.pipe(takeUntil(this.destroySubject$)).subscribe(data => {
       this.currentData = data;
@@ -59,7 +65,7 @@ export class BodyServerComponent implements OnDestroy, OnInit {
     this.goToPath('/');
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.destroySubject$.next();
   }
 

@@ -14,6 +14,8 @@ import {AnyOpsOSAppInfrastructureVmwareNodeActionsService} from './vmware/anyops
 
 import {ImTreeNode} from '../types/im-tree-node';
 import {ConnectionVmware} from '../types/connections/connection-vmware';
+import {ImDataObject} from "../types/im-data-object";
+import {VMWareVM} from "../types/vmware-vm";
 
 @Injectable({
   providedIn: 'root'
@@ -1191,7 +1193,7 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
       },
       {
         id: 1, text: '<i class="fas fa-television text-primary"></i> Open Remote Console', action: (node: ImTreeNode) => {
-          this.openRemoteConsole(node.info.mainUuid, node.info);
+          this.openRemoteConsole(node);
         }
       },
       {id: 1, text: 'divider'},
@@ -2428,17 +2430,14 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
     ];
   }
 
-  private openRemoteConsole(connectionUuid: string, vm: any): void {
+  private openRemoteConsole(vm: ImDataObject & { info: { data: VMWareVM } }): void {
     this.logger.debug('Infrastructure Manager', 'Opening Remote Console APP', arguments);
 
-    const connection: ConnectionVmware = this.InfrastructureManager.getConnectionByUuid(connectionUuid) as ConnectionVmware;
+    const connection: ConnectionVmware = this.InfrastructureManager.getConnectionByUuid(vm.info.mainUuid) as ConnectionVmware;
 
     this.Applications.openApplication('wmks', {
-      connectionUuid,
-      vm: vm.vm,
-      credential: connection.credential,
-      host: connection.host,
-      port: connection.port
+      connection,
+      vm
     });
   }
 

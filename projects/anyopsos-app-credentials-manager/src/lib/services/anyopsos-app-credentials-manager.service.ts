@@ -108,7 +108,8 @@ export class AnyOpsOSAppCredentialsManagerService {
 
   }
 
-  saveCredential(credential: Credential): Promise<null> {
+  saveCredential(credential: Credential): Promise<void> {
+    const loggerArgs = arguments;
 
     return new Promise((resolve, reject) => {
 
@@ -143,7 +144,7 @@ export class AnyOpsOSAppCredentialsManagerService {
           return resolve();
         },
         error => {
-          this.logger.error('Credentials Manager', 'Error while saving credentials', null, error);
+          this.logger.error('Credentials Manager', 'Error while saving credentials', loggerArgs, error);
           this.Toastr.error('Error saving credential.', 'Credential Manager');
           return reject();
         });

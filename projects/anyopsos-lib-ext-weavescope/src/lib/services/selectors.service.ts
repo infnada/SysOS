@@ -612,7 +612,7 @@ export class SelectorsService implements OnDestroy {
     this.State.currentZoomCache.pipe(takeUntil(this.destroySubject$)).subscribe(zoomState => this.zoomState = zoomState);
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.destroySubject$.next();
   }
 

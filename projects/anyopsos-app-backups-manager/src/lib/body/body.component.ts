@@ -17,7 +17,7 @@ export class BodyComponent implements OnInit {
   constructor(private BackupsManager: AnyOpsOSAppBackupsManagerService) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     console.log(this.application);
     if (this.application.initData) {
 

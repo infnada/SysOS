@@ -6,8 +6,9 @@ import {ToastrService} from 'ngx-toastr';
 import {Socket} from 'ngx-socket-io';
 
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
-import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
+import {AnyOpsOSLibServiceInjectorService} from '@anyopsos/lib-service-injector';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
+import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
 
 import {SftpConnection} from '../types/sftp-connection';
 
@@ -15,6 +16,8 @@ import {SftpConnection} from '../types/sftp-connection';
   providedIn: 'root'
 })
 export class AnyOpsOSAppSftpService {
+  private Ssh;
+
   private $connections: BehaviorSubject<SftpConnection[]>;
   private $activeConnection: BehaviorSubject<string>;
   private $viewExchange: BehaviorSubject<boolean>;
@@ -32,8 +35,10 @@ export class AnyOpsOSAppSftpService {
   constructor(private logger: AnyOpsOSLibLoggerService,
               private Toastr: ToastrService,
               private socket: Socket,
+              private serviceInjector: AnyOpsOSLibServiceInjectorService,
               private Modal: AnyOpsOSLibModalService,
               private FileSystem: AnyOpsOSLibFileSystemService) {
+
     this.dataStore = {connections: [], activeConnection: null, viewExchange: false};
     this.$connections = new BehaviorSubject(this.dataStore.connections);
     this.$activeConnection = new BehaviorSubject(this.dataStore.activeConnection);
@@ -129,18 +134,25 @@ export class AnyOpsOSAppSftpService {
    * Initialize SSH connection with Backend
    */
   sendConnect(connection: SftpConnection): void {
+    // Get Ssh service here instead at constructor because this service is initialized when the application is loaded.
+    // This means that sometimes Ssh service from ServiceInjector will be undefined. RaceCondition.
+    this.Ssh = this.serviceInjector.get('AnyOpsOSAppSshService');
 
     Promise.resolve().then(() => {
 
       // If current connection have hopServerUuid, make sure it's Online and then Start the current connection
-      if (connection.hopServerUuid && this.getConnectionByUuid(connection.hopServerUuid).state === 'disconnected') {
-        return this.socketConnectServer(this.getConnectionByUuid(connection.hopServerUuid));
+      if (connection.hopServerUuid && this.Ssh.getConnectionByUuid(connection.hopServerUuid).state === 'disconnected') {
+        return this.Ssh.socketConnectServer(this.Ssh.getConnectionByUuid(connection.hopServerUuid));
       }
 
     }).then(() => {
 
       // Start current connection
       return this.socketConnectServer(connection);
+    }).then(() => {
+
+      // Create SFTP client
+      return this.socketGetSftpWrapper(connection.uuid);
     }).then(() => {
       this.Modal.closeModal('.window--sftp .window__main');
 
@@ -202,6 +214,39 @@ export class AnyOpsOSAppSftpService {
       });
     });
 
+  }
+
+  /**
+   * Starts a SFTP client on top of an SSH connection
+   */
+  private socketGetSftpWrapper(connectionUuid: string): Promise<any> {
+    const loggerArgs = arguments;
+
+    this.logger.info('Sftp', 'Creating SFTP client', loggerArgs);
+
+    return new Promise((resolve, reject) => {
+
+      this.socket.emit('[ssh-sftp]', {
+        uuid: connectionUuid
+      }, (data: { status: 'error' | 'ok', data: any }) => {
+        if (data.status === 'error') {
+          this.logger.error('Sftp', 'Error while emitting [ssh-sftp]', loggerArgs, data.data);
+          this.getConnectionByUuid(connectionUuid).error = data.data;
+
+          return reject(data.data);
+        }
+
+        // Set connection state as connected and remove any previous errors
+        this.getConnectionByUuid(connectionUuid).state = 'ready';
+        this.getConnectionByUuid(connectionUuid).error = null;
+
+        // broadcast data to subscribers
+        this.$connections.next(Object.assign({}, this.dataStore).connections);
+
+        return resolve();
+      });
+
+    });
   }
 
   saveConnection(connection: SftpConnection, saveOnly: boolean = false): void {

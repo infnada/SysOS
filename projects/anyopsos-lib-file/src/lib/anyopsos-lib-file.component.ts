@@ -39,7 +39,7 @@ export class AnyOpsOSLibFileComponent implements OnInit, AfterViewInit {
               private FileSystemUi: AnyOpsOSLibFileSystemUiService) {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.fileContextMenuItems = [
       {
         id: 0, text: '<i class="fas fa-upload"></i> Upload to Remote', action: (file: AnyOpsOSFile): void => {

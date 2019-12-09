@@ -11,7 +11,7 @@ export class AnyOpsOSModalInfrastructureManagerAddTagComponent implements OnInit
 
   constructor(public activeModal: NgbActiveModal) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
 }

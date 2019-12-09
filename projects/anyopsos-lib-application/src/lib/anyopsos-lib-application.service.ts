@@ -43,9 +43,9 @@ export class AnyOpsOSLibApplicationService {
               private FileSystem: AnyOpsOSLibFileSystemService) {
 
     this.dataStore = {taskBarApplications: [], openedApplications: [], applications: [], taskbarItemOpen: null};
-    this.$applications = new BehaviorSubject(this.dataStore.taskBarApplications);
-    this.$taskBarApplications = new BehaviorSubject(this.dataStore.openedApplications);
-    this.$openedApplications = new BehaviorSubject(this.dataStore.applications);
+    this.$applications = new BehaviorSubject(this.dataStore.applications);
+    this.$taskBarApplications = new BehaviorSubject(this.dataStore.taskBarApplications);
+    this.$openedApplications = new BehaviorSubject(this.dataStore.openedApplications);
     this.$taskbarItemOpen = new BehaviorSubject(this.dataStore.taskbarItemOpen);
     this.taskBarApplications = this.$taskBarApplications.asObservable();
     this.openedApplications = this.$openedApplications.asObservable();
@@ -289,7 +289,7 @@ export class AnyOpsOSLibApplicationService {
    * @description
    * Returns all scripts to load as anyOpsOS applications
    */
-  getInstalledApplications(): Promise<null> {
+  getInstalledApplications(): Promise<void> {
 
     return new Promise((resolve, reject) => {
 

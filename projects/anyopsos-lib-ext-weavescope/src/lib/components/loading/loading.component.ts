@@ -26,7 +26,7 @@ export class LoadingComponent implements OnInit {
   constructor() {
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.template = sample(this.LOADING_TEMPLATES);
     this.message = this.renderTemplate(this.itemType, this.template);
   }

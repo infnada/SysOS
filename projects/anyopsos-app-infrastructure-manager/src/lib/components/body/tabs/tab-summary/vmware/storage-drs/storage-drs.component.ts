@@ -9,7 +9,7 @@ export class StorageDrsComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
 }

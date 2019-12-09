@@ -11,7 +11,7 @@ export class AnyOpsOSModalInfrastructureManagerAddPermissionComponent implements
 
   constructor(public activeModal: NgbActiveModal) { }
 
-  ngOnInit() {
+  ngOnInit(): void {
   }
 
 }
