@@ -52,7 +52,7 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
       uuid: [null]
     });
 
-    this.Ssh.connections.pipe(takeUntil(this.destroySubject$)).subscribe(connections => {
+    this.Ssh.connections.pipe(takeUntil(this.destroySubject$)).subscribe((connections: SshConnection[]) => {
       this.sshConnections = connections;
 
       if (this.sshConnections.length === 0) return this.connectionForm.controls.hopServerUuid.disable();
@@ -62,14 +62,13 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
     this.Sftp.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe((activeConnection: string) => {
 
       if (!activeConnection) {
-        this.connectionForm.reset({
+        return this.connectionForm.reset({
           port: 22,
           save: true,
           autologin: false,
           hopServerUuid: null,
           uuid: null
         });
-        return;
       }
 
       // Set Form controls with currentConnection data

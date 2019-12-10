@@ -1,4 +1,5 @@
 /**
+ * This is a PoC
  * TODO:
  * full typescript rewrite
  * remove jquery-ui dependency

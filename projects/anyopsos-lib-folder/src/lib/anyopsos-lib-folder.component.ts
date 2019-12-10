@@ -4,7 +4,8 @@ import {
   ViewChild,
   ElementRef,
   Input,
-  OnDestroy
+  OnDestroy,
+  ViewEncapsulation
 } from '@angular/core';
 import {CdkDragStart} from '@angular/cdk/drag-drop';
 

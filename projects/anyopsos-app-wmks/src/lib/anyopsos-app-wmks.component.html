@@ -3,30 +3,26 @@
   <div class="window__main row no_padding" (window:resize)="layout()">
 
     <!-- Page bar -->
-    <div id="bar">
-      <div id="buttonBar">
-        <div class="buttonC">
-          <button (click)="toggleEnforce()">
+    <div class="top-wmks-bar" *ngIf="currentVm">
+      <div class="float-right">
+        <mat-button-toggle-group aria-label="WMKS Buttons">
+          <mat-button-toggle (click)="toggleEnforce()">
             <ng-container *ngIf="isEnforcingKeyboard">Stop Enforcing US Keyboard Layout</ng-container>
             <ng-container *ngIf="!isEnforcingKeyboard">Enforce US Keyboard Layout</ng-container>
-          </button>
-          <button (click)="enterFullScreen()" *ngIf="!hideFullScreen">
-            View Fullscreen
-          </button>
-          <button (click)="sendCad()">
-            Send Ctrl+Alt+Delete
-          </button>
-        </div>
+          </mat-button-toggle>
+          <mat-button-toggle (click)="enterFullScreen()">View Fullscreen</mat-button-toggle>
+          <mat-button-toggle (click)="sendCad()">Send Ctrl+Alt+Delete</mat-button-toggle>
+        </mat-button-toggle-group>
       </div>
-      <div id="vmName">
-        <span id="vmTitle">labvcenter01</span>
+      <div class="h-100 d-table">
+        <span class="align-middle d-table-cell font-weight-bold">{{currentVm.name}}</span>
       </div>
     </div>
 
     <!-- WMKS container -->
     <div id="container"
-         [style.top]="isFullScreen ? 0 : '80px'"
-         [style.height]="isFullScreen ? '100%' : 'calc(100% - 80px)'"
+         [style.top]="isFullScreen ? 0 : '75px'"
+         [style.height]="isFullScreen ? '100%' : 'calc(100% - 75px)'"
          style="left: 0"
          class="w-100">
 

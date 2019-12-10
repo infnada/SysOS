@@ -1,11 +1,11 @@
 import {Injectable} from '@angular/core';
 
 import {BehaviorSubject, Observable} from 'rxjs';
+import {v4 as uuidv4} from 'uuid';
 import {Socket} from 'ngx-socket-io';
 import {ToastrService} from 'ngx-toastr';
-import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
-import {v4 as uuidv4} from 'uuid';
 
+import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
 import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
 import {AnyOpsOSLibVmwareService} from '@anyopsos/lib-vmware';
@@ -43,25 +43,6 @@ export class AnyOpsOSAppDatastoreExplorerService {
     this.viewExchange = this.$viewExchange.asObservable();
   }
 
-  getActiveConnection(): DatastoreExplorerConnection {
-    if (this.dataStore.activeConnection === null) return null;
-
-    return this.dataStore.connections.find(obj => obj.uuid === this.dataStore.activeConnection);
-  }
-
-  getConnectionByUuid(uuid: string): DatastoreExplorerConnection {
-    if (!uuid) throw new Error('uuid');
-
-    return this.dataStore.connections.find(obj => obj.uuid === uuid);
-  }
-
-  setActiveConnection(uuid: string): void {
-    this.dataStore.activeConnection = uuid;
-
-    // broadcast data to subscribers
-    this.$activeConnection.next(Object.assign({}, this.dataStore).activeConnection);
-  }
-
   toggleExchange(): void {
     this.dataStore.viewExchange = !this.dataStore.viewExchange;
 
@@ -69,11 +50,70 @@ export class AnyOpsOSAppDatastoreExplorerService {
     this.$viewExchange.next(Object.assign({}, this.dataStore).viewExchange);
   }
 
-  private initConnection(uuid): Promise<any> {
+  getActiveConnection(): DatastoreExplorerConnection {
+    if (this.dataStore.activeConnection === null) return null;
 
-    if (this.getConnectionByUuid(uuid).type === 'vmware') {
+    return this.dataStore.connections.find(obj => obj.uuid === this.dataStore.activeConnection);
+  }
+
+  getConnectionByUuid(connectionUuid: string): DatastoreExplorerConnection {
+    if (!connectionUuid) throw new Error('uuid');
+
+    return this.dataStore.connections.find(obj => obj.uuid === connectionUuid);
+  }
+
+  setActiveConnection(connectionUuid: string = null): void {
+    this.dataStore.activeConnection = connectionUuid;
+
+    // broadcast data to subscribers
+    this.$activeConnection.next(Object.assign({}, this.dataStore).activeConnection);
+  }
+
+  connect(connection: DatastoreExplorerConnection): Promise<any> {
+    if (!connection) throw new Error('connection_not_found');
+
+    this.logger.debug('Datastore Explorer', 'Connect received', arguments);
+
+    // Editing an existing connection
+    if (connection.uuid) {
+      connection.state = 'disconnected';
+
+      const currentConnectionIndex = this.dataStore.connections.findIndex((obj) => obj.uuid === connection.uuid);
+      this.dataStore.connections[currentConnectionIndex] = connection;
+
+    // New connection received
+    } else {
+      connection = {
+        uuid: uuidv4(),
+        host: connection.host,
+        port: connection.port,
+        credential: connection.credential,
+        type: connection.type,
+        data: connection.data,
+        state: 'disconnected'
+      };
+
+      this.dataStore.connections.push(connection);
+    }
+
+    // broadcast data to subscribers
+    this.$connections.next(Object.assign({}, this.dataStore).connections);
+
+    this.setActiveConnection(connection.uuid);
+
+    return this.initConnection().catch(e => {
+      // Show error on screen
+      this.Modal.changeModalType('danger', '.window--datastore-explorer .window__main');
+      this.Modal.changeModalText(e, '.window--datastore-explorer .window__main');
+    });
+  }
+
+  private initConnection(): Promise<void> {
+
+    if (this.getActiveConnection().type === 'vmware') {
       this.Modal.changeModalText('Connecting to Datastore...', '.window--datastore-explorer .window__main');
-      return this.VMWare.connectvCenterSoap(this.getConnectionByUuid(uuid)).then((data) => {
+
+      return this.VMWare.connectvCenterSoap(this.getActiveConnection()).then((data) => {
         if (data.status === 'error') throw new Error('Failed to connect to vCenter');
 
         this.getActiveConnection().state = 'connected';
@@ -82,47 +122,11 @@ export class AnyOpsOSAppDatastoreExplorerService {
       });
     }
 
-    if (this.getConnectionByUuid(uuid).type === 'netapp') {
+    if (this.getActiveConnection().type === 'netapp') {
       this.getActiveConnection().state = 'connected';
       return Promise.resolve();
     }
 
-  }
-
-  connect(connection: DatastoreExplorerConnection): Promise<any> {
-    if (!connection) throw new Error('connection_not_found');
-
-    this.logger.debug('Datastore Explorer', 'Connect received', arguments);
-
-    if (connection.uuid) {
-      connection.state = 'disconnected';
-
-      const currentConnectionIndex = this.dataStore.connections.findIndex((obj) => {
-        return obj.uuid === connection.uuid;
-      });
-
-      this.dataStore.connections[currentConnectionIndex] = connection;
-
-    } else {
-      connection.uuid = uuidv4();
-
-      this.dataStore.connections.push({
-        uuid: connection.uuid,
-        host: connection.host,
-        port: connection.port,
-        credential: connection.credential,
-        type: connection.type,
-        data: connection.data,
-        state: 'disconnected'
-      });
-    }
-
-    // broadcast data to subscribers
-    this.$connections.next(Object.assign({}, this.dataStore).connections);
-
-    this.setActiveConnection(connection.uuid);
-
-    return this.initConnection(connection.uuid);
   }
 
   disconnectConnection(uuid?: string): void {

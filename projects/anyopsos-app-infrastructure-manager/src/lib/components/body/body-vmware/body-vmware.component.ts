@@ -29,7 +29,7 @@ export class BodyVmwareComponent implements OnChanges {
     this.Monitor = this.serviceInjector.get('AnyOpsOSAppMonitorService');
   }
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(changes: SimpleChanges): void {
 
     // Reset old Netdata Dashboard
     // TODO if old dashboard is active on Monitor Application, it will be reseated as well

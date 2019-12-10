@@ -3,20 +3,18 @@ import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
+import {AnyOpsOSLibFileSystemUiService} from '@anyopsos/lib-file-system-ui';
 import {Application} from '@anyopsos/lib-application';
 import {AnyOpsOSFile} from '@anyopsos/lib-types';
-import {AnyOpsOSLibFileSystemUiService} from '@anyopsos/lib-file-system-ui';
 
-import {AnyOpsOSAppDatastoreExplorerService} from '../../services/anyopsos-app-datastore-explorer.service';
-import {AnyOpsOSAppDatastoreExplorerServerService} from '../../services/anyopsos-app-datastore-explorer-server.service';
-import {DatastoreExplorerConnection} from '../../types/datastore-explorer-connection';
+import {AnyOpsOSAppDatastoreExplorerLocalService} from '../../../services/anyopsos-app-datastore-explorer-local.service';
 
 @Component({
-  selector: 'sade-actions-server',
-  templateUrl: './actions-server.component.html',
-  styleUrls: ['./actions-server.component.scss']
+  selector: 'sade-actions-local',
+  templateUrl: './actions-local.component.html',
+  styleUrls: ['./actions-local.component.scss']
 })
-export class ActionsServerComponent implements OnDestroy, OnInit {
+export class ActionsLocalComponent implements OnDestroy, OnInit {
   @Input() application: Application;
 
   private destroySubject$: Subject<void> = new Subject();
@@ -30,52 +28,47 @@ export class ActionsServerComponent implements OnDestroy, OnInit {
   nextPath: string[] = [];
 
   constructor(private FileSystemUi: AnyOpsOSLibFileSystemUiService,
-              private DatastoreExplorer: AnyOpsOSAppDatastoreExplorerService,
-              private DatastoreExplorerServer: AnyOpsOSAppDatastoreExplorerServerService) {
+              private DatastoreExplorerLocal: AnyOpsOSAppDatastoreExplorerLocalService) {
 
-    this.DatastoreExplorerServer.getObserverGoPathBack().pipe(takeUntil(this.destroySubject$)).subscribe(() => {
+    this.DatastoreExplorerLocal.getObserverGoPathBack().pipe(takeUntil(this.destroySubject$)).subscribe(() => {
       this.goPathBack();
     });
 
     this.FileSystemUi.getObserverGoToPath().pipe(takeUntil(this.destroySubject$)).subscribe((data) => {
-      if (data.application === 'datastore-explorer#server') this.goToPath(data.path);
+      if (data.application === 'datastore-explorer#local') this.goToPath(data.path);
     });
   }
 
   ngOnInit(): void {
-    this.DatastoreExplorerServer.currentPath.pipe(takeUntil(this.destroySubject$)).subscribe(path => this.currentPath = path);
-    this.DatastoreExplorerServer.currentData.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.currentData = data);
-    this.DatastoreExplorerServer.viewAsList.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.viewAsList = data);
-    this.DatastoreExplorerServer.search.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.search = data);
+    this.DatastoreExplorerLocal.currentPath.pipe(takeUntil(this.destroySubject$)).subscribe(path => this.currentPath = path);
+    this.DatastoreExplorerLocal.currentData.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.currentData = data);
+    this.DatastoreExplorerLocal.viewAsList.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.viewAsList = data);
+    this.DatastoreExplorerLocal.search.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.search = data);
   }
 
   ngOnDestroy(): void {
     this.destroySubject$.next();
   }
 
-  getActiveConnection(): DatastoreExplorerConnection {
-    return this.DatastoreExplorer.getActiveConnection();
-  }
-
   /**
    * Creates a new folder
    */
   UIcreateFolder(): void {
-    this.FileSystemUi.UIcreateFolder(this.currentPath, '.window--datastore-explorer .window__main', 'linux', { connection: this.getActiveConnection() });
+    this.FileSystemUi.UIcreateFolder(this.currentPath, '.window--datastore-explorer .window__main');
   }
 
   /**
    * Sets view mode (icons, detailed...)
    */
   toggleView(): void {
-    this.DatastoreExplorerServer.toggleView();
+    this.DatastoreExplorerLocal.toggleView();
   }
 
   /**
    * Get current path data
    */
   reloadPath(newPath?: string): void {
-    this.DatastoreExplorerServer.reloadPath(this.getActiveConnection().uuid, newPath);
+    this.DatastoreExplorerLocal.reloadPath(newPath);
     this.searchChange(null);
   }
 
@@ -122,6 +115,6 @@ export class ActionsServerComponent implements OnDestroy, OnInit {
   }
 
   searchChange(event: string): void {
-    this.DatastoreExplorerServer.setSearch(event);
+    this.DatastoreExplorerLocal.setSearch(event);
   }
 }

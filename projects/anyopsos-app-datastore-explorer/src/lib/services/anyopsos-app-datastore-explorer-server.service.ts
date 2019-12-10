@@ -107,7 +107,7 @@ export class AnyOpsOSAppDatastoreExplorerServerService {
       let returnData;
 
       if (connection.type === 'vmware') {
-        obj = FilesDataFromDatastoreResult.data.data[0].propSet.info.result.file;
+        obj = FilesDataFromDatastoreResult.data.data[0].propSet[0].info[0].result[0].file;
 
         delete obj.datastore;
         delete obj.folderPath;

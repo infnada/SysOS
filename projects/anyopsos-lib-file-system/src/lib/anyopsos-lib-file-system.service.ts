@@ -150,17 +150,17 @@ export class AnyOpsOSLibFileSystemService {
   getFileType(longname: string): string {
     if (longname.charAt(0) === 'd') return 'folder';
     if (longname.charAt(0) === 'l') return 'folder';
-    if (longname.substr(-4) === '.vmx') return 'file-code-o';
-    if (longname.substr(-4) === '.log') return 'file-text';
+    if (longname.substr(-4) === '.vmx') return 'file-code';
+    if (longname.substr(-4) === '.log') return 'file-alt';
     if (longname.substr(-6) === '.nvram') return 'file';
-    if (longname.substr(-5) === '.vmdk') return 'hdd-o';
+    if (longname.substr(-5) === '.vmdk') return 'hdd';
     if (longname.substr(-5) === '.vmem') return 'file';
     if (longname.substr(-5) === '.vmsd') return 'file';
     if (longname.substr(-5) === '.vmsn') return 'file';
     if (longname.substr(-5) === '.vmss') return 'file';
     if (longname.substr(-5) === '.vmxf') return 'file';
     if (longname.substr(-5) === '.vmtm') return 'file';
-    if (longname.substr(-5) === '.iso') return 'file-archive-o';
+    if (longname.substr(-5) === '.iso') return 'file-archive';
     if (longname.charAt(0) === '-' && (longname.charAt(3) === 'x')) return 'file-code';
     if (longname.charAt(0) === '-') return 'file';
     return 'file';

@@ -9,9 +9,9 @@ import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
 import {AnyOpsOSLibApplicationService, Application} from '@anyopsos/lib-application';
 import {ImConnection, ConnectionVmware, ConnectionNetapp, ImDataObject, NetAppVolume, VMWareDatastore} from '@anyopsos/app-infrastructure-manager';
 
-import {DatastoreExplorerConnection} from '../../types/datastore-explorer-connection';
-import {AnyOpsOSAppDatastoreExplorerService} from '../../services/anyopsos-app-datastore-explorer.service';
-import {AnyOpsOSAppDatastoreExplorerServerService} from '../../services/anyopsos-app-datastore-explorer-server.service';
+import {DatastoreExplorerConnection} from '../../../types/datastore-explorer-connection';
+import {AnyOpsOSAppDatastoreExplorerService} from '../../../services/anyopsos-app-datastore-explorer.service';
+import {AnyOpsOSAppDatastoreExplorerServerService} from '../../../services/anyopsos-app-datastore-explorer-server.service';
 
 @Component({
   selector: 'sade-body-new-connection',
@@ -47,13 +47,12 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
 
     this.DatastoreExplorer.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe((activeConnection: string) => {
 
-      if (!activeConnection) this.newConnectionType = null;
-      if (this.datastores.length === 0) return this.connectionForm.controls.datastore.disable();
-
-      if (!activeConnection) return this.connectionForm.reset();
+      if (!activeConnection) {
+        this.newConnectionType = null;
+        return this.connectionForm.reset();
+      }
 
       this.newConnectionType = this.getActiveConnection().type;
-      this.connectionForm.controls.datastore.enable();
       this.connectionForm.controls.datastore.setValue(this.getActiveConnection());
     });
 
@@ -111,6 +110,10 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
     if (type === 'netapp') {
       this.datastores = this.InfrastructureManagerObjectHelper.getObjectsByType(null, 'volume') as (ImDataObject & { info: { data: NetAppVolume } })[];
     }
+
+    // Disable or enable mat-select
+    if (this.datastores.length === 0) return this.connectionForm.controls.datastore.disable();
+    this.connectionForm.controls.datastore.enable();
 
   }
 

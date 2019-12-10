@@ -9,9 +9,9 @@ import {AnyOpsOSLibFileSystemUiService} from '@anyopsos/lib-file-system-ui';
 import {AnyOpsOSLibApplicationService, Application} from '@anyopsos/lib-application';
 import {AnyOpsOSFile} from '@anyopsos/lib-types';
 
-import {AnyOpsOSAppDatastoreExplorerService} from '../../services/anyopsos-app-datastore-explorer.service';
-import {AnyOpsOSAppDatastoreExplorerServerService} from '../../services/anyopsos-app-datastore-explorer-server.service';
-import {DatastoreExplorerConnection} from '../../types/datastore-explorer-connection';
+import {AnyOpsOSAppDatastoreExplorerService} from '../../../services/anyopsos-app-datastore-explorer.service';
+import {AnyOpsOSAppDatastoreExplorerServerService} from '../../../services/anyopsos-app-datastore-explorer-server.service';
+import {DatastoreExplorerConnection} from '../../../types/datastore-explorer-connection';
 
 @Component({
   selector: 'sade-body-server',

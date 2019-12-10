@@ -6,9 +6,9 @@ import {takeUntil} from 'rxjs/operators';
 import {Application} from '@anyopsos/lib-application';
 import {AnyOpsOSLibFileSystemUiService} from '@anyopsos/lib-file-system-ui';
 
-import {AnyOpsOSAppDatastoreExplorerService} from '../../services/anyopsos-app-datastore-explorer.service';
-import {AnyOpsOSAppDatastoreExplorerServerService} from '../../services/anyopsos-app-datastore-explorer-server.service';
-import {AnyOpsOSAppDatastoreExplorerLocalService} from '../../services/anyopsos-app-datastore-explorer-local.service';
+import {AnyOpsOSAppDatastoreExplorerService} from '../../../services/anyopsos-app-datastore-explorer.service';
+import {AnyOpsOSAppDatastoreExplorerServerService} from '../../../services/anyopsos-app-datastore-explorer-server.service';
+import {AnyOpsOSAppDatastoreExplorerLocalService} from '../../../services/anyopsos-app-datastore-explorer-local.service';
 
 @Component({
   selector: 'sade-body-exchange',

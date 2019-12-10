@@ -9,7 +9,7 @@ import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
 import {AnyOpsOSLibFileSystemUiService} from '@anyopsos/lib-file-system-ui';
 import {AnyOpsOSFile} from '@anyopsos/lib-types';
 
-import {AnyOpsOSAppDatastoreExplorerLocalService} from '../../services/anyopsos-app-datastore-explorer-local.service';
+import {AnyOpsOSAppDatastoreExplorerLocalService} from '../../../services/anyopsos-app-datastore-explorer-local.service';
 
 @Component({
   selector: 'sade-body-local',

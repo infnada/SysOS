@@ -2,6 +2,7 @@ import {AfterViewInit, Component, Input} from '@angular/core';
 
 import {Application} from '@anyopsos/lib-application';
 import {AnyOpsOSLibVmwareService} from '@anyopsos/lib-vmware';
+import {ImDataObject, VMWareVM} from '@anyopsos/app-infrastructure-manager';
 
 import {AnyOpsOSLibExtJqueryService} from '@anyopsos/lib-ext-jquery';
 
@@ -22,6 +23,8 @@ export class BodyComponent implements AfterViewInit {
   hideFullScreen: boolean = true;
   message: string;
   hideSpinner: boolean;
+
+  currentVm: ImDataObject & { info: { data: VMWareVM } };
 
   constructor(private jQuery: AnyOpsOSLibExtJqueryService,
               private VMWare: AnyOpsOSLibVmwareService) {
@@ -83,7 +86,9 @@ export class BodyComponent implements AfterViewInit {
   }
 
   ngAfterViewInit() {
-    if (this.application.initData) {
+    if (this.application.initData && this.application.initData.vm && this.application.initData.connection) {
+      this.currentVm = this.application.initData.vm;
+
       console.log(this.application.initData);
       this.VMWare.connectvCenterSoap(this.application.initData.connection).then((connectSoapResult) => {
         if (connectSoapResult.status === 'error') throw {

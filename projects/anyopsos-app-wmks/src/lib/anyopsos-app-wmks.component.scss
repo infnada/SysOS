@@ -1,13 +1,9 @@
-#bar {
-  height: 60px;
+.top-wmks-bar {
+  height: 75px;
   overflow: hidden;
   padding: 12px;
+  width: 100%;
 }
-
-#buttonBar {
-  float: right;
-}
-
 #vmName {
   font-weight: bold;
   white-space: nowrap;

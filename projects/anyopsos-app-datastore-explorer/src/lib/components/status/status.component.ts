@@ -2,8 +2,8 @@ import {Component, Input, OnInit} from '@angular/core';
 
 import {Application} from '@anyopsos/lib-application';
 
-import {AnyOpsOSAppDatastoreExplorerService} from '../services/anyopsos-app-datastore-explorer.service';
-import {DatastoreExplorerConnection} from '../types/datastore-explorer-connection';
+import {AnyOpsOSAppDatastoreExplorerService} from '../../services/anyopsos-app-datastore-explorer.service';
+import {DatastoreExplorerConnection} from '../../types/datastore-explorer-connection';
 
 @Component({
   selector: 'sade-status',

@@ -525,10 +525,6 @@ li li .list__toggle:before {
   border-left: 8px solid #7bb6ef;
 }
 
-
-
-
-
 .folders__body {
   margin:0;
   padding:0;
@@ -537,13 +533,8 @@ li li .list__toggle:before {
   #local_body {
     margin-top: 32px;
     height: calc(100% - 32px);
-    position: relative;
-  }
-
-  .folders {
-    overflow-y: scroll;
-    height: calc(100% - 55px);
-    position: relative;
+    position: absolute;
+    width: 100%;
   }
 }
 

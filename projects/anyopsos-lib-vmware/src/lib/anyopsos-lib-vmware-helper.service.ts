@@ -335,17 +335,14 @@ export class AnyOpsOSLibVmwareHelperService {
 
       const taskInfo = this.parseVMwareObject(data.RetrievePropertiesResponse[0].returnval[0]);
 
-      if (taskInfo['info.state'] === 'running') {
-        console.log('running', taskInfo);
+      if (taskInfo.propSet['info.state'] === 'running') {
 
-        return new Observable(observer => {
+        return new Promise(resolve => {
           setTimeout(() => {
-            observer.next(this.getTaskStatus(connectionData, taskId));
-          }, 2000);
-        }).toPromise();
+            return resolve(this.getTaskStatus(connectionData, taskId));
+          }, 1000);
+        });
       }
-
-      console.log('finished', taskInfo);
 
       return this.getTaskResults(connectionData, taskId).then((res) => {
         return res;

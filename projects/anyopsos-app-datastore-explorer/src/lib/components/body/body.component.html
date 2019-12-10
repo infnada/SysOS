@@ -1,14 +1,16 @@
 <div class="window__body" [ngClass]="{'with_status': application.status, 'with_actions': application.actions}">
 
   <div class="window__side" *ngIf="viewSide">
+
     <ng-container *ngFor="let connection of connections; index as $index">
       <div class="menu__item" *ngIf="connection != undefined" [ngClass]="{'active': connection.uuid === activeConnection}" (click)="setActiveConnection(connection)">
-        <h5>
-          {{connection.data.obj.name}} <small>({{connection.host}})</small>
-          <i class="fas fa-circle pull-right m-t-f" [ngClass]="{'text-danger': connection.state == 'disconnected', 'text-success': connection.state == 'connected'}"></i>
+        <h5 class="position-relative">
+          {{connection.data.obj.name}} <small class="d-block">({{connection.host}})</small>
+          <i class="fas fa-circle connection-state" [ngClass]="{'text-danger': connection.state == 'disconnected', 'text-success': connection.state == 'connected'}"></i>
         </h5>
       </div>
     </ng-container>
+
     <div class="secondary-content__new__box__toggle pointer visible-lg">
       <div class="secondary-content__new__box__toggle__slide" (click)="toggleSide()">
         <i class="fas fa-arrow-left sidebar-open-font open-sidebar"></i>
@@ -19,8 +21,10 @@
     <i class="fas fa-arrow-right sidebar-open-font open-sidebar"></i>
   </div>
   <div class="window__main row no_padding" [ngClass]="{'with__stats': viewExchange === true}">
+
     <sade-body-local [application]="application"></sade-body-local>
     <sade-body-server [application]="application"></sade-body-server>
     <sade-body-exchange [application]="application"></sade-body-exchange>
+
   </div>
 </div>
