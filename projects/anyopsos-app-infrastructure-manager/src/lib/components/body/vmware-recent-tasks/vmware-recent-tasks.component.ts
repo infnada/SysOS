@@ -16,7 +16,7 @@ import {ConnectionVmware} from '../../../types/connections/connection-vmware';
 })
 export class VmwareRecentTasksComponent implements OnInit {
   @Input() application: Application;
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatSort, {static: false}) sort: MatSort;
 
   displayedColumns: string[] = ['taskName', 'target', 'status', 'initiator', 'queuedFor', 'startTime', 'completionTime', 'server'];
   dataSource: MatTableDataSource<TaskInfo>;

@@ -1,7 +1,7 @@
 import {Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {FlatTreeControl} from '@angular/cdk/tree';
 
-import {Subject} from 'rxjs';
+import {Observable, of as observableOf, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
 import {MatTreeFlatDataSource, MatTreeFlattener, MatMenuTrigger} from '@anyopsos/lib-angular-material';
@@ -38,25 +38,40 @@ interface InfrastructureManagerFlatNode {
   styleUrls: ['./body.component.scss']
 })
 export class BodyComponent implements OnInit, OnDestroy {
-  @ViewChild(MatMenuTrigger) contextMenuTree: MatMenuTrigger;
+  @ViewChild(MatMenuTrigger, {static: false}) contextMenuTree: MatMenuTrigger;
   @Input() application: Application;
 
   private destroySubject$: Subject<void> = new Subject();
 
+  viewSide: boolean = true;
+
   activeConnection: string = null;
   activeObject: string = null;
 
-  viewSide: boolean = true;
   contextMenuPosition = {x: '0px', y: '0px'};
 
   private contextMenus: {[s: string]: ContextMenuItem[]};
 
-  treeControl: FlatTreeControl<InfrastructureManagerFlatNode> = new FlatTreeControl(node => node.level, node => node.expandable);
-  private treeFlattener: MatTreeFlattener<ImTreeNode, InfrastructureManagerFlatNode> = new MatTreeFlattener(this.transformer, node => node.level, node => node.expandable, node => node.children);
-  dataSource: MatTreeFlatDataSource<ImTreeNode, InfrastructureManagerFlatNode> = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
+  treeControl: FlatTreeControl<InfrastructureManagerFlatNode>;
+  dataSource: MatTreeFlatDataSource<ImTreeNode, InfrastructureManagerFlatNode>;
+  private readonly treeFlattener: MatTreeFlattener<ImTreeNode, InfrastructureManagerFlatNode>;
+  private expandedNodeSet: Set<string> = new Set();
 
-  hasChild = (_: number, node: InfrastructureManagerFlatNode) => node.expandable;
-  treeTracker = (index, node) => node.uuid;
+  private transformer = (node: ImTreeNode, level: number) => {
+    return {
+      expandable: !!node.children && node.children.length > 0,
+      name: node.name,
+      type: node.type,
+      uuid: node.uuid,
+      info: node.info,
+      level
+    };
+  }
+  private getLevel = (node: InfrastructureManagerFlatNode) => node.level;
+  private isExpandable = (node: InfrastructureManagerFlatNode) => node.expandable;
+  private getChildren = (node: ImTreeNode): Observable<ImTreeNode[]> => observableOf(node.children);
+  hasChild = (_: number, nodeData: InfrastructureManagerFlatNode) => nodeData.expandable;
+
 
   constructor(private Utils: AnyOpsOSLibUtilsService,
               private InfrastructureManager: AnyOpsOSAppInfrastructureManagerService,
@@ -70,56 +85,39 @@ export class BodyComponent implements OnInit, OnDestroy {
               private InfrastructureManagerSNMP: AnyOpsOSAppInfrastructureSnmpService,
               public InfrastructureManagerTemplateHelper: AnyOpsOSAppInfrastructureManagerTemplateHelperService) {
 
+    this.treeFlattener = new MatTreeFlattener(this.transformer, this.getLevel, this.isExpandable, this.getChildren);
+    this.treeControl = new FlatTreeControl<InfrastructureManagerFlatNode>(this.getLevel, this.isExpandable);
+    this.dataSource = new MatTreeFlatDataSource<ImTreeNode, InfrastructureManagerFlatNode>(this.treeControl, this.treeFlattener);
+
     /**
      * @description Required to avoid circular dependency
      * @link{AnyOpsOSAppInfrastructureManagerService#getObserverConnectGetData}
      */
-    this.InfrastructureManager.getObserverConnectGetData().pipe(takeUntil(this.destroySubject$)).subscribe((connection) => {
-      if (connection.type === 'netapp') this.InfrastructureManagerNetApp.getNetAppData(connection);
-      if (connection.type === 'vmware') this.InfrastructureManagerVMWare.getVMWareData(connection);
-      if (connection.type === 'kubernetes') this.InfrastructureManagerKubernetes.initConnection(connection);
-      if (connection.type === 'docker') this.InfrastructureManagerDocker.initConnection(connection);
-      if (connection.type === 'linux') this.InfrastructureManagerLinux.initConnection(connection);
-      if (connection.type === 'snmp') this.InfrastructureManagerSNMP.initConnection(connection);
-    });
+    this.InfrastructureManager.getObserverConnectGetData()
+      .pipe(takeUntil(this.destroySubject$)).subscribe((connection) => {
+        if (connection.type === 'netapp') this.InfrastructureManagerNetApp.getNetAppData(connection);
+        if (connection.type === 'vmware') this.InfrastructureManagerVMWare.getVMWareData(connection);
+        if (connection.type === 'kubernetes') this.InfrastructureManagerKubernetes.initConnection(connection);
+        if (connection.type === 'docker') this.InfrastructureManagerDocker.initConnection(connection);
+        if (connection.type === 'linux') this.InfrastructureManagerLinux.initConnection(connection);
+        if (connection.type === 'snmp') this.InfrastructureManagerSNMP.initConnection(connection);
+      });
 
-  }
-
-  ngOnDestroy(): void {
-    this.destroySubject$.next();
   }
 
   ngOnInit(): void {
-    this.InfrastructureManager.activeObject.pipe(takeUntil(this.destroySubject$)).subscribe(activeObject => this.activeObject = activeObject);
-    this.InfrastructureManager.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe(activeConnection => {
-      this.activeConnection = activeConnection;
 
-      if (this.activeConnection !== null && this.getActiveConnection().state === 'disconnected') {
-        setTimeout(() => this.Utils.scrollTo('infrastructure-manager_main-body', true), 100);
-      }
-    });
-    this.InfrastructureManagerTreeData.treeData.pipe(takeUntil(this.destroySubject$)).subscribe((data: ImTreeNode[]) => {
+    // Listen for treeData change
+    this.InfrastructureManagerTreeData.treeData
+      .pipe(takeUntil(this.destroySubject$)).subscribe(data => this.rebuildTreeForData(data));
 
-      // Save expanded nodes
-      const expandedNodes = new Array<InfrastructureManagerFlatNode>();
-      if (this.treeControl.dataNodes) {
-        this.treeControl.dataNodes.forEach(node => {
-          if (node.expandable && this.treeControl.isExpanded(node)) {
-            expandedNodes.push(node);
-          }
-        });
-      }
+    // Listen for activeObject change
+    this.InfrastructureManager.activeObject
+      .pipe(takeUntil(this.destroySubject$)).subscribe((activeObjectUuid: string) => this.activeObject = activeObjectUuid);
 
-      this.dataSource.data = data;
-
-      // Set expanded nodes
-      if (expandedNodes) {
-        expandedNodes.forEach(node => {
-          this.treeControl.expand(this.treeControl.dataNodes.find(n => n.uuid === node.uuid));
-        });
-      }
-
-    });
+    // Listen for activeConnection change
+    this.InfrastructureManager.activeConnection
+      .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnectionUuid: string) => this.onActiveConnectionChange(activeConnectionUuid));
 
     // Set Context Menus
     this.contextMenus = {
@@ -143,15 +141,19 @@ export class BodyComponent implements OnInit, OnDestroy {
     };
   }
 
-  private transformer(node: ImTreeNode, level: number)  {
-    return {
-      expandable: !!node.children && node.children.length > 0,
-      name: node.name,
-      type: node.type,
-      uuid: node.uuid,
-      info: node.info,
-      level
-    };
+  ngOnDestroy(): void {
+
+    // Remove all listeners
+    this.destroySubject$.next();
+  }
+
+  private onActiveConnectionChange(activeConnectionUuid: string): void {
+    this.activeConnection = activeConnectionUuid;
+
+    // Show Connection Form
+    if (this.activeConnection !== null && this.getActiveConnection().state === 'disconnected') {
+      setTimeout(() => this.Utils.scrollTo('infrastructure-manager_main-body', true), 100);
+    }
   }
 
   /**
@@ -229,5 +231,50 @@ export class BodyComponent implements OnInit, OnDestroy {
     }
 
     return this.InfrastructureManager.setActiveConnection(data.info.uuid);
+  }
+
+  /**
+   * The following methods are for persisting the tree expand state
+   * after being rebuilt
+   */
+
+  private rebuildTreeForData(data: any) {
+    this.rememberExpandedTreeNodes(this.treeControl, this.expandedNodeSet);
+    this.dataSource.data = data;
+    this.forgetMissingExpandedNodes(this.treeControl, this.expandedNodeSet);
+    this.expandNodesById(this.treeControl.dataNodes, Array.from(this.expandedNodeSet));
+  }
+
+  private rememberExpandedTreeNodes(treeControl: FlatTreeControl<InfrastructureManagerFlatNode>, expandedNodeSet: Set<string>) {
+    if (treeControl.dataNodes) {
+      treeControl.dataNodes.forEach((node) => {
+        if (treeControl.isExpandable(node) && treeControl.isExpanded(node)) {
+          // capture latest expanded state
+          expandedNodeSet.add(node.uuid);
+        }
+      });
+    }
+  }
+
+  private forgetMissingExpandedNodes(treeControl: FlatTreeControl<InfrastructureManagerFlatNode>, expandedNodeSet: Set<string>) {
+    if (treeControl.dataNodes) {
+      expandedNodeSet.forEach((nodeUuid) => {
+        // maintain expanded node state
+        if (!treeControl.dataNodes.find((n) => n.uuid === nodeUuid)) {
+          // if the tree doesn't have the previous node, remove it from the expanded list
+          expandedNodeSet.delete(nodeUuid);
+        }
+      });
+    }
+  }
+
+  private expandNodesById(flatNodes: InfrastructureManagerFlatNode[], ids: string[]) {
+    if (!flatNodes || flatNodes.length === 0) return;
+    const idSet = new Set(ids);
+    return flatNodes.forEach((node) => {
+      if (idSet.has(node.uuid)) {
+        this.treeControl.expand(node);
+      }
+    });
   }
 }

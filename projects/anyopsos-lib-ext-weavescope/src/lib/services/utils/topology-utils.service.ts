@@ -13,7 +13,7 @@ export class TopologyUtilsService {
     let foundTopology;
 
     subTree.forEach((topology) => {
-      if (endsWith(topology.get('url'), topologyId)) {
+      if (topology.get('id') === topologyId) {
         foundTopology = topology;
       }
       if (!foundTopology && topology.has('sub_topologies')) {

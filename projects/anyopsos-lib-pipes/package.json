@@ -1,0 +1,15 @@
+{
+  "name": "@anyopsos/lib-pipes",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@angular/common": "^8.2.14",
+    "@angular/core": "^8.2.14",
+    "tslib": "^1.10.0",
+    "@angular/platform-browser": "~7.2.0",
+    "tslib": "^1.9.0"
+  },
+  "dependencies": {
+    "ngx-filter-pipe": "^2.1.2",
+    "ngx-order-pipe": "^2.0.4"
+  }
+}

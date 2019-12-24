@@ -1,3 +1,4 @@
+/* tslint:disable */
 /**
  * This is a PoC
  * TODO:
@@ -21,7 +22,7 @@ export function WmksLib($) {
 
     $.ui = $.ui || {};
 
-    var version = $.ui.version = "1.12.1";
+    let version = $.ui.version = "1.12.1";
 
 
     /*!
@@ -41,12 +42,12 @@ export function WmksLib($) {
 
 
 
-    var widgetUuid = 0;
-    var widgetSlice = Array.prototype.slice;
+    let widgetUuid = 0;
+    let widgetSlice = Array.prototype.slice;
 
     $.cleanData = ( function( orig ) {
       return function( elems ) {
-        var events, elem, i;
+        let events, elem, i;
         for ( i = 0; ( elem = elems[ i ] ) != null; i++ ) {
           try {
 
@@ -64,15 +65,15 @@ export function WmksLib($) {
     } )( $.cleanData );
 
     $.widget = function( name, base, prototype ) {
-      var existingConstructor, constructor, basePrototype;
+      let existingConstructor, constructor, basePrototype;
 
       // ProxiedPrototype allows the provided prototype to remain unmodified
       // so that it can be used as a mixin for multiple widgets (#8876)
-      var proxiedPrototype = {};
+      let proxiedPrototype = {};
 
-      var namespace = name.split( "." )[ 0 ];
+      let namespace = name.split( "." )[ 0 ];
       name = name.split( "." )[ 1 ];
-      var fullName = namespace + "-" + name;
+      let fullName = namespace + "-" + name;
 
       if ( !prototype ) {
         prototype = base;
@@ -138,9 +139,9 @@ export function WmksLib($) {
           }
 
           return function() {
-            var __super = this._super;
-            var __superApply = this._superApply;
-            var returnValue;
+            let __super = this._super;
+            let __superApply = this._superApply;
+            let returnValue;
 
             this._super = _super;
             this._superApply = _superApply;
@@ -173,7 +174,7 @@ export function WmksLib($) {
       // level in the prototype chain.
       if ( existingConstructor ) {
         $.each( existingConstructor._childConstructors, function( i, child ) {
-          var childPrototype = child.prototype;
+          let childPrototype = child.prototype;
 
           // Redefine the child widget using the same prototype that was
           // originally used, but inherit from the new version of the base
@@ -194,11 +195,11 @@ export function WmksLib($) {
     };
 
     $.widget.extend = function( target ) {
-      var input = widgetSlice.call( arguments, 1 );
-      var inputIndex = 0;
-      var inputLength = input.length;
-      var key;
-      var value;
+      let input = widgetSlice.call( arguments, 1 );
+      let inputIndex = 0;
+      let inputLength = input.length;
+      let key;
+      let value;
 
       for ( ; inputIndex < inputLength; inputIndex++ ) {
         for ( key in input[ inputIndex ] ) {
@@ -224,11 +225,11 @@ export function WmksLib($) {
     };
 
     $.widget.bridge = function( name, object ) {
-      var fullName = object.prototype.widgetFullName || name;
+      let fullName = object.prototype.widgetFullName || name;
       $.fn[ name ] = function( options ) {
-        var isMethodCall = typeof options === "string";
-        var args = widgetSlice.call( arguments, 1 );
-        var returnValue = this;
+        let isMethodCall = typeof options === "string";
+        let args = widgetSlice.call( arguments, 1 );
+        let returnValue = this;
 
         if ( isMethodCall ) {
 
@@ -238,8 +239,8 @@ export function WmksLib($) {
             returnValue = undefined;
           } else {
             this.each( function() {
-              var methodValue;
-              var instance = $.data( this, fullName );
+              let methodValue;
+              let instance = $.data( this, fullName );
 
               if ( options === "instance" ) {
                 returnValue = instance;
@@ -275,7 +276,7 @@ export function WmksLib($) {
           }
 
           this.each( function() {
-            var instance = $.data( this, fullName );
+            let instance = $.data( this, fullName );
             if ( instance ) {
               instance.option( options || {} );
               if ( instance._init ) {
@@ -363,7 +364,7 @@ export function WmksLib($) {
       _init: $.noop,
 
       destroy: function() {
-        var that = this;
+        let that = this;
 
         this._destroy();
         $.each( this.classesElementLookup, function( key, value ) {
@@ -390,10 +391,10 @@ export function WmksLib($) {
       },
 
       option: function( key, value ) {
-        var options = key;
-        var parts;
-        var curOption;
-        var i;
+        let options = key;
+        let parts;
+        let curOption;
+        let i;
 
         if ( arguments.length === 0 ) {
 
@@ -432,7 +433,7 @@ export function WmksLib($) {
       },
 
       _setOptions: function( options ) {
-        var key;
+        let key;
 
         for ( key in options ) {
           this._setOption( key, options[ key ] );
@@ -456,7 +457,7 @@ export function WmksLib($) {
       },
 
       _setOptionClasses: function( value ) {
-        var classKey, elements, currentElements;
+        let classKey, elements, currentElements;
 
         for ( classKey in value ) {
           currentElements = this.classesElementLookup[ classKey ];
@@ -505,8 +506,8 @@ export function WmksLib($) {
       },
 
       _classes: function( options ) {
-        var full = [];
-        var that = this;
+        let full = [];
+        let that = this;
 
         options = $.extend( {
           element: this.element,
@@ -514,7 +515,7 @@ export function WmksLib($) {
         }, options );
 
         function processClassString( classes, checkOption? ) {
-          var current, i;
+          let current, i;
           for ( i = 0; i < classes.length; i++ ) {
             current = that.classesElementLookup[ classes[ i ] ] || $();
             if ( options.add ) {
@@ -545,7 +546,7 @@ export function WmksLib($) {
       },
 
       _untrackClassesElement: function( event ) {
-        var that = this;
+        let that = this;
         $.each( that.classesElementLookup, function( key, value ) {
           if ( $.inArray( event.target, value ) !== -1 ) {
             that.classesElementLookup[ key ] = $( value.not( event.target ).get() );
@@ -563,7 +564,7 @@ export function WmksLib($) {
 
       _toggleClass: function( element, keys, extra, add ) {
         add = ( typeof add === "boolean" ) ? add : extra;
-        var shift = ( typeof element === "string" || element === null ),
+        let shift = ( typeof element === "string" || element === null ),
           options = {
             extra: shift ? keys : extra,
             keys: shift ? element : keys,
@@ -575,8 +576,8 @@ export function WmksLib($) {
       },
 
       _on: function( suppressDisabledCheck, element, handlers ) {
-        var delegateElement;
-        var instance = this;
+        let delegateElement;
+        let instance = this;
 
         // No suppressDisabledCheck flag, shuffle arguments
         if ( typeof suppressDisabledCheck !== "boolean" ) {
@@ -616,9 +617,9 @@ export function WmksLib($) {
               handler.guid || handlerProxy.guid || $.guid++;
           }
 
-          var match = event.match( /^([\w:-]*)\s*(.*)$/ );
-          var eventName = match[ 1 ] + instance.eventNamespace;
-          var selector = match[ 2 ];
+          let match = event.match( /^([\w:-]*)\s*(.*)$/ );
+          let eventName = match[ 1 ] + instance.eventNamespace;
+          let selector = match[ 2 ];
 
           if ( selector ) {
             delegateElement.on( eventName, selector, handlerProxy );
@@ -644,7 +645,7 @@ export function WmksLib($) {
           return ( typeof handler === "string" ? instance[ handler ] : handler )
             .apply( instance, arguments );
         }
-        var instance = this;
+        let instance = this;
         return setTimeout( handlerProxy, delay || 0 );
       },
 
@@ -673,8 +674,8 @@ export function WmksLib($) {
       },
 
       _trigger: function( type, event, data ) {
-        var prop, orig;
-        var callback = this.options[ type ];
+        let prop, orig;
+        let callback = this.options[ type ];
 
         data = data || {};
         event = $.Event( event );
@@ -709,8 +710,8 @@ export function WmksLib($) {
           options = { effect: options };
         }
 
-        var hasOptions;
-        var effectName = !options ?
+        let hasOptions;
+        let effectName = !options ?
           method :
           options === true || typeof options === "number" ?
             defaultEffect :
@@ -744,7 +745,7 @@ export function WmksLib($) {
       };
     } );
 
-    var widget = $.widget;
+    let widget = $.widget;
 
     /*!
      * jQuery UI Position 1.12.1
@@ -759,7 +760,7 @@ export function WmksLib($) {
 
 
     ( function() {
-      var cachedScrollbarWidth,
+      let cachedScrollbarWidth,
         max = Math.max,
         abs = Math.abs,
         rhorizontal = /left|center|right/,
@@ -781,7 +782,7 @@ export function WmksLib($) {
       }
 
       function getDimensions( elem ) {
-        var raw = elem[ 0 ];
+        let raw = elem[ 0 ];
         if ( raw.nodeType === 9 ) {
           return {
             width: elem.width(),
@@ -815,7 +816,7 @@ export function WmksLib($) {
           if ( cachedScrollbarWidth !== undefined ) {
             return cachedScrollbarWidth;
           }
-          var w1, w2,
+          let w1, w2,
             div = $( "<div " +
               "style='display:block;position:absolute;width:50px;height:50px;overflow:hidden;'>" +
               "<div style='height:100px;width:auto;'></div></div>" ),
@@ -836,7 +837,7 @@ export function WmksLib($) {
           return ( cachedScrollbarWidth = w1 - w2 );
         },
         getScrollInfo: function( within ) {
-          var overflowX = within.isWindow || within.isDocument ? "" :
+          let overflowX = within.isWindow || within.isDocument ? "" :
             within.element.css( "overflow-x" ),
             overflowY = within.isWindow || within.isDocument ? "" :
               within.element.css( "overflow-y" ),
@@ -850,7 +851,7 @@ export function WmksLib($) {
           };
         },
         getWithinInfo: function( element ) {
-          var withinElement = $( element || window ),
+          let withinElement = $( element || window ),
             isWindow = $.isWindow( withinElement[ 0 ] ),
             isDocument = !!withinElement[ 0 ] && withinElement[ 0 ].nodeType === 9,
             hasOffset = !isWindow && !isDocument;
@@ -875,7 +876,7 @@ export function WmksLib($) {
         // Make a copy, we don't want to modify arguments
         options = $.extend( {}, options );
 
-        var atOffset, targetWidth, targetHeight, targetOffset, basePosition, dimensions,
+        let atOffset, targetWidth, targetHeight, targetOffset, basePosition, dimensions,
           target = $( options.of ),
           within = $.position.getWithinInfo( options.within ),
           scrollInfo = $.position.getScrollInfo( within ),
@@ -898,7 +899,7 @@ export function WmksLib($) {
         // Force my and at to have valid horizontal and vertical positions
         // if a value is missing or invalid, it will be converted to center
         $.each( [ "my", "at" ], function() {
-          var pos = ( options[ this ] || "" ).split( " " ),
+          let pos = ( options[ this ] || "" ).split( " " ),
             horizontalOffset,
             verticalOffset;
 
@@ -949,7 +950,7 @@ export function WmksLib($) {
         basePosition.top += atOffset[ 1 ];
 
         return this.each( function() {
-          var collisionPosition, using,
+          let collisionPosition, using,
             elem = $( this ),
             elemWidth = elem.outerWidth(),
             elemHeight = elem.outerHeight(),
@@ -1005,7 +1006,7 @@ export function WmksLib($) {
 
             // Adds feedback as second argument to using callback, if present
             using = function( props ) {
-              var left = targetOffset.left - position.left,
+              let left = targetOffset.left - position.left,
                 right = left + targetWidth - elemWidth,
                 top = targetOffset.top - position.top,
                 bottom = top + targetHeight - elemHeight,
@@ -1049,7 +1050,7 @@ export function WmksLib($) {
       $.ui.position = {
         fit: {
           left: function( position, data ) {
-            var within = data.within,
+            let within = data.within,
               withinOffset = within.isWindow ? within.scrollLeft : within.offset.left,
               outerWidth = within.width,
               collisionPosLeft = position.left - data.collisionPosition.marginLeft,
@@ -1093,7 +1094,7 @@ export function WmksLib($) {
             }
           },
           top: function( position, data ) {
-            var within = data.within,
+            let within = data.within,
               withinOffset = within.isWindow ? within.scrollTop : within.offset.top,
               outerHeight = data.within.height,
               collisionPosTop = position.top - data.collisionPosition.marginTop,
@@ -1139,7 +1140,7 @@ export function WmksLib($) {
         },
         flip: {
           left: function( position, data ) {
-            var within = data.within,
+            let within = data.within,
               withinOffset = within.offset.left + within.scrollLeft,
               outerWidth = within.width,
               offsetLeft = within.isWindow ? within.scrollLeft : within.offset.left,
@@ -1175,7 +1176,7 @@ export function WmksLib($) {
             }
           },
           top: function( position, data ) {
-            var within = data.within,
+            let within = data.within,
               withinOffset = within.offset.top + within.scrollTop,
               outerHeight = within.height,
               offsetTop = within.isWindow ? within.scrollTop : within.offset.top,
@@ -1225,7 +1226,7 @@ export function WmksLib($) {
 
     } )();
 
-    var position = $.ui.position;
+    let position = $.ui.position;
 
     /*!
      * jQuery UI :data 1.12.1
@@ -1236,7 +1237,7 @@ export function WmksLib($) {
      * http://jquery.org/license
      */
 
-    var data = $.extend( $.expr[ ":" ], {
+    let data = $.extend( $.expr[ ":" ], {
       data: $.expr.createPseudo ?
         $.expr.createPseudo( function( dataName ) {
           return function( elem ) {
@@ -1259,9 +1260,9 @@ export function WmksLib($) {
      * http://jquery.org/license
      */
 
-    var disableSelection = $.fn.extend( {
+    let disableSelection = $.fn.extend( {
       disableSelection: ( function() {
-        var eventType = "onselectstart" in document.createElement( "div" ) ?
+        let eventType = "onselectstart" in document.createElement( "div" ) ?
           "selectstart" :
           "mousedown";
 
@@ -1288,7 +1289,7 @@ export function WmksLib($) {
      */
 
     $.ui.focusable = function( element, hasTabindex ) {
-      var map, mapName, img, focusableIfVisible, fieldset,
+      let map, mapName, img, focusableIfVisible, fieldset,
         nodeName = element.nodeName.toLowerCase();
 
       if ( "area" === nodeName ) {
@@ -1325,7 +1326,7 @@ export function WmksLib($) {
     };
 
     function visible( element ) {
-      var visibility = element.css( "visibility" );
+      let visibility = element.css( "visibility" );
       while ( visibility === "inherit" ) {
         element = element.parent();
         visibility = element.css( "visibility" );
@@ -1339,9 +1340,9 @@ export function WmksLib($) {
       }
     } );
 
-    var focusable = $.ui.focusable;
+    let focusable = $.ui.focusable;
 
-    var form = $.fn.form = function() {
+    let form = $.fn.form = function() {
       return typeof this[ 0 ].form === "string" ? this.closest( "form" ) : $( this[ 0 ].form );
     };
 
@@ -1355,13 +1356,13 @@ export function WmksLib($) {
      * http://jquery.org/license
      */
 
-    var formResetMixin = $.ui.formResetMixin = {
+    let formResetMixin = $.ui.formResetMixin = {
       _formResetHandler: function() {
-        var form = $( this );
+        let form = $( this );
 
         // Wait for the form reset to actually happen before refreshing
         setTimeout( function() {
-          var instances = form.data( "ui-form-reset-instances" );
+          let instances = form.data( "ui-form-reset-instances" );
           $.each( instances, function() {
             this.refresh();
           } );
@@ -1374,7 +1375,7 @@ export function WmksLib($) {
           return;
         }
 
-        var instances = this.form.data( "ui-form-reset-instances" ) || [];
+        let instances = this.form.data( "ui-form-reset-instances" ) || [];
         if ( !instances.length ) {
 
           // We don't use _on() here because we use a single event handler per form
@@ -1389,7 +1390,7 @@ export function WmksLib($) {
           return;
         }
 
-        var instances = this.form.data( "ui-form-reset-instances" );
+        let instances = this.form.data( "ui-form-reset-instances" );
         instances.splice( $.inArray( this, instances ), 1 );
         if ( instances.length ) {
           this.form.data( "ui-form-reset-instances", instances );
@@ -1410,7 +1411,7 @@ export function WmksLib($) {
      * http://jquery.org/license
      */
 
-    var keycode = $.ui.keyCode = {
+    let keycode = $.ui.keyCode = {
       BACKSPACE: 8,
       COMMA: 188,
       DELETE: 46,
@@ -1429,8 +1430,8 @@ export function WmksLib($) {
       UP: 38
     };
 
-    var escapeSelector = $.ui.escapeSelector = ( function() {
-      var selectorEscape = /([!"#$%&'()*+,./:;<=>?@[\]^`{|}~])/g;
+    let escapeSelector = $.ui.escapeSelector = ( function() {
+      let selectorEscape = /([!"#$%&'()*+,./:;<=>?@[\]^`{|}~])/g;
       return function( selector ) {
         return selector.replace( selectorEscape, "\\$1" );
       };
@@ -1446,8 +1447,8 @@ export function WmksLib($) {
      * http://jquery.org/license
      */
 
-    var labels = $.fn.labels = function() {
-      var ancestor, selector, id, labels, ancestors;
+    let labels = $.fn.labels = function() {
+      let ancestor, selector, id, labels, ancestors;
 
       // Check control.labels first
       if ( this[ 0 ].labels && this[ 0 ].labels.length ) {
@@ -1490,12 +1491,12 @@ export function WmksLib($) {
      * http://jquery.org/license
      */
 
-    var scrollParent = $.fn.scrollParent = function( includeHidden ) {
-      var position = this.css( "position" ),
+    let scrollParent = $.fn.scrollParent = function( includeHidden ) {
+      let position = this.css( "position" ),
         excludeStaticParent = position === "absolute",
         overflowRegex = includeHidden ? /(auto|scroll|hidden)/ : /(auto|scroll)/,
         scrollParent = this.parents().filter( function() {
-          var parent = $( this );
+          let parent = $( this );
           if ( excludeStaticParent && parent.css( "position" ) === "static" ) {
             return false;
           }
@@ -1517,9 +1518,9 @@ export function WmksLib($) {
      * http://jquery.org/license
      */
 
-    var tabbable = $.extend( $.expr[ ":" ], {
+    let tabbable = $.extend( $.expr[ ":" ], {
       tabbable: function( element ) {
-        var tabIndex = $.attr( element, "tabindex" ),
+        let tabIndex = $.attr( element, "tabindex" ),
           hasTabindex = tabIndex != null;
         return ( !hasTabindex || tabIndex >= 0 ) && $.ui.focusable( element, hasTabindex );
       }
@@ -1534,9 +1535,9 @@ export function WmksLib($) {
      * http://jquery.org/license
      */
 
-    var uniqueId = $.fn.extend( {
+    let uniqueId = $.fn.extend( {
       uniqueId: ( function() {
-        var uuid = 0;
+        let uuid = 0;
 
         return function() {
           return this.each( function() {
@@ -1556,7 +1557,7 @@ export function WmksLib($) {
       }
     } );
 
-    var ie = $.ui.ie = !!/msie [\w.]+/.exec( navigator.userAgent.toLowerCase() );
+    let ie = $.ui.ie = !!/msie [\w.]+/.exec( navigator.userAgent.toLowerCase() );
 
     /*!
      * jQuery UI Mouse 1.12.1
@@ -1567,12 +1568,12 @@ export function WmksLib($) {
      * http://jquery.org/license
      */
 
-    var mouseHandled = false;
+    let mouseHandled = false;
     $( document ).on( "mouseup", function() {
       mouseHandled = false;
     } );
 
-    var widgetsMouse = $.widget( "ui.mouse", {
+    let widgetsMouse = $.widget( "ui.mouse", {
       version: "1.12.1",
       options: {
         cancel: "input, textarea, button, select, option",
@@ -1580,7 +1581,7 @@ export function WmksLib($) {
         delay: 0
       },
       _mouseInit: function() {
-        var that = this;
+        let that = this;
 
         this.element
           .on( "mousedown." + this.widgetName, function( event ) {
@@ -1622,7 +1623,7 @@ export function WmksLib($) {
 
         this._mouseDownEvent = event;
 
-        var that = this,
+        let that = this,
           btnIsLeft = ( event.which === 1 ),
 
           // event.target.nodeName works around a bug in IE 8 with
@@ -1762,9 +1763,9 @@ export function WmksLib($) {
       _mouseCapture: function( /* event */ ) { return true; }
     } );
 
-    var plugin = $.ui.plugin = {
+    let plugin = $.ui.plugin = {
       add: function( module, option, set ) {
-        var i,
+        let i,
           proto = $.ui[ module ].prototype;
         for ( i in set ) {
           proto.plugins[ i ] = proto.plugins[ i ] || [];
@@ -1772,7 +1773,7 @@ export function WmksLib($) {
         }
       },
       call: function( instance, name, args, allowDisconnected ) {
-        var i,
+        let i,
           set = instance.plugins[ name ];
 
         if ( !set ) {
@@ -1792,8 +1793,8 @@ export function WmksLib($) {
       }
     };
 
-    var safeActiveElement = $.ui.safeActiveElement = function( document ) {
-      var activeElement;
+    let safeActiveElement = $.ui.safeActiveElement = function( document ) {
+      let activeElement;
 
       // Support: IE 9 only
       // IE9 throws an "Unspecified error" accessing document.activeElement from an <iframe>
@@ -1820,7 +1821,7 @@ export function WmksLib($) {
       return activeElement;
     };
 
-    var safeBlur = $.ui.safeBlur = function( element ) {
+    let safeBlur = $.ui.safeBlur = function( element ) {
 
       // Support: IE9 - 10 only
       // If the <body> is blurred, IE will switch windows, see #9420
@@ -1903,7 +1904,7 @@ export function WmksLib($) {
       },
 
       _mouseCapture: function( event ) {
-        var o = this.options;
+        let o = this.options;
 
         // Among others, prevent a drag on a resizable-handle
         if ( this.helper || o.disabled ||
@@ -1927,7 +1928,7 @@ export function WmksLib($) {
 
       _blockFrames: function( selector ) {
         this.iframeBlocks = this.document.find( selector ).map( function() {
-          var iframe = $( this );
+          let iframe = $( this );
 
           return $( "<div>" )
             .css( "position", "absolute" )
@@ -1946,7 +1947,7 @@ export function WmksLib($) {
       },
 
       _blurActiveElement: function( event ) {
-        var activeElement = $.ui.safeActiveElement( this.document[ 0 ] ),
+        let activeElement = $.ui.safeActiveElement( this.document[ 0 ] ),
           target = $( event.target );
 
         // Don't blur if the event occurred on an element that is within
@@ -1962,7 +1963,7 @@ export function WmksLib($) {
 
       _mouseStart: function( event ) {
 
-        var o = this.options;
+        let o = this.options;
 
         //Create and append the visible helper
         this.helper = this._createHelper( event );
@@ -2063,7 +2064,7 @@ export function WmksLib($) {
 
         //Call plugins and callbacks and use the resulting position if something is returned
         if ( !noPropagation ) {
-          var ui = this._uiHash();
+          let ui = this._uiHash();
           if ( this._trigger( "drag", event, ui ) === false ) {
             this._mouseUp( new $.Event( "mouseup", event ) );
             return false;
@@ -2084,7 +2085,7 @@ export function WmksLib($) {
       _mouseStop: function( event ) {
 
         //If we are using droppables, inform the manager about the drop
-        var that = this,
+        let that = this,
           dropped = false;
         if ( $.ui.ddmanager && !this.options.dropBehaviour ) {
           dropped = $.ui.ddmanager.drop( this, event );
@@ -2169,7 +2170,7 @@ export function WmksLib($) {
 
       _createHelper: function( event ) {
 
-        var o = this.options,
+        let o = this.options,
           helperIsFunction = $.isFunction( o.helper ),
           helper = helperIsFunction ?
             $( o.helper.apply( this.element[ 0 ], [ event ] ) ) :
@@ -2233,7 +2234,7 @@ export function WmksLib($) {
       _getParentOffset: function() {
 
         //Get the offsetParent and cache its position
-        var po = this.offsetParent.offset(),
+        let po = this.offsetParent.offset(),
           document = this.document[ 0 ];
 
         // This is a special case where we need to modify a offset calculated on start, since the
@@ -2265,7 +2266,7 @@ export function WmksLib($) {
           return { top: 0, left: 0 };
         }
 
-        var p = this.element.position(),
+        let p = this.element.position(),
           scrollIsRootNode = this._isRootNode( this.scrollParent[ 0 ] );
 
         return {
@@ -2295,7 +2296,7 @@ export function WmksLib($) {
 
       _setContainment: function() {
 
-        var isUserScrollable, c, ce,
+        let isUserScrollable, c, ce,
           o = this.options,
           document = this.document[ 0 ];
 
@@ -2375,7 +2376,7 @@ export function WmksLib($) {
           pos = this.position;
         }
 
-        var mod = d === "absolute" ? 1 : -1,
+        let mod = d === "absolute" ? 1 : -1,
           scrollIsRootNode = this._isRootNode( this.scrollParent[ 0 ] );
 
         return {
@@ -2413,7 +2414,7 @@ export function WmksLib($) {
 
       _generatePosition: function( event, constrainPosition ) {
 
-        var containment, co, top, left,
+        let containment, co, top, left,
           o = this.options,
           scrollIsRootNode = this._isRootNode( this.scrollParent[ 0 ] ),
           pageX = event.pageX,
@@ -2572,13 +2573,13 @@ export function WmksLib($) {
 
     $.ui.plugin.add( "draggable", "connectToSortable", {
       start: function( event, ui, draggable ) {
-        var uiSortable = $.extend( {}, ui, {
+        let uiSortable = $.extend( {}, ui, {
           item: draggable.element
         } );
 
         draggable.sortables = [];
         $( draggable.options.connectToSortable ).each( function() {
-          var sortable = $( this ).sortable( "instance" );
+          let sortable = $( this ).sortable( "instance" );
 
           if ( sortable && !sortable.options.disabled ) {
             draggable.sortables.push( sortable );
@@ -2592,14 +2593,14 @@ export function WmksLib($) {
         } );
       },
       stop: function( event, ui, draggable ) {
-        var uiSortable = $.extend( {}, ui, {
+        let uiSortable = $.extend( {}, ui, {
           item: draggable.element
         } );
 
         draggable.cancelHelperRemoval = false;
 
         $.each( draggable.sortables, function() {
-          var sortable = this;
+          let sortable = this;
 
           if ( sortable.isOver ) {
             sortable.isOver = 0;
@@ -2635,7 +2636,7 @@ export function WmksLib($) {
       },
       drag: function( event, ui, draggable ) {
         $.each( draggable.sortables, function() {
-          var innermostIntersecting = false,
+          let innermostIntersecting = false,
             sortable = this;
 
           // Copy over variables that sortable's _intersectsWith uses
@@ -2775,7 +2776,7 @@ export function WmksLib($) {
 
     $.ui.plugin.add( "draggable", "cursor", {
       start: function( event, ui, instance ) {
-        var t = $( "body" ),
+        let t = $( "body" ),
           o = instance.options;
 
         if ( t.css( "cursor" ) ) {
@@ -2784,7 +2785,7 @@ export function WmksLib($) {
         t.css( "cursor", o.cursor );
       },
       stop: function( event, ui, instance ) {
-        var o = instance.options;
+        let o = instance.options;
         if ( o._cursor ) {
           $( "body" ).css( "cursor", o._cursor );
         }
@@ -2793,7 +2794,7 @@ export function WmksLib($) {
 
     $.ui.plugin.add( "draggable", "opacity", {
       start: function( event, ui, instance ) {
-        var t = $( ui.helper ),
+        let t = $( ui.helper ),
           o = instance.options;
         if ( t.css( "opacity" ) ) {
           o._opacity = t.css( "opacity" );
@@ -2801,7 +2802,7 @@ export function WmksLib($) {
         t.css( "opacity", o.opacity );
       },
       stop: function( event, ui, instance ) {
-        var o = instance.options;
+        let o = instance.options;
         if ( o._opacity ) {
           $( ui.helper ).css( "opacity", o._opacity );
         }
@@ -2821,7 +2822,7 @@ export function WmksLib($) {
       },
       drag: function( event, ui, i  ) {
 
-        var o = i.options,
+        let o = i.options,
           scrolled = false,
           scrollParent = i.scrollParentNotHidden[ 0 ],
           document = i.document[ 0 ];
@@ -2883,13 +2884,13 @@ export function WmksLib($) {
     $.ui.plugin.add( "draggable", "snap", {
       start: function( event, ui, i ) {
 
-        var o = i.options;
+        let o = i.options;
 
         i.snapElements = [];
 
         $( o.snap.constructor !== String ? ( o.snap.items || ":data(ui-draggable)" ) : o.snap )
           .each( function() {
-            var $t = $( this ),
+            let $t = $( this ),
               $o = $t.offset();
             if ( this !== i.element[ 0 ] ) {
               i.snapElements.push( {
@@ -2903,7 +2904,7 @@ export function WmksLib($) {
       },
       drag: function( event, ui, inst ) {
 
-        var ts, bs, ls, rs, l, r, t, b, i, first,
+        let ts, bs, ls, rs, l, r, t, b, i, first,
           o = inst.options,
           d = o.snapTolerance,
           x1 = ui.offset.left, x2 = x1 + inst.helperProportions.width,
@@ -3013,7 +3014,7 @@ export function WmksLib($) {
 
     $.ui.plugin.add( "draggable", "stack", {
       start: function( event, ui, instance ) {
-        var min,
+        let min,
           o = instance.options,
           group = $.makeArray( $( o.stack ) ).sort( function( a, b ) {
             return ( parseInt( $( a ).css( "zIndex" ), 10 ) || 0 ) -
@@ -3032,7 +3033,7 @@ export function WmksLib($) {
 
     $.ui.plugin.add( "draggable", "zIndex", {
       start: function( event, ui, instance ) {
-        var t = $( ui.helper ),
+        let t = $( ui.helper ),
           o = instance.options;
 
         if ( t.css( "zIndex" ) ) {
@@ -3041,7 +3042,7 @@ export function WmksLib($) {
         t.css( "zIndex", o.zIndex );
       },
       stop: function( event, ui, instance ) {
-        var o = instance.options;
+        let o = instance.options;
 
         if ( o._zIndex ) {
           $( ui.helper ).css( "zIndex", o._zIndex );
@@ -3049,7 +3050,7 @@ export function WmksLib($) {
       }
     } );
 
-    var widgetsDraggable = $.ui.draggable;
+    let widgetsDraggable = $.ui.draggable;
 
 
     /*!
@@ -3107,7 +3108,7 @@ export function WmksLib($) {
           return false;
         }
 
-        var scroll = ( a && a === "left" ) ? "scrollLeft" : "scrollTop",
+        let scroll = ( a && a === "left" ) ? "scrollLeft" : "scrollTop",
           has = false;
 
         if ( el[ scroll ] > 0 ) {
@@ -3125,7 +3126,7 @@ export function WmksLib($) {
 
       _create: function() {
 
-        var margins,
+        let margins,
           o = this.options,
           that = this;
         this._addClass( "ui-resizable" );
@@ -3214,7 +3215,7 @@ export function WmksLib($) {
 
         this._mouseDestroy();
 
-        var wrapper,
+        let wrapper,
           _destroy = function( exp ) {
             $( exp )
               .removeData( "resizable" )
@@ -3258,7 +3259,7 @@ export function WmksLib($) {
       },
 
       _setupHandles: function() {
-        var o = this.options, handle, i, n, hname, axis, that = this;
+        let o = this.options, handle, i, n, hname, axis, that = this;
         this.handles = o.handles ||
           ( !$( ".ui-resizable-handle", this.element ).length ?
             "e,s,se" : {
@@ -3299,7 +3300,7 @@ export function WmksLib($) {
 
         this._renderAxis = function( target ) {
 
-          var i, axis, padPos, padWrapper;
+          let i, axis, padPos, padWrapper;
 
           target = target || this.element;
 
@@ -3362,7 +3363,7 @@ export function WmksLib($) {
       },
 
       _mouseCapture: function( event ) {
-        var i, handle,
+        let i, handle,
           capture = false;
 
         for ( i in this.handles ) {
@@ -3377,7 +3378,7 @@ export function WmksLib($) {
 
       _mouseStart: function( event ) {
 
-        var curleft, curtop, cursor,
+        let curleft, curtop, cursor,
           o = this.options,
           el = this.element;
 
@@ -3434,7 +3435,7 @@ export function WmksLib($) {
 
       _mouseDrag: function( event ) {
 
-        var data, props,
+        let data, props,
           smp = this.originalMousePosition,
           a = this.axis,
           dx = ( event.pageX - smp.left ) || 0,
@@ -3478,7 +3479,7 @@ export function WmksLib($) {
       _mouseStop: function( event ) {
 
         this.resizing = false;
-        var pr, ista, soffseth, soffsetw, s, left, top,
+        let pr, ista, soffseth, soffsetw, s, left, top,
           o = this.options, that = this;
 
         if ( this._helper ) {
@@ -3535,7 +3536,7 @@ export function WmksLib($) {
       },
 
       _applyChanges: function() {
-        var props: any = {};
+        let props: any = {};
 
         if ( this.position.top !== this.prevPosition.top ) {
           props.top = this.position.top + "px";
@@ -3556,7 +3557,7 @@ export function WmksLib($) {
       },
 
       _updateVirtualBoundaries: function( forceAspectRatio ) {
-        var pMinWidth, pMaxWidth, pMinHeight, pMaxHeight, b,
+        let pMinWidth, pMaxWidth, pMinHeight, pMaxHeight, b,
           o = this.options;
 
         b = {
@@ -3606,7 +3607,7 @@ export function WmksLib($) {
 
       _updateRatio: function( data ) {
 
-        var cpos = this.position,
+        let cpos = this.position,
           csize = this.size,
           a = this.axis;
 
@@ -3630,7 +3631,7 @@ export function WmksLib($) {
 
       _respectSize: function( data ) {
 
-        var o = this._vBoundaries,
+        let o = this._vBoundaries,
           a = this.axis,
           ismaxw = this._isNumber( data.width ) && o.maxWidth && ( o.maxWidth < data.width ),
           ismaxh = this._isNumber( data.height ) && o.maxHeight && ( o.maxHeight < data.height ),
@@ -3676,7 +3677,7 @@ export function WmksLib($) {
       },
 
       _getPaddingPlusBorderDimensions: function( element ) {
-        var i = 0,
+        let i = 0,
           widths = [],
           borders = [
             element.css( "borderTopWidth" ),
@@ -3708,7 +3709,7 @@ export function WmksLib($) {
           return;
         }
 
-        var prel,
+        let prel,
           i = 0,
           element = this.helper || this.element;
 
@@ -3733,7 +3734,7 @@ export function WmksLib($) {
 
       _renderProxy: function() {
 
-        var el = this.element, o = this.options;
+        let el = this.element, o = this.options;
         this.elementOffset = el.offset();
 
         if ( this._helper ) {
@@ -3765,11 +3766,11 @@ export function WmksLib($) {
           return { width: this.originalSize.width + dx };
         },
         w: function( event, dx ) {
-          var cs = this.originalSize, sp = this.originalPosition;
+          let cs = this.originalSize, sp = this.originalPosition;
           return { left: sp.left + dx, width: cs.width - dx };
         },
         n: function( event, dx, dy ) {
-          var cs = this.originalSize, sp = this.originalPosition;
+          let cs = this.originalSize, sp = this.originalPosition;
           return { top: sp.top + dy, height: cs.height - dy };
         },
         s: function( event, dx, dy ) {
@@ -3821,7 +3822,7 @@ export function WmksLib($) {
     $.ui.plugin.add( "resizable", "animate", {
 
       stop: function( event ) {
-        var that = $( this ).resizable( "instance" ),
+        let that = $( this ).resizable( "instance" ),
           o = that.options,
           pr = that._proportionallyResizeElements,
           ista = pr.length && ( /textarea/i ).test( pr[ 0 ].nodeName ),
@@ -3842,7 +3843,7 @@ export function WmksLib($) {
             easing: o.animateEasing,
             step: function() {
 
-              var data = {
+              let data = {
                 width: parseFloat( that.element.css( "width" ) ),
                 height: parseFloat( that.element.css( "height" ) ),
                 top: parseFloat( that.element.css( "top" ) ),
@@ -3867,7 +3868,7 @@ export function WmksLib($) {
     $.ui.plugin.add( "resizable", "containment", {
 
       start: function() {
-        var element, p, co, ch, cw, width, height,
+        let element, p, co, ch, cw, width, height,
           that = $( this ).resizable( "instance" ),
           o = that.options,
           el = that.element,
@@ -3931,7 +3932,7 @@ export function WmksLib($) {
       },
 
       resize: function( event ) {
-        var woset, hoset, isParent, isOffsetRelative,
+        let woset, hoset, isParent, isOffsetRelative,
           that = $( this ).resizable( "instance" ),
           o = that.options,
           co = that.containerOffset,
@@ -4020,7 +4021,7 @@ export function WmksLib($) {
       },
 
       stop: function() {
-        var that = $( this ).resizable( "instance" ),
+        let that = $( this ).resizable( "instance" ),
           o = that.options,
           co = that.containerOffset,
           cop = that.containerPosition,
@@ -4051,11 +4052,11 @@ export function WmksLib($) {
     $.ui.plugin.add( "resizable", "alsoResize", {
 
       start: function() {
-        var that = $( this ).resizable( "instance" ),
+        let that = $( this ).resizable( "instance" ),
           o = that.options;
 
         $( o.alsoResize ).each( function() {
-          var el = $( this );
+          let el = $( this );
           el.data( "ui-resizable-alsoresize", {
             width: parseFloat( el.width() ), height: parseFloat( el.height() ),
             left: parseFloat( el.css( "left" ) ), top: parseFloat( el.css( "top" ) )
@@ -4064,7 +4065,7 @@ export function WmksLib($) {
       },
 
       resize: function( event, ui ) {
-        var that = $( this ).resizable( "instance" ),
+        let that = $( this ).resizable( "instance" ),
           o = that.options,
           os = that.originalSize,
           op = that.originalPosition,
@@ -4076,13 +4077,13 @@ export function WmksLib($) {
           };
 
         $( o.alsoResize ).each( function() {
-          var el = $( this ), start = $( this ).data( "ui-resizable-alsoresize" ), style = {},
+          let el = $( this ), start = $( this ).data( "ui-resizable-alsoresize" ), style = {},
             css = el.parents( ui.originalElement[ 0 ] ).length ?
               [ "width", "height" ] :
               [ "width", "height", "top", "left" ];
 
           $.each( css, function( i, prop ) {
-            var sum = ( start[ prop ] || 0 ) + ( delta[ prop ] || 0 );
+            let sum = ( start[ prop ] || 0 ) + ( delta[ prop ] || 0 );
             if ( sum && sum >= 0 ) {
               style[ prop ] = sum || null;
             }
@@ -4101,7 +4102,7 @@ export function WmksLib($) {
 
       start: function() {
 
-        var that = $( this ).resizable( "instance" ), cs = that.size;
+        let that = $( this ).resizable( "instance" ), cs = that.size;
 
         that.ghost = that.originalElement.clone();
         that.ghost.css( {
@@ -4130,7 +4131,7 @@ export function WmksLib($) {
       },
 
       resize: function() {
-        var that = $( this ).resizable( "instance" );
+        let that = $( this ).resizable( "instance" );
         if ( that.ghost ) {
           that.ghost.css( {
             position: "relative",
@@ -4141,7 +4142,7 @@ export function WmksLib($) {
       },
 
       stop: function() {
-        var that = $( this ).resizable( "instance" );
+        let that = $( this ).resizable( "instance" );
         if ( that.ghost && that.helper ) {
           that.helper.get( 0 ).removeChild( that.ghost.get( 0 ) );
         }
@@ -4152,7 +4153,7 @@ export function WmksLib($) {
     $.ui.plugin.add( "resizable", "grid", {
 
       resize: function() {
-        var outerDimensions,
+        let outerDimensions,
           that = $( this ).resizable( "instance" ),
           o = that.options,
           cs = that.size,
@@ -4223,7 +4224,7 @@ export function WmksLib($) {
 
     } );
 
-    var widgetsResizable = $.ui.resizable;
+    let widgetsResizable = $.ui.resizable;
 
     /*!
      * jQuery UI Controlgroup 1.12.1
@@ -4234,9 +4235,9 @@ export function WmksLib($) {
      * http://jquery.org/license
      */
 
-    var controlgroupCornerRegex = /ui-corner-([a-z]){2,6}/g;
+    let controlgroupCornerRegex = /ui-corner-([a-z]){2,6}/g;
 
-    var widgetsControlgroup = $.widget( "ui.controlgroup", {
+    let widgetsControlgroup = $.widget( "ui.controlgroup", {
       version: "1.12.1",
       defaultElement: "<div>",
       options: {
@@ -4275,13 +4276,13 @@ export function WmksLib($) {
       },
 
       _initWidgets: function() {
-        var that = this,
+        let that = this,
           childWidgets = [];
 
         // First we iterate over each of the items options
         $.each( this.options.items, function( widget, selector ) {
-          var labels;
-          var options = {};
+          let labels;
+          let options = {};
 
           // Make sure the widget has a selector set
           if ( !selector ) {
@@ -4291,7 +4292,7 @@ export function WmksLib($) {
           if ( widget === "controlgroupLabel" ) {
             labels = that.element.find( selector );
             labels.each( function() {
-              var element = $( this );
+              let element = $( this );
 
               if ( element.children( ".ui-controlgroup-label-contents" ).length ) {
                 return;
@@ -4321,12 +4322,12 @@ export function WmksLib($) {
           that.element
             .find( selector )
             .each( function() {
-              var element = $( this );
-              var instance = element[ widget ]( "instance" );
+              let element = $( this );
+              let instance = element[ widget ]( "instance" );
 
               // We need to clone the default options for this type of widget to avoid
               // polluting the variable options which has a wider scope than a single widget.
-              var instanceOptions = $.widget.extend( {}, options );
+              let instanceOptions = $.widget.extend( {}, options );
 
               // If the button is the child of a spinner ignore it
               // TODO: Find a more generic solution
@@ -4346,7 +4347,7 @@ export function WmksLib($) {
 
               // Store an instance of the controlgroup to be able to reference
               // from the outermost element for changing options and refresh
-              var widgetElement = element[ widget ]( "widget" );
+              let widgetElement = element[ widget ]( "widget" );
               $.data( widgetElement[ 0 ], "ui-controlgroup-data",
                 instance ? instance : element[ widget ]( "instance" ) );
 
@@ -4360,7 +4361,7 @@ export function WmksLib($) {
 
       _callChildMethod: function( method ) {
         this.childWidgets.each( function() {
-          var element = $( this ),
+          let element = $( this ),
             data = element.data( "ui-controlgroup-data" );
           if ( data && data[ method ] ) {
             data[ method ]();
@@ -4369,16 +4370,16 @@ export function WmksLib($) {
       },
 
       _updateCornerClass: function( element, position ) {
-        var remove = "ui-corner-top ui-corner-bottom ui-corner-left ui-corner-right ui-corner-all";
-        var add = this._buildSimpleOptions( position, "label" ).classes.label;
+        let remove = "ui-corner-top ui-corner-bottom ui-corner-left ui-corner-right ui-corner-all";
+        let add = this._buildSimpleOptions( position, "label" ).classes.label;
 
         this._removeClass( element, null, remove );
         this._addClass( element, null, add );
       },
 
       _buildSimpleOptions: function( position, key ) {
-        var direction = this.options.direction === "vertical";
-        var result = {
+        let direction = this.options.direction === "vertical";
+        let result = {
           classes: {}
         };
         result.classes[ key ] = {
@@ -4392,7 +4393,7 @@ export function WmksLib($) {
       },
 
       _spinnerOptions: function( position ) {
-        var options = this._buildSimpleOptions( position, "ui-spinner" );
+        let options = this._buildSimpleOptions( position, "ui-spinner" );
 
         options.classes[ "ui-spinner-up" ] = "";
         options.classes[ "ui-spinner-down" ] = "";
@@ -4409,7 +4410,7 @@ export function WmksLib($) {
       },
 
       _selectmenuOptions: function( position ) {
-        var direction = this.options.direction === "vertical";
+        let direction = this.options.direction === "vertical";
         return {
           width: direction ? "auto" : false,
           classes: {
@@ -4435,9 +4436,9 @@ export function WmksLib($) {
       },
 
       _resolveClassesValues: function( classes, instance ) {
-        var result = {};
+        let result = {};
         $.each( classes, function( key ) {
-          var current = instance.options.classes[ key ] || "";
+          let current = instance.options.classes[ key ] || "";
           current = $.trim( current.replace( controlgroupCornerRegex, "" ) );
           result[ key ] = ( current + " " + classes[ key ] ).replace( /\s+/g, " " );
         } );
@@ -4459,7 +4460,7 @@ export function WmksLib($) {
       },
 
       refresh: function() {
-        var children,
+        let children,
           that = this;
 
         this._addClass( "ui-controlgroup ui-controlgroup-" + this.options.direction );
@@ -4481,10 +4482,10 @@ export function WmksLib($) {
           // We do this last because we need to make sure all enhancment is done
           // before determining first and last
           $.each( [ "first", "last" ], function( index, value ) {
-            var instance = children[ value ]().data( "ui-controlgroup-data" );
+            let instance = children[ value ]().data( "ui-controlgroup-data" );
 
             if ( instance && that[ "_" + instance.widgetName + "Options" ] ) {
-              var options = that[ "_" + instance.widgetName + "Options" ](
+              let options = that[ "_" + instance.widgetName + "Options" ](
                 children.length === 1 ? "only" : value
               );
               options.classes = that._resolveClassesValues( options.classes, instance );
@@ -4522,9 +4523,9 @@ export function WmksLib($) {
       },
 
       _getCreateOptions: function() {
-        var disabled, labels;
-        var that = this;
-        var options = this._super() || {};
+        let disabled, labels;
+        let that = this;
+        let options = this._super() || {};
 
         // We read the type here, because it makes more sense to throw a element type error first,
         // rather then the error for lack of a label. Often if its the wrong type, it
@@ -4563,7 +4564,7 @@ export function WmksLib($) {
       },
 
       _create: function() {
-        var checked = this.element[ 0 ].checked;
+        let checked = this.element[ 0 ].checked;
 
         this._bindFormResetHandler();
 
@@ -4606,7 +4607,7 @@ export function WmksLib($) {
       },
 
       _readType: function() {
-        var nodeName = this.element[ 0 ].nodeName.toLowerCase();
+        let nodeName = this.element[ 0 ].nodeName.toLowerCase();
         this.type = this.element[ 0 ].type;
         if ( nodeName !== "input" || !/radio|checkbox/.test( this.type ) ) {
           $.error( "Can't create checkboxradio on element.nodeName=" + nodeName +
@@ -4624,9 +4625,9 @@ export function WmksLib($) {
       },
 
       _getRadioGroup: function() {
-        var group;
-        var name = this.element[ 0 ].name;
-        var nameSelector = "input[name='" + $.ui.escapeSelector( name ) + "']";
+        let group;
+        let name = this.element[ 0 ].name;
+        let nameSelector = "input[name='" + $.ui.escapeSelector( name ) + "']";
 
         if ( !name ) {
           return $( [] );
@@ -4646,7 +4647,7 @@ export function WmksLib($) {
       },
 
       _toggleClasses: function() {
-        var checked = this.element[ 0 ].checked;
+        let checked = this.element[ 0 ].checked;
         this._toggleClass( this.label, "ui-checkboxradio-checked", "ui-state-active", checked );
 
         if ( this.options.icon && this.type === "checkbox" ) {
@@ -4657,7 +4658,7 @@ export function WmksLib($) {
         if ( this.type === "radio" ) {
           this._getRadioGroup()
             .each( function() {
-              var instance = $( this ).checkboxradio( "instance" );
+              let instance = $( this ).checkboxradio( "instance" );
 
               if ( instance ) {
                 instance._removeClass( instance.label,
@@ -4696,7 +4697,7 @@ export function WmksLib($) {
       },
 
       _updateIcon: function( checked ) {
-        var toAdd = "ui-icon ui-icon-background ";
+        let toAdd = "ui-icon ui-icon-background ";
 
         if ( this.options.icon ) {
           if ( !this.icon ) {
@@ -4726,7 +4727,7 @@ export function WmksLib($) {
       _updateLabel: function() {
 
         // Remove the contents of the label ( minus the icon, icon space, and input )
-        var contents = this.label.contents().not( this.element[ 0 ] );
+        let contents = this.label.contents().not( this.element[ 0 ] );
         if ( this.icon ) {
           contents = contents.not( this.icon[ 0 ] );
         }
@@ -4739,7 +4740,7 @@ export function WmksLib($) {
       },
 
       refresh: function() {
-        var checked = this.element[ 0 ].checked,
+        let checked = this.element[ 0 ].checked,
           isDisabled = this.element[ 0 ].disabled;
 
         this._updateIcon( checked );
@@ -4755,7 +4756,7 @@ export function WmksLib($) {
 
     } ] );
 
-    var widgetsCheckboxradio = $.ui.checkboxradio;
+    let widgetsCheckboxradio = $.ui.checkboxradio;
 
 
     /*!
@@ -4782,7 +4783,7 @@ export function WmksLib($) {
       },
 
       _getCreateOptions: function() {
-        var disabled,
+        let disabled,
 
           // This is to support cases like in jQuery Mobile where the base widget does have
           // an implementation of _getCreateOptions
@@ -4869,7 +4870,7 @@ export function WmksLib($) {
       },
 
       _updateIcon: function( option, value ) {
-        var icon = option !== "iconPosition",
+        let icon = option !== "iconPosition",
           position = icon ? this.options.iconPosition : value,
           displayBlock = position === "top" || position === "bottom";
 
@@ -4938,7 +4939,7 @@ export function WmksLib($) {
       },
 
       _setOptions: function( options ) {
-        var newShowLabel = options.showLabel === undefined ?
+        let newShowLabel = options.showLabel === undefined ?
           this.options.showLabel :
           options.showLabel,
           newIcon = options.icon === undefined ? this.options.icon : options.icon;
@@ -5001,7 +5002,7 @@ export function WmksLib($) {
 
         // Make sure to only check disabled if its an element that supports this otherwise
         // check for the disabled class to determine state
-        var isDisabled = this.element.is( "input, button" ) ?
+        let isDisabled = this.element.is( "input, button" ) ?
           this.element[ 0 ].disabled : this.element.hasClass( "ui-button-disabled" );
 
         if ( isDisabled !== this.options.disabled ) {
@@ -5109,7 +5110,7 @@ export function WmksLib($) {
       };
     }
 
-    var widgetsButton = $.ui.button;
+    let widgetsButton = $.ui.button;
 
 
     /*!
@@ -5149,7 +5150,7 @@ export function WmksLib($) {
 
           // Ensure the titlebar is always visible
           using: function( pos ) {
-            var topOffset = $( this ).css( pos ).offset().top;
+            let topOffset = $( this ).css( pos ).offset().top;
             if ( topOffset < 0 ) {
               $( this ).css( "top", pos.top - topOffset );
             }
@@ -5243,7 +5244,7 @@ export function WmksLib($) {
       },
 
       _appendTo: function() {
-        var element = this.options.appendTo;
+        let element = this.options.appendTo;
         if ( element && ( element.jquery || element.nodeType ) ) {
           return $( element );
         }
@@ -5251,7 +5252,7 @@ export function WmksLib($) {
       },
 
       _destroy: function() {
-        var next,
+        let next,
           originalPosition = this.originalPosition;
 
         this._untrackInstance();
@@ -5288,7 +5289,7 @@ export function WmksLib($) {
       enable: $.noop,
 
       close: function( event ) {
-        var that = this;
+        let that = this;
 
         if ( !this._isOpen || this._trigger( "beforeClose", event ) === false ) {
           return;
@@ -5321,7 +5322,7 @@ export function WmksLib($) {
       },
 
       _moveToTop: function( event, silent ) {
-        var moved = false,
+        let moved = false,
           zIndices = this.uiDialog.siblings( ".ui-front:visible" ).map( function() {
             return +$( this ).css( "z-index" );
           } ).get(),
@@ -5339,7 +5340,7 @@ export function WmksLib($) {
       },
 
       open: function() {
-        var that = this;
+        let that = this;
         if ( this._isOpen ) {
           if ( this._moveToTop() ) {
             this._focusTabbable();
@@ -5384,7 +5385,7 @@ export function WmksLib($) {
         // 4. Tabbable element inside the buttonpane
         // 5. The close button
         // 6. The dialog itself
-        var hasFocus = this._focusedElement;
+        let hasFocus = this._focusedElement;
         if ( !hasFocus ) {
           hasFocus = this.element.find( "[autofocus]" );
         }
@@ -5405,7 +5406,7 @@ export function WmksLib($) {
 
       _keepFocus: function( event ) {
         function checkFocus() {
-          var activeElement = $.ui.safeActiveElement( this.document[ 0 ] ),
+          let activeElement = $.ui.safeActiveElement( this.document[ 0 ] ),
             isActive = this.uiDialog[ 0 ] === activeElement ||
               $.contains( this.uiDialog[ 0 ], activeElement );
           if ( !isActive ) {
@@ -5446,7 +5447,7 @@ export function WmksLib($) {
             if ( event.keyCode !== $.ui.keyCode.TAB || event.isDefaultPrevented() ) {
               return;
             }
-            var tabbables = this.uiDialog.find( ":tabbable" ),
+            let tabbables = this.uiDialog.find( ":tabbable" ),
               first = tabbables.filter( ":first" ),
               last = tabbables.filter( ":last" );
 
@@ -5482,7 +5483,7 @@ export function WmksLib($) {
       },
 
       _createTitlebar: function() {
-        var uiDialogTitle;
+        let uiDialogTitle;
 
         this.uiDialogTitlebar = $( "<div>" );
         this._addClass( this.uiDialogTitlebar,
@@ -5552,7 +5553,7 @@ export function WmksLib($) {
       },
 
       _createButtons: function() {
-        var that = this,
+        let that = this,
           buttons = this.options.buttons;
 
         // If we already have a button pane, remove it
@@ -5565,7 +5566,7 @@ export function WmksLib($) {
         }
 
         $.each( buttons, function( name, props ) {
-          var click, buttonOptions;
+          let click, buttonOptions;
           props = $.isFunction( props ) ?
             { click: props, text: name } :
             props;
@@ -5608,7 +5609,7 @@ export function WmksLib($) {
       },
 
       _makeDraggable: function() {
-        var that = this,
+        let that = this,
           options = this.options;
 
         function filteredUi( ui ) {
@@ -5631,7 +5632,7 @@ export function WmksLib($) {
             that._trigger( "drag", event, filteredUi( ui ) );
           },
           stop: function( event, ui ) {
-            var left = ui.offset.left - that.document.scrollLeft(),
+            let left = ui.offset.left - that.document.scrollLeft(),
               top = ui.offset.top - that.document.scrollTop();
 
             options.position = {
@@ -5648,7 +5649,7 @@ export function WmksLib($) {
       },
 
       _makeResizable: function() {
-        var that = this,
+        let that = this,
           options = this.options,
           handles = options.resizable,
 
@@ -5686,7 +5687,7 @@ export function WmksLib($) {
             that._trigger( "resize", event, filteredUi( ui ) );
           },
           stop: function( event, ui ) {
-            var offset = that.uiDialog.offset(),
+            let offset = that.uiDialog.offset(),
               left = offset.left - that.document.scrollLeft(),
               top = offset.top - that.document.scrollTop();
 
@@ -5721,7 +5722,7 @@ export function WmksLib($) {
       },
 
       _untrackInstance: function() {
-        var instances = this._trackingInstances(),
+        let instances = this._trackingInstances(),
           exists = $.inArray( this, instances );
         if ( exists !== -1 ) {
           instances.splice( exists, 1 );
@@ -5729,7 +5730,7 @@ export function WmksLib($) {
       },
 
       _trackingInstances: function() {
-        var instances = this.document.data( "ui-dialog-instances" );
+        let instances = this.document.data( "ui-dialog-instances" );
         if ( !instances ) {
           instances = [];
           this.document.data( "ui-dialog-instances", instances );
@@ -5738,7 +5739,7 @@ export function WmksLib($) {
       },
 
       _minHeight: function() {
-        var options = this.options;
+        let options = this.options;
 
         return options.height === "auto" ?
           options.minHeight :
@@ -5748,7 +5749,7 @@ export function WmksLib($) {
       _position: function() {
 
         // Need to show the dialog to get the actual offset in the position plugin
-        var isVisible = this.uiDialog.is( ":visible" );
+        let isVisible = this.uiDialog.is( ":visible" );
         if ( !isVisible ) {
           this.uiDialog.show();
         }
@@ -5759,7 +5760,7 @@ export function WmksLib($) {
       },
 
       _setOptions: function( options ) {
-        var that = this,
+        let that = this,
           resize = false,
           resizableOptions = {};
 
@@ -5784,7 +5785,7 @@ export function WmksLib($) {
       },
 
       _setOption: function( key, value ) {
-        var isDraggable, isResizable,
+        let isDraggable, isResizable,
           uiDialog = this.uiDialog;
 
         if ( key === "disabled" ) {
@@ -5852,7 +5853,7 @@ export function WmksLib($) {
 
         // If the user has resized the dialog, the .ui-dialog and .ui-dialog-content
         // divs will both have width and height set, so we need to reset them
-        var nonContentHeight, minContentHeight, maxContentHeight,
+        let nonContentHeight, minContentHeight, maxContentHeight,
           options = this.options;
 
         // Reset content sizing
@@ -5896,7 +5897,7 @@ export function WmksLib($) {
 
       _blockFrames: function() {
         this.iframeBlocks = this.document.find( "iframe" ).map( function() {
-          var iframe = $( this );
+          let iframe = $( this );
 
           return $( "<div>" )
             .css( {
@@ -5933,7 +5934,7 @@ export function WmksLib($) {
 
         // We use a delay in case the overlay is created from an
         // event that we're going to be cancelling (#2804)
-        var isOpening = true;
+        let isOpening = true;
         this._delay( function() {
           isOpening = false;
         } );
@@ -5974,7 +5975,7 @@ export function WmksLib($) {
         }
 
         if ( this.overlay ) {
-          var overlays = this.document.data( "ui-dialog-overlays" ) - 1;
+          let overlays = this.document.data( "ui-dialog-overlays" ) - 1;
 
           if ( !overlays ) {
             this._off( this.document, "focusin" );
@@ -6011,10 +6012,9 @@ export function WmksLib($) {
       } );
     }
 
-    var widgetsDialog = $.ui.dialog;
+    let widgetsDialog = $.ui.dialog;
 
   })($);
-
 
   /**
    * WMKS
@@ -6064,19 +6064,19 @@ export function WmksLib($) {
   }
 
   let Base64 = {
-    decodeToArray: function (data, useUint8Array) {
+    decodeToArray: function(data, useUint8Array) {
       return arrayFromString(window.atob(data), useUint8Array);
     },
 
-    decodeToString: function (data) {
+    decodeToString: function(data) {
       return window.atob(data);
     },
 
-    encodeFromArray: function (data) {
+    encodeFromArray: function(data) {
       return window.btoa(stringFromArray(data));
     },
 
-    encodeFromString: function (data) {
+    encodeFromString: function(data) {
       return window.btoa(data);
     }
   };
@@ -6085,16 +6085,16 @@ export function WmksLib($) {
    * Convenience functions for building an array of bytes
    * (for sending messages to servers or handling image formats).
    */
-  Array.prototype.push8 = function (aByte) {
+  Array.prototype.push8 = function(aByte) {
     this.push(aByte & 0xFF);
   };
 
-  Array.prototype.push16 = function (aWord) {
+  Array.prototype.push16 = function(aWord) {
     this.push((aWord >> 8) & 0xFF,
       (aWord     ) & 0xFF);
   };
 
-  Array.prototype.push32 = function (aLongWord) {
+  Array.prototype.push32 = function(aLongWord) {
     this.push((aLongWord >> 24) & 0xFF,
       (aLongWord >> 16) & 0xFF,
       (aLongWord >>  8) & 0xFF,
@@ -6167,14 +6167,14 @@ export function WmksLib($) {
 
     // Public function that invokes a private function _getImageFromCache()
     //  to get an image.
-    this.getImage = function () {
+    this.getImage = function() {
       return _getImageFromCache()
     };
 
     // Public function that invokes a private function _cacheImageOrDelete()
     // to add the image to a cache when the cache is not full or delete the
     // image.
-    this.releaseImage = function (image) {
+    this.releaseImage = function(image) {
       if (!image) {
         return;
       }
@@ -6209,7 +6209,7 @@ export function WmksLib($) {
   /**
    *  Generate a Media Source object and associate it with video DOM element.
    */
-  MP4Decoder.prototype.init = function (mediaPlayer, urlObject , mediaSourceObject , DoneCb, ErrorCb) {
+  MP4Decoder.prototype.init = function(mediaPlayer, urlObject , mediaSourceObject , DoneCb, ErrorCb) {
     const self = this;
     // @ts-ignore
     const URL = urlObject  || window.URL || window.webkitURL;
@@ -6239,7 +6239,7 @@ export function WmksLib($) {
    * attach it to media source object. If there is any MP4 data in the buffer,
    * add it to source buffer so that media source can play it.
    */
-  MP4Decoder.prototype._onMediaSourceOpen = function (e) {
+  MP4Decoder.prototype._onMediaSourceOpen = function(e) {
     const self = this;
 
     WMKS.LOGGER.log(this + " media source status is changed to open.");
@@ -6248,7 +6248,7 @@ export function WmksLib($) {
       return;
     }
     this._sourceBuffer = this._mediaSource.addSourceBuffer(MP4Decoder.byteStreamFormat);
-    this._sourceBuffer.addEventListener("updateend", function () {
+    this._sourceBuffer.addEventListener("updateend", function() {
       if (self._tempQueue.length === 0) return;
       if (self._tempQueue[0].method === "add" && self._decodeDoneCb) {
         self._doneRequest++;
@@ -6263,7 +6263,7 @@ export function WmksLib($) {
     * Listen to update event. It will fire after current buffer data is
     * handled by media source object.
     */
-    this._sourceBuffer.addEventListener("error", function (a) {
+    this._sourceBuffer.addEventListener("error", function(a) {
       WMKS.LOGGER.error(self + " error code is " + a)
     });
 
@@ -6274,7 +6274,7 @@ export function WmksLib($) {
   /**
    * Append all the data in our temp buffer to sourceBuffer object.
    */
-  MP4Decoder.prototype._flushPayloads = function () {
+  MP4Decoder.prototype._flushPayloads = function() {
     let bufferStart = 0;
     let bufferEnd = 0;
     let bufferTime = 0;
@@ -6299,6 +6299,7 @@ export function WmksLib($) {
             WMKS.LOGGER.log(this + " start to remove from " + bufferStart + " to " + bufferTime);
             this._sourceBuffer.remove(bufferStart, bufferTime);
           } else {
+            // @ts-ignore
             throw WMKS.LOGGER.log(this + " it is too close to clear buffer.");
           }
           this._tempQueue.shift();
@@ -6308,7 +6309,7 @@ export function WmksLib($) {
           const self = this;
           WMKS.LOGGER.log(this + " browser is full.");
 
-          setTimeout(function () {
+          setTimeout(function() {
             self._tempQueue.unshift({
               method: "remove"
             });
@@ -6332,7 +6333,7 @@ export function WmksLib($) {
   /**
    * Reset all the resources used by MP4 Decoder object.
    */
-  MP4Decoder.prototype.reset = function () {
+  MP4Decoder.prototype.reset = function() {
     WMKS.LOGGER.log(this + " is reset.");
     if (this._mediaSource) {
       if (this._sourceBuffer) {
@@ -6367,7 +6368,7 @@ export function WmksLib($) {
    * Append MP4 data to media source object. If media source is not ready, put
    * it into temporary buffer.
    */
-  MP4Decoder.prototype.appendData = function (a) {
+  MP4Decoder.prototype.appendData = function(a) {
     if (this._isError) {
       WMKS.LOGGER.log(this + " is in error state.");
       if (this._decodeDoneCb) this._decodeDoneCb();
@@ -6416,20 +6417,20 @@ export function WmksLib($) {
     * RX/TX queue management
     *
     */
-    legacyFunctions._receiveQueueBytesUnread = function () {
+    legacyFunctions._receiveQueueBytesUnread = function() {
       return this._legacyReceiveQueue.length - this._legacyReceiveQueueIndex;
     };
 
-    legacyFunctions._receiveQueueConsumeBytes = function (nr) {
+    legacyFunctions._receiveQueueConsumeBytes = function(nr) {
       this._legacyReceiveQueueIndex += nr;
     };
 
-    legacyFunctions._receiveQueueReset = function () {
+    legacyFunctions._receiveQueueReset = function() {
       this._legacyReceiveQueue = '';
       this._legacyReceiveQueueIndex = 0;
     };
 
-    legacyFunctions._readString = function (stringLength) {
+    legacyFunctions._readString = function(stringLength) {
       let string = this._legacyReceiveQueue.slice(this._legacyReceiveQueueIndex, this._legacyReceiveQueueIndex + stringLength);
       this._legacyReceiveQueueIndex += stringLength;
       return string;
@@ -6438,7 +6439,7 @@ export function WmksLib($) {
     // Pops the first 'stringLength' bytes from the front of the read buffer
     // and parses the string for unicode. If it finds unicode, it converts them
     // to unicode and returns the unicode string.
-    legacyFunctions._readStringUTF8 = function (stringLength) {
+    legacyFunctions._readStringUTF8 = function(stringLength) {
       let c;
       let c1;
       let c2;
@@ -6476,14 +6477,14 @@ export function WmksLib($) {
     };
 
     // Pops the first byte from the front of the receive buffer.
-    legacyFunctions._readByte = function () {
+    legacyFunctions._readByte = function() {
       let aByte = this._legacyReceiveQueue.charCodeAt(this._legacyReceiveQueueIndex);
       this._legacyReceiveQueueIndex += 1;
       return aByte;
     };
 
     // Pops the first 'length' bytes from the front of the receive buffer.
-    legacyFunctions._readBytes = function (length) {
+    legacyFunctions._readBytes = function(length) {
       let result;
       let i;
 
@@ -6498,7 +6499,7 @@ export function WmksLib($) {
     };
 
     // Sends a string to the server, using the appropriate encoding.
-    legacyFunctions._sendString = function (stringValue) {
+    legacyFunctions._sendString = function(stringValue) {
       if (!this._websocket) {
         return;
       }
@@ -6507,14 +6508,14 @@ export function WmksLib($) {
     };
 
     // Sends the array 'bytes' of data bytes to the server.
-    legacyFunctions._sendBytes = function (bytes) {
+    legacyFunctions._sendBytes = function(bytes) {
       this._sendString(stringFromArray(bytes));
     };
 
     // Sends the server a list of supported image encodings.
     // This is a temporary override to disabled encTightDiffComp
     //  until it can be better tested and potentially updated.
-    legacyFunctions._sendClientEncodingsMsg = function () {
+    legacyFunctions._sendClientEncodingsMsg = function() {
       let i;
       let encodings = [/* this.encTightDiffComp, */
         this.encTightPNG,
@@ -6544,7 +6545,7 @@ export function WmksLib($) {
        */
       encodings = [this.encCopyRect].concat(encodings);
 
-      var message = [];
+      let message = [];
       message.push8(this.msgClientEncodings);
       message.push8(0);
       message.push16(encodings.length);
@@ -6554,7 +6555,7 @@ export function WmksLib($) {
       this._sendBytes(message);
     };
 
-    legacyFunctions._readTightData = function (rect) {
+    legacyFunctions._readTightData = function(rect) {
       /*
        * Skip the preamble and read the actual JPEG data.
        */
@@ -6568,7 +6569,7 @@ export function WmksLib($) {
         data = arrayFromString(data, !0);
         createImageBitmap(new Blob([data], {
           type: type
-        })).then(function (image) {
+        })).then(function(image) {
           rect.image = image;
           self.onDecodeComplete();
         })
@@ -6615,7 +6616,7 @@ export function WmksLib($) {
     // required in each case to send a message of a specific size on
     // connection establishment.  We are lucky that the two messages
     // are of different sizes.
-    legacyFunctions._peekFirstMessage = function () {
+    legacyFunctions._peekFirstMessage = function() {
       this.usedVNCHandshake = (this._receiveQueueBytesUnread() === 12);
       if (this.usedVNCHandshake) {
         this._setReadCB(12, this._handleProtocolVersionMsg);
@@ -6652,7 +6653,7 @@ export function WmksLib($) {
       }
     }
 
-    self.wsOpen = function (evt) {
+    self.wsOpen = function(evt) {
 
       self._state = self.VNC_ACTIVE_STATE;
       if (this.protocol !== 'uint8utf8' && this.protocol !== 'binary' && this.protocol !== 'vmware-vvc') {
@@ -6685,7 +6686,7 @@ export function WmksLib($) {
     };
 
     let wsMessageOriginal = self.wsMessage;
-    self.wsMessage = function (evt) {
+    self.wsMessage = function(evt) {
       if (!self.useLegacy) { return wsMessageOriginal.apply(this, arguments); }
 
       if (self._legacyReceiveQueueIndex > self._legacyReceiveQueue.length) {
@@ -6751,7 +6752,7 @@ export function WmksLib($) {
   * for mouse wheel events across browsers when it comes to variables and
   * values, and it's nearly impossible to normalize.
   */
-  (function () {
+  (function() {
 
     // @ts-ignore
     let WHEEL_EVENTS = ( 'onwheel' in document || document.documentMode >= 9 ) ?
@@ -6759,7 +6760,7 @@ export function WmksLib($) {
     let toFix  = ['wheel', 'mousewheel', 'DOMMouseScroll', 'MozMousePixelScroll'];
 
     if ( $.event.fixHooks ) {
-      for ( var i = toFix.length; i; ) {
+      for ( let i = toFix.length; i; ) {
         $.event.fixHooks[ toFix[--i] ] = $.event.mouseHooks;
       }
     }
@@ -6816,7 +6817,7 @@ export function WmksLib($) {
 
       tearDown: function() {
         if (this.removeEventListener) {
-          var i;
+          let i;
 
           for (i = 0; i < WHEEL_EVENTS.length; i++) {
             this.removeEventListener(WHEEL_EVENTS[i], onMouseWheelEvent, false);
@@ -7006,7 +7007,7 @@ export function WmksLib($) {
       trueFunc : falseFunc;
 
     let getValue = function(regex, index) {
-      var match = ua.match(regex);
+      let match = ua.match(regex);
       return (match && match.length > index && match[index]) || '';
     };
     this.version = { full : "" };
@@ -7040,8 +7041,8 @@ export function WmksLib($) {
 
     this.isCanvasSupported = function() {
       try {
-        var canvas = document.createElement('canvas');
-        var result = !!canvas.getContext; // convert to Boolean, invert again.
+        let canvas = document.createElement('canvas');
+        let result = !!canvas.getContext; // convert to Boolean, invert again.
         canvas = null; // was never added to DOM, don't need to remove
         return result;
       } catch(e) {
@@ -7206,7 +7207,7 @@ export function WmksLib($) {
    * Helper for readBits() which reads a number of bits from the
    * current active byte and returns them to the caller.
    */
-  WMKS.BitBuf.prototype.readBits0 = function (val, nr) {
+  WMKS.BitBuf.prototype.readBits0 = function(val, nr) {
     "use strict";
     let mask;
 
@@ -7228,7 +7229,7 @@ export function WmksLib($) {
   /**
    * Read and return the specified number of bits from the BitBuf.
    */
-  WMKS.BitBuf.prototype.readBits = function (nr) {
+  WMKS.BitBuf.prototype.readBits = function(nr) {
     "use strict";
     let origNr = nr;
     let val = 0;
@@ -7301,7 +7302,7 @@ export function WmksLib($) {
   /**
    * WebMKS VNC decoder prototype.
    */
-  WMKS.VNCDecoder = function (opts) {
+  WMKS.VNCDecoder = function(opts) {
     this.options = $.extend({}, this.options, opts);
     $.extend(this, {
       useVMWRequestResolution: !1,
@@ -7443,7 +7444,7 @@ export function WmksLib($) {
 
     // Pushes the current image to the cache if it is not full,
     // and then deletes the image. Reset destX, destY before image recycle.
-    this._releaseImage = function (image) {
+    this._releaseImage = function(image) {
       if (this._imageManager) this._imageManager.releaseImage(image);
     };
 
@@ -7465,39 +7466,39 @@ export function WmksLib($) {
       enableVMWSessionClose: !1,
       retryConnectionInterval: -1,
       sendRelativeMouseEvent: !1,
-      onConnecting: function () {
+      onConnecting: function() {
       },
-      onConnected: function () {
+      onConnected: function() {
       },
-      onBeforeDisconnected: function () {
+      onBeforeDisconnected: function() {
       },
-      onDisconnected: function () {
+      onDisconnected: function() {
       },
-      onAuthenticationFailed: function () {
+      onAuthenticationFailed: function() {
       },
-      onError: function (a) {
+      onError: function(a) {
       },
-      onProtocolError: function () {
+      onProtocolError: function() {
       },
-      onNewDesktopSize: function (a, b) {
+      onNewDesktopSize: function(a, b) {
       },
-      onKeyboardLEDsChanged: function (a) {
+      onKeyboardLEDsChanged: function(a) {
       },
-      onCursorStateChanged: function (a) {
+      onCursorStateChanged: function(a) {
       },
-      onHeartbeat: function (a) {
+      onHeartbeat: function(a) {
       },
-      onUpdateCopyPasteUI: function (a, b) {
+      onUpdateCopyPasteUI: function(a, b) {
       },
-      onCopy: function (a) {
+      onCopy: function(a) {
       },
-      onSetReconnectToken: function (a) {
+      onSetReconnectToken: function(a) {
       },
-      onAudio: function (a) {
+      onAudio: function(a) {
       },
-      onAudioMixer: function (a) {
+      onAudioMixer: function(a) {
       },
-      onEncodingChanged: function (a) {
+      onEncodingChanged: function(a) {
       },
       cacheSizeKB: 102400,
       cacheSizeEntries: 1024
@@ -7629,135 +7630,135 @@ export function WmksLib($) {
     resolutionDelay: 300 // milliseconds
   });
   // TODO
-  WMKS.VNCDecoder.prototype.fail = function (a) {
+  WMKS.VNCDecoder.prototype.fail = function(a) {
     return WMKS.LOGGER.log(a), this.disconnect(), null
   };
-  WMKS.VNCDecoder.prototype._assumeServerIsVMware = function () {
+  WMKS.VNCDecoder.prototype._assumeServerIsVMware = function() {
     if (!this.usedVNCHandshake) return;
     this.useVMWKeyEvent = !0
   };
-  WMKS.VNCDecoder.prototype._receiveQueueBytesUnread = function () {
+  WMKS.VNCDecoder.prototype._receiveQueueBytesUnread = function() {
     "use strict";
     return this._receiveQueueLength - this._receiveQueueIndex;
   };
-  WMKS.VNCDecoder.prototype._receiveQueueConsumeBytes = function (a) {
+  WMKS.VNCDecoder.prototype._receiveQueueConsumeBytes = function(a) {
     this._receiveQueueIndex += a;
     while (this._receiveQueueIndex > 0 && this._receiveQueue[0].data.byteLength <= this._receiveQueueIndex) this._receiveQueueLength -= this._receiveQueue[0].data.byteLength, this._receiveQueueIndex -= this._receiveQueue[0].data.byteLength, this._receiveQueue.shift()
   };
-  WMKS.VNCDecoder.prototype._receiveQueueReset = function () {
+  WMKS.VNCDecoder.prototype._receiveQueueReset = function() {
     this._receiveQueue = [], this._receiveQueueLength = 0, this._receiveQueueIndex = 0
   };
-  WMKS.VNCDecoder.prototype._readBytes = function (a) {
+  WMKS.VNCDecoder.prototype._readBytes = function(a) {
     "use strict";
     if (this._receiveQueueIndex + a <= this._receiveQueue[0].data.byteLength) {
-      var b = new Uint8Array(this._receiveQueue[0].data, this._receiveQueueIndex, a);
+      let b = new Uint8Array(this._receiveQueue[0].data, this._receiveQueueIndex, a);
       return this._receiveQueueConsumeBytes(a), b
     }
-    var b = new Uint8Array(a),
+    let b = new Uint8Array(a),
       c = 0;
     while (a > 0) {
-      var d = Math.min(a, this._receiveQueue[0].data.byteLength - this._receiveQueueIndex),
+      let d = Math.min(a, this._receiveQueue[0].data.byteLength - this._receiveQueueIndex),
         e = new Uint8Array(this._receiveQueue[0].data, this._receiveQueueIndex, d);
       b.set(e, c), c += d, a -= d, this._receiveQueueConsumeBytes(d)
     }
     return b
   };
-  WMKS.VNCDecoder.prototype._readByte = function () {
+  WMKS.VNCDecoder.prototype._readByte = function() {
     "use strict";
-    var a = this._readBytes(1);
+    let a = this._readBytes(1);
     return a[0]
   };
-  WMKS.VNCDecoder.prototype._skipBytes = function (a) {
+  WMKS.VNCDecoder.prototype._skipBytes = function(a) {
     "use strict";
       this._receiveQueueConsumeBytes(a)
   };
-  WMKS.VNCDecoder.prototype._readString = function (b) {
+  WMKS.VNCDecoder.prototype._readString = function(b) {
     "use strict";
-    var c = this._readBytes(b);
+    let c = this._readBytes(b);
     return stringFromArray(c)
   };
-  WMKS.VNCDecoder.prototype._readStringUTF8 = function (a) {
+  WMKS.VNCDecoder.prototype._readStringUTF8 = function(a) {
     "use strict";
-    var b, c, d, e, f = [],
+    let b, c, d, e, f = [],
       g = 0,
       h = this._readBytes(a);
     while (g < a) b = h[g], b < 128 ? (f.push(b), g++) : b < 224 ? (c = h[g + 1] & 63, f.push((b & 31) << 6 | c), g += 2) : b < 240 ? (c = h[g + 1] & 63, d = h[g + 2] & 63, f.push((b & 15) << 12 | c << 6 | d), g += 3) : (c = h[g + 1] & 63, d = h[g + 2] & 63, e = h[g + 3] & 63, f.push((b & 7) << 18 | c << 12 | d << 6 | e), g += 4);
     return String.fromCharCode.apply(String, f)
   };
-  WMKS.VNCDecoder.prototype._readInt16 = function () {
+  WMKS.VNCDecoder.prototype._readInt16 = function() {
     "use strict";
-    var a = this._readBytes(2);
+    let a = this._readBytes(2);
     return (a[0] << 8) + a[1]
   };
-  WMKS.VNCDecoder.prototype._readInt32 = function () {
+  WMKS.VNCDecoder.prototype._readInt32 = function() {
     "use strict";
-    var a = this._readBytes(4);
+    let a = this._readBytes(4);
     return (a[0] << 24) + (a[1] << 16) + (a[2] << 8) + a[3]
   };
-  WMKS.VNCDecoder.prototype._sendString = function (a) {
+  WMKS.VNCDecoder.prototype._sendString = function(a) {
     "use strict";
       this._sendBytes(arrayFromString(a))
   };
-  WMKS.VNCDecoder.prototype._sendBytes = function (a) {
+  WMKS.VNCDecoder.prototype._sendBytes = function(a) {
     "use strict";
     if (!this._websocket) return;
-    var b = new ArrayBuffer(a.length),
+    let b = new ArrayBuffer(a.length),
       c = new Uint8Array(b),
       d;
     for (d = 0; d < a.length; d++) c[d] = a[d];
     this._websocket.send(b)
   };
-  WMKS.VNCDecoder.prototype._setReadCB = function (a, b, c) {
+  WMKS.VNCDecoder.prototype._setReadCB = function(a, b, c) {
     this.nextBytes = a, this.nextFn = b, this.nextArg = c
   };
-  WMKS.VNCDecoder.prototype._sendMouseEvent = function () {
+  WMKS.VNCDecoder.prototype._sendMouseEvent = function() {
     if (this.options.sendRelativeMouseEvent) {
-      var a = [];
+      let a = [];
       a.push8(this.msgVMWClientMessage), a.push8(this.msgVMWPointerEvent2), a.push16(19), a.push8(0), a.push32(this._mouseX), a.push32(this._mouseY), a.push32(this._mouseButtonMask), a.push8(0), a.push8(0), this._sendBytes(a), this._mouseActive = !1
     } else {
-      var a = [];
+      let a = [];
       a.push8(this.msgPointerEvent), a.push8(this._mouseButtonMask), a.push16(this._mouseX), a.push16(this._mouseY), this._sendBytes(a), this._mouseActive = !1
     }
   };
-  WMKS.VNCDecoder.prototype._sendResolutionRequest = function () {
-    var a = [];
+  WMKS.VNCDecoder.prototype._sendResolutionRequest = function() {
+    let a = [];
     a.push8(this.msgVMWClientMessage), a.push8(5), a.push16(8), a.push16(this.requestedWidth), a.push16(this.requestedHeight), this._sendBytes(a)
   };
-  WMKS.VNCDecoder.prototype._sendTopologyRequest = function (a) {
-    var b = [],
+  WMKS.VNCDecoder.prototype._sendTopologyRequest = function(a) {
+    let b = [],
       c = 0;
     b.push8(this.msgVMWClientMessage), b.push8(10), b.push16(6 + 20 * a.length), b.push16(a.length);
     for (c = 0; c < a.length; c++) b.push32(a[c].left), b.push32(a[c].top), b.push32(a[c].requestedWidth), b.push32(a[c].requestedHeight), b.push32(0);
     this._sendBytes(b)
   };
-  WMKS.VNCDecoder.prototype._sendClientEncodingsMsg = function () {
-    var a,
+  WMKS.VNCDecoder.prototype._sendClientEncodingsMsg = function() {
+    let a,
       b = [this.encTightDiffComp, this.encTightPNG, this.encDesktopSize, this.encVMWDefineCursor, this.encVMWCursorState, this.encVMWCursorPosition, this.encVMWTypematicInfo, this.encVMWLEDState, this.encVMWServerPush2, this.encVMWServerCaps, this.encTightJpegQuality10, this.encVMWFrameStamp, this.encUpdateCache];
     this.options.mediaPlayer && b.unshift(this.encH264MP4), this.options.enableRawH264 && b.unshift(this.encH264RectEnc), this.options.enableTopologyChange && b.unshift(this.encToppologyChangeEnc), this.options.enableH264Multimon && b.unshift(this.encH264MultimonEnc), this._canvas[1] && (b = [this.encOffscreenCopyRect].concat(b)), b = [this.encCopyRect].concat(b);
-    var c = [];
+    let c = [];
     c.push8(this.msgClientEncodings), c.push8(0), c.push16(b.length);
     for (a = 0; a < b.length; a += 1) c.push32(b[a]);
     this._sendBytes(c)
   };
-  WMKS.VNCDecoder.prototype._sendFBUpdateRequestMsg = function (a) {
-    var b = [];
+  WMKS.VNCDecoder.prototype._sendFBUpdateRequestMsg = function(a) {
+    let b = [];
     b.push8(this.msgFBUpdateRequest), b.push8(a), b.push16(0), b.push16(0), b.push16(this._FBWidth), b.push16(this._FBHeight), this._sendBytes(b)
   };
-  WMKS.VNCDecoder.prototype._sendAck = function (a) {
-    var b = this.updateReqId || 1,
+  WMKS.VNCDecoder.prototype._sendAck = function(a) {
+    let b = this.updateReqId || 1,
       c;
     if (this.useVMWAck) {
-      var d = (a + 2) * 10,
+      let d = (a + 2) * 10,
         e = [];
       e.push8(this.msgVMWClientMessage), e.push8(4), e.push16(8), e.push8(b), e.push8(0), e.push16(d), this._sendBytes(e)
     } else this._sendFBUpdateRequestMsg(b)
   };
-  WMKS.VNCDecoder.prototype._sendAudioAck = function (a, b) {
-    var c = [];
+  WMKS.VNCDecoder.prototype._sendAudioAck = function(a, b) {
+    let c = [];
     c.push8(this.msgVMWClientMessage), c.push8(this.msgVMWAudioAck), c.push16(12), c.push32(a), c.push32(b), this._sendBytes(c)
   };
-  WMKS.VNCDecoder.prototype._changeCursor = function (a, b, d, e, f, g) {
-    var h = [],
+  WMKS.VNCDecoder.prototype._changeCursor = function(a, b, d, e, f, g) {
+    let h = [],
       i = f * g * 4,
       j = Math.ceil(f * g / 8),
       k = i + 40 + j * 2,
@@ -7765,7 +7766,7 @@ export function WmksLib($) {
     h.push16le(0), h.push16le(2), h.push16le(1), h.push8(f), h.push8(g), h.push8(0), h.push8(0), h.push16le(d), h.push16le(e), h.push32le(k), h.push32le(h.length + 4), h.push32le(40), h.push32le(f), h.push32le(g * 2), h.push16le(1), h.push16le(32), h.push32le(0), h.push32le(i + 2 * j), h.push32le(0), h.push32le(0), h.push32le(0), h.push32le(0);
     for (m = g - 1; m >= 0; m -= 1)
       for (l = 0; l < f; l += 1) {
-        var n = m * Math.ceil(f / 8) + Math.floor(l / 8),
+        let n = m * Math.ceil(f / 8) + Math.floor(l / 8),
           o = 0;
         b.length > 0 && (o = b[n] << l % 8 & 128 ? 255 : 0), n = (f * m + l) * 4, h.push8(a[n]), h.push8(a[n + 1]), h.push8(a[n + 2]), b.length > 0 ? h.push8(o) : h.push8(a[n + 3])
       }
@@ -7773,18 +7774,18 @@ export function WmksLib($) {
       for (l = 0; l < Math.ceil(f / 8); l += 1) h.push8(0);
     for (m = 0; m < g; m += 1)
       for (l = 0; l < Math.ceil(f / 8); l += 1) h.push8(0);
-    var p = "data:image/x-icon;base64," + Base64.encodeFromArray(h);
+    let p = "data:image/x-icon;base64," + Base64.encodeFromArray(h);
     this._currentCursorURI = "url(" + p + ") " + d + " " + e + ", default", this._updateCanvasCursor()
   };
-  WMKS.VNCDecoder.prototype._readOffscreenCopyRect = function (a) {
+  WMKS.VNCDecoder.prototype._readOffscreenCopyRect = function(a) {
     a.srcBuffer = this._readByte(), a.dstBuffer = this._readByte(), a.srcX = this._readInt16(), a.srcY = this._readInt16(), this._nextRect()
   };
-  WMKS.VNCDecoder.prototype._readUpdateCacheData = function (a) {
+  WMKS.VNCDecoder.prototype._readUpdateCacheData = function(a) {
     "use strict";
       a.data = this._readBytes(a.dataLength),
       this._nextRect()
   };
-  WMKS.VNCDecoder.prototype._readUpdateCacheInitData = function (a) {
+  WMKS.VNCDecoder.prototype._readUpdateCacheInitData = function(a) {
     "use strict";
       this._skipBytes(4),
       this._skipBytes(4),
@@ -7792,15 +7793,15 @@ export function WmksLib($) {
       this._skipBytes(4),
       this._nextRect()
   };
-  WMKS.VNCDecoder.prototype._readUpdateCacheRect = function (a) {
+  WMKS.VNCDecoder.prototype._readUpdateCacheRect = function(a) {
     "use strict";
       a.opcode = this._readByte(),
       a.slot = this._readInt16(),
       a.dataLength = this._readInt16(),
       a.opcode != this.updateCacheOpInit ? this._setReadCB(a.dataLength, this._readUpdateCacheData, a) : this._setReadCB(a.dataLength, this._readUpdateCacheInitData, a)
   };
-  WMKS.VNCDecoder.prototype._readVMWDefineCursorData = function (a) {
-    var b, c, d = [],
+  WMKS.VNCDecoder.prototype._readVMWDefineCursorData = function(a) {
+    let b, c, d = [],
       e = [],
       f = [],
       g, h, i, j;
@@ -7816,81 +7817,84 @@ export function WmksLib($) {
     } else a.cursorType === 1 && a.pixelslength > 0 && (e = this._readBytes(a.pixelslength), a.pixelslength == 4 && e[3] == 0 && (e[3] = 1));
     this._changeCursor(e, f, a.x, a.y, a.width, a.height), this._nextRect()
   };
-  WMKS.VNCDecoder.prototype._readVMWDefineCursor = function (a) {
+  WMKS.VNCDecoder.prototype._readVMWDefineCursor = function(a) {
     a.cursorType = this._readByte(), this._skipBytes(1), a.pixelslength = 4 * a.width * a.height, a.cursorType === 0 ? a.masklength = a.pixelslength : a.masklength = 0, this._setReadCB(a.pixelslength + a.masklength, this._readVMWDefineCursorData, a)
   };
-  WMKS.VNCDecoder.prototype._updateCanvasCursor = function () {
-    var a, b;
+  WMKS.VNCDecoder.prototype._updateCanvasCursor = function() {
+    let a, b;
     this._cursorVisible ? WMKS.BROWSER.isIE() ? a = "default" : a = this._currentCursorURI : WMKS.BROWSER.isFirefox() && WMKS.BROWSER.isMacOS() ? a = "none, !important" : a = "none", b = this._mediaPlayer || this._canvas[0], b.style.cursor !== a && (b.style.cursor = a)
   };
-  WMKS.VNCDecoder.prototype._readVMWCursorState = function (a) {
-    var b = this._readInt16();
+  WMKS.VNCDecoder.prototype._readVMWCursorState = function(a) {
+    let b = this._readInt16();
     this._cursorVisible = !!(b & 1), this._updateCanvasCursor(), this.options.onCursorStateChanged(this._cursorVisible), this._nextRect()
   };
-  WMKS.VNCDecoder.prototype._readVMWCursorPosition = function (a) {
+  WMKS.VNCDecoder.prototype._readVMWCursorPosition = function(a) {
     WMKS.VNCDecoder.cursorPosition = a, this._nextRect()
   };
-  WMKS.VNCDecoder.prototype._readTypematicInfo = function (a) {
+  WMKS.VNCDecoder.prototype._readTypematicInfo = function(a) {
     this.typematicState = this._readInt16(), this.typematicPeriod = this._readInt32(), this.typematicDelay = this._readInt32(), this._nextRect()
   };
-  WMKS.VNCDecoder.prototype._readLEDState = function (a) {
+  WMKS.VNCDecoder.prototype._readLEDState = function(a) {
     this._keyboardLEDs = this._readInt32(), this.options.onKeyboardLEDsChanged(this._keyboardLEDs), this._nextRect()
   };
-  WMKS.VNCDecoder.prototype._readFrameStamp = function (a) {
+  WMKS.VNCDecoder.prototype._readFrameStamp = function(a) {
     this._frameTimestampLo = this._readInt32(), this._frameTimestampHi = this._readInt32(), this._nextRect()
   };
-  WMKS.VNCDecoder.prototype._fillRectWithColor = function (a, b, c, d, e, f) {
-    var g;
+  WMKS.VNCDecoder.prototype._fillRectWithColor = function(a, b, c, d, e, f) {
+    let g;
     g = "rgb(" + f[0] + "," + f[1] + "," + f[2] + ")", a.fillStyle = g, a.fillRect(b, c, d, e)
   };
-  WMKS.VNCDecoder.prototype._blitImageString = function (a, b, c, d, e, f) {
-    var g, h, i;
+  WMKS.VNCDecoder.prototype._blitImageString = function(a, b, c, d, e, f) {
+    let g, h, i;
     g = a.createImageData(d, e), i = g.data;
     for (h = 0; h < d * e * 4; h += 4) i[h] = f.charCodeAt(h + 2), i[h + 1] = f.charCodeAt(h + 1), i[h + 2] = f.charCodeAt(h + 0), i[h + 3] = 255;
     a.putImageData(g, b, c)
   };
-  WMKS.VNCDecoder.prototype._copyRectGetPut = function (srcIndex, srcX, srcY, width, height, dstIndex, dstX, dstY) {
+  WMKS.VNCDecoder.prototype._copyRectGetPut = function(srcIndex, srcX, srcY, width, height, dstIndex, dstX, dstY) {
     let img;
     img = this._canvas[srcIndex].ctx.getImageData(srcX, srcY, width, height);
 
     this._canvas[dstIndex].ctx.putImageData(img, dstX, dstY);
     img = undefined;
   };
-  WMKS.VNCDecoder.prototype._copyRectDrawImage = function (a, b, c, d, e, f, g, h) {
+  WMKS.VNCDecoder.prototype._copyRectDrawImage = function(a, b, c, d, e, f, g, h) {
     this._canvas[f].ctx.drawImage(this._canvas[a], b, c, d, e, g, h, d, e)
   };
-  WMKS.VNCDecoder.prototype._copyRectDrawImageTemp = function (a, b, c, d, e, f, g, h) {
+  WMKS.VNCDecoder.prototype._copyRectDrawImageTemp = function(a, b, c, d, e, f, g, h) {
     this._copyRectDrawImage(a, b, c, d, e, 2, b, c), this._copyRectDrawImage(2, b, c, d, e, f, g, h)
   };
-  WMKS.VNCDecoder.prototype._lighten = function (a, b, c, d, e) {
+  WMKS.VNCDecoder.prototype._lighten = function(a, b, c, d, e) {
     "use strict";
       this._canvas[0].ctx.globalCompositeOperation = "lighten",
       this._canvas[0].ctx.fillStyle = e,
       this._canvas[0].ctx.fillRect(a, b, c, d),
       this._canvas[0].ctx.globalCompositeOperation = "source-over"
   };
-  WMKS.VNCDecoder.prototype._decodeDiffComp = function (a, b) {
+  WMKS.VNCDecoder.prototype._decodeDiffComp = function(a, b) {
     "use strict";
-    var c = 0,
+    let c = 0,
       d = 0,
       e = new Uint8Array(1024),
-      f;
-    while (d < a.length && c <= e.length) switch (a[d++]) {
-      case this.diffCompCopyFromPrev:
-        var g = a[d++];
-        e.set(b.subarray(c, c + g), c), c += g;
-        break;
-      case this.diffCompAppend:
-        var g = a[d++];
-        e.set(a.subarray(d, d + g), c), d += g, c += g;
-        break;
-      case this.diffCompAppendRemaining:
-        return f = new Uint8Array(c + a.length - d), f.set(e.subarray(0, c), 0), d < a.length && f.set(a.subarray(d), c), f
+      f,
+      g;
+    while (d < a.length && c <= e.length) {
+      switch (a[d++]) {
+        case this.diffCompCopyFromPrev:
+          g = a[d++];
+          e.set(b.subarray(c, c + g), c), c += g;
+          break;
+        case this.diffCompAppend:
+          g = a[d++];
+          e.set(a.subarray(d, d + g), c), d += g, c += g;
+          break;
+        case this.diffCompAppendRemaining:
+          return f = new Uint8Array(c + a.length - d), f.set(e.subarray(0, c), 0), d < a.length && f.set(a.subarray(d), c), f
+      }
     }
     return e.subarray(0, c)
   };
-  WMKS.VNCDecoder.prototype._readTightData = function (a) {
-    var b = this._readBytes(this.nextBytes),
+  WMKS.VNCDecoder.prototype._readTightData = function(a) {
+    let b = this._readBytes(this.nextBytes),
       // @ts-ignore
       d = window.URL || window.webkitURL,
       e = this,
@@ -7898,51 +7902,51 @@ export function WmksLib($) {
     a.subEncoding === this.subEncDiffJpeg && (b = this._decodeDiffComp(b, this._lastJpegData)), a.subEncoding !== this.subEncPNG ? (this._lastJpegData = b, f = "image/jpeg") : f = "image/png", this._useImageBitmaps ? createImageBitmap(new Blob([b], {
       type: f
     }))
-      .then(function (b) {
+      .then(function(b) {
         a.image = b, e.onDecodeComplete()
       }) : (a.image = this._imageManager.getImage(), a.image.width = a.width, a.image.height = a.height, d && !(WMKS.BROWSER.isChrome() && WMKS.BROWSER.version.major >= 50) ? (a.image.onload = this.onDecodeObjectURLComplete, a.image.src = d.createObjectURL(new Blob([b], {
       type: f
     }))) : (b = Base64.encodeFromArray(b), a.image.onload = this.onDecodeComplete, a.image.src = "data:" + f + ";base64," + b)), this._nextRect()
   };
-  WMKS.VNCDecoder.prototype._readTightPNG = function (a) {
+  WMKS.VNCDecoder.prototype._readTightPNG = function(a) {
     a.subEncoding = this._readByte(), a.subEncoding &= this.subEncMask, this._mediaPlayer && this.options.onEncodingChanged("TightPNG");
     if (a.subEncoding === this.subEncFill) a.color = [], a.color[0] = this._readByte(), a.color[1] = this._readByte(), a.color[2] = this._readByte(), a.color[3] = 255, this.rectsDecoded++, this._nextRect();
     else {
-      var b = 1,
+      let b = 1,
         c = this._readByte();
       c & 128 && (b = 2, c &= -129, c += this._readByte() << 7, c & 16384 &&
       (b = 3, c &= -16385, c += this._readByte() << 14)), this._setReadCB(c, this._readTightData, a)
     }
   };
-  WMKS.VNCDecoder.prototype._readH264MP4Rect = function (a) {
-    var b = this._readInt16(),
+  WMKS.VNCDecoder.prototype._readH264MP4Rect = function(a) {
+    let b = this._readInt16(),
       c = this._readInt16(),
       d = this._readInt32();
     b === 1 && (WMKS.LOGGER.log("MP4 encoding is selected and stream is reset."), this.options.onEncodingChanged("MP4"), this._mp4Decoder.init(this._mediaPlayer, undefined, undefined, this.onDecodeComplete, this.onDecodeMP4Error)), this._setReadCB(d, this._readH264MP4Data, a)
   };
-  WMKS.VNCDecoder.prototype._readH264MP4Data = function (a) {
+  WMKS.VNCDecoder.prototype._readH264MP4Data = function(a) {
     this._mp4Decoder.appendData(this._readBytes(this.nextBytes)), this._nextRect()
   };
-  WMKS.VNCDecoder.prototype._readH264Rect = function (a) {
-    var b = this._readInt16(),
+  WMKS.VNCDecoder.prototype._readH264Rect = function(a) {
+    let b = this._readInt16(),
       c = this._readInt16(),
       d = this._readInt32();
     b === 1 && (WMKS.LOGGER.log("Raw H264 encoding is selected and stream is reset."), this.options.onEncodingChanged("RawH264")), this._setReadCB(d, this._readH264Data, a)
   };
-  WMKS.VNCDecoder.prototype._readH264Data = function (a) {
+  WMKS.VNCDecoder.prototype._readH264Data = function(a) {
     this._readBytes(this.nextBytes), this._nextRect()
   };
-  WMKS.VNCDecoder.prototype._readCopyRect = function (a) {
+  WMKS.VNCDecoder.prototype._readCopyRect = function(a) {
     a.srcX = this._readInt16(), a.srcY = this._readInt16(), this._nextRect()
   };
-  WMKS.VNCDecoder.prototype._readRaw = function (a) {
+  WMKS.VNCDecoder.prototype._readRaw = function(a) {
     a.imageString = this._readString(this.nextBytes), this._nextRect()
   };
-  WMKS.VNCDecoder.prototype._readDesktopSize = function (a) {
+  WMKS.VNCDecoder.prototype._readDesktopSize = function(a) {
     this._FBWidth = a.width, this._FBHeight = a.height, this.options.onNewDesktopSize(this._FBWidth, this._FBHeight), this._nextRect()
   };
-  WMKS.VNCDecoder.prototype._readRect = function () {
-    var a = this.rectsRead;
+  WMKS.VNCDecoder.prototype._readRect = function() {
+    let a = this.rectsRead;
     this.rect[a] = {}, this.rect[a].x = this._readInt16(), this.rect[a].y = this._readInt16(), this.rect[a].width = this._readInt16(), this.rect[a].height = this._readInt16(), this.rect[a].encoding = this._readInt32(), this.rect[a].encoding !== this.encTightPNG && this.rect[a].encoding !== this.encH264MP4 && this.rectsDecoded++;
     switch (this.rect[a].encoding) {
       case this.encRaw:
@@ -7991,29 +7995,29 @@ export function WmksLib($) {
         return this.fail("Disconnected: unsupported encoding " + this.rect[a].encoding)
     }
   };
-  WMKS.VNCDecoder.prototype._evictUpdateCacheEntry = function (a) {
+  WMKS.VNCDecoder.prototype._evictUpdateCacheEntry = function(a) {
     "use strict";
     this.updateCache[a].image !== null && this._releaseImage(this.updateCache[a].image),
       this.updateCache[a] = {},
       this.updateCache[a].image = null
   };
-  WMKS.VNCDecoder.prototype._executeUpdateCacheInit = function (a) {
+  WMKS.VNCDecoder.prototype._executeUpdateCacheInit = function(a) {
     "use strict";
-    var b;
+    let b;
     for (b = 0; b < this.updateCacheEntries; b++) this._evictUpdateCacheEntry(b);
     this.updateCache = [], this.updateCacheEntries = a.updateCacheEntries;
     if (this.updateCacheEntries > this.options.cacheSizeEntries) return this.fail("Disconnected: requested cache too large");
     for (b = 0; b < this.updateCacheEntries; b++) this.updateCache[b] = {}, this.updateCache[b].image = null
   };
-  WMKS.VNCDecoder.prototype._updateCacheInsideBeginEnd = function () {
+  WMKS.VNCDecoder.prototype._updateCacheInsideBeginEnd = function() {
     return this.decodeToCacheEntry !== -1
   };
-  WMKS.VNCDecoder.prototype._updateCacheInitialized = function () {
+  WMKS.VNCDecoder.prototype._updateCacheInitialized = function() {
     return this.updateCacheSizeEntries !== 0
   };
-  WMKS.VNCDecoder.prototype._executeUpdateCacheBegin = function (a) {
+  WMKS.VNCDecoder.prototype._executeUpdateCacheBegin = function(a) {
     "use strict";
-    var b, c, d, e, f;
+    let b, c, d, e, f;
     if (!this._updateCacheInitialized() || this._updateCacheInsideBeginEnd() || a.slot >= this.updateCacheEntries) return this.fail("Disconnected: requested cache slot too large");
     b = new WMKS.BitBuf(a.data, a.dataLength), c = !b.readBits(1), d = 0, f = 0;
     do {
@@ -8024,9 +8028,9 @@ export function WmksLib($) {
     } while (f < this.updateCacheEntries && !b.overflow);
     this.decodeToCacheEntry = a.slot, this._evictUpdateCacheEntry(a.slot), this.updateCache[this.decodeToCacheEntry].imageWidth = a.width, this.updateCache[this.decodeToCacheEntry].imageHeight = a.height
   };
-  WMKS.VNCDecoder.prototype._executeUpdateCacheEnd = function (a) {
+  WMKS.VNCDecoder.prototype._executeUpdateCacheEnd = function(a) {
     "use strict";
-    var b = this.updateCache[this.decodeToCacheEntry],
+    let b = this.updateCache[this.decodeToCacheEntry],
       c, d, e = 0,
       f = 0,
       g = Math.ceil(this._FBWidth / 16),
@@ -8041,10 +8045,10 @@ export function WmksLib($) {
     do d == 0 && (d = n.readEliasGamma(), c = !c), m = Math.min(k - i, g - e), m = Math.min(m, d), c && (this._canvas[0].ctx.drawImage(b.image, i * 16, j * 16, m * 16, 16, e * 16, f * 16, m * 16, 16), i += m, i == k && (i = 0, j++)), e += m, e == g && (e = 0, f++), d -= m; while (f < h && !n._overflow);
     this.decodeToCacheEntry = -1
   };
-  WMKS.VNCDecoder.prototype._executeUpdateCacheReplay = function (a) {
+  WMKS.VNCDecoder.prototype._executeUpdateCacheReplay = function(a) {
     "use strict";
     if (a.slot >= this.updateCacheEntries) return this.fail("Disconnected: requested cache slot invalid");
-    var b = 0,
+    let b = 0,
       c = 0,
       d = Math.ceil(this._FBWidth / 16),
       e = Math.ceil(this._FBHeight / 16),
@@ -8062,12 +8066,12 @@ export function WmksLib($) {
     if (!this._updateCacheInitialized() || this._updateCacheInsideBeginEnd() || a.slot >= this.updateCacheEntries) return this.fail("");
     do o == 0 && (o = m.readEliasGamma(), n = !n), q == 0 && (q = l.readEliasGamma(), p = !p), f = d - b, f = Math.min(f, o), n && (f = Math.min(f, j - h), f = Math.min(f, q), p && this._canvas[0].ctx.drawImage(g.image, h * 16, i * 16, f * 16, 16, b * 16, c * 16, f * 16, 16), h += f, h == j && (h = 0, i++), q -= f), b += f, b == d && (b = 0, c++), o -= f; while (c < e && !l._overflow && !m._overflow)
   };
-  WMKS.VNCDecoder.prototype._handleVCDProxyVmxPathMessage = function () {
-    var a = this._readString(17);
+  WMKS.VNCDecoder.prototype._handleVCDProxyVmxPathMessage = function() {
+    let a = this._readString(17);
     if (a !== "connect info vmx\n") return this.fail("Invalid connection vmx request: " + a);
     this._sendString(this.options.VCDProxyHandshakeVmxPath), this._setReadCB(12, this._peekFirstMessage)
   };
-  WMKS.VNCDecoder.prototype._executeUpdateCache = function (a) {
+  WMKS.VNCDecoder.prototype._executeUpdateCache = function(a) {
     "use strict";
     switch (a.opcode) {
       case this.updateCacheOpInit:
@@ -8086,8 +8090,8 @@ export function WmksLib($) {
         return this.fail("Disconnected: requested cache opcode invalid")
     }
   };
-  WMKS.VNCDecoder.prototype._executeRectSingle = function (a) {
-    var b = this._canvas[0].ctx;
+  WMKS.VNCDecoder.prototype._executeRectSingle = function(a) {
+    let b = this._canvas[0].ctx;
     switch (a.encoding) {
       case this.encRaw:
         this._blitImageString(b, a.x, a.y, a.width, a.height, a.imageString), a.imageString = "";
@@ -8113,61 +8117,61 @@ export function WmksLib($) {
       default:
     }
   };
-  WMKS.VNCDecoder.prototype._executeRects = function () {
-    var a;
+  WMKS.VNCDecoder.prototype._executeRects = function() {
+    let a;
     if (this._state !== this.FBU_DECODING_STATE) return this.fail("wrong state: " + this._state);
     if (this.rectsDecoded !== this.rects || this.rectsRead !== this.rects) return this.fail("messed up state");
     for (a = 0; a < this.rects; a++) this._executeRectSingle(this.rect[a]), delete this.rect[a];
-    var b = (new Date)
+    let b = (new Date)
       .getTime();
     this._sendAck(b - this.decodeStart), this.rects = 0, this.rectsRead = 0, this.rectsDecoded = 0, this.updateReqId = 0, this._receivedFirstUpdate === !1 && (this.options.onConnected(), this._receivedFirstUpdate = !0);
-    var c = this;
+    let c = this;
     this._state = this.FBU_RESTING_STATE, this._getNextServerMessage(), this._msgTimer = setTimeout(this.msgTimeout, 1)
   };
-  WMKS.VNCDecoder.prototype._nextRect = function () {
+  WMKS.VNCDecoder.prototype._nextRect = function() {
     this.rectsRead++, this.rectsRead < this.rects ? this._setReadCB(12, this._readRect) : (this._state = this.FBU_DECODING_STATE, this.rectsDecoded === this.rects && this._executeRects())
   };
-  WMKS.VNCDecoder.prototype._gobble = function (a) {
+  WMKS.VNCDecoder.prototype._gobble = function(a) {
     this._skipBytes(this.nextBytes), a()
   };
-  WMKS.VNCDecoder.prototype._getNextServerMessage = function () {
+  WMKS.VNCDecoder.prototype._getNextServerMessage = function() {
     this._setReadCB(1, this._handleServerMsg)
   };
-  WMKS.VNCDecoder.prototype._framebufferUpdate = function () {
+  WMKS.VNCDecoder.prototype._framebufferUpdate = function() {
     this.updateReqId = this._readByte(), this.rects = this._readInt16(), this.rectsRead = 0, this.rectsDecoded = 0, this.decodeStart = (new Date)
       .getTime(), this._setReadCB(12, this._readRect)
   };
-  WMKS.VNCDecoder.prototype._handleServerInitializedMsg = function () {
-    var a = this;
+  WMKS.VNCDecoder.prototype._handleServerInitializedMsg = function() {
+    let a = this;
     this._FBWidth = this._readInt16(), this._FBHeight = this._readInt16();
-    var b = this._readByte(),
+    let b = this._readByte(),
       c = this._readByte(),
       d = this._readByte(),
       e = this._readByte();
     WMKS.LOGGER.log("Screen: " + this._FBWidth + " x " + this._FBHeight + ", bits-per-pixel: " + b + ", depth: " + c + ", big-endian-flag: " + d + ", true-color-flag: " + e), this._skipBytes(6);
-    var f = this._readByte(),
+    let f = this._readByte(),
       g = this._readByte(),
       h = this._readByte();
     WMKS.LOGGER.debug("red shift: " + f + ", green shift: " + g + ", blue shift: " + h), this._skipBytes(3);
-    var i = this._readInt32();
+    let i = this._readInt32();
     this.options.onNewDesktopSize(this._FBWidth, this._FBHeight), this._copyRectBlit = this._copyRectDrawImageTemp, this._copyRectOffscreenBlit = this._copyRectDrawImage;
     if (e) this._FBBytesPerPixel = 4, this._FBDepth = 3;
     else return this.fail("no colormap support");
-    var j = function () {
+    let j = function() {
       a._FBName = a._readString(i), a._sendClientEncodingsMsg(), a._sendFBUpdateRequestMsg(0), WMKS.LOGGER.log("Connected " + (a._encrypted ? "(encrypted)" : "(unencrypted)") + " to: " + a._FBName), a._serverInitialized = !0, a._getNextServerMessage()
     };
     this._setReadCB(i, j)
   };
-  WMKS.VNCDecoder.prototype._peekFirstMessage = function () {
+  WMKS.VNCDecoder.prototype._peekFirstMessage = function() {
     this.usedVNCHandshake = this._receiveQueue[0].data.byteLength == 12, this.usedVNCHandshake ? this._setReadCB(12, this._handleProtocolVersionMsg) : this._setReadCB(24, this._handleServerInitializedMsg)
   };
-  WMKS.VNCDecoder.prototype._handleSecurityResultMsg = function () {
-    var a = this,
-      b, c = function () {
-        var c = a._readString(b);
+  WMKS.VNCDecoder.prototype._handleSecurityResultMsg = function() {
+    let a = this,
+      b, c = function() {
+        let c = a._readString(b);
         return a.options.onAuthenticationFailed(), a.fail(c)
       },
-      d = function () {
+      d = function() {
         b = a._readInt32(), a._setReadCB(b, c)
       };
     switch (this._readInt32()) {
@@ -8183,18 +8187,18 @@ export function WmksLib($) {
         return this.fail("Bogus security result")
     }
   };
-  WMKS.VNCDecoder.prototype._handleSecurityMsg = function () {
-    var a = 0,
+  WMKS.VNCDecoder.prototype._handleSecurityMsg = function() {
+    let a = 0,
       b, c, d = this,
-      e = function () {
-        var a = this._readString(c);
+      e = function() {
+        let a = this._readString(c);
         return d.options.onAuthenticationFailed(), d.fail(a)
       },
-      f = function () {
+      f = function() {
         c = d._readInt32(), d._setReadCB(c, e)
       },
-      g = function () {
-        var c = d._readBytes(b);
+      g = function() {
+        let c = d._readBytes(b);
         WMKS.LOGGER.log("Server security types: " + c);
         for (var e = 0; e < c.length; e += 1) c && c[e] < 3 && (a = c[e]);
         if (a === 0) return d.fail("Unsupported security types: " + c);
@@ -8204,53 +8208,53 @@ export function WmksLib($) {
       };
     b = this._readByte(), b === 0 ? this._setReadCB(4, f) : this._setReadCB(b, g)
   };
-  WMKS.VNCDecoder.prototype._handleProtocolVersionMsg = function () {
-    var a = this._readString(12);
+  WMKS.VNCDecoder.prototype._handleProtocolVersionMsg = function() {
+    let a = this._readString(12);
     if (a !== "RFB 003.008\n") return this.fail("Invalid Version packet: " + a);
     this._sendString("RFB 003.008\n"), this._setReadCB(1, this._handleSecurityMsg)
   };
-  WMKS.VNCDecoder.prototype._sendClientCaps = function () {
+  WMKS.VNCDecoder.prototype._sendClientCaps = function() {
     if (this._serverInitialized) {
-      var a = [],
+      let a = [],
         b = this.clientCapHeartbeat | this.clientCapAudioAck | this.clientCapSetReconnectToken;
       this.options.enableVorbisAudioClips ? b |= this.clientCapVorbisAudioClips : this.options.enableOpusAudioClips ? b |= this.clientCapOpusAudioClips : this.options.enableAacAudioClips && (b |= this.clientCapAacAudioClips), this.options.enableVMWSessionClose && (b |= this.clientCapSessionClose), this.options.enableVMWAudioMixer && (b |= this.clientCapUseAudioMixer), this.serverSupportsMKSVChanClipboard && this.vvcSession && (b |= this.clientCapUseMKSVChanClipboard), a.push8(this.msgVMWClientMessage), a.push8(3), a.push16(8), a.push32(b), this._sendBytes(a)
     }
   };
-  WMKS.VNCDecoder.prototype._sendSessionClose = function (a) {
+  WMKS.VNCDecoder.prototype._sendSessionClose = function(a) {
     if (this._serverInitialized && this.useVMWSessionClose && this.options.enableVMWSessionClose) {
       WMKS.LOGGER.log("Send session close to server.");
-      var b = [];
+      let b = [];
       b.push8(this.msgVMWClientMessage), b.push8(this.msgVMWSessionClose), b.push16(8), b.push32(a), this._sendBytes(b)
     }
   };
-  WMKS.VNCDecoder.prototype._sendUpdateCacheInfo = function () {
+  WMKS.VNCDecoder.prototype._sendUpdateCacheInfo = function() {
     "use strict";
-    var a = [],
+    let a = [],
       b = this.updateCacheCapReplay | this.updateCacheCapDisableOffscreenSurface,
       c = this.options.cacheSizeEntries,
       d = this.options.cacheSizeKB;
     WMKS.LOGGER.trace("sendUpdateCacheInfo"), a.push8(this.msgVMWClientMessage), a.push8(11), a.push16(14), a.push32(b), a.push16(c), a.push32(d), this._sendBytes(a)
   };
-  WMKS.VNCDecoder.prototype._handleServerCapsMsg = function () {
-    var a = this._readInt32();
+  WMKS.VNCDecoder.prototype._handleServerCapsMsg = function() {
+    let a = this._readInt32();
     this.useVMWKeyEvent = !!(a & this.serverCapKeyEvent), this.allowVMWKeyEvent2UnicodeAndRaw = this.options.useUnicodeKeyboardInput && !!(a & this.serverCapKeyEvent2Unicode) && !!(a & this.serverCapKeyEvent2JSKeyCode), this.useVMWAck = !!(a & this.serverCapUpdateAck), this.useVMWRequestResolution = !!(a & this.serverCapRequestResolution), this.useVMWRequestMultiMon = !!(a & this.serverCapMultiMon), this.useVMWAudioAck = !!(a & this.serverCapAudioAck), this.useVMWSessionClose = !!(a & this.serverCapSessionClose), this.serverSupportsMKSVChanClipboard = !!(a & this.serverCapHasMKSVChanClipboard), this.useVMWRequestResolution && this.requestedWidth > 0 && this.requestedHeight > 0 && this.onRequestResolution(this.requestedWidth, this.requestedHeight), a & this.serverCapClientCaps && this._sendClientCaps(), a & this.serverCapUpdateCacheInfo && this._sendUpdateCacheInfo();
     if (a & this.serverCapDisablingCopyUI || a & this.serverCapDisablingPasteUI) {
-      var b = 0,
+      let b = 0,
         c = 0;
       a & this.serverCapDisablingCopyUI && (b = 1), a & this.serverCapDisablingPasteUI && (c = 1), this.options.onUpdateCopyPasteUI(b, c)
     }
     this._getNextServerMessage()
   };
-  WMKS.VNCDecoder.prototype._handleServerHeartbeatMsg = function () {
-    var a = this._readInt16();
+  WMKS.VNCDecoder.prototype._handleServerHeartbeatMsg = function() {
+    let a = this._readInt16();
     this.options.onHeartbeat(a), this._getNextServerMessage()
   };
-  WMKS.VNCDecoder.prototype._handleSessionCloseMsg = function () {
-    var a = this._readInt32();
+  WMKS.VNCDecoder.prototype._handleSessionCloseMsg = function() {
+    let a = this._readInt32();
     this.options.onBeforeDisconnected(a), this._getNextServerMessage()
   };
-  WMKS.VNCDecoder.prototype._handleAudioMixer = function () {
-    var a = this._readInt32(),
+  WMKS.VNCDecoder.prototype._handleAudioMixer = function() {
+    let a = this._readInt32(),
       b = this._readInt32(),
       c = this._readInt32(),
       d = this._readInt32();
@@ -8261,12 +8265,12 @@ export function WmksLib($) {
       flags: d
     }) : WMKS.LOGGER.warn("Ignoring audio mixer message for an unsupported  channelId = " + a + " msgType = " + b + " data = " + c + " flags = " + d), this._getNextServerMessage()
   };
-  WMKS.VNCDecoder.prototype._handleServerSetReconnectTokenMsg = function (a) {
-    var b = this._readString(a);
+  WMKS.VNCDecoder.prototype._handleServerSetReconnectTokenMsg = function(a) {
+    let b = this._readString(a);
     this.options.onSetReconnectToken(b), this._getNextServerMessage()
   };
-  WMKS.VNCDecoder.prototype._handleServerAudioMsg = function () {
-    var a = this._readInt32(),
+  WMKS.VNCDecoder.prototype._handleServerAudioMsg = function() {
+    let a = this._readInt32(),
       b = this._readInt32(),
       c = this._readInt32(),
       d = this._readInt32(),
@@ -8289,24 +8293,24 @@ export function WmksLib($) {
       };
     this._setReadCB(a, this._handleServerAudioMsgData, i)
   };
-  WMKS.VNCDecoder.prototype._handleServerAudioMsgData = function (a) {
+  WMKS.VNCDecoder.prototype._handleServerAudioMsgData = function(a) {
     a.length > 0 ? (a.data = this._readBytes(a.length), this.useVMWAudioAck && (a.flags == 0 || a.flags & this.audioflagRequestAck) && this._sendAudioAck(a.audioTimestampLo, a.audioTimestampHi), this.options.onAudio(a)) : WMKS.LOGGER.info("Audio data length is 0."), this._getNextServerMessage()
   };
-  WMKS.VNCDecoder.prototype._handleServerCutText = function (a) {
-    var b = this._readStringUTF8(a);
+  WMKS.VNCDecoder.prototype._handleServerCutText = function(a) {
+    let b = this._readStringUTF8(a);
     this.options.onCopy(b), this._getNextServerMessage()
   };
-  WMKS.VNCDecoder.prototype._handleServerMsg = function () {
-    var a, b, c, d, e, f = this,
+  WMKS.VNCDecoder.prototype._handleServerMsg = function() {
+    let a, b, c, d, e, f = this,
       g = this._readByte();
     switch (g) {
       case this.msgFramebufferUpdate:
         this._setReadCB(3, this._framebufferUpdate);
         break;
       case this.msgSetColorMapEntries:
-        var h = function () {
+        let h = function() {
           f._skipBytes(3);
-          var a = f._readInt16();
+          let a = f._readInt16();
           f._setReadCB(6 * a, f._gobble, f._getNextServerMessage)
         };
         this._setReadCB(5, h);
@@ -8315,14 +8319,14 @@ export function WmksLib($) {
         this._getNextServerMessage();
         break;
       case this.msgServerCutText:
-        var i = function () {
+        let i = function() {
           f._readBytes(3), a = f._readInt32(), a > 0 ? f._setReadCB(a, f._handleServerCutText, a) : f._getNextServerMessage()
         };
         this._setReadCB(8, i);
         break;
       case this.msgVMWSrvMessage:
-        var j = function () {
-          var a = f._readByte(),
+        let j = function() {
+          let a = f._readByte(),
             b = f._readInt16();
           if (a === this.msgVMWSrvMessage_ServerCaps) {
             if (b !== 8) return f.options.onProtocolError(), f.fail("invalid length message for id: " + a + ", len: " + b);
@@ -8341,7 +8345,7 @@ export function WmksLib($) {
             if (b !== 20) return f.options.onProtocolError(), f.fail("invalid length message for id: " + a + ", len: " + b);
             f._setReadCB(b - 4, f._handleAudioMixer)
           } else {
-            var c = b - 4;
+            let c = b - 4;
             c === 0 ? f._getNextServerMessage() : f._setReadCB(c, f._gobble, f._getNextServerMessage)
           }
         };
@@ -8351,104 +8355,104 @@ export function WmksLib($) {
         return this.options.onProtocolError(), this.fail("Disconnected: illegal server message type " + g)
     }
   };
-  WMKS.VNCDecoder.prototype._processMessages = function () {
+  WMKS.VNCDecoder.prototype._processMessages = function() {
     while (this._state === this.VNC_ACTIVE_STATE && this._receiveQueueBytesUnread() >= this.nextBytes) {
-      var a = this.nextBytes,
+      let a = this.nextBytes,
         b = this._receiveQueueBytesUnread();
       this.nextFn(this.nextArg);
-      var c = this._receiveQueueBytesUnread();
+      let c = this._receiveQueueBytesUnread();
       if (a < b - c) return this.fail("decode overrun " + a + " vs " + (b - c))
     }
   };
-  WMKS.VNCDecoder.prototype.onMouseMove = function (a, b) {
+  WMKS.VNCDecoder.prototype.onMouseMove = function(a, b) {
     this._mouseX = a, this._mouseY = b, this._serverInitialized && (this._mouseActive = !0, this._mouseTimer === null && (this._sendMouseEvent(), this._mouseTimer = setTimeout(this.mouseTimeout, this.mouseTimeResolution)))
   };
-  WMKS.VNCDecoder.prototype.onMouseButton = function (a, b, c, d) {
+  WMKS.VNCDecoder.prototype.onMouseButton = function(a, b, c, d) {
     this._mouseX = a, this._mouseY = b, c ? this._mouseButtonMask |= d : this._mouseButtonMask &= ~d, this._serverInitialized && (this._mouseActive = !0, this._sendMouseEvent())
   };
-  WMKS.VNCDecoder.prototype.onKeyVScan = function (a, b) {
+  WMKS.VNCDecoder.prototype.onKeyVScan = function(a, b) {
     if (this._serverInitialized) {
-      var c = [];
+      let c = [];
       c.push8(this.msgVMWClientMessage), c.push8(this.msgVMWKeyEvent), c.push16(8), c.push16(a), c.push8(b), c.push8(0), this._sendBytes(c)
     }
   };
-  WMKS.VNCDecoder.prototype.onVMWKeyUnicode = function (a, b, c) {
+  WMKS.VNCDecoder.prototype.onVMWKeyUnicode = function(a, b, c) {
     if (this._serverInitialized) {
-      var d = [];
+      let d = [];
       d.push8(this.msgVMWClientMessage), d.push8(this.msgVMWKeyEvent2), d.push16(10), d.push32(a), d.push8(b), d.push8(c), this._sendBytes(d)
     }
   };
-  WMKS.VNCDecoder.prototype.onMouseWheel = function (a, b, c, d) {
+  WMKS.VNCDecoder.prototype.onMouseWheel = function(a, b, c, d) {
     if (this._serverInitialized) {
-      var e = [];
+      let e = [];
       e.push8(this.msgVMWClientMessage), e.push8(this.msgVMWPointerEvent2), e.push16(19), e.push8(1), e.push32(a), e.push32(b), e.push32(0), e.push8(d), e.push8(c), this._sendBytes(e)
     }
   };
-  WMKS.VNCDecoder.prototype.onRequestResolution = function (a, b) {
+  WMKS.VNCDecoder.prototype.onRequestResolution = function(a, b) {
     this._serverInitialized && this.useVMWRequestResolution && (a !== this.requestedWidth || b !== this.requestedHeight) && (this.resolutionRequestActive = !0, clearTimeout(this.resolutionTimer), this.resolutionTimer = setTimeout(this.resolutionTimeout, this.resolutionDelay), this.requestedWidth = a, this.requestedHeight = b)
   };
-  WMKS.VNCDecoder.prototype.onRequestTopology = function (a) {
+  WMKS.VNCDecoder.prototype.onRequestTopology = function(a) {
     this._serverInitialized && this.useVMWRequestMultiMon && (WMKS.LOGGER.log("Calling _sendTopologyRequest with arg:" + a), WMKS.LOGGER.log(a), console.log(a), this._sendTopologyRequest(a))
   };
-  WMKS.VNCDecoder.prototype.disconnect = function () {
+  WMKS.VNCDecoder.prototype.disconnect = function() {
     "use strict";
     this._state !== this.DISCONNECTED && (this._state = this.DISCONNECTED, this._mp4Decoder && (this._mp4Decoder.reset(), this._mp4Decoder = null), this._receiveQueueReset(), this.rects = 0, this._receivedFirstUpdate = !1, this._websocket && (this._sendSessionClose(23), this._websocket.onopen = null, this._websocket.onclose = null, this._websocket.onmessage = null, this._websocket.onerror = null, this._websocket.close(), delete this._websocket), this._serverInitialized = !1)
   };
-  WMKS.VNCDecoder.prototype.connect = function (a) {
-    var b = this;
-    this.setRenderCanvas(this.options.canvas), this._mediaPlayer = this.options.mediaPlayer, this.onDecodeComplete = function () {
+  WMKS.VNCDecoder.prototype.connect = function(a) {
+    let b = this;
+    this.setRenderCanvas(this.options.canvas), this._mediaPlayer = this.options.mediaPlayer, this.onDecodeComplete = function() {
       b.rectsDecoded++, b.rectsDecoded === b.rects && b.rectsRead === b.rects && (b._state = b.FBU_DECODING_STATE, b._executeRects())
-    }, this.onDecodeObjectURLComplete = function () {
+    }, this.onDecodeObjectURLComplete = function() {
       URL.revokeObjectURL(this.src), b.onDecodeComplete()
-    }, this.onDecodeMP4Error = function () {
-      var a = b.options.mediaPlayer;
+    }, this.onDecodeMP4Error = function() {
+      let a = b.options.mediaPlayer;
       WMKS.LOGGER.log("Resetting stream request is sent."), b.options.mediaPlayer = null, b._sendClientEncodingsMsg(), b.options.mediaPlayer = a, b._sendClientEncodingsMsg()
-    }, this.msgTimeout = function () {
+    }, this.msgTimeout = function() {
       b._state = b.VNC_ACTIVE_STATE, b._processMessages()
-    }, this.mouseTimeout = function () {
+    }, this.mouseTimeout = function() {
       b._mouseTimer = null, b._mouseActive && (b._sendMouseEvent(), b._mouseTimer = setTimeout(b.mouseTimeout, b.mouseTimeResolution))
-    }, this.resolutionTimeout = function () {
+    }, this.resolutionTimeout = function() {
       b.resolutionRequestActive && (b._sendResolutionRequest(), b.resolutionRequestActive = !1)
-    }, this.options.VCDProxyHandshakeVmxPath ? this._setReadCB(17, this._handleVCDProxyVmxPathMessage) : this._setReadCB(12, this._peekFirstMessage), this._url = a, this._receiveQueueReset(), this.wsOpen = function (a) {
+    }, this.options.VCDProxyHandshakeVmxPath ? this._setReadCB(17, this._handleVCDProxyVmxPathMessage) : this._setReadCB(12, this._peekFirstMessage), this._url = a, this._receiveQueueReset(), this.wsOpen = function(a) {
       b._state = b.VNC_ACTIVE_STATE;
       if (this.protocol !== "binary" && this.protocol !== "vmware-vvc") return this.fail("no agreement on protocol");
       this.protocol === "vmware-vvc" && (b._setupVVC(), WMKS.LOGGER.log("WebSocket is using VMware Virtual Channels"), this.protocol = "binary"), this.protocol === "binary" && (this.binaryType = "arraybuffer", WMKS.LOGGER.log("WebSocket HAS binary support")), b.options.onConnecting(b.vvc, b.vvcSession), WMKS.LOGGER.log("WebSocket created protocol: " + this.protocol)
-    }, this.wsClose = function (a) {
+    }, this.wsClose = function(a) {
       b.options.onDisconnected(a.reason, a.code)
-    }, this.wsMessage = function (a) {
+    }, this.wsMessage = function(a) {
       if (typeof a.data != "string") b._receiveQueue.push(a), b._receiveQueueLength += a.data.byteLength;
       else return b.fail("non-binary message");
       b._processMessages()
-    }, this.wsError = function (a) {
+    }, this.wsError = function(a) {
       b.options.onError(a)
-    }, this.protocolList = ["binary"], this.options.enableVVC && this.protocolList.push("vmware-vvc"), this._setupConnection = function () {
+    }, this.protocolList = ["binary"], this.options.enableVVC && this.protocolList.push("vmware-vvc"), this._setupConnection = function() {
       b._websocket = WMKS.WebSocket(b._url, b.protocolList), b._websocket.onopen = b.wsOpen, b._websocket.onclose = b.wsClose, b._websocket.onmessage = b.wsMessage, b._websocket.onerror = b.wsError
-    }, this._setupVVC = function () {
-      b.vvc = new VVC(), b.vvcSession = b.vvc.openSession(b._websocket), b.vvcSession.onerror = function (a) {
+    }, this._setupVVC = function() {
+      b.vvc = new VVC(), b.vvcSession = b.vvc.openSession(b._websocket), b.vvcSession.onerror = function(a) {
         b.vvcSession.close()
-      }, b.vvcSession.ontransportclose = function (a) {
+      }, b.vvcSession.ontransportclose = function(a) {
         b.wsClose(a)
-      }, b.vvcSession.ontransporterror = function (a) {
+      }, b.vvcSession.ontransporterror = function(a) {
         b.wsError(a)
       };
-      var a = b.vvc.createListener(b.vvcSession, "blast-*");
-      a.onpeeropen = function (a, c) {
-        c.name === "blast-mks" ? (c.onclose = function (c) {
+      let a = b.vvc.createListener(b.vvcSession, "blast-*");
+      a.onpeeropen = function(a, c) {
+        c.name === "blast-mks" ? (c.onclose = function(c) {
           a.close(), b._websocket = null, b.disconnect()
-        }, c.onerror = function (c) {
+        }, c.onerror = function(c) {
           a.close(), b._websocket = null, b.disconnect()
-        }, b._websocket = c, c.onmessage = b.wsMessage, a.acceptChannel(c)) : c.name === "blast-audio" && (c.onclose = function (b) {
+        }, b._websocket = c, c.onmessage = b.wsMessage, a.acceptChannel(c)) : c.name === "blast-audio" && (c.onclose = function(b) {
           a.close()
-        }, c.onerror = function (b) {
+        }, c.onerror = function(b) {
           a.close()
         }, c.onmessage = b.wsMessage, a.acceptChannel(c))
       }
-    }, this._retryConnectionTimeout = function () {
-      b._state === b.DISCONNECTED && (WMKS.LOGGER.log("Connection timeout. Retrying now."), b._websocket && (b._websocket.onclose = function () {
+    }, this._retryConnectionTimeout = function() {
+      b._state === b.DISCONNECTED && (WMKS.LOGGER.log("Connection timeout. Retrying now."), b._websocket && (b._websocket.onclose = function() {
       }, b._websocket.close(), b._websocket = null), b._setupConnection()), b._retryConnectionTimer = null
     }, this.options.enableUint8Utf8 && addUint8Utf8(this), this._setupConnection(), this.options.retryConnectionInterval > 0 && (WMKS.LOGGER.log("Check connection status after " + this.options.retryConnectionInterval + "ms."), this._retryConnectionTimer = setTimeout(this._retryConnectionTimeout, this.options.retryConnectionInterval))
   };
-  WMKS.VNCDecoder.prototype.setRenderCanvas = function (a) {
+  WMKS.VNCDecoder.prototype.setRenderCanvas = function(a) {
     this._canvas[0] = a, this._canvas[0].ctx = a.getContext("2d");
     if (!this._canvas[0].ctx.createImageData) throw "no canvas imagedata support"
   };
@@ -8643,7 +8647,7 @@ export function WmksLib($) {
      */
 
     this._extractKeyCodeFromEvent = function(e) {
-      var keyCode = 0, isUnicode = false;
+      let keyCode = 0, isUnicode = false;
 
       if (e.keyCode) {
         keyCode = e.keyCode;
@@ -8718,7 +8722,7 @@ export function WmksLib($) {
      */
 
     this.onKeyDown = function(e) {
-      var keyCodeRes,
+      let keyCodeRes,
         keyCode = 0,
         isUnicode = false,
         self = this;
@@ -8820,7 +8824,7 @@ export function WmksLib($) {
      */
 
     this._handleControlKeys = function(keyCode) {
-      // var isCapsOn = this._vncDecoder._keyboardLEDs & 4;
+      // let isCapsOn = this._vncDecoder._keyboardLEDs & 4;
       // WMKS.LOGGER.log('Led: ' + led + ', Caps: ' + isCapsOn);
 
       /*
@@ -8856,10 +8860,10 @@ export function WmksLib($) {
      */
 
     this._syncModifiers = function(e) {
-      var thisMod, thisVal, i, idx;
+      let thisMod, thisVal, i, idx;
       // This must be in the order of WMKS.CONST.KB.Modifiers
-      var vals = [e.shiftKey, e.ctrlKey, e.altKey, e.metaKey, false];
-      // var names = ['shift', 'ctrl', 'alt', 'meta']; // used with logging.
+      let vals = [e.shiftKey, e.ctrlKey, e.altKey, e.metaKey, false];
+      // let names = ['shift', 'ctrl', 'alt', 'meta']; // used with logging.
 
       // Do check for AltGr and set ctrl and alt if set
       if (e.altGraphKey === true) {
@@ -8936,7 +8940,7 @@ export function WmksLib($) {
      */
 
     this.cancelModifiers = function(applyToSoftKB) {
-      var i;
+      let i;
       /*
        * On blur events invoke cancelModifiers for desktop browsers. This is not
        * desired in case of softKB (touch devices, as we constantly change focus
@@ -8993,7 +8997,7 @@ export function WmksLib($) {
      */
 
     this.onKeyPress = function(e) {
-      var keyCode,
+      let keyCode,
         isRaw = false,
         shiftMismatch = false,
         noShiftMismatch = false,
@@ -9123,7 +9127,7 @@ export function WmksLib($) {
      */
 
     this.onKeyUp = function(e) {
-      var keyCode, keyCodeRes, unicode, raw, isUnicode = false;
+      let keyCode, keyCodeRes, unicode, raw, isUnicode = false;
 
       if (e.preventDefault) {
         e.preventDefault();
@@ -9212,7 +9216,7 @@ export function WmksLib($) {
      *---------------------------------------------------------------------------
      */
     this.onKeyDownSoftKb = function(e) {
-      var keyCode = e.keyCode || e.which;
+      let keyCode = e.keyCode || e.which;
 
       if (keyCode && WMKS.CONST.KB.SoftKBRawKeyCodes.indexOf(keyCode) !== -1) {
         // Non-Unicode but apply modifiers.
@@ -9246,7 +9250,7 @@ export function WmksLib($) {
      */
 
     this.onKeyPressSoftKb = function(e) {
-      var keyCode = e.keyCode || e.which;
+      let keyCode = e.keyCode || e.which;
       if (WMKS.BROWSER.isAndroid() && WMKS.BROWSER.isChrome()) {
         // Android on Chrome, special case, ignore it.
         return true;
@@ -9289,7 +9293,7 @@ export function WmksLib($) {
 
     this.onInputTextSoftKb = function(e) {
       // We have received speech-to-text input or something.
-      var input = $(e.target),
+      let input = $(e.target),
         val = input.val(),
         defaultInputSize = WMKS.CONST.KB.keyInputDefaultValue.length;
 
@@ -9350,7 +9354,7 @@ export function WmksLib($) {
      */
 
     this.processInputString = function(str, processNewline) {
-      var i, key;
+      let i, key;
       for (i = 0; i < str.length; i++) {
         if (processNewline && str.charAt(i) === '\n') {
           // Found a newline, handle this differently by sending the enter key.
@@ -9396,7 +9400,7 @@ export function WmksLib($) {
      */
 
     this.handleSoftKb = function(key, isUnicode) {
-      var implicitShift, shiftSentAlready;
+      let implicitShift, shiftSentAlready;
 
       /*
        * In case of unicode, determine if the shift key is implicit.
@@ -9514,7 +9518,7 @@ export function WmksLib($) {
      */
 
     this._sendVScanCode = function(key, isUp, isUnicode) {
-      var vScanCode = null;
+      let vScanCode = null;
       if (isUnicode || key === 13) {
         vScanCode = this.UnicodeToVScanMap[key];
       }
@@ -9766,14 +9770,14 @@ export function WmksLib($) {
     jsScanCode: 0,
     vScanCode: 0
   };
-  WMKS.keyboardUtils.keyDownUpInfo = function (a) {
-    var b = a || window.event,
+  WMKS.keyboardUtils.keyDownUpInfo = function(a) {
+    let b = a || window.event,
       c = this._keyInfoTemplate;
     if (b.type === "keydown" || b.type === "keyup") c.jsScanCode = b.keyCode, c.vScanCode = this._jsToVScanTable[c.jsScanCode], WMKS.BROWSER.isIE() && WMKS.BROWSER.version.major <= 10 && c.jsScanCode == 13 && (c.vScanCode = 28);
     return c
   };
-  WMKS.keyboardUtils.keyPressInfo = function (a) {
-    var b = a || window.event,
+  WMKS.keyboardUtils.keyPressInfo = function(a) {
+    let b = a || window.event,
       c = 0;
     if (b.type === "keypress") {
       c = b.which;
@@ -10097,10 +10101,10 @@ export function WmksLib($) {
     92: 123,
     0: 125
   };
-  WMKS.keyboardMapper = function (a) {
+  WMKS.keyboardMapper = function(a) {
     return a.vncDecoder ? (this._vncDecoder = a.vncDecoder, this._keysDownVScan = [], this._keysDownUnicode = [], this.VSCAN_CAPS_LOCK_KEY = 58, this.VSCAN_CMD_KEY = 347, this._typematicKeyVScan = 0, this._typematicDelayTimer = null, this) : null
   };
-  WMKS.keyboardMapper.prototype.doKeyVScan = function (a, b) {
+  WMKS.keyboardMapper.prototype.doKeyVScan = function(a, b) {
     if (!this._vncDecoder.useVMWKeyEvent) return;
     if (a === this.VSCAN_CAPS_LOCK_KEY && navigator.platform.indexOf("Mac") !== -1) {
       this._vncDecoder.onKeyVScan(a, 1), this._vncDecoder.onKeyVScan(a, 0);
@@ -10109,45 +10113,45 @@ export function WmksLib($) {
     if (b) this._keysDownVScan.indexOf(a) <= -1 && this._keysDownVScan.push(a), this.beginTypematic(a);
     else {
       this.cancelTypematic(a);
-      var c = this._keysDownVScan.indexOf(a);
+      let c = this._keysDownVScan.indexOf(a);
       c >= 0 && this._keysDownVScan.splice(c, 1)
     }
     this._vncDecoder.onKeyVScan(a, b)
   };
-  WMKS.keyboardMapper.prototype.doKeyUnicode = function (a, b) {
+  WMKS.keyboardMapper.prototype.doKeyUnicode = function(a, b) {
     if (!this._vncDecoder.useVMWKeyEvent) return;
     if (b) this._keysDownUnicode.push(a);
     else {
-      var c = this._keysDownUnicode.indexOf(a);
+      let c = this._keysDownUnicode.indexOf(a);
       c >= 0 && this._keysDownUnicode.splice(c, 1)
     }
-    var d = this._tableUnicodeToVScan[a];
+    let d = this._tableUnicodeToVScan[a];
     d && (b ? this.beginTypematic(d & 511) : this.cancelTypematic(d & 511), this._vncDecoder.onKeyVScan(d & 511, b))
   };
-  WMKS.keyboardMapper.prototype.doReleaseAll = function () {
-    var a;
+  WMKS.keyboardMapper.prototype.doReleaseAll = function() {
+    let a;
     for (a = 0; a < this._keysDownUnicode.length; a++) this.doKeyUnicode(this._keysDownUnicode[a], 0);
     this._keysDownUnicode.length > 0 && console.log("Warning: Could not release all Unicode keys.");
     for (a = 0; a < this._keysDownVScan.length; a++) this.cancelTypematic(this._keysDownVScan[a]), this._vncDecoder.onKeyVScan(this._keysDownVScan[a], 0);
     this._keysDownVScan = []
   };
-  WMKS.keyboardMapper.prototype.beginTypematic = function (a) {
+  WMKS.keyboardMapper.prototype.beginTypematic = function(a) {
     if (this._keysDownVScan.indexOf(this.VSCAN_CMD_KEY) >= 0) return;
     this.cancelTypematicDelay(), this.cancelTypematicPeriod(), this._vncDecoder.typematicState === 1 && this.startTypematicDelay(a)
   };
-  WMKS.keyboardMapper.prototype.cancelTypematic = function (a) {
+  WMKS.keyboardMapper.prototype.cancelTypematic = function(a) {
     this._typematicKeyVScan === a && (this.cancelTypematicDelay(), this.cancelTypematicPeriod())
   };
-  WMKS.keyboardMapper.prototype.cancelTypematicDelay = function () {
+  WMKS.keyboardMapper.prototype.cancelTypematicDelay = function() {
     this._typematicDelayTimer !== null && clearTimeout(this._typematicDelayTimer), this._typematicDelayTimer = null
   };
-  WMKS.keyboardMapper.prototype.cancelTypematicPeriod = function () {
+  WMKS.keyboardMapper.prototype.cancelTypematicPeriod = function() {
     this._typematicPeriodTimer !== null && clearInterval(this._typematicPeriodTimer), this._typematicPeriodTimer = null
   };
-  WMKS.keyboardMapper.prototype.startTypematicDelay = function (a) {
-    var b = this;
-    this._typematicKeyVScan = a, this._typematicDelayTimer = setTimeout(function () {
-      b._typematicPeriodTimer = setInterval(function () {
+  WMKS.keyboardMapper.prototype.startTypematicDelay = function(a) {
+    let b = this;
+    this._typematicKeyVScan = a, this._typematicDelayTimer = setTimeout(function() {
+      b._typematicPeriodTimer = setInterval(function() {
         b._vncDecoder.onKeyVScan(b._typematicKeyVScan, 1)
       }, b._vncDecoder.typematicPeriod / 1e3)
     }, this._vncDecoder.typematicDelay / 1e3)
@@ -10303,7 +10307,7 @@ export function WmksLib($) {
       return null;
     }
 
-    var _widget = options.widgetProto,
+    let _widget = options.widgetProto,
       _keyboardManager = options.keyboardManager,
       _KEYBOARD = {
         visible: false,             // Internal flag to identify keyboard state.
@@ -10393,7 +10397,7 @@ export function WmksLib($) {
     this._initDragEventAndSendFeedback = function(firstTouch) {
       if (_TAP_STATE.opType === WMKS.CONST.TOUCH.OP.drag) {
         // Send the left mousedown at the touch location & send drag feedback
-        var pos = this._applyZoomCorrectionToTouchXY(firstTouch);
+        let pos = this._applyZoomCorrectionToTouchXY(firstTouch);
         _widget.sendMouseButtonMessage(pos, true, WMKS.CONST.CLICK.left);
         // Show drag icon above implying the drag is ready to use.
         this._showFeedback(_ELEMENTS.dragFeedback, firstTouch);
@@ -10450,7 +10454,7 @@ export function WmksLib($) {
      */
 
     this._sendScrollEventMessage = function(touch) {
-      var dx = 0, dy = 0, deltaX, deltaY, wheelDeltas, firstPos;
+      let dx = 0, dy = 0, deltaX, deltaY, wheelDeltas, firstPos;
       if (_TAP_STATE.opType === WMKS.CONST.TOUCH.OP.scroll) {
         deltaX = touch.clientX - _TAP_STATE.currentTouch.clientX;
         deltaY = touch.clientY - _TAP_STATE.currentTouch.clientY;
@@ -10489,7 +10493,7 @@ export function WmksLib($) {
      */
 
     this._calculateMouseWheelDeltas = function(deltaX, deltaY) {
-      var dx = 0,
+      let dx = 0,
         dy = 0,
         absDeltaX = Math.abs(deltaX),
         absDeltaY = Math.abs(deltaY),
@@ -10543,7 +10547,7 @@ export function WmksLib($) {
      */
 
     this._updatePreScrollState = function(touch) {
-      var deltaY = touch.clientY - _TAP_STATE.currentTouch.clientY;
+      let deltaY = touch.clientY - _TAP_STATE.currentTouch.clientY;
       _TAP_STATE.scrollCount++;
       if (deltaY < 0) {
         _TAP_STATE.skipScrollCount--;
@@ -10566,7 +10570,7 @@ export function WmksLib($) {
     this._sendResidualScrollEventMessage = function() {
       // Detech if there is a leftover scroll event to be sent.
       if (_TAP_STATE.skipScrollCount !== 0 && _TAP_STATE.currentTouch) {
-        var pos, sendScroll;
+        let pos, sendScroll;
 
         // Server pays attention only to the sign of the scroll direction.
         sendScroll = (_TAP_STATE.skipScrollCount < 0) ? -1 : 1;
@@ -10603,7 +10607,7 @@ export function WmksLib($) {
      */
 
     this._isDoubleTap = function(event, now) {
-      var dist, duration;
+      let dist, duration;
       // Check if this is the second tap and there is a time delay from the first.
       if (_TAP_STATE.currentTouch === null || _TAP_STATE.tapStartTime === null
         || _TAP_STATE.opType !== WMKS.CONST.TOUCH.OP.none) {
@@ -10665,7 +10669,7 @@ export function WmksLib($) {
      */
 
     this._onTouchStart = function(e) {
-      var pos, timeGap, self = this, now = $.now();
+      let pos, timeGap, self = this, now = $.now();
 
       // WMKS.LOGGER.debug('Start#: ' + e.targetTouches.length);
       // Unless two fingers are involved (native scrolling) prevent default
@@ -10787,7 +10791,7 @@ export function WmksLib($) {
      */
 
     this._onTouchMove = function(e) {
-      var dist, pos;
+      let dist, pos;
 
       // Reset the drag timer if there is one.
       if (_dragTimer !== null) {
@@ -10909,7 +10913,7 @@ export function WmksLib($) {
            * The difference in angle can tell us if the 2 finger swipes
            * are closer (scroll) to each other or farther away(zoom/pinch).
            */
-          var angle = WMKS.UTIL.TOUCH.touchAngleBwLines(
+          let angle = WMKS.UTIL.TOUCH.touchAngleBwLines(
             _TAP_STATE.touchArray[0], e.targetTouches[0],
             _TAP_STATE.touchArray[1], e.targetTouches[1]);
           angle = Math.abs(angle);
@@ -10972,7 +10976,7 @@ export function WmksLib($) {
      */
 
     this._onTouchEnd = function(e) {
-      var pos, touches;
+      let pos, touches;
 
       // Reset the drag timer if there is one.
       if (_dragTimer !== null) {
@@ -11085,7 +11089,7 @@ export function WmksLib($) {
 
     this._sendTwoTouchEvent = function(firstTouch, secondTouch, button) {
       // Send modifier keys as well if any to support inputs like 'ctrl click'
-      var pos = this._applyZoomCorrectionToTouchXY(firstTouch);
+      let pos = this._applyZoomCorrectionToTouchXY(firstTouch);
       _widget.sendMouseButtonMessage(pos, true, button);
 
       /*
@@ -11152,7 +11156,7 @@ export function WmksLib($) {
      */
 
     this.widgetRepositionOnRotation = function(widget) {
-      var w, h, size, screenW, screenH, hasPositionChanged = false;
+      let w, h, size, screenW, screenH, hasPositionChanged = false;
 
       if (!WMKS.BROWSER.isTouchDevice()) {
         WMKS.LOGGER.warn('Widget reposition ignored, this is not a touch device.');
@@ -11205,7 +11209,7 @@ export function WmksLib($) {
      */
 
     this._repositionFloatingElementsOnRotation = function(e) {
-      var self = this,
+      let self = this,
         canvasOffset = _canvas.offset();
       // Move them inside the canvas region if they are outside.
       this.widgetRepositionOnRotation(_ELEMENTS.inputProxy);
@@ -11244,7 +11248,7 @@ export function WmksLib($) {
      */
 
     this._onOrientationChange = function(e) {
-      var self = this;
+      let self = this;
 
       if (this._isInputInFocus()) {
         // Listen to resize event.
@@ -11307,7 +11311,7 @@ export function WmksLib($) {
      */
 
     this._showFeedback = function(feedback,touch, inputArgs) {
-      var multiplier, padLeft, padTop, args = inputArgs || {};
+      let multiplier, padLeft, padTop, args = inputArgs || {};
       if (!touch || !feedback) {
         WMKS.LOGGER.trace('No touch value / feedback object, skip feedback.');
         return;
@@ -11410,7 +11414,7 @@ export function WmksLib($) {
      */
 
     this.onCaretPositionChanged = function(pos) {
-      var offsetX, offsetY;
+      let offsetX, offsetY;
 
       if (_ELEMENTS.inputProxy) {
         offsetX = pos.x;
@@ -11653,7 +11657,7 @@ export function WmksLib($) {
      */
 
     this.installTouchHandlers = function() {
-      var self = this,
+      let self = this,
         container = _canvas.parent();
 
       if (!WMKS.BROWSER.isTouchDevice()) {
@@ -11802,7 +11806,7 @@ export function WmksLib($) {
      */
 
     this.initSoftKeyboard = function() {
-      var self = this,
+      let self = this,
         kbHandler = _keyboardManager;
 
       /*
@@ -11819,7 +11823,7 @@ export function WmksLib($) {
        * borders. To hide the caret, we use 0px font-size and disable any of
        * the default selectable behavior for copy-paste, etc.
        */
-      var inputDiv = $('<input type="text"/>')
+      let inputDiv = $('<input type="text"/>')
         .val(WMKS.CONST.KB.keyInputDefaultValue)
         .attr({
           'id':                   'input-proxy',
@@ -12045,13 +12049,13 @@ export function WmksLib($) {
     keyboardLayoutId: "en-US",
     sendRelativeMouseEvent: !1
   };
-  WMKS.widgetProto._updatePixelRatio = function () {
+  WMKS.widgetProto._updatePixelRatio = function() {
     this.options.useNativePixels ? this._pixelRatio = window.devicePixelRatio || 1 : this._pixelRatio = 1
   };
-  WMKS.widgetProto._updateMobileFeature = function (a, b) {
+  WMKS.widgetProto._updateMobileFeature = function(a, b) {
     a ? this._touchHandler.initializeMobileFeature(b) : this._touchHandler.removeMobileFeature(b)
   };
-  WMKS.widgetProto._setOption = function (a, b) {
+  WMKS.widgetProto._setOption = function(a, b) {
     $.Widget.prototype._setOption.apply(this, arguments);
     switch (a) {
       case "fitToParent":
@@ -12100,22 +12104,22 @@ export function WmksLib($) {
         this._vncDecoder.options.sendRelativeMouseEvent = b
     }
   };
-  WMKS.widgetProto.getCanvasPosition = function (a, b) {
-    var c, d, e, f;
+  WMKS.widgetProto.getCanvasPosition = function(a, b) {
+    let c, d, e, f;
     if (isNaN(a) || isNaN(b)) return {
       x: 0,
       y: 0
     };
     c = this._canvas.offset(), d = this._pixelRatio / this._scale;
-    var g = Math.ceil((a - c.left) * d),
+    let g = Math.ceil((a - c.left) * d),
       h = Math.ceil((b - c.top) * d);
     return this.options.useNativePixels ? (e = Math.ceil(this._canvas.width() * d) - 1, f = Math.ceil(this._canvas.height() * d) - 1) : (e = Math.ceil(this._canvas.width()) - 1, f = Math.ceil(this._canvas.height()) - 1), g = Math.min(g, e), h = Math.min(h, f), g = Math.max(g, 0), h = Math.max(h, 0), {
       x: g,
       y: h
     }
   };
-  WMKS.widgetProto.getRelativeMouseCanvasPosition = function (a) {
-    var b, c, d, e = a.x,
+  WMKS.widgetProto.getRelativeMouseCanvasPosition = function(a) {
+    let b, c, d, e = a.x,
       f = a.y;
     if (isNaN(e) || isNaN(f)) return {
       x: 0,
@@ -12123,74 +12127,74 @@ export function WmksLib($) {
     };
     b = this._canvas.offset(), c = this._canvas.parent()
       .offset(), d = this._scale / this._pixelRatio;
-    var g = Math.ceil(e * d + b.left),
+    let g = Math.ceil(e * d + b.left),
       h = Math.ceil(f * d + b.top);
     return {
       x: g,
       y: h
     }
   };
-  WMKS.widgetProto.getEventPosition = function (a) {
-    var b, c;
+  WMKS.widgetProto.getEventPosition = function(a) {
+    let b, c;
     if (a.pageX || a.pageY) b = a.pageX, c = a.pageY;
     else if (a.clientX || a.clientY) b = a.clientX + document.body.scrollLeft + document.documentElement.scrollLeft, c = a.clientY + document.body.scrollTop + document.documentElement.scrollTop;
     return this.getCanvasPosition(b, c)
   };
-  WMKS.widgetProto._isCanvasMouseEvent = function (a) {
-    var b = a || window.event,
+  WMKS.widgetProto._isCanvasMouseEvent = function(a) {
+    let b = a || window.event,
       c = b.target || b.srcElement;
     return this._mouseDownBMask !== 0 ? !0 : c === this._canvas[0] || this._video && c === this._video[0] || c === $("#relativePadSurface")
   };
-  WMKS.widgetProto._onMouseButton = function (a, b) {
+  WMKS.widgetProto._onMouseButton = function(a, b) {
     if (this._vncDecoder && this._isCanvasMouseEvent(a)) {
-      var c = a || window.event,
+      let c = a || window.event,
         d = this.getEventPosition(c),
         e;
       return c.which ? WMKS.BROWSER.isMacOS() && WMKS.BROWSER.isGecko() && c.ctrlKey && c.button === 2 ? (WMKS.LOGGER.trace("FF on OSX: Rewrite Ctrl+Right-click as Ctrl+Left-click."), e = 1) : e = 1 << c.button : e = (c.button & 1) << 0 | (c.button & 2) << 1 | (c.button & 4) >> 1, this.sendMouseButtonMessage(d, b, e)
     }
   };
-  WMKS.widgetProto.sendMouseButtonMessage = function (a, b, c) {
+  WMKS.widgetProto.sendMouseButtonMessage = function(a, b, c) {
     return this._vncDecoder && (b ? this._mouseDownBMask |= c : this._mouseDownBMask &= ~c, (this._mousePosGuest.x !== a.x || this._mousePosGuest.y !== a.y) && this.sendMouseMoveMessage(a), this._vncDecoder.onMouseButton(a.x, a.y, b, c)), !0
   };
-  WMKS.widgetProto._onMouseWheel = function (a) {
+  WMKS.widgetProto._onMouseWheel = function(a) {
     if (this._vncDecoder && this._isCanvasMouseEvent(a)) {
-      var b = a || window.event,
+      let b = a || window.event,
         c = this.getEventPosition(b),
         d = Math.max(Math.min(a.wheelDeltaX, 1), -1),
         e = Math.max(Math.min(a.wheelDeltaY, 1), -1);
       return this.options.reverseScrollY && (e *= -1), this.sendScrollMessage(c, d, e), a.stopPropagation(), a.preventDefault(), !1
     }
   };
-  WMKS.widgetProto.sendScrollMessage = function (a, b, c) {
+  WMKS.widgetProto.sendScrollMessage = function(a, b, c) {
     this._vncDecoder && this._vncDecoder.onMouseWheel(a.x, a.y, b, c)
   };
-  WMKS.widgetProto._onMouseMove = function (a) {
+  WMKS.widgetProto._onMouseMove = function(a) {
     if (this._vncDecoder && this._isCanvasMouseEvent(a)) {
-      var b = a || window.event,
+      let b = a || window.event,
         c = this.getEventPosition(b);
       this.sendMouseMoveMessage(c)
     }
     return !0
   };
-  WMKS.widgetProto.sendMouseMoveMessage = function (a) {
+  WMKS.widgetProto.sendMouseMoveMessage = function(a) {
     this._vncDecoder && (this._vncDecoder.onMouseMove(a.x, a.y), this._mousePosGuest = a, this._touchHandler && this._touchHandler.onCaretPositionChanged(a))
   };
-  WMKS.widgetProto._onBlur = function (a) {
+  WMKS.widgetProto._onBlur = function(a) {
     return this.connected && (this._keyboardManager.cancelModifiers(), this._vncDecoder.onMouseButton(this._mousePosGuest.x, this._mousePosGuest.y, 0, this._mouseDownBMask), this._mouseDownBMask = 0), !0
   };
-  WMKS.widgetProto._onPaste = function (a) {
-    var b = a.originalEvent,
+  WMKS.widgetProto._onPaste = function(a) {
+    let b = a.originalEvent,
       c = this;
     if (b && b.clipboardData) {
-      var d = b.clipboardData.items;
+      let d = b.clipboardData.items;
       if (d)
-        for (var e = 0; e < d.length; e++) d[e].kind === "string" && d[e].type === "text/plain" && d[e].getAsString(function (a) {
+        for (var e = 0; e < d.length; e++) d[e].kind === "string" && d[e].type === "text/plain" && d[e].getAsString(function(a) {
           c._keyboardManager.processInputString(a)
         })
     }
     return !0
   };
-  WMKS.widgetProto.disconnectEvents = function () {
+  WMKS.widgetProto.disconnectEvents = function() {
     this.element.unbind("contextmenu.wmks")
       .unbind("keydown.wmks")
       .unbind("keypress.wmks")
@@ -12201,98 +12205,98 @@ export function WmksLib($) {
       .unbind("blur.wmks"), $(window)
       .unbind("blur.wmks"), this._touchHandler && this._touchHandler.disconnectEvents()
   };
-  WMKS.widgetProto.connectEvents = function () {
-    var a = this;
-    this.element.bind("blur.wmks", function (b) {
+  WMKS.widgetProto.connectEvents = function() {
+    let a = this;
+    this.element.bind("blur.wmks", function(b) {
       return a._onBlur(b)
-    }), this.element.bind("contextmenu.wmks", function (a) {
+    }), this.element.bind("contextmenu.wmks", function(a) {
       return !1
     })
-      .bind("keydown.wmks", function (b) {
+      .bind("keydown.wmks", function(b) {
         return a.updateUserActivity(), a._keyboardManager.onKeyDown(b)
       })
-      .bind("keypress.wmks", function (b) {
+      .bind("keypress.wmks", function(b) {
         return a._keyboardManager.onKeyPress(b)
       })
-      .bind("keyup.wmks", function (b) {
+      .bind("keyup.wmks", function(b) {
         return a.updateUserActivity(), a._keyboardManager.onKeyUp(b)
       }), $(window)
-      .bind("blur.wmks", function (b) {
+      .bind("blur.wmks", function(b) {
         return a._onBlur(b)
       })
-      .bind("mousemove.wmks", function (b) {
+      .bind("mousemove.wmks", function(b) {
         a.updateUserActivity();
         if (a.options.sendRelativeMouseEvent) return;
         return a._onMouseMove(b)
       })
-      .bind("mousewheel.wmks", function (b) {
+      .bind("mousewheel.wmks", function(b) {
         a.updateUserActivity();
         if (a.options.sendRelativeMouseEvent) return;
         return a._onMouseWheel(b)
       })
-      .bind("mouseup.wmks", function (b) {
+      .bind("mouseup.wmks", function(b) {
         a.updateUserActivity();
         if (a.options.sendRelativeMouseEvent) return;
         return a._onMouseButton(b, 0)
       })
-      .bind("mousedown.wmks", function (b) {
+      .bind("mousedown.wmks", function(b) {
         a.updateUserActivity();
         if (a.options.sendRelativeMouseEvent) return;
         return a._onMouseButton(b, 1)
       }), this._touchHandler && this._touchHandler.installTouchHandlers(), this._relativeMouseHandler && this._relativeMouseHandler.installMouseHandlers()
   };
-  WMKS.widgetProto.maxFitWidth = function () {
+  WMKS.widgetProto.maxFitWidth = function() {
     return this.element[0].scrollWidth * this._pixelRatio
   };
-  WMKS.widgetProto.maxFitHeight = function () {
+  WMKS.widgetProto.maxFitHeight = function() {
     return this.element[0].scrollHeight * this._pixelRatio
   };
-  WMKS.widgetProto.hideKeyboard = function (a?) {
+  WMKS.widgetProto.hideKeyboard = function(a?) {
     a = a || {}, a.show = !1, this.toggleKeyboard(a)
   };
-  WMKS.widgetProto.showKeyboard = function (a?) {
+  WMKS.widgetProto.showKeyboard = function(a?) {
     a = a || {}, a.show = !0, this.toggleKeyboard(a)
   };
-  WMKS.widgetProto.toggleKeyboard = function (a) {
+  WMKS.widgetProto.toggleKeyboard = function(a) {
     this.options.allowMobileKeyboardInput && this._touchHandler && this._touchHandler.toggleKeyboard(a)
   };
-  WMKS.widgetProto.toggleTrackpad = function (a) {
+  WMKS.widgetProto.toggleTrackpad = function(a) {
     this.options.allowMobileTrackpad && this._touchHandler && this._touchHandler.toggleTrackpad(a)
   };
-  WMKS.widgetProto.toggleRelativePad = function (a) {
+  WMKS.widgetProto.toggleRelativePad = function(a) {
     this._relativeMouseHandler && this._relativeMouseHandler.toggleRelativePad(a)
   };
-  WMKS.widgetProto.toggleExtendedKeypad = function (a) {
+  WMKS.widgetProto.toggleExtendedKeypad = function(a) {
     this.options.allowMobileExtendedKeypad && this._touchHandler && this._touchHandler.toggleExtendedKeypad(a)
   };
-  WMKS.widgetProto.sendInputString = function (a) {
+  WMKS.widgetProto.sendInputString = function(a) {
     this._keyboardManager.processInputString(a, !0)
   };
-  WMKS.widgetProto.sendKeyCodes = function (a) {
-    var b, c = [];
+  WMKS.widgetProto.sendKeyCodes = function(a) {
+    let b, c = [];
     for (b = 0; b < a.length; b++) {
-      var d = a[b];
+      let d = a[b];
       d > 0 ? (this._keyboardManager.sendKey(d, !1, !1), (d !== 20 || WMKS.BROWSER.isMacOS()) && c.push(d)) : d < 0 && this._keyboardManager.sendKey(0 - d, !0, !0)
     }
     for (b = c.length - 1; b >= 0; b--) this._keyboardManager.sendKey(c[b], !0, !1)
   };
-  WMKS.widgetProto.rescale = function () {
+  WMKS.widgetProto.rescale = function() {
     this.rescaleOrResize(!0)
   };
-  WMKS.widgetProto.updateFitGuestSize = function (a) {
-    var b = this.element.width() * this._pixelRatio,
+  WMKS.widgetProto.updateFitGuestSize = function(a) {
+    let b = this.element.width() * this._pixelRatio,
       c = this.element.height() * this._pixelRatio;
     if (!this.options.fitGuest || a && this._guestWidth === b && this._guestWidth === c) return;
     this._vncDecoder.onRequestResolution(b, c)
   };
-  WMKS.widgetProto.updateTopology = function (a) {
-    var b;
+  WMKS.widgetProto.updateTopology = function(a) {
+    let b;
     if (!this.options.fitGuest) return;
     for (b = 0; b < a.length; b++) a[b].left = a[b].left * this._pixelRatio, a[b].top = a[b].top * this._pixelRatio, a[b].requestedWidth = a[b].requestedWidth * this._pixelRatio, a[b].requestedHeight = a[b].requestedHeight * this._pixelRatio;
     this._vncDecoder.onRequestTopology(a)
   };
-  WMKS.widgetProto.rescaleOrResize = function (a) {
-    var b = 1,
+  WMKS.widgetProto.rescaleOrResize = function(a) {
+    let b = 1,
       c = 0,
       d = 0,
       e = this.element.width(),
@@ -12301,11 +12305,11 @@ export function WmksLib($) {
       width: this._guestWidth / this._pixelRatio,
       height: this._guestHeight / this._pixelRatio
     });
-    var g = this._canvas.width(),
+    let g = this._canvas.width(),
       h = this._canvas.height();
     if (this.transform === null || !!this.options.fitToParent || !!this.options.fitGuest)
       if (this.transform !== null && this.options.fitToParent) {
-        var i = e / g,
+        let i = e / g,
           j = f / h;
         c = (e - g) / 2, d = (f - h) / 2, b = Math.max(.1, Math.min(i, j))
       } else this.options.fitGuest && a ? this.updateFitGuestSize(!0) : this.transform === null && WMKS.LOGGER.warn("No scaling support");
@@ -12317,19 +12321,19 @@ export function WmksLib($) {
       })
     }
   };
-  WMKS.widgetProto.setVCDProxyHandshakeVmxPath = function (a) {
+  WMKS.widgetProto.setVCDProxyHandshakeVmxPath = function(a) {
     this.options.VCDProxyHandshakeVmxPath = a, this._vncDecoder && this._vncDecoder.options && (this._vncDecoder.options.VCDProxyHandshakeVmxPath = a)
   };
-  WMKS.widgetProto.disconnect = function () {
+  WMKS.widgetProto.disconnect = function() {
     this._vncDecoder.disconnect(), this.disconnectEvents(), this._keyboardManager.cancelModifiers()
   };
-  WMKS.widgetProto.connect = function (a) {
+  WMKS.widgetProto.connect = function(a) {
     this.disconnect(), this._vncDecoder.connect(a), this.connectEvents()
   };
-  WMKS.widgetProto.destroy = function () {
+  WMKS.widgetProto.destroy = function() {
     this.disconnect(), this.element.removeClass("wmks"), this._touchHandler.destroy(), this._touchHandler = null, this._relativeMouseHandler.destroy(), this._relativeMouseHandler = null, this._canvas.remove(), this._video && this._video.remove(), this._backCanvas && this._backCanvas.remove(), this._blitTempCanvas && this._blitTempCanvas.remove(), $.Widget.prototype.destroy.call(this)
   };
-  WMKS.widgetProto.requestElementReposition = function (a, b) {
+  WMKS.widgetProto.requestElementReposition = function(a, b) {
     if (this._touchHandler) {
       if (b) {
         this._touchHandler.addToRepositionQueue(a);
@@ -12338,11 +12342,11 @@ export function WmksLib($) {
       this._touchHandler.widgetRepositionOnRotation(a)
     }
   };
-  WMKS.widgetProto.updateUserActivity = function () {
+  WMKS.widgetProto.updateUserActivity = function() {
     this._trigger("useractivity", 0, $.now())
   };
-  WMKS.widgetProto._create = function () {
-    var a = this;
+  WMKS.widgetProto._create = function() {
+    let a = this;
     this._mouseDownBMask = 0, this._mousePosGuest = {
       x: 0,
       y: 0
@@ -12352,7 +12356,7 @@ export function WmksLib($) {
         tabindex: 1
       }), this._backCanvas = WMKS.UTIL.createCanvas(!0), this._blitTempCanvas = WMKS.UTIL.createCanvas(!0), this.element.addClass("wmks")
       .append(this._canvas), this.options.enableMP4 && (this._video = WMKS.UTIL.createVideo(!0), this.element.append(this._video));
-    var b = function (b) {
+    let b = function(b) {
       return typeof a._canvas[0].style[b] != "undefined" ? b : null
     };
     this.transform = b("transform") || b("WebkitTransform") || b("MozTransform") || b("msTransform") || b("OTransform"), this._vncDecoder = new WMKS.VNCDecoder({
@@ -12375,36 +12379,36 @@ export function WmksLib($) {
       enableRawH264: this.options.enableRawH264,
       enableTopologyChange: this.options.enableTopologyChange,
       enableH264Multimon: this.options.enableH264Multimon,
-      onConnecting: function (b, c) {
+      onConnecting: function(b, c) {
         a._trigger("connecting", 0, {
           vvc: b,
           vvcSession: c
         })
       },
-      onConnected: function () {
+      onConnected: function() {
         a.connected = !0, a._trigger("connected"), a._keyboardManager.clearState(), a.rescaleOrResize(!0)
       },
-      onBeforeDisconnected: function (b) {
+      onBeforeDisconnected: function(b) {
         a._trigger("beforedisconnected", 0, b)
       },
-      onDisconnected: function (b, c) {
+      onDisconnected: function(b, c) {
         a.connected = !1, a._trigger("disconnected", 0, {
           reason: b,
           code: c
         })
       },
-      onAuthenticationFailed: function () {
+      onAuthenticationFailed: function() {
         a._trigger("authenticationFailed")
       },
-      onError: function (b) {
+      onError: function(b) {
         a._trigger("error", 0, b)
       },
-      onProtocolError: function () {
+      onProtocolError: function() {
         a._trigger("protocolError")
       },
-      onNewDesktopSize: function (b, c) {
+      onNewDesktopSize: function(b, c) {
         a._guestWidth = b, a._guestHeight = c;
-        var d: any = {
+        let d: any = {
             width: b,
             height: c
           },
@@ -12418,35 +12422,35 @@ export function WmksLib($) {
           .css(e), a._video && a._video.attr(d)
           .css(e), a._trigger("resolutionchanged", null, d), a.rescaleOrResize(!1)
       },
-      onEncodingChanged: function (b) {
+      onEncodingChanged: function(b) {
         b === "TightPNG" && !a.isCanvasActive ? (WMKS.LOGGER.info("Activate canvas element since we use TightPNG encoding."), a.isCanvasActive = !0, a._video && a._video.hide(), a._canvas.show()) : b === "MP4" && a.isCanvasActive ? (WMKS.LOGGER.info("Activate video element since we use MP4 encoding."), a._video ? (a.isCanvasActive = !1, a._canvas.hide(), a._video.show()) : WMKS.LOGGER.error("Video element doesn't exist.")) : b === "RawH264" && a.isCanvasActive && WMKS.LOGGER.info("Activate video element since we use raw H264 encoding.")
       },
-      onKeyboardLEDsChanged: function (b) {
+      onKeyboardLEDsChanged: function(b) {
         a._trigger("keyboardLEDsChanged", 0, b)
       },
-      onCursorStateChanged: function (b) {
+      onCursorStateChanged: function(b) {
         a._touchHandler && a._touchHandler.setCursorVisibility(b)
       },
-      onHeartbeat: function (b) {
+      onHeartbeat: function(b) {
         a._trigger("heartbeat", 0, b)
       },
-      onUpdateCopyPasteUI: function (b, c) {
-        var d = {
+      onUpdateCopyPasteUI: function(b, c) {
+        let d = {
           noCopyUI: b,
           noPasteUI: c
         };
         a._trigger("updateCopyPasteUI", 0, d)
       },
-      onCopy: function (b) {
+      onCopy: function(b) {
         return typeof b != "string" ? (WMKS.LOGGER.debug("data format is not string, ignore."), !1) : (a._trigger("copy", 0, b), !0)
       },
-      onSetReconnectToken: function (b) {
+      onSetReconnectToken: function(b) {
         a._trigger("reconnecttoken", 0, b)
       },
-      onAudio: function (b) {
+      onAudio: function(b) {
         a._trigger("audio", 0, [b])
       },
-      onAudioMixer: function (b) {
+      onAudioMixer: function(b) {
         a._trigger("audiomixer", 0, b)
       }
     }), this._keyboardManager = new WMKS.KeyboardManager({
@@ -12460,14 +12464,14 @@ export function WmksLib($) {
       widgetProto: this,
       canvas: this._canvas,
       keyboardManager: this._keyboardManager,
-      onToggle: function (b) {
+      onToggle: function(b) {
         a._trigger("toggle", 0, b)
       }
     }), this._relativeMouseHandler = new WMKS.RelativeMouseHandler({
       widgetProto: this,
       canvas: this._canvas,
       keyboardManager: this._keyboardManager,
-      onToggle: function (b) {
+      onToggle: function(b) {
         a._trigger("toggle", 0, b), a._setOption("sendRelativeMouseEvent", b[1]), a._relativeMouseHandler.setCursorVisibility(b[1])
       }
     }), this._updatePixelRatio(), this.updateFitGuestSize(), this._relativeMouseHandler.initializeRelativeMouseFeature(), this._updateMobileFeature(this.options.allowMobileKeyboardInput, WMKS.CONST.TOUCH.FEATURE.SoftKeyboard), this._updateMobileFeature(this.options.allowMobileTrackpad, WMKS.CONST.TOUCH.FEATURE.Trackpad), this._updateMobileFeature(this.options.allowMobileExtendedKeypad, WMKS.CONST.TOUCH.FEATURE.ExtendedKeypad)
@@ -12503,7 +12507,7 @@ export function WmksLib($) {
 
       // Set values of a set of options.
       WMKS.dialogManager.prototype.setOptions = function(options) {
-        var key;
+        let key;
 
         for (key in options) {
           this.setOption(key, options[key]);
@@ -12548,7 +12552,7 @@ export function WmksLib($) {
 
       // Destroy the dialog.
       WMKS.dialogManager.prototype.remove = function() {
-        var dialog = this.dialog;
+        let dialog = this.dialog;
 
         if (!!dialog) {
           // Destroy the dialog and remove it from DOM.
@@ -12561,7 +12565,7 @@ export function WmksLib($) {
       // Show / hide the dialog. If the options comes with a launcher element
       // then upon open / close, send an event to the launcher element.
       WMKS.dialogManager.prototype.toggle = function(options) {
-        var dialog = this.dialog,
+        let dialog = this.dialog,
           show = !this.visible,
           isOpen;
 
@@ -12715,7 +12719,7 @@ export function WmksLib($) {
       let self = this,
         ctrlPaneHolder = this.dialog,
         keyInputHandler = function(e) {
-          var key = parseInt($(this).attr('abkeycode'), 10);
+          let key = parseInt($(this).attr('abkeycode'), 10);
           self._kbManager.handleSoftKb(key, false);
           return false;
         };
@@ -12945,7 +12949,7 @@ export function WmksLib($) {
     };
 
     // Helper function to adjust the functional key pad CSS based on the position
-    WMKS.extendedKeypad.prototype.adjustFunctionKeyStyle = function (isAbove) {
+    WMKS.extendedKeypad.prototype.adjustFunctionKeyStyle = function(isAbove) {
       let fnKeys = $('#fnKeyPad');
       let keyGroup = fnKeys.find('.key-group');
       if (isAbove) {
@@ -13479,7 +13483,7 @@ export function WmksLib($) {
   /**
    * A useful class for reading and writing binary data to and from a Uint8Array
    */
-  WMKS.Packet = function (buffer, length, byteOrder) {
+  WMKS.Packet = function(buffer, length, byteOrder) {
     /**
      * The length of the packet.
      * @type {Number}
@@ -13534,12 +13538,12 @@ export function WmksLib($) {
     NETWORK_ORDER: 2
   };
 
-  WMKS.Packet.createNewPacket = function (size, byteOrder) {
+  WMKS.Packet.createNewPacket = function(size, byteOrder) {
     size = size || 512;
     return new WMKS.Packet(new Uint8Array(size), 0, byteOrder);
   };
 
-  WMKS.Packet.createFromBuffer = function (buffer, byteOrder) {
+  WMKS.Packet.createFromBuffer = function(buffer, byteOrder) {
     if (buffer instanceof ArrayBuffer) {
       buffer = new Uint8Array(buffer);
     } else if (!(buffer instanceof Uint8Array)) {
@@ -13549,78 +13553,78 @@ export function WmksLib($) {
     return new WMKS.Packet(buffer, buffer.length, byteOrder);
   };
 
-  WMKS.Packet.createNewPacketBE = function (size) {
+  WMKS.Packet.createNewPacketBE = function(size) {
     return WMKS.Packet.createNewPacket(size, WMKS.Packet.BYTE_ORDER.BIG_ENDIAN);
   };
 
-  WMKS.Packet.createNewPacketLE = function (size) {
+  WMKS.Packet.createNewPacketLE = function(size) {
     return WMKS.Packet.createNewPacket(size, WMKS.Packet.BYTE_ORDER.LITTLE_ENDIAN);
   };
 
-  WMKS.Packet.createFromBufferBE = function (buffer) {
+  WMKS.Packet.createFromBufferBE = function(buffer) {
     return WMKS.Packet.createFromBuffer(buffer, WMKS.Packet.BYTE_ORDER.BIG_ENDIAN);
 
   };
 
-  WMKS.Packet.createFromBufferLE = function (buffer) {
+  WMKS.Packet.createFromBufferLE = function(buffer) {
     return WMKS.Packet.createFromBuffer(buffer, WMKS.Packet.BYTE_ORDER.LITTLE_ENDIAN);
   };
 
-  WMKS.Packet.prototype.reset = function () {
+  WMKS.Packet.prototype.reset = function() {
     this.length = 0;
     this._readPosition = 0;
   };
 
-  WMKS.Packet.prototype.getData = function () {
+  WMKS.Packet.prototype.getData = function() {
     return this._buffer.subarray(0, this.length);
   };
 
-  WMKS.Packet.prototype.bytesRemaining = function () {
+  WMKS.Packet.prototype.bytesRemaining = function() {
     return this.length - this._readPosition;
   };
 
-  WMKS.Packet.prototype.getDataAsArrayBuffer = function () {
+  WMKS.Packet.prototype.getDataAsArrayBuffer = function() {
     return this._buffer.buffer.slice(this._buffer.byteOffset, this._buffer.byteOffset + this.length);
   };
 
-  WMKS.Packet.prototype.writeUint8 = function (value) {
+  WMKS.Packet.prototype.writeUint8 = function(value) {
     this._ensureWriteableBytes(1);
     this.setUint8(this.length, value);
     this.length += 1;
   };
 
-  WMKS.Packet.prototype.writeUint16 = function (value) {
+  WMKS.Packet.prototype.writeUint16 = function(value) {
     this._ensureWriteableBytes(2);
     this.setUint16(this.length, value);
     this.length += 2;
   };
 
-  WMKS.Packet.prototype.writeUint32 = function (value) {
+  WMKS.Packet.prototype.writeUint32 = function(value) {
     this._ensureWriteableBytes(4);
     this.setUint32(this.length, value);
     this.length += 4;
   };
 
-  WMKS.Packet.prototype.writeInt8 = function (value) {
+  WMKS.Packet.prototype.writeInt8 = function(value) {
     this._ensureWriteableBytes(1);
     this.setInt8(this.length, value);
     this.length += 1;
   };
 
-  WMKS.Packet.prototype.writeInt16 = function (value) {
+  WMKS.Packet.prototype.writeInt16 = function(value) {
     this._ensureWriteableBytes(2);
     this.setInt16(this.length, value);
     this.length += 2;
   };
 
-  WMKS.Packet.prototype.writeInt32 = function (value) {
+  WMKS.Packet.prototype.writeInt32 = function(value) {
     this._ensureWriteableBytes(4);
     this.setInt32(this.length, value);
     this.length += 4;
   };
 
-  WMKS.Packet.prototype.writeStringASCII = function (value) {
-    var i;
+  WMKS.Packet.prototype.writeStringASCII = function(value) {
+    let i;
     this._ensureWriteableBytes(value.length);
 
     for (i = 0; i < value.length; ++i) {
@@ -13628,7 +13632,7 @@ export function WmksLib($) {
     }
   };
 
-  WMKS.Packet.prototype.writeArray = function (value) {
+  WMKS.Packet.prototype.writeArray = function(value) {
     if (value && value.length) {
       this._ensureWriteableBytes(value.length);
       this._buffer.set(value, this.length);
@@ -13636,7 +13640,7 @@ export function WmksLib($) {
     }
   };
 
-  WMKS.Packet.prototype.readUint8 = function () {
+  WMKS.Packet.prototype.readUint8 = function() {
     let value;
 
     if (this._checkReadableBytes(1)) {
@@ -13647,7 +13651,7 @@ export function WmksLib($) {
     return value;
   };
 
-  WMKS.Packet.prototype.readUint16 = function () {
+  WMKS.Packet.prototype.readUint16 = function() {
     let value;
 
     if (this._checkReadableBytes(2)) {
@@ -13658,7 +13662,7 @@ export function WmksLib($) {
     return value;
   };
 
-  WMKS.Packet.prototype.readUint32 = function () {
+  WMKS.Packet.prototype.readUint32 = function() {
     let value;
 
     if (this._checkReadableBytes(4)) {
@@ -13669,7 +13673,7 @@ export function WmksLib($) {
     return value;
   };
 
-  WMKS.Packet.prototype.readInt8 = function () {
+  WMKS.Packet.prototype.readInt8 = function() {
     let value;
 
     if (this._checkReadableBytes(1)) {
@@ -13680,7 +13684,7 @@ export function WmksLib($) {
     return value;
   };
 
-  WMKS.Packet.prototype.readInt16 = function () {
+  WMKS.Packet.prototype.readInt16 = function() {
     let value;
 
     if (this._checkReadableBytes(2)) {
@@ -13691,7 +13695,7 @@ export function WmksLib($) {
     return value;
   };
 
-  WMKS.Packet.prototype.readInt32 = function () {
+  WMKS.Packet.prototype.readInt32 = function() {
     let value;
 
     if (this._checkReadableBytes(4)) {
@@ -13702,7 +13706,7 @@ export function WmksLib($) {
     return value;
   };
 
-  WMKS.Packet.prototype.readArray = function (length) {
+  WMKS.Packet.prototype.readArray = function(length) {
     let value;
 
     if (this._checkReadableBytes(length)) {
@@ -13717,7 +13721,7 @@ export function WmksLib($) {
     return value;
   };
 
-  WMKS.Packet.prototype.readStringASCII = function (length) {
+  WMKS.Packet.prototype.readStringASCII = function(length) {
     let value = this.readArray(length);
 
     if (value) {
@@ -13727,59 +13731,59 @@ export function WmksLib($) {
     return value;
   };
 
-  WMKS.Packet.prototype.setUint8 = function (position, value) {
+  WMKS.Packet.prototype.setUint8 = function(position, value) {
     this._buffer[position] = value & 0xff;
   };
 
-  WMKS.Packet.prototype.setUint16be = function (position, value) {
+  WMKS.Packet.prototype.setUint16be = function(position, value) {
     this._buffer[position + 1] = value & 0xff;
     this._buffer[position + 0] = (value >> 8) & 0xff;
   };
 
-  WMKS.Packet.prototype.setUint32be = function (position, value) {
+  WMKS.Packet.prototype.setUint32be = function(position, value) {
     this._buffer[position + 3] = value & 0xff;
     this._buffer[position + 2] = (value >> 8) & 0xff;
     this._buffer[position + 1] = (value >> 16) & 0xff;
     this._buffer[position + 0] = (value >> 24) & 0xff;
   };
 
-  WMKS.Packet.prototype.setUint16le = function (position, value) {
+  WMKS.Packet.prototype.setUint16le = function(position, value) {
     this._buffer[position + 0] = value & 0xff;
     this._buffer[position + 1] = (value >> 8) & 0xff;
   };
 
-  WMKS.Packet.prototype.setUint32le = function (position, value) {
+  WMKS.Packet.prototype.setUint32le = function(position, value) {
     this._buffer[position + 0] = value & 0xff;
     this._buffer[position + 1] = (value >> 8) & 0xff;
     this._buffer[position + 2] = (value >> 16) & 0xff;
     this._buffer[position + 3] = (value >> 24) & 0xff;
   };
 
-  WMKS.Packet.prototype.setInt8 = function (position, value) {
+  WMKS.Packet.prototype.setInt8 = function(position, value) {
     return this.setUint8(position, value);
   };
 
-  WMKS.Packet.prototype.setInt16be = function (position, value) {
+  WMKS.Packet.prototype.setInt16be = function(position, value) {
     return this.setUint16be(position, value);
   };
 
-  WMKS.Packet.prototype.setInt32be = function (position, value) {
+  WMKS.Packet.prototype.setInt32be = function(position, value) {
     return this.setUint32be(position, value);
   };
 
-  WMKS.Packet.prototype.setInt16le = function (position, value) {
+  WMKS.Packet.prototype.setInt16le = function(position, value) {
     return this.setUint16le(position, value);
   };
 
-  WMKS.Packet.prototype.setInt32le = function (position, value) {
+  WMKS.Packet.prototype.setInt32le = function(position, value) {
     return this.setUint32le(position, value);
   };
 
-  WMKS.Packet.prototype.getArray = function (start, length) {
+  WMKS.Packet.prototype.getArray = function(start, length) {
     return this._buffer.subarray(start, start + length);
   };
 
-  WMKS.Packet.prototype.getInt8 = function (position) {
+  WMKS.Packet.prototype.getInt8 = function(position) {
     let value = this._buffer[position];
 
     if (value & 0x80) {
@@ -13789,7 +13793,7 @@ export function WmksLib($) {
     return value;
   };
 
-  WMKS.Packet.prototype.getInt16be = function (position) {
+  WMKS.Packet.prototype.getInt16be = function(position) {
     let value;
     value  = this._buffer[position + 1];
     value |= this._buffer[position + 0] << 8;
@@ -13801,8 +13805,8 @@ export function WmksLib($) {
     return value;
   };
 
-  WMKS.Packet.prototype.getInt32be = function (position) {
-    var value;
+  WMKS.Packet.prototype.getInt32be = function(position) {
+    let value;
     value  = this._buffer[position + 3];
     value |= this._buffer[position + 2] << 8;
     value |= this._buffer[position + 1] << 16;
@@ -13810,7 +13814,7 @@ export function WmksLib($) {
     return value;
   };
 
-  WMKS.Packet.prototype.getInt16le = function (position) {
+  WMKS.Packet.prototype.getInt16le = function(position) {
     let value;
     value  = this._buffer[position + 0];
     value |= this._buffer[position + 1] << 8;
@@ -13822,7 +13826,7 @@ export function WmksLib($) {
     return value;
   };
 
-  WMKS.Packet.prototype.getInt32le = function (position) {
+  WMKS.Packet.prototype.getInt32le = function(position) {
     let value;
     value  = this._buffer[position + 0];
     value |= this._buffer[position + 1] << 8;
@@ -13831,19 +13835,19 @@ export function WmksLib($) {
     return value;
   };
 
-  WMKS.Packet.prototype.getUint8 = function (position) {
+  WMKS.Packet.prototype.getUint8 = function(position) {
     let value = this._buffer[position];
     return value;
   };
 
-  WMKS.Packet.prototype.getUint16be = function (position) {
+  WMKS.Packet.prototype.getUint16be = function(position) {
     let value;
     value  = this._buffer[position + 1];
     value |= this._buffer[position + 0] << 8;
     return value;
   };
 
-  WMKS.Packet.prototype.getUint32be = function (position) {
+  WMKS.Packet.prototype.getUint32be = function(position) {
     let value;
     value  = this._buffer[position + 3];
     value |= this._buffer[position + 2] << 8;
@@ -13857,14 +13861,14 @@ export function WmksLib($) {
     return value;
   };
 
-  WMKS.Packet.prototype.getUint16le = function (position) {
+  WMKS.Packet.prototype.getUint16le = function(position) {
     let value;
     value  = this._buffer[position + 0];
     value |= this._buffer[position + 1] << 8;
     return value;
   };
 
-  WMKS.Packet.prototype.getUint32le = function (position) {
+  WMKS.Packet.prototype.getUint32le = function(position) {
     let value;
     value  = this._buffer[position + 0];
     value |= this._buffer[position + 1] << 8;
@@ -13878,18 +13882,18 @@ export function WmksLib($) {
     return value;
   };
 
-  WMKS.Packet.prototype._resizeBuffer = function (size) {
+  WMKS.Packet.prototype._resizeBuffer = function(size) {
     if (size > 0) {
-      var buffer = new Uint8Array(size);
+      let buffer = new Uint8Array(size);
       buffer.set(this._buffer);
       this._buffer = buffer;
     }
   };
 
-  WMKS.Packet.prototype._ensureWriteableBytes = function (length) {
+  WMKS.Packet.prototype._ensureWriteableBytes = function(length) {
     if (length > 0) {
-      var reqLength = this.length + length;
-      var newLength = this._buffer.length;
+      let reqLength = this.length + length;
+      let newLength = this._buffer.length;
 
       while (newLength < reqLength) {
         newLength = Math.floor(newLength * 1.5);
@@ -13901,7 +13905,7 @@ export function WmksLib($) {
     }
   };
 
-  WMKS.Packet.prototype._checkReadableBytes = function (length) {
+  WMKS.Packet.prototype._checkReadableBytes = function(length) {
     return this._readPosition + length <= this.length;
   };
 
@@ -13951,7 +13955,7 @@ export function WmksLib($) {
     OPEN_TIMEOUT: 9
   };
 
-  VVC.prototype.openSession = function (socket) {
+  VVC.prototype.openSession = function(socket) {
     let session;
 
     session = new VVCSession(this);
@@ -13961,7 +13965,7 @@ export function WmksLib($) {
     return session;
   };
 
-  VVC.prototype.closeSession = function (session) {
+  VVC.prototype.closeSession = function(session) {
     let index;
 
     if (!(session instanceof VVCSession)) {
@@ -13990,7 +13994,7 @@ export function WmksLib($) {
     return true;
   };
 
-  VVC.prototype.createListener = function (session, name) {
+  VVC.prototype.createListener = function(session, name) {
     let listener;
     let sessionListeners;
     let i;
@@ -14031,7 +14035,7 @@ export function WmksLib($) {
     return listener;
   };
 
-  VVC.prototype.closeListener = function (listener) {
+  VVC.prototype.closeListener = function(listener) {
     let index = this._listeners.indexOf(listener);
 
     if (!(listener instanceof VVCListener)) {
@@ -14061,7 +14065,7 @@ export function WmksLib($) {
     return true;
   };
 
-  VVC.prototype._findListenerByName = function (name) {
+  VVC.prototype._findListenerByName = function(name) {
     let listener;
     let i;
 
@@ -14076,7 +14080,7 @@ export function WmksLib($) {
     return null;
   };
 
-  VVC.prototype._findSessionListeners = function (session) {
+  VVC.prototype._findSessionListeners = function(session) {
     let listener;
     let i;
     let sessionListeners = [];
@@ -14103,11 +14107,11 @@ export function WmksLib($) {
     return this;
   };
 
-  VVC.prototype.getLastError = function () {
+  VVC.prototype.getLastError = function() {
     return this._lastError
   };
 
-  VVC.prototype.setLastError = function (status, where, msg) {
+  VVC.prototype.setLastError = function(status, where, msg) {
     this._lastError = VVCError(status, where, msg);
 
     if (status !== VVC.STATUS.SUCCESS) {
@@ -14118,7 +14122,7 @@ export function WmksLib($) {
   /**
    * Represents a VVC channel which exposes a websocket-like API.
    */
-  let VVCChannel: any = function (session, id, name, priority, flags, timeout) {
+  let VVCChannel: any = function(session, id, name, priority, flags, timeout) {
     this.id = id;
     this.name = name;
     this.priority = priority || 0;
@@ -14146,18 +14150,18 @@ export function WmksLib($) {
     CLOSED: 6
   };
 
-  VVCChannel.prototype.send = function (data) {
+  VVCChannel.prototype.send = function(data) {
     return this._session.send(this, data)
   };
 
-  VVCChannel.prototype.close = function () {
+  VVCChannel.prototype.close = function() {
     return this._session.closeChannel(this)
   };
 
   /**
    * The control channel created and owned by a VVCSession.
    */
-  let VVCControlChannel: any  = function (channel) {
+  let VVCControlChannel: any  = function(channel) {
     VVCChannel.call(this, channel, VVC.CONTROL_CHANNEL_ID, VVC.CONTROL_CHANNEL_NAME, 0, 0, 0);
 
     this.state = VVC.CHANNEL_STATE.OPEN;
@@ -14234,7 +14238,7 @@ export function WmksLib($) {
   VVC.CTRL_OP.NAME[VVC.CTRL_OP.RTT] = "VVC.CTRL_OP.RTT";
   VVC.CTRL_OP.NAME[VVC.CTRL_OP.RTT_ACK] = "VVC.CTRL_OP.RTT_ACK";
 
-  VVCControlChannel.prototype.sendInit = function (code) {
+  VVCControlChannel.prototype.sendInit = function(code) {
     let b;
     let c;
     let packet;
@@ -14282,12 +14286,12 @@ export function WmksLib($) {
     return this._sendControlPacket(packet)
   };
 
-  VVCControlChannel.prototype.sendRtt = function () {
+  VVCControlChannel.prototype.sendRtt = function() {
     this._rttSendTimeMS = Date.now();
     return this._sendControlPacket(this._createControlPacket(VVC.CTRL_OP.RTT))
   };
 
-  VVCControlChannel.prototype.sendRecvAck = function (bytes) {
+  VVCControlChannel.prototype.sendRecvAck = function(bytes) {
     let packet;
 
     while (bytes > 0xffff) {
@@ -14304,7 +14308,7 @@ export function WmksLib($) {
     return true;
   };
 
-  VVCControlChannel.prototype.sendOpenChannel = function (channel, initialData) {
+  VVCControlChannel.prototype.sendOpenChannel = function(channel, initialData) {
     let packet;
     let initialDataLen = 0;
 
@@ -14340,7 +14344,7 @@ export function WmksLib($) {
     return this._sendControlPacket(packet);
   };
 
-  VVCControlChannel.prototype.sendOpenChannelAck = function (channel, status, initialData) {
+  VVCControlChannel.prototype.sendOpenChannelAck = function(channel, status, initialData) {
     let packet = this._createControlPacket(VVC.CTRL_OP.OPEN_CHAN_ACK);
     packet.writeUint32(channel.id);
     packet.writeUint32(status);
@@ -14355,21 +14359,21 @@ export function WmksLib($) {
     return this._sendControlPacket(packet);
   };
 
-  VVCControlChannel.prototype.sendCloseChannel = function (channel, reason) {
+  VVCControlChannel.prototype.sendCloseChannel = function(channel, reason) {
     let packet = this._createControlPacket(VVC.CTRL_OP.CLOSE_CHAN);
     packet.writeUint32(channel.id);
     packet.writeUint32(reason);
     return this._sendControlPacket(packet);
   };
 
-  VVCControlChannel.prototype.sendCloseChannelAck = function (channel, status) {
+  VVCControlChannel.prototype.sendCloseChannelAck = function(channel, status) {
     let packet = this._createControlPacket(VVC.CTRL_OP.CLOSE_CHAN_ACK);
     packet.writeUint32(channel.id);
     packet.writeUint32(status);
     return this._sendControlPacket(packet);
   };
 
-  VVCControlChannel.prototype.onmessage = function (evt) {
+  VVCControlChannel.prototype.onmessage = function(evt) {
     let packet = WMKS.Packet.createFromBuffer(evt.data);
     let opcode = packet.readUint8();
     let flags  = packet.readUint8();
@@ -14411,7 +14415,7 @@ export function WmksLib($) {
     return true;
   };
 
-  VVCControlChannel.prototype._onRtt = function (packet) {
+  VVCControlChannel.prototype._onRtt = function(packet) {
     let ack;
 
     if (!this._checkErrorMinimumSize(VVC.CTRL_OP.RTT, packet)) {
@@ -14422,7 +14426,7 @@ export function WmksLib($) {
     return this._sendControlPacket(ack);
   };
 
-  VVCControlChannel.prototype._onRttAck = function (packet) {
+  VVCControlChannel.prototype._onRttAck = function(packet) {
     if (!this._checkErrorMinimumSize(VVC.CTRL_OP.RTT_ACK, packet)) {
       return false;
     }
@@ -14431,7 +14435,7 @@ export function WmksLib($) {
     return true;
   };
 
-  VVCControlChannel.prototype._onRecvAck = function (packet, bytesReceived) {
+  VVCControlChannel.prototype._onRecvAck = function(packet, bytesReceived) {
     if (!this._checkErrorMinimumSize(VVC.CTRL_OP.RECV_ACK, packet)) {
       return false;
     }
@@ -14439,14 +14443,14 @@ export function WmksLib($) {
     return true;
   };
 
-  VVCControlChannel.prototype._isVersionSupported = function (major, minor) {
+  VVCControlChannel.prototype._isVersionSupported = function(major, minor) {
     if (VVC.MAJOR_VER == major && VVC.MINOR_VER == minor) return !0;
     for (let c = 0; c < VVC.SUPPORTED_VER.length; ++c)
       if (VVC.SUPPORTED_VER[c].MAJOR == major && VVC.SUPPORTED_VER[c].MINOR == minor) return true;
     return false;
   };
 
-  VVCControlChannel.prototype._onInit = function (packet, opcode) {
+  VVCControlChannel.prototype._onInit = function(packet, opcode) {
     let major;
     let minor;
     let caps1;
@@ -14461,6 +14465,8 @@ export function WmksLib($) {
     caps1 = packet.readUint32();
     caps2 = packet.readUint32();
 
+    let j, k, l, m, n, o, p, q, r;
+
     if (major >= 2) {
 
       if (!this._checkErrorRemainingSize(opcode, packet, 4)) return false;
@@ -14469,7 +14475,6 @@ export function WmksLib($) {
       if (!this._checkErrorRemainingSize(opcode, packet, i)) return false;
 
       while (packet.bytesRemaining() >= 8) {
-        var j, k, l, m, n, o, p, q, r;
         j = packet.readUint16();
         k = packet.readUint16();
         l = packet.readUint32();
@@ -14530,7 +14535,7 @@ export function WmksLib($) {
     return true;
   };
 
-  VVCControlChannel.prototype._onOpenChannel = function (packet) {
+  VVCControlChannel.prototype._onOpenChannel = function(packet) {
     if (!this._checkErrorMinimumSize(VVC.CTRL_OP.OPEN_CHAN, packet)) {
       return false;
     }
@@ -14561,7 +14566,7 @@ export function WmksLib($) {
     return true;
   };
 
-  VVCControlChannel.prototype._onOpenChannelAck = function (packet) {
+  VVCControlChannel.prototype._onOpenChannelAck = function(packet) {
     let id;
     let status;
     let initialDataLen;
@@ -14589,7 +14594,7 @@ export function WmksLib($) {
     return true;
   };
 
-  VVCControlChannel.prototype._onCloseChannel = function (packet) {
+  VVCControlChannel.prototype._onCloseChannel = function(packet) {
     let id;
     let reason;
 
@@ -14608,7 +14613,7 @@ export function WmksLib($) {
     return true;
   };
 
-  VVCControlChannel.prototype._onCloseChannelAck = function (packet) {
+  VVCControlChannel.prototype._onCloseChannelAck = function(packet) {
     let id;
     let status;
 
@@ -14627,7 +14632,7 @@ export function WmksLib($) {
     return true;
   };
 
-  VVCControlChannel.prototype._checkErrorMinimumSize = function (opcode, packet, extraSize) {
+  VVCControlChannel.prototype._checkErrorMinimumSize = function(opcode, packet, extraSize) {
     let packetSize = packet.length - 4;
     let expectSize = VVC.CTRL_OP.SIZE[opcode];
     extraSize = extraSize || 0;
@@ -14647,7 +14652,7 @@ export function WmksLib($) {
     return true;
   };
 
-  VVCControlChannel.prototype._checkErrorRemainingSize = function (opcode, packet, c) {
+  VVCControlChannel.prototype._checkErrorRemainingSize = function(opcode, packet, c) {
     let bytesRemaining = packet.bytesRemaining();
 
     if (bytesRemaining < c) {
@@ -14660,7 +14665,7 @@ export function WmksLib($) {
     return true
   };
 
-  VVCControlChannel.prototype._checkErrorSessionState = function (opcode, state) {
+  VVCControlChannel.prototype._checkErrorSessionState = function(opcode, state) {
     let opname = VVC.CTRL_OP.NAME[opcode];
 
     if (this._session.state !== state) {
@@ -14676,7 +14681,7 @@ export function WmksLib($) {
     return true;
   };
 
-  VVCControlChannel.prototype._checkErrorValidChannel = function (opcode, id, state) {
+  VVCControlChannel.prototype._checkErrorValidChannel = function(opcode, id, state) {
     let opname  = VVC.CTRL_OP.NAME[opcode];
     let channel = this._session.getChannel(id);
 
@@ -14709,7 +14714,7 @@ export function WmksLib($) {
     return true;
   };
 
-  VVCControlChannel.prototype._createControlPacket = function (code, flags, param) {
+  VVCControlChannel.prototype._createControlPacket = function(code, flags, param) {
     let packet = WMKS.Packet.createNewPacket();
 
     param = param || 0;
@@ -14728,7 +14733,7 @@ export function WmksLib($) {
     return packet;
   };
 
-  VVCControlChannel.prototype._sendControlPacket = function (packet) {
+  VVCControlChannel.prototype._sendControlPacket = function(packet) {
     if (packet.length > VVC.CTRL_HEADER_SIZE) {
       packet.control.flags |= VVC.CTRL_FLAG.ODAT;
       packet.control.param = packet.length - VVC.CTRL_HEADER_SIZE;
@@ -14744,7 +14749,7 @@ export function WmksLib($) {
    * A VVC listener provides callbacks to notifiy the user about events
    * on one or more VVC sessions.
    */
-  let VVCListener: any = function (vvcInstance, session, name) {
+  let VVCListener: any = function(vvcInstance, session, name) {
     this.name = name;
     this.session = session;
     this.state = VVC.LISTENER_STATE.ACTIVE;
@@ -14762,11 +14767,11 @@ export function WmksLib($) {
     CLOSING: 2
   };
 
-  VVCListener.prototype.close = function () {
+  VVCListener.prototype.close = function() {
     return this._vvcInstance.closeListener(this)
   };
 
-  VVCListener.prototype.matchName = function (name) {
+  VVCListener.prototype.matchName = function(name) {
     let wildcard = this.name.indexOf('*');
 
     if (wildcard !== -1) {
@@ -14776,7 +14781,7 @@ export function WmksLib($) {
     return this.name === name;
   };
 
-  let VVCProveChannel: any = function (channel) {
+  let VVCProveChannel: any = function(channel) {
     VVCChannel.call(this, channel, VVC.PROBE_CHANNEL_ID, VVC.PROBE_CHANNEL_NAME, 0, 0, 0);
     this.state = VVC.CHANNEL_STATE.OPEN;
   };
@@ -14788,7 +14793,7 @@ export function WmksLib($) {
   /**
    * A VVC session represents a physical connection to a remote server
    */
-  let VVCSession: any = function (vvcInstance, options?) {
+  let VVCSession: any = function(vvcInstance, options?) {
     let server = false;
 
     if (options) {
@@ -14877,11 +14882,11 @@ export function WmksLib($) {
     LARGE_CHANNEL_ID: 1
   };
 
-  VVCSession.prototype.close = function () {
+  VVCSession.prototype.close = function() {
     return this._vvcInstance.closeSession(this)
   };
 
-  VVCSession.prototype.openChannel = function (name, priority, flags, timeout, initialData) {
+  VVCSession.prototype.openChannel = function(name, priority, flags, timeout, initialData) {
     let channel;
 
     priority    = priority || 0;
@@ -14912,7 +14917,7 @@ export function WmksLib($) {
     return channel;
   };
 
-  VVCSession.prototype.acceptChannel = function (channel, flags, initialData) {
+  VVCSession.prototype.acceptChannel = function(channel, flags, initialData) {
     flags       = flags || 0;
     initialData = initialData || null;
 
@@ -14941,7 +14946,7 @@ export function WmksLib($) {
     return channel;
   };
 
-  VVCSession.prototype.rejectChannel = function (channel, initialData) {
+  VVCSession.prototype.rejectChannel = function(channel, initialData) {
     initialData = initialData || null;
 
     if (!this._checkErrorSessionState('rejectChannel',
@@ -14966,7 +14971,7 @@ export function WmksLib($) {
     return true;
   };
 
-  VVCSession.prototype.closeChannel = function (channel) {
+  VVCSession.prototype.closeChannel = function(channel) {
     if (!this._checkErrorSessionState('closeChannel',
       VVC.SESSION_STATE.ESTABLISHED)) {
       return false;
@@ -14986,7 +14991,7 @@ export function WmksLib($) {
     return true;
   };
 
-  VVCSession.prototype.addRttTime = function (rttMS) {
+  VVCSession.prototype.addRttTime = function(rttMS) {
     this._rttHistory[this._rttHistoryIndex] = rttMS;
     this._rttHistoryIndex++;
 
@@ -14995,7 +15000,7 @@ export function WmksLib($) {
     }
   };
 
-  VVCSession.prototype.attachToWebSocket = function (socket) {
+  VVCSession.prototype.attachToWebSocket = function(socket) {
     let self = this;
 
     if (!(socket instanceof WebSocket)) {
@@ -15038,13 +15043,13 @@ export function WmksLib($) {
     return true;
   };
 
-  VVCSession.prototype._nextChannelId = function () {
-    var id = this._channelIdCtrl;
+  VVCSession.prototype._nextChannelId = function() {
+    let id = this._channelIdCtrl;
     this._channelIdCtrl += 2;
     return id;
   };
 
-  VVCSession.prototype.createChannel = function (id, name, priority, flags, timeout) {
+  VVCSession.prototype.createChannel = function(id, name, priority, flags, timeout) {
     let channel;
 
     priority = priority || 0;
@@ -15057,7 +15062,7 @@ export function WmksLib($) {
     return channel;
   };
 
-  VVCSession.prototype._releaseChannel = function (channel) {
+  VVCSession.prototype._releaseChannel = function(channel) {
     if (channel.state === VVC.CHANNEL_STATE.OPEN) {
       this._vvcInstance.setLastError(VVC.STATUS.PROTOCOL_ERROR,
         'VVCSession._releaseChannel',
@@ -15068,7 +15073,7 @@ export function WmksLib($) {
     delete this._buffers.data[channel.id];
   };
 
-  VVCSession.prototype.getChannel = function (id) {
+  VVCSession.prototype.getChannel = function(id) {
     if (!!this._channels[id]) {
       return this._channels[id];
     }
@@ -15076,7 +15081,7 @@ export function WmksLib($) {
     return null;
   };
 
-  VVCSession.prototype.onSessionError = function (status, where, message) {
+  VVCSession.prototype.onSessionError = function(status, where, message) {
     this.state = VVC.SESSION_STATE.ERROR;
     this._vvcInstance.setLastError(status, where, message);
 
@@ -15085,7 +15090,7 @@ export function WmksLib($) {
     }
   };
 
-  VVCSession.prototype.onSessionClose = function () {
+  VVCSession.prototype.onSessionClose = function() {
     let channel;
     let closeChanReason;
     let i;
@@ -15118,7 +15123,7 @@ export function WmksLib($) {
     }
   };
 
-  VVCSession.prototype.onConnect = function () {
+  VVCSession.prototype.onConnect = function() {
     let i;
     let listener;
     let listeners;
@@ -15135,7 +15140,7 @@ export function WmksLib($) {
     }
   };
 
-  VVCSession.prototype.onPeerOpen = function (channel) {
+  VVCSession.prototype.onPeerOpen = function(channel) {
     let i;
     let listener;
     let listeners;
@@ -15153,7 +15158,7 @@ export function WmksLib($) {
     }
   };
 
-  VVCSession.prototype.onChannelOpen = function (channel, status, initialData) {
+  VVCSession.prototype.onChannelOpen = function(channel, status, initialData) {
     if (status === VVC.OPEN_CHAN_STATUS.SUCCESS) {
       channel.state = VVC.CHANNEL_STATE.OPEN;
       if (channel.onopen) {
@@ -15166,13 +15171,13 @@ export function WmksLib($) {
     }
   };
 
-  VVCSession.prototype.onChannelError = function (channel) {
+  VVCSession.prototype.onChannelError = function(channel) {
     if (channel.onerror) {
       channel.onerror(this._createEvent('error'));
     }
   };
 
-  VVCSession.prototype.onChannelMessage = function (channel, data) {
+  VVCSession.prototype.onChannelMessage = function(channel, data) {
     if (!channel) {
       this.onSessionError(VVC.STATUS.PROTOCOL_ERROR,
         'VVCSession.onChannelMessage',
@@ -15185,7 +15190,7 @@ export function WmksLib($) {
     }
   };
 
-  VVCSession.prototype.onChannelClose = function (channel, reason) {
+  VVCSession.prototype.onChannelClose = function(channel, reason) {
     let code;
 
     if (reason === VVC.CLOSE_CHAN_REASON.NORMAL) {
@@ -15213,19 +15218,19 @@ export function WmksLib($) {
     this._releaseChannel(channel);
   };
 
-  VVCSession.prototype.createProbeChannel = function () {
+  VVCSession.prototype.createProbeChannel = function() {
     this.probeChannel = new VVCProveChannel(this);
     this._channels[this.probeChannel.id] = this.probeChannel;
     this._buffers.data[this.probeChannel.id] = [];
   };
 
-  VVCSession.prototype._createControlChannel = function () {
+  VVCSession.prototype._createControlChannel = function() {
     this.controlChannel = new VVCControlChannel(this);
     this._channels[this.controlChannel.id] = this.controlChannel;
     this._buffers.data[this.controlChannel.id] = [];
   };
 
-  VVCSession.prototype._onTransportOpen = function () {
+  VVCSession.prototype._onTransportOpen = function() {
     this._createControlChannel();
 
     // It is the clients responsibility to send the first control init message
@@ -15234,7 +15239,7 @@ export function WmksLib($) {
     }
   };
 
-  VVCSession.prototype._onTransportClose = function (evt) {
+  VVCSession.prototype._onTransportClose = function(evt) {
     if (this.state === VVC.SESSION_STATE.ESTABLISHED) {
       this.onSessionError(VVC.TRANSPORT_ERROR,
         'VVCSession._onTransportClose',
@@ -15246,7 +15251,7 @@ export function WmksLib($) {
     }
   };
 
-  VVCSession.prototype._onTransportError = function (evt) {
+  VVCSession.prototype._onTransportError = function(evt) {
     this.onSessionError(VVC.TRANSPORT_ERROR,
       'VVCSession._onTransportError',
       'An error occurred in the WebSocket.');
@@ -15256,7 +15261,7 @@ export function WmksLib($) {
     }
   };
 
-  VVCSession.prototype._onTransportException = function (evt) {
+  VVCSession.prototype._onTransportException = function(evt) {
     this.onSessionError(VVC.TRANSPORT_ERROR,
       'VVCSession._onTransportException',
       'An exception occurred in the WebSocket.' + evt.message);
@@ -15266,7 +15271,7 @@ export function WmksLib($) {
     }
   };
 
-  VVCSession.prototype._combineBuffers = function (buffers) {
+  VVCSession.prototype._combineBuffers = function(buffers) {
     let array;
     let buffer;
     let i;
@@ -15294,7 +15299,7 @@ export function WmksLib($) {
     return buffer;
   };
 
-  VVCSession.prototype._setReceiveState = function (state) {
+  VVCSession.prototype._setReceiveState = function(state) {
     this._receiveState = state;
 
     switch(state) {
@@ -15318,7 +15323,7 @@ export function WmksLib($) {
     }
   };
 
-  VVCSession.prototype._onTransportRecv = function (data) {
+  VVCSession.prototype._onTransportRecv = function(data) {
     let buffer;
     let bytesNeeded;
     let bytesRead;
@@ -15414,7 +15419,7 @@ export function WmksLib($) {
     }
   };
 
-  VVCSession.prototype.send = function (channel, data) {
+  VVCSession.prototype.send = function(channel, data) {
     let header;
     let flags;
     let length;
@@ -15462,7 +15467,7 @@ export function WmksLib($) {
     return true;
   };
 
-  VVCSession.prototype._createEvent = function (name, properties) {
+  VVCSession.prototype._createEvent = function(name, properties) {
     let evt = document.createEvent('Event');
     evt.initEvent(name, false, false);
 
@@ -15473,7 +15478,7 @@ export function WmksLib($) {
     return evt;
   };
 
-  VVCSession.prototype._checkErrorIsChannel = function (func, object) {
+  VVCSession.prototype._checkErrorIsChannel = function(func, object) {
     if (!(object instanceof VVCChannel)) {
       this._vvcInstance.setLastError(VVC.STATUS.INVALID_ARGS,
         'VVCSession.' + func,
@@ -15485,7 +15490,7 @@ export function WmksLib($) {
     return true;
   };
 
-  VVCSession.prototype._checkErrorSessionState = function (func, state) {
+  VVCSession.prototype._checkErrorSessionState = function(func, state) {
     if (this.state !== state) {
       this._vvcInstance.setLastError(VVC.STATUS.INVALID_STATE,
         'VVCSession.' + func,
@@ -15497,7 +15502,7 @@ export function WmksLib($) {
     return true;
   };
 
-  VVCSession.prototype._checkErrorChannelState = function (func, channel, state) {
+  VVCSession.prototype._checkErrorChannelState = function(func, channel, state) {
     if (channel.state !== state) {
       this._vvcInstance.setLastError(VVC.STATUS.INVALID_STATE,
         'VVCSession.' + func,
@@ -15509,7 +15514,7 @@ export function WmksLib($) {
     return true;
   };
 
-  VVCSession.prototype._checkErrorNameLength = function (func, name) {
+  VVCSession.prototype._checkErrorNameLength = function(func, name) {
     if (name.length < VVC.MIN_CHANNEL_NAME_LEN ||
       name.length > VVC.MAX_CHANNEL_NAME_LEN) {
       this._vvcInstance.setLastError(VVC.STATUS.INVALID_ARGS,
@@ -15524,7 +15529,7 @@ export function WmksLib($) {
     return true;
   };
 
-  VVCSession.prototype._checkErrorInitialData = function (func, initialData) {
+  VVCSession.prototype._checkErrorInitialData = function(func, initialData) {
     if (initialData && !(initialData instanceof Uint8Array)) {
       this._vvcInstance.setLastError(VVC.STATUS.INVALID_ARGS,
         'VVCSession.' + func,
@@ -15546,10 +15551,10 @@ export function WmksLib($) {
   };
 
   // TODO
-  WMKS.RelativeMouseHandler = function (a) {
+  WMKS.RelativeMouseHandler = function(a) {
     "use strict";
     if (!a || !a.canvas || !a.widgetProto) return WMKS.LOGGER.warn("Invalid params set for RelativeMouseHandler."), null;
-    var b = a.widgetProto,
+    let b = a.widgetProto,
       c = a.canvas,
       d = a.onToggle,
       e = {
@@ -15562,12 +15567,12 @@ export function WmksLib($) {
         keypad: null,
         relativePad: null
       };
-    this.toggleRelativePad = function (a) {
+    this.toggleRelativePad = function(a) {
       e.relativePad && (a = $.extend({}, a, {
         toggleCallback: d
       }), e.relativePad.toggle(a))
-    }, this.installMouseHandlers = function () {
-      var a = this,
+    }, this.installMouseHandlers = function() {
+      let a = this,
         b = c.parent();
       c.css({
         "-webkit-user-select": "none",
@@ -15583,20 +15588,20 @@ export function WmksLib($) {
         .appendTo(b), e.scrollFeedback = $("<div/>")
         .addClass("feedback-container scroll-icon")
         .appendTo(b)
-    }, this.initializeRelativeMouseFeature = function () {
+    }, this.initializeRelativeMouseFeature = function() {
       e.relativePad = new WMKS.relativePadManager(b, c), e.relativePad.initialize()
-    }, this.moveCursor = function (a, b) {
+    }, this.moveCursor = function(a, b) {
       e.cursorIcon && e.cursorIcon.css({
         left: a,
         top: b
       })
-    }, this.setCursorVisibility = function (a) {
+    }, this.setCursorVisibility = function(a) {
       e.cursorIcon && (a ? e.cursorIcon.show() : e.cursorIcon.hide())
-    }, this.destroy = function () {
+    }, this.destroy = function() {
       b = null, c = null, e = null
     }
   };
-  (function () {
+  (function() {
     "use strict";
     WMKS.CONST.RELATIVEPAD = {
       STATE: {
@@ -15607,7 +15612,7 @@ export function WmksLib($) {
       }
     };
 
-    WMKS.relativePadManager = function (a, b) {
+    WMKS.relativePadManager = function(a, b) {
       WMKS.dialogManager.call(this), this._widget = a, this._canvas = b, this.state = WMKS.CONST.RELATIVEPAD.STATE.idle, this.history = [], $.extend(this.options, {
         name: "RELATIVEPAD",
         speedControlMinMovePx: 5,
@@ -15617,12 +15622,12 @@ export function WmksLib($) {
       }), WMKS.LOGGER.warn("relativepad : " + this.options.name)
     };
     WMKS.relativePadManager.prototype = new WMKS.dialogManager;
-    WMKS.relativePadManager.prototype.getTrackpadHtml = function () {
-      var a = '<div id="relativePad" class="relativepad-container">                   <div class="left-border"></div>                   <div id="relativePadSurface" style="height:200px; border:1px solid black;"></div>                   <div class="right-border"></div>                   <div class="bottom-border">                      <div class="button-container">                         <div id="relativepadLeft" class="button-left"></div>                         <div id="relativepadRight" class="button-right"></div>                      </div>                   </div>               </div>';
+    WMKS.relativePadManager.prototype.getTrackpadHtml = function() {
+      let a = '<div id="relativePad" class="relativepad-container">                   <div class="left-border"></div>                   <div id="relativePadSurface" style="height:200px; border:1px solid black;"></div>                   <div class="right-border"></div>                   <div class="bottom-border">                      <div class="button-container">                         <div id="relativepadLeft" class="button-left"></div>                         <div id="relativepadRight" class="button-right"></div>                      </div>                   </div>               </div>';
       return a
     };
-    WMKS.relativePadManager.prototype.create = function () {
-      var a, b = this;
+    WMKS.relativePadManager.prototype.create = function() {
+      let a, b = this;
       return !this._widget || !this._canvas ? (WMKS.LOGGER.debug("Trackpad dialog creation has been aborted. Widget or Canvas is not ready."), null) : (a = $(this.getTrackpadHtml()), a.dialog({
         autoOpen: !1,
         closeOnEscape: !0,
@@ -15635,17 +15640,17 @@ export function WmksLib($) {
         zIndex: 1e3,
         draggable: !0,
         dialogClass: "relativepad-wrapper",
-        close: function (a) {
+        close: function(a) {
           b.sendUpdatedState(!1)
         },
-        create: function (a) {
+        create: function(a) {
           b.layout($(this)
             .parent())
         }
       }), a)
     };
-    WMKS.relativePadManager.prototype.init = function () {
-      var a = this.dialog,
+    WMKS.relativePadManager.prototype.init = function() {
+      let a = this.dialog,
         b = this,
         c, d, e;
       if (!a) {
@@ -15653,21 +15658,21 @@ export function WmksLib($) {
         return
       }
       this._widget.requestElementReposition(a.parent(), !0), c = a.find("#relativePadSurface")
-        .on("mousemove", function (a) {
+        .on("mousemove", function(a) {
           return b.relativepadMouseMove(a.originalEvent)
         })
-        .on("mouseup", function (a) {
+        .on("mouseup", function(a) {
           return b.relativepadMouseClick(a, 0)
         })
-        .on("mousedown", function (a) {
+        .on("mousedown", function(a) {
           return b.relativepadMouseClick(a, 1)
         })
-        .on("contextmenu", function () {
+        .on("contextmenu", function() {
           return !1
         })
     };
-    WMKS.relativePadManager.prototype.disconnect = function () {
-      var a = this.dialog,
+    WMKS.relativePadManager.prototype.disconnect = function() {
+      let a = this.dialog,
         b;
       if (!a) return;
       b = a.find("#relativepadSurface")
@@ -15675,14 +15680,14 @@ export function WmksLib($) {
         .off("mouseup")
         .off("mousedown")
     };
-    WMKS.relativePadManager.prototype.layout = function (a) {
-      var b = this._canvas,
+    WMKS.relativePadManager.prototype.layout = function(a) {
+      let b = this._canvas,
         c, d;
       if (!a || !b) return;
       c = a.parent(), d = b.parent(), c !== d && d.append(a)
     };
-    WMKS.relativePadManager.prototype.relativepadMouseMove = function (a) {
-      var b, c, d, e, f = $(a.target),
+    WMKS.relativePadManager.prototype.relativepadMouseMove = function(a) {
+      let b, c, d, e, f = $(a.target),
         g = this._widget;
       return this.state === WMKS.CONST.RELATIVEPAD.STATE.idle ? !1 : (b = a.pageX, c = a.pageY, c < f.offset()
         .top || c > f.offset()
@@ -15702,21 +15707,21 @@ export function WmksLib($) {
         y: c
       })), !1))
     };
-    WMKS.relativePadManager.prototype.computeNewCursorLocation = function (a, b) {
-      var c, d = {
+    WMKS.relativePadManager.prototype.computeNewCursorLocation = function(a, b) {
+      let c, d = {
         x: 0,
         y: 0
       };
       return c = WMKS.UTIL.getLineLength(a - this.history[2].x, b - this.history[2].y), isNaN(c) || c === 0 ? d : (c < this.options.speedControlMinMovePx ? (d.x = a - this.history[2].x, d.y = b - this.history[2].y) : (c = this.computeMovingDistance(a, b), d.x = Math.floor(c[0]), d.y = Math.floor(c[1])), d)
     };
-    WMKS.relativePadManager.prototype.computeMovingDistance = function (a, b) {
+    WMKS.relativePadManager.prototype.computeMovingDistance = function(a, b) {
       let c, d, e, f;
       return c = this.getTrackpadSpeed(a, this.history[0].x, this.history[1].x, this.history[2].x), d = this.getTrackpadSpeed(b, this.history[0].y, this.history[1].y, this.history[2].y), e = WMKS.UTIL.getLineLength(c, d), f = e * this.options.accelerator, f > this.options.maxSpeed ? f = this.options.maxSpeed : f < this.options.minSpeed && (f = this.options.minSpeed), [c * f, d * f]
     };
-    WMKS.relativePadManager.prototype.getTrackpadSpeed = function (a, b, c, d) {
+    WMKS.relativePadManager.prototype.getTrackpadSpeed = function(a, b, c, d) {
       return a * .3 + b * .1 - c * .1 - d * .3
     };
-    WMKS.relativePadManager.prototype.relativepadMouseClick = function (a, b) {
+    WMKS.relativePadManager.prototype.relativepadMouseClick = function(a, b) {
       if (this.state == WMKS.CONST.RELATIVEPAD.STATE.idle) {
         this.state = WMKS.CONST.RELATIVEPAD.STATE.click;
         return false;
@@ -15732,14 +15737,14 @@ export function WmksLib($) {
 
       return c.which ? c.which == 1 ? e = 1 : c.which == 2 ? e = 4 : c.which == 3 && (e = 2) : c.button == 0 ? e = 1 : c.button == 1 ? e = 4 : c.button == 2 && (e = 2), this._widget.sendMouseButtonMessage(d, b, e), this.resetRelativepadState(), !1
     };
-    WMKS.relativePadManager.prototype.resetRelativepadState = function () {
+    WMKS.relativePadManager.prototype.resetRelativepadState = function() {
       this.history.length = 0
     };
   }());
 
   $.widget("wmks.wmks", WMKS.widgetProto);
 
-  (function () {
+  (function() {
 
     /**
      * This file expanded the original WMKS.CONST, all constants used in
@@ -17061,7 +17066,7 @@ export function WmksLib($) {
        * then still use the super class's _create() method for instantiation.
        */
 
-      _create: function () {
+      _create: function() {
 
         if (this.options.changeResolution) {
           this.options.fitGuest = true;
@@ -17089,9 +17094,9 @@ export function WmksLib($) {
        * jQuery-UI initialisation function, called by $.widget
        * Here initialize the attribute transformOrigin in cross browser environment.
        */
-      _init: function () {
+      _init: function() {
         let self = this;
-        let checkProperty = function (prop) {
+        let checkProperty = function(prop) {
           return typeof self._canvas[0].style[prop] !== 'undefined' ? prop : null;
         };
 
@@ -17117,7 +17122,7 @@ export function WmksLib($) {
        * the container's allocated size, then put the remote screen in the center
        * or left top of the container based on its value.
        */
-      rescaleOrResize: function (tryChangeResolution) {
+      rescaleOrResize: function(tryChangeResolution) {
         let newScale = 1.0;
         let x = 0;
         let y = 0;
@@ -17177,7 +17182,7 @@ export function WmksLib($) {
       /**
        * Changes a WMKS option.
        */
-      _setOption: function (key, value) {
+      _setOption: function(key, value) {
 
         // mixin the option to this.options
         $.Widget.prototype._setOption.apply(this, arguments);
@@ -17218,7 +17223,7 @@ export function WmksLib($) {
        * It will send the request about desired resolution (both width and height)
        * to the connect VM.
        */
-      setRemoteScreenSize: function (width, height) {
+      setRemoteScreenSize: function(width, height) {
         let newW = width * this._pixelRatio;
         let newH = height * this._pixelRatio;
 
@@ -17234,7 +17239,7 @@ export function WmksLib($) {
     /**
      * The CoreWMKS class defined all the Public API(22) provided by the wmks:
      */
-    WMKS.CoreWMKS = function (wmks) {
+    WMKS.CoreWMKS = function(wmks) {
       this.wmks = wmks;
       //different version jquery has different way to get the data
       this.wmksData = wmks.data("nwmks") || wmks.data("wmks-nwmks") ;
@@ -17245,7 +17250,7 @@ export function WmksLib($) {
       let Event_Prefix = this.wmksData.widgetEventPrefix;
       let self = this;
 
-      let triggerEvents = function (eventName, event, data) {
+      let triggerEvents = function(eventName, event, data) {
         let handlerArray = self.eventHandlers[eventName];
         if (handlerArray && handlerArray.length > 0) {
           let len = handlerArray.length;
@@ -17258,7 +17263,7 @@ export function WmksLib($) {
       /* ----------------------- CONNECTION_STATE_CHANGE event ---------------------- */
       let connectEventsNameStr = [Event_Prefix + "connecting", Event_Prefix + "connected", Event_Prefix + "disconnected"].join(" ");
 
-      wmks.bind(connectEventsNameStr, function (event, data) {
+      wmks.bind(connectEventsNameStr, function(event, data) {
         data = data || {};
         let eventName = event.type;
         self.connectionState = eventName.substring(Event_Prefix.length, eventName.length);
@@ -17273,7 +17278,7 @@ export function WmksLib($) {
 
       let errorEventsNameStr = [Event_Prefix + "authenticationfailed", Event_Prefix + "error", Event_Prefix + "protocolerror" ].join(" ");
 
-      wmks.bind(errorEventsNameStr, function (event, data) {
+      wmks.bind(errorEventsNameStr, function(event, data) {
         let errorType;
         let cons = WMKS.CONST.ErrorType;
         let type = event.type.substring(Event_Prefix.length,event.type.length);
@@ -17298,7 +17303,7 @@ export function WmksLib($) {
 
 
       /* ---------------------- REMOTE_SCREEN_SIZE_CHANGE event -------------------- */
-      wmks.bind(Event_Prefix + "resolutionchanged", function (event, data) {
+      wmks.bind(Event_Prefix + "resolutionchanged", function(event, data) {
         triggerEvents(WMKS.CONST.Events.REMOTE_SCREEN_SIZE_CHANGE, event, data);
       });
 
@@ -17308,7 +17313,7 @@ export function WmksLib($) {
         Event_Prefix + "copy",
         Event_Prefix + "audio",
         Event_Prefix + "toggle"].join(" ");
-      wmks.bind(eventsNameStr, function (event, data) {
+      wmks.bind(eventsNameStr, function(event, data) {
         let type = event.type.substring(Event_Prefix.length,event.type.length);
         if(type == "toggle")
         {
@@ -17322,7 +17327,7 @@ export function WmksLib($) {
       // here the enterFullScreenHandler would be remove in the exitFullScreenHandler
       // cause the resize event maybe would be triggered for more than once,
       // and only the last one is the really fullscreen
-      let enterFullScreenHandler = function (e) {
+      let enterFullScreenHandler = function(e) {
 
         if (!WMKS.UTIL.isFullscreenNow()) return;
         //make the wmks can occupy the whole screen
@@ -17334,7 +17339,7 @@ export function WmksLib($) {
         triggerEvents(WMKS.CONST.Events.FULL_SCREEN_CHANGE, e, {isFullScreen: true});
       };
 
-      let exitFullScreenHandler = function (e) {
+      let exitFullScreenHandler = function(e) {
 
         $(window).off("resize.wmks", enterFullScreenHandler);
 
@@ -17359,7 +17364,7 @@ export function WmksLib($) {
        ************************************************************************/
       // put the public API method enterFullScreen and exitFullScreen
       // here, cause need to trigger the FULL_SCREEN_CHANGE event
-      WMKS.CoreWMKS.prototype.enterFullScreen = function () {
+      WMKS.CoreWMKS.prototype.enterFullScreen = function() {
 
         if (WMKS.UTIL.isFullscreenNow() || !WMKS.UTIL.isFullscreenEnabled())
           return;
@@ -17372,7 +17377,7 @@ export function WmksLib($) {
       };
 
 
-      WMKS.CoreWMKS.prototype.exitFullScreen = function () {
+      WMKS.CoreWMKS.prototype.exitFullScreen = function() {
 
         if (!WMKS.UTIL.isFullscreenNow())
           return;
@@ -17389,7 +17394,7 @@ export function WmksLib($) {
     // Attach the handler to the certain event for WMKS widget.
     // This can be called by consumers of WMKS to register  the
     // events to interact with the guest.
-    WMKS.CoreWMKS.prototype.register = function (eventType, handler) {
+    WMKS.CoreWMKS.prototype.register = function(eventType, handler) {
       if(!eventType || !handler) return;
       //here maybe need to validate the eventName
       let handlersArray = this.eventHandlers[eventType];
@@ -17401,7 +17406,7 @@ export function WmksLib($) {
     };
 
     // Remove a previously-attached event handler for WMKS widget.
-    WMKS.CoreWMKS.prototype.unregister = function (eventType, handler) {
+    WMKS.CoreWMKS.prototype.unregister = function(eventType, handler) {
       if(!eventType && !handler)
       {
         this.eventHandlers = {};
@@ -17430,13 +17435,13 @@ export function WmksLib($) {
     };
 
     // This method retrieves the current version number of the WMKS SDK.
-    WMKS.CoreWMKS.prototype.getVersion = function () {
+    WMKS.CoreWMKS.prototype.getVersion = function() {
       return WMKS.version;
     };
 
     // This method retrieves the current connection state. Could be any value in
     // WMKS.CONST.ConnectionState
-    WMKS.CoreWMKS.prototype.getConnectionState = function () {
+    WMKS.CoreWMKS.prototype.getConnectionState = function() {
       return this.connectionState;
     };
 
@@ -17444,7 +17449,7 @@ export function WmksLib($) {
     //
     // Consumers should call this after they've created the WMKS by invoking the method
     // createWMKS(), and then ready to start displaying a stream from the VM.
-    WMKS.CoreWMKS.prototype.connect = function (url) {
+    WMKS.CoreWMKS.prototype.connect = function(url) {
       this.wmksData.connect(url);
     };
 
@@ -17452,7 +17457,7 @@ export function WmksLib($) {
     //
     // Consumers should call this when they are done with the WMKS
     // component. Destroying the WMKS will also result in a disconnect.
-    WMKS.CoreWMKS.prototype.disconnect = function () {
+    WMKS.CoreWMKS.prototype.disconnect = function() {
       this.wmksData.disconnect();
     };
 
@@ -17460,7 +17465,7 @@ export function WmksLib($) {
     //
     // This will disconnect the WMKS connection (if active) and remove
     // the widget from the associated element.
-    WMKS.CoreWMKS.prototype.destroy = function () {
+    WMKS.CoreWMKS.prototype.destroy = function() {
       if (this.wmksData) {
         clearTimeout(this.wmksData._vncDecoder.resolutionTimer);
         this.wmksData.destroy();
@@ -17478,13 +17483,13 @@ export function WmksLib($) {
     //
     // It will send the request about desired resolution (both width and height)
     // to the connect VM.
-    WMKS.CoreWMKS.prototype.setRemoteScreenSize = function (width, height) {
+    WMKS.CoreWMKS.prototype.setRemoteScreenSize = function(width, height) {
       this.wmksData.setRemoteScreenSize(width, height);
     };
 
     // This method retrieves the screen width and height in pixels of currently
     // connected VM.
-    WMKS.CoreWMKS.prototype.getRemoteScreenSize = function () {
+    WMKS.CoreWMKS.prototype.getRemoteScreenSize = function() {
       return {
         width: this.wmksData._guestWidth,
         height: this.wmksData._guestHeight
@@ -17504,7 +17509,7 @@ export function WmksLib($) {
     // 3) check position option: If the remote screen's size is not same with
     // the container's allocated size, then put the remote screen in the center
     // or left top of the container based on its value.
-    WMKS.CoreWMKS.prototype.updateScreen = function () {
+    WMKS.CoreWMKS.prototype.updateScreen = function() {
       this.wmksData.rescaleOrResize(true);
     };
 
@@ -17512,17 +17517,17 @@ export function WmksLib($) {
     //
     // Fullscreen mode is disabled on Safari as it does not support keyboard
     // input in fullscreen for "security reasons". See bug 1296505.
-    WMKS.CoreWMKS.prototype.canFullScreen = function () {
+    WMKS.CoreWMKS.prototype.canFullScreen = function() {
       return WMKS.UTIL.isFullscreenEnabled();
     };
 
     // Inform if the browser is in full-screen mode.
-    WMKS.CoreWMKS.prototype.isFullScreen = function () {
+    WMKS.CoreWMKS.prototype.isFullScreen = function() {
       return WMKS.UTIL.isFullscreenNow();
     };
 
     // Sends a unicode string as keyboard input to the server.
-    WMKS.CoreWMKS.prototype.sendInputString = function (str) {
+    WMKS.CoreWMKS.prototype.sendInputString = function(str) {
       this.wmksData.sendInputString(str);
     };
 
@@ -17546,44 +17551,44 @@ export function WmksLib($) {
     // [17, 18, 46]      Control-Alt-Del
     // [17, 18, 45]      Control-Alt-Ins
     // [17, -118]        Control-v (note the lowercase 'v')
-    WMKS.CoreWMKS.prototype.sendKeyCodes = function (keyCodes) {
+    WMKS.CoreWMKS.prototype.sendKeyCodes = function(keyCodes) {
       this.wmksData.sendKeyCodes(keyCodes);
     };
 
     // Send key combination Control-Alt-Del .
-    WMKS.CoreWMKS.prototype.sendCAD = function () {
+    WMKS.CoreWMKS.prototype.sendCAD = function() {
       this.wmksData.sendKeyCodes([17, 18, 46]);
     };
 
     // This method used to show the keyboard on the mobile device
-    WMKS.CoreWMKS.prototype.showKeyboard = function () {
+    WMKS.CoreWMKS.prototype.showKeyboard = function() {
       this.wmksData.showKeyboard();
     };
 
     // This method used to hide the keyboard on the mobile device
-    WMKS.CoreWMKS.prototype.hideKeyboard = function () {
+    WMKS.CoreWMKS.prototype.hideKeyboard = function() {
       this.wmksData.hideKeyboard();
     };
 
     // This method used to show/hide the extendedKeypad  on the mobile device
     // depend on the current visibility.
-    WMKS.CoreWMKS.prototype.toggleExtendedKeypad = function (options) {
+    WMKS.CoreWMKS.prototype.toggleExtendedKeypad = function(options) {
       this.wmksData.toggleExtendedKeypad(options);
     };
 
     // This method used to show/hide the trackpad  on the mobile device
     // depend on the current visibility.
-    WMKS.CoreWMKS.prototype.toggleTrackpad = function (options) {
+    WMKS.CoreWMKS.prototype.toggleTrackpad = function(options) {
       this.wmksData.toggleTrackpad(options);
     };
 
-    WMKS.CoreWMKS.prototype.toggleRelativePad = function (options) {
+    WMKS.CoreWMKS.prototype.toggleRelativePad = function(options) {
       this.wmksData.toggleRelativePad(options);
     };
 
     // This method used to enable the input device on the mobile device according to
     // the deviceType(any value in WMKS.CONST.InputDeviceType)
-    WMKS.CoreWMKS.prototype.enableInputDevice = function (deviceType) {
+    WMKS.CoreWMKS.prototype.enableInputDevice = function(deviceType) {
       let cons = WMKS.CONST.InputDeviceType;
       let innerType = null;
       switch (deviceType) {
@@ -17608,7 +17613,7 @@ export function WmksLib($) {
 
     // This method used to disable the input device on the mobile device according to
     // the deviceType(any value in WMKS.CONST.InputDeviceType)
-    WMKS.CoreWMKS.prototype.disableInputDevice = function (deviceType) {
+    WMKS.CoreWMKS.prototype.disableInputDevice = function(deviceType) {
       let cons = WMKS.CONST.InputDeviceType;
       switch (deviceType) {
         case cons.KEYBOARD:
@@ -17636,7 +17641,7 @@ export function WmksLib($) {
     // -	reverseScrollY
     //   - fixANSIEquivalentKeys
     //   - sendProperMouseWheelDeltas
-    WMKS.CoreWMKS.prototype.setOption = function (key, value) {
+    WMKS.CoreWMKS.prototype.setOption = function(key, value) {
       this.wmksData._setOption(key, value);
     };
 
@@ -17644,7 +17649,7 @@ export function WmksLib($) {
     // By using this method, it would generate the widget which could display the
     // remote screen, and then return the WMKS core object which could use all the
     // WMKS API to connect to a VM and perform operations.
-    WMKS.createWMKS = function (id, options) {
+    WMKS.createWMKS = function(id, options) {
       let wmks = $("#" + id).nwmks(options);
 
       return new WMKS.CoreWMKS(wmks);

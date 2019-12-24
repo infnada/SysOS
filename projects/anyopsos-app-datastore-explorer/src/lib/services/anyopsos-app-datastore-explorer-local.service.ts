@@ -17,17 +17,17 @@ export class AnyOpsOSAppDatastoreExplorerLocalService {
   private $currentPath: BehaviorSubject<string>;
   private $currentData: BehaviorSubject<AnyOpsOSFile[]>;
   private $viewAsList: BehaviorSubject<boolean>;
-  private $search: BehaviorSubject<object>;
+  private $search: BehaviorSubject<{ filename: string; }>;
   private dataStore: {  // This is where we will store our data in memory
     currentPath: string,
     currentData: AnyOpsOSFile[],
     viewAsList: boolean,
-    search: {filename: string}
+    search: { filename: string; }
   };
-  currentPath: Observable<any>;
-  currentData: Observable<any>;
-  viewAsList: Observable<any>;
-  search: Observable<any>;
+  currentPath: Observable<string>;
+  currentData: Observable<AnyOpsOSFile[]>;
+  viewAsList: Observable<boolean>;
+  search: Observable<{ filename: string; }>;
 
 
 

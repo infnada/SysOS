@@ -3,7 +3,6 @@ import {HttpClient} from '@angular/common/http';
 
 import {BehaviorSubject, Observable} from 'rxjs';
 import {v4 as uuidv4} from 'uuid';
-import {ToastrService} from 'ngx-toastr';
 
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibServiceInjectorService} from '@anyopsos/lib-service-injector';
@@ -36,7 +35,6 @@ export class AnyOpsOSAppMonitorService {
               private serviceInjector: AnyOpsOSLibServiceInjectorService,
               private Modal: AnyOpsOSLibModalService,
               private FileSystem: AnyOpsOSLibFileSystemService,
-              private Toastr: ToastrService,
               private Netdata: AnyOpsOSLibExtNetdataService) {
 
     this.CredentialsManager = this.serviceInjector.get('AnyOpsOSAppCredentialsManagerService');
@@ -93,7 +91,6 @@ export class AnyOpsOSAppMonitorService {
       },
       error => {
         this.logger.error('Monitor', 'Error while getting credentials', null, error);
-        return this.Toastr.error('Error getting connections.', 'Monitor');
       });
   }
 
@@ -206,7 +203,6 @@ export class AnyOpsOSAppMonitorService {
       },
       error => {
         this.logger.error('Monitor', 'Error while saving connection', loggerArgs, error);
-        this.Toastr.error('Error while saving connection.', 'Monitor');
       });
   }
 

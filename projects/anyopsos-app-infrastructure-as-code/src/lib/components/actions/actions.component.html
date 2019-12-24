@@ -1,0 +1,16 @@
+<div class="window__actions">
+  <a class="window__item" matTooltip="New connection" (click)="newProject()">
+    <i class="fas fa-plus text-success"></i>
+  </a>
+  <a class="window__item separator"></a>
+  <a class="window__item" matTooltip="Edit connection" (click)="editProject()">
+    <i class="fas fa-edit" [ngClass]="{'text-primary': activeProject !== null}"></i>
+  </a>
+  <a class="window__item" matTooltip="Delete" (click)="deleteProject()">
+    <i class="fas fa-trash" [ngClass]="{'text-danger': activeProject !== null}"></i>
+  </a>
+  <a class="window__item" matTooltip="Connection options" (click)="configureProject()">
+    <i class="fas fa-cog" [ngClass]="{'text-primary': activeProject !== null}"></i>
+  </a>
+  <a class="window__item separator"></a>
+</div>

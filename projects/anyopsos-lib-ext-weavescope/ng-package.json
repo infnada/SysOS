@@ -6,7 +6,7 @@
     "umdModuleIds": {
       "lodash-es": "lodash-es",
       "@anyopsos/lib-angular-material": "anyopsos.lib-angular-material",
-      "@anyopsos/lib-sanitize": "anyopsos.lib-sanitize"
+      "@anyopsos/lib-pipes": "anyopsos.lib-pipes"
     }
   },
   "whitelistedNonPeerDependencies": [

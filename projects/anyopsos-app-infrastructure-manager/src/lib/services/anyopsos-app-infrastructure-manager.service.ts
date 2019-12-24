@@ -1,11 +1,10 @@
 import {Injectable} from '@angular/core';
 
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
-import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
-import {ToastrService} from 'ngx-toastr';
 import {Socket} from 'ngx-socket-io';
 import {v4 as uuidv4} from 'uuid';
 
+import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
 import {AnyOpsOSLibApplicationService} from '@anyopsos/lib-application';
 import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
@@ -40,7 +39,6 @@ export class AnyOpsOSAppInfrastructureManagerService {
   activeObject: Observable<any>;
 
   constructor(private logger: AnyOpsOSLibLoggerService,
-              private Toastr: ToastrService,
               private socket: Socket,
               private Modal: AnyOpsOSLibModalService,
               private Applications: AnyOpsOSLibApplicationService,
@@ -149,7 +147,6 @@ export class AnyOpsOSAppInfrastructureManagerService {
       },
       error => {
         this.logger.error('Infrastructure Manager', 'Error while getting connections', null, error);
-        return this.Toastr.error('Error getting connections.', 'Infrastructure Manager');
       });
   }
 
@@ -184,10 +181,6 @@ export class AnyOpsOSAppInfrastructureManagerService {
 
       }).length > 0) {
         this.logger.error('Infrastructure Manager', 'Error while setting new connection -> Connection already exists', arguments);
-        this.Toastr.error(
-          `Node (${(connection.type === 'kubernetes' || connection.type === 'docker' ? connection.clusterServer : connection.host)}) already exists. Please modify the existing connection properties or ReScan the node.`,
-          'Error creating connection'
-        );
         return null;
       }
 
@@ -408,7 +401,6 @@ export class AnyOpsOSAppInfrastructureManagerService {
       },
       error => {
         this.logger.error('Infrastructure Manager', 'Error while saving connection', loggerArgs, error);
-        this.Toastr.error('Error while saving connection.', 'Infrastructure Manager');
       });
 
   }

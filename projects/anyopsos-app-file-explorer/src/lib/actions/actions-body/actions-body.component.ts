@@ -22,31 +22,47 @@ export class ActionsBodyComponent implements OnDestroy, OnInit {
   currentPath: string;
   currentData: AnyOpsOSFile[];
   viewAsList: boolean;
-  search: { filename: string } = null;
+  search: { filename: string; } = null;
 
   lastPath: string[] = [];
   nextPath: string[] = [];
 
   constructor(private FileSystemUi: AnyOpsOSLibFileSystemUiService,
               private FileExplorer: AnyOpsOSAppFileExplorerService) {
-
-    this.FileExplorer.getObserverGoPathBack().pipe(takeUntil(this.destroySubject$)).subscribe(() => {
-      this.goPathBack();
-    });
-
-    this.FileSystemUi.getObserverGoToPath().pipe(takeUntil(this.destroySubject$)).subscribe((data) => {
-      if (data.application === 'file-explorer') this.goToPath(data.path);
-    });
   }
 
   ngOnInit(): void {
-    this.FileExplorer.currentPath.pipe(takeUntil(this.destroySubject$)).subscribe(path => this.currentPath = path);
-    this.FileExplorer.currentData.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.currentData = data);
-    this.FileExplorer.viewAsList.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.viewAsList = data);
-    this.FileExplorer.search.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.search = data);
+
+    // Listen for goToPath calls
+    this.FileSystemUi.getObserverGoToPath()
+      .pipe(takeUntil(this.destroySubject$)).subscribe((data: { application: string; path: string; }) => {
+      if (data.application === 'file-explorer') this.goToPath(data.path);
+    });
+
+    // Listen for goPathBack calls
+    this.FileExplorer.getObserverGoPathBack()
+      .pipe(takeUntil(this.destroySubject$)).subscribe(() => this.goPathBack());
+
+    // Listen for currentPath change
+    this.FileExplorer.currentPath
+      .pipe(takeUntil(this.destroySubject$)).subscribe((path: string) => this.currentPath = path);
+
+    // Listen for currentData change
+    this.FileExplorer.currentData
+      .pipe(takeUntil(this.destroySubject$)).subscribe((data: AnyOpsOSFile[]) => this.currentData = data);
+
+    // Listen for viewAsList change
+    this.FileExplorer.viewAsList
+      .pipe(takeUntil(this.destroySubject$)).subscribe((data: boolean) => this.viewAsList = data);
+
+    // Listen for search change
+    this.FileExplorer.search
+      .pipe(takeUntil(this.destroySubject$)).subscribe((data: { filename: string; }) => this.search = data);
   }
 
   ngOnDestroy(): void {
+
+    // Remove all listeners
     this.destroySubject$.next();
   }
 

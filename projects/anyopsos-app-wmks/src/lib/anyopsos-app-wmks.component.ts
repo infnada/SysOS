@@ -43,32 +43,32 @@ export class BodyComponent implements AfterViewInit {
   }
 
   private getKeyboardLayout(): string {
-    const locale = "ca-ES".replace("-", "_");
+    const locale = 'ca-ES'.replace('-', '_');
     switch (locale) {
-      case "de":
-      case "de_DE":
-        return "de-DE";
-      case "de_CH":
-        return "de-CH";
-      case "ja":
-      case "ja_JP":
-        return "ja-JP_106/109";
-      case "it":
-      case "it_IT":
-        return "it-IT";
-      case "es":
-      case "es_ES":
-        return "es-ES";
-      case "pt":
-      case "pt_PT":
-        return "pt-PT";
-      case "fr":
-      case "fr_FR":
-        return "fr-FR";
-      case "fr_CH":
-        return "fr-CH";
+      case 'de':
+      case 'de_DE':
+        return 'de-DE';
+      case 'de_CH':
+        return 'de-CH';
+      case 'ja':
+      case 'ja_JP':
+        return 'ja-JP_106/109';
+      case 'it':
+      case 'it_IT':
+        return 'it-IT';
+      case 'es':
+      case 'es_ES':
+        return 'es-ES';
+      case 'pt':
+      case 'pt_PT':
+        return 'pt-PT';
+      case 'fr':
+      case 'fr_FR':
+        return 'fr-FR';
+      case 'fr_CH':
+        return 'fr-CH';
       default:
-        return "en-US";
+        return 'en-US';
     }
   }
 
@@ -91,10 +91,12 @@ export class BodyComponent implements AfterViewInit {
 
       console.log(this.application.initData);
       this.VMWare.connectvCenterSoap(this.application.initData.connection).then((connectSoapResult) => {
-        if (connectSoapResult.status === 'error') throw {
-          error: connectSoapResult.error,
-          description: 'Failed to connect to vCenter'
-        };
+        if (connectSoapResult.status === 'error') {
+          throw {
+            error: connectSoapResult.error,
+            description: 'Failed to connect to vCenter'
+          };
+        }
 
         return this.VMWare.AcquireTicket(
           this.application.initData.connection,
@@ -103,12 +105,14 @@ export class BodyComponent implements AfterViewInit {
         );
 
       }).then((acquireTicketResult) => {
-        if (acquireTicketResult.status === 'error') throw {
-          error: acquireTicketResult.error,
-          description: 'Failed to acquire VM ticket'
-        };
+        if (acquireTicketResult.status === 'error') {
+          throw {
+            error: acquireTicketResult.error,
+            description: 'Failed to acquire VM ticket'
+          };
+        }
 
-        this.wmks = this.WMKS.createWMKS("container", {
+        this.wmks = this.WMKS.createWMKS('container', {
           keyboardLayoutId: this.getKeyboardLayout()
         });
 
@@ -116,20 +120,20 @@ export class BodyComponent implements AfterViewInit {
         this.wmks.register(this.WMKS.CONST.Events.CONNECTION_STATE_CHANGE, (evt, data) => {
           switch (data.state) {
             case this.WMKS.CONST.ConnectionState.CONNECTING:
-              console.log("The console is connecting");
+              console.log('The console is connecting');
               break;
             case this.WMKS.CONST.ConnectionState.CONNECTED:
-              console.log("The console has been connected");
+              console.log('The console has been connected');
               this.hideSpinner = true;
               break;
             case this.WMKS.CONST.ConnectionState.DISCONNECTED:
-              console.log("The console has been disconnected");
-              this.showMessage("The console has been disconnected. Close this window and re-launch the console to reconnect.");
+              console.log('The console has been disconnected');
+              this.showMessage('The console has been disconnected. Close this window and re-launch the console to reconnect.');
               break;
           }
         });
         this.wmks.register(this.WMKS.CONST.Events.ERROR, (evt, data) => {
-          console.log("Error: " + data.errorType);
+          console.log('Error: ' + data.errorType);
         });
         this.wmks.register(this.WMKS.CONST.Events.REMOTE_SCREEN_SIZE_CHANGE, (evt, data) => {
           this.layout();

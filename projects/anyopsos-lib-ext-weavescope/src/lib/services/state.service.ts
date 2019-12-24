@@ -36,7 +36,6 @@ export class StateService {
     topologies: makeList(),
     topologiesLoaded: false,
     topologyOptions: makeOrderedMap(), // topologyId -> options
-    topologyUrlsById: makeOrderedMap(), // topologyId -> topologyUrl
     topologyViewMode: GRAPH_VIEW_MODE,
     // Set some initial numerical values to prevent NaN in case of edgy race conditions.
     viewport: makeMap({height: 0, width: 0})
@@ -77,7 +76,6 @@ export class StateService {
       topologies: makeList(),
       topologiesLoaded: false,
       topologyOptions: makeOrderedMap(), // topologyId -> options
-      topologyUrlsById: makeOrderedMap(), // topologyId -> topologyUrl
       topologyViewMode: GRAPH_VIEW_MODE,
       // Set some initial numerical values to prevent NaN in case of edgy race conditions.
       viewport: makeMap({height: 0, width: 0})

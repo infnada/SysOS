@@ -29,22 +29,32 @@ export class ActionsServerComponent implements OnDestroy, OnInit {
   constructor(private FileSystemUi: AnyOpsOSLibFileSystemUiService,
               private Sftp: AnyOpsOSAppSftpService,
               private SftpServer: AnyOpsOSAppSftpServerService) {
-
-    this.SftpServer.getObserverGoPathBack().pipe(takeUntil(this.destroySubject$)).subscribe(() => {
-      this.goPathBack();
-    });
-
-    this.FileSystemUi.getObserverGoToPath().pipe(takeUntil(this.destroySubject$)).subscribe((data) => {
-      if (data.application === 'sftp#server') this.goToPath(data.path);
-    });
   }
 
   ngOnInit(): void {
-    this.SftpServer.currentPath.pipe(takeUntil(this.destroySubject$)).subscribe(path => this.currentPath = path);
-    this.SftpServer.search.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.search = data);
+
+    // Listen for goToPath calls
+    this.FileSystemUi.getObserverGoToPath()
+      .pipe(takeUntil(this.destroySubject$)).subscribe((data: { application: string; path: string; }) => {
+        if (data.application === 'sftp#server') this.goToPath(data.path);
+      });
+
+    // Listen for goPathBack calls
+    this.SftpServer.getObserverGoPathBack()
+      .pipe(takeUntil(this.destroySubject$)).subscribe(() => this.goPathBack());
+
+    // Listen for currentPath change
+    this.SftpServer.currentPath
+      .pipe(takeUntil(this.destroySubject$)).subscribe((path: string) => this.currentPath = path);
+
+    // Listen for search change
+    this.SftpServer.search
+      .pipe(takeUntil(this.destroySubject$)).subscribe((data: { filename: string; }) => this.search = data);
   }
 
   ngOnDestroy(): void {
+
+    // Remove all listeners
     this.destroySubject$.next();
   }
 

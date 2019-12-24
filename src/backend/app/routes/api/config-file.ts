@@ -25,7 +25,7 @@ router.get(':fileName(*)', (req: express.Request, res: express.Response) => {
 /**
  * Save config file
  */
-router.put(':fileName(*)', (req: express.Request, res: express.Response) => {
+router.put(':fileName(*)', async (req: express.Request, res: express.Response) => {
   logger.info(`[API configFile] -> Save configFile -> fileName [${req.params.fileName}], fullSave [${req.body.fullSave}]`);
 
   const apiGlobals = new ApiGlobalsModule(req, res);
@@ -55,20 +55,16 @@ router.put(':fileName(*)', (req: express.Request, res: express.Response) => {
   // Create new uuid (is new entry)
   if (!data.hasOwnProperty('uuid')) {
 
-    return uuid((e, id) => {
-      if (e && e.code) return apiGlobals.serverError(e.code);
-      if (e) return apiGlobals.serverError(e);
+    const id = await uuid();
 
-      data.uuid = id;
-      config.push(data);
+    data.uuid = id;
+    config.push(data);
 
-      return jsonfile.writeFile(path.join(__dirname, '../../filesystem/etc/' + req.params.fileName), config, {flag: 'w'}, (err) => {
-        if (err && err.code) return apiGlobals.serverError(err.code);
-        if (err) return apiGlobals.serverError(err);
+    return jsonfile.writeFile(path.join(__dirname, '../../filesystem/etc/' + req.params.fileName), config, {flag: 'w'}, (err) => {
+      if (err && err.code) return apiGlobals.serverError(err.code);
+      if (err) return apiGlobals.serverError(err);
 
-        return apiGlobals.responseJsonData(id);
-      });
-
+      return apiGlobals.responseJsonData(id);
     });
 
   }

@@ -24,7 +24,7 @@ export class ActionsServerComponent implements OnDestroy, OnInit {
   currentPath: string;
   currentData: AnyOpsOSFile[];
   viewAsList: boolean;
-  search: {filename: string} = null;
+  search: { filename: string; } = null;
 
   lastPath: string[] = [];
   nextPath: string[] = [];
@@ -32,24 +32,40 @@ export class ActionsServerComponent implements OnDestroy, OnInit {
   constructor(private FileSystemUi: AnyOpsOSLibFileSystemUiService,
               private DatastoreExplorer: AnyOpsOSAppDatastoreExplorerService,
               private DatastoreExplorerServer: AnyOpsOSAppDatastoreExplorerServerService) {
-
-    this.DatastoreExplorerServer.getObserverGoPathBack().pipe(takeUntil(this.destroySubject$)).subscribe(() => {
-      this.goPathBack();
-    });
-
-    this.FileSystemUi.getObserverGoToPath().pipe(takeUntil(this.destroySubject$)).subscribe((data) => {
-      if (data.application === 'datastore-explorer#server') this.goToPath(data.path);
-    });
   }
 
   ngOnInit(): void {
-    this.DatastoreExplorerServer.currentPath.pipe(takeUntil(this.destroySubject$)).subscribe(path => this.currentPath = path);
-    this.DatastoreExplorerServer.currentData.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.currentData = data);
-    this.DatastoreExplorerServer.viewAsList.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.viewAsList = data);
-    this.DatastoreExplorerServer.search.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.search = data);
+
+    // Listen for goToPath calls
+    this.FileSystemUi.getObserverGoToPath()
+      .pipe(takeUntil(this.destroySubject$)).subscribe((data: { application: string; path: string; }) => {
+        if (data.application === 'datastore-explorer#server') this.goToPath(data.path);
+      });
+
+    // Listen for goPathBack calls
+    this.DatastoreExplorerServer.getObserverGoPathBack()
+      .pipe(takeUntil(this.destroySubject$)).subscribe(() => this.goPathBack());
+
+    // Listen for currentPath change
+    this.DatastoreExplorerServer.currentPath
+      .pipe(takeUntil(this.destroySubject$)).subscribe((path: string) => this.currentPath = path);
+
+    // Listen for currentData change
+    this.DatastoreExplorerServer.currentData
+      .pipe(takeUntil(this.destroySubject$)).subscribe((data: AnyOpsOSFile[]) => this.currentData = data);
+
+    // Listen for viewAsList change
+    this.DatastoreExplorerServer.viewAsList
+      .pipe(takeUntil(this.destroySubject$)).subscribe((data: boolean) => this.viewAsList = data);
+
+    // Listen for search change
+    this.DatastoreExplorerServer.search
+      .pipe(takeUntil(this.destroySubject$)).subscribe((data: { filename: string; }) => this.search = data);
   }
 
   ngOnDestroy(): void {
+
+    // Remove all listeners
     this.destroySubject$.next();
   }
 

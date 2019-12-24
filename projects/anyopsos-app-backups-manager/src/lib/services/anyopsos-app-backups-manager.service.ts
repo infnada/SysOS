@@ -1,9 +1,8 @@
 import {Injectable} from '@angular/core';
 
-import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
-import {ToastrService} from 'ngx-toastr';
 import {v4 as uuidv4} from 'uuid';
 
+import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
 import {AnyOpsOSLibServiceInjectorService} from '@anyopsos/lib-service-injector';
@@ -40,7 +39,6 @@ export class AnyOpsOSAppBackupsManagerService {
   private InfrastructureManagerObjectHelper;
 
   constructor(private logger: AnyOpsOSLibLoggerService,
-              private Toastr: ToastrService,
               private Modal: AnyOpsOSLibModalService,
               private serviceInjector: AnyOpsOSLibServiceInjectorService,
               private Applications: AnyOpsOSLibApplicationService,
@@ -64,7 +62,6 @@ export class AnyOpsOSAppBackupsManagerService {
     },
     error => {
       this.logger.error('Backups Manager', 'Error while getting backups', null, error);
-      return this.Toastr.error('Error getting backups.', 'Backups Manager');
     });
   }
 
@@ -77,7 +74,6 @@ export class AnyOpsOSAppBackupsManagerService {
     },
     error => {
       this.logger.error('Backups Manager', 'Error while getting restores', null, error);
-      return this.Toastr.error('Error getting restores.', 'Backups Manager');
     });
   }
 

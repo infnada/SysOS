@@ -19,7 +19,7 @@ const TAGS_DATA: TagElement[] = [
   styleUrls: ['./tags.component.scss']
 })
 export class TagsComponent implements OnInit {
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatSort, {static: false}) sort: MatSort;
 
   displayedColumns: string[] = ['tag', 'category', 'description'];
   dataSource = new MatTableDataSource(TAGS_DATA);

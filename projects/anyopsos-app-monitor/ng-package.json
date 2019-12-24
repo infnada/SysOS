@@ -5,15 +5,13 @@
     "entryFile": "src/public-api.ts",
     "umdModuleIds": {
       "uuid": "uuid",
-      "ngx-order-pipe": "ngx-order-pipe",
-      "ngx-toastr": "ngx-toastr",
       "@anyopsos/lib-angular-material": "anyopsos.lib-angular-material",
       "@anyopsos/lib-application": "anyopsos.lib-application",
       "@anyopsos/lib-file-system": "anyopsos.lib-file-system",
       "@anyopsos/lib-logger": "anyopsos.lib-logger",
       "@anyopsos/lib-modal": "anyopsos.lib-modal",
       "@anyopsos/lib-scroll-spy": "anyopsos.lib-scroll-spy",
-      "@anyopsos/lib-sanitize": "anyopsos.lib-sanitize",
+      "@anyopsos/lib-pipes": "anyopsos.lib-pipes",
       "@anyopsos/lib-service-injector": "anyopsos.lib-service-injector",
       "@anyopsos/lib-ext-netdata": "anyopsos.lib-ext-netdata"
     }

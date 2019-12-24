@@ -16,8 +16,8 @@ import {IMConnection, SftpConnection, DatastoreExplorerConnection} from '@anyops
   providers: [AnyOpsOSLibSelectableService]
 })
 export class AnyOpsOSLibFileComponent implements OnInit, AfterViewInit {
-  @ViewChild(MatMenuTrigger) contextMenuFile: MatMenuTrigger;
-  @ViewChild('selectableFileElement') selectableFileElement: ElementRef;
+  @ViewChild(MatMenuTrigger, {static: false}) contextMenuFile: MatMenuTrigger;
+  @ViewChild('selectableFileElement', {static: false}) selectableFileElement: ElementRef;
 
   @Input() file: AnyOpsOSFile;
   @Input() application: Application;

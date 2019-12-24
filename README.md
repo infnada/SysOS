@@ -77,10 +77,11 @@ Don't hesitate to provide a Logo and Backgrounds :)
     - Full integration with `VMware vCenter`/`ESXi` nodes and `VM`s.
     - Full integration with `NetApp` storage.
     - Full integration with `K8s` and `Docker`.
-    - Full integration with `Ansible`.
-    - Full integration with `Terraform`.
     - Manage all your standalone nodes (`Linux`, `Windows` and `SNMP`).
     - Generate `PCI Compilance` reports
+- Infrastructure as Code
+    - Full integration with `Ansible`.
+    - Full integration with `Terraform`.
 - VMware Remote Console
     - Connect to any managed Virtual Machine!
 - Backups Manager
@@ -112,7 +113,7 @@ Don't hesitate to provide a Logo and Backgrounds :)
 - Drawer
     - Full integration of `draw.io`.
 - Notepad
-    - Full integration of `Atom`.
+    - Full integration of `Theia`.
 
 ![alt text](https://isartnavarro.io/img/anyOpsOS/sftp_app.png "SFTP app")
 
@@ -150,7 +151,7 @@ Don't hesitate to provide a Logo and Backgrounds :)
 
 `@anyopsos/lib-scroll-spy` => Directive
 
-`@anyopsos/lib-sanitize` => Pipe
+`@anyopsos/lib-pipes` => Pipes
 
 
 - External libraries ready to use in anyOpsOS

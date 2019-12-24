@@ -17,7 +17,7 @@ import {TopologyUtilsService} from '../../services/utils/topology-utils.service'
   styleUrls: ['./search.component.scss']
 })
 export class SearchComponent {
-  @ViewChild('searchInput') searchInput: ElementRef<HTMLInputElement>;
+  @ViewChild('searchInput', {static: false}) searchInput: ElementRef<HTMLInputElement>;
 
   private destroySubject$: Subject<void> = new Subject();
   private state;

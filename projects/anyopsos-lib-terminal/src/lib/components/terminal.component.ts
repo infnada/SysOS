@@ -19,12 +19,12 @@ import {Terminal as TerminalData} from '../types/terminal';
 
 @Component({
   encapsulation: ViewEncapsulation.None,
-  selector: 'slterm-terminal',
+  selector: 'slterm-terminal[terminalType]',
   templateUrl: './terminal.component.html',
   styleUrls: ['./terminal.component.scss']
 })
 export class TerminalComponent implements OnChanges, OnDestroy, AfterViewInit {
-  @ViewChild('terminalRef') terminalRef: ElementRef;
+  @ViewChild('terminalRef', {static: false}) terminalRef: ElementRef;
   @Input() terminalType: 'container_logs' | 'container_shell' | 'ssh';
   @Input() terminalUuid: string;
   @Input() customTerminalMessage: string = null;
@@ -48,14 +48,14 @@ export class TerminalComponent implements OnChanges, OnDestroy, AfterViewInit {
     }
   }
 
+  ngAfterViewInit(): void {
+    this.setTerminalReference();
+  }
+
   ngOnDestroy(): void {
     if (!this.deleteOnDestroy) return;
 
     this.Terminal.deleteTerminal(this.terminalUuid);
-  }
-
-  ngAfterViewInit(): void {
-    this.setTerminalReference();
   }
 
   onBodyResize(): void {

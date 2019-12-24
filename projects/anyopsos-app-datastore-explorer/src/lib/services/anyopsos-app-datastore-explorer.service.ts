@@ -3,7 +3,6 @@ import {Injectable} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {v4 as uuidv4} from 'uuid';
 import {Socket} from 'ngx-socket-io';
-import {ToastrService} from 'ngx-toastr';
 
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
@@ -29,7 +28,6 @@ export class AnyOpsOSAppDatastoreExplorerService {
   viewExchange: Observable<any>;
 
   constructor(private logger: AnyOpsOSLibLoggerService,
-              private Toastr: ToastrService,
               private socket: Socket,
               private FileSystem: AnyOpsOSLibFileSystemService,
               private Modal: AnyOpsOSLibModalService,

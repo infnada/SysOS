@@ -1,7 +1,5 @@
 import {Injectable} from '@angular/core';
 
-import {ToastrService} from 'ngx-toastr';
-
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
 import {AnyOpsOSLibNetappService} from '@anyopsos/lib-netapp';
@@ -25,7 +23,6 @@ import {VMWareVM} from '../../types/vmware-vm';
 })
 export class AnyOpsOSAppInfrastructureNetappService {
   constructor(private logger: AnyOpsOSLibLoggerService,
-              private Toastr: ToastrService,
               private Modal: AnyOpsOSLibModalService,
               private FileSystemUi: AnyOpsOSLibFileSystemUiService,
               private NetApp: AnyOpsOSLibNetappService,
@@ -131,7 +128,7 @@ export class AnyOpsOSAppInfrastructureNetappService {
 
     }).then(() => {
       this.saveNewData(connection).then(() => {
-        this.Toastr.success('NetApp connection added successfully');
+        this.logger.log('Infrastructure Manager', 'NetApp connection added successfully');
 
         // Set connection as Good
         this.InfrastructureManager.getConnectionByUuid(connection.uuid).state = 'connected';
@@ -146,8 +143,6 @@ export class AnyOpsOSAppInfrastructureNetappService {
       }
 
       this.InfrastructureManager.setActiveConnection(null);
-
-      this.Toastr.error((e.description ? e.description : e.message), 'Error getting data from NetApp');
 
       throw e;
     });
@@ -351,14 +346,12 @@ export class AnyOpsOSAppInfrastructureNetappService {
     return this.getVolumeSnapshots(connection, vServer, volume).then(() => {
       return this.saveNewData(connection);
     }).catch((e) => {
-      this.logger.error('Infrastructure Manager', 'Error while getVolumeData', loggerArgs, e.description);
+      this.logger.error('Infrastructure Manager', 'Error while getVolumeData from NetApp', loggerArgs, e.description);
 
       if (this.Modal.isModalOpened('.window--infrastructure-manager .window__main')) {
         this.Modal.changeModalType('danger', '.window--infrastructure-manager .window__main');
         this.Modal.changeModalText((e.description ? e.description : e.message), '.window--infrastructure-manager .window__main');
       }
-
-      this.Toastr.error((e.description ? e.description : e.message), 'Error getting data from NetApp');
 
       throw e;
     });

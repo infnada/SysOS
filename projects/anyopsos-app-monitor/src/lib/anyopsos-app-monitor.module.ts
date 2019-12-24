@@ -2,14 +2,11 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ReactiveFormsModule} from '@angular/forms';
 
-import {OrderModule} from 'ngx-order-pipe';
-import {ToastrModule} from 'ngx-toastr';
-
 import {AnyOpsOSLibUtilsModule} from '@anyopsos/lib-utils';
 import {AnyOpsOSLibAngularMaterialModule} from '@anyopsos/lib-angular-material';
 import {AnyOpsOSLibApplicationService} from '@anyopsos/lib-application';
 import {AnyOpsOSLibScrollSpyModule} from '@anyopsos/lib-scroll-spy';
-import {AnyOpsOSLibSanitizeModule} from '@anyopsos/lib-sanitize';
+import {AnyOpsOSLibPipesModule} from '@anyopsos/lib-pipes';
 import {AnyOpsOSLibServiceInjectorService} from '@anyopsos/lib-service-injector';
 import {AnyOpsOSLibExtWeavescopeModule} from '@anyopsos/lib-ext-weavescope';
 
@@ -31,13 +28,11 @@ import {AnyOpsOSAppMonitorService} from './services/anyopsos-app-monitor.service
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    OrderModule,
-    ToastrModule.forRoot(),
     // Shared module import
     AnyOpsOSLibUtilsModule,
     AnyOpsOSLibAngularMaterialModule,
     AnyOpsOSLibScrollSpyModule,
-    AnyOpsOSLibSanitizeModule,
+    AnyOpsOSLibPipesModule,
     AnyOpsOSLibExtWeavescopeModule
   ],
   exports: []

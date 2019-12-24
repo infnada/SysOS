@@ -4,7 +4,6 @@ import {HttpClient} from '@angular/common/http';
 import {map} from 'rxjs/operators';
 
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
-import {ImDataObject} from '@anyopsos/app-infrastructure-manager';
 
 @Injectable({
   providedIn: 'root'
@@ -30,7 +29,7 @@ export class AnyOpsOSLibKubernetesService {
     };
   }
 
-  getResourceBySelfLink(object: ImDataObject): Promise<any> {
+  getResourceBySelfLink(object): Promise<any> {
     return this.http.get(`/api/kubernetes/resource/${object.info.mainUuid}/${encodeURIComponent(object.info.data.metadata.selfLink)}`).pipe(map((data: any) => {
         if (data.status === 'error') return this.errorHandler(data.errno ? data.errno : data.data);
         if (!data.data) return this.errorHandler(data.data);

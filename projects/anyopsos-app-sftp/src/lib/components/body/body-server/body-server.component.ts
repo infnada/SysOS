@@ -31,7 +31,7 @@ export class BodyServerComponent implements OnDestroy, OnInit {
   currentData: Array<AnyOpsOSFile>;
 
   viewAsList: boolean;
-  search: { filename: string } = null;
+  search: { filename: string; } = null;
 
   currentActive: number = 0;
 
@@ -43,29 +43,52 @@ export class BodyServerComponent implements OnDestroy, OnInit {
               private Applications: AnyOpsOSLibApplicationService,
               private Sftp: AnyOpsOSAppSftpService,
               private SftpServer: AnyOpsOSAppSftpServerService) {
-
-    this.FileSystemUi.getObserverRefreshPath().pipe(takeUntil(this.destroySubject$)).subscribe(path => {
-      if (path === this.currentPath) this.reloadPath();
-    });
   }
 
   ngOnInit(): void {
+
+    // Listen for refreshPath call
+    this.FileSystemUi.getObserverRefreshPath()
+      .pipe(takeUntil(this.destroySubject$)).subscribe((path: string) => {
+        if (path === this.currentPath) this.reloadPath();
+      });
+
     // Is loading data from Backend?
-    this.SftpServer.getObserverLoadingData().pipe(takeUntil(this.destroySubject$)).subscribe(loadingData => this.loadingData = loadingData);
+    this.SftpServer.getObserverLoadingData()
+      .pipe(takeUntil(this.destroySubject$)).subscribe((loadingData: boolean) => this.loadingData = loadingData);
 
-    this.SftpServer.currentPath.pipe(takeUntil(this.destroySubject$)).subscribe(path => this.currentPath = path);
-    this.SftpServer.currentData.pipe(takeUntil(this.destroySubject$)).subscribe(data => {
-      this.currentData = data;
-      this.resetActive();
-    });
-    this.SftpServer.viewAsList.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.viewAsList = data);
-    this.SftpServer.search.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.search = data);
-    this.Sftp.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe(connection => this.activeConnection = connection);
+    // Listen for currentPath change
+    this.SftpServer.currentPath
+      .pipe(takeUntil(this.destroySubject$)).subscribe((path: string) => this.currentPath = path);
 
+    // Listen for currentData change
+    this.SftpServer.currentData
+      .pipe(takeUntil(this.destroySubject$)).subscribe((data: AnyOpsOSFile[]) => {
+        this.currentData = data;
+        this.resetActive();
+      });
+
+    // Listen for viewAsList change
+    this.SftpServer.viewAsList
+      .pipe(takeUntil(this.destroySubject$)).subscribe((data: boolean) => this.viewAsList = data);
+
+    // Listen for search change
+    this.SftpServer.search
+      .pipe(takeUntil(this.destroySubject$)).subscribe((data: { filename: string; }) => this.search = data);
+
+    // Listen for activeConnection change
+    this.Sftp.activeConnection
+      .pipe(takeUntil(this.destroySubject$)).subscribe(activeConnectionUuid => this.activeConnection = activeConnectionUuid);
+
+    /**
+     * Initialize root path
+     */
     this.goToPath('/');
   }
 
   ngOnDestroy(): void {
+
+    // Remove all listeners
     this.destroySubject$.next();
   }
 

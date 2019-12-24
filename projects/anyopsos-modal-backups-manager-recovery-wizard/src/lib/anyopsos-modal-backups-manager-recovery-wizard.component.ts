@@ -2,7 +2,6 @@ import {Component, Input, OnInit} from '@angular/core';
 import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 
 import {NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-import {ToastrService} from 'ngx-toastr';
 
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibServiceInjectorService} from '@anyopsos/lib-service-injector';
@@ -85,8 +84,7 @@ export class AnyOpsOSModalBackupsManagerRecoveryWizardComponent implements OnIni
 
   constructor(public activeModal: NgbActiveModal,
               private logger: AnyOpsOSLibLoggerService,
-              private Toastr: ToastrService,
-              private formBuilder: FormBuilder,
+              private readonly formBuilder: FormBuilder,
               private serviceInjector: AnyOpsOSLibServiceInjectorService,
               private Modal: AnyOpsOSLibModalService,
               private VMWare: AnyOpsOSLibVmwareService,
@@ -101,17 +99,12 @@ export class AnyOpsOSModalBackupsManagerRecoveryWizardComponent implements OnIni
     this.ESXIHosts = this.InfrastructureManagerObjectHelper.getObjectsByType(null, 'HostSystem');
   }
 
-  get f1(): { [key: string]: AbstractControl } {
-    return this.firstFormGroup.controls;
-  }
-
-  get f2(): { [key: string]: AbstractControl } {
-    return this.secondFormGroup.controls;
-  }
-
-  get f3(): { [key: string]: AbstractControl } {
-    return this.thirdFormGroup.controls;
-  }
+  /**
+   * Form getters
+   */
+  get f1(): { [key: string]: AbstractControl } { return this.firstFormGroup.controls; }
+  get f2(): { [key: string]: AbstractControl } { return this.secondFormGroup.controls; }
+  get f3(): { [key: string]: AbstractControl } { return this.thirdFormGroup.controls; }
 
   getHostOfConnection(host: ImDataObject & { info: { data: VMWareHost } }): string {
     return this.InfrastructureManager.getConnectionByUuid(host.info.mainUuid).host;
@@ -382,8 +375,6 @@ export class AnyOpsOSModalBackupsManagerRecoveryWizardComponent implements OnIni
         this.Modal.changeModalText((e.description ? e.description : e.message), '.modal-backups-manager-recovery-wizard');
       }
 
-      this.Toastr.error((e.description ? e.description : e.message), 'Error getting data from VMWare');
-
       this.f3.hostFormControl.reset();
 
       throw e;
@@ -414,8 +405,6 @@ export class AnyOpsOSModalBackupsManagerRecoveryWizardComponent implements OnIni
           this.Modal.changeModalType('danger', '.modal-backups-manager-recovery-wizard');
           this.Modal.changeModalText((e.description ? e.description : e.message), '.modal-backups-manager-recovery-wizard');
         }
-
-        this.Toastr.error((e.description ? e.description : e.message), 'Error getting data from NetApp');
 
         this.f3.ifaceFormControl.reset();
 

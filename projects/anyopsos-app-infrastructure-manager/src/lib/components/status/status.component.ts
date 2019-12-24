@@ -21,12 +21,17 @@ export class StatusComponent implements OnInit, OnDestroy {
   constructor(private InfrastructureManager: AnyOpsOSAppInfrastructureManagerService) {
   }
 
-  ngOnDestroy(): void {
-    this.destroySubject$.next();
+  ngOnInit(): void {
+
+    // Listen for activeConnection change
+    this.InfrastructureManager.activeConnection
+      .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnectionUuid: string) => this.activeConnection = activeConnectionUuid);
   }
 
-  ngOnInit(): void {
-    this.InfrastructureManager.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe(activeConnection => this.activeConnection = activeConnection);
+  ngOnDestroy(): void {
+
+    // Remove all listeners
+    this.destroySubject$.next();
   }
 
   getActiveConnection(): ConnectionTypes {

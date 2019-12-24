@@ -29,24 +29,40 @@ export class ActionsLocalComponent implements OnDestroy, OnInit {
 
   constructor(private FileSystemUi: AnyOpsOSLibFileSystemUiService,
               private DatastoreExplorerLocal: AnyOpsOSAppDatastoreExplorerLocalService) {
-
-    this.DatastoreExplorerLocal.getObserverGoPathBack().pipe(takeUntil(this.destroySubject$)).subscribe(() => {
-      this.goPathBack();
-    });
-
-    this.FileSystemUi.getObserverGoToPath().pipe(takeUntil(this.destroySubject$)).subscribe((data) => {
-      if (data.application === 'datastore-explorer#local') this.goToPath(data.path);
-    });
   }
 
   ngOnInit(): void {
-    this.DatastoreExplorerLocal.currentPath.pipe(takeUntil(this.destroySubject$)).subscribe(path => this.currentPath = path);
-    this.DatastoreExplorerLocal.currentData.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.currentData = data);
-    this.DatastoreExplorerLocal.viewAsList.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.viewAsList = data);
-    this.DatastoreExplorerLocal.search.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.search = data);
+
+    // Listen for GoToPath call
+    this.FileSystemUi.getObserverGoToPath()
+      .pipe(takeUntil(this.destroySubject$)).subscribe((data: { application: string; path: string; }) => {
+        if (data.application === 'datastore-explorer#local') this.goToPath(data.path);
+      });
+
+    // Listen for GoPathBack call
+    this.DatastoreExplorerLocal.getObserverGoPathBack()
+      .pipe(takeUntil(this.destroySubject$)).subscribe(() => this.goPathBack());
+
+    // Listen for currentPath change
+    this.DatastoreExplorerLocal.currentPath
+      .pipe(takeUntil(this.destroySubject$)).subscribe((path: string) => this.currentPath = path);
+
+    // Listen for currentData change
+    this.DatastoreExplorerLocal.currentData
+      .pipe(takeUntil(this.destroySubject$)).subscribe((data: AnyOpsOSFile[]) => this.currentData = data);
+
+    // Listen for viewAsList change
+    this.DatastoreExplorerLocal.viewAsList
+      .pipe(takeUntil(this.destroySubject$)).subscribe((data: boolean) => this.viewAsList = data);
+
+    // Listen for search change
+    this.DatastoreExplorerLocal.search
+      .pipe(takeUntil(this.destroySubject$)).subscribe((data: { filename: string; }) => this.search = data);
   }
 
   ngOnDestroy(): void {
+
+    // Remove all listeners
     this.destroySubject$.next();
   }
 

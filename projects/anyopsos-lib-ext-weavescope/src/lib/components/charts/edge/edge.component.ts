@@ -35,6 +35,8 @@ export class EdgeComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
+
+    // Remove all listeners
     this.destroySubject$.next();
   }
 

@@ -299,8 +299,8 @@ export class AnyOpsOSLibSelectableService {
     this.container.appendChild(this.lasso);
 
     if (node !== this.container) {
-      const item = this.get(node);
-      item.selecting = true;
+      const itemNode = this.get(node);
+      itemNode.selecting = true;
       this.classList.add(node, this.config.classes.selecting);
     }
 

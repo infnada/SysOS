@@ -84,10 +84,6 @@ export class RoutesModule {
   }
 
   setRoutes(): void {
-    this.app.use('/api/remoteFile/:b(*)', (req, res, next) => {
-      console.log(req.params.b);
-      next();
-    });
     this.app.use('/api/file/', file);
     this.app.use('/api/remote-file/', remoteFile);
     this.app.use('/api/config-file/', configFile);

@@ -24,10 +24,15 @@ export class ActionsComponent implements OnDestroy, OnInit {
   }
 
   ngOnInit(): void {
-    this.DatastoreExplorer.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe(connection => this.activeConnection = connection);
+
+    // Listen for activeConnection change
+    this.DatastoreExplorer.activeConnection
+      .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnectionUuid: string) => this.activeConnection = activeConnectionUuid);
   }
 
   ngOnDestroy(): void {
+
+    // Remove all listeners
     this.destroySubject$.next();
   }
 

@@ -2,6 +2,16 @@
   "$schema": "../../node_modules/ng-packagr/ng-package.schema.json",
   "dest": "../../dist/libs/anyopsos-lib-terminal",
   "lib": {
-    "entryFile": "src/public-api.ts"
-  }
+    "entryFile": "src/public-api.ts",
+    "umdModuleIds": {
+      "xterm": "xterm",
+      "xterm-addon-fit": "xterm-addon-fit",
+      "xterm-addon-web-links": "xterm-addon-web-links"
+    }
+  },
+  "whitelistedNonPeerDependencies": [
+    "xterm",
+    "xterm-addon-fit",
+    "xterm-addon-web-links"
+  ]
 }

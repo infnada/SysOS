@@ -3,14 +3,13 @@ import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 
-import {FilterPipeModule} from 'ngx-filter-pipe';
 import {ngfModule} from 'angular-file';
-import {ToastrModule} from 'ngx-toastr';
 
 import {AnyOpsOSLibAngularMaterialModule} from '@anyopsos/lib-angular-material';
 import {AnyOpsOSLibApplicationService} from '@anyopsos/lib-application';
 import {AnyOpsOSLibFileModule} from '@anyopsos/lib-file';
 import {AnyOpsOSLibFolderModule} from '@anyopsos/lib-folder';
+import {AnyOpsOSLibPipesModule} from '@anyopsos/lib-pipes';
 
 import {ActionsComponent} from './components/actions/actions.component';
 import {ActionsLocalComponent} from './components/actions/actions-local/actions-local.component';
@@ -40,14 +39,13 @@ import {StatusComponent} from './components/status/status.component';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    FilterPipeModule,
     DragDropModule,
     ngfModule,
-    ToastrModule.forRoot(),
     // Shared module import
     AnyOpsOSLibAngularMaterialModule,
     AnyOpsOSLibFolderModule,
-    AnyOpsOSLibFileModule
+    AnyOpsOSLibFileModule,
+    AnyOpsOSLibPipesModule
   ],
   exports: []
 })

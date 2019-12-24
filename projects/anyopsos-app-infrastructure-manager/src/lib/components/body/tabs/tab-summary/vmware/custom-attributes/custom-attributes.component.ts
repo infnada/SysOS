@@ -18,7 +18,7 @@ const ATTRIBUTES_DATA: AttributeElement[] = [
   styleUrls: ['./custom-attributes.component.scss']
 })
 export class CustomAttributesComponent implements OnInit {
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatSort, {static: false}) sort: MatSort;
 
   displayedColumns: string[] = ['attribute', 'value'];
   dataSource = new MatTableDataSource(ATTRIBUTES_DATA);

@@ -1,7 +1,5 @@
 import {Injectable} from '@angular/core';
 
-import {ToastrService} from 'ngx-toastr';
-
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
 import {AnyOpsOSLibFileSystemUiService} from '@anyopsos/lib-file-system-ui';
@@ -16,7 +14,6 @@ import {ConnectionVmware} from '../../types/connections/connection-vmware';
 })
 export class AnyOpsOSAppInfrastructureVmwareService {
   constructor(private logger: AnyOpsOSLibLoggerService,
-              private Toastr: ToastrService,
               private Modal: AnyOpsOSLibModalService,
               private FileSystemUi: AnyOpsOSLibFileSystemUiService,
               private VMWare: AnyOpsOSLibVmwareService,
@@ -90,7 +87,7 @@ export class AnyOpsOSAppInfrastructureVmwareService {
       this.InfrastructureManager.getConnectionByUuid(connection.uuid).state = 'connected';
 
       this.Modal.closeModal('.window--infrastructure-manager .window__main');
-      this.Toastr.success('VMWare connection added successfully');
+      this.logger.log('Infrastructure Manager', 'VMWare connection added successfully');
 
     }).catch((e) => {
       this.logger.error('Infrastructure Manager', 'Error while getting VMWare data', loggerArgs, e.description);
@@ -101,8 +98,6 @@ export class AnyOpsOSAppInfrastructureVmwareService {
       }
 
       this.InfrastructureManager.setActiveConnection(null);
-
-      this.Toastr.error((e.description ? e.description : e.message), 'Error getting data from VMWare');
 
       throw e;
     });

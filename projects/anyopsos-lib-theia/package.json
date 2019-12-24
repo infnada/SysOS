@@ -1,0 +1,19 @@
+{
+  "name": "@anyopsos/lib-theia",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@angular/common": "^8.2.14",
+    "@angular/core": "^8.2.14"
+  },
+  "dependencies": {
+    "reflect-metadata": "0.1.13",
+    "inversify": "^5.0.1",
+    "@theia/core": "~0.14.0"
+  },
+  "browser": {
+    "net": false,
+    "crypto": false,
+    "path": false,
+    "os": false
+  }
+}

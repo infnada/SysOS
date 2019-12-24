@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
-import {ToastrService} from 'ngx-toastr';
 import {Socket} from 'ngx-socket-io';
 
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
@@ -23,20 +22,19 @@ export class AnyOpsOSAppSftpServerService {
   private $currentPath: BehaviorSubject<string>;
   private $currentData: BehaviorSubject<AnyOpsOSFile[]>;
   private $viewAsList: BehaviorSubject<boolean>;
-  private $search: BehaviorSubject<object>;
+  private $search: BehaviorSubject<{ filename: string; }>;
   private dataStore: {  // This is where we will store our data in memory
     currentPath: string,
     currentData: AnyOpsOSFile[],
     viewAsList: boolean,
-    search: { filename: string }
+    search: { filename: string; }
   };
-  currentPath: Observable<any>;
-  currentData: Observable<any>;
-  viewAsList: Observable<any>;
-  search: Observable<any>;
+  currentPath: Observable<string>;
+  currentData: Observable<AnyOpsOSFile[]>;
+  viewAsList: Observable<boolean>;
+  search: Observable<{ filename: string; }>;
 
   constructor(private logger: AnyOpsOSLibLoggerService,
-              private Toastr: ToastrService,
               private socket: Socket,
               private Modal: AnyOpsOSLibModalService,
               private FileSystem: AnyOpsOSLibFileSystemService,
@@ -129,7 +127,6 @@ export class AnyOpsOSAppSftpServerService {
       },
       error => {
         this.logger.error('Sftp', 'Error while getting connections', null, error);
-        return this.Toastr.error('Error getting connections.', 'SFTP');
       });
   }
 

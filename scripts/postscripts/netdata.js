@@ -51,7 +51,7 @@ fs.readFile('dist/anyOpsOS/filesystem/bin/libs/anyopsos-lib-ext-netdata.umd.js',
   result = result.replace('})(window, document, (typeof jQuery === \'function\')?jQuery:undefined);', 'return NETDATA;\n' +
     '};');
   result = result.replace('    var Dashboard = /*#__PURE__*/Object.freeze({\n' +
-    '\n' +
+    '        __proto__: null\n' +
     '    });', '');
 
   // Make global vars as local
@@ -73,7 +73,7 @@ fs.readFile('dist/anyOpsOS/filesystem/bin/libs/anyopsos-lib-ext-netdata.umd.js',
   // Remove global and make it inside DashboardInfo function to call it from angular
   result = result.replace('var netdataDashboard = window.netdataDashboard || {};', 'var DashboardInfo = function(NETDATA, netdataDashboard) {');
   result = result.replace('    var DashboardInfo = /*#__PURE__*/Object.freeze({\n' +
-    '\n' +
+    '        __proto__: null\n' +
     '    });', 'return netdataDashboard\n' +
     '};');
 

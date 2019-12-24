@@ -29,7 +29,7 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
   sshConnections: SshConnection[];
   connectionForm: FormGroup;
 
-  constructor(private formBuilder: FormBuilder,
+  constructor(private readonly formBuilder: FormBuilder,
               private Applications: AnyOpsOSLibApplicationService,
               private serviceInjector: AnyOpsOSLibServiceInjectorService,
               private Modal: AnyOpsOSLibModalService,
@@ -37,7 +37,6 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
 
     this.CredentialsManager = this.serviceInjector.get('AnyOpsOSAppCredentialsManagerService');
     this.Ssh = this.serviceInjector.get('AnyOpsOSAppSshService');
-    this.CredentialsManager.credentials.pipe(takeUntil(this.destroySubject$)).subscribe(credentials => this.credentials = credentials);
   }
 
   ngOnInit(): void {
@@ -52,38 +51,54 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
       uuid: [null]
     });
 
-    this.Ssh.connections.pipe(takeUntil(this.destroySubject$)).subscribe((connections: SshConnection[]) => {
-      this.sshConnections = connections;
+    // Listen for credentials changes
+    this.CredentialsManager.credentials
+      .pipe(takeUntil(this.destroySubject$)).subscribe((credentials: Credential[]) => this.credentials = credentials);
 
-      if (this.sshConnections.length === 0) return this.connectionForm.controls.hopServerUuid.disable();
-      this.connectionForm.controls.hopServerUuid.enable();
-    });
+    // Listen for connections changes
+    this.Ssh.connections
+      .pipe(takeUntil(this.destroySubject$)).subscribe((connections: SshConnection[]) => this.onConnectionsChange(connections));
 
-    this.Sftp.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe((activeConnection: string) => {
-
-      if (!activeConnection) {
-        return this.connectionForm.reset({
-          port: 22,
-          save: true,
-          autologin: false,
-          hopServerUuid: null,
-          uuid: null
-        });
-      }
-
-      // Set Form controls with currentConnection data
-      const currentConnection = this.getActiveConnection();
-      Object.keys(currentConnection).forEach((item) => {
-        if (this.connectionForm.controls[item]) this.connectionForm.controls[item].setValue(currentConnection[item]);
-      });
-    });
+    // Listen for activeConnection change
+    this.Sftp.activeConnection
+      .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnectionUuid: string) => this.onActiveConnectionChange(activeConnectionUuid));
   }
 
   ngOnDestroy(): void {
     this.connectionForm.reset();
+
+    // Remove all listeners
     this.destroySubject$.next();
   }
 
+  private onConnectionsChange(connections: SshConnection[]): void {
+    this.sshConnections = connections;
+
+    if (this.sshConnections.length === 0) return this.connectionForm.controls.hopServerUuid.disable();
+    this.connectionForm.controls.hopServerUuid.enable();
+  }
+
+  private onActiveConnectionChange(activeConnectionUuid: string): void {
+    if (!activeConnectionUuid) {
+      return this.connectionForm.reset({
+        port: 22,
+        save: true,
+        autologin: false,
+        hopServerUuid: null,
+        uuid: null
+      });
+    }
+
+    // Set Form controls with currentConnection data
+    const currentConnection = this.getActiveConnection();
+    Object.keys(currentConnection).forEach((item) => {
+      if (this.connectionForm.controls[item]) this.connectionForm.controls[item].setValue(currentConnection[item]);
+    });
+  }
+
+  /**
+   * Form getter
+   */
   get f(): { [key: string]: AbstractControl } { return this.connectionForm.controls; }
 
   sendConnect(saveOnly: boolean = false): void {

@@ -23,10 +23,15 @@ export class ActionsComponent implements OnDestroy, OnInit {
   constructor(private Sftp: AnyOpsOSAppSftpService) { }
 
   ngOnInit(): void {
-    this.Sftp.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe(connection => this.activeConnection = connection);
+
+    // Listen for activeConnection change
+    this.Sftp.activeConnection
+      .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnectionUuid: string) => this.activeConnection = activeConnectionUuid);
   }
 
   ngOnDestroy(): void {
+
+    // Remove all listeners
     this.destroySubject$.next();
   }
 

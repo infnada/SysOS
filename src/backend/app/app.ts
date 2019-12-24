@@ -38,10 +38,10 @@ export class App {
     cert: fs.readFileSync(__dirname + '/ssl/cert.pem')
   };
   private expressOptions: ServeStaticOptions = {
+    index: 'index.html',
     dotfiles: 'ignore',
     etag: false,
     extensions: ['htm', 'html'],
-    index: false,
     maxAge: '1s',
     redirect: false,
     setHeaders: (res) => {

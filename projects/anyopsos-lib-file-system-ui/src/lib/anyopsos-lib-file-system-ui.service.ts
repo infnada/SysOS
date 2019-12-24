@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
-import {ToastrService} from 'ngx-toastr';
 
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
@@ -42,7 +41,6 @@ export class AnyOpsOSLibFileSystemUiService {
   currentCutCopyConnectionUuid: string = null;
 
   constructor(private logger: AnyOpsOSLibLoggerService,
-              private Toastr: ToastrService,
               private Modal: AnyOpsOSLibModalService,
               private FileSystem: AnyOpsOSLibFileSystemService,
               private Applications: AnyOpsOSLibApplicationService) {
@@ -233,7 +231,7 @@ export class AnyOpsOSLibFileSystemUiService {
               if (res.status === 'error') return this.logger.error('FileSystemUI', 'UIdownloadFromURL -> Error while downloading file', loggerArgs, res.data);
 
               this.refreshPath(currentPath);
-              this.Toastr.success('File downloaded to ' + currentPath, 'Download file from URL');
+              this.logger.log('File downloaded to ' + currentPath, 'Download file from URL');
             },
             error => {
               this.logger.error('FileSystemUI', 'UIdownloadFromURL -> Error while downloading file', loggerArgs, error);
@@ -259,8 +257,7 @@ export class AnyOpsOSLibFileSystemUiService {
     this.logger.debug('FileSystemUI', 'UIpasteFile', loggerArgs);
 
     if (this.currentCutCopyApplication && applicationId && this.currentCutCopyConnectionUuid && connectionUuid && this.currentCutCopyApplication !== applicationId) {
-      this.logger.error('FileSystemUI', 'UIpasteFile -> C&P, D&D from different applications', arguments);
-      this.Toastr.error('Remote to Remote is not allowed', 'Drag&Drop');
+      this.logger.error('FileSystemUI', 'Drag&Drop -> C&P, D&D Remote to Remote is not allowed', arguments);
       return;
     }
 

@@ -26,7 +26,6 @@ export class NodeDetailsUtilsService {
     return state;
   }
 
-
   closeAllNodeDetails(state) {
     while (state.get('nodeDetails').size) {
       state = this.closeNodeDetails(state);

@@ -21,7 +21,7 @@ export class AnyOpsOSAppFileExplorerService {
     currentPath: string,
     currentData: AnyOpsOSFile[],
     viewAsList: boolean,
-    search: { filename: string }
+    search: { filename: string; }
   };
   currentPath: Observable<any>;
   currentData: Observable<any>;

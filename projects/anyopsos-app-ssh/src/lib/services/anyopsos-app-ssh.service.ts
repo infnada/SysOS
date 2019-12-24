@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 
 import {BehaviorSubject, Observable} from 'rxjs';
 import {v4 as uuidv4} from 'uuid';
-import {ToastrService} from 'ngx-toastr';
 import {Socket} from 'ngx-socket-io';
 
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
@@ -28,7 +27,6 @@ export class AnyOpsOSAppSshService {
   private connectionToTerminalMap: string[] = [];
 
   constructor(private logger: AnyOpsOSLibLoggerService,
-              private Toastr: ToastrService,
               private socket: Socket,
               private FileSystem: AnyOpsOSLibFileSystemService,
               private Modal: AnyOpsOSLibModalService) {
@@ -84,8 +82,7 @@ export class AnyOpsOSAppSshService {
         });
       },
       error => {
-        this.logger.error('Ssh', 'Error while getting credentials', null, error);
-        return this.Toastr.error('Error getting connections.', 'SSH');
+        this.logger.error('Ssh', 'Error while getting connections', null, error);
       });
   }
 
@@ -248,7 +245,6 @@ export class AnyOpsOSAppSshService {
       },
       error => {
         this.logger.error('Ssh', 'Error while saving connection', loggerArgs, error);
-        this.Toastr.error('Error while saving connection.', 'SSH');
       });
   }
 

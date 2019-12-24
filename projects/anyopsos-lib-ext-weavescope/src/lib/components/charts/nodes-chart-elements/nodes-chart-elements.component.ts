@@ -224,6 +224,8 @@ export class NodesChartElementsComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
+
+    // Remove all listeners
     this.destroySubject$.next();
   }
 

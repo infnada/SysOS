@@ -10,7 +10,7 @@ export class CreateFromFileComponent implements OnInit {
 
   newObjectForm: FormGroup;
 
-  constructor(private formBuilder: FormBuilder) {
+  constructor(private readonly formBuilder: FormBuilder) {
   }
 
   ngOnInit(): void {

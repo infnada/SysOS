@@ -38,6 +38,8 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
   private InfrastructureManagerNodeGraph;
   private InfrastructureManagerObjectHelper;
 
+  private currentGraphTopology: string = null;
+
   credentials: Credential[];
   connectionForm: FormGroup;
   submitted: boolean = false;
@@ -47,7 +49,7 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
 
   linkToOptions: Observable<LinkTo[]>;
 
-  constructor(private formBuilder: FormBuilder,
+  constructor(private readonly formBuilder: FormBuilder,
               private Applications: AnyOpsOSLibApplicationService,
               private serviceInjector: AnyOpsOSLibServiceInjectorService,
               private Modal: AnyOpsOSLibModalService,
@@ -55,7 +57,6 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
               private Monitor: AnyOpsOSAppMonitorService) {
 
     this.CredentialsManager = this.serviceInjector.get('AnyOpsOSAppCredentialsManagerService');
-    this.CredentialsManager.credentials.pipe(takeUntil(this.destroySubject$)).subscribe(credentials => this.credentials = credentials);
     this.InfrastructureManagerNodeGraph = this.serviceInjector.get('AnyOpsOSAppInfrastructureManagerNodeGraphService');
     this.InfrastructureManagerObjectHelper = this.serviceInjector.get('AnyOpsOSAppInfrastructureManagerObjectHelperService');
   }
@@ -76,6 +77,43 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
       type: [null]
     });
 
+    // Listen for credentials changes
+    this.CredentialsManager.credentials
+      .pipe(takeUntil(this.destroySubject$)).subscribe((credentials: Credential[]) => this.credentials = credentials);
+
+    // Listen for activeConnection change
+    this.Monitor.activeConnection
+      .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnectionUuid: string) => this.onActiveConnectionChange(activeConnectionUuid));
+
+    this.generateLinkGroups();
+  }
+
+  ngOnDestroy(): void {
+    this.connectionForm.reset();
+
+    // Remove all listeners
+    this.destroySubject$.next();
+  }
+
+  private onActiveConnectionChange(activeConnectionUuid: string): void {
+    if (!activeConnectionUuid) {
+      this.connectionForm.reset();
+      return this.newConnectionType = null;
+    }
+
+    this.newConnectionType = this.getActiveConnection().type;
+
+    this.connectionForm.controls.description.setValue(this.getActiveConnection().description);
+    this.connectionForm.controls.url.setValue(this.getActiveConnection().url);
+    this.connectionForm.controls.withCredential.setValue(this.getActiveConnection().withCredential);
+    this.connectionForm.controls.credential.setValue(this.getActiveConnection().credential);
+    this.connectionForm.controls.save.setValue(this.getActiveConnection().save);
+    this.connectionForm.controls.autologin.setValue(this.getActiveConnection().autologin);
+    this.connectionForm.controls.uuid.setValue(this.getActiveConnection().uuid);
+    this.connectionForm.controls.type.setValue(this.getActiveConnection().type);
+  }
+
+  private generateLinkGroups() {
     // Create linkGroups with VMs, Nodes, Pods...
     const linkVirtualMachines = this.InfrastructureManagerObjectHelper.getObjectsByType(null, 'VirtualMachine');
     const linkPods = this.InfrastructureManagerObjectHelper.getObjectsByType(null, 'Pod');
@@ -101,35 +139,11 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
     this.linkToOptions = this.connectionForm.get('linkTo').valueChanges
       .pipe(
         startWith(''),
-        map(value => this._filterGroup(value))
+        map(value => this.filterGroup(value))
       );
-
-    this.Monitor.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe((activeConnection: string) => {
-      if (!activeConnection) {
-        this.connectionForm.reset();
-        return this.newConnectionType = null;
-      }
-
-      this.newConnectionType = this.getActiveConnection().type;
-
-      this.connectionForm.controls.description.setValue(this.getActiveConnection().description);
-      this.connectionForm.controls.url.setValue(this.getActiveConnection().url);
-      this.connectionForm.controls.withCredential.setValue(this.getActiveConnection().withCredential);
-      this.connectionForm.controls.credential.setValue(this.getActiveConnection().credential);
-      this.connectionForm.controls.save.setValue(this.getActiveConnection().save);
-      this.connectionForm.controls.autologin.setValue(this.getActiveConnection().autologin);
-      this.connectionForm.controls.uuid.setValue(this.getActiveConnection().uuid);
-      this.connectionForm.controls.type.setValue(this.getActiveConnection().type);
-    });
-
   }
 
-  ngOnDestroy(): void {
-    this.connectionForm.reset();
-    this.destroySubject$.next();
-  }
-
-  private _filterGroup(value: string): LinkTo[] {
+  private filterGroup(value: string): LinkTo[] {
     if (value) {
       return this.linkGroups
         .map(group => ({type: group.type, nodes: nodesFilter(group.nodes, value)}))
@@ -139,11 +153,17 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
     return this.linkGroups;
   }
 
+  /**
+   * Form getter
+   */
+  get f(): { [key: string]: AbstractControl } { return this.connectionForm.controls; }
+
+  /**
+   * mat-autocomplete displayWith
+   */
   displayFn(node?: ImDataObject): string | undefined {
     return node ? node.name : undefined;
   }
-
-  get f(): { [key: string]: AbstractControl } { return this.connectionForm.controls; }
 
   setConnectionType(type: string): void {
     this.newConnectionType = type;
@@ -180,7 +200,15 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
   }
 
   setNodeGraphNodes() {
-    return this.InfrastructureManagerNodeGraph.setNodeGraphNodes();
+    return this.InfrastructureManagerNodeGraph.setNodeGraphNodes(this.currentGraphTopology);
+  }
+
+  setNodeGraphTopologies() {
+    return this.InfrastructureManagerNodeGraph.getTopologies();
+  }
+
+  selectedTopologyChange($event) {
+    this.currentGraphTopology = $event;
   }
 
   selectedNodeChange($event) {

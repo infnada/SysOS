@@ -4,13 +4,13 @@
   "lib": {
     "entryFile": "src/public-api.ts",
     "umdModuleIds": {
-      "ngx-filter-pipe": "ngx-filter-pipe",
       "@anyopsos/lib-angular-material": "anyopsos.lib-angular-material",
       "@anyopsos/lib-application": "anyopsos.lib-application",
       "@anyopsos/lib-file": "anyopsos.lib-file",
       "@anyopsos/lib-file-system": "anyopsos.lib-file-system",
       "@anyopsos/lib-file-system-ui": "anyopsos.lib-file-system-ui",
       "@anyopsos/lib-logger": "anyopsos.lib-logger",
+      "@anyopsos/lib-pipes": "anyopsos.lib-pipes",
       "@anyopsos/lib-selectable": "anyopsos.lib-selectable",
       "@anyopsos/lib-types": "anyopsos.lib-types"
     }

@@ -1,4 +1,4 @@
-import {Component, Input, OnDestroy} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
@@ -15,7 +15,7 @@ import {Netdata} from '../types/netdata';
   templateUrl: './actions.component.html',
   styleUrls: ['./actions.component.scss']
 })
-export class ActionsComponent implements OnDestroy {
+export class ActionsComponent implements OnDestroy, OnInit {
   @Input() application: Application;
 
   private destroySubject$: Subject<void> = new Subject();
@@ -28,17 +28,22 @@ export class ActionsComponent implements OnDestroy {
               private Utils: AnyOpsOSLibUtilsService,
               private Monitor: AnyOpsOSAppMonitorService,
               private Netdata: AnyOpsOSLibExtNetdataService) {
+  }
 
-    this.Monitor.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe(connection => this.activeConnection = connection);
+  ngOnInit(): void {
 
-    this.Netdata.connections.pipe(takeUntil(this.destroySubject$)).subscribe(connections => {
-      this.connection = connections[this.activeConnection];
-    });
+    // Listen for connections changes
+    this.Netdata.connections
+      .pipe(takeUntil(this.destroySubject$)).subscribe(connections => this.connection = connections[this.activeConnection]);
 
-
+    // Listen for activeConnection change
+    this.Monitor.activeConnection
+      .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnectionUuid: string) => this.activeConnection = activeConnectionUuid);
   }
 
   ngOnDestroy(): void {
+
+    // Remove all listeners
     this.destroySubject$.next();
   }
 

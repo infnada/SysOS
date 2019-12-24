@@ -2,8 +2,6 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
-import {ToastrModule} from 'ngx-toastr';
-
 import {AnyOpsOSLibAngularMaterialModule} from '@anyopsos/lib-angular-material';
 import {AnyOpsOSLibApplicationService} from '@anyopsos/lib-application';
 import {AnyOpsOSLibServiceInjectorService} from '@anyopsos/lib-service-injector';
@@ -26,16 +24,15 @@ import {AnyOpsOSAppCredentialsManagerService} from './services/anyopsos-app-cred
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    ToastrModule.forRoot(),
     // Shared module import
     AnyOpsOSLibAngularMaterialModule
   ],
   exports: []
 })
 export class AnyOpsOSAppCredentialsManagerModule {
-  constructor(private serviceInjector: AnyOpsOSLibServiceInjectorService,
-              private Applications: AnyOpsOSLibApplicationService,
-              private CredentialsManager: AnyOpsOSAppCredentialsManagerService) {
+  constructor(private readonly serviceInjector: AnyOpsOSLibServiceInjectorService,
+              private readonly Applications: AnyOpsOSLibApplicationService,
+              private readonly CredentialsManager: AnyOpsOSAppCredentialsManagerService) {
 
     this.serviceInjector.set('AnyOpsOSAppCredentialsManagerService', this.CredentialsManager);
 

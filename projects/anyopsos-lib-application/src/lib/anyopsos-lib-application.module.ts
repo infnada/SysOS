@@ -3,7 +3,6 @@ import {NgModule, Optional, SkipSelf} from '@angular/core';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 
 import {ResizableModule} from 'angular-resizable-element';
-import {ToastrModule} from 'ngx-toastr';
 
 import {AnyOpsOSLibApplicationComponent} from './anyopsos-lib-application.component';
 
@@ -14,8 +13,7 @@ import {AnyOpsOSLibApplicationComponent} from './anyopsos-lib-application.compon
   imports: [
     CommonModule,
     DragDropModule,
-    ResizableModule,
-    ToastrModule.forRoot()
+    ResizableModule
   ],
   exports: [
     AnyOpsOSLibApplicationComponent

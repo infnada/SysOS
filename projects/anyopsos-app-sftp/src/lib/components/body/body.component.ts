@@ -18,22 +18,33 @@ export class BodyComponent implements OnDestroy, OnInit {
 
   private destroySubject$: Subject<void> = new Subject();
 
+  viewSide: boolean = true;
+
   connections: SftpConnection[];
   activeConnection: string;
   viewExchange: boolean;
-
-  viewSide: boolean = true;
 
   constructor(private Sftp: AnyOpsOSAppSftpService) {
   }
 
   ngOnInit(): void {
-    this.Sftp.connections.pipe(takeUntil(this.destroySubject$)).subscribe(connections => this.connections = connections);
-    this.Sftp.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe(connection => this.activeConnection = connection);
-    this.Sftp.viewExchange.pipe(takeUntil(this.destroySubject$)).subscribe(view => this.viewExchange = view);
+
+    // Listen for connections changes
+    this.Sftp.connections
+      .pipe(takeUntil(this.destroySubject$)).subscribe((connections: SftpConnection[]) => this.connections = connections);
+
+    // Listen for activeConnection change
+    this.Sftp.activeConnection
+      .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnectionUuid: string) => this.activeConnection = activeConnectionUuid);
+
+    // Listen for viewExchange change
+    this.Sftp.viewExchange
+      .pipe(takeUntil(this.destroySubject$)).subscribe((view: boolean) => this.viewExchange = view);
   }
 
   ngOnDestroy(): void {
+
+    // Remove all listeners
     this.destroySubject$.next();
   }
 

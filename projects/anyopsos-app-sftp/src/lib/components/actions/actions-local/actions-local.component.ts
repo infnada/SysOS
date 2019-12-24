@@ -26,22 +26,32 @@ export class ActionsLocalComponent implements OnDestroy, OnInit {
 
   constructor(private FileSystemUi: AnyOpsOSLibFileSystemUiService,
               private SftpLocal: AnyOpsOSAppSftpLocalService) {
-
-    this.SftpLocal.getObserverGoPathBack().pipe(takeUntil(this.destroySubject$)).subscribe(() => {
-      this.goPathBack();
-    });
-
-    this.FileSystemUi.getObserverGoToPath().pipe(takeUntil(this.destroySubject$)).subscribe((data) => {
-      if (data.application === 'sftp#local') this.goToPath(data.path);
-    });
   }
 
   ngOnInit(): void {
-    this.SftpLocal.currentPath.pipe(takeUntil(this.destroySubject$)).subscribe(path => this.currentPath = path);
-    this.SftpLocal.search.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.search = data);
+
+    // Listen for goToPath calls
+    this.FileSystemUi.getObserverGoToPath()
+      .pipe(takeUntil(this.destroySubject$)).subscribe((data: { application: string; path: string; }) => {
+        if (data.application === 'sftp#local') this.goToPath(data.path);
+      });
+
+    // Listen for goPathBack calls
+    this.SftpLocal.getObserverGoPathBack()
+      .pipe(takeUntil(this.destroySubject$)).subscribe(() => this.goPathBack());
+
+    // Listen for currentPath change
+    this.SftpLocal.currentPath
+      .pipe(takeUntil(this.destroySubject$)).subscribe((path: string) => this.currentPath = path);
+
+    // Listen for search change
+    this.SftpLocal.search
+      .pipe(takeUntil(this.destroySubject$)).subscribe((data: { filename: string; }) => this.search = data);
   }
 
   ngOnDestroy(): void {
+
+    // Remove all listeners
     this.destroySubject$.next();
   }
 

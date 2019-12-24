@@ -71,6 +71,8 @@ export class GraphNodeStaticComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
+
+    // Remove all listeners
     this.destroySubject$.next();
   }
 

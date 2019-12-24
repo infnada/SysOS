@@ -47,6 +47,7 @@ export {MatSort} from '@angular/material/sort';
 export {MatTableDataSource} from '@angular/material/table';
 export {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
 export {MatMenuTrigger} from '@angular/material/menu';
+export {MatSnackBar} from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [],

@@ -20,7 +20,7 @@ import {ConnectionTypes} from '../../../types/connections/connection-types';
   styleUrls: ['./body-new-connection.component.scss']
 })
 export class BodyNewConnectionComponent implements OnInit, OnDestroy {
-  @ViewChild('scrollToElement') scrollToElement: ElementRef<HTMLInputElement>;
+  @ViewChild('scrollToElement', {static: false}) scrollToElement: ElementRef<HTMLInputElement>;
   @Input() application: Application;
 
   private destroySubject$: Subject<void> = new Subject();
@@ -32,7 +32,7 @@ export class BodyNewConnectionComponent implements OnInit, OnDestroy {
   submitted: boolean = false;
   newConnectionType: string = null;
 
-  constructor(private formBuilder: FormBuilder,
+  constructor(private readonly formBuilder: FormBuilder,
               private Applications: AnyOpsOSLibApplicationService,
               private serviceInjector: AnyOpsOSLibServiceInjectorService,
               private Modal: AnyOpsOSLibModalService,
@@ -41,12 +41,6 @@ export class BodyNewConnectionComponent implements OnInit, OnDestroy {
               private InfrastructureManagerNodeGraph: AnyOpsOSAppInfrastructureManagerNodeGraphService) {
 
     this.CredentialsManager = this.serviceInjector.get('AnyOpsOSAppCredentialsManagerService');
-    this.CredentialsManager.credentials.pipe(takeUntil(this.destroySubject$)).subscribe(credentials => this.credentials = credentials);
-  }
-
-  ngOnDestroy(): void {
-    this.connectionForm.reset();
-    this.destroySubject$.next();
   }
 
   ngOnInit(): void {
@@ -69,75 +63,90 @@ export class BodyNewConnectionComponent implements OnInit, OnDestroy {
       uuid: [null]
     });
 
-    /**
-     * Update validators on type change
-     */
+    // Update validators on type change
     this.connectionForm.get('type').valueChanges
-      .pipe(takeUntil(this.destroySubject$)).subscribe(type => {
+      .pipe(takeUntil(this.destroySubject$)).subscribe((type: string) => this.onFormTypeChanges(type));
 
-        if (type === 'kubernetes') {
-          this.connectionForm.controls.clusterName.setValidators([Validators.required]);
-          this.connectionForm.controls.clusterServer.setValidators([Validators.required]);
-          this.connectionForm.controls.clusterCa.setValidators([Validators.required]);
-          this.connectionForm.controls.clusterName.updateValueAndValidity();
-          this.connectionForm.controls.clusterServer.updateValueAndValidity();
-          this.connectionForm.controls.clusterCa.updateValueAndValidity();
-        } else {
-          this.connectionForm.controls.host.setValidators([Validators.required]);
-          this.connectionForm.controls.port.setValidators([Validators.required]);
-          this.connectionForm.controls.host.updateValueAndValidity();
-          this.connectionForm.controls.port.updateValueAndValidity();
-        }
+    // Listen for credentials changes
+    this.CredentialsManager.credentials
+      .pipe(takeUntil(this.destroySubject$)).subscribe((credentials: Credential[]) => this.credentials = credentials);
 
-        if (type === 'snmp') {
-          this.connectionForm.controls.community.setValidators([Validators.required]);
-          this.connectionForm.controls.community.updateValueAndValidity();
-        } else {
-          this.connectionForm.controls.credential.setValidators([Validators.required]);
-          this.connectionForm.controls.credential.updateValueAndValidity();
-        }
-    });
-
-    /**
-     * Set Form data on connection change
-     */
-    this.InfrastructureManager.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe((activeConnection: string) => {
-      if (!activeConnection) {
-        this.connectionForm.reset({
-          save: true,
-          autologin: true,
-          uuid: null
-        });
-        return this.newConnectionType = null;
-      }
-
-      const currentConnection = this.getActiveConnection();
-
-      this.newConnectionType = currentConnection.type;
-
-      if (currentConnection.type === 'kubernetes' || currentConnection.type === 'docker') {
-        (this.f.clusterName as FormControl).setValue(currentConnection.clusterName);
-        (this.f.clusterServer as FormControl).setValue(currentConnection.clusterServer);
-        (this.f.clusterCa as FormControl).setValue(currentConnection.clusterCa);
-      } else {
-        (this.f.host as FormControl).setValue(currentConnection.host);
-        (this.f.port as FormControl).setValue(currentConnection.port);
-      }
-
-      if (currentConnection.type === 'snmp') {
-        (this.f.community as FormControl).setValue(currentConnection.community);
-      } else {
-        (this.f.credential as FormControl).setValue(currentConnection.credential);
-      }
-
-      (this.f.description as FormControl).setValue(currentConnection.description);
-      (this.f.type as FormControl).setValue(currentConnection.type);
-      (this.f.save as FormControl).setValue(currentConnection.save);
-      (this.f.autologin as FormControl).setValue(currentConnection.autologin);
-      (this.f.uuid as FormControl).setValue(currentConnection.uuid);
-    });
+    // Set Form data on activeConnection change
+    this.InfrastructureManager.activeConnection
+      .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnectionUuid: string) => this.onActiveConnectionChange(activeConnectionUuid));
   }
 
+
+  ngOnDestroy(): void {
+    this.connectionForm.reset();
+
+    // Remove all listeners
+    this.destroySubject$.next();
+  }
+
+  private onActiveConnectionChange(activeConnectionUuid: string): void {
+    if (!activeConnectionUuid) {
+      this.connectionForm.reset({
+        save: true,
+        autologin: true,
+        uuid: null
+      });
+      return this.newConnectionType = null;
+    }
+
+    const currentConnection = this.getActiveConnection();
+
+    this.newConnectionType = currentConnection.type;
+
+    if (currentConnection.type === 'kubernetes' || currentConnection.type === 'docker') {
+      (this.f.clusterName as FormControl).setValue(currentConnection.clusterName);
+      (this.f.clusterServer as FormControl).setValue(currentConnection.clusterServer);
+      (this.f.clusterCa as FormControl).setValue(currentConnection.clusterCa);
+    } else {
+      (this.f.host as FormControl).setValue(currentConnection.host);
+      (this.f.port as FormControl).setValue(currentConnection.port);
+    }
+
+    if (currentConnection.type === 'snmp') {
+      (this.f.community as FormControl).setValue(currentConnection.community);
+    } else {
+      (this.f.credential as FormControl).setValue(currentConnection.credential);
+    }
+
+    (this.f.description as FormControl).setValue(currentConnection.description);
+    (this.f.type as FormControl).setValue(currentConnection.type);
+    (this.f.save as FormControl).setValue(currentConnection.save);
+    (this.f.autologin as FormControl).setValue(currentConnection.autologin);
+    (this.f.uuid as FormControl).setValue(currentConnection.uuid);
+  }
+
+  private onFormTypeChanges(type: string): void {
+    if (type === 'kubernetes') {
+      this.connectionForm.controls.clusterName.setValidators([Validators.required]);
+      this.connectionForm.controls.clusterServer.setValidators([Validators.required]);
+      this.connectionForm.controls.clusterCa.setValidators([Validators.required]);
+      this.connectionForm.controls.clusterName.updateValueAndValidity();
+      this.connectionForm.controls.clusterServer.updateValueAndValidity();
+      this.connectionForm.controls.clusterCa.updateValueAndValidity();
+    } else {
+      this.connectionForm.controls.host.setValidators([Validators.required]);
+      this.connectionForm.controls.port.setValidators([Validators.required]);
+      this.connectionForm.controls.host.updateValueAndValidity();
+      this.connectionForm.controls.port.updateValueAndValidity();
+    }
+
+    if (type === 'snmp') {
+      this.connectionForm.controls.community.setValidators([Validators.required]);
+      this.connectionForm.controls.community.updateValueAndValidity();
+    } else {
+      this.connectionForm.controls.credential.setValidators([Validators.required]);
+      this.connectionForm.controls.credential.updateValueAndValidity();
+    }
+  }
+
+  /**
+   * Form getter
+   */
   get f(): { [key: string]: AbstractControl } { return this.connectionForm.controls; }
 
   setConnectionType(type: string): void {
@@ -159,11 +168,13 @@ export class BodyNewConnectionComponent implements OnInit, OnDestroy {
       this.InfrastructureManager.connect(this.connectionForm.value, saveOnly);
       this.submitted = false;
 
-      if (saveOnly) this.connectionForm.reset({
-        save: true,
-        autologin: true,
-        uuid: null
-      });
+      if (saveOnly) {
+        this.connectionForm.reset({
+          save: true,
+          autologin: true,
+          uuid: null
+        });
+      }
     });
   }
 
@@ -179,10 +190,6 @@ export class BodyNewConnectionComponent implements OnInit, OnDestroy {
    * NodeGraph
    */
   scrollTo(): void {
-    console.log(this.scrollToElement);
-    console.log(this.scrollToElement.nativeElement);
-    console.log(this.scrollToElement.nativeElement.parentElement);
-    console.log(this.scrollToElement.nativeElement.parentElement.parentElement);
     this.Utils.angularElementScrollTo(this.scrollToElement.nativeElement.parentElement.parentElement, true);
   }
 
@@ -190,8 +197,12 @@ export class BodyNewConnectionComponent implements OnInit, OnDestroy {
     return this.InfrastructureManagerNodeGraph.setNodeGraphNodes(this.currentGraphTopology);
   }
 
+  setNodeGraphTopologies() {
+    return this.InfrastructureManagerNodeGraph.getTopologies();
+  }
+
   selectedTopologyChange($event) {
-    this.currentGraphTopology = $event;
+    this.currentGraphTopology = $event.id;
   }
 
   selectedNodeChange($event) {

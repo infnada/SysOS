@@ -1,4 +1,4 @@
-import {Component, Input, OnDestroy} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {takeUntil} from 'rxjs/operators';
 import {Subject} from 'rxjs';
 
@@ -11,18 +11,26 @@ import {AnyOpsOSAppCredentialsManagerService} from '../services/anyopsos-app-cre
   templateUrl: './actions.component.html',
   styleUrls: ['./actions.component.scss']
 })
-export class ActionsComponent implements OnDestroy {
+export class ActionsComponent implements OnDestroy, OnInit {
   @Input() application: Application;
 
   private destroySubject$: Subject<void> = new Subject();
 
   activeCredential: string;
 
-  constructor(private CredentialsManager: AnyOpsOSAppCredentialsManagerService) {
-    this.CredentialsManager.activeCredential.pipe(takeUntil(this.destroySubject$)).subscribe(credential => this.activeCredential = credential);
+  constructor(private readonly CredentialsManager: AnyOpsOSAppCredentialsManagerService) {
+  }
+
+  ngOnInit() {
+
+    // Listen for activeCredential change
+    this.CredentialsManager.activeCredential
+      .pipe(takeUntil(this.destroySubject$)).subscribe((credentialUuid: string) => this.activeCredential = credentialUuid);
   }
 
   ngOnDestroy(): void {
+
+    // Remove all listeners
     this.destroySubject$.next();
   }
 

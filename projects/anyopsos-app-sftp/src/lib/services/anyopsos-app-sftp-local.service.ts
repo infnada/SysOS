@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {Socket} from 'ngx-socket-io';
@@ -22,7 +22,7 @@ export class AnyOpsOSAppSftpLocalService {
     currentPath: string,
     currentData: AnyOpsOSFile[],
     viewAsList: boolean,
-    search: {filename: string}
+    search: { filename: string }
   };
   currentPath: Observable<any>;
   currentData: Observable<any>;

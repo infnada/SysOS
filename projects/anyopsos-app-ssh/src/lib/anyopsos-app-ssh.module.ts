@@ -2,8 +2,6 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
-import {ToastrModule} from 'ngx-toastr';
-
 import {AnyOpsOSLibAngularMaterialModule} from '@anyopsos/lib-angular-material';
 import {AnyOpsOSLibApplicationService} from '@anyopsos/lib-application';
 import {AnyOpsOSLibTerminalModule} from '@anyopsos/lib-terminal';
@@ -28,7 +26,6 @@ import {StatusComponent} from './components/status/status.component';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    ToastrModule.forRoot(),
     // Shared module import
     AnyOpsOSLibAngularMaterialModule,
     AnyOpsOSLibTerminalModule

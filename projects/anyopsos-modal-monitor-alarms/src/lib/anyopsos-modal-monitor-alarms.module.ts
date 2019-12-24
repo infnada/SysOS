@@ -3,11 +3,10 @@ import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 import {NgbModalModule, NgbActiveModal} from '@ng-bootstrap/ng-bootstrap';
-import {OrderModule} from 'ngx-order-pipe';
 
 import {AnyOpsOSLibAngularMaterialModule} from '@anyopsos/lib-angular-material';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
-import {AnyOpsOSLibSanitizeModule} from '@anyopsos/lib-sanitize';
+import {AnyOpsOSLibPipesModule} from '@anyopsos/lib-pipes';
 
 import {AnyOpsOSModalMonitorAlarmsComponent} from './components/anyopsos-modal-monitor-alarms.component';
 import {EntryComponent} from './monitor-alarms-entry/entry.component';
@@ -24,11 +23,9 @@ import { AlarmComponent } from './components/alarm/alarm.component';
     FormsModule,
     ReactiveFormsModule,
     NgbModalModule,
-    OrderModule,
     // Shared module import
     AnyOpsOSLibAngularMaterialModule,
-    AnyOpsOSLibSanitizeModule,
-    AnyOpsOSLibSanitizeModule,
+    AnyOpsOSLibPipesModule,
   ],
   providers: [
     NgbActiveModal

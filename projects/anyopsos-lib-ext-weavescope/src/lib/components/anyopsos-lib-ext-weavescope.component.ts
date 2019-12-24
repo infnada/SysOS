@@ -24,13 +24,14 @@ import {NodeDetailsUtilsService} from '../services/utils/node-details-utils.serv
 
 @Component({
   encapsulation: ViewEncapsulation.None,
-  selector: 'slews-anyopsos-lib-ext-weavescope',
+  selector: 'slews-anyopsos-lib-ext-weavescope[graphNodes][graphTopologies]',
   templateUrl: './anyopsos-lib-ext-weavescope.component.html',
   styleUrls: ['./anyopsos-lib-ext-weavescope.component.scss']
 })
 export class AnyOpsOSLibExtWeavescopeComponent implements OnChanges, AfterViewInit, OnDestroy {
-  @ViewChild('weaveApp') weaveApp: ElementRef;
-  @Input() nodes;
+  @ViewChild('weaveApp', {static: false}) weaveApp: ElementRef;
+  @Input() graphNodes;
+  @Input() graphTopologies;
   @Input() simpleLayout: boolean = false;
   @Output() selectedNode = new EventEmitter<{}>();
   @Output() selectedTopology = new EventEmitter<{}>();
@@ -86,23 +87,19 @@ export class AnyOpsOSLibExtWeavescopeComponent implements OnChanges, AfterViewIn
   }
 
   ngOnChanges(nextProps) {
-    if (nextProps.nodes.firstChange) return;
-    if (!isEqual(nextProps.nodes.previousValue, nextProps.nodes.currentValue)) {
+    if (!nextProps.graphNodes || nextProps.graphNodes && nextProps.graphNodes.firstChange) return;
+    if (!isEqual(nextProps.graphNodes.previousValue, nextProps.graphNodes.currentValue)) {
 
       this.state = this.NodeDetailsUtils.closeAllNodeDetails(this.state);
       this.state = this.NodeDetailsUtils.clearNodes(this.state);
 
-      this.state = this.state.set('nodes', fromJS(nextProps.nodes.currentValue));
+      this.state = this.state.set('nodes', fromJS(nextProps.graphNodes.currentValue));
       this.state = this.state.set('nodesLoaded', true);
       this.state = this.state.set('forceRelayout', true);
       this.State.setState(this.state);
 
       this.Init.updateStateFromNodes();
     }
-  }
-
-  ngOnDestroy(): void {
-    this.destroySubject$.next();
   }
 
   ngAfterViewInit() {
@@ -115,9 +112,14 @@ export class AnyOpsOSLibExtWeavescopeComponent implements OnChanges, AfterViewIn
     this.State.setState(this.state);
 
     // Set topology & nodes
-    setTimeout(() => this.Init.init(this.nodes), 0);
+    setTimeout(() => this.Init.init(this.graphNodes, this.graphTopologies), 0);
   }
 
+  ngOnDestroy(): void {
+
+    // Remove all listeners
+    this.destroySubject$.next();
+  }
 
   private isNodesDisplayEmpty(state) {
     return state.get('nodes').filter(node => !node.get('filtered')).isEmpty();

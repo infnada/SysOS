@@ -5,23 +5,14 @@
     "entryFile": "src/public-api.ts",
     "umdModuleIds": {
       "ngx-socket-io": "ngx-socket-io",
-      "ngx-socket-io/src/socket-io.service": "ngx-socket-io",
-      "ngx-toastr": "ngx-toastr",
       "uuid": "uuid",
-      "xterm": "xterm",
-      "xterm-addon-fit": "xterm-addon-fit",
-      "xterm-addon-web-links": "xterm-addon-web-links",
       "@anyopsos/lib-angular-material": "anyopsos.lib-angular-material",
       "@anyopsos/lib-application": "anyopsos.lib-application",
       "@anyopsos/lib-file-system": "anyopsos.lib-file-system",
       "@anyopsos/lib-logger": "anyopsos.lib-logger",
       "@anyopsos/lib-modal": "anyopsos.lib-modal",
-      "@anyopsos/lib-service-injector": "anyopsos.lib-service-injector"
+      "@anyopsos/lib-service-injector": "anyopsos.lib-service-injector",
+      "@anyopsos/lib-terminal": "anyopsos.lib-terminal"
     }
-  },
-  "whitelistedNonPeerDependencies": [
-    "xterm",
-    "xterm-addon-fit",
-    "xterm-addon-web-links"
-  ]
+  }
 }

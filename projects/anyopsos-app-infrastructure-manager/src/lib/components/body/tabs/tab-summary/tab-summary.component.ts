@@ -18,7 +18,7 @@ export interface Tag {
   styleUrls: ['./tab-summary.component.scss']
 })
 export class TabSummaryComponent implements OnInit {
-  @ViewChild('scrollToElement') scrollToElement: ElementRef<HTMLInputElement>;
+  @ViewChild('scrollToElement', {static: false}) scrollToElement: ElementRef<HTMLInputElement>;
   @Input() nmObject: ImDataObject;
 
   private currentGraphTopology: string = null;
@@ -70,6 +70,10 @@ export class TabSummaryComponent implements OnInit {
 
   setNodeGraphNodes() {
     return this.InfrastructureManagerNodeGraph.setNodeGraphNodes(this.currentGraphTopology, this.InfrastructureManager.getActiveObject());
+  }
+
+  setNodeGraphTopologies() {
+    return this.InfrastructureManagerNodeGraph.getTopologies();
   }
 
   selectedTopologyChange($event) {

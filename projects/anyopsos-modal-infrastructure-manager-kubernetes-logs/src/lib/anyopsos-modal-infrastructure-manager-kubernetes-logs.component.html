@@ -12,10 +12,10 @@
   <ng-container *ngIf="foundPods.length !== 0">
     <mat-form-field class="w-100 p-3">
       <mat-label>Containers</mat-label>
-      <mat-select placeholder="Toppings" [formControl]="containerForm" multiple>
+      <mat-select placeholder="Containers" [formControl]="containerForm" multiple>
         <mat-select-trigger>
           {{containerForm.value[0] ? containerForm.value[0].pod.name + ' - ' + containerForm.value[0].container.name : ''}}
-          <span *ngIf="containerForm.value.length > 1" class="additional-selection">
+          <span *ngIf="containerForm.value.length > 1">
             (+{{containerForm.value.length - 1}} {{containerForm.value?.length === 2 ? 'other' : 'others'}})
           </span>
         </mat-select-trigger>

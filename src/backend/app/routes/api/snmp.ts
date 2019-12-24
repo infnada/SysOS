@@ -16,7 +16,7 @@ const router = Router();
 router.get('/:type/:uuid/:oid', (req: express.Request, res: express.Response) => {
   logger.info(`[API SNMP] -> Call -> type [${req.params.type}], uuid [${req.params.uuid}], oid [${req.params.oid}]`);
 
-  if (!Array.isArray(req.params.oid)) req.params.oid = [req.params.oid];
+  // if (!Array.isArray(req.params.oid)) req.params.oid = [req.params.oid];
 
   const apiGlobals = new ApiGlobalsModule(req, res);
   const snmpSessions = new SnmpSessionsModule();

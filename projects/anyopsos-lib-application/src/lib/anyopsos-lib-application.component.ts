@@ -15,11 +15,11 @@ import {Application} from './types/application';
   encapsulation: ViewEncapsulation.None
 })
 export class AnyOpsOSLibApplicationComponent implements OnInit, AfterViewInit {
-  @ViewChild('appElement') appElement: ElementRef;
-  @ViewChild('appActions', { read: ViewContainerRef }) appActions;
-  @ViewChild('appBody', { read: ViewContainerRef }) appBody;
-  @ViewChild('appMenu', { read: ViewContainerRef }) appMenu;
-  @ViewChild('appStatus', { read: ViewContainerRef }) appStatus;
+  @ViewChild('appElement', {static: false}) appElement: ElementRef;
+  @ViewChild('appActions', {static: false, read: ViewContainerRef}) appActions;
+  @ViewChild('appBody', {static: false, read: ViewContainerRef}) appBody;
+  @ViewChild('appMenu', {static: false, read: ViewContainerRef}) appMenu;
+  @ViewChild('appStatus', {static: false, read: ViewContainerRef}) appStatus;
   @Input() application: Application;
 
   closeAppSubscription: Subscription;

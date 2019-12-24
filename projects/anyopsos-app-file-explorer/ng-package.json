@@ -5,7 +5,6 @@
     "entryFile": "src/public-api.ts",
     "umdModuleIds": {
       "angular-file": "angular-file",
-      "ngx-filter-pipe": "ngx-filter-pipe",
       "@anyopsos/lib-angular-material": "anyopsos.lib-angular-material",
       "@anyopsos/lib-application": "anyopsos.lib-application",
       "@anyopsos/lib-file": "anyopsos.lib-file",

@@ -326,7 +326,7 @@ export class SelectorsService implements OnDestroy {
       () => this.focusedNodesIdsSelector(this.state).length - 1,
       this.canvasCircularExpanseSelector,
     ],
-    (scale, circularNodesCount, viewportExpanse: number) => {
+    (scale: number, circularNodesCount, viewportExpanse: number) => {
       // Here we calculate the zoom factor of the nodes that get selected into focus.
       // The factor is a somewhat arbitrary function (based on what looks good) of the
       // viewport dimensions and the number of nodes in the circular layout. The idea
@@ -613,6 +613,8 @@ export class SelectorsService implements OnDestroy {
   }
 
   ngOnDestroy(): void {
+
+    // Remove all listeners
     this.destroySubject$.next();
   }
 

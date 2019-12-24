@@ -19,28 +19,38 @@ export class BodyComponent implements OnDestroy, OnInit {
 
   private destroySubject$: Subject<void> = new Subject();
 
-  activeConnection: string;
   viewSide: boolean = true;
 
   connections: Netdata[];
+  activeConnection: string;
 
   constructor(private Utils: AnyOpsOSLibUtilsService,
               private Monitor: AnyOpsOSAppMonitorService) {
   }
 
   ngOnInit(): void {
-    this.Monitor.connections.pipe(takeUntil(this.destroySubject$)).subscribe(connections => this.connections = connections);
-    this.Monitor.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe(connection => {
-      this.activeConnection = connection;
 
-      if (this.activeConnection !== null && this.getActiveConnection().state === 'disconnected') {
-        setTimeout(() => this.Utils.scrollTo('monitor_main-body', true), 100);
-      }
-    });
+    // Listen for connections changes
+    this.Monitor.connections
+      .pipe(takeUntil(this.destroySubject$)).subscribe((connections: Netdata[]) => this.connections = connections);
+
+    // Listen for activeConnection change
+    this.Monitor.activeConnection
+      .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnectionUuid: string) => this.onActiveConnectionChange(activeConnectionUuid));
   }
 
   ngOnDestroy(): void {
+
+    // Remove all listeners
     this.destroySubject$.next();
+  }
+
+  private onActiveConnectionChange(activeConnectionUuid: string): void {
+    this.activeConnection = activeConnectionUuid;
+
+    if (this.activeConnection !== null && this.getActiveConnection().state === 'disconnected') {
+      setTimeout(() => this.Utils.scrollTo('monitor_main-body', true), 100);
+    }
   }
 
   getActiveConnection(): Netdata {

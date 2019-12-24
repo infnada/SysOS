@@ -2,8 +2,6 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
-import {ToastrModule} from 'ngx-toastr';
-
 import {AnyOpsOSLibAngularMaterialModule} from '@anyopsos/lib-angular-material';
 import {AnyOpsOSLibApplicationService} from '@anyopsos/lib-application';
 import {AnyOpsOSLibServiceInjectorService} from '@anyopsos/lib-service-injector';
@@ -116,7 +114,6 @@ import {SwitchFeaturesComponent} from './components/body/tabs/tab-summary/vmware
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    ToastrModule.forRoot(),
     // Shared module import
     AnyOpsOSLibExtWeavescopeModule,
     AnyOpsOSLibAngularMaterialModule,

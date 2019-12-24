@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 
-import {ToastrService} from 'ngx-toastr';
-
+import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibVmwareService} from '@anyopsos/lib-vmware';
 
 import {AnyOpsOSAppInfrastructureManagerService} from '../anyopsos-app-infrastructure-manager.service';
@@ -15,7 +14,7 @@ import {VMWareVM} from '../../types/vmware-vm';
 })
 export class AnyOpsOSAppInfrastructureVmwareNodeActionsService {
 
-  constructor(private Toastr: ToastrService,
+  constructor(private logger: AnyOpsOSLibLoggerService,
               private VMWare: AnyOpsOSLibVmwareService,
               private InfrastructureManager: AnyOpsOSAppInfrastructureManagerService) {
   }
@@ -104,7 +103,7 @@ export class AnyOpsOSAppInfrastructureVmwareNodeActionsService {
     }).then((vmActionResult) => {
       if (vmActionResult.status === 'error') throw {error: vmActionResult.error, description: `Failed to ${action} off VM`};
     }).catch((e) => {
-      this.Toastr.error((e.description ? e.description : e.message), `Error while ${action} on VMWare VM`);
+      this.logger.error((e.description ? e.description : e.message), `Error while ${action} on VMWare VM`);
 
       throw e;
     });

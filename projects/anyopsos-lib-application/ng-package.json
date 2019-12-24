@@ -5,7 +5,6 @@
     "entryFile": "src/public-api.ts",
     "umdModuleIds": {
       "angular-resizable-element": "angular-resizable-element",
-      "ngx-toastr": "ngx-toastr",
       "@anyopsos/lib-file-system": "anyopsos.lib-file-system",
       "@anyopsos/lib-logger": "anyopsos.lib-logger"
     }

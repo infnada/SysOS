@@ -1,4 +1,4 @@
-import {Injectable, OnDestroy} from '@angular/core';
+import {Injectable, OnDestroy, OnInit} from '@angular/core';
 
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
@@ -14,7 +14,7 @@ import {ConnectionKubernetes} from '../types/connections/connection-kubernetes';
 @Injectable({
   providedIn: 'root'
 })
-export class AnyOpsOSAppInfrastructureManagerTreeDataService implements OnDestroy {
+export class AnyOpsOSAppInfrastructureManagerTreeDataService implements OnDestroy, OnInit {
 
   private destroySubject$: Subject<void> = new Subject();
 
@@ -22,31 +22,39 @@ export class AnyOpsOSAppInfrastructureManagerTreeDataService implements OnDestro
   private dataStore: {  // This is where we will store our data in memory
     treeData: ImTreeNode[]
   };
-  treeData: Observable<any>;
+  treeData: Observable<ImTreeNode[]>;
 
   constructor(private InfrastructureManager: AnyOpsOSAppInfrastructureManagerService) {
-    this.dataStore = {
-      treeData: []
-    };
+    this.dataStore = { treeData: [] };
 
     this.$treeData = new BehaviorSubject(this.dataStore.treeData);
     this.treeData = this.$treeData.asObservable();
+  }
 
-    // Subscribe to Connections
-    this.InfrastructureManager.connections.pipe(takeUntil(this.destroySubject$)).subscribe(() => {
+  ngOnInit(): void {
 
-      // Every time a connection is modified, check if new treeData has to be emitted
-      if (JSON.stringify(this.dataStore.treeData) !== JSON.stringify(this.getTreeData())) {
-        this.dataStore.treeData = this.getTreeData();
-
-        // broadcast data to subscribers if treeData has changed as well
-        this.$treeData.next(Object.assign({}, this.dataStore).treeData);
-      }
-    });
+    // Listen for connections changes
+    this.InfrastructureManager.connections
+      .pipe(takeUntil(this.destroySubject$)).subscribe(() => this.onConnectionsChange());
   }
 
   ngOnDestroy(): void {
+
+    // Remove all listeners
     this.destroySubject$.next();
+  }
+
+  /**
+   * Set new tree data if needed
+   */
+  private onConnectionsChange() {
+    // Every time a connection is modified, check if new treeData has to be emitted
+    if (JSON.stringify(this.dataStore.treeData) !== JSON.stringify(this.getTreeData())) {
+      this.dataStore.treeData = this.getTreeData();
+
+      // broadcast data to subscribers if treeData has changed as well
+      this.$treeData.next(Object.assign({}, this.dataStore).treeData);
+    }
   }
 
   /**

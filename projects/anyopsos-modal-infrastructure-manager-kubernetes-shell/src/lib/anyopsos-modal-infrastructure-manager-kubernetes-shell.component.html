@@ -12,7 +12,7 @@
   <ng-container *ngIf="foundPods.length !== 0">
     <mat-form-field class="w-100 p-3">
       <mat-label>Container</mat-label>
-      <mat-select placeholder="Toppings" [formControl]="containerForm">
+      <mat-select placeholder="Container" [formControl]="containerForm">
         <mat-select-trigger>
           {{containerForm.value ? containerForm.value.pod.name + ' - ' + containerForm.value.container.name : ''}}
         </mat-select-trigger>

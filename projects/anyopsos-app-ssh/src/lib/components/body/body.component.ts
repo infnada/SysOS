@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, ViewChild, ElementRef, ViewEncapsulation, OnDestroy} from '@angular/core';
+import {Component, Input, OnInit, ViewEncapsulation, OnDestroy} from '@angular/core';
 
 import {takeUntil} from 'rxjs/operators';
 import {Subject} from 'rxjs';
@@ -19,15 +19,14 @@ import {SshConnection} from '../../types/ssh-connection';
 export class BodyComponent implements OnDestroy, OnInit {
   @Input() application: Application;
 
-  terminalUuid: string = null;
-
   private destroySubject$: Subject<void> = new Subject();
+
+  viewSide: boolean = true;
 
   connections: SshConnection[];
   activeConnection: string;
 
-  viewSide: boolean = true;
-
+  terminalUuid: string = null;
   customTerminalMessage: string = null;
 
   constructor(private socket: Socket,
@@ -35,15 +34,23 @@ export class BodyComponent implements OnDestroy, OnInit {
   }
 
   ngOnInit(): void {
-    this.Ssh.connections.pipe(takeUntil(this.destroySubject$)).subscribe(connections => this.connections = connections);
-    this.Ssh.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe(activeConnection => {
-      if (activeConnection) this.terminalUuid = this.Ssh.getTerminalMap(activeConnection);
 
-      this.activeConnection = activeConnection;
-    });
+    // Listen for connections change
+    this.Ssh.connections
+      .pipe(takeUntil(this.destroySubject$)).subscribe((connections: SshConnection[]) => this.connections = connections);
+
+    // Listen for activeConnection change
+    this.Ssh.activeConnection
+      .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnectionUuid: string) => {
+        if (activeConnectionUuid) this.terminalUuid = this.Ssh.getTerminalMap(activeConnectionUuid);
+
+        this.activeConnection = activeConnectionUuid;
+      });
   }
 
   ngOnDestroy(): void {
+
+    // Remove all listeners
     this.destroySubject$.next();
   }
 

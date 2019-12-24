@@ -2,9 +2,8 @@ import {Injectable, Injector, Compiler, NgModuleFactory} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 
 import {Observable, BehaviorSubject, Subject} from 'rxjs';
-import {ToastrService} from 'ngx-toastr';
-import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 
+import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
 
 import {Application} from './types/application';
@@ -39,7 +38,6 @@ export class AnyOpsOSLibApplicationService {
               private compiler: Compiler,
               private injector: Injector,
               private http: HttpClient,
-              private Toastr: ToastrService,
               private FileSystem: AnyOpsOSLibFileSystemService) {
 
     this.dataStore = {taskBarApplications: [], openedApplications: [], applications: [], taskbarItemOpen: null};
@@ -97,7 +95,6 @@ export class AnyOpsOSLibApplicationService {
   errorHandler(e: any): Error {
     if (!e) throw new Error('e_not_found');
 
-    this.Toastr.error(e, 'General Error');
     this.logger.error('Applications', 'General Error', null, e);
     return new Error(e);
   }

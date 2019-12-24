@@ -14,8 +14,8 @@ import {AnyOpsOSAppInfrastructureVmwareNodeActionsService} from './vmware/anyops
 
 import {ImTreeNode} from '../types/im-tree-node';
 import {ConnectionVmware} from '../types/connections/connection-vmware';
-import {ImDataObject} from "../types/im-data-object";
-import {VMWareVM} from "../types/vmware-vm";
+import {ImDataObject} from '../types/im-data-object';
+import {VMWareVM} from '../types/vmware-vm';
 
 @Injectable({
   providedIn: 'root'

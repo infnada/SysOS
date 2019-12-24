@@ -29,7 +29,7 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
   connectionForm: FormGroup;
   newConnectionType: string = null;
 
-  constructor(private formBuilder: FormBuilder,
+  constructor(private readonly formBuilder: FormBuilder,
               private Applications: AnyOpsOSLibApplicationService,
               private Modal: AnyOpsOSLibModalService,
               private serviceInjector: AnyOpsOSLibServiceInjectorService,
@@ -45,59 +45,67 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
       datastore: ['', Validators.required],
     });
 
-    this.DatastoreExplorer.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe((activeConnection: string) => {
+    // Listen for activeConnection change
+    this.DatastoreExplorer.activeConnection
+      .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnectionUuid: string) => this.onActiveConnectionChange(activeConnectionUuid));
 
-      if (!activeConnection) {
-        this.newConnectionType = null;
-        return this.connectionForm.reset();
-      }
-
-      this.newConnectionType = this.getActiveConnection().type;
-      this.connectionForm.controls.datastore.setValue(this.getActiveConnection());
-    });
-
-    /**
-     * If initData TODO
-     */
-    if (this.application.initData && this.application.initData.type) {
-      const initConnection = this.InfrastructureManager.getConnectionByUuid(this.application.initData.connectionUuid);
-
-      if (this.application.initData.type === 'vmware') {
-        this.DatastoreExplorer.connect({
-          credential: initConnection.credential,
-          host: initConnection.host,
-          port: initConnection.port,
-          data: {
-            obj: this.application.initData.data.datastore,
-            datacenter: this.InfrastructureManagerObjectHelper.getParentObjectByType(this.application.initData.connectionUuid, 'Datacenter', this.application.initData.data.datastore.info.parent)
-          },
-          type: 'vmware'
-        }).then(() => {
-          this.DatastoreExplorerServer.reloadPath(this.getActiveConnection().uuid);
-        });
-      }
-
-      if (this.application.initData.type === 'netapp') {
-        this.DatastoreExplorer.connect({
-          credential: initConnection.credential,
-          host: initConnection.host,
-          port: initConnection.port,
-          data: {
-            obj: this.application.initData.data.volume
-          },
-          type: 'netapp'
-        }).then(() => {
-          this.DatastoreExplorerServer.reloadPath(this.getActiveConnection().uuid);
-        });
-      }
-    }
+    if (this.application.initData && this.application.initData.type) this.initializeWithData();
   }
 
   ngOnDestroy(): void {
     this.connectionForm.reset();
+
+    // Remove all listeners
     this.destroySubject$.next();
   }
 
+  private onActiveConnectionChange(activeConnection: string): void {
+    if (!activeConnection) {
+      this.newConnectionType = null;
+      return this.connectionForm.reset();
+    }
+
+    this.newConnectionType = this.getActiveConnection().type;
+    this.connectionForm.controls.datastore.setValue(this.getActiveConnection());
+  }
+
+  // TODO if contains initData
+  private initializeWithData() {
+    const initConnection = this.InfrastructureManager.getConnectionByUuid(this.application.initData.connectionUuid);
+
+    if (this.application.initData.type === 'vmware') {
+      this.DatastoreExplorer.connect({
+        credential: initConnection.credential,
+        host: initConnection.host,
+        port: initConnection.port,
+        data: {
+          obj: this.application.initData.data.datastore,
+          datacenter: this.InfrastructureManagerObjectHelper.getParentObjectByType(this.application.initData.connectionUuid, 'Datacenter', this.application.initData.data.datastore.info.parent)
+        },
+        type: 'vmware'
+      }).then(() => {
+        this.DatastoreExplorerServer.reloadPath(this.getActiveConnection().uuid);
+      });
+    }
+
+    if (this.application.initData.type === 'netapp') {
+      this.DatastoreExplorer.connect({
+        credential: initConnection.credential,
+        host: initConnection.host,
+        port: initConnection.port,
+        data: {
+          obj: this.application.initData.data.volume
+        },
+        type: 'netapp'
+      }).then(() => {
+        this.DatastoreExplorerServer.reloadPath(this.getActiveConnection().uuid);
+      });
+    }
+  }
+
+  /**
+   * Form getter
+   */
   get f(): { [key: string]: AbstractControl } { return this.connectionForm.controls; }
 
   setConnectionType(type: string): void {

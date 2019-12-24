@@ -18,22 +18,33 @@ export class BodyComponent implements OnDestroy, OnInit {
 
   private destroySubject$: Subject<void> = new Subject();
 
+  viewSide: boolean = true;
+
   connections: DatastoreExplorerConnection[];
   activeConnection: string;
   viewExchange: boolean;
-
-  viewSide: boolean = true;
 
   constructor(private DatastoreExplorer: AnyOpsOSAppDatastoreExplorerService) {
   }
 
   ngOnInit(): void {
-    this.DatastoreExplorer.connections.pipe(takeUntil(this.destroySubject$)).subscribe(connections => this.connections = connections);
-    this.DatastoreExplorer.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe(connection => this.activeConnection = connection);
-    this.DatastoreExplorer.viewExchange.pipe(takeUntil(this.destroySubject$)).subscribe(view => this.viewExchange = view);
+
+    // Listen for connections changes
+    this.DatastoreExplorer.connections
+      .pipe(takeUntil(this.destroySubject$)).subscribe((connections: DatastoreExplorerConnection[]) => this.connections = connections);
+
+    // Listen for activeConnection change
+    this.DatastoreExplorer.activeConnection
+      .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnectionUuid: string) => this.activeConnection = activeConnectionUuid);
+
+    // Listen for viewExchange change
+    this.DatastoreExplorer.viewExchange
+      .pipe(takeUntil(this.destroySubject$)).subscribe((view: boolean) => this.viewExchange = view);
   }
 
   ngOnDestroy(): void {
+
+    // Remove all listeners
     this.destroySubject$.next();
   }
 

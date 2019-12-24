@@ -6,8 +6,6 @@ $fa-font-path : '~node_modules/@fortawesome/fontawesome-free/webfonts';
 @import '~@fortawesome/fontawesome-free/scss/brands.scss';
 @import "~@angular/material/prebuilt-themes/indigo-pink.css";
 @import "~material-design-icons/iconfont/material-icons.css";
-@import '~ngx-toastr/toastr.css';
-
 
 *, *:before, *:after {
   box-sizing: border-box;
@@ -220,6 +218,17 @@ h1, h2, h3, h4, h5, h6 {
 .mat-menu-item {
   line-height: 40px !important;
   height: 40px !important;
+}
+
+//////////
+// MAT SNACK
+//////////
+.cdk-overlay-container {
+  z-index: 99999;
+}
+
+.mat-snack-bar-container {
+  margin: 55px;
 }
 
 //////////

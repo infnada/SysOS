@@ -28,7 +28,7 @@ export class BodyLocalComponent implements OnDestroy, OnInit {
   currentData: AnyOpsOSFile[];
 
   viewAsList: boolean;
-  search: { filename: string } = null;
+  search: { filename: string; } = null;
 
   currentActive: number = 0;
 
@@ -40,23 +40,41 @@ export class BodyLocalComponent implements OnDestroy, OnInit {
               private Applications: AnyOpsOSLibApplicationService,
               private DatastoreExplorerLocal: AnyOpsOSAppDatastoreExplorerLocalService) {
 
-    this.FileSystemUi.getObserverRefreshPath().pipe(takeUntil(this.destroySubject$)).subscribe(path => {
-      if (path === this.currentPath) this.reloadPath();
-    });
   }
 
   ngOnInit(): void {
+    // Listen for refreshPath call
+    this.FileSystemUi.getObserverRefreshPath()
+      .pipe(takeUntil(this.destroySubject$)).subscribe((path: string) => {
+        if (path === this.currentPath) this.reloadPath();
+      });
+
     // Is loading data from Backend?
-    this.DatastoreExplorerLocal.getObserverLoadingData().pipe(takeUntil(this.destroySubject$)).subscribe(loadingData => this.loadingData = loadingData);
+    this.DatastoreExplorerLocal.getObserverLoadingData()
+      .pipe(takeUntil(this.destroySubject$)).subscribe((loadingData: boolean) => this.loadingData = loadingData);
 
-    this.DatastoreExplorerLocal.currentPath.pipe(takeUntil(this.destroySubject$)).subscribe(path => this.currentPath = path);
-    this.DatastoreExplorerLocal.currentData.pipe(takeUntil(this.destroySubject$)).subscribe(data => {
-      this.currentData = data;
-      this.resetActive();
-    });
-    this.DatastoreExplorerLocal.viewAsList.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.viewAsList = data);
-    this.DatastoreExplorerLocal.search.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.search = data);
+    // Listen for currentPath change
+    this.DatastoreExplorerLocal.currentPath
+      .pipe(takeUntil(this.destroySubject$)).subscribe((path: string) => this.currentPath = path);
 
+    // Listen for currentPath change
+    this.DatastoreExplorerLocal.currentData
+      .pipe(takeUntil(this.destroySubject$)).subscribe((data: AnyOpsOSFile[]) => {
+        this.currentData = data;
+        this.resetActive();
+      });
+
+    // Listen for currentPath change
+    this.DatastoreExplorerLocal.viewAsList
+      .pipe(takeUntil(this.destroySubject$)).subscribe((data: boolean) => this.viewAsList = data);
+
+    // Listen for currentPath change
+    this.DatastoreExplorerLocal.search
+      .pipe(takeUntil(this.destroySubject$)).subscribe((data: { filename: string; }) => this.search = data);
+
+    /**
+     * Initialize path
+     */
     if (this.application.initData && this.application.initData.path) {
       return this.goToPath(this.application.initData.path);
     }
@@ -65,6 +83,8 @@ export class BodyLocalComponent implements OnDestroy, OnInit {
   }
 
   ngOnDestroy(): void {
+
+    // Remove all listeners
     this.destroySubject$.next();
   }
 

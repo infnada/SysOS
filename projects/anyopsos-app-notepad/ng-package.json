@@ -4,8 +4,8 @@
   "lib": {
     "entryFile": "src/public-api.ts",
     "umdModuleIds": {
-      "ngx-monaco-editor": "ngx-monaco-editor",
-      "@anyopsos/lib-application": "anyopsos.lib-application"
+      "@anyopsos/lib-application": "anyopsos.lib-application",
+      "@anyopsos/lib-theia": "anyopsos.lib-theia"
     }
   }
 }

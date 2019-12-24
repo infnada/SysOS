@@ -5,10 +5,7 @@
     "entryFile": "src/public-api.ts",
     "umdModuleIds": {
       "angular-file": "angular-file",
-      "ngx-filter-pipe": "ngx-filter-pipe",
       "ngx-socket-io": "ngx-socket-io",
-      "ngx-socket-io/src/socket-io.service": "ngx-socket-io",
-      "ngx-toastr": "ngx-toastr",
       "uuid": "uuid",
       "@anyopsos/lib-angular-material": "anyopsos.lib-angular-material",
       "@anyopsos/lib-application": "anyopsos.lib-application",

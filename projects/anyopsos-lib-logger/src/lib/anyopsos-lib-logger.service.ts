@@ -2,12 +2,15 @@ import {Injectable} from '@angular/core';
 
 import {NGXLogger} from 'ngx-logger';
 
+import {MatSnackBar} from '@anyopsos/lib-angular-material';
+
 @Injectable({
   providedIn: 'root'
 })
 export class AnyOpsOSLibLoggerService {
 
-  constructor(private logger: NGXLogger) {
+  constructor(private readonly logger: NGXLogger,
+              private readonly snackBar: MatSnackBar) {
   }
 
 
@@ -25,17 +28,21 @@ export class AnyOpsOSLibLoggerService {
 
   log(entry: string, message: string, args?: IArguments, ...anything: any[]) {
     this.logger.log(`[${entry}] -> ${message} -> ${JSON.stringify(args)} -> ${anything}`);
+    this.snackBar.open(message, entry, { panelClass: 'bg-success' });
   }
 
   warn(entry: string, message: string, args?: IArguments, ...anything: any[]) {
     this.logger.warn(`[${entry}] -> ${message} -> ${JSON.stringify(args)} -> ${anything}`);
+    this.snackBar.open(message, entry, { panelClass: 'bg-warning' });
   }
 
   error(entry: string, message: string, args?: IArguments, ...anything: any[]) {
     this.logger.error(`[${entry}] -> ${message} -> ${JSON.stringify(args)} -> ${anything}`);
+    this.snackBar.open(message, entry, { panelClass: 'bg-danger' });
   }
 
   fatal(entry: string, message: string, args?: IArguments, ...anything: any[]) {
     this.logger.fatal(`[${entry}] -> ${message} -> ${JSON.stringify(args)} -> ${anything}`);
+    this.snackBar.open(message, entry, { panelClass: 'bg-danger' });
   }
 }

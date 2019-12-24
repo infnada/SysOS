@@ -18,7 +18,7 @@ enum EditorMode {
   styleUrls: ['./anyopsos-modal-infrastructure-manager-kubernetes-edit-resource.component.scss']
 })
 export class AnyOpsOSModalInfrastructureManagerKubernetesEditResourceComponent implements OnInit {
-  @ViewChild('group') buttonToggleGroup: MatButtonToggleGroup;
+  @ViewChild('group', {static: false}) buttonToggleGroup: MatButtonToggleGroup;
   @Input() object: ImDataObject;
 
   selectedMode = EditorMode.YAML;

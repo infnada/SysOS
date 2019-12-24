@@ -74,7 +74,6 @@ anyOpsOS redistributes the following third-party software on the pre-built docke
 | ngx-monaco-editor                 | perpetual      | material                | MIT               | git+https://github.com/atularen/ngx-monaco-editor.git            | 7.0.0 |
 | ngx-order-pipe                    | perpetual      | material                | MIT               | git+https://github.com/VadimDez/ngx-order-pipe.git               | 2.0.3 |
 | ngx-socket-io                     | perpetual      | material                | MIT               | git+ssh://git@github.com/rodgc/ngx-socket-io.git                 | 2.1.1 |
-| ngx-toastr                        | perpetual      | material                | MIT               | git+https://github.com/scttcper/ngx-toastr.git                   | 10.1.0 |
 | node-fetch                        | perpetual      | material                | MIT               | git+https://github.com/bitinn/node-fetch.git                     | 2.6.0 |
 | read-config                       | perpetual      | material                | MIT               | git+https://github.com/coditorium/nodejs-read-config.git         | 1.6.0 |
 | rxjs                              | perpetual      | material                | Apache-2.0        | git+https://github.com/reactivex/rxjs.git                        | 6.3.3 |

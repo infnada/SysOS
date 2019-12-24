@@ -4,8 +4,7 @@ import {
   ViewChild,
   ElementRef,
   Input,
-  OnDestroy,
-  ViewEncapsulation
+  OnDestroy
 } from '@angular/core';
 import {CdkDragStart} from '@angular/cdk/drag-drop';
 
@@ -26,8 +25,8 @@ import {ContextMenuItem, IMConnection, AnyOpsOSFile} from '@anyopsos/lib-types';
   styleUrls: ['./anyopsos-lib-folder.component.scss'],
 })
 export class AnyOpsOSLibFolderComponent implements OnDestroy, OnInit {
-  @ViewChild(MatMenuTrigger) contextMenuFolder: MatMenuTrigger;
-  @ViewChild('selectableContainer') selectableContainer: ElementRef;
+  @ViewChild(MatMenuTrigger, {static: false}) contextMenuFolder: MatMenuTrigger;
+  @ViewChild('selectableContainer', {static: true}) selectableContainer: ElementRef;
 
   @Input() application: Application;
 
@@ -44,7 +43,7 @@ export class AnyOpsOSLibFolderComponent implements OnDestroy, OnInit {
 
   @Input() viewAsList: boolean = false;
   @Input() loadingData: boolean = false;
-  @Input() search: { filename: string } = null;
+  @Input() search: { filename: string; } = null;
 
   private destroySubject$: Subject<void> = new Subject();
 
@@ -102,9 +101,18 @@ export class AnyOpsOSLibFolderComponent implements OnDestroy, OnInit {
   }
 
   ngOnInit(): void {
-    this.FileSystemUi.copyFile.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.copyFile = data);
-    this.FileSystemUi.cutFile.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.cutFile = data);
 
+    // Listen for copyFile change
+    this.FileSystemUi.copyFile
+      .pipe(takeUntil(this.destroySubject$)).subscribe((data: { fileName: string; currentPath: string; fullPath: string; }) => this.copyFile = data);
+
+    // Listen for cutFile change
+    this.FileSystemUi.cutFile
+      .pipe(takeUntil(this.destroySubject$)).subscribe((data: { fileName: string; currentPath: string; fullPath: string; }) => this.cutFile = data);
+
+    /**
+     * Initialize file Selectable
+     */
     this.Selectable.init({
       appendTo: this.selectableContainer,
       ignore: 'a'
@@ -112,6 +120,8 @@ export class AnyOpsOSLibFolderComponent implements OnDestroy, OnInit {
   }
 
   ngOnDestroy(): void {
+
+    // Remove all listeners
     this.destroySubject$.next();
   }
 

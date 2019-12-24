@@ -1,0 +1,56 @@
+<div>
+
+  <ng-container [formGroup]="form">
+    <ng-container formArrayName="categories">
+
+      <div *ngFor="let category of categories.controls; let i = index;" [formGroupName]="i">
+
+        <mat-form-field class="w-50">
+          <input matInput name="name" formControlName="name" placeholder="Name" (keyup)="check(i)">
+          <mat-hint align="end">{{category.get('name').value?.length}} / 253</mat-hint>
+          <mat-error *ngIf="category.get('name').errors?.unique">
+            {{category.get('name').value}} is not unique
+          </mat-error>
+          <mat-error *ngIf="category.get('name').errors?.pattern">
+            Category name must be alphanumeric.
+          </mat-error>
+          <mat-error *ngIf="category.get('name').errors?.maxlength">
+            Category name must not exceed 253 characters.
+          </mat-error>
+        </mat-form-field>
+
+        <div class="clearfix"></div>
+
+        <ng-container formArrayName="values">
+
+          <ng-container *ngFor="let value of categoryValues(i)?.controls; let vi = index" [formGroupName]="vi">
+
+            <mat-form-field class="ml-5 w-50">
+              <input matInput name="value" formControlName="value" placeholder="Value" (keyup)="check(i, vi)">
+              <mat-hint align="end">{{value.get('value').value?.length}} / 253</mat-hint>
+              <mat-error *ngIf="value.get('value').errors?.unique">
+                {{value.get('value').value}} is not unique
+              </mat-error>
+              <mat-error *ngIf="value.get('value').errors?.pattern">
+                Category name must be alphanumeric.
+              </mat-error>
+              <mat-error *ngIf="value.get('value').errors?.maxlength">
+                Category name must not exceed 253 characters.
+              </mat-error>
+            </mat-form-field>
+
+          </ng-container>
+
+        </ng-container>
+
+        <div>
+          <button mat-icon-button *ngIf="isRemovable(i)" (click)="remove(i)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+
+    </ng-container>
+  </ng-container>
+
+</div>

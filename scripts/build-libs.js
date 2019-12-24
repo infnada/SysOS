@@ -17,6 +17,7 @@ function onExit(child) {
 
 const projectInOrder = [
   'anyopsos-lib-angular-material',
+  'anyopsos-lib-pipes',
   'anyopsos-lib-logger',
   'anyopsos-lib-file-system',
   'anyopsos-lib-application',
@@ -31,7 +32,6 @@ const projectInOrder = [
   'anyopsos-lib-folder',
   'anyopsos-lib-service-injector',
   'anyopsos-lib-scroll-spy',
-  'anyopsos-lib-sanitize',
   'anyopsos-lib-utils'
 ];
 

@@ -153,22 +153,29 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
    * Gets adjacent Datastores from a HostSystem/StoragePod node
    */
   private getAdjacentDatastores(objData: ImDataObject): string[] {
-    const adjacentDatastores = [];
 
-    if (objData.info.data.datastore[0].ManagedObjectReference) {
-      // Connect to Datastores
-      if (Array.isArray(objData.info.data.datastore[0].ManagedObjectReference)) {
-        Array.isArray(objData.info.data.datastore[0].ManagedObjectReference.forEach((datastoreData) => {
-          adjacentDatastores.push(`${objData.info.mainUuid};\u003c${datastoreData.name}:${datastoreData.type}\u003e`);
-        }));
-      } else {
-        adjacentDatastores.push(`${objData.info.mainUuid};\u003c${objData.info.data.datastore[0].ManagedObjectReference.name}:${objData.info.data.datastore[0].ManagedObjectReference.type}\u003e`);
-      }
-
-      return adjacentDatastores;
+    if (objData.type === 'StoragePod') {
+      return this.InfrastructureManagerObjectHelper.getChildObjectsByType(objData.info.mainUuid, 'Datastore', objData.info.obj).map(obj => obj.info.uuid);
     }
 
-    return adjacentDatastores;
+    if (objData.type === 'HostSystem') {
+      const adjacentDatastores = [];
+
+      if (objData.info.data.datastore[0].ManagedObjectReference) {
+        // Connect to Datastores
+        if (Array.isArray(objData.info.data.datastore[0].ManagedObjectReference)) {
+          Array.isArray(objData.info.data.datastore[0].ManagedObjectReference.forEach((datastoreData) => {
+            adjacentDatastores.push(`${objData.info.mainUuid};\u003c${datastoreData.name}:${datastoreData.type}\u003e`);
+          }));
+        } else {
+          adjacentDatastores.push(`${objData.info.mainUuid};\u003c${objData.info.data.datastore[0].ManagedObjectReference.name}:${objData.info.data.datastore[0].ManagedObjectReference.type}\u003e`);
+        }
+
+        return adjacentDatastores;
+      }
+    }
+
+    return [];
   }
 
   /**
@@ -730,6 +737,10 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
     }
 
     if (objData.type === 'Datastore') {
+
+      // Do not go further when mainNode is a VirtualMachine, otherwise this will get all VMs from this Datastore and so one
+      if (this.mainNode && this.mainNode.type === 'VirtualMachine') return adjacents;
+
       adjacents = [...adjacents, ...this.getAdjacentVMs(objData)];
     }
 
@@ -808,7 +819,7 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
     this.setAdjacentNodes(objData);
   }
 
-  setNodeGraphNodes(graphType: string, objData?: ImDataObject): { [key: string]: ImGraphNode } {
+  setNodeGraphNodes(graphType: string = 'all', objData?: ImDataObject): { [key: string]: ImGraphNode } {
     this.graphType = graphType;
     this.nodes = {};
 
@@ -819,9 +830,37 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
       return this.nodes;
     }
 
-    // Return all object by topology type
-    if (this.graphType === 'Pods') {
+    if (this.graphType === 'all') {
       this.InfrastructureManagerObjectHelper.getObjectsByType(null, 'Pod').forEach((podObj: ImDataObject) => this.setNode(podObj));
+
+      this.InfrastructureManagerObjectHelper.getObjectsByType(null, 'VirtualMachine').forEach((podObj: ImDataObject) => this.setNode(podObj));
+
+      this.InfrastructureManagerObjectHelper.getObjectsByType(null, 'volume').forEach((podObj: ImDataObject) => this.setNode(podObj));
+
+      this.InfrastructureManagerObjectHelper.getObjectsByType(null, 'Host').forEach((podObj: ImDataObject) => this.setNode(podObj));
+      this.InfrastructureManagerObjectHelper.getObjectsByType(null, 'HostSystem').forEach((podObj: ImDataObject) => this.setNode(podObj));
+    }
+
+    // Return all object by topology type
+    if (this.graphType === 'pods') {
+      this.InfrastructureManagerObjectHelper.getObjectsByType(null, 'Pod').forEach((podObj: ImDataObject) => this.setNode(podObj));
+    }
+
+    if (this.graphType === 'virtualmachines') {
+      this.InfrastructureManagerObjectHelper.getObjectsByType(null, 'VirtualMachine').forEach((podObj: ImDataObject) => this.setNode(podObj));
+    }
+
+    if (this.graphType === 'volumes') {
+      this.InfrastructureManagerObjectHelper.getObjectsByType(null, 'volume').forEach((podObj: ImDataObject) => this.setNode(podObj));
+    }
+
+    if (this.graphType === 'hosts') {
+      this.InfrastructureManagerObjectHelper.getObjectsByType(null, 'Host').forEach((podObj: ImDataObject) => this.setNode(podObj));
+      this.InfrastructureManagerObjectHelper.getObjectsByType(null, 'HostSystem').forEach((podObj: ImDataObject) => this.setNode(podObj));
+    }
+
+    if (this.graphType === 'processes') {
+
     }
 
     return this.nodes;
@@ -829,6 +868,543 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
 
   selectedNodeChange($event) {
     console.log($event);
+  }
+
+  getTopologies() {
+    const topologies = [
+      {
+        hide_if_empty: false,
+        name: 'All',
+        rank: 0,
+        options: [
+          {
+            defaultValue: 'all',
+            id: 'all',
+            options: [
+              {
+                label: 'All',
+                value: 'all'
+              },
+              {
+                label: 'Virtual Nodes',
+                value: 'virtual'
+              },
+              {
+                label: 'Container Nodes',
+                value: 'container'
+              },
+              {
+                label: 'Standalone Nodes',
+                value: 'standalone'
+              },
+              {
+                label: 'Storage Nodes',
+                value: 'storage'
+              }
+            ]
+          }
+        ]
+      },
+
+      {
+        hide_if_empty: false,
+        name: 'VirtualMachines',
+        options: [
+          {
+            defaultValue: 'hide',
+            id: 'backups',
+            options: [
+              {
+                label: 'Show backups',
+                value: 'show'
+              },
+              {
+                label: 'Hide backups',
+                value: 'hide'
+              }
+            ]
+          },
+          {
+            defaultValue: 'show',
+            id: 'storage',
+            options: [
+              {
+                label: 'Show storage',
+                value: 'show'
+              },
+              {
+                label: 'Hide storage',
+                value: 'hide'
+              }
+            ]
+          },
+          {
+            defaultValue: '',
+            id: 'connection',
+            noneLabel: 'All Connections',
+            options: [
+              {
+                label: 'default',
+                value: 'default'
+              },
+              {
+                label: 'inaregames-com',
+                value: 'inaregames-com'
+              },
+              {
+                label: 'isartnavarro-io',
+                value: 'isartnavarro-io'
+              },
+              {
+                label: 'kube-public',
+                value: 'kube-public'
+              },
+              {
+                label: 'kube-system',
+                value: 'kube-system'
+              },
+              {
+                label: 'monitoring',
+                value: 'monitoring'
+              },
+              {
+                label: 'weave',
+                value: 'weave'
+              },
+              {
+                label: 'wiki',
+                value: 'wiki'
+              }
+            ],
+            selectType: 'union'
+          }
+        ],
+        rank: 1,
+        stats: {
+          edge_count: 13,
+          filtered_nodes: 16,
+          node_count: 36,
+          nonpseudo_node_count: 35
+        },
+      },
+
+      {
+        hide_if_empty: false,
+        name: 'Pods',
+        options: [
+          {
+            defaultValue: 'hide',
+            id: 'snapshot',
+            options: [
+              {
+                label: 'Show snapshots',
+                value: 'show'
+              },
+              {
+                label: 'Hide snapshots',
+                value: 'hide'
+              }
+            ]
+          },
+          {
+            defaultValue: 'show',
+            id: 'storage',
+            options: [
+              {
+                label: 'Show storage',
+                value: 'show'
+              },
+              {
+                label: 'Hide storage',
+                value: 'hide'
+              }
+            ]
+          },
+          {
+            defaultValue: 'hide',
+            id: 'pseudo',
+            options: [
+              {
+                label: 'Show unmanaged',
+                value: 'show'
+              },
+              {
+                label: 'Hide unmanaged',
+                value: 'hide'
+              }
+            ]
+          },
+          {
+            defaultValue: '',
+            id: 'namespace',
+            noneLabel: 'All Namespaces',
+            options: [
+              {
+                label: 'default',
+                value: 'default'
+              },
+              {
+                label: 'inaregames-com',
+                value: 'inaregames-com'
+              },
+              {
+                label: 'isartnavarro-io',
+                value: 'isartnavarro-io'
+              },
+              {
+                label: 'kube-public',
+                value: 'kube-public'
+              },
+              {
+                label: 'kube-system',
+                value: 'kube-system'
+              },
+              {
+                label: 'monitoring',
+                value: 'monitoring'
+              },
+              {
+                label: 'weave',
+                value: 'weave'
+              },
+              {
+                label: 'wiki',
+                value: 'wiki'
+              }
+            ],
+            selectType: 'union'
+          }
+        ],
+        rank: 2,
+        stats: {
+          edge_count: 13,
+          filtered_nodes: 16,
+          node_count: 36,
+          nonpseudo_node_count: 35
+        },
+        sub_topologies: [
+          {
+            hide_if_empty: true,
+            name: 'Controllers',
+            options: [
+              {
+                defaultValue: 'hide',
+                id: 'pseudo',
+                options: [
+                  {
+                    label: 'Show unmanaged',
+                    value: 'show'
+                  },
+                  {
+                    label: 'Hide unmanaged',
+                    value: 'hide'
+                  }
+                ]
+              },
+              {
+                defaultValue: '',
+                id: 'namespace',
+                noneLabel: 'All Namespaces',
+                options: [
+                  {
+                    label: 'default',
+                    value: 'default'
+                  },
+                  {
+                    label: 'inaregames-com',
+                    value: 'inaregames-com'
+                  },
+                  {
+                    label: 'isartnavarro-io',
+                    value: 'isartnavarro-io'
+                  },
+                  {
+                    label: 'kube-public',
+                    value: 'kube-public'
+                  },
+                  {
+                    label: 'kube-system',
+                    value: 'kube-system'
+                  },
+                  {
+                    label: 'monitoring',
+                    value: 'monitoring'
+                  },
+                  {
+                    label: 'weave',
+                    value: 'weave'
+                  },
+                  {
+                    label: 'wiki',
+                    value: 'wiki'
+                  }
+                ],
+                selectType: 'union'
+              }
+            ],
+            rank: 0,
+            stats: {
+              edge_count: 11,
+              filtered_nodes: 4,
+              node_count: 26,
+              nonpseudo_node_count: 25
+            },
+            url: '/api/topology/kube-controllers'
+          },
+          {
+            hide_if_empty: true,
+            name: 'Services',
+            options: [
+              {
+                defaultValue: 'hide',
+                id: 'pseudo',
+                options: [
+                  {
+                    label: 'Show unmanaged',
+                    value: 'show'
+                  },
+                  {
+                    label: 'Hide unmanaged',
+                    value: 'hide'
+                  }
+                ]
+              },
+              {
+                defaultValue: '',
+                id: 'namespace',
+                noneLabel: 'All Namespaces',
+                options: [
+                  {
+                    label: 'default',
+                    value: 'default'
+                  },
+                  {
+                    label: 'inaregames-com',
+                    value: 'inaregames-com'
+                  },
+                  {
+                    label: 'isartnavarro-io',
+                    value: 'isartnavarro-io'
+                  },
+                  {
+                    label: 'kube-public',
+                    value: 'kube-public'
+                  },
+                  {
+                    label: 'kube-system',
+                    value: 'kube-system'
+                  },
+                  {
+                    label: 'monitoring',
+                    value: 'monitoring'
+                  },
+                  {
+                    label: 'weave',
+                    value: 'weave'
+                  },
+                  {
+                    label: 'wiki',
+                    value: 'wiki'
+                  }
+                ],
+                selectType: 'union'
+              }
+            ],
+            rank: 0,
+            stats: {
+              edge_count: 7,
+              filtered_nodes: 4,
+              node_count: 15,
+              nonpseudo_node_count: 15
+            },
+            url: '/api/topology/services'
+          }
+        ],
+      },
+
+      {
+        hide_if_empty: false,
+        name: 'Volumes',
+        options: [
+          {
+            defaultValue: 'hide',
+            id: 'backups',
+            options: [
+              {
+                label: 'Show backups',
+                value: 'show'
+              },
+              {
+                label: 'Hide backups',
+                value: 'hide'
+              }
+            ]
+          },
+          {
+            defaultValue: 'show',
+            id: 'links',
+            options: [
+              {
+                label: 'Show links',
+                value: 'show'
+              },
+              {
+                label: 'Hide links',
+                value: 'hide'
+              }
+            ]
+          },
+          {
+            defaultValue: '',
+            id: 'connection',
+            noneLabel: 'All Connections',
+            options: [
+              {
+                label: 'default',
+                value: 'default'
+              },
+              {
+                label: 'inaregames-com',
+                value: 'inaregames-com'
+              },
+              {
+                label: 'isartnavarro-io',
+                value: 'isartnavarro-io'
+              },
+              {
+                label: 'kube-public',
+                value: 'kube-public'
+              },
+              {
+                label: 'kube-system',
+                value: 'kube-system'
+              },
+              {
+                label: 'monitoring',
+                value: 'monitoring'
+              },
+              {
+                label: 'weave',
+                value: 'weave'
+              },
+              {
+                label: 'wiki',
+                value: 'wiki'
+              }
+            ],
+            selectType: 'union'
+          }
+        ],
+        rank: 3,
+        stats: {
+          edge_count: 13,
+          filtered_nodes: 16,
+          node_count: 36,
+          nonpseudo_node_count: 35
+        },
+      },
+
+      {
+        hide_if_empty: false,
+        name: 'Hosts',
+        options: [
+          {
+            defaultValue: 'all',
+            id: 'all',
+            options: [
+              {
+                label: 'All',
+                value: 'all'
+              },
+              {
+                label: 'Virtual Nodes',
+                value: 'virtual'
+              },
+              {
+                label: 'Container Nodes',
+                value: 'container'
+              },
+              {
+                label: 'Standalone Nodes',
+                value: 'standalone'
+              },
+              {
+                label: 'Storage Nodes',
+                value: 'storage'
+              }
+            ]
+          }
+        ],
+        rank: 4,
+        stats: {
+          edge_count: 5,
+          filtered_nodes: 1,
+          node_count: 3,
+          nonpseudo_node_count: 2
+        }
+
+      },
+
+      {
+        hide_if_empty: true,
+        name: 'Processes',
+        options: [
+          {
+            defaultValue: 'hide',
+            id: 'unconnected',
+            options: [
+              {
+                label: 'Show unconnected',
+                value: 'show'
+              },
+              {
+                label: 'Hide unconnected',
+                value: 'hide'
+              }
+            ]
+          }
+        ],
+        rank: 5,
+        stats: {
+          edge_count: 8,
+          filtered_nodes: 331,
+          node_count: 11,
+          nonpseudo_node_count: 10
+        },
+        sub_topologies: [
+          {
+            hide_if_empty: true,
+            name: 'by name',
+            options: [
+              {
+                defaultValue: 'hide',
+                id: 'unconnected',
+                options: [
+                  {
+                    label: 'Show unconnected',
+                    value: 'show'
+                  },
+                  {
+                    label: 'Hide unconnected',
+                    value: 'hide'
+                  }
+                ]
+              }
+            ],
+            rank: 0,
+            stats: {
+              edge_count: 4,
+              filtered_nodes: 123,
+              node_count: 5,
+              nonpseudo_node_count: 4
+            },
+            url: '/api/topology/processes-by-name'
+          }
+        ],
+      },
+    ];
+
+    return topologies;
   }
 
 }

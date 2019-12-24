@@ -2,9 +2,8 @@ import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 
 import {AnyOpsOSLibAngularMaterialModule} from '@anyopsos/lib-angular-material';
-
 import {AnyOpsOSLibUtilsModule} from '@anyopsos/lib-utils';
-import {AnyOpsOSLibSanitizeModule} from '@anyopsos/lib-sanitize';
+import {AnyOpsOSLibPipesModule} from '@anyopsos/lib-pipes';
 
 import {AnyOpsOSLibExtWeavescopeComponent} from './components/anyopsos-lib-ext-weavescope.component';
 import {LoadingComponent} from './components/loading/loading.component';
@@ -48,7 +47,7 @@ import {TopologyOptionsComponent} from './components/topology-options/topology-o
     CommonModule,
     // Shared module import
     AnyOpsOSLibUtilsModule,
-    AnyOpsOSLibSanitizeModule,
+    AnyOpsOSLibPipesModule,
     AnyOpsOSLibAngularMaterialModule
   ],
   exports: [

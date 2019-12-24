@@ -31,7 +31,7 @@ export class BodyServerComponent implements OnDestroy, OnInit {
   currentData: AnyOpsOSFile[];
 
   viewAsList: boolean;
-  search: { filename: string } = null;
+  search: { filename: string; } = null;
 
   currentActive: number = 0;
 
@@ -43,29 +43,52 @@ export class BodyServerComponent implements OnDestroy, OnInit {
               private Applications: AnyOpsOSLibApplicationService,
               private DatastoreExplorer: AnyOpsOSAppDatastoreExplorerService,
               private DatastoreExplorerServer: AnyOpsOSAppDatastoreExplorerServerService) {
-
-    this.FileSystemUi.getObserverRefreshPath().pipe(takeUntil(this.destroySubject$)).subscribe(path => {
-      if (path === this.currentPath) this.reloadPath();
-    });
   }
 
   ngOnInit(): void {
+
+    // Listen for refreshPath call
+    this.FileSystemUi.getObserverRefreshPath()
+      .pipe(takeUntil(this.destroySubject$)).subscribe((path: string) => {
+        if (path === this.currentPath) this.reloadPath();
+      });
+
     // Is loading data from Backend?
-    this.DatastoreExplorerServer.getObserverLoadingData().pipe(takeUntil(this.destroySubject$)).subscribe(loadingData => this.loadingData = loadingData);
+    this.DatastoreExplorerServer.getObserverLoadingData()
+      .pipe(takeUntil(this.destroySubject$)).subscribe((loadingData: boolean) => this.loadingData = loadingData);
 
-    this.DatastoreExplorerServer.currentPath.pipe(takeUntil(this.destroySubject$)).subscribe(path => this.currentPath = path);
-    this.DatastoreExplorerServer.currentData.pipe(takeUntil(this.destroySubject$)).subscribe(data => {
-      this.currentData = data;
-      this.resetActive();
-    });
-    this.DatastoreExplorerServer.viewAsList.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.viewAsList = data);
-    this.DatastoreExplorerServer.search.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.search = data);
-    this.DatastoreExplorer.activeConnection.pipe(takeUntil(this.destroySubject$)).subscribe(connection => this.activeConnection = connection);
+    // Listen for currentPath change
+    this.DatastoreExplorerServer.currentPath
+      .pipe(takeUntil(this.destroySubject$)).subscribe((path: string) => this.currentPath = path);
 
+    // Listen for currentData change
+    this.DatastoreExplorerServer.currentData
+      .pipe(takeUntil(this.destroySubject$)).subscribe((data: AnyOpsOSFile[]) => {
+        this.currentData = data;
+        this.resetActive();
+      });
+
+    // Listen for viewAsList change
+    this.DatastoreExplorerServer.viewAsList
+      .pipe(takeUntil(this.destroySubject$)).subscribe((data: boolean) => this.viewAsList = data);
+
+    // Listen for search change
+    this.DatastoreExplorerServer.search
+      .pipe(takeUntil(this.destroySubject$)).subscribe((data: { filename: string; }) => this.search = data);
+
+    // Listen for activeConnection change
+    this.DatastoreExplorer.activeConnection
+      .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnectionUuid: string) => this.activeConnection = activeConnectionUuid);
+
+    /**
+     * Initialize as root path
+     */
     this.goToPath('/');
   }
 
   ngOnDestroy(): void {
+
+    // Remove all listeners
     this.destroySubject$.next();
   }
 

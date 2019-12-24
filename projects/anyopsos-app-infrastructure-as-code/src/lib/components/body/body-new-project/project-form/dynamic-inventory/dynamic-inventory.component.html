@@ -1,0 +1,74 @@
+<div>
+
+  <ng-container [formGroup]="form">
+    <ng-container formArrayName="inventories">
+
+      <div *ngFor="let inventory of inventories.controls; let i = index;" [formGroupName]="i">
+
+        Generate one inventory
+
+        <mat-form-field class="p-2" style="max-width: 110px;">
+          <mat-label>Recurrence</mat-label>
+          <mat-select placeholder="Recurrence" (selectionChange)="check()" formControlName="type">
+            <mat-option [value]="'for'">for</mat-option>
+            <mat-option [value]="'forEach'">for each</mat-option>
+            <mat-option [value]="'forEachBut'">for each, but</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Select one or multiple category values -->
+        <mat-form-field class="p-2" *ngIf="inventory.get('type').value === 'for'">
+          <mat-label>Category Values</mat-label>
+          <mat-select placeholder="Categories" (selectionChange)="check()"  formControlName="of" multiple>
+            <mat-select-trigger>
+              {{inventory.get('of').value[0] ? inventory.get('of').value[0].name + ' - ' + inventory.get('of').value[0].value : ''}}
+              <span *ngIf="inventory.get('of').value.length > 1">
+                (+{{inventory.get('of').value.length - 1}} {{inventory.get('of').value?.length === 2 ? 'other' : 'others'}})
+              </span>
+            </mat-select-trigger>
+            <mat-optgroup *ngFor="let category of categories" [label]="category.name">
+              <mat-option *ngFor="let categoryValue of category.values" [value]="{ name: category.name, value: categoryValue.value }" [disabled]="isCategoryAlreadyInInventory(i, category.name, categoryValue.value)">{{categoryValue.value}}</mat-option>
+            </mat-optgroup>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Select one or multiple categories -->
+        <mat-form-field class="p-2" *ngIf="inventory.get('type').value === 'forEach' || inventory.get('type').value === 'forEachBut'">
+          <mat-label>Categories</mat-label>
+          <mat-select placeholder="Categories" (selectionChange)="check()" formControlName="of" multiple>
+            <mat-select-trigger>
+              {{inventory.get('of').value[0] ? inventory.get('of').value[0].name : ''}}
+              <span *ngIf="inventory.get('of').value.length > 1">
+                (+{{inventory.get('of').value.length - 1}} {{inventory.get('of').value?.length === 2 ? 'other' : 'others'}})
+              </span>
+            </mat-select-trigger>
+            <mat-option *ngFor="let category of categories" [value]="category" [disabled]="isCategoryAlreadyInInventory(i, category.name)">{{category.name}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Select one or multiple category values to exclude -->
+        <mat-form-field class="p-2" *ngIf="inventory.get('type').value === 'forEachBut'">
+          <mat-label>But</mat-label>
+          <mat-select placeholder="But" (selectionChange)="check()" formControlName="but" multiple>
+            <mat-select-trigger>
+              {{inventory.get('but').value[0] ? inventory.get('but').value[0].name + ' - ' + inventory.get('but').value[0].value : ''}}
+              <span *ngIf="inventory.get('but').value.length > 1">
+                (+{{inventory.get('but').value.length - 1}} {{inventory.get('but').value?.length === 2 ? 'other' : 'others'}})
+              </span>
+            </mat-select-trigger>
+            <mat-optgroup *ngFor="let category of inventory.get('of').value" [label]="category.name">
+              <mat-option *ngFor="let categoryValue of category.values" [value]="{ name: category.name, value: categoryValue.value }" [disabled]="isCategoryAlreadyInInventory(i, category.name, categoryValue.value)">{{categoryValue.value}}</mat-option>
+            </mat-optgroup>
+          </mat-select>
+        </mat-form-field>
+
+        <button mat-icon-button *ngIf="isRemovable(i)" (click)="remove(i)">
+          <mat-icon>delete</mat-icon>
+        </button>
+
+      </div>
+
+    </ng-container>
+  </ng-container>
+
+</div>

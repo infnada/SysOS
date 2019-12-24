@@ -2,7 +2,9 @@
   "name": "@anyopsos/lib-angular-material",
   "version": "0.0.1",
   "peerDependencies": {
-    "@angular/common": "^7.2.0",
-    "@angular/core": "^7.2.0"
+    "@angular/common": "^8.2.14",
+    "@angular/core": "^8.2.14",
+    "tslib": "^1.10.0",
+    "@angular/material": "^7.3.7"
   }
 }

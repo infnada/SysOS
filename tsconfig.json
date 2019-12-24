@@ -5,12 +5,12 @@
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,
-    "module": "es6",
-    "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "module": "esnext",
+    "moduleResolution": "node",
     "importHelpers": true,
-    "target": "es5",
+    "target": "es2015",
     "typeRoots": [
       "node_modules/@types"
     ],
@@ -73,6 +73,12 @@
       "@anyopsos/lib-terminal/*": [
         "projects/anyopsos-lib-terminal/*"
       ],
+      "@anyopsos/lib-theia": [
+        "projects/anyopsos-lib-theia/src/public-api"
+      ],
+      "@anyopsos/lib-theia/*": [
+        "projects/anyopsos-lib-theia/*"
+      ],
       "@anyopsos/lib-types": [
         "projects/anyopsos-lib-types/src/public-api"
       ],
@@ -103,11 +109,11 @@
       "@anyopsos/lib-folder/*": [
         "projects/anyopsos-lib-folder/*"
       ],
-      "@anyopsos/lib-sanitize": [
-        "projects/anyopsos-lib-sanitize/src/public-api"
+      "@anyopsos/lib-pipes": [
+        "projects/anyopsos-lib-pipes/src/public-api"
       ],
-      "@anyopsos/lib-sanitize/*": [
-        "projects/anyopsos-lib-sanitize/*"
+      "@anyopsos/lib-pipes/*": [
+        "projects/anyopsos-lib-pipes/*"
       ],
       "@anyopsos/lib-scroll-spy": [
         "projects/anyopsos-lib-scroll-spy/src/public-api"
@@ -216,6 +222,12 @@
       ],
       "@anyopsos/app-file-explorer/*": [
         "projects/anyopsos-app-file-explorer/*"
+      ],
+      "@anyopsos/app-infrastructure-as-code": [
+        "projects/anyopsos-app-infrastructure-as-code/src/public-api"
+      ],
+      "@anyopsos/app-infrastructure-as-code/*": [
+        "projects/anyopsos-app-infrastructure-as-code/*"
       ],
       "@anyopsos/app-infrastructure-manager": [
         "projects/anyopsos-app-infrastructure-manager/src/public-api"
@@ -492,18 +504,6 @@
       ],
       "@anyopsos/modal-infrastructure-manager-kubernetes-shell/*": [
         "projects/anyopsos-modal-infrastructure-manager-kubernetes-shell/*"
-      ],
-      "anyopsos-lib-terminal": [
-        "dist/anyopsos-lib-terminal"
-      ],
-      "anyopsos-lib-terminal/*": [
-        "dist/anyopsos-lib-terminal/*"
-      ],
-      "anyopsos-modal-infrastructure-manager-kubernetes-scale-resource": [
-        "dist/anyopsos-modal-infrastructure-manager-kubernetes-scale-resource"
-      ],
-      "anyopsos-modal-infrastructure-manager-kubernetes-scale-resource/*": [
-        "dist/anyopsos-modal-infrastructure-manager-kubernetes-scale-resource/*"
       ]
     }
   }

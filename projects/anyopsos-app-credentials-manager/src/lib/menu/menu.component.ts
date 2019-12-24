@@ -10,7 +10,8 @@ export class MenuComponent implements OnInit {
   @Input() application: Application;
   @Input() isMenuOpened: boolean;
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit(): void {
   }

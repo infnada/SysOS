@@ -2,7 +2,6 @@ import {Injectable} from '@angular/core';
 
 import {BehaviorSubject, Observable} from 'rxjs';
 import {v4 as uuidv4} from 'uuid';
-import {ToastrService} from 'ngx-toastr';
 import {Socket} from 'ngx-socket-io';
 
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
@@ -33,7 +32,6 @@ export class AnyOpsOSAppSftpService {
   private connectionsInitialized: boolean = false;
 
   constructor(private logger: AnyOpsOSLibLoggerService,
-              private Toastr: ToastrService,
               private socket: Socket,
               private serviceInjector: AnyOpsOSLibServiceInjectorService,
               private Modal: AnyOpsOSLibModalService,
@@ -266,7 +264,6 @@ export class AnyOpsOSAppSftpService {
       },
       error => {
         this.logger.error('Sftp', 'Error while saving connection', loggerArgs, error);
-        this.Toastr.error('Error while saving connection.', 'SFTP');
       });
   }
 

@@ -30,7 +30,7 @@ export class BodyComponent implements OnDestroy, OnInit {
   currentData: AnyOpsOSFile[];
 
   viewAsList: boolean;
-  search: { filename: string } = null;
+  search: { filename: string; } = null;
 
   currentActive: number = 0;
 
@@ -44,24 +44,42 @@ export class BodyComponent implements OnDestroy, OnInit {
               private FileSystemUi: AnyOpsOSLibFileSystemUiService,
               private Applications: AnyOpsOSLibApplicationService,
               private FileExplorer: AnyOpsOSAppFileExplorerService) {
-
-    this.FileSystemUi.getObserverRefreshPath().pipe(takeUntil(this.destroySubject$)).subscribe(path => {
-      if (path === this.currentPath) this.reloadPath();
-    });
   }
 
   ngOnInit(): void {
+
+    // Listen for refreshPath call
+    this.FileSystemUi.getObserverRefreshPath()
+      .pipe(takeUntil(this.destroySubject$)).subscribe((path: string) => {
+        if (path === this.currentPath) this.reloadPath();
+      });
+
     // Is loading data from Backend?
-    this.FileExplorer.getObserverLoadingData().pipe(takeUntil(this.destroySubject$)).subscribe(loadingData => this.loadingData = loadingData);
+    this.FileExplorer.getObserverLoadingData()
+      .pipe(takeUntil(this.destroySubject$)).subscribe((loadingData: boolean) => this.loadingData = loadingData);
 
-    this.FileExplorer.currentPath.pipe(takeUntil(this.destroySubject$)).subscribe(path => this.currentPath = path);
-    this.FileExplorer.currentData.pipe(takeUntil(this.destroySubject$)).subscribe(data => {
-      this.currentData = data;
-      this.resetActive();
-    });
-    this.FileExplorer.viewAsList.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.viewAsList = data);
-    this.FileExplorer.search.pipe(takeUntil(this.destroySubject$)).subscribe(data => this.search = data);
+    // Listen for currentPath change
+    this.FileExplorer.currentPath
+      .pipe(takeUntil(this.destroySubject$)).subscribe((path: string) => this.currentPath = path);
 
+    // Listen for currentData change
+    this.FileExplorer.currentData
+      .pipe(takeUntil(this.destroySubject$)).subscribe((data: AnyOpsOSFile[]) => {
+        this.currentData = data;
+        this.resetActive();
+      });
+
+    // Listen for viewAsList change
+    this.FileExplorer.viewAsList
+      .pipe(takeUntil(this.destroySubject$)).subscribe((data: boolean) => this.viewAsList = data);
+
+    // Listen for search change
+    this.FileExplorer.search
+      .pipe(takeUntil(this.destroySubject$)).subscribe((data: { filename: string; }) => this.search = data);
+
+    /**
+     * Initialize path
+     */
     if (this.application.initData && this.application.initData.path) {
       return this.goToPath(this.application.initData.path);
     }
@@ -70,6 +88,8 @@ export class BodyComponent implements OnDestroy, OnInit {
   }
 
   ngOnDestroy(): void {
+
+    // Remove all listeners
     this.destroySubject$.next();
   }
 

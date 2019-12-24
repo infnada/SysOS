@@ -2,8 +2,9 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 
 import {BehaviorSubject, Observable} from 'rxjs';
-import {ToastrService} from 'ngx-toastr';
+import {map} from 'rxjs/operators';
 
+import {ServerResponse} from '@anyopsos/lib-types';
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
 
@@ -13,64 +14,74 @@ import {Credential} from '../types/credential';
   providedIn: 'root'
 })
 export class AnyOpsOSAppCredentialsManagerService {
+  private appInitialized: boolean = false;
+
   private $credentials: BehaviorSubject<Credential[]>;
   private $activeCredential: BehaviorSubject<string>;
-  private dataStore: {  // This is where we will store our data in memory
+  private dataStore: {
     credentials: Credential[],
     activeCredential: string
   };
-  credentials: Observable<any>;
-  activeCredential: Observable<any>;
+  credentials: Observable<Credential[]>;
+  activeCredential: Observable<string>;
 
-  constructor(private http: HttpClient,
-              private logger: AnyOpsOSLibLoggerService,
-              private Toastr: ToastrService,
-              private Modal: AnyOpsOSLibModalService) {
+  constructor(private readonly http: HttpClient,
+              private readonly logger: AnyOpsOSLibLoggerService,
+              private readonly Modal: AnyOpsOSLibModalService) {
 
-    this.dataStore = { credentials: [], activeCredential: null };
+    this.dataStore = {credentials: [], activeCredential: null};
     this.$credentials = new BehaviorSubject(this.dataStore.credentials);
     this.$activeCredential = new BehaviorSubject(this.dataStore.activeCredential);
     this.credentials = this.$credentials.asObservable();
     this.activeCredential = this.$activeCredential.asObservable();
   }
 
-  setActiveCredential(uuid: string): void {
-    this.dataStore.activeCredential = uuid;
+  isAppInitialized(): boolean {
+    return this.appInitialized;
+  }
 
-    // broadcast data to subscribers
+  setActiveCredential(credentialUuid: string): void {
+    this.dataStore.activeCredential = credentialUuid;
+
     this.$activeCredential.next(Object.assign({}, this.dataStore).activeCredential);
   }
 
-  getCredentialByUuid(uuid: string): Credential {
-    if (!uuid) throw new Error('uuid');
+  getCredentialByUuid(credentialUuid: string): Credential {
+    if (!credentialUuid) throw new Error('uuid');
 
-    return this.dataStore.credentials.find(obj => obj.uuid === uuid);
+    return this.dataStore.credentials.find(obj => obj.uuid === credentialUuid);
   }
 
+  /**
+   * Initialize application
+   */
   initCredentials(): void {
-    this.http.get('/api/credential/').subscribe(
-      (res: { data: Credential[] }) => {
-        this.logger.info('Credentials Manager', 'Got credentials successfully');
+    this.http.get('/api/credential/')
+      .subscribe((getCredentialsStatus: ServerResponse & { data: Credential[] }) => {
+        if (getCredentialsStatus.status === 'error') {
+          throw {
+            error: getCredentialsStatus.data,
+            description: 'Error while initializing credentials'
+          };
+        }
 
-        this.dataStore.credentials = res.data;
+        this.appInitialized = true;
 
-        // broadcast data to subscribers
+        this.dataStore.credentials = getCredentialsStatus.data;
         this.$credentials.next(Object.assign({}, this.dataStore).credentials);
-      },
-      error => {
-        this.logger.error('Credentials Manager', 'Error while getting credentials', null, error);
-        return this.Toastr.error('Error getting credentials.', 'Credential Manager');
+
+        this.logger.info('Credentials Manager', 'Got credentials successfully');
       });
   }
 
-  deleteCredential(uuid?: string): void {
+  deleteCredential(credentialUuid?: string): void {
     const loggerArgs = arguments;
 
-    if (!uuid) uuid = this.dataStore.activeCredential;
+    if (!credentialUuid) credentialUuid = this.dataStore.activeCredential;
 
     this.Modal.openRegisteredModal('question', '.window--credentials-manager .window__main',
       {
-        title: 'Delete credential ' + this.getCredentialByUuid(uuid).description,
+        title: 'Delete credential ' + this.getCredentialByUuid(credentialUuid).description,
         text: 'Remove the selected credential from the inventory?',
         yes: 'Delete',
         yesClass: 'warn',
@@ -79,31 +90,33 @@ export class AnyOpsOSAppCredentialsManagerService {
         boxClass: 'text-danger',
         boxIcon: 'warning'
       }
-    ).then((modalInstance) => {
-      modalInstance.result.then((result: boolean) => {
-        if (result === true) {
-          this.logger.debug('Credentials Manager', 'Deleting credential', loggerArgs);
+    ).then((modalInstance) => modalInstance.result
+    ).then((result: boolean) => {
+      if (result !== true) return;
 
-          this.http.delete(`/api/credential/${uuid}`).subscribe(
-            () => {
-              this.setActiveCredential(null);
+      this.logger.debug('Credentials Manager', 'Deleting credential', loggerArgs);
 
-              this.dataStore.credentials = this.dataStore.credentials.filter((el) => {
-                return el.uuid !== uuid;
-              });
+      // Encode credential because it can contain symbols like '/'
+      this.http.delete(`/api/credential/${encodeURIComponent(credentialUuid)}`)
+        .subscribe((deleteCredentialResult: ServerResponse) => {
+          if (deleteCredentialResult.status === 'error') {
+            throw {
+              error: deleteCredentialResult.data,
+              description: 'Error while deleting credential'
+            };
+          }
 
-              // broadcast data to subscribers
-              this.$credentials.next(Object.assign({}, this.dataStore).credentials);
+          // Remove credential from dataStore
+          this.setActiveCredential(null);
+          this.dataStore.credentials = this.dataStore.credentials.filter((el) => el.uuid !== credentialUuid);
 
-              this.logger.debug('Credentials Manager', 'Deleted credential successfully', loggerArgs);
-              return this.Toastr.success('Credential deleted.', 'Credential Manager');
-            },
-            error => {
-              this.logger.error('Credentials Manager', 'Error while deleting credentials', loggerArgs, error);
-              return this.Toastr.error('Error deleting credential.', 'Credential Manager');
-            });
-        }
-      });
+          this.$credentials.next(Object.assign({}, this.dataStore).credentials);
+
+          this.logger.log('Credentials Manager', 'Deleted credential successfully', loggerArgs);
+        },
+        error => {
+          this.logger.error('Credentials Manager', 'Error while deleting credential', loggerArgs, error);
+        });
     });
 
   }
@@ -111,44 +124,44 @@ export class AnyOpsOSAppCredentialsManagerService {
   saveCredential(credential: Credential): Promise<void> {
     const loggerArgs = arguments;
 
-    return new Promise((resolve, reject) => {
+    return this.http.put('/api/credential/', {
+      credential
+    }).pipe(map(
+      (saveCredentialStatus: ServerResponse & { data: string }) => {
+        if (saveCredentialStatus.status === 'error') {
+          throw {
+            error: saveCredentialStatus.data,
+            description: 'Error while saving credential'
+          };
+        }
 
-      this.http.put('/api/credential/', {
-        credential
-      }).subscribe(
-        (res: { data: string }) => {
-          const credentialExists = this.dataStore.credentials.filter(el => {
-            return el.uuid === credential.uuid;
-          })[0];
+        const credentialExists = this.dataStore.credentials.find(el => el.uuid === credential.uuid);
 
-          if (credentialExists) {
-            credentialExists.description = credential.description;
-            credentialExists.username = credential.username;
-          } else {
-            this.dataStore.credentials.push({
-              uuid: res.data,
-              description: credential.description,
-              type: credential.type,
-              username: credential.username
-            });
-          }
+        // TODO manage other credentials types
+        if (credentialExists) {
+          credentialExists.description = credential.description;
+          credentialExists.username = credential.username;
 
-          this.dataStore.activeCredential = null;
+        } else {
+          this.dataStore.credentials.push({
+            uuid: saveCredentialStatus.data,
+            description: credential.description,
+            type: credential.type,
+            username: credential.username
+          });
+        }
 
-          // broadcast data to subscribers
-          this.$credentials.next(Object.assign({}, this.dataStore).credentials);
-          this.$activeCredential.next(Object.assign({}, this.dataStore).activeCredential);
+        this.dataStore.activeCredential = null;
 
-          this.logger.debug('Credentials Manager', 'Saved credential successfully');
-          this.Toastr.success('Credential saved.', 'Credential Manager');
-          return resolve();
-        },
-        error => {
-          this.logger.error('Credentials Manager', 'Error while saving credentials', loggerArgs, error);
-          this.Toastr.error('Error saving credential.', 'Credential Manager');
-          return reject();
-        });
+        this.$credentials.next(Object.assign({}, this.dataStore).credentials);
+        this.$activeCredential.next(Object.assign({}, this.dataStore).activeCredential);
 
-    });
+        this.logger.log('Credentials Manager', 'Saved credential successfully', loggerArgs);
+      },
+      error => {
+        this.logger.error('Credentials Manager', 'Error while saving credential', loggerArgs, error);
+      }
+    )).toPromise();
+
   }
 }
