@@ -1,0 +1,25 @@
+{
+  "name": "@anyopsos/lib-pipes",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@angular/common": "^8.2.14",
+    "@angular/core": "^8.2.14",
+    "tslib": "^1.10.0",
+    "@angular/platform-browser": "~7.2.0"
+  },
+  "dependencies": {
+    "ngx-filter-pipe": "^2.1.2",
+    "ngx-order-pipe": "^2.0.4"
+  },
+  "homepage": "https://github.com/anyOpsOS/anyOpsOS#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anyOpsOS/anyOpsOS.git"
+  },
+  "bugs": "https://github.com/anyOpsOS/anyOpsOS/issues",
+  "keywords": [],
+  "description": "anyOpsOS pipes library",
+  "author": "Isart Navarro <contact@isartnavarro.io> (https://isartnavarro.io)",
+  "license": "GPL-3.0-or-later",
+  "private": false
+}

@@ -4,8 +4,8 @@ import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
 import {AnyOpsOSLibFileSystemUiService} from '@anyopsos/lib-file-system-ui';
 import {Application, AnyOpsOSLibApplicationService} from '@anyopsos/lib-application';
-
-import {AnyOpsOSFile} from '@anyopsos/lib-types';
+import {AnyOpsOSFile} from '@anyopsos/backend/app/types/anyopsos-file';
+import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
 
 @Component({
   selector: 'app-desktop',
@@ -50,8 +50,10 @@ export class DesktopComponent implements OnInit {
    * Get current path data
    */
   private reloadPath(): void {
-    this.FileSystem.getFileSystemPath(null, this.currentPath).subscribe(
-      (res: { data: AnyOpsOSFile[] }) => {
+    this.FileSystem.getFolder(this.currentPath).subscribe(
+      (res: BackendResponse & { data: AnyOpsOSFile[] }) => {
+        if (res.status === 'error') return this.logger.error('anyOpsOS', 'Error while reloading desktop files', null, res.data);
+
         this.currentData = res.data;
         this.resetActive();
       },

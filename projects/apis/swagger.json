@@ -1,0 +1,1522 @@
+{
+  "info": {
+    "title": "A sample API",
+    "version": "1.0.0",
+    "description": "Generated with `routing-controllers-openapi`"
+  },
+  "paths": {
+    "/api/auth/": {
+      "get": {
+        "operationId": "AnyOpsOSAuthApiController.getAuth",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Get auth",
+        "tags": [
+          "Any Ops OS Auth Api"
+        ],
+        "parameters": [],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      },
+      "post": {
+        "operationId": "AnyOpsOSAuthApiController.login",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Login",
+        "tags": [
+          "Any Ops OS Auth Api"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "username": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/config-file/{configUuid}/{fileName}": {
+      "get": {
+        "operationId": "AnyOpsOSConfigFileApiController.getConfigFile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "configUuid",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "fileName",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Get config file",
+        "tags": [
+          "Any Ops OS Config File Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      },
+      "put": {
+        "operationId": "AnyOpsOSConfigFileApiController.putConfigFile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "configUuid",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "fileName",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "data": {}
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Put config file",
+        "tags": [
+          "Any Ops OS Config File Api"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      },
+      "patch": {
+        "operationId": "AnyOpsOSConfigFileApiController.patchConfigFile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "configUuid",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "fileName",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "data": {}
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Patch config file",
+        "tags": [
+          "Any Ops OS Config File Api"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      },
+      "delete": {
+        "operationId": "AnyOpsOSConfigFileApiController.deleteConfigFile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "configUuid",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "fileName",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Delete config file",
+        "tags": [
+          "Any Ops OS Config File Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/credential/": {
+      "get": {
+        "operationId": "AnyOpsOSCredentialApiController.getAllCredentials",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Get all credentials",
+        "tags": [
+          "Any Ops OS Credential Api"
+        ],
+        "parameters": [],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      },
+      "put": {
+        "operationId": "AnyOpsOSCredentialApiController.putCredential",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Put credential",
+        "tags": [
+          "Any Ops OS Credential Api"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "credential": {}
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      },
+      "patch": {
+        "operationId": "AnyOpsOSCredentialApiController.patchCredential",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Patch credential",
+        "tags": [
+          "Any Ops OS Credential Api"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "credential": {}
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/credential/{credentialUuid}": {
+      "delete": {
+        "operationId": "AnyOpsOSCredentialApiController.deleteCredential",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "credentialUuid",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Delete credential",
+        "tags": [
+          "Any Ops OS Credential Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/file/{fileName}": {
+      "get": {
+        "operationId": "AnyOpsOSFileApiController.getFile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "fileName",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Get file",
+        "tags": [
+          "Any Ops OS File Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      },
+      "delete": {
+        "operationId": "AnyOpsOSFileApiController.deleteFile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "fileName",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Delete file",
+        "tags": [
+          "Any Ops OS File Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/file/": {
+      "put": {
+        "operationId": "AnyOpsOSFileApiController.newFile",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "New file",
+        "tags": [
+          "Any Ops OS File Api"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/file/download_from_url": {
+      "post": {
+        "operationId": "AnyOpsOSFileApiController.newFileFromUrl",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "New file from url",
+        "tags": [
+          "Any Ops OS File Api"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                },
+                "credentialUuid": {
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/file/{type}/{fileName}": {
+      "patch": {
+        "operationId": "AnyOpsOSFileApiController.patchFile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "type",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "fileName",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "dstPath": {
+                  "type": "string"
+                },
+                "permissions": {
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Patch file",
+        "tags": [
+          "Any Ops OS File Api"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/folder/{folderName}": {
+      "get": {
+        "operationId": "AnyOpsOSFolderApiController.getFolder",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "folderName",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Get folder",
+        "tags": [
+          "Any Ops OS Folder Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      },
+      "put": {
+        "operationId": "AnyOpsOSFolderApiController.createFolder",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "folderName",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Create folder",
+        "tags": [
+          "Any Ops OS Folder Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/kubernetes/resource/{connectionUuid}/{resourceLink}": {
+      "get": {
+        "operationId": "AnyOpsOSKubernetesApiController.getKubernetesResource",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "resourceLink",
+            "required": true,
+            "pattern": "*",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Get kubernetes resource",
+        "tags": [
+          "Any Ops OS Kubernetes Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/kubernetes/log/{connectionUuid}/{terminalUuid}/{namespace}/{pod}/{container}/{showContainerName}": {
+      "get": {
+        "operationId": "AnyOpsOSKubernetesApiController.getContainerLogs",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "terminalUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "namespace",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "pod",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "container",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "showContainerName",
+            "required": true,
+            "type": "boolean"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Get container logs",
+        "tags": [
+          "Any Ops OS Kubernetes Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/kubernetes/log/{logUuid}": {
+      "delete": {
+        "operationId": "AnyOpsOSKubernetesApiController.stopContainerLogs",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "logUuid",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Stop container logs",
+        "tags": [
+          "Any Ops OS Kubernetes Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/kubernetes/exec/{connectionUuid}/{terminalUuid}/{namespace}/{pod}/{container}/{command}": {
+      "get": {
+        "operationId": "AnyOpsOSKubernetesApiController.executeIntoContainer",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "terminalUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "namespace",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "pod",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "container",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "command",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Execute into container",
+        "tags": [
+          "Any Ops OS Kubernetes Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/kubernetes/shell/{type}/{connectionUuid}/{terminalUuid}/{namespace}/{pod}/{container}/{command}": {
+      "get": {
+        "operationId": "AnyOpsOSKubernetesApiController.shellIntoContainer",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "type",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "terminalUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "namespace",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "pod",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "container",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "command",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Shell into container",
+        "tags": [
+          "Any Ops OS Kubernetes Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/kubernetes/shell/{terminalUuid}": {
+      "delete": {
+        "operationId": "AnyOpsOSKubernetesApiController.stopContainerShell",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "terminalUuid",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Stop container shell",
+        "tags": [
+          "Any Ops OS Kubernetes Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/monitor/charts/{connectionUuid}/{type}/": {
+      "get": {
+        "operationId": "AnyOpsOSMonitorApiController.getMonitorCharts",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "type",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Get monitor charts",
+        "tags": [
+          "Any Ops OS Monitor Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/monitor/chart/{connectionUuid}/{type}/": {
+      "get": {
+        "operationId": "AnyOpsOSMonitorApiController.getMonitorChart",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "type",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "chart",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Get monitor chart",
+        "tags": [
+          "Any Ops OS Monitor Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/monitor/data/{connectionUuid}/{type}/": {
+      "get": {
+        "operationId": "AnyOpsOSMonitorApiController.getMonitorData",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "type",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "chart",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Get monitor data",
+        "tags": [
+          "Any Ops OS Monitor Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/monitor/alarms/{connectionUuid}/{type}/": {
+      "get": {
+        "operationId": "AnyOpsOSMonitorApiController.getMonitorAlarms",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "type",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "type",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Get monitor alarms",
+        "tags": [
+          "Any Ops OS Monitor Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/monitor/alarm_log/{connectionUuid}/{type}/": {
+      "get": {
+        "operationId": "AnyOpsOSMonitorApiController.getMonitorAlarmsLog",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "type",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Get monitor alarms log",
+        "tags": [
+          "Any Ops OS Monitor Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/monitor/badge/{connectionUuid}/{type}/": {
+      "get": {
+        "operationId": "AnyOpsOSMonitorApiController.monitorTestRemoteConnection",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "type",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Monitor test remote connection",
+        "tags": [
+          "Any Ops OS Monitor Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/netapp/": {
+      "get": {
+        "operationId": "AnyOpsOSNetappApiController.callNetapp",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Call netapp",
+        "tags": [
+          "Any Ops OS Netapp Api"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "credentialUuid": {
+                  "type": "string"
+                },
+                "host": {
+                  "type": "string"
+                },
+                "port": {
+                  "type": "number"
+                },
+                "xml": {
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/remote-file/{connectionUuid}/download_from_url": {
+      "post": {
+        "operationId": "AnyOpsOSRemoteFileApiController.getRemoteFile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                },
+                "credentialUuid": {
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Get remote file",
+        "tags": [
+          "Any Ops OS Remote File Api"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/remote-file/{connectionUuid}/{type}/{fileName}": {
+      "patch": {
+        "operationId": "AnyOpsOSRemoteFileApiController.patchFile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "type",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "fileName",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "dstPath": {
+                  "type": "string"
+                },
+                "permissions": {
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Patch file",
+        "tags": [
+          "Any Ops OS Remote File Api"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/remote-file/{connectionUuid}/{fileName}": {
+      "delete": {
+        "operationId": "AnyOpsOSRemoteFileApiController.deleteFile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "fileName",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Delete file",
+        "tags": [
+          "Any Ops OS Remote File Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/remote-folder/{connectionUuid}/{folderName}": {
+      "get": {
+        "operationId": "AnyOpsOSRemoteFolderApiController.getRemoteFolder",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "folderName",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Get remote folder",
+        "tags": [
+          "Any Ops OS Remote Folder Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      },
+      "put": {
+        "operationId": "AnyOpsOSRemoteFolderApiController.createRemoteFolder",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "folderName",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Create remote folder",
+        "tags": [
+          "Any Ops OS Remote Folder Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/snmp/{type}/{connectionUuid}/{oid}": {
+      "get": {
+        "operationId": "AnyOpsOSSnmpApiController.getSnmp",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "type",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "oid",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Get snmp",
+        "tags": [
+          "Any Ops OS Snmp Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/vmware/getClientVersion": {
+      "post": {
+        "operationId": "AnyOpsOSVmwareApiController.getVmwareClientVersion",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Get vmware client version",
+        "tags": [
+          "Any Ops OS Vmware Api"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "host": {
+                  "type": "string"
+                },
+                "port": {
+                  "type": "number"
+                }
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/vmware/connect": {
+      "post": {
+        "operationId": "AnyOpsOSVmwareApiController.vmwareConnect",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Vmware connect",
+        "tags": [
+          "Any Ops OS Vmware Api"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "host": {
+                  "type": "string"
+                },
+                "port": {
+                  "type": "number"
+                },
+                "credentialUuid": {
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/vmware/connectSoap": {
+      "post": {
+        "operationId": "AnyOpsOSVmwareApiController.vmwareConnectSoap",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Vmware connect soap",
+        "tags": [
+          "Any Ops OS Vmware Api"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "host": {
+                  "type": "string"
+                },
+                "port": {
+                  "type": "number"
+                },
+                "credentialUuid": {
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/vmware/call": {
+      "post": {
+        "operationId": "AnyOpsOSVmwareApiController.vmwareCall",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Vmware call",
+        "tags": [
+          "Any Ops OS Vmware Api"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "host": {
+                  "type": "string"
+                },
+                "port": {
+                  "type": "number"
+                },
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/vmware/callSoap": {
+      "post": {
+        "operationId": "AnyOpsOSVmwareApiController.vmwareCallSoap",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Vmware call soap",
+        "tags": [
+          "Any Ops OS Vmware Api"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "host": {
+                  "type": "string"
+                },
+                "port": {
+                  "type": "number"
+                },
+                "action": {
+                  "type": "string"
+                },
+                "xml": {
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/vmware/upload_to_datastore": {
+      "post": {
+        "operationId": "AnyOpsOSVmwareApiController.uploadToDatastore",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Upload to datastore",
+        "tags": [
+          "Any Ops OS Vmware Api"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                },
+                "credentialUuid": {
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    }
+  },
+  "swagger": "2.0",
+  "definitions": {},
+  "securityDefinitions": {
+    "basicAuth": {
+      "type": "basic"
+    }
+  },
+  "x-components": {}
+}

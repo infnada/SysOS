@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibUserService} from '@anyopsos/lib-user';
+import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
 
 import {MainService} from '../../services/main.service';
 
@@ -33,7 +34,7 @@ export class LoginComponent {
 
   login(username: string, password: string): void {
     this.UserState.loginUser(username, password).subscribe(
-      (res: { status: string, data?: any }) => {
+      (res: BackendResponse) => {
         if (res.status === 'ok') {
           this.UserState.setState({
             userLoggedIn: true,

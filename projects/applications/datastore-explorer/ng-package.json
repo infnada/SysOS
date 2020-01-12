@@ -1,0 +1,25 @@
+{
+  "$schema": "../../../node_modules/ng-packagr/ng-package.schema.json",
+  "dest": "../../../dist/applications/datastore-explorer",
+  "lib": {
+    "entryFile": "src/public-api.ts"
+  },
+  "whitelistedNonPeerDependencies": [
+    "@anyopsos/lib-angular-material",
+    "@anyopsos/lib-application",
+    "@anyopsos/lib-file",
+    "@anyopsos/lib-file-system",
+    "@anyopsos/lib-file-system-ui",
+    "@anyopsos/lib-folder",
+    "@anyopsos/lib-logger",
+    "@anyopsos/lib-modal",
+    "@anyopsos/lib-netapp",
+    "@anyopsos/lib-selectable",
+    "@anyopsos/lib-service-injector",
+    "@anyopsos/lib-types",
+    "@anyopsos/lib-vmware",
+    "@anyopsos/app-infrastructure-manager",
+    "uuid",
+    "ngx-socket-io"
+  ]
+}

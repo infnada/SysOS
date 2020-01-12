@@ -1,4 +1,4 @@
-<li class="start-menu__{{application.id}}" (click)="toggleApplication(application.id)" *ngIf="application.id !== 'start'" (contextmenu)="onAppContextMenu($event)">
+<li class="start-menu__{{application.uuid}}" (click)="toggleApplication(application.uuid)" *ngIf="application.uuid !== 'start'" (contextmenu)="onAppContextMenu($event)">
   <span>
     <i class="{{application.ico}}"></i>
     {{application.name}}

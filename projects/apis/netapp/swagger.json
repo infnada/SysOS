@@ -1,0 +1,55 @@
+{
+  "info": {
+    "title": "A sample API",
+    "version": "1.0.0",
+    "description": "Generated with `routing-controllers-openapi`"
+  },
+  "swagger": "2.0",
+  "projectName": "netapp",
+  "paths": {
+    "/api/netapp/": {
+      "get": {
+        "operationId": "AnyOpsOSNetappApiController.callNetapp",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Call netapp",
+        "tags": [
+          "Any Ops OS Netapp Api"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "credentialUuid": {
+                  "type": "string"
+                },
+                "host": {
+                  "type": "string"
+                },
+                "port": {
+                  "type": "number"
+                },
+                "xml": {
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    }
+  }
+}

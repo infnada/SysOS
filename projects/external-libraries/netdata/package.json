@@ -1,0 +1,39 @@
+{
+  "name": "@anyopsos/ext-lib-netdata",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@angular/common": "^8.2.14",
+    "@angular/core": "^8.2.14",
+    "tslib": "^1.10.0",
+    "rxjs": "~6.5.3"
+  },
+  "devDependencies": {
+    "replace-in-file": "^5.0.2"
+  },
+  "dependencies": {
+    "@anyopsos/lib-modal": "~0.0.1",
+    "@anyopsos/lib-logger": "~0.0.1",
+    "@anyopsos/ext-lib-jquery": "~0.0.1",
+    "@anyopsos/ext-lib-dygraphs": "~0.0.1",
+    "@anyopsos/ext-lib-easy-pie-chart": "~0.0.1",
+    "@anyopsos/ext-lib-perfect-scrollbar": "~0.0.1",
+    "@anyopsos/ext-lib-gauge-js": "~0.0.1",
+    "@anyopsos/ext-lib-pako": "~0.0.1",
+    "@anyopsos/ext-lib-lz-string": "~0.0.1",
+    "netdata": "link:../../../node_modules/netdata_downloaded"
+  },
+  "bundledDependencies": [
+    "netdata"
+  ],
+  "homepage": "https://github.com/anyOpsOS/anyOpsOS#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anyOpsOS/anyOpsOS.git"
+  },
+  "bugs": "https://github.com/anyOpsOS/anyOpsOS/issues",
+  "keywords": [],
+  "description": "anyOpsOS netdata ext-library",
+  "author": "Isart Navarro <contact@isartnavarro.io> (https://isartnavarro.io)",
+  "license": "GPL-3.0-or-later",
+  "private": false
+}

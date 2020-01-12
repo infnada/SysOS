@@ -1,0 +1,13 @@
+{
+  "$schema": "../../../node_modules/ng-packagr/ng-package.schema.json",
+  "dest": "../../../dist/libraries/terminal",
+  "lib": {
+    "entryFile": "src/public-api.ts"
+  },
+  "whitelistedNonPeerDependencies": [
+    "ngx-socket-io",
+    "xterm",
+    "xterm-addon-fit",
+    "xterm-addon-web-links"
+  ]
+}

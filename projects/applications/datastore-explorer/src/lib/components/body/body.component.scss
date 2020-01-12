@@ -1,0 +1,21 @@
+aade-body-local, aade-body-server {
+  height: auto;
+  width: 50%;
+  display: flex;
+}
+
+aade-body-exchange {
+  height: 0;
+}
+
+.with__stats {
+  aade-body-local, aade-body-server {
+    height: 70%;
+  }
+
+  aade-body-exchange {
+    width: 100%;
+    height: 30%;
+  }
+}
+

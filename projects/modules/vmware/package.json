@@ -1,0 +1,25 @@
+{
+  "name": "@anyopsos/module-vmware",
+  "version": "0.0.1",
+  "main": "src/index.ts",
+  "dependencies": {
+    "node-fetch": "^2.6.0",
+    "xml2js": "^0.4.23"
+  },
+  "devDependencies": {
+    "@types/node-fetch": "^2.5.4",
+    "@types/xml2js": "^0.4.5",
+    "typescript": "^3.7.4"
+  },
+  "homepage": "https://github.com/anyOpsOS/anyOpsOS#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anyOpsOS/anyOpsOS.git"
+  },
+  "bugs": "https://github.com/anyOpsOS/anyOpsOS/issues",
+  "keywords": [],
+  "description": "anyOpsOS module vmware",
+  "author": "Isart Navarro <contact@isartnavarro.io> (https://isartnavarro.io)",
+  "license": "GPL-3.0-or-later",
+  "private": true
+}

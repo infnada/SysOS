@@ -7,7 +7,8 @@ import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
 import {AnyOpsOSLibApplicationService} from '@anyopsos/lib-application';
 import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
-import {AnyOpsOSFile} from '@anyopsos/lib-types';
+import {AnyOpsOSFile} from '@anyopsos/backend/app/types/anyopsos-file';
+import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
 
 declare const SystemJS: any;
 
@@ -34,33 +35,28 @@ export class MainService {
               private socket: Socket) {
   }
 
-  getInstalledLibs(path = ''): Promise<void> {
+  getInstalledLibs(path?): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.FileSystem.getFileSystemPath(null, '/bin/libs/' + path).subscribe(
-        (res: { data: AnyOpsOSFile[] }) => {
-          this.logger.info('anyOpsOS', 'Got Installed Libs successfully');
+      this.FileSystem.getFolder('/bin/libs/' + (path ? path : '')).subscribe(
+        async (res: BackendResponse & { data: AnyOpsOSFile[] }) => {
+          if (res.status === 'error') return this.logger.fatal('anyOpsOS', `Error while getting installed libs on /bin/libs/${path ? path : ''}`, null, res.data);
+          this.logger.info('anyOpsOS', `Got Installed Libs successfully on /bin/libs)${path ? path : ''}`);
 
           const libPromises = [];
           const libFolders = [];
 
           res.data.forEach((value) => {
-            if (this.FileSystem.getFileType(value.longname) === 'folder') {
-              libFolders.push(this.getInstalledLibs(value.filename + '/'));
-            } else {
-              if (value.filename.endsWith('.umd.js')) {
-                libPromises.push(this.loadLib(value, path));
-              }
-            }
+            if (this.FileSystem.getFileType(value.longName) === 'folder') return libFolders.push(this.getInstalledLibs(value.fileName + '/'));
+            if (value.fileName.endsWith('.umd.js')) return libPromises.push(this.loadLib(value, path));
           });
 
-          return Promise.all(libPromises).then(() => {
-            return Promise.all(libFolders);
-          }).then(() => {
-            return resolve();
-          }).catch((e: Error) => {
-            this.logger.error('anyOpsOS', 'Error while getting installed libs', null, e.message);
-          });
+          await Promise.all(libPromises);
 
+          // TODO system.js is not returning a real promise.
+          //  Hard waiting 1 second before loading next folder dependencies
+          await new Promise(r => setTimeout(r, 1000));
+          await Promise.all(libFolders);
+          return resolve();
         },
         error => {
           this.logger.error('anyOpsOS', 'Error while getting installed libs', null, error);
@@ -70,7 +66,7 @@ export class MainService {
   }
 
   async loadLib(lib, path): Promise<void> {
-    return await SystemJS.import(`/api/file/${encodeURIComponent('/bin/libs/' + path + lib.filename)}`);
+    return SystemJS.import(`/api/file/${encodeURIComponent('/bin/libs/' + (path ? path : '') + lib.fileName)}`);
   }
 
   init(): void {

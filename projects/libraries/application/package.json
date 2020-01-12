@@ -1,0 +1,26 @@
+{
+  "name": "@anyopsos/lib-application",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@angular/common": "^8.2.14",
+    "@angular/core": "^8.2.14",
+    "rxjs": "~6.5.3"
+  },
+  "dependencies": {
+    "angular-resizable-element": "^3.2.4",
+    "@anyopsos/lib-angular-material": "~0.0.1",
+    "@anyopsos/lib-file-system": "~0.0.1",
+    "@anyopsos/lib-logger": "~0.0.1"
+  },
+  "homepage": "https://github.com/anyOpsOS/anyOpsOS#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anyOpsOS/anyOpsOS.git"
+  },
+  "bugs": "https://github.com/anyOpsOS/anyOpsOS/issues",
+  "keywords": [],
+  "description": "anyOpsOS application library",
+  "author": "Isart Navarro <contact@isartnavarro.io> (https://isartnavarro.io)",
+  "license": "GPL-3.0-or-later",
+  "private": false
+}

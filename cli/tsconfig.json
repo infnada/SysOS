@@ -1,0 +1,14 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "rootDir": "src",
+    "outDir": "build",
+    "module": "commonjs",
+    "esModuleInterop": true
+  },
+  "include": [
+    "src/**/*"
+  ]
+}

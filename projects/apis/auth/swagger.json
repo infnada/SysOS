@@ -1,0 +1,65 @@
+{
+  "info": {
+    "title": "A sample API",
+    "version": "1.0.0",
+    "description": "Generated with `routing-controllers-openapi`"
+  },
+  "swagger": "2.0",
+  "projectName": "auth",
+  "paths": {
+    "/api/auth/": {
+      "get": {
+        "operationId": "AnyOpsOSAuthApiController.getAuth",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Get auth",
+        "tags": [
+          "Any Ops OS Auth Api"
+        ],
+        "parameters": [],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      },
+      "post": {
+        "operationId": "AnyOpsOSAuthApiController.login",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Login",
+        "tags": [
+          "Any Ops OS Auth Api"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "username": {
+                  "type": "string"
+                },
+                "password": {
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    }
+  }
+}

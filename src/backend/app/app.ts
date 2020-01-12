@@ -1,41 +1,45 @@
 import {configure, getLogger, connectLogger, Logger} from 'log4js';
 import {createServer, Server} from 'http';
 import {createServer as createServers, Server as Servers, ServerOptions} from 'https';
-import {ServeStaticOptions} from 'serve-static';
 import {Application, Request, Response, RequestHandler, static as expressStatic, NextFunction} from 'express';
-import * as fs from 'fs';
-import * as bodyParser from 'body-parser';
-import * as helmet from 'helmet';
-import * as path from 'path';
-import favicon from 'serve-favicon';
-import cookieParser from 'cookie-parser';
-import cookie from 'cookie';
-import compress from 'compression';
-import readConfig from 'read-config';
-import MemoryStore from 'memorystore';
+import {ServeStaticOptions} from 'serve-static';
+import {urlencoded, json} from 'body-parser';
+import {useExpressServer, Action} from 'routing-controllers';
+import {useSocketServer} from 'socket-controllers';
+import {readFileSync, readJSONSync} from 'fs-extra';
+import {join} from 'path';
 import express from 'express';
 import socketIo from 'socket.io';
+
+// @ts-ignore TODO
+import MemoryStore from 'memorystore';
 import session from 'express-session';
+import compress from 'compression';
+import cookieParser from 'cookie-parser';
 import cors from 'cors';
+import cookie from 'cookie';
+import favicon from 'serve-favicon';
+import * as helmet from 'helmet';
 
-import {SocketModule} from './socket';
-import {RoutesModule} from './routes';
-
-export declare let Io: socketIo.Server;
+import {AnyOpsOSGetPathModule} from '@anyopsos/module-get-path';
+import {AnyOpsOSApiFinalMiddleware} from '@anyopsos/api-middleware-final';
+import {AnyOpsOSApiErrorHandlerMiddleware} from '@anyopsos/api-middleware-error-handler';
 
 /**
  * App class will create all the backend listeners HTTP/HTTPS/WSS
  */
 export class App {
-  public config = readConfig(path.join(__dirname, '/filesystem/etc/expressjs/config.json'));
+  private readonly mainConfigPath: string = new AnyOpsOSGetPathModule().mainConfig;
+  private readonly mainConfig: { [key: string]: any; } = readJSONSync(this.mainConfigPath);
+
   private app: Application;
   private server: Server;
   private servers: Servers;
   private io: socketIo.Server;
   private logger: Logger;
   private options: ServerOptions = {
-    key: fs.readFileSync(__dirname + '/ssl/key.pem'),
-    cert: fs.readFileSync(__dirname + '/ssl/cert.pem')
+    key: readFileSync(__dirname + '/ssl/key.pem'),
+    cert: readFileSync(__dirname + '/ssl/cert.pem')
   };
   private expressOptions: ServeStaticOptions = {
     index: 'index.html',
@@ -44,8 +48,8 @@ export class App {
     extensions: ['htm', 'html'],
     maxAge: '1s',
     redirect: false,
-    setHeaders: (res) => {
-      res.set('x-timestamp', Date.now().toString());
+    setHeaders: (response: Response) => {
+      response.set('x-timestamp', Date.now().toString());
     }
   };
   private MemoryStore = MemoryStore(session);
@@ -54,17 +58,18 @@ export class App {
   });
   private Session: RequestHandler = session({
     store: this.sessionStore,
-    secret: this.config.session.secret,
-    name: this.config.session.name,
+    secret: this.mainConfig.session.secret,
+    name: this.mainConfig.session.name,
     resave: false,
     saveUninitialized: true,
+    rolling: true,
     cookie: {
       expires: new Date(Date.now() + 8 * 60 * 60 * 1000)
     }
   });
-  private sessionCookie: string = this.config.session.name;
-  private sessionSecret: string = this.config.session.secret;
-  private uniqueCookie: string = this.config.uniqueCookie;
+  private sessionCookie: string = this.mainConfig.session.name;
+  private sessionSecret: string = this.mainConfig.session.secret;
+  private uniqueCookie: string = this.mainConfig.uniqueCookie;
 
   constructor() {
     this.createApp();
@@ -73,24 +78,23 @@ export class App {
     this.sockets();
     this.listen();
     this.errorHandler();
-    this.routing();
   }
 
   private createApp(): void {
     this.app = express();
     this.app.use(this.Session);
     this.app.use(compress({
-        filter: (req: Request, res: Response) => {
-          return (/json|text|javascript|css/).test((res.getHeader('Content-Type') as string));
+        filter: (request: Request, response: Response) => {
+          return (/json|text|javascript|css/).test((response.getHeader('Content-Type') as string));
         },
         level: 9
       }
     ));
-    this.app.use(bodyParser.urlencoded({
+    this.app.use(urlencoded({
       extended: true
     }));
-    this.app.use(bodyParser.json({limit: '50mb'}));
-    this.app.use(cookieParser(this.config.session.secret));
+    this.app.use(json({limit: '50mb'}));
+    this.app.use(cookieParser(this.mainConfig.session.secret));
     this.app.use(helmet.frameguard());
     this.app.use(helmet.xssFilter());
     this.app.use(helmet.noSniff());
@@ -103,7 +107,44 @@ export class App {
     this.app.disable('x-powered-by');
     this.app.use(cors());
     this.app.use(favicon(__dirname + '/public/favicon.ico'));
-    this.app.use(expressStatic(path.join(__dirname, '/public'), this.expressOptions));
+    this.app.use(expressStatic(join(__dirname, '/public'), this.expressOptions));
+
+    useExpressServer(this.app, {
+      defaultErrorHandler: false,
+      defaults: {
+        paramOptions: {
+          required: true
+        }
+      },
+      controllers: [new AnyOpsOSGetPathModule().filesystem + '/bin/apis/*/index.js'],
+      middlewares: [
+        AnyOpsOSApiFinalMiddleware,
+        AnyOpsOSApiErrorHandlerMiddleware,
+      ],
+      authorizationChecker: async (action: Action, roles?: string[]) => {
+        // No legged_in or deleted uniqueId cookie
+        if (!action.request.signedCookies[this.mainConfig.uniqueCookie]) {
+          this.logger.warn('no_uniqueId_cookie ' + action.request.url);
+          return false;
+        }
+
+        // Session deleted from redis
+        if (!action.request.session.userUuid) {
+          this.logger.warn('no_user_id ' + action.request.url);
+          return false;
+        }
+
+        // Session user_id and uniqueId not match. Modified uniqueId cookie.
+        if (action.request.session.userUuid !== action.request.signedCookies[this.mainConfig.uniqueCookie]) {
+          this.logger.warn('invalid_uniqueId_cookie ' + action.request.url);
+          return false;
+        }
+
+        // Success
+        return true;
+      }
+    });
+
     /*app.use(csrf());
 
     // Set cookie "XSRF-TOKEN" the new token for csrf
@@ -125,7 +166,7 @@ export class App {
   private logging(): void {
     configure({
       appenders: {
-        file: {type: 'file', filename: path.join(__dirname, 'logs/log4js.log')},
+        file: {type: 'file', filename: join(__dirname, 'logs/log4js.log')},
         console: {type: 'console', level: 'trace'}
       },
       categories: {
@@ -146,7 +187,7 @@ export class App {
   private createServer(): void {
 
     this.server = createServer((req: Request, res: Response) => {
-      res.writeHead(301, {Location: 'https://' + req.headers.host + ':' + this.config.listen.ports + req.url});
+      res.writeHead(301, {Location: 'https://' + req.headers.host + ':' + this.mainConfig.listen.ports + req.url});
       res.end();
     });
     this.servers = createServers(this.options, this.app);
@@ -154,9 +195,6 @@ export class App {
 
   private sockets(): void {
     this.io = socketIo(this.servers);
-
-    // Make this a global and exportable variable from this module
-    Io = this.io;
 
     this.io.use((socket: socketIo.Socket, next: NextFunction) => {
 
@@ -176,7 +214,7 @@ export class App {
 
           const sessionID = socketCookies[this.sessionCookie].substring(2, 34);
 
-          this.sessionStore.get(sessionID, (err, sockSession) => {
+          this.sessionStore.get(sessionID, (err: any, sockSession: any) => {
             if (err) {
               this.logger.error('[APP] Get Session -> ' + err.code);
               return next(new Error(err));
@@ -198,19 +236,17 @@ export class App {
       }
 
     });
-
-    // bring up socket
-    this.io.on('connection', (socket: socketIo.Socket) => {
-      return new SocketModule(socket);
+    useSocketServer(this.io, {
+      controllers: [new AnyOpsOSGetPathModule().filesystem + '/bin/websockets/*/index.js'],
     });
   }
 
   private listen(): void {
-    this.server.listen({host: this.config.listen.ip, port: this.config.listen.port}, () => {
-      this.logger.info('Running server on port %s', this.config.listen.port);
+    this.server.listen({host: this.mainConfig.listen.ip, port: this.mainConfig.listen.port}, () => {
+      this.logger.info('Running server on port %s', this.mainConfig.listen.port);
     });
-    this.servers.listen({host: this.config.listen.ip, port: this.config.listen.ports}, () => {
-      this.logger.info('Running server on port %s', this.config.listen.ports);
+    this.servers.listen({host: this.mainConfig.listen.ip, port: this.mainConfig.listen.ports}, () => {
+      this.logger.info('Running server on port %s', this.mainConfig.listen.ports);
     });
   }
 
@@ -221,10 +257,6 @@ export class App {
     this.servers.on('error', (err: any) => {
       this.logger.error('HTTPS server.listen ERROR: ' + err.code);
     });
-  }
-
-  private routing(): void {
-    new RoutesModule(this.app, this.io).init();
   }
 
   public getApp(): Application {

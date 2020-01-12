@@ -1,0 +1,29 @@
+{
+  "name": "@anyopsos/app-backups-manager",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@angular/common": "^8.2.14",
+    "@angular/core": "^8.2.14",
+    "tslib": "^1.10.0",
+    "rxjs": "~6.5.3"
+  },
+  "dependencies": {
+    "@anyopsos/lib-application": "~0.0.1",
+    "@anyopsos/lib-file-system": "~0.0.1",
+    "@anyopsos/lib-logger": "~0.0.1",
+    "@anyopsos/lib-modal": "~0.0.1",
+    "@anyopsos/lib-netapp": "~0.0.1",
+    "@anyopsos/lib-vmware": "~0.0.1"
+  },
+  "homepage": "https://github.com/anyOpsOS/anyOpsOS#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anyOpsOS/anyOpsOS.git"
+  },
+  "bugs": "https://github.com/anyOpsOS/anyOpsOS/issues",
+  "keywords": [],
+  "description": "anyOpsOS backups-manager application",
+  "author": "Isart Navarro <contact@isartnavarro.io> (https://isartnavarro.io)",
+  "license": "GPL-3.0-or-later",
+  "private": false
+}

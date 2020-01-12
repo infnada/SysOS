@@ -1,0 +1,63 @@
+<aelweaves-anyopsos-ext-lib-weavescope [graphNodes]="setNodeGraphNodes()" [graphTopologies]="setNodeGraphTopologies()" (selectedTopology)="selectedTopologyChange($event)" (selectedNode)="selectedNodeChange($event)" [simpleLayout]="true">
+
+  <div class="alerts">
+    <div class="mt-3 alert alert-danger" role="alert">Some alert text</div>
+  </div>
+
+  <div class="col text-center" style="
+    position: absolute;
+    bottom: 35px;
+    z-index: 1;">
+    <button class="btn" type="button" mat-flat-button color="primary" (click)="scrollTo()">Node info</button>
+  </div>
+
+</aelweaves-anyopsos-ext-lib-weavescope>
+
+<div class="h-100" #scrollToElement>
+
+  <!-- Kubernetes Overview -->
+  <div>
+    <div class="kd-card-group-header kd-muted">Workloads</div>
+
+    <div>
+      <aaim-object-list [nmObject]="nmObject" [listType]="'CronJob'"></aaim-object-list>
+      <aaim-object-list [nmObject]="nmObject" [listType]="'DaemonSet'"></aaim-object-list>
+      <aaim-object-list [nmObject]="nmObject" [listType]="'Deployment'"></aaim-object-list>
+      <aaim-object-list [nmObject]="nmObject" [listType]="'Job'"></aaim-object-list>
+      <aaim-object-list [nmObject]="nmObject" [listType]="'Pod'"></aaim-object-list>
+      <aaim-object-list [nmObject]="nmObject" [listType]="'ReplicaSet'"></aaim-object-list>
+      <aaim-object-list [nmObject]="nmObject" [listType]="'ReplicationController'"></aaim-object-list>
+      <aaim-object-list [nmObject]="nmObject" [listType]="'StatefulSet'"></aaim-object-list>
+    </div>
+
+    <div class="kd-card-group-header kd-muted">Discovery and Load Balancing</div>
+    <div>
+      <aaim-object-list [nmObject]="nmObject" [listType]="'Ingress'"></aaim-object-list>
+      <aaim-object-list [nmObject]="nmObject" [listType]="'Service'"></aaim-object-list>
+    </div>
+
+    <div class="kd-card-group-header kd-muted">Config and Storage</div>
+    <div>
+      <aaim-object-list [nmObject]="nmObject" [listType]="'ConfigMap'"></aaim-object-list>
+      <aaim-object-list [nmObject]="nmObject" [listType]="'PersistentVolumeClaim'"></aaim-object-list>
+      <aaim-object-list [nmObject]="nmObject" [listType]="'Secret'"></aaim-object-list>
+    </div>
+  </div>
+  <!-- End Kubernetes Overview -->
+
+  <div class="info-top">
+    <!-- Kubernetes Object Detail -->
+    <aaim-kubernetes-object-detail [nmObject]="nmObject"></aaim-kubernetes-object-detail>
+    <!-- End Kubernetes Object Detail -->
+  </div>
+
+  <div class="info-bottom">
+
+    <!--<mat-chip-list aria-label="Tag selection">
+      <mat-chip color="accent">No tags</mat-chip>
+      <mat-chip *ngFor="let tag of tags" selected removable (removed)="remove(tag)" color="primary">{{tag.category}}: {{tag.name}}<mat-icon matChipRemove>cancel</mat-icon></mat-chip>
+      <mat-chip color="accent"><mat-icon>add</mat-icon></mat-chip>
+    </mat-chip-list>-->
+  </div>
+
+</div>

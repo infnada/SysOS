@@ -1,0 +1,31 @@
+{
+  "name": "@anyopsos/app-credentials-manager",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@angular/common": "^8.2.14",
+    "@angular/core": "^8.2.14",
+    "@angular/forms": "~8.2.14",
+    "rxjs": "~6.5.3",
+    "tslib": "^1.10.0"
+  },
+  "dependencies": {
+    "@anyopsos/lib-angular-material": "~0.0.1",
+    "@anyopsos/lib-application": "~0.0.1",
+    "@anyopsos/lib-logger": "~0.0.1",
+    "@anyopsos/lib-service-injector": "~0.0.1"
+  },
+  "devDependencies": {
+    "@anyopsos/module-credential": "~0.0.1"
+  },
+  "homepage": "https://github.com/anyOpsOS/anyOpsOS#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anyOpsOS/anyOpsOS.git"
+  },
+  "bugs": "https://github.com/anyOpsOS/anyOpsOS/issues",
+  "keywords": [],
+  "description": "anyOpsOS credentials-manager application",
+  "author": "Isart Navarro <contact@isartnavarro.io> (https://isartnavarro.io)",
+  "license": "GPL-3.0-or-later",
+  "private": false
+}

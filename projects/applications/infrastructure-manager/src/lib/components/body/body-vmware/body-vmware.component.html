@@ -1,0 +1,48 @@
+<div class="panel-container">
+  <div class="panel-content">
+    <mat-tab-group selectedIndex="1">
+
+      <mat-tab disabled="true">
+        <ng-template matTabLabel>
+          <div class="object horizontal-flex-container">
+            <div role="titlebar-icon">
+              <i [ngClass]="InfrastructureManagerTemplateHelper.getObjectIcon(vmwareObject).data" *ngIf="InfrastructureManagerTemplateHelper.getObjectIcon(vmwareObject).type === 'class'"></i>
+              <img [src]="InfrastructureManagerTemplateHelper.getObjectIcon(vmwareObject).data" width="25px" class="mr-1" *ngIf="InfrastructureManagerTemplateHelper.getObjectIcon(vmwareObject).type === 'image'" />
+            </div>
+            <div role="titlebar-title" class="summary-name-label">{{vmwareObject.name}}</div>
+          </div>
+        </ng-template>
+      </mat-tab>
+
+      <mat-tab label="Summary">
+        <aaim-tab-summary [nmObject]="vmwareObject"></aaim-tab-summary>
+      </mat-tab>
+
+      <mat-tab label="Configure">
+        <aaim-tab-configure [nmObject]="vmwareObject"></aaim-tab-configure>
+      </mat-tab>
+
+      <mat-tab label="Updates" class="p-2">
+        <aaim-tab-updates [nmObject]="vmwareObject"></aaim-tab-updates>
+      </mat-tab>
+
+    </mat-tab-group>
+  </div>
+  <div class="panel-sidebar">
+    <mat-tab-group mat-stretch-tabs>
+
+      <mat-tab label="Monitor" *ngIf="haveMonitor()">
+        <aaim-tab-monitor [nmObject]="vmwareObject" [monitorConnection]="monitorConnection"></aaim-tab-monitor>
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template matTabLabel>
+          <span matBadge="5" matBadgeOverlap="false" matBadgePosition="before"
+                matBadgeColor="accent">Alarms & Logs</span>
+        </ng-template>
+        <aaim-tab-alarms [nmObject]="vmwareObject"></aaim-tab-alarms>
+      </mat-tab>
+
+    </mat-tab-group>
+  </div>
+</div>

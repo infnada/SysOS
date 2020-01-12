@@ -1,0 +1,25 @@
+<div class="col folders__body" #selectableContainer>
+
+  <aade-body-new-connection [application]="application" *ngIf="activeConnection === null || getActiveConnection().state === 'disconnected'"></aade-body-new-connection>
+
+  <ng-container *ngIf="activeConnection !== null && getActiveConnection().state !== 'disconnected'">
+
+    <aade-actions-server [application]="application"></aade-actions-server>
+
+    <div id="local_body">
+
+      <alfolder-anyopsos-lib-folder
+        [application]=application
+        subApplication="server"
+        [currentPath]=currentPath
+        [currentData]=currentData
+        [currentActive]=currentActive
+        [selector]="'.window--datastore-explorer .window__main'"
+        [viewAsList]=viewAsList
+        [search]=search
+        [loadingData]=loadingData
+        [connection]="getActiveConnection()"></alfolder-anyopsos-lib-folder>
+
+    </div>
+  </ng-container>
+</div>

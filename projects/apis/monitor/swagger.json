@@ -1,0 +1,215 @@
+{
+  "info": {
+    "title": "A sample API",
+    "version": "1.0.0",
+    "description": "Generated with `routing-controllers-openapi`"
+  },
+  "swagger": "2.0",
+  "projectName": "monitor",
+  "paths": {
+    "/api/monitor/charts/{connectionUuid}/{type}/": {
+      "get": {
+        "operationId": "AnyOpsOSMonitorApiController.getMonitorCharts",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "type",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Get monitor charts",
+        "tags": [
+          "Any Ops OS Monitor Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/monitor/chart/{connectionUuid}/{type}/": {
+      "get": {
+        "operationId": "AnyOpsOSMonitorApiController.getMonitorChart",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "type",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "chart",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Get monitor chart",
+        "tags": [
+          "Any Ops OS Monitor Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/monitor/data/{connectionUuid}/{type}/": {
+      "get": {
+        "operationId": "AnyOpsOSMonitorApiController.getMonitorData",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "type",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "chart",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Get monitor data",
+        "tags": [
+          "Any Ops OS Monitor Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/monitor/alarms/{connectionUuid}/{type}/": {
+      "get": {
+        "operationId": "AnyOpsOSMonitorApiController.getMonitorAlarms",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "type",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "type",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Get monitor alarms",
+        "tags": [
+          "Any Ops OS Monitor Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/monitor/alarm_log/{connectionUuid}/{type}/": {
+      "get": {
+        "operationId": "AnyOpsOSMonitorApiController.getMonitorAlarmsLog",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "type",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Get monitor alarms log",
+        "tags": [
+          "Any Ops OS Monitor Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/monitor/badge/{connectionUuid}/{type}/": {
+      "get": {
+        "operationId": "AnyOpsOSMonitorApiController.monitorTestRemoteConnection",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "type",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Monitor test remote connection",
+        "tags": [
+          "Any Ops OS Monitor Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    }
+  }
+}

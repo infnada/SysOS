@@ -1,0 +1,13 @@
+{
+  "$schema": "../../../node_modules/ng-packagr/ng-package.schema.json",
+  "dest": "../../../dist/applications/credentials-manager",
+  "lib": {
+    "entryFile": "src/public-api.ts"
+  },
+  "whitelistedNonPeerDependencies": [
+    "@anyopsos/lib-angular-material",
+    "@anyopsos/lib-application",
+    "@anyopsos/lib-logger",
+    "@anyopsos/lib-service-injector"
+  ]
+}

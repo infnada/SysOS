@@ -4,18 +4,19 @@
 /dist
 /tmp
 /out-tsc
+build/
 # Only exists if Bazel was run
 /bazel-out
 
 # dependencies
-/node_modules
+node_modules/
 
 # profiling files
-chrome-profiler-events.json
-speed-measure-plugin.json
+chrome-profiler-events*.json
+speed-measure-plugin*.json
 
 # IDEs and editors
-.idea
+/.idea
 .project
 .classpath
 .c9/
@@ -36,13 +37,15 @@ speed-measure-plugin.json
 /connect.lock
 /coverage
 /libpeerconnection.log
-npm-debug.log
-yarn-error.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+yarn.lock
 testem.log
 /typings
+/internal_tests
 
 # System Files
 .DS_Store
 Thumbs.db
-
 /internal_tests/

@@ -2,7 +2,7 @@
 <div class="taskbar" cdkDropList cdkDropListOrientation="horizontal" (cdkDropListDropped)="drop($event)">
 
   <div class="taskbar__items">
-    <app-task-bar-items *ngFor="let application of taskBarApplications" cdkDrag cdkDragLockAxis="x" cdkDragBoundary=".taskbar" [cdkDragDisabled]="application.id === 'start'" [application]="application"></app-task-bar-items>
+    <app-task-bar-items *ngFor="let application of taskBarApplications" cdkDrag cdkDragLockAxis="x" cdkDragBoundary=".taskbar" [cdkDragDisabled]="application.uuid === 'start'" [application]="application"></app-task-bar-items>
   </div>
 
   <div class="taskbar__minimize" (click)="minimizeToDesktop()"></div>

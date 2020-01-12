@@ -1,6 +1,13 @@
-# anyOpsOS
+![GitHub package.json version](https://img.shields.io/github/package-json/v/infnada/sysos)
+![GitHub](https://img.shields.io/github/license/infnada/sysos)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/a1b007a1ce974bc590480ac0e943e8a2)](https://www.codacy.com/manual/inf.nada/SysOS?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=infnada/SysOS&amp;utm_campaign=Badge_Grade)
+![Libraries.io dependency status for GitHub repo](https://img.shields.io/librariesio/github/infnada/sysos)
+![GitHub issues](https://img.shields.io/github/issues/infnada/sysos)
 
-> **_This is a SUPER Alpha release, do not use on production environment._**
+![App State](https://img.shields.io/badge/state-alpha-red?style=for-the-badge)
+
+
+# anyOpsOS
 
 anyOpsOS started as a fun/test project and I realized that it can be a good tool to manage my GNU/Linux infrastructure. But finally I opted to do something which not require any Agent to **manage the whole infrastructure of a business**.
 

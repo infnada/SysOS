@@ -1,0 +1,34 @@
+{
+  "name": "@anyopsos/module-ssh",
+  "version": "0.0.1",
+  "main": "src/index.ts",
+  "dependencies": {
+    "bluebird": "^3.7.2",
+    "log4js": "^6.1.0",
+    "ssh2": "^0.8.7",
+    "fs-extra": "^8.1.0"
+  },
+  "peerDependencies": {
+    "@anyopsos/module-get-path": "~0.0.1",
+    "@anyopsos/module-terminal": "~0.0.1",
+    "@anyopsos/module-socket": "~0.0.1"
+  },
+  "devDependencies": {
+    "@types/bluebird": "^3.5.29",
+    "@types/fs-extra": "^8.0.1",
+    "@types/ssh2": "^0.5.39",
+    "socket.io": "^2.3.0",
+    "typescript": "^3.7.4"
+  },
+  "homepage": "https://github.com/anyOpsOS/anyOpsOS#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anyOpsOS/anyOpsOS.git"
+  },
+  "bugs": "https://github.com/anyOpsOS/anyOpsOS/issues",
+  "keywords": [],
+  "description": "anyOpsOS module ssh",
+  "author": "Isart Navarro <contact@isartnavarro.io> (https://isartnavarro.io)",
+  "license": "GPL-3.0-or-later",
+  "private": true
+}

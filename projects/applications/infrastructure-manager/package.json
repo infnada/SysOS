@@ -1,0 +1,37 @@
+{
+  "name": "@anyopsos/app-infrastructure-manager",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@angular/common": "^8.2.14",
+    "@angular/core": "^8.2.14",
+    "@angular/forms": "~8.2.14",
+    "tslib": "^1.10.0",
+    "rxjs": "~6.5.3"
+  },
+  "dependencies": {
+    "uuid": "^3.3.2",
+    "ngx-socket-io": "^3.0.1",
+    "@anyopsos/lib-angular-material": "~0.0.1",
+    "@anyopsos/lib-application": "~0.0.1",
+    "@anyopsos/lib-file-system": "~0.0.1",
+    "@anyopsos/lib-file-system-ui": "~0.0.1",
+    "@anyopsos/lib-logger": "~0.0.1",
+    "@anyopsos/lib-modal": "~0.0.1",
+    "@anyopsos/lib-netapp": "~0.0.1",
+    "@anyopsos/lib-service-injector": "~0.0.1",
+    "@anyopsos/lib-types": "~0.0.1",
+    "@anyopsos/lib-vmware": "~0.0.1",
+    "@anyopsos/app-credentials-manager": "~0.0.1"
+  },
+  "homepage": "https://github.com/anyOpsOS/anyOpsOS#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anyOpsOS/anyOpsOS.git"
+  },
+  "bugs": "https://github.com/anyOpsOS/anyOpsOS/issues",
+  "keywords": [],
+  "description": "anyOpsOS infrastructure-manager application",
+  "author": "Isart Navarro <contact@isartnavarro.io> (https://isartnavarro.io)",
+  "license": "GPL-3.0-or-later",
+  "private": false
+}

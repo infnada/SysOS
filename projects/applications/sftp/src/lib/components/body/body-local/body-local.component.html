@@ -1,0 +1,26 @@
+<div class="col folders__body">
+
+  <aasftp-actions-local [application]="application"></aasftp-actions-local>
+
+  <div id="local_body">
+
+    <div class="dropzone" ngfDrop selectable="1" multiple="1"
+         [(files)]="files"
+         (filesChange)="uploadFiles($event)"
+    >
+      Drop files here (from local system) or click to upload. {{progress}}
+    </div>
+
+    <alfolder-anyopsos-lib-folder
+      [application]=application
+      subApplication="local"
+      [currentPath]=currentPath
+      [currentData]=currentData
+      [currentActive]=currentActive
+      [selector]="'.window--sftp .window__main'"
+      [viewAsList]=viewAsList
+      [loadingData]=loadingData
+      [search]=search></alfolder-anyopsos-lib-folder>
+
+  </div>
+</div>

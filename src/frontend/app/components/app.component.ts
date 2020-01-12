@@ -1,11 +1,11 @@
 import {Component, OnInit, ViewContainerRef} from '@angular/core';
 
 import {CookieService} from 'ngx-cookie-service';
-import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 
+import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibUserService} from '@anyopsos/lib-user';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
-import {Application} from '@anyopsos/lib-application';
+import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
 
 import {MainService} from '../services/main.service';
 
@@ -15,7 +15,6 @@ import {MainService} from '../services/main.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  openedApplications: Application[];
   userLoggedIn: boolean;
   appBootstrapped: boolean;
 
@@ -38,7 +37,7 @@ export class AppComponent implements OnInit {
 
       this.logger.debug('anyOpsOS', 'Getting session', null);
       this.UserState.getSession().subscribe(
-        (res: { status: string }) => {
+        (res: BackendResponse) => {
           if (res.status === 'ok') {
             this.logger.info('anyOpsOS', 'Getting session -> User logged in', null);
             this.UserState.setState({
@@ -57,8 +56,9 @@ export class AppComponent implements OnInit {
             return this.cookieService.delete('uniqueId');
           }
         },
-        error => {
-          this.logger.error('anyOpsOS', 'Error while getting session', null, error);
+        (error: BackendResponse) => {
+          this.logger.debug('anyOpsOS', 'Getting session -> Removing uniqueId cookie', null, error);
+          return this.cookieService.delete('uniqueId');
         });
 
     }

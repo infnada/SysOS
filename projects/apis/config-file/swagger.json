@@ -1,0 +1,157 @@
+{
+  "info": {
+    "title": "A sample API",
+    "version": "1.0.0",
+    "description": "Generated with `routing-controllers-openapi`"
+  },
+  "swagger": "2.0",
+  "projectName": "config-file",
+  "paths": {
+    "/api/config-file/{configUuid}/{fileName}": {
+      "get": {
+        "operationId": "AnyOpsOSConfigFileApiController.getConfigFile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "configUuid",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "fileName",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Get config file",
+        "tags": [
+          "Any Ops OS Config File Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      },
+      "put": {
+        "operationId": "AnyOpsOSConfigFileApiController.putConfigFile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "configUuid",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "fileName",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "data": {}
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Put config file",
+        "tags": [
+          "Any Ops OS Config File Api"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      },
+      "patch": {
+        "operationId": "AnyOpsOSConfigFileApiController.patchConfigFile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "configUuid",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "fileName",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "data": {}
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Patch config file",
+        "tags": [
+          "Any Ops OS Config File Api"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      },
+      "delete": {
+        "operationId": "AnyOpsOSConfigFileApiController.deleteConfigFile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "configUuid",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "fileName",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Delete config file",
+        "tags": [
+          "Any Ops OS Config File Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    }
+  }
+}

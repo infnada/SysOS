@@ -1,8 +1,9 @@
 import {ensureDir, pathExists} from 'fs-extra';
-import * as path from 'path';
-import readConfig from 'read-config';
+import {join} from 'path';
 
-import {CredentialsModule} from './routes/modules/credentials';
+import {AnyOpsOSConfigFileModule} from "@anyopsos/module-config-file";
+import {AnyOpsOSGetPathModule} from "@anyopsos/module-get-path";
+import {AnyOpsOSCredentialModule, User} from "@anyopsos/module-credential";
 
 export class Init {
 
@@ -14,13 +15,15 @@ export class Init {
    */
   private checkSystemFolders(): Promise<void> {
     return Promise.all([
-      ensureDir(path.join(__dirname, '/filesystem/bin/applications')),
-      ensureDir(path.join(__dirname, '/filesystem/bin/libs')),
-      ensureDir(path.join(__dirname, '/filesystem/bin/modals')),
-      ensureDir(path.join(__dirname, '/filesystem/etc/applications')),
-      ensureDir(path.join(__dirname, '/filesystem/etc/desktop')),
-      ensureDir(path.join(__dirname, '/filesystem/etc/expressjs')),
-      ensureDir(path.join(__dirname, '/filesystem/mnt'))
+      ensureDir(join(__dirname, '/filesystem/bin/applications')),
+      ensureDir(join(__dirname, '/filesystem/bin/libs')),
+      ensureDir(join(__dirname, '/filesystem/bin/modals')),
+      ensureDir(join(__dirname, '/filesystem/bin/apis')),
+      ensureDir(join(__dirname, '/filesystem/bin/modules')),
+      ensureDir(join(__dirname, '/filesystem/bin/websockets')),
+      ensureDir(join(__dirname, '/filesystem/etc/applications')),
+      ensureDir(join(__dirname, '/filesystem/etc/desktop')),
+      ensureDir(join(__dirname, '/filesystem/mnt'))
     ]).then(() => {}).catch((e) => {
       console.log(e);
     });
@@ -31,9 +34,9 @@ export class Init {
    */
   private checkHomeFolders(): Promise<void> {
     return Promise.all([
-      ensureDir(path.join(__dirname, '/filesystem/home/root/Desktop')),
-      ensureDir(path.join(__dirname, '/filesystem/home/root/Documents')),
-      ensureDir(path.join(__dirname, '/filesystem/home/root/Downloads'))
+      ensureDir(join(__dirname, '/filesystem/home/root/Desktop')),
+      ensureDir(join(__dirname, '/filesystem/home/root/Documents')),
+      ensureDir(join(__dirname, '/filesystem/home/root/Downloads'))
     ]).then(() => {}).catch((e) => {
       console.log(e);
     });
@@ -42,24 +45,15 @@ export class Init {
   /**
    * Checks and creates if required all Credentials databases
    */
-  private checkCredentials(): Promise<void> {
-    return pathExists(path.join(__dirname, '/filesystem/home/root/credentials.kdbx')).then((exists) => {
+  private async checkCredentials(): Promise<void> {
+    const mainCredentials = await pathExists(join(__dirname, '/filesystem/home/root/credentials.kdbx'));
+    if (mainCredentials) return;
 
-      // Creade new credentials database
-      if (!exists) {
-        const Credentials = new CredentialsModule();
-        const users = readConfig(path.join(__dirname, '/filesystem/etc/shadow.json'));
-
-        const user = users.find((obj) => {
-          return obj.username === 'root';
-        });
-
-        return Credentials.createNewDb(user.uuid, 'root');
-      }
-
-    }).catch((e) => {
-      console.log(e);
-    });
+    // @ts-ignore TODO
+    // Creade new credentials database
+    const users: User[] = await new AnyOpsOSConfigFileModule().get(new AnyOpsOSGetPathModule().shadow);
+    const user: User = users.find((user: User) => user.username === 'root');
+    return new AnyOpsOSCredentialModule().createNewDb(user.uuid, 'root');
   }
 
   /**

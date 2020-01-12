@@ -1,0 +1,285 @@
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  Input,
+  OnDestroy
+} from '@angular/core';
+
+import {takeUntil} from 'rxjs/operators';
+import {Subject} from 'rxjs';
+
+import {MatMenuTrigger, CdkDragStart} from '@anyopsos/lib-angular-material';
+import {Application, AnyOpsOSLibApplicationService} from '@anyopsos/lib-application';
+import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
+import {AnyOpsOSLibSelectableService} from '@anyopsos/lib-selectable';
+import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
+import {AnyOpsOSLibFileSystemUiService} from '@anyopsos/lib-file-system-ui';
+import {ContextMenuItem, IMConnection} from '@anyopsos/lib-types';
+import {AnyOpsOSFile} from '@anyopsos/backend/app/types/anyopsos-file';
+
+@Component({
+  selector: 'alfolder-anyopsos-lib-folder',
+  templateUrl: './anyopsos-lib-folder.component.html',
+  styleUrls: ['./anyopsos-lib-folder.component.scss'],
+})
+export class AnyOpsOSLibFolderComponent implements OnDestroy, OnInit {
+  @ViewChild(MatMenuTrigger, {static: false}) contextMenuFolder: MatMenuTrigger;
+  @ViewChild('selectableContainer', {static: true}) selectableContainer: ElementRef;
+
+  @Input() application: Application;
+
+  // Some applications like SFTP, DatastoreBrowser have 2 file windows. We use this value to know which window this file belongs
+  @Input() subApplication: string;
+  @Input() connection: IMConnection = null;
+
+  @Input() currentPath: string;
+  @Input() currentData: AnyOpsOSFile[];
+  @Input() currentActive: number;
+
+  // Modal selector
+  @Input() selector: string;
+
+  @Input() viewAsList: boolean = false;
+  @Input() loadingData: boolean = false;
+  @Input() search: { fileName: string; } = null;
+
+  private destroySubject$: Subject<void> = new Subject();
+
+  contextMenuPosition = {x: '0px', y: '0px'};
+
+  copyFile: {
+    fileName: string;
+    currentPath: string;
+    fullPath: string;
+  };
+  cutFile: {
+    fileName: string;
+    currentPath: string;
+    fullPath: string;
+  };
+
+  folderContextMenuItems: ContextMenuItem[] = [
+    {
+      id: 1, text: '<i class="fas fa-download"></i> Download from URL to current folder', action: () => {
+        this.UIdownloadFromURL();
+      }
+    },
+    {
+      id: 2, text: '<i class="fas fa-folder"></i> Create Folder', action: () => {
+        this.UIcreateFolder();
+      }
+    },
+    {id: 3, text: 'divider'},
+    {
+      id: 4, text: '<i class="fas fa-sync-alt"></i> Refresh', action: () => {
+        this.reloadPath();
+      }
+    },
+    {id: 5, text: 'divider'},
+    {
+      id: 6, text: '<i class="fas fa-paste"></i> Paste', action: () => {
+        this.UIpasteFile();
+      }, disabled: () => {
+        return this.copyFile === null && this.cutFile === null;
+      }
+    },
+    {id: 7, text: 'divider'},
+    {
+      id: 8, text: '<i class="fas fa-lock"></i> Permissions', action: () => {
+        // TODO
+      }
+    }
+  ];
+
+  constructor(private logger: AnyOpsOSLibLoggerService,
+              private FileSystem: AnyOpsOSLibFileSystemService,
+              private FileSystemUi: AnyOpsOSLibFileSystemUiService,
+              private Applications: AnyOpsOSLibApplicationService,
+              public Selectable: AnyOpsOSLibSelectableService) {
+  }
+
+  ngOnInit(): void {
+
+    // Listen for copyFile change
+    this.FileSystemUi.copyFile
+      .pipe(takeUntil(this.destroySubject$)).subscribe((data: { fileName: string; currentPath: string; fullPath: string; }) => this.copyFile = data);
+
+    // Listen for cutFile change
+    this.FileSystemUi.cutFile
+      .pipe(takeUntil(this.destroySubject$)).subscribe((data: { fileName: string; currentPath: string; fullPath: string; }) => this.cutFile = data);
+
+    /**
+     * Initialize file Selectable
+     */
+    this.Selectable.init({
+      appendTo: this.selectableContainer,
+      ignore: 'a'
+    });
+  }
+
+  ngOnDestroy(): void {
+
+    // Remove all listeners
+    this.destroySubject$.next();
+  }
+
+  /**
+   * Get current path data
+   */
+  private reloadPath(): void {
+    this.FileSystemUi.sendGoToPath({
+      application: this.application.uuid + (this.subApplication ? '#' + this.subApplication : ''),
+      path: this.currentPath
+    });
+  }
+
+  /**
+   * ng-click functions
+   */
+  handleFolderClick($event): void {
+
+    if ($event.target.attributes.class !== undefined && $event.target.attributes.class.value.includes('folders')) {
+      if (this.application.uuid === null) this.Applications.toggleApplication(null);
+      this.currentActive = null;
+    }
+
+  }
+
+  /**
+   * Sets an item file/folder active
+   */
+  setCurrentActive($index: number): void {
+    // TODO $('#desktop_body').focus();
+    // $timeout.cancel(this.selectTimeout);
+
+    if ($index > this.currentData.length - 1) {
+      this.currentActive = 0;
+    } else if ($index < 0) {
+      this.currentActive = this.currentData.length - 1;
+    } else {
+      this.currentActive = $index;
+    }
+
+    this.Selectable.clear();
+    /*this.selectTimeout = $timeout(() => {
+      this.selection = true;
+    }, 100);*/
+  }
+
+  /**
+   * context-menu
+   */
+  onFolderContextMenu(event: MouseEvent): void {
+    this.contextMenuPosition.x = event.clientX + 'px';
+    this.contextMenuPosition.y = event.clientY + 'px';
+    this.contextMenuFolder.openMenu();
+  }
+
+  checkIfDisabled(item: ContextMenuItem): boolean {
+    if (item.disabled) return item.disabled();
+    return false;
+  }
+
+  contextToText(item: ContextMenuItem, file?: AnyOpsOSFile): string {
+    if (typeof item.text === 'string') return item.text;
+    if (typeof item.text === 'function') return item.text(file);
+  }
+
+  /**
+   * On file dragstart
+   */
+  onDragStart($event: CdkDragStart): void {
+    this.FileSystemUi.UIcutFile(
+      this.currentPath,
+      $event.source.data,
+      `${this.application.uuid + (this.subApplication ? '#' + this.subApplication : '')}`,
+      (this.connection ? this.connection.uuid : null)
+    );
+  }
+
+  UIonDropItem(): void {
+    this.FileSystemUi.UIpasteFile(
+      this.currentPath,
+      (this.connection ? this.connection.type : null),
+      `${this.application.uuid + (this.subApplication ? '#' + this.subApplication : '')}`,
+      (this.connection ? this.connection.uuid : null)
+    );
+  }
+
+  UIdownloadFromURL(): void {
+    this.FileSystemUi.UIdownloadFromURL(this.currentPath, this.selector, (this.connection ? this.connection.type : null), { connection: this.connection });
+  }
+
+  UIcreateFolder(): void {
+    this.FileSystemUi.UIcreateFolder(this.currentPath, this.selector, (this.connection ? this.connection.type : null), { connection: this.connection });
+  }
+
+  UIrenameFile(file: AnyOpsOSFile): void {
+    this.FileSystemUi.UIrenameFile(this.currentPath, file, this.selector, (this.connection ? this.connection.type : null), { connection: this.connection });
+  }
+
+  UIdeleteSelected(file: AnyOpsOSFile): void {
+    this.FileSystemUi.UIdeleteSelected(this.currentPath, file, this.selector, (this.connection ? this.connection.type : null), { connection: this.connection });
+  }
+
+  UIpasteFile(): void {
+    this.FileSystemUi.UIpasteFile(this.currentPath, (this.connection ? this.connection.type : null), this.application.uuid, (this.connection ? this.connection.uuid : null));
+  }
+
+  UIdoWithFile(file: AnyOpsOSFile): void {
+    this.FileSystemUi.UIdoWithFile(`${this.application.uuid + (this.subApplication ? '#' + this.subApplication : '')}`, this.currentPath, file);
+  }
+
+  /**
+   * Keypress on item focus
+   */
+  handleItemKeyPress(keyEvent: KeyboardEvent): void {
+    // Do nothing if some application is active
+    console.log(this.application.uuid);
+    if (!this.Applications.isActiveApplication(this.application.uuid)) return;
+
+    let currentFile;
+
+    // Do nothing if there is no active item unless its side arrows
+    if (this.currentActive === null && keyEvent.code !== 'ArrowLeft' && keyEvent.code === 'ArrowRight') return;
+
+    if (keyEvent.code === 'Delete') {
+      currentFile = this.currentData[this.currentActive];
+
+      this.UIdeleteSelected(currentFile);
+    } else if (keyEvent.code === 'F2') {
+      currentFile = this.currentData[this.currentActive];
+
+      this.UIrenameFile(currentFile);
+    } else if (keyEvent.code === 'ArrowRight') {
+
+      if (this.currentActive === null) {
+        this.currentActive = 0;
+      } else {
+        this.setCurrentActive(this.currentActive + 1);
+      }
+
+    } else if (keyEvent.code === 'ArrowLeft') {
+
+      if (this.currentActive === null) {
+        this.currentActive = 0;
+      } else {
+        this.setCurrentActive(this.currentActive - 1);
+      }
+
+    } else if (keyEvent.code === 'Enter') {
+      currentFile = this.currentData[this.currentActive];
+
+      this.UIdoWithFile(currentFile);
+    } else if (keyEvent.code === 'Backspace') {
+      // TODO: this.FileExplorer.sendGoPathBack();
+      // this.SftpLocal.sendGoPathBack();
+      // this.DatastoreExplorerLocal.sendGoPathBack();
+      //  this.DatastoreExplorerServer.sendGoPathBack();
+      // this.SftpServer.sendGoPathBack();
+    }
+  }
+
+}

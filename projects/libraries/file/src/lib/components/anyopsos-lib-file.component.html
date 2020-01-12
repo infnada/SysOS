@@ -1,0 +1,31 @@
+<a *ngIf="!viewAsList" #selectableFileElement matTooltip="{{file.fileName}}" [ngClass]="{'active': isCurrentActive}" (dblclick)="UIdoWithFile(file)" (contextmenu)="onFileContextMenu($event)">
+  <i class="fas fa-{{getFileType(file.longName)}}"></i>
+  <span>{{file.fileName}}</span>
+
+  <div style="position: fixed"
+    [style.left]="contextMenuPosition.x"
+    [style.top]="contextMenuPosition.y"
+    [matMenuTriggerFor]="contextMenuFile">
+  </div>
+</a>
+
+<tr *ngIf="viewAsList" #selectableFileElement matTooltip="{{file.fileName}}" class="w-100" [ngClass]="{'active': isCurrentActive}" (dblclick)="UIdoWithFile(file)" (contextmenu)="onFileContextMenu($event)">
+  <td><i class="fas fa-{{getFileType(file.longName)}}"></i> {{file.fileName}}</td>
+  <td>{{file.attrs.size}}</td>
+  <td>{{getFileType(file.longName)}}</td>
+
+  <div style="position: fixed"
+    [style.left]="contextMenuPosition.x"
+    [style.top]="contextMenuPosition.y"
+    [matMenuTriggerFor]="contextMenuFile">
+  </div>
+</tr>
+
+<mat-menu #contextMenuFile="matMenu">
+  <ng-template matMenuContent>
+    <ng-container *ngFor="let menuItem of fileContextMenuItems">
+      <button mat-menu-item *ngIf="menuItem.text !== 'divider'" (click)="menuItem.action(file)" [disabled]="checkIfDisabled(menuItem)" [innerHTML]="contextToText(menuItem, file)"></button>
+      <mat-divider *ngIf="menuItem.text === 'divider'"></mat-divider>
+    </ng-container>
+  </ng-template>
+</mat-menu>

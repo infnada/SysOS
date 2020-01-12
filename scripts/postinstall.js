@@ -1,9 +1,15 @@
+const fs = require('fs');
 const download = require('download-git-repo');
+const editJsonFile = require('edit-json-file');
 
-download('netdata/netdata', 'node_modules/netdata', function (err) {
-  console.log(err ? 'Error' : 'Success')
-});
+if (!fs.existsSync('node_modules/netdata_downloaded')) {
+  console.log('Downloading netdata');
 
-download('weaveworks/scope', 'node_modules/weavescope', function (err) {
-  console.log(err ? 'Error' : 'Success')
-});
+  download('netdata/netdata', 'node_modules/netdata_downloaded', function (err) {
+    console.log(err ? 'Error' : 'Success');
+
+    let packageFile = editJsonFile('node_modules/netdata_downloaded/package.json');
+    packageFile.set('version', '1.0.0');
+    packageFile.save();
+  });
+}

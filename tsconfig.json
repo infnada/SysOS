@@ -5,7 +5,7 @@
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,
-    "emitDecoratorMetadata": true,
+    "downlevelIteration": true,
     "experimentalDecorators": true,
     "module": "esnext",
     "moduleResolution": "node",
@@ -20,491 +20,267 @@
     ],
     "paths": {
       "@anyopsos/lib-angular-material": [
-        "projects/anyopsos-lib-angular-material/src/public-api"
+        "projects/libraries/angular-material/src/public-api"
       ],
       "@anyopsos/lib-angular-material/*": [
-        "projects/anyopsos-lib-angular-material/*"
-      ],
-      "@anyopsos/lib-logger": [
-        "projects/anyopsos-lib-logger/src/public-api"
-      ],
-      "@anyopsos/lib-logger/*": [
-        "projects/anyopsos-lib-logger/*"
+        "projects/libraries/angular-material/*"
       ],
       "@anyopsos/lib-application": [
-        "projects/anyopsos-lib-application/src/public-api"
+        "projects/libraries/application/src/public-api"
       ],
       "@anyopsos/lib-application/*": [
-        "projects/anyopsos-lib-application/*"
-      ],
-      "@anyopsos/lib-modal": [
-        "projects/anyopsos-lib-modal/src/public-api"
-      ],
-      "@anyopsos/lib-modal/*": [
-        "projects/anyopsos-lib-modal/*"
-      ],
-      "@anyopsos/lib-vmware": [
-        "projects/anyopsos-lib-vmware/src/public-api"
-      ],
-      "@anyopsos/lib-vmware/*": [
-        "projects/anyopsos-lib-vmware/*"
-      ],
-      "@anyopsos/lib-netapp": [
-        "projects/anyopsos-lib-netapp/src/public-api"
-      ],
-      "@anyopsos/lib-netapp/*": [
-        "projects/anyopsos-lib-netapp/*"
-      ],
-      "@anyopsos/lib-kubernetes": [
-        "projects/anyopsos-lib-kubernetes/src/public-api"
-      ],
-      "@anyopsos/lib-kubernetes/*": [
-        "projects/anyopsos-lib-kubernetes/*"
-      ],
-      "@anyopsos/lib-user": [
-        "projects/anyopsos-lib-user/src/public-api"
-      ],
-      "@anyopsos/lib-user/*": [
-        "projects/anyopsos-lib-user/*"
-      ],
-      "@anyopsos/lib-terminal": [
-        "projects/anyopsos-lib-terminal/src/public-api"
-      ],
-      "@anyopsos/lib-terminal/*": [
-        "projects/anyopsos-lib-terminal/*"
-      ],
-      "@anyopsos/lib-theia": [
-        "projects/anyopsos-lib-theia/src/public-api"
-      ],
-      "@anyopsos/lib-theia/*": [
-        "projects/anyopsos-lib-theia/*"
-      ],
-      "@anyopsos/lib-types": [
-        "projects/anyopsos-lib-types/src/public-api"
-      ],
-      "@anyopsos/lib-types/*": [
-        "projects/anyopsos-lib-types/*"
-      ],
-      "@anyopsos/lib-file-system-ui": [
-        "projects/anyopsos-lib-file-system-ui/src/public-api"
-      ],
-      "@anyopsos/lib-file-system-ui/*": [
-        "projects/anyopsos-lib-file-system-ui/*"
-      ],
-      "@anyopsos/lib-file-system": [
-        "projects/anyopsos-lib-file-system/src/public-api"
-      ],
-      "@anyopsos/lib-file-system/*": [
-        "projects/anyopsos-lib-file-system/*"
+        "projects/libraries/application/*"
       ],
       "@anyopsos/lib-file": [
-        "projects/anyopsos-lib-file/src/public-api"
+        "projects/libraries/file/src/public-api"
       ],
       "@anyopsos/lib-file/*": [
-        "projects/anyopsos-lib-file/*"
+        "projects/libraries/file/*"
+      ],
+      "@anyopsos/lib-file-system": [
+        "projects/libraries/file-system/src/public-api"
+      ],
+      "@anyopsos/lib-file-system/*": [
+        "projects/libraries/file-system/*"
+      ],
+      "@anyopsos/lib-file-system-ui": [
+        "projects/libraries/file-system-ui/src/public-api"
+      ],
+      "@anyopsos/lib-file-system-ui/*": [
+        "projects/libraries/file-system-ui/*"
       ],
       "@anyopsos/lib-folder": [
-        "projects/anyopsos-lib-folder/src/public-api"
+        "projects/libraries/folder/src/public-api"
       ],
       "@anyopsos/lib-folder/*": [
-        "projects/anyopsos-lib-folder/*"
+        "projects/libraries/folder/*"
+      ],
+      "@anyopsos/lib-kubernetes": [
+        "projects/libraries/kubernetes/src/public-api"
+      ],
+      "@anyopsos/lib-kubernetes/*": [
+        "projects/libraries/kubernetes/*"
+      ],
+      "@anyopsos/lib-logger": [
+        "projects/libraries/logger/src/public-api"
+      ],
+      "@anyopsos/lib-logger/*": [
+        "projects/libraries/logger/*"
+      ],
+      "@anyopsos/lib-modal": [
+        "projects/libraries/modal/src/public-api"
+      ],
+      "@anyopsos/lib-modal/*": [
+        "projects/libraries/modal/*"
+      ],
+      "@anyopsos/lib-netapp": [
+        "projects/libraries/netapp/src/public-api"
+      ],
+      "@anyopsos/lib-netapp/*": [
+        "projects/libraries/netapp/*"
       ],
       "@anyopsos/lib-pipes": [
-        "projects/anyopsos-lib-pipes/src/public-api"
+        "projects/libraries/pipes/src/public-api"
       ],
       "@anyopsos/lib-pipes/*": [
-        "projects/anyopsos-lib-pipes/*"
+        "projects/libraries/pipes/*"
       ],
       "@anyopsos/lib-scroll-spy": [
-        "projects/anyopsos-lib-scroll-spy/src/public-api"
+        "projects/libraries/scroll-spy/src/public-api"
       ],
       "@anyopsos/lib-scroll-spy/*": [
-        "projects/anyopsos-lib-scroll-spy/*"
+        "projects/libraries/scroll-spy/*"
       ],
       "@anyopsos/lib-selectable": [
-        "projects/anyopsos-lib-selectable/src/public-api"
+        "projects/libraries/selectable/src/public-api"
       ],
       "@anyopsos/lib-selectable/*": [
-        "projects/anyopsos-lib-selectable/*"
+        "projects/libraries/selectable/*"
       ],
       "@anyopsos/lib-service-injector": [
-        "projects/anyopsos-lib-service-injector/src/public-api"
+        "projects/libraries/service-injector/src/public-api"
       ],
       "@anyopsos/lib-service-injector/*": [
-        "projects/anyopsos-lib-service-injector/*"
+        "projects/libraries/service-injector/*"
+      ],
+      "@anyopsos/lib-terminal": [
+        "projects/libraries/terminal/src/public-api"
+      ],
+      "@anyopsos/lib-terminal/*": [
+        "projects/libraries/terminal/*"
+      ],
+      "@anyopsos/ext-lib-theia": [
+        "projects/external-libraries/theia/src/public-api"
+      ],
+      "@anyopsos/ext-lib-theia/*": [
+        "projects/external-libraries/theia/*"
+      ],
+      "@anyopsos/lib-types": [
+        "projects/libraries/types/src/public-api"
+      ],
+      "@anyopsos/lib-types/*": [
+        "projects/libraries/types/*"
+      ],
+      "@anyopsos/lib-user": [
+        "projects/libraries/user/src/public-api"
+      ],
+      "@anyopsos/lib-user/*": [
+        "projects/libraries/user/*"
       ],
       "@anyopsos/lib-utils": [
-        "projects/anyopsos-lib-utils/src/public-api"
+        "projects/libraries/utils/src/public-api"
       ],
       "@anyopsos/lib-utils/*": [
-        "projects/anyopsos-lib-utils/*"
+        "projects/libraries/utils/*"
       ],
-      "@anyopsos/lib-ext-mxgraph": [
-        "projects/anyopsos-lib-ext-mxgraph/src/public-api"
+      "@anyopsos/lib-vmware": [
+        "projects/libraries/vmware/src/public-api"
       ],
-      "@anyopsos/lib-ext-mxgraph/*": [
-        "projects/anyopsos-lib-ext-mxgraph/*"
+      "@anyopsos/lib-vmware/*": [
+        "projects/libraries/vmware/*"
       ],
-      "@anyopsos/lib-ext-dygraphs": [
-        "projects/anyopsos-lib-ext-dygraphs/src/public-api"
+      "@anyopsos/ext-lib-dygraphs": [
+        "projects/external-libraries/dygraphs/src/public-api"
       ],
-      "@anyopsos/lib-ext-dygraphs/*": [
-        "projects/anyopsos-lib-dygraphs/*"
+      "@anyopsos/ext-lib-dygraphs/*": [
+        "projects/external-libraries/dygraphs/*"
       ],
-      "@anyopsos/lib-ext-easypiechart": [
-        "projects/anyopsos-lib-ext-easypiechart/src/public-api"
+      "@anyopsos/ext-lib-easy-pie-chart": [
+        "projects/external-libraries/easy-pie-chart/src/public-api"
       ],
-      "@anyopsos/lib-ext-easypiechart/*": [
-        "projects/anyopsos-lib-easypiechart/*"
+      "@anyopsos/ext-lib-easy-pie-chart/*": [
+        "projects/external-libraries/easy-pie-chart/*"
       ],
-      "@anyopsos/lib-ext-gaugejs": [
-        "projects/anyopsos-lib-ext-gaugejs/src/public-api"
+      "@anyopsos/ext-lib-gauge-js": [
+        "projects/external-libraries/gauge-js/src/public-api"
       ],
-      "@anyopsos/lib-ext-gaugejs/*": [
-        "projects/anyopsos-lib-gauge/*"
+      "@anyopsos/ext-lib-gauge-js/*": [
+        "projects/external-libraries/gauge-js/*"
       ],
-      "@anyopsos/lib-ext-jquery": [
-        "projects/anyopsos-lib-ext-jquery/src/public-api"
+      "@anyopsos/ext-lib-jquery": [
+        "projects/external-libraries/jquery/src/public-api"
       ],
-      "@anyopsos/lib-ext-jquery/*": [
-        "projects/anyopsos-lib-jquery/*"
+      "@anyopsos/ext-lib-jquery/*": [
+        "projects/external-libraries/jquery/*"
       ],
-      "@anyopsos/lib-ext-lz-string": [
-        "projects/anyopsos-lib-ext-lz-string/src/public-api"
+      "@anyopsos/ext-lib-lz-string": [
+        "projects/external-libraries/lz-string/src/public-api"
       ],
-      "@anyopsos/lib-ext-lz-string/*": [
-        "projects/anyopsos-lib-lz-string/*"
+      "@anyopsos/ext-lib-lz-string/*": [
+        "projects/external-libraries/lz-string/*"
       ],
-      "@anyopsos/lib-ext-netdata": [
-        "projects/anyopsos-lib-ext-netdata/src/public-api"
+      "@anyopsos/ext-lib-mxgraph": [
+        "projects/external-libraries/mxgraph/src/public-api"
       ],
-      "@anyopsos/lib-ext-netdata/*": [
-        "projects/anyopsos-lib-netdata/*"
+      "@anyopsos/ext-lib-mxgraph/*": [
+        "projects/external-libraries/mxgraph/*"
       ],
-      "@anyopsos/lib-ext-perfectscrollbar": [
-        "projects/anyopsos-lib-ext-perfectscrollbar/src/public-api"
+      "@anyopsos/ext-lib-netdata": [
+        "projects/external-libraries/netdata/src/public-api"
       ],
-      "@anyopsos/lib-ext-perfectscrollbar/*": [
-        "projects/anyopsos-lib-perfectscrollbar/*"
+      "@anyopsos/ext-lib-netdata/*": [
+        "projects/external-libraries/netdata/*"
       ],
-      "@anyopsos/lib-ext-pako": [
-        "projects/anyopsos-lib-ext-pako/src/public-api"
+      "@anyopsos/ext-lib-pako": [
+        "projects/external-libraries/pako/src/public-api"
       ],
-      "@anyopsos/lib-ext-pako/*": [
-        "projects/anyopsos-lib-pako/*"
+      "@anyopsos/ext-lib-pako/*": [
+        "projects/external-libraries/pako/*"
       ],
-      "@anyopsos/lib-ext-weavescope": [
-        "projects/anyopsos-lib-ext-weavescope/src/public-api"
+      "@anyopsos/ext-lib-perfect-scrollbar": [
+        "projects/external-libraries/perfect-scrollbar/src/public-api"
       ],
-      "@anyopsos/lib-ext-weavescope/*": [
-        "projects/anyopsos-lib-weavescope/*"
+      "@anyopsos/ext-lib-perfect-scrollbar/*": [
+        "projects/external-libraries/perfect-scrollbar/*"
+      ],
+      "@anyopsos/ext-lib-weavescope": [
+        "projects/external-libraries/weavescope/src/public-api"
+      ],
+      "@anyopsos/ext-lib-weavescope/*": [
+        "projects/external-libraries/weavescope/*"
       ],
       "@anyopsos/app-backups-manager": [
-        "projects/anyopsos-app-backups-manager/src/public-api"
+        "projects/applications/backups-manager/src/public-api"
       ],
       "@anyopsos/app-backups-manager/*": [
-        "projects//anyopsos-app-backups-manager/*"
-      ],
-      "@anyopsos/app-datastore-explorer": [
-        "projects/anyopsos-app-datastore-explorer/src/public-api"
-      ],
-      "@anyopsos/app-datastore-explorer/*": [
-        "projects/anyopsos-app-datastore-explorer/*"
-      ],
-      "@anyopsos/app-drawer": [
-        "projects/anyopsos-app-drawer/src/public-api"
-      ],
-      "@anyopsos/app-drawer/*": [
-        "projects/anyopsos-app-drawer/*"
-      ],
-      "@anyopsos/app-file-explorer": [
-        "projects/anyopsos-app-file-explorer/src/public-api"
-      ],
-      "@anyopsos/app-file-explorer/*": [
-        "projects/anyopsos-app-file-explorer/*"
-      ],
-      "@anyopsos/app-infrastructure-as-code": [
-        "projects/anyopsos-app-infrastructure-as-code/src/public-api"
-      ],
-      "@anyopsos/app-infrastructure-as-code/*": [
-        "projects/anyopsos-app-infrastructure-as-code/*"
-      ],
-      "@anyopsos/app-infrastructure-manager": [
-        "projects/anyopsos-app-infrastructure-manager/src/public-api"
-      ],
-      "@anyopsos/app-infrastructure-manager/*": [
-        "projects/anyopsos-app-infrastructure-manager/*"
-      ],
-      "@anyopsos/app-monitor": [
-        "projects/anyopsos-app-monitor/src/public-api"
-      ],
-      "@anyopsos/app-monitor/*": [
-        "projects/anyopsos-app-monitor/*"
-      ],
-      "@anyopsos/app-notepad": [
-        "projects/anyopsos-app-notepad/src/public-api"
-      ],
-      "@anyopsos/app-notepad/*": [
-        "projects/anyopsos-app-notepad/*"
-      ],
-      "@anyopsos/app-sftp": [
-        "projects/anyopsos-app-sftp/src/public-api"
-      ],
-      "@anyopsos/app-sftp/*": [
-        "projects/anyopsos-app-sftp/*"
-      ],
-      "@anyopsos/app-ssh": [
-        "projects/anyopsos-app-ssh/src/public-api"
-      ],
-      "@anyopsos/app-ssh/*": [
-        "projects/anyopsos-app-ssh/*"
+        "projects/applications/backups-manager/*"
       ],
       "@anyopsos/app-credentials-manager": [
-        "projects/anyopsos-app-credentials-manager/src/public-api"
+        "projects/applications/credentials-manager/src/public-api"
       ],
       "@anyopsos/app-credentials-manager/*": [
-        "projects/anyopsos-app-credentials-manager/*"
+        "projects/applications/credentials-manager/*"
+      ],
+      "@anyopsos/app-datastore-explorer": [
+        "projects/applications/datastore-explorer/src/public-api"
+      ],
+      "@anyopsos/app-datastore-explorer/*": [
+        "projects/applications/datastore-explorer/*"
+      ],
+      "@anyopsos/app-drawer": [
+        "projects/applications/drawer/src/public-api"
+      ],
+      "@anyopsos/app-drawer/*": [
+        "projects/applications/drawer/*"
+      ],
+      "@anyopsos/app-file-explorer": [
+        "projects/applications/file-explorer/src/public-api"
+      ],
+      "@anyopsos/app-file-explorer/*": [
+        "projects/applications/file-explorer/*"
+      ],
+      "@anyopsos/app-infrastructure-as-code": [
+        "projects/applications/infrastructure-as-code/src/public-api"
+      ],
+      "@anyopsos/app-infrastructure-as-code/*": [
+        "projects/applications/infrastructure-as-code/*"
+      ],
+      "@anyopsos/app-infrastructure-manager": [
+        "projects/applications/infrastructure-manager/src/public-api"
+      ],
+      "@anyopsos/app-infrastructure-manager/*": [
+        "projects/applications/infrastructure-manager/*"
+      ],
+      "@anyopsos/app-monitor": [
+        "projects/applications/monitor/src/public-api"
+      ],
+      "@anyopsos/app-monitor/*": [
+        "projects/applications/monitor/*"
+      ],
+      "@anyopsos/app-notepad": [
+        "projects/applications/notepad/src/public-api"
+      ],
+      "@anyopsos/app-notepad/*": [
+        "projects/applications/notepad/*"
+      ],
+      "@anyopsos/app-sftp": [
+        "projects/applications/sftp/src/public-api"
+      ],
+      "@anyopsos/app-sftp/*": [
+        "projects/applications/sftp/*"
+      ],
+      "@anyopsos/app-ssh": [
+        "projects/applications/ssh/src/public-api"
+      ],
+      "@anyopsos/app-ssh/*": [
+        "projects/applications/ssh/*"
       ],
       "@anyopsos/app-wmks": [
-        "projects/anyopsos-app-wmks/src/public-api"
+        "projects/applications/wmks/src/public-api"
       ],
       "@anyopsos/app-wmks/*": [
-        "projects/anyopsos-app-wmks/*"
+        "projects/applications/wmks/*"
       ],
-      "@anyopsos/modal-default-input": [
-        "projects/anyopsos-modal-default-input/src/public-api"
+      "@anyopsos/ext-lib-spin-js": [
+        "projects/external-libraries/spin-js/src/public-api"
       ],
-      "@anyopsos/modal-default-input/*": [
-        "projects/anyopsos-modal-default-input/*"
-      ],
-      "@anyopsos/modal-default-plain": [
-        "projects/anyopsos-modal-default-plain/src/public-api"
-      ],
-      "@anyopsos/modal-default-plain/*": [
-        "projects/anyopsos-modal-default-plain/*"
-      ],
-      "@anyopsos/modal-default-question": [
-        "projects/anyopsos-modal-default-question/src/public-api"
-      ],
-      "@anyopsos/modal-default-question/*": [
-        "projects/anyopsos-modal-default-question/*"
-      ],
-      "@anyopsos/modal-default-json-textarea": [
-        "projects/anyopsos-modal-default-json-textarea/src/public-api"
-      ],
-      "@anyopsos/modal-default-json-textarea/*": [
-        "projects/anyopsos-modal-default-json-textarea/*"
-      ],
-      "@anyopsos/modal-backups-manager-backup-wizard": [
-        "projects/anyopsos-modal-backups-manager-backup-wizard/src/public-api"
-      ],
-      "@anyopsos/modal-backups-manager-backup-wizard/*": [
-        "projects/anyopsos-modal-backups-manager-backup-wizard/*"
-      ],
-      "@anyopsos/modal-backups-manager-recovery-wizard": [
-        "projects/anyopsos-modal-backups-manager-recovery-wizard/src/public-api"
-      ],
-      "@anyopsos/modal-backups-manager-recovery-wizard/*": [
-        "projects/anyopsos-modal-backups-manager-recovery-wizard/*"
-      ],
-      "@anyopsos/modal-monitor-options": [
-        "projects/anyopsos-modal-monitor-options/src/public-api"
-      ],
-      "@anyopsos/modal-monitor-options/*": [
-        "projects/anyopsos-modal-monitor-options/*"
-      ],
-      "@anyopsos/modal-monitor-alarms": [
-        "projects/anyopsos-modal-monitor-alarms/src/public-api"
-      ],
-      "@anyopsos/modal-monitor-alarms/*": [
-        "projects/anyopsos-modal-monitor-alarms/*"
-      ],
-      "@anyopsos/modal-monitor-export": [
-        "projects/anyopsos-modal-monitor-export/src/public-api"
-      ],
-      "@anyopsos/modal-monitor-export/*": [
-        "projects/anyopsos-modal-monitor-export/*"
-      ],
-      "@anyopsos/modal-monitor-import": [
-        "projects/anyopsos-modal-monitor-import/src/public-api"
-      ],
-      "@anyopsos/modal-monitor-import/*": [
-        "projects/anyopsos-modal-monitor-import/*"
-      ],
-      "@anyopsos/modal-monitor-xss": [
-        "projects/anyopsos-modal-monitor-xss/src/public-api"
-      ],
-      "@anyopsos/modal-monitor-xss/*": [
-        "projects/anyopsos-modal-monitor-xss/*"
-      ],
-      "@anyopsos/modal-monitor-help": [
-        "projects/anyopsos-modal-monitor-help/src/public-api"
-      ],
-      "@anyopsos/modal-monitor-help/*": [
-        "projects/anyopsos-modal-monitor-help/*"
-      ],
-      "@anyopsos/modal-infrastructure-manager-new-datacenter": [
-        "projects/anyopsos-modal-infrastructure-manager-new-datacenter/src/public-api"
-      ],
-      "@anyopsos/modal-infrastructure-manager-new-datacenter/*": [
-        "projects/anyopsos-modal-infrastructure-manager-new-datacenter/*"
-      ],
-      "@anyopsos/modal-infrastructure-manager-new-distributed-port-group": [
-        "projects/anyopsos-modal-infrastructure-manager-new-distributed-port-group/src/public-api"
-      ],
-      "@anyopsos/modal-infrastructure-manager-new-distributed-port-group/*": [
-        "projects/anyopsos-modal-infrastructure-manager-new-distributed-port-group/*"
-      ],
-      "@anyopsos/modal-infrastructure-manager-export-system-logs": [
-        "projects/anyopsos-modal-infrastructure-manager-export-system-logs/src/public-api"
-      ],
-      "@anyopsos/modal-infrastructure-manager-export-system-logs/*": [
-        "projects/anyopsos-modal-infrastructure-manager-export-system-logs/*"
-      ],
-      "@anyopsos/modal-infrastructure-manager-assign-license": [
-        "projects/anyopsos-modal-infrastructure-manager-assign-license/src/public-api"
-      ],
-      "@anyopsos/modal-infrastructure-manager-assign-license/*": [
-        "projects/anyopsos-modal-infrastructure-manager-assign-license/*"
-      ],
-      "@anyopsos/modal-infrastructure-manager-assign-tag": [
-        "projects/anyopsos-modal-infrastructure-manager-assign-tag/src/public-api"
-      ],
-      "@anyopsos/modal-infrastructure-manager-assign-tag/*": [
-        "projects/anyopsos-modal-infrastructure-manager-assign-tag/*"
-      ],
-      "@anyopsos/modal-infrastructure-manager-add-tag": [
-        "projects/anyopsos-modal-infrastructure-manager-add-tag/src/public-api"
-      ],
-      "@anyopsos/modal-infrastructure-manager-add-tag/*": [
-        "projects/anyopsos-modal-infrastructure-manager-add-tag/*"
-      ],
-      "@anyopsos/modal-infrastructure-manager-add-category": [
-        "projects/anyopsos-modal-infrastructure-manager-add-category/src/public-api"
-      ],
-      "@anyopsos/modal-infrastructure-manager-add-category/*": [
-        "projects/anyopsos-modal-infrastructure-manager-add-category/*"
-      ],
-      "@anyopsos/modal-infrastructure-manager-remove-tag": [
-        "projects/anyopsos-modal-infrastructure-manager-remove-tag/src/public-api"
-      ],
-      "@anyopsos/modal-infrastructure-manager-remove-tag/*": [
-        "projects/anyopsos-modal-infrastructure-manager-remove-tag/*"
-      ],
-      "@anyopsos/modal-infrastructure-manager-edit-custom-attributes": [
-        "projects/anyopsos-modal-infrastructure-manager-edit-custom-attributes/src/public-api"
-      ],
-      "@anyopsos/modal-infrastructure-manager-edit-custom-attributes/*": [
-        "projects/anyopsos-modal-infrastructure-manager-edit-custom-attributes/*"
-      ],
-      "@anyopsos/modal-infrastructure-manager-add-permission": [
-        "projects/anyopsos-modal-infrastructure-manager-add-permission/src/public-api"
-      ],
-      "@anyopsos/modal-infrastructure-manager-add-permission/*": [
-        "projects/anyopsos-modal-infrastructure-manager-add-permission/*"
-      ],
-      "@anyopsos/modal-infrastructure-manager-new-alarm-definition": [
-        "projects/anyopsos-modal-infrastructure-manager-new-alarm-definition/src/public-api"
-      ],
-      "@anyopsos/modal-infrastructure-manager-new-alarm-definition/*": [
-        "projects/anyopsos-modal-infrastructure-manager-new-alarm-definition/*"
-      ],
-      "@anyopsos/modal-infrastructure-manager-remediation-pre-check": [
-        "projects/anyopsos-modal-infrastructure-manager-remediation-pre-check/src/public-api"
-      ],
-      "@anyopsos/modal-infrastructure-manager-remediation-pre-check/*": [
-        "projects/anyopsos-modal-infrastructure-manager-remediation-pre-check/*"
-      ],
-      "@anyopsos/modal-infrastructure-manager-new-cluster": [
-        "projects/anyopsos-modal-infrastructure-manager-new-cluster/src/public-api"
-      ],
-      "@anyopsos/modal-infrastructure-manager-new-cluster/*": [
-        "projects/anyopsos-modal-infrastructure-manager-new-cluster/*"
-      ],
-      "@anyopsos/modal-infrastructure-manager-new-distributed-switch": [
-        "projects/anyopsos-modal-infrastructure-manager-new-distributed-switch/src/public-api"
-      ],
-      "@anyopsos/modal-infrastructure-manager-new-distributed-switch/*": [
-        "projects/anyopsos-modal-infrastructure-manager-new-distributed-switch/*"
-      ],
-      "@anyopsos/modal-infrastructure-manager-import-distributed-switch": [
-        "projects/anyopsos-modal-infrastructure-manager-import-distributed-switch/src/public-api"
-      ],
-      "@anyopsos/modal-infrastructure-manager-import-distributed-switch/*": [
-        "projects/anyopsos-modal-infrastructure-manager-import-distributed-switch/*"
-      ],
-      "@anyopsos/modal-infrastructure-manager-new-virtual-machine": [
-        "projects/anyopsos-modal-infrastructure-manager-new-virtual-machine/src/public-api"
-      ],
-      "@anyopsos/modal-infrastructure-manager-new-virtual-machine/*": [
-        "projects/anyopsos-modal-infrastructure-manager-new-virtual-machine/*"
-      ],
-      "@anyopsos/modal-infrastructure-manager-deploy-ovf-template": [
-        "projects/anyopsos-modal-infrastructure-manager-deploy-ovf-template/src/public-api"
-      ],
-      "@anyopsos/modal-infrastructure-manager-deploy-ovf-template/*": [
-        "projects/anyopsos-modal-infrastructure-manager-deploy-ovf-template/*"
-      ],
-      "@anyopsos/modal-infrastructure-manager-new-datastore": [
-        "projects/anyopsos-modal-infrastructure-manager-new-datastore/src/public-api"
-      ],
-      "@anyopsos/modal-infrastructure-manager-new-datastore/*": [
-        "projects/anyopsos-modal-infrastructure-manager-new-datastore/*"
-      ],
-      "@anyopsos/modal-infrastructure-manager-new-datastore-cluster": [
-        "projects/anyopsos-modal-infrastructure-manager-new-datastore-cluster/src/public-api"
-      ],
-      "@anyopsos/modal-infrastructure-manager-new-datastore-cluster/*": [
-        "projects/anyopsos-modal-infrastructure-manager-new-datastore-cluster/*"
-      ],
-      "@anyopsos/modal-infrastructure-manager-rescan-storage": [
-        "projects/anyopsos-modal-infrastructure-manager-rescan-storage/src/public-api"
-      ],
-      "@anyopsos/modal-infrastructure-manager-rescan-storage/*": [
-        "projects/anyopsos-modal-infrastructure-manager-rescan-storage/*"
-      ],
-      "@anyopsos/modal-infrastructure-manager-edit-default-vm-compatibility": [
-        "projects/anyopsos-modal-infrastructure-manager-edit-default-vm-compatibility/src/public-api"
-      ],
-      "@anyopsos/modal-infrastructure-manager-edit-default-vm-compatibility/*": [
-        "projects/anyopsos-modal-infrastructure-manager-edit-default-vm-compatibility/*"
-      ],
-      "@anyopsos/modal-infrastructure-manager-migrate-vms-another-network": [
-        "projects/anyopsos-modal-infrastructure-manager-migrate-vms-another-network/src/public-api"
-      ],
-      "@anyopsos/modal-infrastructure-manager-migrate-vms-another-network/*": [
-        "projects/anyopsos-modal-infrastructure-manager-migrate-vms-another-network/*"
-      ],
-      "@anyopsos/modal-infrastructure-manager-kubernetes-create-resource": [
-        "projects/anyopsos-modal-infrastructure-manager-kubernetes-create-resource/src/public-api"
-      ],
-      "@anyopsos/modal-infrastructure-manager-kubernetes-create-resource/*": [
-        "projects/anyopsos-modal-infrastructure-manager-kubernetes-create-resource/*"
-      ],
-      "@anyopsos/modal-infrastructure-manager-kubernetes-edit-resource": [
-        "projects/anyopsos-modal-infrastructure-manager-kubernetes-edit-resource/src/public-api"
-      ],
-      "@anyopsos/modal-infrastructure-manager-kubernetes-edit-resource/*": [
-        "projects/anyopsos-modal-infrastructure-manager-kubernetes-edit-resource/*"
-      ],
-      "@anyopsos/modal-infrastructure-manager-kubernetes-scale-resource": [
-        "projects/anyopsos-modal-infrastructure-manager-kubernetes-scale-resource/src/public-api"
-      ],
-      "@anyopsos/modal-infrastructure-manager-kubernetes-scale-resource/*": [
-        "projects/anyopsos-modal-infrastructure-manager-kubernetes-scale-resource/*"
-      ],
-      "@anyopsos/modal-infrastructure-manager-kubernetes-logs": [
-        "projects/anyopsos-modal-infrastructure-manager-kubernetes-logs/src/public-api"
-      ],
-      "@anyopsos/modal-infrastructure-manager-kubernetes-logs/*": [
-        "projects/anyopsos-modal-infrastructure-manager-kubernetes-logs/*"
-      ],
-      "@anyopsos/modal-infrastructure-manager-kubernetes-shell": [
-        "projects/anyopsos-modal-infrastructure-manager-kubernetes-shell/src/public-api"
-      ],
-      "@anyopsos/modal-infrastructure-manager-kubernetes-shell/*": [
-        "projects/anyopsos-modal-infrastructure-manager-kubernetes-shell/*"
+      "@anyopsos/ext-lib-spin-js/*": [
+        "projects/external-libraries/spin-js/*"
       ]
     }
+  },
+  "angularCompilerOptions": {
+    "fullTemplateTypeCheck": true,
+    "strictInjectionParameters": true
   }
 }

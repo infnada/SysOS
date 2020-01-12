@@ -1,0 +1,49 @@
+{
+  "name": "@anyopsos/cli",
+  "version": "0.0.1",
+  "homepage": "https://github.com/anyOpsOS/anyOpsOS#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anyOpsOS/anyOpsOS.git"
+  },
+  "bugs": "https://github.com/anyOpsOS/anyOpsOS/issues",
+  "keywords": [],
+  "description": "anyOpsOS CLI.",
+  "author": "Isart Navarro <contact@isartnavarro.io> (https://isartnavarro.io)",
+  "license": "GPL-3.0-or-later",
+  "private": true,
+  "bin": {
+    "anyopsos": "./bin/anyopsos"
+  },
+  "scripts": {
+    "prepare": "yarn run clean && yarn build",
+    "clean": "rimraf build",
+    "build": "tsc -p tsconfig.json",
+    "watch": "yarn build -w",
+    "test": "echo 'skip'"
+  },
+  "dependencies": {
+    "class-validator": "^0.11.0",
+    "class-validator-jsonschema": "^1.3.0",
+    "reflect-metadata": "^0.1.13",
+    "routing-controllers": "^0.8.0",
+    "routing-controllers-openapi": "^1.8.0",
+    "module-alias": "^2.2.2",
+    "api-spec-converter": "^2.11.0",
+    "swagger-markdown": "^1.2.0",
+    "await-spawn": "^3.0.0",
+    "edit-json-file": "^1.3.2",
+    "fs-extra": "^8.1.0",
+    "read-last-lines": "^1.7.1",
+    "replace-in-file": "^5.0.2",
+    "rimraf": "^3.0.0",
+    "typescript": "~3.5.3",
+    "yargs": "^15.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "^12.12.21",
+    "@types/fs-extra": "^8.0.1",
+    "@types/rimraf": "^2.0.3",
+    "@types/yargs": "^13.0.4"
+  }
+}

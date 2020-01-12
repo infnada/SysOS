@@ -1,7 +1,8 @@
 import {Component, Input, OnInit, ViewChild} from '@angular/core';
 
 import {MatMenuTrigger} from '@anyopsos/lib-angular-material';
-import {Application, AnyOpsOSLibApplicationService} from '@anyopsos/lib-application';
+import {AnyOpsOSLibApplicationService, Application, TaskbarApplication} from '@anyopsos/lib-application';
+import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {ContextMenuItem} from '@anyopsos/lib-types';
 
 @Component({
@@ -19,10 +20,10 @@ export class TaskBarItemsComponent implements OnInit {
     {
       id: 1, text: (application: Application) => {
         return '<span class="fa-stack">' +
-          '<i class="fa-stack-2x ' + this.getApplicationById(application.id).ico + '"></i>' +
-          '</span> ' + this.getApplicationById(application.id).name;
+          '<i class="fa-stack-2x ' + this.getApplicationById(application.uuid).ico + '"></i>' +
+          '</span> ' + this.getApplicationById(application.uuid).name;
       }, action: (application: Application) => {
-        this.toggleApplication(application.id);
+        this.toggleApplication(application.uuid);
       }
     },
     {id: 2, text: 'divider'},
@@ -35,25 +36,35 @@ export class TaskBarItemsComponent implements OnInit {
         }
         return '<span class="fa-stack"><i class="fas fa-stack-2x fa-thumbtack fa-rotate-90"></i></span> Pin to Task Bar';
       }, action: (application: Application) => {
-        // Pin application
-        this.Applications.registerTaskBarApplication({
-          id: application.id,
-          pinned: !application.pinned
-        }, true);
+        this.PinOrUnpinApplication(application);
       }
     },
     {
       id: 4, text: '<span class="fa-stack"><i class="fas fa-stack-2x fa-times"></i></span> Close', action: (application: Application) => {
         this.Applications.sendCloseApplication(application);
       }, disabled: (application: Application) => {
-        return !this.isApplicationOpened(application.id);
+        return !this.isApplicationOpened(application.uuid);
       }
     }
   ];
 
+  constructor(private logger: AnyOpsOSLibLoggerService,
+              private Applications: AnyOpsOSLibApplicationService) {
+  }
+
+  ngOnInit(): void {
+    this.Applications.taskbarItemOpen.subscribe((applicationUuid: string) => this.taskbarItemOpen = applicationUuid);
+  }
+
+  private PinOrUnpinApplication(application: Application) {
+    this.Applications.registerTaskBarApplication({
+      uuid: application.uuid,
+      pinned: !application.pinned
+    }, true);
+  }
 
   onAppContextMenu(event: MouseEvent, application: Application): void {
-    if (application.id === 'start') return;
+    if (application.uuid === 'start') return;
 
     this.contextMenuPosition.x = event.clientX + 'px';
     this.contextMenuPosition.y = event.clientY + 'px';
@@ -70,39 +81,36 @@ export class TaskBarItemsComponent implements OnInit {
     if (typeof item.text === 'function') return item.text(application);
   }
 
-  constructor(private Applications: AnyOpsOSLibApplicationService) { }
+  getApplicationById(applicationUuid: string): Application {
+    const application: Application = this.Applications.getApplicationById(applicationUuid);
+    if (application) return this.Applications.getApplicationById(applicationUuid);
 
-  ngOnInit(): void {
-    this.Applications.taskbarItemOpen.subscribe(application => this.taskbarItemOpen = application);
+    this.logger.error('TaskBarItems', 'Error while getting pinned application. Unpin.');
+    this.PinOrUnpinApplication(application);
   }
 
-  getApplicationById(id: string): Application {
-    return this.Applications.getApplicationById(id);
+  isStartOpened(applicationUuid: string): boolean {
+    return this.taskbarItemOpen === applicationUuid && applicationUuid === 'start';
   }
 
-  isStartOpened(id: string): boolean {
-    return this.taskbarItemOpen === id && id === 'start';
+  isItemOpened(applicationUuid: string): boolean {
+    return this.isApplicationOpened(applicationUuid) && applicationUuid !== 'start';
   }
 
-  isItemOpened(id: string): boolean {
-    return this.isApplicationOpened(id) && id !== 'start';
+  isItemActive(applicationUuid: string): boolean {
+    return this.taskbarItemOpen === applicationUuid && applicationUuid !== 'start';
   }
 
-  isItemActive(id: string): boolean {
-    return this.taskbarItemOpen === id && id !== 'start';
+  isApplicationOpened(applicationUuid: string): boolean {
+    return this.Applications.isApplicationOpened(applicationUuid);
   }
 
-  isApplicationOpened(id: string): boolean {
-    return this.Applications.isApplicationOpened(id);
-  }
-
-  toggleApplication(id: string): void {
-    if (id === 'start') return this.Applications.toggleApplication(id);
+  toggleApplication(applicationUuid: string): void {
+    if (applicationUuid === 'start') return this.Applications.toggleApplication(applicationUuid);
 
     // Open application
-    if (!this.isApplicationOpened(id)) return this.Applications.openApplication(id);
-
-    this.Applications.sendToggleApplication(id);
+    if (!this.isApplicationOpened(applicationUuid)) return this.Applications.openApplication(applicationUuid);
+    this.Applications.sendToggleApplication(applicationUuid);
   }
 
 }

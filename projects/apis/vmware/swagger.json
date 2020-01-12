@@ -1,0 +1,257 @@
+{
+  "info": {
+    "title": "A sample API",
+    "version": "1.0.0",
+    "description": "Generated with `routing-controllers-openapi`"
+  },
+  "swagger": "2.0",
+  "projectName": "vmware",
+  "paths": {
+    "/api/vmware/getClientVersion": {
+      "post": {
+        "operationId": "AnyOpsOSVmwareApiController.getVmwareClientVersion",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Get vmware client version",
+        "tags": [
+          "Any Ops OS Vmware Api"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "host": {
+                  "type": "string"
+                },
+                "port": {
+                  "type": "number"
+                }
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/vmware/connect": {
+      "post": {
+        "operationId": "AnyOpsOSVmwareApiController.vmwareConnect",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Vmware connect",
+        "tags": [
+          "Any Ops OS Vmware Api"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "host": {
+                  "type": "string"
+                },
+                "port": {
+                  "type": "number"
+                },
+                "credentialUuid": {
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/vmware/connectSoap": {
+      "post": {
+        "operationId": "AnyOpsOSVmwareApiController.vmwareConnectSoap",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Vmware connect soap",
+        "tags": [
+          "Any Ops OS Vmware Api"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "host": {
+                  "type": "string"
+                },
+                "port": {
+                  "type": "number"
+                },
+                "credentialUuid": {
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/vmware/call": {
+      "post": {
+        "operationId": "AnyOpsOSVmwareApiController.vmwareCall",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Vmware call",
+        "tags": [
+          "Any Ops OS Vmware Api"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "host": {
+                  "type": "string"
+                },
+                "port": {
+                  "type": "number"
+                },
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/vmware/callSoap": {
+      "post": {
+        "operationId": "AnyOpsOSVmwareApiController.vmwareCallSoap",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Vmware call soap",
+        "tags": [
+          "Any Ops OS Vmware Api"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "host": {
+                  "type": "string"
+                },
+                "port": {
+                  "type": "number"
+                },
+                "action": {
+                  "type": "string"
+                },
+                "xml": {
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/vmware/upload_to_datastore": {
+      "post": {
+        "operationId": "AnyOpsOSVmwareApiController.uploadToDatastore",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Upload to datastore",
+        "tags": [
+          "Any Ops OS Vmware Api"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                },
+                "credentialUuid": {
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    }
+  }
+}

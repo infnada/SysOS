@@ -25,13 +25,13 @@ export class StartMenuItemsComponent implements OnDestroy, OnInit {
       id: 1, text: (application: Application) => {
         return '<span class="fa-stack"><i class="fa-stack-2x ' + application.ico + '"></i></span> ' + application.name;
       }, action: (application: Application) => {
-        this.toggleApplication(application.id);
+        this.toggleApplication(application.uuid);
       }
     },
     {id: 2, text: 'divider'},
     {
       id: 3, text: (application: Application) => {
-        if (this.Applications.isApplicationPinned(application.id)) {
+        if (this.Applications.isApplicationPinned(application.uuid)) {
           return '<span class="fa-stack">' +
             '<i class="fas fa-thumbtack fa-stack-2x"></i><i class="fas fa-ban fa-stack-1x text-danger"></i>' +
             '</span> Unpin from Task Bar';
@@ -40,8 +40,8 @@ export class StartMenuItemsComponent implements OnDestroy, OnInit {
       }, action: (application: Application) => {
         // Pin application
         this.Applications.registerTaskBarApplication({
-          id: application.id,
-          pinned: !this.Applications.isApplicationPinned(application.id)
+          uuid: application.uuid,
+          pinned: !this.Applications.isApplicationPinned(application.uuid)
         }, true);
       }
     }

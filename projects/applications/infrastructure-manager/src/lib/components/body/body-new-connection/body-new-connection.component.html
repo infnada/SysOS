@@ -1,0 +1,148 @@
+<aelweaves-anyopsos-ext-lib-weavescope [graphNodes]="setNodeGraphNodes()" [graphTopologies]="setNodeGraphTopologies()" (selectedTopology)="selectedTopologyChange($event)" (selectedNode)="selectedNodeChange($event)">
+
+  <div class="col text-center" style="
+    position: absolute;
+    bottom: 90px;
+    z-index: 1;">
+    <button class="btn" type="button" mat-flat-button color="primary" (click)="scrollTo()">Add new node</button>
+  </div>
+
+</aelweaves-anyopsos-ext-lib-weavescope>
+
+<div class="h-100" #scrollToElement>
+  <ng-container *ngIf="!newConnectionType">
+    <div class="main_form">
+      <p>Select the type of server you want to register with managed infrastructure. All registered servers can be found under the Manager servers node on the Infrastructure tab.</p>
+      <table class="table table-hover m-t-xl">
+        <tbody>
+        <tr class="cursor-pointer" (click)="setConnectionType('vmware')">
+          <th class="w-25 p-m"><img src="/assets/img/logos/vmware.png" width="95px"></th>
+          <td class="lh-2">Adds vCenter Server (recommended), or standalone vSphere Hypervisor (ESX/ESXi)</td>
+        </tr>
+        <tr class="cursor-pointer" (click)="setConnectionType('kubernetes')">
+          <th class="w-25 p-m"><img src="/assets/img/logos/kubernetes.png" width="120px"></th>
+          <td class="lh-2">Adds Kubernetes Container Orchestrator</td>
+        </tr>
+        <tr class="cursor-pointer" (click)="setConnectionType('docker')">
+          <th class="w-25 p-m"><img src="/assets/img/logos/docker.png" width="90px"></th>
+          <td class="lh-2">Adds Standalone or Docker Swarm platform</td>
+        </tr>
+        <tr class="cursor-pointer" (click)="setConnectionType('netapp')">
+          <th class="w-25 p-m"><img src="/assets/img/logos/netapp.png" width="95px"></th>
+          <td class="lh-2">Adds NetApp FAS/AFF series. NFS, Fibre Channel (FC) and iSCSI connectivity is supported</td>
+        </tr>
+        <tr class="cursor-pointer" (click)="setConnectionType('linux')">
+          <th class="w-25 p-m"><i class="fab fa-linux"></i> Linux</th>
+          <td class="lh-2">Adds Linux server (must have SSH)</td>
+        </tr>
+        <tr class="cursor-pointer" (click)="setConnectionType('windows')">
+          <th class="w-25 p-m"><i class="fab fa-windows"></i> Windows</th>
+          <td class="lh-2">Adds Microsoft Windows Server (Windows 2008 or later)</td>
+        </tr>
+        <tr class="cursor-pointer" (click)="setConnectionType('snmp')">
+          <th class="w-25 p-m"><i class="fas fa-server"></i> SNMP</th>
+          <td class="lh-2">Adds SNMP node for monitoring</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="newConnectionType">
+    <form class="main_form form-horizontal" [formGroup]="connectionForm" (ngSubmit)="sendConnect()">
+
+      <mat-form-field class="w-100">
+        <input matInput maxlength="256" placeholder="Description" formControlName="description">
+        <mat-hint align="end">{{f.description.value && f.description.value.length}} / 256</mat-hint>
+        <mat-error *ngIf="f.description.invalid">Please insert a description</mat-error>
+      </mat-form-field>
+
+      <!-- Kubernetes Only -->
+      <ng-container *ngIf="f.type.value === 'kubernetes'">
+        <mat-form-field class="w-100">
+          <input matInput placeholder="Kubernetes cluster name" formControlName="clusterName" required>
+          <mat-error *ngIf="f.clusterName.invalid">Please insert a Kubernetes cluster name</mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="w-100">
+          <input matInput placeholder="API URL" formControlName="clusterServer" required>
+          <mat-error *ngIf="f.clusterServer.errors && f.clusterServer.errors.required">Please insert an API URL</mat-error>
+          <mat-error *ngIf="f.clusterServer.errors && f.clusterServer.errors.pattern">URL must include a scheme</mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="w-100">
+          <textarea matInput placeholder="CA Certificate (PEM format)" formControlName="clusterCa" required></textarea>
+          <mat-error *ngIf="f.clusterCa.invalid">Please insert a CA Certificate</mat-error>
+        </mat-form-field>
+      </ng-container>
+      <!-- END Kubernetes Only -->
+
+      <!-- Not Kubernetes -->
+      <ng-container *ngIf="f.type.value !== 'kubernetes'">
+        <mat-form-field class="w-100" >
+          <input matInput placeholder="Host" formControlName="host">
+          <mat-error *ngIf="f.host.invalid">Please insert a host</mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="w-100">
+          <input type="number" matInput placeholder="Port" formControlName="port">
+          <mat-error *ngIf="f.port.invalid">Please insert a port</mat-error>
+        </mat-form-field>
+        <div class="mat-form-field-wrapper">
+          <div class="mat-form-field-subscript-wrapper">
+            <div class="mat-form-field-hint-wrapper">
+              <div class="mat-form-field-hint-spacer"></div>
+              <div class="text-primary cursor-pointer mat-hint mat-right" *ngIf="f.type.value === 'vmware'">Default VMware web service port is 443. If connection cannot be established, check for possible port customization in the vCenter Server or ESX(i) server settings</div>
+              <div class="text-primary cursor-pointer mat-hint mat-right" *ngIf="f.type.value === 'linux'">Default SSH service port is 22. If connection cannot be established, check for possible port customization in the SSH service settings</div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+      <!-- END Not Kubernetes -->
+
+      <!-- Not SNMP -->
+      <mat-form-field class="w-100" *ngIf="f.type.value !== 'snmp'">
+        <mat-label>-- Select Credential --</mat-label>
+        <mat-select formControlName="credential">
+          <mat-option *ngFor="let credential of credentials" [value]="credential.uuid">
+            {{credential.description}} - {{credential.username}}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="f.credential.invalid">Please insert a credential</mat-error>
+      </mat-form-field>
+      <div class="mat-form-field-wrapper">
+        <div class="mat-form-field-subscript-wrapper">
+          <div class="mat-form-field-hint-wrapper" style="opacity: 1; transform: translateY(0%);" (click)="manageCredentials()">
+            <div class="mat-form-field-hint-spacer"></div><div class="text-primary cursor-pointer mat-hint mat-right">Manage Credentials</div>
+          </div>
+        </div>
+      </div>
+      <!-- END Not SNMP -->
+
+      <!-- SNMP Only -->
+      <mat-form-field class="w-100" *ngIf="f.type.value === 'snmp'">
+        <input matInput placeholder="Community" formControlName="community">
+        <mat-error *ngIf="f.host.invalid">Please insert a community</mat-error>
+      </mat-form-field>
+      <!-- END SNMP Only -->
+
+      <mat-divider class="m-3"></mat-divider>
+
+      <mat-slide-toggle formControlName="save">
+        Save Connection in config file
+      </mat-slide-toggle>
+
+      <br />
+
+      <mat-slide-toggle formControlName="autologin" *ngIf="f.save">
+        Auto Login
+      </mat-slide-toggle>
+
+      <div class="mt-3">
+        <button class="btn mr-3" type="button" mat-flat-button color="accent" *ngIf="f.save">Save</button>
+        <button class="btn mr-3" type="button" mat-flat-button color="accent" *ngIf="f.uuid">Save & Rescan</button>
+        <button class="btn" type="submit" mat-flat-button color="primary">Connect</button>
+      </div>
+    </form>
+  </ng-container>
+</div>

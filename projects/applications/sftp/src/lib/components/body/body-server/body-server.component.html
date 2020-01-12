@@ -1,0 +1,25 @@
+<div class="col folders__body" #selectableContainer>
+
+  <aasftp-body-new-connection [application]="application" *ngIf="activeConnection === null || getActiveConnection().state === 'disconnected'"></aasftp-body-new-connection>
+
+  <ng-container *ngIf="activeConnection !== null && getActiveConnection().state !== 'disconnected'">
+
+    <aasftp-actions-server [application]="application"></aasftp-actions-server>
+
+    <div id="server_body">
+
+      <alfolder-anyopsos-lib-folder
+        [application]=application
+        subApplication="server"
+        [currentPath]=currentPath
+        [currentData]=currentData
+        [currentActive]=currentActive
+        [selector]="'.window--sftp .window__main'"
+        [viewAsList]=viewAsList
+        [search]=search
+        [loadingData]=loadingData
+        [connection]="getActiveConnection()"></alfolder-anyopsos-lib-folder>
+
+    </div>
+  </ng-container>
+</div>

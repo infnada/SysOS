@@ -1,0 +1,35 @@
+{
+  "name": "@anyopsos/api-vmware",
+  "version": "0.0.1",
+  "main": "src/index.ts",
+  "dependencies": {
+    "child-process-promise": "^2.2.1",
+    "log4js": "^6.1.0"
+  },
+  "peerDependencies": {
+    "@anyopsos/module-api-globals": "~0.0.1",
+    "@anyopsos/module-get-path": "~0.0.1",
+    "@anyopsos/module-credential": "~0.0.1",
+    "@anyopsos/module-vmware": "~0.0.1"
+  },
+  "devDependencies": {
+    "@types/child-process-promise": "^2.2.1",
+    "@types/node-fetch": "^2.5.4",
+    "class-validator": "^0.11.0",
+    "node-fetch": "^2.6.0",
+    "express": "^4.17.1",
+    "routing-controllers": "https://github.com/anyOpsOS/routing-controllers.git#build",
+    "typescript": "^3.7.4"
+  },
+  "homepage": "https://github.com/anyOpsOS/anyOpsOS#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anyOpsOS/anyOpsOS.git"
+  },
+  "bugs": "https://github.com/anyOpsOS/anyOpsOS/issues",
+  "keywords": [],
+  "description": "anyOpsOS api vmware",
+  "author": "Isart Navarro <contact@isartnavarro.io> (https://isartnavarro.io)",
+  "license": "GPL-3.0-or-later",
+  "private": true
+}

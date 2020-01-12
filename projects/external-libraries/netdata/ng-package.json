@@ -1,0 +1,19 @@
+{
+  "$schema": "../../../node_modules/ng-packagr/ng-package.schema.json",
+  "dest": "../../../dist/external-libraries/netdata",
+  "lib": {
+    "entryFile": "src/public-api.ts"
+  },
+  "whitelistedNonPeerDependencies": [
+    "@anyopsos/lib-modal",
+    "@anyopsos/lib-logger",
+    "@anyopsos/ext-lib-jquery",
+    "@anyopsos/ext-lib-dygraphs",
+    "@anyopsos/ext-lib-easy-pie-chart",
+    "@anyopsos/ext-lib-perfect-scrollbar",
+    "@anyopsos/ext-lib-gauge-js",
+    "@anyopsos/ext-lib-pako",
+    "@anyopsos/ext-lib-lz-string",
+    "netdata"
+  ]
+}

@@ -1,0 +1,185 @@
+{
+  "info": {
+    "title": "A sample API",
+    "version": "1.0.0",
+    "description": "Generated with `routing-controllers-openapi`"
+  },
+  "swagger": "2.0",
+  "projectName": "file",
+  "paths": {
+    "/api/file/{fileName}": {
+      "get": {
+        "operationId": "AnyOpsOSFileApiController.getFile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "fileName",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Get file",
+        "tags": [
+          "Any Ops OS File Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      },
+      "delete": {
+        "operationId": "AnyOpsOSFileApiController.deleteFile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "fileName",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Delete file",
+        "tags": [
+          "Any Ops OS File Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/file/": {
+      "put": {
+        "operationId": "AnyOpsOSFileApiController.newFile",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "New file",
+        "tags": [
+          "Any Ops OS File Api"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "path": {
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/file/download_from_url": {
+      "post": {
+        "operationId": "AnyOpsOSFileApiController.newFileFromUrl",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "New file from url",
+        "tags": [
+          "Any Ops OS File Api"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                },
+                "credentialUuid": {
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/file/{type}/{fileName}": {
+      "patch": {
+        "operationId": "AnyOpsOSFileApiController.patchFile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "type",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "fileName",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "dstPath": {
+                  "type": "string"
+                },
+                "permissions": {
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Patch file",
+        "tags": [
+          "Any Ops OS File Api"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    }
+  }
+}

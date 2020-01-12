@@ -1,0 +1,25 @@
+{
+  "name": "@anyopsos/websocket-main",
+  "version": "0.0.1",
+  "main": "src/index.ts",
+  "dependencies": {
+    "log4js": "^6.1.0"
+  },
+  "peerDependencies": {},
+  "devDependencies": {
+    "socket.io": "^2.3.0",
+    "socket-controllers": "https://github.com/anyOpsOS/socket-controllers.git#build",
+    "typescript": "^3.7.4"
+  },
+  "homepage": "https://github.com/anyOpsOS/anyOpsOS#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anyOpsOS/anyOpsOS.git"
+  },
+  "bugs": "https://github.com/anyOpsOS/anyOpsOS/issues",
+  "keywords": [],
+  "description": "anyOpsOS websocket main",
+  "author": "Isart Navarro <contact@isartnavarro.io> (https://isartnavarro.io)",
+  "license": "GPL-3.0-or-later",
+  "private": true
+}
