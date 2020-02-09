@@ -1,0 +1,26 @@
+{
+  "name": "@anyopsos/sdk-netapp",
+  "version": "0.0.1",
+  "main": "src/index.ts",
+  "dependencies": {
+  },
+  "peerDependencies": {
+    "@anyopsos/backend": "~0.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^13.7.0",
+    "typescript": "^3.7.5",
+    "tslib": "^1.10.0"
+  },
+  "homepage": "https://github.com/anyOpsOS/anyOpsOS#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anyOpsOS/anyOpsOS.git"
+  },
+  "bugs": "https://github.com/anyOpsOS/anyOpsOS/issues",
+  "keywords": [],
+  "description": "anyOpsOS SDK netapp",
+  "author": "Isart Navarro <contact@isartnavarro.io> (https://isartnavarro.io)",
+  "license": "GPL-3.0-or-later",
+  "private": true
+}

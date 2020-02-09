@@ -1,166 +1,133 @@
-import {Injectable} from '@angular/core';
+import {Injectable, ViewContainerRef} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 
 import {BehaviorSubject, Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
 
+import {MatDialogRef} from '@anyopsos/lib-angular-material';
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
+import {AnyOpsOSLibCredentialService, AnyOpsOSLibCredentialHelpersService, AnyOpsOSLibCredentialStateService} from '@anyopsos/lib-credential';
 import {Credential} from '@anyopsos/module-credential';
-import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AnyOpsOSAppCredentialsManagerService {
-  private appInitialized: boolean = false;
-
-  private $credentials: BehaviorSubject<Credential[]>;
-  private $activeCredential: BehaviorSubject<string>;
+  private readonly $activeCredential: BehaviorSubject<Credential | null>;
+  private readonly $activeCredentialUuid: BehaviorSubject<string | null>;
   private dataStore: {
-    credentials: Credential[],
-    activeCredential: string
+    activeCredential: Credential | null;
+    activeCredentialUuid: string | null;
   };
-  credentials: Observable<Credential[]>;
-  activeCredential: Observable<string>;
+  readonly activeCredential: Observable<Credential | null>;
+  readonly activeCredentialUuid: Observable<string | null>;
+
+  private bodyContainer: ViewContainerRef;
 
   constructor(private readonly http: HttpClient,
               private readonly logger: AnyOpsOSLibLoggerService,
-              private readonly Modal: AnyOpsOSLibModalService) {
+              private readonly LibModal: AnyOpsOSLibModalService,
+              private readonly LibCredential: AnyOpsOSLibCredentialService,
+              private readonly LibCredentialHelpers: AnyOpsOSLibCredentialHelpersService,
+              private readonly LibCredentialState: AnyOpsOSLibCredentialStateService) {
 
-    this.dataStore = {credentials: [], activeCredential: null};
-    this.$credentials = new BehaviorSubject(this.dataStore.credentials);
+    this.dataStore = { activeCredential: null, activeCredentialUuid: null };
     this.$activeCredential = new BehaviorSubject(this.dataStore.activeCredential);
-    this.credentials = this.$credentials.asObservable();
+    this.$activeCredentialUuid = new BehaviorSubject(this.dataStore.activeCredentialUuid);
     this.activeCredential = this.$activeCredential.asObservable();
-  }
-
-  isAppInitialized(): boolean {
-    return this.appInitialized;
-  }
-
-  setActiveCredential(credentialUuid: string): void {
-    this.dataStore.activeCredential = credentialUuid;
-
-    this.$activeCredential.next(Object.assign({}, this.dataStore).activeCredential);
-  }
-
-  getCredentialByUuid(credentialUuid: string): Credential {
-    if (!credentialUuid) throw new Error('uuid');
-
-    return this.dataStore.credentials.find(obj => obj.uuid === credentialUuid);
+    this.activeCredentialUuid = this.$activeCredentialUuid.asObservable();
   }
 
   /**
-   * Initialize application
+   * Setter of bodyContainerRef
+   * This is used by Modals
    */
-  initCredentials(): void {
-    this.http.get('/api/credential/')
-      .subscribe((getCredentialsStatus: BackendResponse & { data: Credential[] }) => {
-        if (getCredentialsStatus.status === 'error') {
-          throw {
-            error: getCredentialsStatus.data,
-            description: 'Error while initializing credentials'
-          };
-        }
-
-        this.appInitialized = true;
-
-        this.dataStore.credentials = getCredentialsStatus.data;
-        this.$credentials.next(Object.assign({}, this.dataStore).credentials);
-
-        this.logger.info('Credentials Manager', 'Got credentials successfully');
-      });
+  setBodyContainerRef(bodyContainer: ViewContainerRef): void {
+    this.bodyContainer = bodyContainer;
   }
 
-  deleteCredential(credentialUuid?: string): void {
-    const loggerArgs = arguments;
+  /**
+   * Updates current activeCredentialUuid state
+   */
+  setActiveCredentialUuid(credentialUuid: string = null): void {
+    this.dataStore.activeCredentialUuid = credentialUuid;
 
-    if (!credentialUuid) credentialUuid = this.dataStore.activeCredential;
+    // broadcast data to subscribers
+    this.$activeCredentialUuid.next(Object.assign({}, this.dataStore).activeCredentialUuid);
 
-    this.Modal.openRegisteredModal('question', '.window--credentials-manager .window__main',
+    this.credentialsUpdated();
+  }
+
+  getActiveCredential(): Promise<Credential | null> {
+    if (this.dataStore.activeCredentialUuid === null) return null;
+
+    return this.LibCredentialHelpers.getCredentialByUuid(this.dataStore.activeCredentialUuid) as Promise<Credential>;
+  }
+
+  /**
+   * Called every time the credentials state is updated
+   */
+  async credentialsUpdated(): Promise<void> {
+
+    if (!this.dataStore.activeCredentialUuid) {
+      this.dataStore.activeCredential = null;
+    } else {
+      this.dataStore.activeCredential = await this.LibCredentialHelpers.getCredentialByUuid(this.dataStore.activeCredentialUuid);
+    }
+
+    // broadcast data to subscribers
+    this.$activeCredential.next(Object.assign({}, this.dataStore).activeCredential);
+  }
+
+  async saveCredential(credential: Credential): Promise<void> {
+    if (!credential) throw new Error('resource_invalid');
+    this.logger.debug('CredentialsManager', 'Credential received');
+
+    // Editing an existing credential
+    if (credential.uuid) {
+      return this.LibCredentialState.patchFullCredential(credential);
+
+    // New credential received
+    } else {
+      credential = {
+        uuid: null, // Backend will return the correct uuid
+        description: credential.description,
+        type: credential.type,
+        username: credential.username,
+        password: credential.password
+      };
+
+      return this.LibCredentialState.putCredential(credential);
+    }
+
+  }
+
+  async deleteCredential(credentialUuid?: string): Promise<void> {
+    if (!credentialUuid) credentialUuid = this.dataStore.activeCredentialUuid;
+
+    const currentCredential: Credential = await this.LibCredentialHelpers.getCredentialByUuid(credentialUuid);
+    const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('question', this.bodyContainer,
       {
-        title: 'Delete credential ' + this.getCredentialByUuid(credentialUuid).description,
+        title: `Delete credential ${currentCredential.description}`,
         text: 'Remove the selected credential from the inventory?',
         yes: 'Delete',
         yesClass: 'warn',
         no: 'Cancel',
-        boxContent: 'This action is permanent.',
+        boxContent: 'This action is permanent. All resources using this credential will fail...',
         boxClass: 'text-danger',
         boxIcon: 'warning'
       }
-    ).then((modalInstance) => modalInstance.result
-    ).then((result: boolean) => {
+    );
+
+    modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
       if (result !== true) return;
 
-      this.logger.debug('Credentials Manager', 'Deleting credential', loggerArgs);
+      this.logger.debug('CredentialsManager', 'Deleting credential');
 
-      // Encode credential because it can contain symbols like '/'
-      this.http.delete(`/api/credential/${encodeURIComponent(credentialUuid)}`)
-        .subscribe((deleteCredentialResult: BackendResponse) => {
-          if (deleteCredentialResult.status === 'error') {
-            throw {
-              error: deleteCredentialResult.data,
-              description: 'Error while deleting credential'
-            };
-          }
+      this.setActiveCredentialUuid(null);
 
-          // Remove credential from dataStore
-          this.setActiveCredential(null);
-          this.dataStore.credentials = this.dataStore.credentials.filter((el) => el.uuid !== credentialUuid);
-
-          this.$credentials.next(Object.assign({}, this.dataStore).credentials);
-
-          this.logger.log('Credentials Manager', 'Deleted credential successfully', loggerArgs);
-        },
-        error => {
-          this.logger.error('Credentials Manager', 'Error while deleting credential', loggerArgs, error);
-        });
+      await this.LibCredential.deleteCredential(credentialUuid);
     });
-
-  }
-
-  saveCredential(credential: Credential): Promise<void> {
-    const loggerArgs = arguments;
-
-    return this.http.put('/api/credential/', {
-      credential
-    }).pipe(map(
-      (saveCredentialStatus: BackendResponse & { data: string }) => {
-        if (saveCredentialStatus.status === 'error') {
-          throw {
-            error: saveCredentialStatus.data,
-            description: 'Error while saving credential'
-          };
-        }
-
-        const credentialExists = this.dataStore.credentials.find(el => el.uuid === credential.uuid);
-
-        // TODO manage other credentials types
-        if (credentialExists) {
-          credentialExists.description = credential.description;
-          credentialExists.username = credential.username;
-
-        } else {
-          this.dataStore.credentials.push({
-            uuid: saveCredentialStatus.data,
-            description: credential.description,
-            type: credential.type,
-            username: credential.username
-          });
-        }
-
-        this.dataStore.activeCredential = null;
-
-        this.$credentials.next(Object.assign({}, this.dataStore).credentials);
-        this.$activeCredential.next(Object.assign({}, this.dataStore).activeCredential);
-
-        this.logger.log('Credentials Manager', 'Saved credential successfully', loggerArgs);
-      },
-      error => {
-        this.logger.error('Credentials Manager', 'Error while saving credential', loggerArgs, error);
-      }
-    )).toPromise();
 
   }
 }

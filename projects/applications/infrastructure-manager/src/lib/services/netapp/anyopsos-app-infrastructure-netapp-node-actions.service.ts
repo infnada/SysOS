@@ -2,161 +2,139 @@ import {Injectable} from '@angular/core';
 
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
-import {AnyOpsOSLibNetappService} from '@anyopsos/lib-netapp';
+import {MatDialogRef} from '@anyopsos/lib-angular-material';
+import {AnyOpsOSLibNetappSoapApiService, AnyOpsOSLibNetappSoapApiHelpersService} from '@anyopsos/lib-netapp';
+import {ConnectionNetapp, NetAppSnapshot, NetAppVolume, NetAppVserver} from '@anyopsos/module-netapp';
+import {DataObject} from '@anyopsos/backend/app/types/data-object';
+import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
 
 import {AnyOpsOSAppInfrastructureManagerService} from '../anyopsos-app-infrastructure-manager.service';
-import {AnyOpsOSAppInfrastructureNetappService} from './anyopsos-app-infrastructure-netapp.service';
 import {AnyOpsOSAppInfrastructureManagerObjectHelperService} from '../anyopsos-app-infrastructure-manager-object-helper.service';
-
-import {ConnectionNetapp} from '../../types/connections/connection-netapp';
-import {ImDataObject} from '../../types/im-data-object';
-import {NetAppVolume} from '../../types/netapp-volume';
-import {NetAppSnapshot} from '../../types/netapp-snapshot';
-import {NetAppVserver} from '../../types/netapp-vserver';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AnyOpsOSAppInfrastructureNetappNodeActionsService {
 
-  constructor(private logger: AnyOpsOSLibLoggerService,
-              private Modal: AnyOpsOSLibModalService,
-              private NetApp: AnyOpsOSLibNetappService,
-              private InfrastructureManager: AnyOpsOSAppInfrastructureManagerService,
-              private InfrastructureManagerObjectHelper: AnyOpsOSAppInfrastructureManagerObjectHelperService,
-              private InfrastructureManagerNetApp: AnyOpsOSAppInfrastructureNetappService) {
+  constructor(private readonly logger: AnyOpsOSLibLoggerService,
+              private readonly LibModal: AnyOpsOSLibModalService,
+              private readonly LibNetappSoapApiService: AnyOpsOSLibNetappSoapApiService,
+              private readonly LibNetappSoapApiHelpersService: AnyOpsOSLibNetappSoapApiHelpersService,
+              private readonly InfrastructureManager: AnyOpsOSAppInfrastructureManagerService,
+              private readonly InfrastructureManagerObjectHelper: AnyOpsOSAppInfrastructureManagerObjectHelperService) {
   }
 
   /**
    * Creates a NetApp Snapshot for a Volume
    */
-  createStorageSnapShot(volume: ImDataObject & { info: { data: NetAppVolume } }): void {
-    const loggerArgs = arguments;
-
+  async createStorageSnapShot(volume: DataObject & { info: { data: NetAppVolume } }): Promise<void> {
     this.logger.debug('Infrastructure Manager', 'Ask for create storage snapshot', arguments);
 
-    const connection: ConnectionNetapp = this.InfrastructureManager.getConnectionByUuid(volume.info.mainUuid) as ConnectionNetapp;
-    const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(connection.uuid, 'vserver', volume.info.parent);
+    const connection: ConnectionNetapp = await this.InfrastructureManager.getConnectionByUuid(volume.info.mainUuid, 'netapp') as ConnectionNetapp;
+    const vServer: DataObject & { info: { data: NetAppVserver } } = await this.InfrastructureManagerObjectHelper.getParentObjectByType(connection.uuid, 'netapp', 'vserver', volume.info.parent);
 
-    this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
-      {
-        title: 'Create storage snapshot',
-        text: `Do you want to create a Storage snapshot for ${volume['volume-id-attributes'].name} volume?`,
-        yes: 'Create',
-        no: 'Cancel'
-      }
-    ).then((modalInstance) => {
-      modalInstance.result.then((result: boolean) => {
-        if (result !== true) return;
+    const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('question', this.InfrastructureManager.getBodyContainerRef(), {
+      title: 'Create storage snapshot',
+      text: `Do you want to create a Storage snapshot for ${volume['volume-id-attributes'].name} volume?`,
+      yes: 'Create',
+      no: 'Cancel'
+    });
 
-        this.logger.debug('Infrastructure Manager', 'Creating storage snapshot', loggerArgs);
-        this.Modal.openLittleModal('PLEASE WAIT', 'Creating volume snapshot', '.window--infrastructure-manager .window__main', 'plain').then(() => {
+    modalInstance.afterClosed().subscribe(async (result: boolean) => {
+      if (result !== true) return;
 
-          return this.NetApp.createSnapshot(
-            connection.credential,
-            connection.host,
-            connection.port,
-            vServer.name,
-            volume.name
-          );
+      this.logger.debug('Infrastructure Manager', 'Creating storage snapshot');
+      const littleModalRef: MatDialogRef<any> = await this.LibModal.openLittleModal(this.InfrastructureManager.getBodyContainerRef(), 'PLEASE WAIT', 'Creating volume snapshot');
 
-        }).then((createSnapshotResult) => {
-          if (createSnapshotResult.status === 'error') {
-            throw {
-              error: createSnapshotResult.error,
-              description: 'Failed to get NetApp Volume Snapshot'
-            };
-          }
+      const snapshotName = vServer.name + '_anyOpsOS__' + new Date().toISOString().split('.')[0].replace(/:/g, '');
+      return this.LibNetappSoapApiService.callSoapApi(connection.uuid, 'snapshot-create', {
+        async: false,
+        snapshot: snapshotName,
+        volume: volume.name
+      }).then((createSnapshotResult: BackendResponse) => {
+        if (createSnapshotResult.status === 'error') {
+          throw {
+            error: createSnapshotResult.data,
+            description: 'Failed to get NetApp Volume Snapshot'
+          };
+        }
 
-          this.logger.info('Infrastructure Manager', 'Storage snapshot created successfully', loggerArgs);
-          this.Modal.changeModalType('success', '.window--infrastructure-manager .window__main');
-          this.Modal.changeModalText(`Snapshot created successfully for volume ${volume.name}`, '.window--infrastructure-manager .window__main');
+        this.logger.info('Infrastructure Manager', 'Storage snapshot created successfully');
+        this.LibModal.changeModalType(littleModalRef.id, 'success');
+        this.LibModal.changeModalText(littleModalRef.id, `Snapshot created successfully for volume ${volume.name}`);
 
-          // Refresh volume data to fetch the new snapshot
-          return this.InfrastructureManagerNetApp.getVolumeData(volume);
-        });
+        // Refresh volume data to fetch the new snapshot
+        return this.LibNetappSoapApiHelpersService.getVolumeData(volume);
 
+      }).catch((e) => {
+        this.logger.error('Infrastructure Manager', 'createStorageSnapShot', null, e.description);
+
+        if (littleModalRef && this.LibModal.isModalOpened(littleModalRef.id)) {
+          this.LibModal.changeModalType(littleModalRef.id, 'danger');
+          this.LibModal.changeModalText(littleModalRef.id, (e.description ? e.description : e.message));
+        }
+
+        throw e;
       });
-
-    }).catch((e) => {
-      this.logger.error('Infrastructure Manager', 'createStorageSnapShot', loggerArgs, e.description);
-
-      if (this.Modal.isModalOpened('.window--infrastructure-manager .window__main')) {
-        this.Modal.changeModalType('danger', '.window--infrastructure-manager .window__main');
-        this.Modal.changeModalText((e.description ? e.description : e.message), '.window--infrastructure-manager .window__main');
-      }
-
-      throw e;
     });
   }
 
   /**
    * Deletes a NetApp Snapshot from a Volume
    */
-  deleteStorageSnapShot(snapshot: ImDataObject & { info: { data: NetAppSnapshot } }): void {
-    const loggerArgs = arguments;
-
+  async deleteStorageSnapShot(snapshot: DataObject & { info: { data: NetAppSnapshot } }): Promise<void> {
     this.logger.debug('Infrastructure Manager', 'Ask for delete storage snapshot', arguments);
 
-    const connection: ConnectionNetapp = this.InfrastructureManager.getConnectionByUuid(snapshot.info.mainUuid) as ConnectionNetapp;
-    const volume: ImDataObject & { info: { data: NetAppVolume } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(connection.uuid, 'volume', snapshot.info.parent);
-    const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(connection.uuid, 'vserver', volume.info.parent);
+    const connection: ConnectionNetapp = await this.InfrastructureManager.getConnectionByUuid(snapshot.info.mainUuid, 'netapp') as ConnectionNetapp;
+    const volume: DataObject & { info: { data: NetAppVolume } } = await this.InfrastructureManagerObjectHelper.getParentObjectByType(connection.uuid, 'netapp', 'volume', snapshot.info.parent);
 
-    this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
-      {
-        title: 'Delete storage snapshot',
-        text: `Do you want to delete the storage snapshot ${snapshot.name}?`,
-        yes: 'Delete',
-        yesClass: 'warn',
-        no: 'Cancel',
-        boxContent: 'This action is permanent.',
-        boxClass: 'text-danger',
-        boxIcon: 'warning'
-      }
-    ).then((modalInstance) => {
-      modalInstance.result.then((result: boolean) => {
-        if (result !== true) return;
+    const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('question', this.InfrastructureManager.getBodyContainerRef(), {
+      title: 'Delete storage snapshot',
+      text: `Do you want to delete the storage snapshot ${snapshot.name}?`,
+      yes: 'Delete',
+      yesClass: 'warn',
+      no: 'Cancel',
+      boxContent: 'This action is permanent.',
+      boxClass: 'text-danger',
+      boxIcon: 'warning'
+    });
 
-        this.logger.debug('Infrastructure Manager', 'Deleting storage snapshot', loggerArgs);
-        this.Modal.openLittleModal('PLEASE WAIT', 'Deleting volume snapshot', '.window--infrastructure-manager .window__main', 'plain').then(() => {
+    modalInstance.afterClosed().subscribe(async (result: boolean) => {
+      if (result !== true) return;
 
-          return this.NetApp.deleteSnapshot(
-            connection.credential,
-            connection.host,
-            connection.port,
-            vServer.name,
-            volume.name,
-            snapshot.name,
-            snapshot.info.obj.name
-          );
+      this.logger.debug('Infrastructure Manager', 'Deleting storage snapshot');
+      const littleModalRef: MatDialogRef<any> = await this.LibModal.openLittleModal(this.InfrastructureManager.getBodyContainerRef(), 'PLEASE WAIT', 'Deleting volume snapshot');
 
-        }).then((deleteSnapshotResult) => {
-          if (deleteSnapshotResult.status === 'error') {
-            throw {
-              error: deleteSnapshotResult.error,
-              description: 'Failed to delete NetApp Volume Snapshot'
-            };
-          }
+      return this.LibNetappSoapApiService.callSoapApi(connection.uuid, 'snapshot-delete', {
+        async: false,
+        snapshot: snapshot.name,
+        'snapshot-instance-uuid': snapshot.info.obj.name,
+        volume: volume.name
+      }).then((deleteSnapshotResult: BackendResponse) => {
+        if (deleteSnapshotResult.status === 'error') {
+          throw {
+            error: deleteSnapshotResult.data,
+            description: 'Failed to delete NetApp Volume Snapshot'
+          };
+        }
 
-          this.logger.info('Infrastructure Manager', 'Storage snapshot deleted successfully', loggerArgs);
-          this.Modal.changeModalType('success', '.window--infrastructure-manager .window__main');
-          this.Modal.changeModalText(`Snapshot ${snapshot.name} deleted successfully for volume ${volume.name}`, '.window--infrastructure-manager .window__main');
+        this.logger.info('Infrastructure Manager', 'Storage snapshot deleted successfully');
+        this.LibModal.changeModalType(littleModalRef.id, 'success');
+        this.LibModal.changeModalText(littleModalRef.id, `Snapshot ${snapshot.name} deleted successfully for volume ${volume.name}`);
 
-          // Refresh volume data to fetch the new snapshot
-          return this.InfrastructureManagerNetApp.getVolumeData(volume);
-        });
+        // Refresh volume data to fetch the new snapshot
+        return this.LibNetappSoapApiHelpersService.getVolumeData(volume);
 
+      }).catch((e) => {
+        this.logger.error('Infrastructure Manager', 'deleteStorageSnapShot', null, e.description);
+
+        if (littleModalRef && this.LibModal.isModalOpened(littleModalRef.id)) {
+          this.LibModal.changeModalType(littleModalRef.id, 'danger');
+          this.LibModal.changeModalText(littleModalRef.id, (e.description ? e.description : e.message));
+        }
+
+        throw e;
       });
-
-    }).catch((e) => {
-      this.logger.error('Infrastructure Manager', 'deleteStorageSnapShot', loggerArgs, e.description);
-
-      if (this.Modal.isModalOpened('.window--infrastructure-manager .window__main')) {
-        this.Modal.changeModalType('danger', '.window--infrastructure-manager .window__main');
-        this.Modal.changeModalText((e.description ? e.description : e.message), '.window--infrastructure-manager .window__main');
-      }
-
-      throw e;
     });
   }
 }

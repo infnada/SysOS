@@ -50,9 +50,9 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
   linkToOptions: Observable<LinkTo[]>;
 
   constructor(private readonly formBuilder: FormBuilder,
-              private Applications: AnyOpsOSLibApplicationService,
+              private readonly LibApplication: AnyOpsOSLibApplicationService,
               private serviceInjector: AnyOpsOSLibServiceInjectorService,
-              private Modal: AnyOpsOSLibModalService,
+              private readonly LibModal: AnyOpsOSLibModalService,
               private Utils: AnyOpsOSLibUtilsService,
               private Monitor: AnyOpsOSAppMonitorService) {
 
@@ -176,7 +176,7 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
     // stop here if form is invalid
     if (this.connectionForm.invalid) return;
 
-    this.Modal.openLittleModal('PLEASE WAIT', (saveOnly ? 'Saving connection...' : 'Connecting to server...'), '.window--monitor .window__main', 'plain').then(() => {
+    this.LibModal.openLittleModal('PLEASE WAIT', (saveOnly ? 'Saving connection...' : 'Connecting to server...'), '.window--monitor .window__main', 'plain').then(() => {
       this.Monitor.connect(this.connectionForm.value, saveOnly);
       this.submitted = false;
 
@@ -185,7 +185,7 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
   }
 
   manageCredentials(): void {
-    this.Applications.openApplication('credentials-manager');
+    this.LibApplication.openApplication('credentials-manager');
   }
 
   getActiveConnection(): MonitorConnection {

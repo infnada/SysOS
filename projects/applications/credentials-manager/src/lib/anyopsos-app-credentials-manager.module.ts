@@ -4,14 +4,11 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 
 import {AnyOpsOSLibAngularMaterialModule} from '@anyopsos/lib-angular-material';
 import {AnyOpsOSLibApplicationService} from '@anyopsos/lib-application';
-import {AnyOpsOSLibServiceInjectorService} from '@anyopsos/lib-service-injector';
 
-import {ActionsComponent} from './actions/actions.component';
-import {BodyComponent} from './body/body.component';
-import {MenuComponent} from './menu/menu.component';
-import {StatusComponent} from './status/status.component';
-
-import {AnyOpsOSAppCredentialsManagerService} from './services/anyopsos-app-credentials-manager.service';
+import {ActionsComponent} from './components/actions/actions.component';
+import {BodyComponent} from './components/body/body.component';
+import {MenuComponent} from './components/menu/menu.component';
+import {StatusComponent} from './components/status/status.component';
 
 @NgModule({
   declarations: [
@@ -30,13 +27,9 @@ import {AnyOpsOSAppCredentialsManagerService} from './services/anyopsos-app-cred
   exports: []
 })
 export class AnyOpsOSAppCredentialsManagerModule {
-  constructor(private readonly serviceInjector: AnyOpsOSLibServiceInjectorService,
-              private readonly Applications: AnyOpsOSLibApplicationService,
-              private readonly CredentialsManager: AnyOpsOSAppCredentialsManagerService) {
+  constructor(private readonly LibApplication: AnyOpsOSLibApplicationService) {
 
-    this.serviceInjector.set('AnyOpsOSAppCredentialsManagerService', this.CredentialsManager);
-
-    Applications.registerApplication({
+    LibApplication.registerApplication({
       uuid: 'credentials-manager',
       ico: 'fas fa-key',
       name: 'Credentials Manager',
@@ -46,6 +39,5 @@ export class AnyOpsOSAppCredentialsManagerModule {
       style: {width: '870px', height: '600px', top: '7%', left: '10%'}
     });
 
-    CredentialsManager.initCredentials();
   }
 }

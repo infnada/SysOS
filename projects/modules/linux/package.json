@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "main": "src/index.ts",
   "devDependencies": {
+    "@types/node": "^12.12.21",
     "typescript": "^3.7.4"
   },
   "homepage": "https://github.com/anyOpsOS/anyOpsOS#readme",

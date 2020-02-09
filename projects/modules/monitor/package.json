@@ -3,9 +3,10 @@
   "version": "0.0.1",
   "main": "src/index.ts",
   "dependencies": {
-    "decimal.js": "^10.2.0"
+    "validator": "^12.2.0"
   },
   "devDependencies": {
+    "@types/node": "^12.12.21",
     "typescript": "^3.7.4"
   },
   "homepage": "https://github.com/anyOpsOS/anyOpsOS#readme",

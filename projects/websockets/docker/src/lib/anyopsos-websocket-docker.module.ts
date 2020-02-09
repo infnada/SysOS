@@ -11,10 +11,10 @@ import {
 import {getLogger, Logger} from 'log4js';
 import {Socket} from 'socket.io';
 
-import {ConnectionDocker, AnyOpsOSDockerModule} from '@anyopsos/module-docker';
+import {AnyOpsOSDockerModule} from '@anyopsos/module-docker';
 import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
 
-const logger: Logger = getLogger('mainlog');
+const logger: Logger = getLogger('mainLog');
 
 @SocketController()
 export class AnyOpsOSDockerWebsocketController {
@@ -25,29 +25,39 @@ export class AnyOpsOSDockerWebsocketController {
     // TODO disconnect client sessions
   }
 
-  @OnMessage('[docker-session]')
-  dockerNewSession(@ConnectedSocket() socket: Socket,
+  @OnMessage('[docker-disconnect]')
+  @ReturnAck()
+  dockerDisconnect(@ConnectedSocket() socket: Socket,
                    @SocketId() id: string,
                    @SocketSessionParam('userUuid') userUuid: string,
-                   @SocketSessionParam('sessionID') sessionUuid: string,
-                   @MessageBody() messageData: ConnectionDocker) {
-    logger.info(`[Websocket docker] -> newSession -> id [${id}], clusterServer [${messageData.clusterServer}]`);
+                   @SocketSessionParam('sessionId') sessionUuid: string,
+                   @MessageBody() connectionData: { connectionUuid: string; workspaceUuid: string; }) {
+    logger.info(`[Websocket docker] -> disconnect -> id [${id}], connectionUuid [${connectionData.connectionUuid}], workspaceUuid [${connectionData.workspaceUuid}]`);
 
-    return new AnyOpsOSDockerModule(socket).newConnection(userUuid, sessionUuid, messageData).then((result: BackendResponse) => {
+    const DockerModule: AnyOpsOSDockerModule = new AnyOpsOSDockerModule(userUuid, sessionUuid, connectionData.workspaceUuid, connectionData.connectionUuid);
+
+    return DockerModule.disconnectConnection().then((result: BackendResponse) => {
       return result;
     }).catch((e: Error) => {
       return {status: 'error', data: e.toString()} as BackendResponse;
     });
   }
 
-  @OnMessage('[docker-disconnect]')
-  @ReturnAck()
-  dockerDisconnect(@ConnectedSocket() socket: Socket,
+  @OnMessage('[docker-session]')
+  dockerNewSession(@ConnectedSocket() socket: Socket,
                    @SocketId() id: string,
-                   @MessageBody() connectionUuid: string) {
-    logger.info(`[Websocket docker] -> disconnect -> id [${id}], connectionUuid [${connectionUuid}]`);
+                   @SocketSessionParam('userUuid') userUuid: string,
+                   @SocketSessionParam('sessionId') sessionUuid: string,
+                   @MessageBody() connectionData: { connectionUuid: string; workspaceUuid: string; }) {
+    logger.info(`[Websocket docker] -> newSession -> id [${id}], connectionUuid [${connectionData.connectionUuid}], workspaceUuid [${connectionData.workspaceUuid}]`);
 
-    // TODO this.ConnectionsModule.closeConnection(data.type, data.uuid);
+    const DockerModule: AnyOpsOSDockerModule = new AnyOpsOSDockerModule(userUuid, sessionUuid, connectionData.workspaceUuid, connectionData.connectionUuid);
+
+    return DockerModule.newConnection().then((result: BackendResponse) => {
+      return result;
+    }).catch((e: Error) => {
+      return {status: 'error', data: e.toString()} as BackendResponse;
+    });
   }
 
 }

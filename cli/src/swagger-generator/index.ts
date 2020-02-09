@@ -2,17 +2,18 @@ import 'reflect-metadata';
 
 import awaitSpawn from 'await-spawn';
 const moduleAlias = require('module-alias');
-moduleAlias.addAlias('@anyopsos', `${__dirname}/../../../dist/anyOpsOS/filesystem/bin/modules/`);
+moduleAlias.addAlias('@anyopsos', `${process.cwd()}/dist/anyOpsOS/filesystem/bin/modules/`);
 
 import {getFromContainer, MetadataStorage} from 'class-validator';
 import {validationMetadatasToSchemas} from 'class-validator-jsonschema';
 import {createExpressServer, getMetadataArgsStorage} from 'routing-controllers';
 import {routingControllersToSpec} from 'routing-controllers-openapi';
 import {writeJson} from 'fs-extra';
+import {blueBright} from 'chalk';
 import * as Converter from 'api-spec-converter';
 
 const routingControllersOptions = {
-  controllers: [`${__dirname}/../../../dist/apis/*/lib/*.js`]
+  controllers: [`${process.cwd()}/dist/apis/*/lib/*.js`]
 };
 createExpressServer(routingControllersOptions);
 
@@ -41,13 +42,16 @@ const spec = routingControllersToSpec(storage, routingControllersOptions, {
   }
 });
 
+console.log(blueBright(`[anyOpsOS Cli. Internals] Generating APIs swagger.json file.`));
 Converter.convert({
   from: 'openapi_3',
   to: 'swagger_2',
   source: spec,
 }).then(async (converted): Promise<void> => {
+
+  console.log(blueBright(`[anyOpsOS Cli. Internals] Coping API Main swagger.json file.\n`));
   await writeJson(
-    `${__dirname}/../../../projects/apis/swagger.json`,
+    `${process.cwd()}/projects/apis/swagger.json`,
     converted.spec,
     {spaces: 2}
   );
@@ -77,18 +81,19 @@ Converter.convert({
 
   await Promise.all(
     Object.keys(projects).map(async (project): Promise<void> => {
+
+      console.log(blueBright(`[anyOpsOS Cli. Internals] Coping API ${projects[project].projectName} swagger.json file.`));
       await writeJson(
-        `${__dirname}/../../../projects/apis/${projects[project].projectName}/swagger.json`,
+        `${process.cwd()}/projects/apis/${projects[project].projectName}/swagger.json`,
         projects[project],
         {spaces: 2}
       );
 
-      await awaitSpawn('swagger-markdown.cmd', ['--input', `${__dirname}/../../../projects/apis/${projects[project].projectName}/swagger.json`, '--output', `${__dirname}/../../../projects/apis/${projects[project].projectName}/README.md`], {
-        cwd: `${__dirname}/../../`,
+      console.log(blueBright(`[anyOpsOS Cli. Internals] Generating API ${projects[project].projectName} README file.`));
+      await awaitSpawn('swagger-markdown.cmd', ['--input', `${process.cwd()}/projects/apis/${projects[project].projectName}/swagger.json`, '--output', `${process.cwd()}/projects/apis/${projects[project].projectName}/README.md`], {
+        cwd: `${__dirname}/../`,
         stdio: 'inherit'
       });
     })
   );
-
-  console.log('Finish generate APIS swagger.json');
 });

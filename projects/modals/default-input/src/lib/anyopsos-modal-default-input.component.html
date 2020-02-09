@@ -1,0 +1,17 @@
+<almodal-body #modalBody>
+
+  <!-- Put modal contant here -->
+  <span [innerHTML]="text" *ngIf="text"></span>
+
+  <mat-form-field class="w-100">
+    <input type="{{inputType}}" matInput [(ngModel)]="inputValue" maxlength="{{inputMaxLength}}" placeholder="{{inputPlaceholder}}" (keydown.enter)="dialogRef.close(inputValue)">
+    <mat-hint align="end" *ngIf="inputMaxLength && inputType === 'text'">{{inputValue && inputValue.length}} / {{inputMaxLength}}</mat-hint>
+  </mat-form-field>
+
+</almodal-body>
+
+<!-- Put footer buttons here -->
+<almodal-buttons>
+  <button class="btn" type="button" (click)="dialogRef.close()" mat-flat-button>Cancel</button>
+  <button class="btn" type="button" (click)="dialogRef.close(inputValue)" mat-flat-button color="primary">{{buttonText}}</button>
+</almodal-buttons>

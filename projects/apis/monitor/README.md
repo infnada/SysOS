@@ -3,7 +3,7 @@ Generated with `routing-controllers-openapi`
 
 ## Version: 1.0.0
 
-### /api/monitor/charts/{connectionUuid}/{type}/
+### /api/monitor/charts/{workspaceUuid}/{connectionUuid}/{type}/
 
 #### GET
 ##### Summary:
@@ -14,6 +14,7 @@ Get monitor charts
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
+| workspaceUuid | path |  | Yes | string |
 | connectionUuid | path |  | Yes | string |
 | type | path |  | Yes | string |
 
@@ -23,7 +24,7 @@ Get monitor charts
 | ---- | ----------- |
 | 200 | Successful response |
 
-### /api/monitor/chart/{connectionUuid}/{type}/
+### /api/monitor/chart/{workspaceUuid}/{connectionUuid}/{type}/
 
 #### GET
 ##### Summary:
@@ -34,6 +35,7 @@ Get monitor chart
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
+| workspaceUuid | path |  | Yes | string |
 | connectionUuid | path |  | Yes | string |
 | type | path |  | Yes | string |
 | chart | query |  | No | string |
@@ -44,7 +46,7 @@ Get monitor chart
 | ---- | ----------- |
 | 200 | Successful response |
 
-### /api/monitor/data/{connectionUuid}/{type}/
+### /api/monitor/data/{workspaceUuid}/{connectionUuid}/{type}/
 
 #### GET
 ##### Summary:
@@ -55,6 +57,7 @@ Get monitor data
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
+| workspaceUuid | path |  | Yes | string |
 | connectionUuid | path |  | Yes | string |
 | type | path |  | Yes | string |
 | chart | query |  | No | string |
@@ -65,7 +68,7 @@ Get monitor data
 | ---- | ----------- |
 | 200 | Successful response |
 
-### /api/monitor/alarms/{connectionUuid}/{type}/
+### /api/monitor/alarms/{workspaceUuid}/{connectionUuid}/{type}/
 
 #### GET
 ##### Summary:
@@ -76,6 +79,7 @@ Get monitor alarms
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
+| workspaceUuid | path |  | Yes | string |
 | connectionUuid | path |  | Yes | string |
 | type | path |  | Yes | string |
 | type | query |  | No | string |
@@ -86,7 +90,7 @@ Get monitor alarms
 | ---- | ----------- |
 | 200 | Successful response |
 
-### /api/monitor/alarm_log/{connectionUuid}/{type}/
+### /api/monitor/alarm_log/{workspaceUuid}/{connectionUuid}/{type}/
 
 #### GET
 ##### Summary:
@@ -97,6 +101,7 @@ Get monitor alarms log
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
+| workspaceUuid | path |  | Yes | string |
 | connectionUuid | path |  | Yes | string |
 | type | path |  | Yes | string |
 
@@ -106,7 +111,28 @@ Get monitor alarms log
 | ---- | ----------- |
 | 200 | Successful response |
 
-### /api/monitor/badge/{connectionUuid}/{type}/
+### /api/monitor/badge/{workspaceUuid}/{connectionUuid}/{type}/
+
+#### GET
+##### Summary:
+
+Get monitor badge
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| workspaceUuid | path |  | Yes | string |
+| connectionUuid | path |  | Yes | string |
+| type | path |  | Yes | string |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 | Successful response |
+
+### /api/monitor/{workspaceUuid}/{connectionUuid}/{type}/
 
 #### GET
 ##### Summary:
@@ -117,6 +143,7 @@ Monitor test remote connection
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
+| workspaceUuid | path |  | Yes | string |
 | connectionUuid | path |  | Yes | string |
 | type | path |  | Yes | string |
 

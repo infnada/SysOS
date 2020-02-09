@@ -1,50 +1,43 @@
 import {Injectable} from '@angular/core';
 
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
+import {MatDialogRef} from '@anyopsos/lib-angular-material';
 import {AnyOpsOSLibApplicationService} from '@anyopsos/lib-application';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
+import {DataObject} from '@anyopsos/backend/app/types/data-object';
+import {ConnectionVmware, VMWareVM} from '@anyopsos/module-vmware/src';
 
 import {AnyOpsOSAppInfrastructureManagerService} from './anyopsos-app-infrastructure-manager.service';
-import {AnyOpsOSAppInfrastructureNetappService} from './netapp/anyopsos-app-infrastructure-netapp.service';
-import {AnyOpsOSAppInfrastructureVmwareService} from './vmware/anyopsos-app-infrastructure-vmware.service';
 import {AnyOpsOSAppInfrastructureNetappBackupService} from './netapp/anyopsos-app-infrastructure-netapp-backup.service';
 import {AnyOpsOSAppInfrastructureVmwareBackupService} from './vmware/anyopsos-app-infrastructure-vmware-backup.service';
 import {AnyOpsOSAppInfrastructureNetappNodeActionsService} from './netapp/anyopsos-app-infrastructure-netapp-node-actions.service';
 import {AnyOpsOSAppInfrastructureVmwareNodeActionsService} from './vmware/anyopsos-app-infrastructure-vmware-node-actions.service';
 
 import {ImTreeNode} from '../types/im-tree-node';
-import {ConnectionVmware} from '../types/connections/connection-vmware';
-import {ImDataObject} from '../types/im-data-object';
-import {VMWareVM} from '../types/vmware-vm';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AnyOpsOSAppInfrastructureManagerContextMenusService {
 
-  constructor(private logger: AnyOpsOSLibLoggerService,
-              private Applications: AnyOpsOSLibApplicationService,
-              private Modal: AnyOpsOSLibModalService,
-              private InfrastructureManager: AnyOpsOSAppInfrastructureManagerService,
-              private InfrastructureManagerNetApp: AnyOpsOSAppInfrastructureNetappService,
-              private InfrastructureManagerVMWare: AnyOpsOSAppInfrastructureVmwareService,
-              private InfrastructureManagerNetAppBackup: AnyOpsOSAppInfrastructureNetappBackupService,
-              private InfrastructureManagerVMWareBackup: AnyOpsOSAppInfrastructureVmwareBackupService,
-              private InfrastructureManagerNetappNodeActions: AnyOpsOSAppInfrastructureNetappNodeActionsService,
-              private InfrastructureManagerVMWareNodeActions: AnyOpsOSAppInfrastructureVmwareNodeActionsService) {
+  constructor(private readonly logger: AnyOpsOSLibLoggerService,
+              private readonly LibApplication: AnyOpsOSLibApplicationService,
+              private readonly LibModal: AnyOpsOSLibModalService,
+              private readonly InfrastructureManager: AnyOpsOSAppInfrastructureManagerService,
+              private readonly InfrastructureManagerNetappBackup: AnyOpsOSAppInfrastructureNetappBackupService,
+              private readonly InfrastructureManagerVMWareBackup: AnyOpsOSAppInfrastructureVmwareBackupService,
+              private readonly InfrastructureManagerNetappNodeActions: AnyOpsOSAppInfrastructureNetappNodeActionsService,
+              private readonly InfrastructureManagerVMWareNodeActions: AnyOpsOSAppInfrastructureVmwareNodeActionsService) {
   }
 
-  // Kubernetes
+  /**
+   * KUBERNETES
+   */
   get kubernetesContextMenu() {
     return [
       {
         id: 0, text: '<i class="fas fa-pencil"></i> Edit Connection', action: (node: ImTreeNode) => {
           this.InfrastructureManager.editConnection(node.info.uuid);
-        }
-      },
-      {
-        id: 1, text: '<i class="fas fa-sync-alt"></i> Rescan', action: (node: ImTreeNode) => {
-          this.InfrastructureManager.refreshConnection(node.info.uuid);
         }
       },
       {
@@ -55,17 +48,14 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
     ];
   }
 
-  // Storage
+  /**
+   * NETAPP
+   */
   get netappContextMenu() {
     return [
       {
         id: 0, text: '<i class="fas fa-pencil"></i> Edit Connection', action: (node: ImTreeNode) => {
           this.InfrastructureManager.editConnection(node.info.uuid);
-        }
-      },
-      {
-        id: 1, text: '<i class="fas fa-sync-alt"></i> Rescan', action: (node: ImTreeNode) => {
-          this.InfrastructureManager.refreshConnection(node.info.uuid);
         }
       },
       {
@@ -87,18 +77,12 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
       },
       {
         id: 1, text: '<i class="fas fa-file"></i> Restore Volume files', action: (node: ImTreeNode) => {
-          this.InfrastructureManagerNetAppBackup.restoreVolumeFiles(node);
+          this.InfrastructureManagerNetappBackup.restoreVolumeFiles(node);
         }
       },
       {
         id: 2, text: '<i class="fas fa-database"></i> Create Storage Snapshot', action: (node: ImTreeNode) => {
           this.InfrastructureManagerNetappNodeActions.createStorageSnapShot(node);
-        }
-      },
-      {id: 3, text: 'divider'},
-      {
-        id: 4, text: '<i class="fas fa-file"></i> Rescan Volume', action: (node: ImTreeNode) => {
-          this.InfrastructureManagerNetApp.getVolumeData(node);
         }
       }
     ];
@@ -108,12 +92,12 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
     return [
       {
         id: 0, text: '<i class="fas fa-database"></i> Mount as Datastore', action: (node: ImTreeNode) => {
-          this.InfrastructureManagerNetAppBackup.mountSnapShotAsDatastore(node);
+          this.InfrastructureManagerNetappBackup.mountSnapShotAsDatastore(node);
         }
       },
       {
         id: 1, text: '<i class="fas fa-file"></i> Restore Volume files', action: (node: ImTreeNode) => {
-          this.InfrastructureManagerNetAppBackup.restoreVolumeFiles(node);
+          this.InfrastructureManagerNetappBackup.restoreVolumeFiles(node);
         }
       },
       {
@@ -128,32 +112,30 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
     return [
       {
         id: 0, text: '<i class="fas fa-server"></i> Instant VM', action: (node: ImTreeNode) => {
-          this.InfrastructureManagerNetAppBackup.instantVM(node, node);
+          this.InfrastructureManagerNetappBackup.instantVM(node, node);
         }
       },
       {
         id: 1, text: '<i class="fas fa-server"></i> Restore entire VM', action: (node: ImTreeNode) => {
-          this.InfrastructureManagerNetAppBackup.restoreVM(node, node);
+          this.InfrastructureManagerNetappBackup.restoreVM(node, node);
         }
       },
       {
         id: 2, text: '<i class="fas fa-file-import"></i> Restore Guest files', action: (node: ImTreeNode) => {
-          this.InfrastructureManagerNetAppBackup.restoreGuestFiles(node, node);
+          this.InfrastructureManagerNetappBackup.restoreGuestFiles(node, node);
         }
       }
     ];
   }
 
+  /**
+   * VMWARE
+   */
   get vmwareContextMenu() {
     return [
       {
         id: 0, text: '<i class="fas fa-pencil"></i> Edit Connection', action: (node: ImTreeNode) => {
           this.InfrastructureManager.editConnection(node.info.uuid);
-        }
-      },
-      {
-        id: 1, text: '<i class="fas fa-sync-alt"></i> Rescan', action: (node: ImTreeNode) => {
-          this.InfrastructureManager.refreshConnection(node.info.uuid);
         }
       },
       {
@@ -164,11 +146,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
       {id: 1, text: 'divider'},
       {
         id: 1, text: '<i class="vs-icon vsphere-icon-datacenter"></i> New Datacenter...',
-        action: (node: ImTreeNode) => {
-          this.Modal.openRegisteredModal('infrastructure-manager-new-datacenter', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-            modalInstance.result.then(() => {
+        action: async (node: ImTreeNode) => {
+          const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-new-datacenter', this.InfrastructureManager.getBodyContainerRef(), {});
 
-            });
+          modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
           });
         }
       },
@@ -181,11 +163,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: '<i class="vs-icon network-lib-ui-icon-dvPortGroupNew"></i> New Distributed Port Group...',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-new-distributed-port-group', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-new-distributed-port-group', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           }
@@ -193,21 +175,21 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
       },
       {id: 1, text: 'divider'},
       {
-        id: 1, text: 'Export System Logs...', action: (node: ImTreeNode) => {
-          this.Modal.openRegisteredModal('infrastructure-manager-export-system-logs', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-            modalInstance.result.then(() => {
+        id: 1, text: 'Export System Logs...', action: async (node: ImTreeNode) => {
+          const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-export-system-logs', this.InfrastructureManager.getBodyContainerRef(), {});
 
-            });
+          modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
           });
         }
       },
       {id: 1, text: 'divider'},
       {
-        id: 1, text: '<i class="vs-icon vsphere-icon-assign_license"></i> Assign License...', action: (node: ImTreeNode) => {
-          this.Modal.openRegisteredModal('infrastructure-manager-assign-license', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-            modalInstance.result.then(() => {
+        id: 1, text: '<i class="vs-icon vsphere-icon-assign_license"></i> Assign License...', action: async (node: ImTreeNode) => {
+          const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-assign-license', this.InfrastructureManager.getBodyContainerRef(), {});
 
-            });
+          modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
           });
         }
       },
@@ -217,22 +199,22 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_assign"></i> Assign Tag...',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-assign-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-assign-tag', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
           {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_remove"></i> Remove Tag',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-remove-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-remove-tag', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
@@ -240,11 +222,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: 'Edit Custom Attributes...',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-edit-custom-attributes', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-edit-custom-attributes', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           }
@@ -252,11 +234,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
       },
       {id: 1, text: 'divider'},
       {
-        id: 1, text: 'Add Permission...', action: (node: ImTreeNode) => {
-          this.Modal.openRegisteredModal('infrastructure-manager-add-permission', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-            modalInstance.result.then(() => {
+        id: 1, text: 'Add Permission...', action: async (node: ImTreeNode) => {
+          const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-add-permission', this.InfrastructureManager.getBodyContainerRef(), {});
 
-            });
+          modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
           });
         }
       },
@@ -265,11 +247,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: 'New Alarm Definition...',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-new-alarm-definition', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-new-alarm-definition', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
@@ -299,11 +281,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: 'Pre-check Remediation',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-remediation-pre-check', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-remediation-pre-check', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           }
@@ -315,11 +297,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
   get folderDatacenterContextMenu() {
     return [
       {
-        id: 0, text: '<i class="vs-icon vsphere-icon-datacenter"></i> New Datacenter...', action: (node: ImTreeNode) => {
-          this.Modal.openRegisteredModal('infrastructure-manager-new-datacenter', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-            modalInstance.result.then(() => {
+        id: 0, text: '<i class="vs-icon vsphere-icon-datacenter"></i> New Datacenter...', action: async (node: ImTreeNode) => {
+          const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-new-datacenter', this.InfrastructureManager.getBodyContainerRef(), {});
 
-            });
+          modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
           });
         }
       },
@@ -341,22 +323,22 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_assign"></i> Assign Tag...',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-assign-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-assign-tag', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
           {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_remove"></i> Remove Tag',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-remove-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-remove-tag', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
@@ -364,11 +346,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: 'Edit Custom Attributes...',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-edit-custom-attributes', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-edit-custom-attributes', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           }
@@ -380,11 +362,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: 'New Alarm Definition...',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-new-alarm-definition', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-new-alarm-definition', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
@@ -419,11 +401,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: 'Pre-check Remediation',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-remediation-pre-check', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-remediation-pre-check', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           }
@@ -435,20 +417,20 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
   get folderDatastoreContextMenu() {
     return [
       {
-        id: 0, text: '<i class="vs-icon vx-icon-new-ds-cluster"></i> New Datastore Cluster...', action: (node: ImTreeNode) => {
-          this.Modal.openRegisteredModal('infrastructure-manager-new-datastore-cluster', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-            modalInstance.result.then(() => {
+        id: 0, text: '<i class="vs-icon vx-icon-new-ds-cluster"></i> New Datastore Cluster...', action: async (node: ImTreeNode) => {
+          const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-new-datastore-cluster', this.InfrastructureManager.getBodyContainerRef(), {});
 
-            });
+          modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
           });
         }
       },
       {
-        id: 0, text: '<i class="vs-icon storage-ui-icon-create-datastore"></i> New Datastore...', action: (node: ImTreeNode) => {
-          this.Modal.openRegisteredModal('infrastructure-manager-new-datastore', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-            modalInstance.result.then(() => {
+        id: 0, text: '<i class="vs-icon storage-ui-icon-create-datastore"></i> New Datastore...', action: async (node: ImTreeNode) => {
+          const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-new-datastore', this.InfrastructureManager.getBodyContainerRef(), {});
 
-            });
+          modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
           });
         }
       },
@@ -470,22 +452,22 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_assign"></i> Assign Tag...',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-assign-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-assign-tag', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
           {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_remove"></i> Remove Tag',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-remove-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-remove-tag', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
@@ -493,11 +475,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: 'Edit Custom Attributes...',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-edit-custom-attributes', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-edit-custom-attributes', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           }
@@ -505,11 +487,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
       },
       {id: 1, text: 'divider'},
       {
-        id: 0, text: 'Add Permission...', action: (node: ImTreeNode) => {
-          this.Modal.openRegisteredModal('infrastructure-manager-add-permission', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-            modalInstance.result.then(() => {
+        id: 0, text: 'Add Permission...', action: async (node: ImTreeNode) => {
+          const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-add-permission', this.InfrastructureManager.getBodyContainerRef(), {});
 
-            });
+          modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
           });
         }
       },
@@ -518,11 +500,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: 'New Alarm Definition...',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-new-alarm-definition', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-new-alarm-definition', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
@@ -551,20 +533,20 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
   get folderVMContextMenu() {
     return [
       {
-        id: 0, text: '<i class="vs-icon vsphere-icon-vm-add"></i> New Virtual Machine...', action: (node: ImTreeNode) => {
-          this.Modal.openRegisteredModal('infrastructure-manager-new-virtual-machine', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-            modalInstance.result.then(() => {
+        id: 0, text: '<i class="vs-icon vsphere-icon-vm-add"></i> New Virtual Machine...', action: async (node: ImTreeNode) => {
+          const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-new-virtual-machine', this.InfrastructureManager.getBodyContainerRef(), {});
 
-            });
+          modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
           });
         }
       },
       {
-        id: 0, text: '<i class="vs-icon vsphere-icon-ovf-deploy"></i> Deploy OVF Template...', action: (node: ImTreeNode) => {
-          this.Modal.openRegisteredModal('infrastructure-manager-deploy-ovf-template', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-            modalInstance.result.then(() => {
+        id: 0, text: '<i class="vs-icon vsphere-icon-ovf-deploy"></i> Deploy OVF Template...', action: async (node: ImTreeNode) => {
+          const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-deploy-ovf-template', this.InfrastructureManager.getBodyContainerRef(), {});
 
-            });
+          modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
           });
         }
       },
@@ -586,22 +568,22 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_assign"></i> Assign Tag...',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-assign-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-assign-tag', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
           {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_remove"></i> Remove Tag',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-remove-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-remove-tag', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
@@ -609,11 +591,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: 'Edit Custom Attributes...',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-edit-custom-attributes', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-edit-custom-attributes', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           }
@@ -621,11 +603,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
       },
       {id: 1, text: 'divider'},
       {
-        id: 0, text: 'Add Permission...', action: (node: ImTreeNode) => {
-          this.Modal.openRegisteredModal('infrastructure-manager-add-permission', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-            modalInstance.result.then(() => {
+        id: 0, text: 'Add Permission...', action: async (node: ImTreeNode) => {
+          const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-add-permission', this.InfrastructureManager.getBodyContainerRef(), {});
 
-            });
+          modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
           });
         }
       },
@@ -634,11 +616,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: 'New Alarm Definition...',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-new-alarm-definition', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-new-alarm-definition', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
@@ -684,20 +666,20 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
   get folderNetworkContextMenu() {
     return [
       {
-        id: 0, text: '<i class="vs-icon network-lib-ui-icon-dvsNew"></i> New Distributed Switch...', action: (node: ImTreeNode) => {
-          this.Modal.openRegisteredModal('infrastructure-manager-new-distributes-switch', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-            modalInstance.result.then(() => {
+        id: 0, text: '<i class="vs-icon network-lib-ui-icon-dvsNew"></i> New Distributed Switch...', action: async (node: ImTreeNode) => {
+          const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-new-distributes-switch', this.InfrastructureManager.getBodyContainerRef(), {});
 
-            });
+          modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
           });
         }
       },
       {
-        id: 0, text: 'Import Distributed Switch...', action: (node: ImTreeNode) => {
-          this.Modal.openRegisteredModal('infrastructure-manager-import-distributes-switch', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-            modalInstance.result.then(() => {
+        id: 0, text: 'Import Distributed Switch...', action: async (node: ImTreeNode) => {
+          const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-import-distributes-switch', this.InfrastructureManager.getBodyContainerRef(), {});
 
-            });
+          modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
           });
         }
       },
@@ -719,22 +701,22 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_assign"></i> Assign Tag...',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-assign-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-assign-tag', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
           {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_remove"></i> Remove Tag',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-remove-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action:async  (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-remove-tag', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
@@ -742,11 +724,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: 'Edit Custom Attributes...',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-edit-custom-attributes', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-edit-custom-attributes', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           }
@@ -754,11 +736,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
       },
       {id: 1, text: 'divider'},
       {
-        id: 0, text: 'Add Permission...', action: (node: ImTreeNode) => {
-          this.Modal.openRegisteredModal('infrastructure-manager-add-permission', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-            modalInstance.result.then(() => {
+        id: 0, text: 'Add Permission...', action: async (node: ImTreeNode) => {
+          const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-add-permission', this.InfrastructureManager.getBodyContainerRef(), {});
 
-            });
+          modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
           });
         }
       },
@@ -767,11 +749,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: 'New Alarm Definition...',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-new-alarm-definition', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-new-alarm-definition', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
@@ -804,11 +786,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
         }
       },
       {
-        id: 0, text: '<i class="vs-icon vx-icon-new-cluster"></i> New Cluster...', action: (node: ImTreeNode) => {
-          this.Modal.openRegisteredModal('infrastructure-manager-new-cluster', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-            modalInstance.result.then(() => {
+        id: 0, text: '<i class="vs-icon vx-icon-new-cluster"></i> New Cluster...', action: async (node: ImTreeNode) => {
+          const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-new-cluster', this.InfrastructureManager.getBodyContainerRef(), {});
 
-            });
+          modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
           });
         }
       },
@@ -835,79 +817,79 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
       {
         id: 0, text: 'Distributed Switch', subMenu: [
           {
-            id: 0, text: '<i class="vs-icon network-lib-ui-icon-dvsNew"></i> New Distributed Switch...', action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-new-distributed-switch', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            id: 0, text: '<i class="vs-icon network-lib-ui-icon-dvsNew"></i> New Distributed Switch...', action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-new-distributed-switch', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
           {
-            id: 0, text: '<i class="vs-icon network-lib-ui-icon-dvPortGroupNew"></i> New Distributed Port Group...', action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-new-distributed-port-group', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            id: 0, text: '<i class="vs-icon network-lib-ui-icon-dvPortGroupNew"></i> New Distributed Port Group...', action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-new-distributed-port-group', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
           {
-            id: 0, text: 'Import Distributed Switch...', action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-import-distributed-switch', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            id: 0, text: 'Import Distributed Switch...', action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-import-distributed-switch', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
         ]
       },
       {
-        id: 0, text: '<i class="vs-icon vsphere-icon-vm-add"></i> New Virtual Machine', action: (node: ImTreeNode) => {
-          this.Modal.openRegisteredModal('infrastructure-manager-new-virtual-machine', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-            modalInstance.result.then(() => {
+        id: 0, text: '<i class="vs-icon vsphere-icon-vm-add"></i> New Virtual Machine', action: async (node: ImTreeNode) => {
+          const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-new-virtual-machine', this.InfrastructureManager.getBodyContainerRef(), {});
 
-            });
+          modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
           });
         }
       },
       {
-        id: 0, text: '<i class="vs-icon vsphere-icon-ovf-deploy"></i> Deploy OVF Template...', action: (node: ImTreeNode) => {
-          this.Modal.openRegisteredModal('infrastructure-manager-deploy-ovf-template', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-            modalInstance.result.then(() => {
+        id: 0, text: '<i class="vs-icon vsphere-icon-ovf-deploy"></i> Deploy OVF Template...', action: async (node: ImTreeNode) => {
+          const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-deploy-ovf-template', this.InfrastructureManager.getBodyContainerRef(), {});
 
-            });
+          modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
           });
         }
       },
       {
         id: 0, text: 'Storage', subMenu: [
           {
-            id: 0, text: '<i class="vs-icon storage-ui-icon-create-datastore"></i> New Datastore', action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-new-datastore', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            id: 0, text: '<i class="vs-icon storage-ui-icon-create-datastore"></i> New Datastore', action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-new-datastore', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
           {
-            id: 0, text: '<i class="vs-icon vx-icon-new-ds-cluster"></i> New Datastore Cluster...', action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-new-datastore-cluster', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            id: 0, text: '<i class="vs-icon vx-icon-new-ds-cluster"></i> New Datastore Cluster...', action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-new-datastore-cluster', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
           {id: 1, text: 'divider'},
           {
-            id: 0, text: '<i class="vs-icon vsphere-icon-rescan-storage"></i> Rescan Storage...', action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-rescan-storage', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            id: 0, text: '<i class="vs-icon vsphere-icon-rescan-storage"></i> Rescan Storage...', action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-rescan-storage', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
@@ -915,21 +897,21 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
       },
       {id: 1, text: 'divider'},
       {
-        id: 0, text: 'Edit Default VM Compatibility...', action: (node: ImTreeNode) => {
-          this.Modal.openRegisteredModal('infrastructure-manager-edit-default-vm-compatibility', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-            modalInstance.result.then(() => {
+        id: 0, text: 'Edit Default VM Compatibility...', action: async (node: ImTreeNode) => {
+          const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-edit-default-vm-compatibility', this.InfrastructureManager.getBodyContainerRef(), {});
 
-            });
+          modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
           });
         }
       },
       {id: 1, text: 'divider'},
       {
-        id: 0, text: '<i class="vs-icon network-lib-ui-icon-vmMigrate"></i> Migrate VMs to Another Network...', action: (node: ImTreeNode) => {
-          this.Modal.openRegisteredModal('infrastructure-manager-migrate-vms-another-network', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-            modalInstance.result.then(() => {
+        id: 0, text: '<i class="vs-icon network-lib-ui-icon-vmMigrate"></i> Migrate VMs to Another Network...', action: async (node: ImTreeNode) => {
+          const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-migrate-vms-another-network', this.InfrastructureManager.getBodyContainerRef(), {});
 
-            });
+          modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
           });
         }
       },
@@ -947,22 +929,22 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_assign"></i> Assign Tag...',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-assign-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-assign-tag', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
           {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_remove"></i> Remove Tag',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-remove-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-remove-tag', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
@@ -970,11 +952,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: 'Edit Custom Attributes...',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-edit-custom-attributes', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-edit-custom-attributes', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           }
@@ -982,11 +964,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
       },
       {id: 1, text: 'divider'},
       {
-        id: 0, text: 'Add Permission...', action: (node: ImTreeNode) => {
-          this.Modal.openRegisteredModal('infrastructure-manager-add-permission', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-            modalInstance.result.then(() => {
+        id: 0, text: 'Add Permission...', action: async (node: ImTreeNode) => {
+          const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-add-permission', this.InfrastructureManager.getBodyContainerRef(), {});
 
-            });
+          modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
           });
         }
       },
@@ -995,11 +977,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: 'New Alarm Definition...',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-new-alarm-definition', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-new-alarm-definition', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
@@ -1034,11 +1016,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: 'Pre-check Remediation',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-remediation-pre-check', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-remediation-pre-check', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           }
@@ -1337,11 +1319,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
       },
       {id: 1, text: 'divider'},
       {
-        id: 1, text: 'Export System Logs...', action: (node: ImTreeNode) => {
-          this.Modal.openRegisteredModal('infrastructure-manager-export-system-logs', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-            modalInstance.result.then(() => {
+        id: 1, text: 'Export System Logs...', action: async (node: ImTreeNode) => {
+          const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-export-system-logs', this.InfrastructureManager.getBodyContainerRef(), {});
 
-            });
+          modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
           });
         }
       },
@@ -1368,22 +1350,22 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_assign"></i> Assign Tag...',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-assign-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-assign-tag', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
           {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_remove"></i> Remove Tag',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-remove-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-remove-tag', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
@@ -1391,11 +1373,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: 'Edit Custom Attributes...',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-edit-custom-attributes', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-edit-custom-attributes', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           }
@@ -1403,11 +1385,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
       },
       {id: 1, text: 'divider'},
       {
-        id: 1, text: 'Add Permission...', action: (node: ImTreeNode) => {
-          this.Modal.openRegisteredModal('infrastructure-manager-add-permission', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-            modalInstance.result.then(() => {
+        id: 1, text: 'Add Permission...', action: async (node: ImTreeNode) => {
+          const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-add-permission', this.InfrastructureManager.getBodyContainerRef(), {});
 
-            });
+          modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
           });
         }
       },
@@ -1416,11 +1398,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: 'New Alarm Definition...',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-new-alarm-definition', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-new-alarm-definition', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
@@ -1517,11 +1499,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
   get datastoreContextMenu() {
     return [
       {
-        id: 0, text: '<i class="vs-icon vsphere-icon-vm-add"></i> New Virtual Machine...', action: (node: ImTreeNode) => {
-          this.Modal.openRegisteredModal('infrastructure-manager-new-virtual-machine', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-            modalInstance.result.then(() => {
+        id: 0, text: '<i class="vs-icon vsphere-icon-vm-add"></i> New Virtual Machine...', action: async (node: ImTreeNode) => {
+          const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-new-virtual-machine', this.InfrastructureManager.getBodyContainerRef(), {});
 
-            });
+          modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
           });
         }
       },
@@ -1591,22 +1573,22 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_assign"></i> Assign Tag...',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-assign-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-assign-tag', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
           {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_remove"></i> Remove Tag',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-remove-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-remove-tag', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
@@ -1614,11 +1596,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: 'Edit Custom Attributes...',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-edit-custom-attributes', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-edit-custom-attributes', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           }
@@ -1626,11 +1608,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
       },
       {id: 1, text: 'divider'},
       {
-        id: 0, text: 'Add Permission...', action: (node: ImTreeNode) => {
-          this.Modal.openRegisteredModal('infrastructure-manager-add-permission', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-            modalInstance.result.then(() => {
+        id: 0, text: 'Add Permission...', action: async (node: ImTreeNode) => {
+          const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-add-permission', this.InfrastructureManager.getBodyContainerRef(), {});
 
-            });
+          modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
           });
         }
       },
@@ -1639,11 +1621,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: 'New Alarm Definition...',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-new-alarm-definition', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-new-alarm-definition', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
@@ -1667,11 +1649,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
   get datastoreClusterContextMenu() {
     return [
       {
-        id: 0, text: '<i class="vs-icon vsphere-icon-vm-add"></i> New Virtual Machine...', action: (node: ImTreeNode) => {
-          this.Modal.openRegisteredModal('infrastructure-manager-new-virtual-machine', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-            modalInstance.result.then(() => {
+        id: 0, text: '<i class="vs-icon vsphere-icon-vm-add"></i> New Virtual Machine...', action: async (node: ImTreeNode) => {
+          const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-new-virtual-machine', this.InfrastructureManager.getBodyContainerRef(), {});
 
-            });
+          modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
           });
         }
       },
@@ -1694,22 +1676,22 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_assign"></i> Assign Tag...',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-assign-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-assign-tag', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
           {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_remove"></i> Remove Tag',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-remove-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-remove-tag', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
@@ -1717,11 +1699,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: 'Edit Custom Attributes...',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-edit-custom-attributes', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-edit-custom-attributes', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           }
@@ -1729,11 +1711,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
       },
       {id: 1, text: 'divider'},
       {
-        id: 0, text: 'Add Permission...', action: (node: ImTreeNode) => {
-          this.Modal.openRegisteredModal('infrastructure-manager-add-permission', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-            modalInstance.result.then(() => {
+        id: 0, text: 'Add Permission...', action: async (node: ImTreeNode) => {
+          const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-add-permission', this.InfrastructureManager.getBodyContainerRef(), {});
 
-            });
+          modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
           });
         }
       },
@@ -1742,11 +1724,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: 'New Alarm Definition...',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-new-alarm-definition', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-new-alarm-definition', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
@@ -1779,11 +1761,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
         }
       },
       {
-        id: 0, text: '<i class="vs-icon vsphere-icon-vm-add"></i> New Virtual Machine...', action: (node: ImTreeNode) => {
-          this.Modal.openRegisteredModal('infrastructure-manager-new-virtual-machine', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-            modalInstance.result.then(() => {
+        id: 0, text: '<i class="vs-icon vsphere-icon-vm-add"></i> New Virtual Machine...', action: async (node: ImTreeNode) => {
+          const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-new-virtual-machine', this.InfrastructureManager.getBodyContainerRef(), {});
 
-            });
+          modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
           });
         }
       },
@@ -1793,11 +1775,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
       },
       {id: 1, text: 'divider'},
       {
-        id: 0, text: '<i class="vs-icon vsphere-icon-ovf-deploy"></i> Deploy OVF Template....', action: (node: ImTreeNode) => {
-          this.Modal.openRegisteredModal('infrastructure-manager-deploy-ovf-template', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-            modalInstance.result.then(() => {
+        id: 0, text: '<i class="vs-icon vsphere-icon-ovf-deploy"></i> Deploy OVF Template....', action: async (node: ImTreeNode) => {
+          const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-deploy-ovf-template', this.InfrastructureManager.getBodyContainerRef(), {});
 
-            });
+          modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
           });
         }
       },
@@ -1810,20 +1792,20 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
       {
         id: 0, text: 'Storage', subMenu: [
           {
-            id: 0, text: '<i class="vs-icon storage-ui-icon-create-datastore"></i> New Datastore...', action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-new-datastore', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            id: 0, text: '<i class="vs-icon storage-ui-icon-create-datastore"></i> New Datastore...', action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-new-datastore', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
           {
-            id: 0, text: '<i class="vs-icon vsphere-icon-rescan-storage"></i> Rescan Storage...', action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-rescan-storage', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            id: 0, text: '<i class="vs-icon vsphere-icon-rescan-storage"></i> Rescan Storage...', action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-rescan-storage', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
@@ -1864,21 +1846,21 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
       },
       {id: 1, text: 'divider'},
       {
-        id: 0, text: 'Edit Default VM Compatibility...', action: (node: ImTreeNode) => {
-          this.Modal.openRegisteredModal('infrastructure-manager-edit-default-vm-compatibility', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-            modalInstance.result.then(() => {
+        id: 0, text: 'Edit Default VM Compatibility...', action: async (node: ImTreeNode) => {
+          const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-edit-default-vm-compatibility', this.InfrastructureManager.getBodyContainerRef(), {});
 
-            });
+          modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
           });
         }
       },
       {id: 1, text: 'divider'},
       {
-        id: 0, text: '<i class="vs-icon vsphere-icon-assign_license"></i> Assign License...', action: (node: ImTreeNode) => {
-          this.Modal.openRegisteredModal('infrastructure-manager-assign-license', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-            modalInstance.result.then(() => {
+        id: 0, text: '<i class="vs-icon vsphere-icon-assign_license"></i> Assign License...', action: async (node: ImTreeNode) => {
+          const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-assign-license', this.InfrastructureManager.getBodyContainerRef(), {});
 
-            });
+          modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
           });
         }
       },
@@ -1901,22 +1883,22 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_assign"></i> Assign Tag...',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-assign-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-assign-tag', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
           {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_remove"></i> Remove Tag',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-remove-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-remove-tag', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
@@ -1924,11 +1906,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: 'Edit Custom Attributes...',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-edit-custom-attributes', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-edit-custom-attributes', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           }
@@ -1936,11 +1918,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
       },
       {id: 1, text: 'divider'},
       {
-        id: 0, text: 'Add Permission...', action: (node: ImTreeNode) => {
-          this.Modal.openRegisteredModal('infrastructure-manager-add-permission', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-            modalInstance.result.then(() => {
+        id: 0, text: 'Add Permission...', action: async (node: ImTreeNode) => {
+          const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-add-permission', this.InfrastructureManager.getBodyContainerRef(), {});
 
-            });
+          modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
           });
         }
       },
@@ -1949,11 +1931,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: 'New Alarm Definition...',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-new-alarm-definition', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-new-alarm-definition', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
@@ -1988,11 +1970,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: 'Pre-check Remediation',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-remediation-pre-check', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-remediation-pre-check', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           }
@@ -2014,20 +1996,20 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
   get hostSystemContextMenu() {
     return [
       {
-        id: 0, text: '<i class="vs-icon vsphere-icon-vm-add"></i> New Virtual Machine...', action: (node: ImTreeNode) => {
-          this.Modal.openRegisteredModal('infrastructure-manager-new-virtual-machine', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-            modalInstance.result.then(() => {
+        id: 0, text: '<i class="vs-icon vsphere-icon-vm-add"></i> New Virtual Machine...', action: async (node: ImTreeNode) => {
+          const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-new-virtual-machine', this.InfrastructureManager.getBodyContainerRef(), {});
 
-            });
+          modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
           });
         }
       },
       {
-        id: 0, text: '<i class="vs-icon vsphere-icon-ovf-deploy"></i> Deploy OVF Template...', action: (node: ImTreeNode) => {
-          this.Modal.openRegisteredModal('infrastructure-manager-deploy-ovf-template', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-            modalInstance.result.then(() => {
+        id: 0, text: '<i class="vs-icon vsphere-icon-ovf-deploy"></i> Deploy OVF Template...', action: async (node: ImTreeNode) => {
+          const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-deploy-ovf-template', this.InfrastructureManager.getBodyContainerRef(), {});
 
-            });
+          modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
           });
         }
       },
@@ -2101,20 +2083,20 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
       {
         id: 0, text: 'Storage', subMenu: [
           {
-            id: 0, text: '<i class="vs-icon storage-ui-icon-create-datastore"></i> New Datastore...', action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-new-datastore', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            id: 0, text: '<i class="vs-icon storage-ui-icon-create-datastore"></i> New Datastore...', action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-new-datastore', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
           {
-            id: 0, text: '<i class="vs-icon vsphere-icon-rescan-storage"></i> Rescan Storage...', action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-rescan-storage', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            id: 0, text: '<i class="vs-icon vsphere-icon-rescan-storage"></i> Rescan Storage...', action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-rescan-storage', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
@@ -2168,11 +2150,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
       },
       {id: 1, text: 'divider'},
       {
-        id: 0, text: 'Export System Logs...', action: (node: ImTreeNode) => {
-          this.Modal.openRegisteredModal('infrastructure-manager-export-system-logs', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-            modalInstance.result.then(() => {
+        id: 0, text: 'Export System Logs...', action: async (node: ImTreeNode) => {
+          const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-export-system-logs', this.InfrastructureManager.getBodyContainerRef(), {});
 
-            });
+          modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
           });
         }
       },
@@ -2182,11 +2164,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
         }
       },
       {
-        id: 0, text: '<i class="vs-icon vsphere-icon-assign_license"></i> Assign License...', action: (node: ImTreeNode) => {
-          this.Modal.openRegisteredModal('infrastructure-manager-assign-license', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-            modalInstance.result.then(() => {
+        id: 0, text: '<i class="vs-icon vsphere-icon-assign_license"></i> Assign License...', action: async (node: ImTreeNode) => {
+          const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-assign-license', this.InfrastructureManager.getBodyContainerRef(), {});
 
-            });
+          modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
           });
         }
       },
@@ -2205,22 +2187,22 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_assign"></i> Assign Tag...',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-assign-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-assign-tag', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
           {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_remove"></i> Remove Tag',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-remove-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-remove-tag', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
@@ -2228,11 +2210,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: 'Edit Custom Attributes...',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-edit-custom-attributes', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-edit-custom-attributes', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           }
@@ -2245,11 +2227,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
       },
       {id: 1, text: 'divider'},
       {
-        id: 0, text: 'Add Permission...', action: (node: ImTreeNode) => {
-          this.Modal.openRegisteredModal('infrastructure-manager-add-permission', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-            modalInstance.result.then(() => {
+        id: 0, text: 'Add Permission...', action: async (node: ImTreeNode) => {
+          const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-add-permission', this.InfrastructureManager.getBodyContainerRef(), {});
 
-            });
+          modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
           });
         }
       },
@@ -2258,11 +2240,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: 'New Alarm Definition...',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-new-alarm-definition', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-new-alarm-definition', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
@@ -2292,11 +2274,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: 'Pre-check Remediation',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-remediation-pre-check', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-remediation-pre-check', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           }
@@ -2308,20 +2290,20 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
   get resourcePoolContextMenu() {
     return [
       {
-        id: 0, text: '<i class="vs-icon vsphere-icon-vm-add"></i> New Virtual Machine...', action: (node: ImTreeNode) => {
-          this.Modal.openRegisteredModal('infrastructure-manager-new-virtual-machine', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-            modalInstance.result.then(() => {
+        id: 0, text: '<i class="vs-icon vsphere-icon-vm-add"></i> New Virtual Machine...', action: async (node: ImTreeNode) => {
+          const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-new-virtual-machine', this.InfrastructureManager.getBodyContainerRef(), {});
 
-            });
+          modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
           });
         }
       },
       {
-        id: 0, text: '<i class="vs-icon vsphere-icon-ovf-deploy"></i> Deploy OVF Template...', action: (node: ImTreeNode) => {
-          this.Modal.openRegisteredModal('infrastructure-manager-deploy-ovf-template', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-            modalInstance.result.then(() => {
+        id: 0, text: '<i class="vs-icon vsphere-icon-ovf-deploy"></i> Deploy OVF Template...', action: async (node: ImTreeNode) => {
+          const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-deploy-ovf-template', this.InfrastructureManager.getBodyContainerRef(), {});
 
-            });
+          modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
           });
         }
       },
@@ -2352,22 +2334,22 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_assign"></i> Assign Tag...',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-assign-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-assign-tag', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
           {
             id: 0,
             text: '<i class="vs-icon vx-icon-tag_remove"></i> Remove Tag',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-remove-tag', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-remove-tag', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
@@ -2375,11 +2357,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: 'Edit Custom Attributes...',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-edit-custom-attributes', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-edit-custom-attributes', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           }
@@ -2387,11 +2369,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
       },
       {id: 1, text: 'divider'},
       {
-        id: 0, text: 'Add Permission...', action: (node: ImTreeNode) => {
-          this.Modal.openRegisteredModal('infrastructure-manager-add-permission', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-            modalInstance.result.then(() => {
+        id: 0, text: 'Add Permission...', action: async (node: ImTreeNode) => {
+          const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-add-permission', this.InfrastructureManager.getBodyContainerRef(), {});
 
-            });
+          modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
           });
         }
       },
@@ -2400,11 +2382,11 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
           {
             id: 0,
             text: 'New Alarm Definition...',
-            action: (node: ImTreeNode) => {
-              this.Modal.openRegisteredModal('infrastructure-manager-new-alarm-definition', '.window--infrastructure-manager .window__main', {}).then((modalInstance) => {
-                modalInstance.result.then(() => {
+            action: async (node: ImTreeNode) => {
+              const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('infrastructure-manager-new-alarm-definition', this.InfrastructureManager.getBodyContainerRef(), {});
 
-                });
+              modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+
               });
             }
           },
@@ -2430,12 +2412,12 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
     ];
   }
 
-  private openRemoteConsole(vm: ImDataObject & { info: { data: VMWareVM } }): void {
+  private async openRemoteConsole(vm: DataObject & { info: { data: VMWareVM } }): Promise<void> {
     this.logger.debug('Infrastructure Manager', 'Opening Remote Console APP', arguments);
 
-    const connection: ConnectionVmware = this.InfrastructureManager.getConnectionByUuid(vm.info.mainUuid) as ConnectionVmware;
+    const connection: ConnectionVmware = await this.InfrastructureManager.getConnectionByUuid(vm.info.mainUuid, 'vmware') as ConnectionVmware;
 
-    this.Applications.openApplication('wmks', {
+    this.LibApplication.openApplication('wmks', {
       connection,
       vm
     });
@@ -2444,7 +2426,7 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
   private openDatastoreExplorer(connectionUuid: string, type: 'vmware' | 'netapp', data: any): void {
     this.logger.debug('Infrastructure Manager', 'Opening Datastore Explorer APP', arguments);
 
-    this.Applications.openApplication('datastore-explorer', {
+    this.LibApplication.openApplication('datastore-explorer', {
       connectionUuid,
       data,
       type

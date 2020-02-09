@@ -14,6 +14,7 @@
   },
   "devDependencies": {
     "@anyopsos/backend": "~0.0.1",
+    "@types/node": "^12.12.21",
     "@types/child-process-promise": "^2.2.1",
     "@types/fs-extra": "^8.0.1",
     "ssh2-streams": "^0.4.8",

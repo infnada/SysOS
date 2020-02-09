@@ -2,6 +2,7 @@ import {join} from 'path';
 
 export class AnyOpsOSGetPathModule {
 
+  // @ts-ignore TODO
   private anyOpsOSPath: string = require('path').dirname(require.main.filename);
 
   constructor() {
@@ -16,11 +17,11 @@ export class AnyOpsOSGetPathModule {
   }
 
   get mainConfig(): string {
-    return join(this.anyOpsOSPath, '/filesystem/etc/config.json');
+    return 'config.json';
   }
 
   get shadow(): string {
-    return join(this.anyOpsOSPath, '/filesystem/etc/shadow.json');
+    return 'shadow.json';
   }
 
 }

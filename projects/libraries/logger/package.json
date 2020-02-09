@@ -8,7 +8,7 @@
     "rxjs": "~6.5.3"
   },
   "dependencies": {
-    "ngx-logger": "^4.0.8",
+    "ngx-logger": "~4.0.8",
     "@anyopsos/lib-angular-material": "~0.0.1"
   },
   "homepage": "https://github.com/anyOpsOS/anyOpsOS#readme",

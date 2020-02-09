@@ -1,21 +1,9 @@
 {
+  "extends": "../../tsconfig.backend.json",
   "compilerOptions": {
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "module": "commonjs",
-    "esModuleInterop": true,
-    "target": "es2015",
-    "moduleResolution": "node",
-    "sourceMap": true,
     "outDir": "../../dist/anyOpsOS",
     "baseUrl": "./app",
     "paths": {
-      "@anyopsos/fs/*": [
-        "filesystem/*"
-      ],
-      "@anyopsos/fs/bin/modules/*": [
-        "../../projects/modules/*"
-      ],
       "*": [
         "node_modules/*"
       ]

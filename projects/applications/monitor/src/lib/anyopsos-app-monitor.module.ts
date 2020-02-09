@@ -33,18 +33,19 @@ import {AnyOpsOSAppMonitorService} from './services/anyopsos-app-monitor.service
     AnyOpsOSLibAngularMaterialModule,
     AnyOpsOSLibScrollSpyModule,
     AnyOpsOSLibPipesModule,
-    AnyOpsOSExtLibWeavescopeModule
+    AnyOpsOSExtLibWeavescopeModule,
+    AnyOpsOSLibScrollSpyModule
   ],
   exports: []
 })
 export class AnyOpsOSAppMonitorModule {
   constructor(private serviceInjector: AnyOpsOSLibServiceInjectorService,
-              private Applications: AnyOpsOSLibApplicationService,
+              private readonly LibApplication: AnyOpsOSLibApplicationService,
               private Monitor: AnyOpsOSAppMonitorService) {
 
     this.serviceInjector.set('AnyOpsOSAppMonitorService', this.Monitor);
 
-    Applications.registerApplication({
+    this.LibApplication.registerApplication({
       uuid: 'monitor',
       ico: 'fas fa-chart-pie',
       name: 'Monitor',

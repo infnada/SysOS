@@ -1,4 +1,4 @@
-import {Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
 
 import {Observable, of as observableOf, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
@@ -11,12 +11,6 @@ import {ContextMenuItem} from '@anyopsos/lib-types';
 import {AnyOpsOSAppInfrastructureManagerService} from '../../services/anyopsos-app-infrastructure-manager.service';
 import {AnyOpsOSAppInfrastructureManagerTreeDataService} from '../../services/anyopsos-app-infrastructure-manager-tree-data.service';
 import {AnyOpsOSAppInfrastructureManagerContextMenusService} from '../../services/anyopsos-app-infrastructure-manager-context-menus.service';
-import {AnyOpsOSAppInfrastructureVmwareService} from '../../services/vmware/anyopsos-app-infrastructure-vmware.service';
-import {AnyOpsOSAppInfrastructureNetappService} from '../../services/netapp/anyopsos-app-infrastructure-netapp.service';
-import {AnyOpsOSAppInfrastructureKubernetesService} from '../../services/kubernetes/anyopsos-app-infrastructure-kubernetes.service';
-import {AnyOpsOSAppInfrastructureDockerService} from '../../services/docker/anyopsos-app-infrastructure-docker.service';
-import {AnyOpsOSAppInfrastructureLinuxService} from '../../services/linux/anyopsos-app-infrastructure-linux.service';
-import {AnyOpsOSAppInfrastructureSnmpService} from '../../services/snmp/anyopsos-app-infrastructure-snmp.service';
 import {AnyOpsOSAppInfrastructureManagerTemplateHelperService} from '../../services/anyopsos-app-infrastructure-manager-template-helper.service';
 
 import {ImTreeNode} from '../../types/im-tree-node';
@@ -38,6 +32,7 @@ interface InfrastructureManagerFlatNode {
 })
 export class BodyComponent implements OnInit, OnDestroy {
   @ViewChild(MatMenuTrigger, {static: false}) contextMenuTree: MatMenuTrigger;
+  @ViewChild('bodyContainer', {static: true}) bodyContainer: ViewContainerRef;
   @Input() application: Application;
 
   private destroySubject$: Subject<void> = new Subject();
@@ -49,7 +44,7 @@ export class BodyComponent implements OnInit, OnDestroy {
 
   contextMenuPosition = {x: '0px', y: '0px'};
 
-  private contextMenus: {[s: string]: ContextMenuItem[]};
+  private contextMenus: { [s: string]: ContextMenuItem[]; };
 
   treeControl: FlatTreeControl<InfrastructureManagerFlatNode>;
   dataSource: MatTreeFlatDataSource<ImTreeNode, InfrastructureManagerFlatNode>;
@@ -76,35 +71,16 @@ export class BodyComponent implements OnInit, OnDestroy {
               private InfrastructureManager: AnyOpsOSAppInfrastructureManagerService,
               private InfrastructureManagerTreeData: AnyOpsOSAppInfrastructureManagerTreeDataService,
               private InfrastructureContextMenus: AnyOpsOSAppInfrastructureManagerContextMenusService,
-              private InfrastructureManagerNetApp: AnyOpsOSAppInfrastructureNetappService,
-              private InfrastructureManagerVMWare: AnyOpsOSAppInfrastructureVmwareService,
-              private InfrastructureManagerKubernetes: AnyOpsOSAppInfrastructureKubernetesService,
-              private InfrastructureManagerDocker: AnyOpsOSAppInfrastructureDockerService,
-              private InfrastructureManagerLinux: AnyOpsOSAppInfrastructureLinuxService,
-              private InfrastructureManagerSNMP: AnyOpsOSAppInfrastructureSnmpService,
               public InfrastructureManagerTemplateHelper: AnyOpsOSAppInfrastructureManagerTemplateHelperService) {
 
     this.treeFlattener = new MatTreeFlattener(this.transformer, this.getLevel, this.isExpandable, this.getChildren);
     this.treeControl = new FlatTreeControl<InfrastructureManagerFlatNode>(this.getLevel, this.isExpandable);
     this.dataSource = new MatTreeFlatDataSource<ImTreeNode, InfrastructureManagerFlatNode>(this.treeControl, this.treeFlattener);
-
-    /**
-     * @description Required to avoid circular dependency
-     * @link{AnyOpsOSAppInfrastructureManagerService#getObserverConnectGetData}
-     */
-    this.InfrastructureManager.getObserverConnectGetData()
-      .pipe(takeUntil(this.destroySubject$)).subscribe((connection) => {
-        if (connection.type === 'netapp') this.InfrastructureManagerNetApp.getNetAppData(connection);
-        if (connection.type === 'vmware') this.InfrastructureManagerVMWare.getVMWareData(connection);
-        if (connection.type === 'kubernetes') this.InfrastructureManagerKubernetes.initConnection(connection);
-        if (connection.type === 'docker') this.InfrastructureManagerDocker.initConnection(connection);
-        if (connection.type === 'linux') this.InfrastructureManagerLinux.initConnection(connection);
-        if (connection.type === 'snmp') this.InfrastructureManagerSNMP.initConnection(connection);
-      });
-
   }
 
   ngOnInit(): void {
+    // Set bodyContainerRef, this is used by Modals
+    this.InfrastructureManager.setBodyContainerRef(this.bodyContainer);
 
     // Listen for treeData change
     this.InfrastructureManagerTreeData.treeData

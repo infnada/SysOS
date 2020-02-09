@@ -1,138 +1,147 @@
 import {Controller, Get, Authorized, Req, Res, Param, QueryParam} from 'routing-controllers';
+import {SessionParam} from 'routing-controllers/decorator/SessionParam';
 import {Request, Response} from 'express';
 import {getLogger, Logger} from 'log4js';
-import {join} from 'path';
 
 import {AnyOpsOSApiGlobalsModule} from '@anyopsos/module-api-globals';
-import {AnyOpsOSGetPathModule} from '@anyopsos/module-get-path';
-import {AnyOpsOSConfigFileModule} from '@anyopsos/module-config-file';
-import {AnyOpsOSHttpForwarderModule, ForwarderResponse} from '@anyopsos/module-http-forwarder';
-import {AnyOpsOSMonitorModule, MonitorConnection} from '@anyopsos/module-monitor';
+import {AnyOpsOSMonitorModule, MonitorConnectionTypes} from '@anyopsos/module-monitor';
+import {ForwarderResponse} from '@anyopsos/module-monitor/src';
 
-const logger: Logger = getLogger('mainlog');
+
+const logger: Logger = getLogger('mainLog');
 
 @Authorized()
 @Controller('/api/monitor')
 export class AnyOpsOSMonitorApiController {
 
-  /**
-   * Function used to forward Netdata requests to original destination host providing credentials/tokens if needed
-   */
-  private async forwardRequest(urlPath: string, connectionUuid: string, request: Request, response: Response) {
+  @Get('/charts/:workspaceUuid/:connectionUuid/:type/')
+  async getMonitorCharts(@Req() request: Request,
+                         @Res() response: Response,
+                         @SessionParam('userUuid') userUuid: string,
+                         @SessionParam('id') sessionUuid: string,
+                         @Param('workspaceUuid') workspaceUuid: string,
+                         @Param('connectionUuid') connectionUuid: string,
+                         @Param('type') type: MonitorConnectionTypes) {
+    logger.info(`[API Monitor] -> getCharts -> workspaceUuid [${workspaceUuid}], connectionUuid [${connectionUuid}], type [${type}]`);
 
-    const configPath: string = join(new AnyOpsOSGetPathModule().filesystem, 'applications/monitor/config.json');
-    // @ts-ignore TODO
-    const currentConnection: MonitorConnection = await new AnyOpsOSConfigFileModule().get(configPath, connectionUuid);
+    const MonitorModule: AnyOpsOSMonitorModule = new AnyOpsOSMonitorModule(userUuid, sessionUuid, workspaceUuid, connectionUuid, request);
+    const ApiGlobalsModule: AnyOpsOSApiGlobalsModule = new AnyOpsOSApiGlobalsModule(request, response);
 
-    const forwarderResult: ForwarderResponse = await new AnyOpsOSHttpForwarderModule(request).doCall(
-      currentConnection.url + urlPath + (Object.keys(request.query).length ? '?' + Object.keys(request.query).map(k => `${k}${(request.query[k] ? '=' + request.query[k] : '')}`).join('&') : ''),
-      currentConnection.credential
-    );
+    const chartsDatabase: ForwarderResponse = await MonitorModule.getCharts();
 
-    // Handle 'connect' case
-    if (urlPath === '' && forwarderResult.resStatus === 200) {
-      return new AnyOpsOSApiGlobalsModule(request, response).validResponse();
-
-    // Handle normal case
-    } else {
-      return new AnyOpsOSApiGlobalsModule(request, response).responseAsIs(forwarderResult.resStatus, forwarderResult.contentType, forwarderResult.data);
-    }
-
+    return ApiGlobalsModule.responseAsIs(chartsDatabase.resStatus, chartsDatabase.contentType, chartsDatabase.data);
   }
 
-  @Get('/charts/:connectionUuid/:type/')
-  getMonitorCharts(@Req() request: Request,
-                   @Res() response: Response,
-                   @Param('connectionUuid') connectionUuid: string,
-                   @Param('type') type: 'netdata-credential') {
-    logger.info(`[API Monitor] -> getCharts -> connectionUuid [${connectionUuid}], type [${type}]`);
+  @Get('/chart/:workspaceUuid/:connectionUuid/:type/')
+  async getMonitorChart(@Req() request: Request,
+                        @Res() response: Response,
+                        @SessionParam('userUuid') userUuid: string,
+                        @SessionParam('id') sessionUuid: string,
+                        @Param('workspaceUuid') workspaceUuid: string,
+                        @Param('connectionUuid') connectionUuid: string,
+                        @Param('type') type: MonitorConnectionTypes,
+                        @QueryParam('chart') chart: string) {
+    logger.info(`[API Monitor] -> getChart -> workspaceUuid [${workspaceUuid}], connectionUuid [${connectionUuid}], type [${type}], chart [${chart}]`);
 
-    if (type === 'netdata-credential') return this.forwardRequest('/api/v1/charts', connectionUuid, request, response);
-    const chartsDatabase = new AnyOpsOSMonitorModule().getCharts();
+    const MonitorModule: AnyOpsOSMonitorModule = new AnyOpsOSMonitorModule(userUuid, sessionUuid, workspaceUuid, connectionUuid, request);
+    const ApiGlobalsModule: AnyOpsOSApiGlobalsModule = new AnyOpsOSApiGlobalsModule(request, response);
 
-    return new AnyOpsOSApiGlobalsModule(request, response).jsonDataResponse(chartsDatabase);
+    const chartDatabase: ForwarderResponse = await MonitorModule.getChart();
+
+    return ApiGlobalsModule.responseAsIs(chartDatabase.resStatus, chartDatabase.contentType, chartDatabase.data);
   }
 
-  @Get('/chart/:connectionUuid/:type/')
-  getMonitorChart(@Req() request: Request,
-                  @Res() response: Response,
-                  @Param('connectionUuid') connectionUuid: string,
-                  @Param('type') type: 'netdata-credential',
-                  @QueryParam('chart') chart: string) {
-    logger.info(`[API Monitor] -> getChart -> connectionUuid [${connectionUuid}], type [${type}], chart [${chart}]`);
+  @Get('/data/:workspaceUuid/:connectionUuid/:type/')
+  async getMonitorData(@Req() request: Request,
+                       @Res() response: Response,
+                       @SessionParam('userUuid') userUuid: string,
+                       @SessionParam('id') sessionUuid: string,
+                       @Param('workspaceUuid') workspaceUuid: string,
+                       @Param('connectionUuid') connectionUuid: string,
+                       @Param('type') type: MonitorConnectionTypes,
+                       @QueryParam('chart') chart: string) {
+    logger.info(`[API Monitor] -> getData -> workspaceUuid [${workspaceUuid}], connectionUuid [${connectionUuid}], type [${type}], chart [${chart}]`);
 
-    if (type === 'netdata-credential') return this.forwardRequest('/api/v1/chart', connectionUuid, request, response);
-    const chartDatabase = new AnyOpsOSMonitorModule().getChart();
+    const MonitorModule: AnyOpsOSMonitorModule = new AnyOpsOSMonitorModule(userUuid, sessionUuid, workspaceUuid, connectionUuid, request);
+    const ApiGlobalsModule: AnyOpsOSApiGlobalsModule = new AnyOpsOSApiGlobalsModule(request, response);
 
-    return new AnyOpsOSApiGlobalsModule(request, response).jsonDataResponse(chartDatabase);
+    const chartData: ForwarderResponse = await MonitorModule.getChartData();
+
+    return ApiGlobalsModule.responseAsIs(chartData.resStatus, chartData.contentType, chartData.data);
   }
 
-  @Get('/data/:connectionUuid/:type/')
-  getMonitorData(@Req() request: Request,
-                 @Res() response: Response,
-                 @Param('connectionUuid') connectionUuid: string,
-                 @Param('type') type: 'netdata-credential',
-                 @QueryParam('chart') chart: string) {
-    logger.info(`[API Monitor] -> getData -> connectionUuid [${connectionUuid}], type [${type}], chart [${chart}]`);
+  @Get('/alarms/:workspaceUuid/:connectionUuid/:type/')
+  async getMonitorAlarms(@Req() request: Request,
+                         @Res() response: Response,
+                         @SessionParam('userUuid') userUuid: string,
+                         @SessionParam('id') sessionUuid: string,
+                         @Param('workspaceUuid') workspaceUuid: string,
+                         @Param('connectionUuid') connectionUuid: string,
+                         @Param('type') type: MonitorConnectionTypes,
+                         @QueryParam('type') alarmType: string) {
+    logger.info(`[API Monitor] -> getAlarms -> workspaceUuid [${workspaceUuid}], connectionUuid [${connectionUuid}], type [${type}], alarmType [${alarmType}]`);
 
-    if (type === 'netdata-credential') return this.forwardRequest('/api/v1/data', connectionUuid, request, response);
-    const chartData = new AnyOpsOSMonitorModule().getChartData();
+    const MonitorModule: AnyOpsOSMonitorModule = new AnyOpsOSMonitorModule(userUuid, sessionUuid, workspaceUuid, connectionUuid, request);
+    const ApiGlobalsModule: AnyOpsOSApiGlobalsModule = new AnyOpsOSApiGlobalsModule(request, response);
 
-    return new AnyOpsOSApiGlobalsModule(request, response).jsonDataResponse(chartData);
+    const chartAlarms: ForwarderResponse = await MonitorModule.getAlarms();
+
+    return ApiGlobalsModule.responseAsIs(chartAlarms.resStatus, chartAlarms.contentType, chartAlarms.data);
   }
 
-  @Get('/alarms/:connectionUuid/:type/')
-  getMonitorAlarms(@Req() request: Request,
-                   @Res() response: Response,
-                   @Param('connectionUuid') connectionUuid: string,
-                   @Param('type') type: 'netdata-credential',
-                   @QueryParam('type') alarmType: string) {
-    logger.info(`[API Monitor] -> getAlarms -> connectionUuid [${connectionUuid}], type [${type}], alarmType [${alarmType}]`);
+  @Get('/alarm_log/:workspaceUuid/:connectionUuid/:type/')
+  async getMonitorAlarmsLog(@Req() request: Request,
+                            @Res() response: Response,
+                            @SessionParam('userUuid') userUuid: string,
+                            @SessionParam('id') sessionUuid: string,
+                            @Param('workspaceUuid') workspaceUuid: string,
+                            @Param('connectionUuid') connectionUuid: string,
+                            @Param('type') type: MonitorConnectionTypes) {
+    logger.info(`[API Monitor] -> getAlarmsLog -> workspaceUuid [${workspaceUuid}], connectionUuid [${connectionUuid}], type [${type}]`);
 
-    if (type === 'netdata-credential') return this.forwardRequest('/api/v1/alarms', connectionUuid, request, response);
-    const chartAlarms = new AnyOpsOSMonitorModule().getAlarms();
+    const MonitorModule: AnyOpsOSMonitorModule = new AnyOpsOSMonitorModule(userUuid, sessionUuid, workspaceUuid, connectionUuid, request);
+    const ApiGlobalsModule: AnyOpsOSApiGlobalsModule = new AnyOpsOSApiGlobalsModule(request, response);
 
-    return new AnyOpsOSApiGlobalsModule(request, response).jsonDataResponse(chartAlarms);
+    const chartAlarmsLog: ForwarderResponse = await MonitorModule.getAlarmsLog();
+
+    return ApiGlobalsModule.responseAsIs(chartAlarmsLog.resStatus, chartAlarmsLog.contentType, chartAlarmsLog.data);
   }
 
-  @Get('/alarm_log/:connectionUuid/:type/')
-  getMonitorAlarmsLog(@Req() request: Request,
-                      @Res() response: Response,
-                      @Param('connectionUuid') connectionUuid: string,
-                      @Param('type') type: 'netdata-credential') {
-    logger.info(`[API Monitor] -> getAlarmsLog -> connectionUuid [${connectionUuid}], type [${type}]`);
+  @Get('/badge/:workspaceUuid/:connectionUuid/:type/')
+  async getMonitorBadge(@Req() request: Request,
+                        @Res() response: Response,
+                        @SessionParam('userUuid') userUuid: string,
+                        @SessionParam('id') sessionUuid: string,
+                        @Param('workspaceUuid') workspaceUuid: string,
+                        @Param('connectionUuid') connectionUuid: string,
+                        @Param('type') type: MonitorConnectionTypes) {
+    logger.info(`[API Monitor] -> getBadge -> workspaceUuid [${workspaceUuid}], connectionUuid [${connectionUuid}], type [${type}]`);
 
-    if (type === 'netdata-credential') return this.forwardRequest('/api/v1/alarm_log', connectionUuid, request, response);
-    const chartAlarmsLog = new AnyOpsOSMonitorModule().getAlarmsLog();
+    const MonitorModule: AnyOpsOSMonitorModule = new AnyOpsOSMonitorModule(userUuid, sessionUuid, workspaceUuid, connectionUuid, request);
+    const ApiGlobalsModule: AnyOpsOSApiGlobalsModule = new AnyOpsOSApiGlobalsModule(request, response);
 
-    return new AnyOpsOSApiGlobalsModule(request, response).jsonDataResponse(chartAlarmsLog);
+    const chartBadge: ForwarderResponse = await MonitorModule.getBadge();
+
+    return ApiGlobalsModule.responseAsIs(chartBadge.resStatus, chartBadge.contentType, chartBadge.data);
   }
 
-  @Get('/badge/:connectionUuid/:type/')
-  getMonitorBadge(@Req() request: Request,
-                  @Res() response: Response,
-                  @Param('connectionUuid') connectionUuid: string,
-                  @Param('type') type: 'netdata-credential') {
-    logger.info(`[API Monitor] -> getBadge -> connectionUuid [${connectionUuid}], type [${type}]`);
+  @Get('/:workspaceUuid/:connectionUuid/:type/')
+  async monitorTestRemoteConnection(@Req() request: Request,
+                                    @Res() response: Response,
+                                    @SessionParam('userUuid') userUuid: string,
+                                    @SessionParam('id') sessionUuid: string,
+                                    @Param('workspaceUuid') workspaceUuid: string,
+                                    @Param('connectionUuid') connectionUuid: string,
+                                    @Param('type') type: MonitorConnectionTypes) {
+    logger.info(`[API Monitor] -> Connect -> workspaceUuid [${workspaceUuid}], connectionUuid [${connectionUuid}], type [${type}]`);
 
-    if (type === 'netdata-credential') return this.forwardRequest('/api/v1/badge.svg', connectionUuid, request, response);
-    const chartBadge = new AnyOpsOSMonitorModule().getBadge();
+    const MonitorModule: AnyOpsOSMonitorModule = new AnyOpsOSMonitorModule(userUuid, sessionUuid, workspaceUuid, connectionUuid, request);
+    const ApiGlobalsModule: AnyOpsOSApiGlobalsModule = new AnyOpsOSApiGlobalsModule(request, response);
 
-    return new AnyOpsOSApiGlobalsModule(request, response).jsonDataResponse(chartBadge);
-  }
+    const successConnection: boolean = await MonitorModule.createSession();
 
-  @Get('/badge/:connectionUuid/:type/')
-  monitorTestRemoteConnection(@Req() request: Request,
-                              @Res() response: Response,
-                              @Param('connectionUuid') connectionUuid: string,
-                              @Param('type') type: 'netdata-credential') {
-    logger.info(`[API Monitor] -> Connect -> connectionUuid [${connectionUuid}], type [${type}]`);
-
-    if (type === 'netdata-credential') return this.forwardRequest('', connectionUuid, request, response);
-    const successConnection: boolean = new AnyOpsOSMonitorModule().testRemoteConnection();
-
-    if (successConnection) return new AnyOpsOSApiGlobalsModule(request, response).validResponse();
-    return new AnyOpsOSApiGlobalsModule(request, response).invalidResponse('connection_failed');
+    if (successConnection) return ApiGlobalsModule.validResponse();
+    return ApiGlobalsModule.invalidResponse('connection_failed');
   }
 
 }

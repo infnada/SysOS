@@ -1,4 +1,4 @@
-<div class="start-menu" [ngClass]="{'start-menu--open' : taskbarItemOpen == 'start'}">
+<div class="start-menu" [ngClass]="{'start-menu--open' : activeApplication == 'start'}">
   <div class="start-menu__list">
     <div class="media">
       <span class="user-info menu-toggle" (click)="openMenu('user')">

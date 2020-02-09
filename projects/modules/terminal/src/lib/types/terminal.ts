@@ -8,7 +8,7 @@ export interface Terminal {
   cols: number;
   rows: number;
   type: TerminalTypes;
-  stream?: ClientChannel;
-  stdin?: Readable;
-  stdout?: Writable;
+  stream: ClientChannel | null;
+  stdin: Readable | null;
+  stdout: Writable | null;
 }

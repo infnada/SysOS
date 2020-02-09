@@ -4,7 +4,10 @@ import {
   ViewChild,
   ElementRef,
   Input,
-  OnDestroy
+  OnDestroy,
+  ViewContainerRef,
+  OnChanges,
+  SimpleChanges
 } from '@angular/core';
 
 import {takeUntil} from 'rxjs/operators';
@@ -15,52 +18,44 @@ import {Application, AnyOpsOSLibApplicationService} from '@anyopsos/lib-applicat
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibSelectableService} from '@anyopsos/lib-selectable';
 import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
-import {AnyOpsOSLibFileSystemUiService} from '@anyopsos/lib-file-system-ui';
-import {ContextMenuItem, IMConnection} from '@anyopsos/lib-types';
+import {AnyOpsOSLibFileSystemUiService, CutCopyFile} from '@anyopsos/lib-file-system-ui';
+import {ContextMenuItem} from '@anyopsos/lib-types';
 import {AnyOpsOSFile} from '@anyopsos/backend/app/types/anyopsos-file';
+import {Connection} from '@anyopsos/backend/app/types/connection';
 
 @Component({
   selector: 'alfolder-anyopsos-lib-folder',
   templateUrl: './anyopsos-lib-folder.component.html',
   styleUrls: ['./anyopsos-lib-folder.component.scss'],
+  providers: [AnyOpsOSLibSelectableService]
 })
-export class AnyOpsOSLibFolderComponent implements OnDestroy, OnInit {
-  @ViewChild(MatMenuTrigger, {static: false}) contextMenuFolder: MatMenuTrigger;
-  @ViewChild('selectableContainer', {static: true}) selectableContainer: ElementRef;
+export class AnyOpsOSLibFolderComponent implements OnDestroy, OnInit, OnChanges {
+  @ViewChild(MatMenuTrigger, {static: false}) readonly contextMenuFolder: MatMenuTrigger;
+  @ViewChild('selectableContainer', {static: true}) private readonly selectableContainer: ElementRef;
+  @ViewChild('modalContainer', {static: false, read: ViewContainerRef}) readonly viewContainerRef: ViewContainerRef;
 
-  @Input() application: Application;
+  @Input() readonly application: Application;
+  @Input() readonly connection: Connection = null;
 
-  // Some applications like SFTP, DatastoreBrowser have 2 file windows. We use this value to know which window this file belongs
-  @Input() subApplication: string;
-  @Input() connection: IMConnection = null;
+  @Input() readonly currentPath: string = '';
+  @Input() readonly currentData: AnyOpsOSFile[] = [];
+  @Input() currentActive: number = 0;
 
-  @Input() currentPath: string;
-  @Input() currentData: AnyOpsOSFile[];
-  @Input() currentActive: number;
+  @Input() readonly viewAsList: boolean = false;
+  @Input() readonly loadingData: boolean = false;
+  @Input() readonly search: { fileName: string; } = null;
 
-  // Modal selector
-  @Input() selector: string;
+  private readonly destroySubject$: Subject<void> = new Subject();
 
-  @Input() viewAsList: boolean = false;
-  @Input() loadingData: boolean = false;
-  @Input() search: { fileName: string; } = null;
+  private connectionType: string = null;
+  private connectionUuid: string = null;
+  private applicationType: 'local' | 'server' = 'local';
 
-  private destroySubject$: Subject<void> = new Subject();
+  private copyFile: CutCopyFile;
+  private cutFile: CutCopyFile;
 
-  contextMenuPosition = {x: '0px', y: '0px'};
-
-  copyFile: {
-    fileName: string;
-    currentPath: string;
-    fullPath: string;
-  };
-  cutFile: {
-    fileName: string;
-    currentPath: string;
-    fullPath: string;
-  };
-
-  folderContextMenuItems: ContextMenuItem[] = [
+  readonly contextMenuPosition = {x: '0px', y: '0px'};
+  readonly folderContextMenuItems: ContextMenuItem[] = [
     {
       id: 1, text: '<i class="fas fa-download"></i> Download from URL to current folder', action: () => {
         this.UIdownloadFromURL();
@@ -68,7 +63,7 @@ export class AnyOpsOSLibFolderComponent implements OnDestroy, OnInit {
     },
     {
       id: 2, text: '<i class="fas fa-folder"></i> Create Folder', action: () => {
-        this.UIcreateFolder();
+        this.UIputFolder();
       }
     },
     {id: 3, text: 'divider'},
@@ -93,22 +88,40 @@ export class AnyOpsOSLibFolderComponent implements OnDestroy, OnInit {
     }
   ];
 
-  constructor(private logger: AnyOpsOSLibLoggerService,
-              private FileSystem: AnyOpsOSLibFileSystemService,
-              private FileSystemUi: AnyOpsOSLibFileSystemUiService,
-              private Applications: AnyOpsOSLibApplicationService,
-              public Selectable: AnyOpsOSLibSelectableService) {
+  constructor(private readonly logger: AnyOpsOSLibLoggerService,
+              private readonly LibFileSystem: AnyOpsOSLibFileSystemService,
+              private readonly LibFileSystemUi: AnyOpsOSLibFileSystemUiService,
+              private readonly LibApplication: AnyOpsOSLibApplicationService,
+              readonly Selectable: AnyOpsOSLibSelectableService) {
+  }
+
+  // Sometimes 'connection' input is async. Make sure we read any change
+  ngOnChanges(changes: SimpleChanges): void {
+    if (!changes.connection) return;
+
+    /**
+     * Set main info if is remote connection
+     */
+    if (this.connection) {
+
+      // Some applications like SFTP, DatastoreBrowser have 2 file windows. We use this value to know which window this file belongs
+      this.applicationType = 'server';
+
+      // Used to check which handler to use for (copy/move/create...) files & folders
+      this.connectionType = this.connection.type;
+      this.connectionUuid = this.connection.uuid;
+    }
   }
 
   ngOnInit(): void {
 
     // Listen for copyFile change
-    this.FileSystemUi.copyFile
-      .pipe(takeUntil(this.destroySubject$)).subscribe((data: { fileName: string; currentPath: string; fullPath: string; }) => this.copyFile = data);
+    this.LibFileSystemUi.copyFile
+      .pipe(takeUntil(this.destroySubject$)).subscribe((data: CutCopyFile) => this.copyFile = data);
 
     // Listen for cutFile change
-    this.FileSystemUi.cutFile
-      .pipe(takeUntil(this.destroySubject$)).subscribe((data: { fileName: string; currentPath: string; fullPath: string; }) => this.cutFile = data);
+    this.LibFileSystemUi.cutFile
+      .pipe(takeUntil(this.destroySubject$)).subscribe((data: CutCopyFile) => this.cutFile = data);
 
     /**
      * Initialize file Selectable
@@ -129,8 +142,8 @@ export class AnyOpsOSLibFolderComponent implements OnDestroy, OnInit {
    * Get current path data
    */
   private reloadPath(): void {
-    this.FileSystemUi.sendGoToPath({
-      application: this.application.uuid + (this.subApplication ? '#' + this.subApplication : ''),
+    this.LibFileSystemUi.sendGoToPath({
+      application: `${this.application.uuid}#${this.applicationType}`,
       path: this.currentPath
     });
   }
@@ -138,10 +151,11 @@ export class AnyOpsOSLibFolderComponent implements OnDestroy, OnInit {
   /**
    * ng-click functions
    */
-  handleFolderClick($event): void {
+  // TODO target type?
+  handleFolderClick($event: MouseEvent & { target: any; }): void {
 
     if ($event.target.attributes.class !== undefined && $event.target.attributes.class.value.includes('folders')) {
-      if (this.application.uuid === null) this.Applications.toggleApplication(null);
+      if (this.application.uuid === null) this.LibApplication.toggleApplication(null);
       this.currentActive = null;
     }
 
@@ -191,45 +205,45 @@ export class AnyOpsOSLibFolderComponent implements OnDestroy, OnInit {
    * On file dragstart
    */
   onDragStart($event: CdkDragStart): void {
-    this.FileSystemUi.UIcutFile(
+    this.LibFileSystemUi.UIcutFile(
       this.currentPath,
       $event.source.data,
-      `${this.application.uuid + (this.subApplication ? '#' + this.subApplication : '')}`,
-      (this.connection ? this.connection.uuid : null)
+      `${this.application.uuid}#${this.applicationType}`,
+      this.connectionUuid
     );
   }
 
   UIonDropItem(): void {
-    this.FileSystemUi.UIpasteFile(
+    this.LibFileSystemUi.UIpasteFile(
       this.currentPath,
-      (this.connection ? this.connection.type : null),
-      `${this.application.uuid + (this.subApplication ? '#' + this.subApplication : '')}`,
-      (this.connection ? this.connection.uuid : null)
+      this.connectionType,
+      `${this.application.uuid}#${this.applicationType}`,
+      this.connectionUuid
     );
   }
 
   UIdownloadFromURL(): void {
-    this.FileSystemUi.UIdownloadFromURL(this.currentPath, this.selector, (this.connection ? this.connection.type : null), { connection: this.connection });
+    this.LibFileSystemUi.UIdownloadFromURL(this.currentPath, this.viewContainerRef, this.connectionType, { connection: this.connection });
   }
 
-  UIcreateFolder(): void {
-    this.FileSystemUi.UIcreateFolder(this.currentPath, this.selector, (this.connection ? this.connection.type : null), { connection: this.connection });
+  UIputFolder(): void {
+    this.LibFileSystemUi.UIputFolder(this.currentPath, this.viewContainerRef, this.connectionType, { connection: this.connection });
   }
 
   UIrenameFile(file: AnyOpsOSFile): void {
-    this.FileSystemUi.UIrenameFile(this.currentPath, file, this.selector, (this.connection ? this.connection.type : null), { connection: this.connection });
+    this.LibFileSystemUi.UIrenameFile(this.currentPath, file, this.viewContainerRef, this.connectionType, { connection: this.connection });
   }
 
-  UIdeleteSelected(file: AnyOpsOSFile): void {
-    this.FileSystemUi.UIdeleteSelected(this.currentPath, file, this.selector, (this.connection ? this.connection.type : null), { connection: this.connection });
+  UIdeleteFile(file: AnyOpsOSFile): void {
+    this.LibFileSystemUi.UIdeleteFile(this.currentPath, file, this.viewContainerRef, this.connectionType, { connection: this.connection });
   }
 
   UIpasteFile(): void {
-    this.FileSystemUi.UIpasteFile(this.currentPath, (this.connection ? this.connection.type : null), this.application.uuid, (this.connection ? this.connection.uuid : null));
+    this.LibFileSystemUi.UIpasteFile(this.currentPath, this.connectionType, `${this.application.uuid}#${this.applicationType}`, this.connectionUuid);
   }
 
   UIdoWithFile(file: AnyOpsOSFile): void {
-    this.FileSystemUi.UIdoWithFile(`${this.application.uuid + (this.subApplication ? '#' + this.subApplication : '')}`, this.currentPath, file);
+    this.LibFileSystemUi.UIdoWithFile(this.currentPath, file, `${this.application.uuid}#${this.applicationType}`);
   }
 
   /**
@@ -238,7 +252,7 @@ export class AnyOpsOSLibFolderComponent implements OnDestroy, OnInit {
   handleItemKeyPress(keyEvent: KeyboardEvent): void {
     // Do nothing if some application is active
     console.log(this.application.uuid);
-    if (!this.Applications.isActiveApplication(this.application.uuid)) return;
+    if (!this.LibApplication.isActiveApplication(this.application.uuid)) return;
 
     let currentFile;
 
@@ -248,7 +262,7 @@ export class AnyOpsOSLibFolderComponent implements OnDestroy, OnInit {
     if (keyEvent.code === 'Delete') {
       currentFile = this.currentData[this.currentActive];
 
-      this.UIdeleteSelected(currentFile);
+      this.UIdeleteFile(currentFile);
     } else if (keyEvent.code === 'F2') {
       currentFile = this.currentData[this.currentActive];
 

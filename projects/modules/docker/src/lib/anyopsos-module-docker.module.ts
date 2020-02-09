@@ -1,24 +1,30 @@
-import {Socket} from 'socket.io';
+import {getSocketIO} from 'socket-controllers';
 import * as Dockerode from 'dockerode';
 
-import {AnyOpsOSSocketModule} from '@anyopsos/module-socket';
 import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
 
-import {DockerSessionsModule} from './docker-sessions';
-
-import {ConnectionDocker} from './types/connection-docker';
+import {AnyOpsOSDockerSessionStateModule} from './anyopsos-module-docker-session-state';
 
 export class AnyOpsOSDockerModule {
 
-  private readonly DockerSessionsModule: DockerSessionsModule = new DockerSessionsModule();
-  private readonly SocketModule: AnyOpsOSSocketModule = new AnyOpsOSSocketModule(this.socket);
+  private readonly DockerSessionStateModule: AnyOpsOSDockerSessionStateModule;
 
-  constructor(private readonly socket: Socket) {
+  constructor(private readonly userUuid: string,
+              private readonly sessionUuid: string,
+              private readonly workspaceUuid: string,
+              private readonly connectionUuid: string) {
+
+
+    this.DockerSessionStateModule = new AnyOpsOSDockerSessionStateModule(this.userUuid, this.sessionUuid, this.workspaceUuid, this.connectionUuid);
   }
 
-  newConnection(userUuid: string, sessionUuid: string, data: ConnectionDocker): Promise<BackendResponse> {
+  /**
+   * Creates a new connection
+   */
+  newConnection(): Promise<BackendResponse> {
 
-    return this.DockerSessionsModule.createSession(userUuid, sessionUuid, data).then(async (dockerConfig: Dockerode) => {
+    return this.DockerSessionStateModule.createSession().then(async (dockerConfig: Dockerode) => {
+
       const containers: Dockerode.ContainerInfo[] = await dockerConfig.listContainers();
       const images: Dockerode.ImageInfo[] = await dockerConfig.listImages();
       const services: Dockerode.ServiceSpec[] = await dockerConfig.listServices();
@@ -30,26 +36,40 @@ export class AnyOpsOSDockerModule {
       const volumes: { Volumes: Dockerode.VolumeInspectInfo[]; Warnings: string[] } = await dockerConfig.listVolumes();
       const networks: Dockerode.NetworkInfo[] = await dockerConfig.listNetworks();
 
-      this.SocketModule.emitData(data.type, data.uuid, [
-        ...containers,
-        ...images,
-        ...services,
-        ...nodes,
-        ...tasks,
-        ...secrets,
-        ...configs,
-        ...plugins,
-        ...volumes.Volumes,
-        ...networks
-      ]);
-
-      this.SocketModule.emitProp(data.type, 'docker@' + data.clusterServer, data.uuid, 'footer');
-      this.SocketModule.emitProp(data.type, 'Docker Connection Established', data.uuid, 'status');
-      this.SocketModule.emitProp(data.type, 'connected', data.uuid, 'state');
+      getSocketIO().to(this.workspaceUuid).emit('[docker-data]', {
+        connectionUuid: this.connectionUuid,
+        data: [
+          ...containers,
+          ...images,
+          ...services,
+          ...nodes,
+          ...tasks,
+          ...secrets,
+          ...configs,
+          ...plugins,
+          ...volumes.Volumes,
+          ...networks
+        ]
+      });
 
       return {status: 'ok', data: 'connected'} as BackendResponse;
+    }).catch((e: Error) => {
+      throw e;
     });
+  }
 
+  /**
+   * Disconnects a connection
+   */
+  disconnectConnection(): Promise<BackendResponse> {
+
+    return this.DockerSessionStateModule.disconnectSession().then(() => {
+
+      return {status: 'ok', data: 'disconnected'} as BackendResponse;
+
+    }).catch((e: Error) => {
+      throw e;
+    });
   }
 
 }

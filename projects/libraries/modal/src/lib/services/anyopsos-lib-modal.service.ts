@@ -1,167 +1,127 @@
-import {Injectable, Injector, Compiler, NgModuleFactory, ModuleWithComponentFactories, ViewContainerRef} from '@angular/core';
+import {Injectable, ViewContainerRef, ComponentFactory, ComponentRef} from '@angular/core';
 
-import {NgbModalRef} from '@ng-bootstrap/ng-bootstrap';
+import {v4 as uuidv4} from 'uuid';
 
+import {MatDialogRef, MatDialogConfig} from '@anyopsos/lib-angular-material';
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
-import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
-import {AnyOpsOSFile} from '@anyopsos/backend/app/types/anyopsos-file';
-import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
 
+import {AnyOpsOSLibModalRegisteredStateService} from './anyopsos-lib-modal-registered-state.service';
+import {AnyOpsOSLibModalHelpersService} from './anyopsos-lib-modal-helpers.service';
+import {ModalType} from '../types/modal-type';
 import {Modal} from '../types/modal';
-
-
-declare const SystemJS: any;
 
 @Injectable({
   providedIn: 'root'
 })
 export class AnyOpsOSLibModalService {
-  mainContainerRef: ViewContainerRef;
+  private modalInstances: MatDialogRef<any>[] = [];
+  private mainContainerRef: ViewContainerRef;
 
-  modalInstances = [];
-  registeredModals: Modal[] = [];
-
-  constructor(private logger: AnyOpsOSLibLoggerService,
-              private injector: Injector,
-              private compiler: Compiler,
-              private FileSystem: AnyOpsOSLibFileSystemService) {
+  constructor(private readonly logger: AnyOpsOSLibLoggerService,
+              private readonly ModalRegisteredState: AnyOpsOSLibModalRegisteredStateService,
+              private readonly ModalHelpers: AnyOpsOSLibModalHelpersService) {
   }
 
-
+  /**
+   * This is set by main application component and used as a default ViewContainerRef when opening a Modal
+   */
   setMainContainerRef(view: ViewContainerRef): void {
     this.mainContainerRef = view;
   }
 
   /**
-   * @description
-   * Returns all scripts to load as anyOpsOS applications
-   */
-  getInstalledModals() {
-    this.FileSystem.getFolder('/bin/modals').subscribe(
-      (res: BackendResponse & { data: AnyOpsOSFile[] }) => {
-        if (res.status === 'error') return this.logger.fatal('Applications', 'Error while getting Installed Modals', null, res.data);
-
-        this.logger.info('Modal', 'Get Installed Modals successfully');
-
-        res.data.forEach((value) => {
-          if (value.fileName.endsWith('.umd.js')) {
-            this.loadModal(value);
-          }
-        });
-
-      },
-      error => {
-        this.logger.error('Modal', 'Error while getting installed modals', null, error);
-      });
-  }
-
-  loadModal(modal: { fileName: string }) {
-    const loggerArgs = arguments;
-
-    // TODO make this more dynamic
-    const module = modal.fileName.replace(/^anyopsos-modal-(default-)?/, '').replace('.umd.js', '');
-
-    SystemJS.import(`/api/file/${encodeURIComponent('/bin/modals/' + modal.fileName)}`).then((moduleToCompile) => {
-
-      // This will only work if the modal exposes only one Module
-      const modalModule: string = Object.keys(moduleToCompile).find((entry: string) => entry.endsWith('Module'));
-      return this.compiler.compileModuleAsync<any>(moduleToCompile[modalModule]);
-
-    }).then((modFac: NgModuleFactory<any>) => {
-
-      // need to instantiate the Module so we can use it as the provider for the new component
-      return this.compiler.compileModuleAndAllComponentsAsync<any>(modFac.moduleType).then(
-        (factory: ModuleWithComponentFactories<any>) => {
-
-          const modRef = modFac.create(this.injector);
-
-          // Set factory to use in future
-          this.registeredModals[module].factory = factory;
-          this.registeredModals[module].modRef = modRef;
-
-        });
-
-    }).catch((e: Error) => {
-      this.logger.error('Library Modal', 'loadModal', loggerArgs, e.message);
-    });
-
-  }
-
-  registerModal(data: Modal): void {
-    this.logger.debug('Modal', 'New modal registration', arguments);
-
-    this.registeredModals[data.modalId] = data;
-  }
-
-  /**
    * Opens a registered modal
    */
-  openRegisteredModal(modalId: string, selector: string, resolvers: {}): Promise<NgbModalRef> {
+  openRegisteredModal(
+    modalUuid: string,
+    viewContainerRef: ViewContainerRef = this.mainContainerRef,
+    resolvers: { [key: string]: any } = {}
+  ): Promise<MatDialogRef<any>> {
 
     return new Promise((resolve) => {
 
-      const viewContainerRef: ViewContainerRef = this.mainContainerRef;
-      const cmpFactory = this.registeredModals[modalId].factory.componentFactories.find(
-        x => x.componentType.name === 'EntryComponent'
+      const cmpFactory: ComponentFactory<any> = this.ModalHelpers.getModalByUuid(modalUuid).factory.componentFactories.find(
+        (componentFactory: ComponentFactory<any>) => componentFactory.componentType.name === 'EntryComponent'
       );
+      const cmpRef: ComponentRef<any> = viewContainerRef.createComponent(cmpFactory, 0, this.ModalHelpers.getModalByUuid(modalUuid).modRef.injector);
 
-      const cmpRef = viewContainerRef.createComponent(cmpFactory, 0, this.registeredModals[modalId].modRef.injector);
-
-      (cmpRef.instance as any).size = this.registeredModals[modalId].size;
-      (cmpRef.instance as any).selector = selector;
+      const modalInstanceUuid: string = uuidv4();
+      const size = this.ModalHelpers.getModalByUuid(modalUuid).size;
+      (cmpRef.instance as any).dialogConfig = {
+        data: resolvers,
+        id: modalInstanceUuid,
+        autoFocus: true,
+        closeOnNavigation: false,
+        disableClose: true,
+        hasBackdrop: true,
+        restoreFocus: true,
+        maxHeight: (size === 'sm' ? '300px' : '500px'),
+        maxWidth: (size === 'sm' ? '500px' : '900px'),
+        minWidth: (size === 'sm' ? '400px' : '700px'),
+        viewContainerRef
+      } as MatDialogConfig;
 
       setTimeout(() => {
-        this.modalInstances[selector] = (cmpRef.instance as any).OutputNgbModalRef;
-
-        for (const [key, value] of Object.entries(resolvers)) {
-          this.modalInstances[selector].componentInstance[key] = value;
-        }
-
-        return resolve(this.modalInstances[selector]);
+        this.modalInstances[modalInstanceUuid] = (cmpRef.instance as any).dialogRef;
+        return resolve(this.modalInstances[modalInstanceUuid]);
       }, 0);
     });
 
   }
 
   /**
-   * "alias" to open "plain" modalId
+   * Alias to {@link openRegisteredModal} with "plain" modaluuid
    */
-  openLittleModal(title: string, text: string, selector: string, modalId: string) {
+  openLittleModal(viewContainerRef: ViewContainerRef, title: string, text: string, type?: ModalType): Promise<MatDialogRef<any>> {
 
-    return this.openRegisteredModal(modalId, selector, {
+    return this.openRegisteredModal('plain', viewContainerRef, {
       title,
-      text
+      text,
+      type
     });
 
   }
 
   /**
-   * Change text of already created modal
+   * Change text of already created modal.
    */
-  changeModalText(text: string, selector: string) {
-    this.modalInstances[selector].componentInstance.text = text;
+  changeModalData(modalUuid: string, prop: string, data: any): void {
+    this.modalInstances[modalUuid].componentInstance[prop] = data;
   }
 
   /**
-   * Change type of already created modal
+   * Alias of {@link changeModalData}. Change title of already created modal.
    */
-  changeModalType(type: 'primary' | 'secondary' | 'success' | 'danger' | 'warning' | 'info' | 'light' | 'dark' | 'white', selector: string) {
-    this.modalInstances[selector].componentInstance.type = type;
+  changeModalTitle(modalUuid: string, title: string): void {
+    this.modalInstances[modalUuid].componentInstance.modalBody.title = title;
+  }
+
+  /**
+   * Alias of {@link changeModalData}. Change type of already created modal.
+   */
+  changeModalType(modalUuid: string, type: ModalType): void {
+    this.modalInstances[modalUuid].componentInstance.modalBody.type = type;
+  }
+
+  /**
+   * Alias of {@link changeModalData}. Change text of already created modal.
+   */
+  changeModalText(modalUuid: string, text: string): void {
+    this.changeModalData(modalUuid, 'text', text);
   }
 
   /**
    * Close already created modal
    */
-  closeModal(selector: string) {
-    if (this.modalInstances[selector]) this.modalInstances[selector].close('ok');
+  closeModal(modalUuid: string): void {
+    if (this.modalInstances[modalUuid]) this.modalInstances[modalUuid].close('ok');
   }
 
   /**
    * Check if modal is opened
    */
-  isModalOpened(selector: string) {
-    if (this.modalInstances[selector] && this.modalInstances[selector]._contentRef) return true;
-    return false;
+  isModalOpened(modalUuid: string): boolean {
+    return (this.modalInstances[modalUuid] && this.modalInstances[modalUuid]._contentRef);
   }
 
 }

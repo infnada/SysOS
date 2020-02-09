@@ -26,7 +26,7 @@ export class ActionsServerComponent implements OnDestroy, OnInit {
   lastPath: string[] = [];
   nextPath: string[] = [];
 
-  constructor(private FileSystemUi: AnyOpsOSLibFileSystemUiService,
+  constructor(private readonly LibFileSystemUi: AnyOpsOSLibFileSystemUiService,
               private DatastoreExplorer: AnyOpsOSAppDatastoreExplorerService,
               private DatastoreExplorerServer: AnyOpsOSAppDatastoreExplorerServerService) {
   }
@@ -34,7 +34,7 @@ export class ActionsServerComponent implements OnDestroy, OnInit {
   ngOnInit(): void {
 
     // Listen for goToPath calls
-    this.FileSystemUi.getObserverGoToPath()
+    this.LibFileSystemUi.getObserverGoToPath()
       .pipe(takeUntil(this.destroySubject$)).subscribe((data: { application: string; path: string; }) => {
         if (data.application === 'datastore-explorer#server') this.goToPath(data.path);
       });
@@ -65,8 +65,8 @@ export class ActionsServerComponent implements OnDestroy, OnInit {
   /**
    * Creates a new folder
    */
-  UIcreateFolder(): void {
-    this.FileSystemUi.UIcreateFolder(this.currentPath, '.window--datastore-explorer .window__main', 'linux', { connection: this.getActiveConnection() });
+  UIputFolder(): void {
+    this.LibFileSystemUi.UIputFolder(this.currentPath, this.DatastoreExplorer.serverBodyContainer, 'linux', { connection: this.getActiveConnection() });
   }
 
   /**

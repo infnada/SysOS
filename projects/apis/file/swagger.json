@@ -7,13 +7,13 @@
   "swagger": "2.0",
   "projectName": "file",
   "paths": {
-    "/api/file/{fileName}": {
+    "/api/file/{srcPath}": {
       "get": {
         "operationId": "AnyOpsOSFileApiController.getFile",
         "parameters": [
           {
             "in": "path",
-            "name": "fileName",
+            "name": "srcPath",
             "required": true,
             "type": "string"
           }
@@ -36,7 +36,7 @@
         "parameters": [
           {
             "in": "path",
-            "name": "fileName",
+            "name": "srcPath",
             "required": true,
             "type": "string"
           }
@@ -55,9 +55,17 @@
         ]
       }
     },
-    "/api/file/": {
+    "/api/file/{dstPath}": {
       "put": {
         "operationId": "AnyOpsOSFileApiController.newFile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "dstPath",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful response"
@@ -66,24 +74,6 @@
         "summary": "New file",
         "tags": [
           "Any Ops OS File Api"
-        ],
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "properties": {
-                "path": {
-                  "type": "string"
-                }
-              },
-              "required": [],
-              "type": "object"
-            }
-          }
-        ],
-        "consumes": [
-          "application/json"
         ],
         "produces": [
           "text/html; charset=utf-8"
@@ -108,7 +98,7 @@
             "in": "body",
             "schema": {
               "properties": {
-                "path": {
+                "dstPath": {
                   "type": "string"
                 },
                 "url": {
@@ -131,7 +121,7 @@
         ]
       }
     },
-    "/api/file/{type}/{fileName}": {
+    "/api/file/{type}/{srcPath}": {
       "patch": {
         "operationId": "AnyOpsOSFileApiController.patchFile",
         "parameters": [
@@ -143,7 +133,7 @@
           },
           {
             "in": "path",
-            "name": "fileName",
+            "name": "srcPath",
             "required": true,
             "type": "string"
           },

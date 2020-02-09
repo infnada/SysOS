@@ -14,10 +14,14 @@ import {
 
 import {Socket} from 'ngx-socket-io';
 
+import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
+import {AnyOpsOSLibWorkspaceService} from '@anyopsos/lib-workspace';
+import {TerminalTypes} from '@anyopsos/module-terminal';
 import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
 
 import {AnyOpsOSLibTerminalService} from '../services/anyopsos-lib-terminal.service';
 import {Terminal as TerminalData} from '../types/terminal';
+
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -27,16 +31,20 @@ import {Terminal as TerminalData} from '../types/terminal';
 })
 export class TerminalComponent implements OnChanges, OnDestroy, AfterViewInit {
   @ViewChild('terminalRef', {static: false}) terminalRef: ElementRef;
-  @Input() terminalType: 'container_logs' | 'container_shell' | 'ssh';
-  @Input() terminalUuid: string;
+  @Input() private readonly connectionUuid: string;
+  @Input() private readonly workspaceUuid: string = this.LibWorkspace.getCurrentWorkspaceUuid();
+  @Input() private readonly terminalType: TerminalTypes = 'ssh';
+  @Input() private readonly deleteOnDestroy: boolean = true;
+  @Input() private terminalUuid: string;
   @Input() customTerminalMessage: string = null;
-  @Input() deleteOnDestroy: boolean = true;
   @Output() terminalUuidChange: EventEmitter<string> = new EventEmitter<string>();
 
   currentTerminal: TerminalData;
 
-  constructor(private socket: Socket,
-              private Terminal: AnyOpsOSLibTerminalService) {
+  constructor(private readonly socket: Socket,
+              private readonly logger: AnyOpsOSLibLoggerService,
+              private readonly LibWorkspace: AnyOpsOSLibWorkspaceService,
+              private readonly Terminal: AnyOpsOSLibTerminalService) {
 
   }
 
@@ -83,11 +91,18 @@ export class TerminalComponent implements OnChanges, OnDestroy, AfterViewInit {
    * Creates new terminal at Backend
    */
   private createWebsocketTerminal(): void {
-    this.socket.emit('[terminal-create]', this.terminalType, (resultData: BackendResponse) => {
-      if (resultData.status === 'error') return console.log(resultData.data);
+    this.socket.emit('[terminal-create]', {
+      connectionUuid: this.connectionUuid,
+      workspaceUuid: this.workspaceUuid,
+      terminalType: this.terminalType
+    }, (resultData: BackendResponse) => {
+      if (resultData.status === 'error') {
+        this.logger.error('LibTerminal', 'Unable to create websocket terminal', null, resultData.data);
+        return this.customTerminalMessage = resultData.data;
+      }
 
       this.terminalUuid = resultData.data;
-      this.currentTerminal = this.Terminal.createTerminal(resultData.data);
+      this.currentTerminal = this.Terminal.createTerminal(this.workspaceUuid, this.connectionUuid, resultData.data);
       this.mountTerminal();
 
       // Emit new terminalUuid

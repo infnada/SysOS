@@ -4,9 +4,11 @@
   "main": "src/index.ts",
   "dependencies": {
     "node-fetch": "^2.6.0",
+    "validator": "^12.2.0",
     "xml2js": "^0.4.23"
   },
   "devDependencies": {
+    "@types/node": "^12.12.21",
     "@types/node-fetch": "^2.5.4",
     "@types/xml2js": "^0.4.5",
     "typescript": "^3.7.4"

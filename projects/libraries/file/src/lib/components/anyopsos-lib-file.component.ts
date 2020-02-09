@@ -1,107 +1,124 @@
-import {Component, OnInit, Input, ViewChild, ElementRef, AfterViewInit} from '@angular/core';
+import {Component, Input, ViewChild, ElementRef, AfterViewInit, ViewContainerRef, OnChanges, SimpleChanges} from '@angular/core';
 
 import {MatMenuTrigger} from '@anyopsos/lib-angular-material';
 import {AnyOpsOSLibSelectableService} from '@anyopsos/lib-selectable';
-import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
-import {AnyOpsOSLibFileSystemUiService} from '@anyopsos/lib-file-system-ui';
-import {ContextMenuItem, IMConnection} from '@anyopsos/lib-types';
+import {AnyOpsOSLibFileSystemUiService, AnyOpsOSLibFileSystemUiHelpersService} from '@anyopsos/lib-file-system-ui';
 import {Application} from '@anyopsos/lib-application';
+import {ContextMenuItem} from '@anyopsos/lib-types';
+import {Connection} from '@anyopsos/backend/app/types/connection';
 import {AnyOpsOSFile} from '@anyopsos/backend/app/types/anyopsos-file';
 
 @Component({
   selector: 'alfile-anyopsos-lib-file',
   templateUrl: './anyopsos-lib-file.component.html',
-  styleUrls: ['./anyopsos-lib-file.component.scss'],
-  providers: [AnyOpsOSLibSelectableService]
+  styleUrls: ['./anyopsos-lib-file.component.scss']
 })
-export class AnyOpsOSLibFileComponent implements OnInit, AfterViewInit {
-  @ViewChild(MatMenuTrigger, {static: false}) contextMenuFile: MatMenuTrigger;
-  @ViewChild('selectableFileElement', {static: false}) selectableFileElement: ElementRef;
+export class AnyOpsOSLibFileComponent implements AfterViewInit, OnChanges {
+  @ViewChild(MatMenuTrigger, {static: false}) readonly contextMenuFile: MatMenuTrigger;
+  @ViewChild('selectableFileElement', {static: false}) private readonly selectableFileElement: ElementRef;
 
-  @Input() file: AnyOpsOSFile;
-  @Input() application: Application;
-  // Some applications like SFTP, DatastoreBrowser have 2 file windows. We use this value to know which window this file belongs
-  @Input() subApplication: string;
-  @Input() connection: IMConnection = null;
-  @Input() uploadAllowed: boolean = false;
-  @Input() selectable: AnyOpsOSLibSelectableService;
-  @Input() isCurrentActive: boolean;
-  @Input() currentPath: string;
-  @Input() viewAsList: boolean;
+  @Input() private readonly application: Application;
+  @Input() private readonly connection: Connection = null;
+  @Input() readonly file: AnyOpsOSFile;
+
   // Where to show the modal box
-  @Input() selector: string;
+  @Input() private readonly viewContainerRef: ViewContainerRef;
 
-  contextMenuPosition = {x: '0px', y: '0px'};
-  fileContextMenuItems: ContextMenuItem[];
+  @Input() private readonly uploadAllowed: boolean = false; // Instead of this, check if upload handler on FileSystemUI is set
+  @Input() private readonly selectable: AnyOpsOSLibSelectableService;
+  @Input() private readonly currentPath: string;
+  @Input() readonly isCurrentActive: boolean;
+  @Input() readonly viewAsList: boolean;
 
-  constructor(private FileSystem: AnyOpsOSLibFileSystemService,
-              private FileSystemUi: AnyOpsOSLibFileSystemUiService) {
-  }
+  private connectionType: string = null;
+  private connectionUuid: string = null;
+  private applicationType: 'local' | 'server' = 'local';
 
-  ngOnInit(): void {
-    this.fileContextMenuItems = [
-      {
-        id: 0, text: '<i class="fas fa-upload"></i> Upload to Remote', action: (file: AnyOpsOSFile): void => {
-          this.UIuploadFileToRemote(file);
-        }, disabled: () => {
-          return !this.uploadAllowed;
-        }
-      },
-      {
-        id: 1, text: (
-          this.connection && this.connection.uuid !== null ?
-            '<i class="fas fa-cloud-download-alt"></i> Download to anyOpsOS' :
-            '<i class="fas fa-download"></i> Download to local'
-        ), action: (file: AnyOpsOSFile): void => {
-          if (this.connection) return this.UIdownloadFileToanyOpsOS(file);
-          return this.UIdownloadFileToLocal(file);
-        }
-      },
-      {
-        id: 2, text: (file: AnyOpsOSFile) => {
-          const filetype = this.getFileType(file.longName);
-
-          if (filetype === 'folder') {
-            return '<i class="fas fa-folder-open"></i> Open';
-          } else {
-            return '<i class="fas fa-edit"></i> Open with Notepad';
-          }
-        }, action: (file: AnyOpsOSFile): void => {
-          this.UIdoWithFile(file);
-        }
-      },
-      {id: 3, text: 'divider'},
-      {
-        id: 4, text: '<i class="fas fa-copy"></i> Copy', action: (file: AnyOpsOSFile): void => {
-          this.UIcopyFile(file);
-        }
-      },
-      {
-        id: 6, text: '<i class="fas fa-cut"></i> Cut', action: (file: AnyOpsOSFile): void => {
-          this.UIcutFile(file);
-        }
-      },
-      {id: 7, text: 'divider'},
-      {
-        id: 8, text: '<i class="fas fa-font"></i> Rename', action: (file: AnyOpsOSFile): void => {
-          return this.UIrenameFile(file);
-        }
-      },
-      {
-        id: 9, text: '<i class="fas fa-trash-alt"></i> Delete', action: (file: AnyOpsOSFile): void => {
-          return this.UIdeleteSelected(file);
-        }
-      },
-      {id: 10, text: 'divider'},
-      {
-        id: 11, text: '<i class="fas fa-lock"></i> Permissions', action: (file: AnyOpsOSFile): void => {
-          return this.UIfilePermissions(file);
-        }
+  readonly contextMenuPosition = {x: '0px', y: '0px'};
+  readonly fileContextMenuItems: ContextMenuItem[] = [
+    {
+      id: 0, text: '<i class="fas fa-upload"></i> Upload to Remote', action: (file: AnyOpsOSFile): void => {
+        this.UIuploadFile(file);
+      }, disabled: () => {
+        if (this.connection) return true;
+        return false;
       }
-    ];
+    },
+    {
+      id: 1, text: (
+        this.connection && this.connection.uuid !== null ?
+          '<i class="fas fa-cloud-download-alt"></i> Download to anyOpsOS' :
+          '<i class="fas fa-download"></i> Download to local'
+      ), action: (file: AnyOpsOSFile): void => {
+        return this.UIdownloadFile(file);
+      }
+    },
+    {
+      id: 2, text: (file: AnyOpsOSFile) => {
+        const filetype: string = this.getFileType(file.longName);
+
+        if (filetype === 'folder') {
+          return '<i class="fas fa-folder-open"></i> Open';
+        } else {
+          return '<i class="fas fa-edit"></i> Open with Notepad';
+        }
+      }, action: (file: AnyOpsOSFile): void => {
+        return this.UIdoWithFile(file);
+      }
+    },
+    {id: 3, text: 'divider'},
+    {
+      id: 4, text: '<i class="fas fa-copy"></i> Copy', action: (file: AnyOpsOSFile): void => {
+        return this.UIcopyFile(file);
+      }
+    },
+    {
+      id: 6, text: '<i class="fas fa-cut"></i> Cut', action: (file: AnyOpsOSFile): void => {
+        return this.UIcutFile(file);
+      }
+    },
+    {id: 7, text: 'divider'},
+    {
+      id: 8, text: '<i class="fas fa-font"></i> Rename', action: (file: AnyOpsOSFile): void => {
+        return this.UIrenameFile(file);
+      }
+    },
+    {
+      id: 9, text: '<i class="fas fa-trash-alt"></i> Delete', action: (file: AnyOpsOSFile): void => {
+        return this.UIdeleteFile(file);
+      }
+    },
+    {id: 10, text: 'divider'},
+    {
+      id: 11, text: '<i class="fas fa-lock"></i> Permissions', action: (file: AnyOpsOSFile): void => {
+        return this.UIfilePermissions(file);
+      }
+    }
+  ];
+
+  constructor(private readonly LibFileSystemUi: AnyOpsOSLibFileSystemUiService,
+              private readonly FileSystemUiHelpers: AnyOpsOSLibFileSystemUiHelpersService) {
   }
 
-  ngAfterViewInit() {
+  // Sometimes 'connection' input is async. Make sure we read any change
+  ngOnChanges(changes: SimpleChanges): void {
+    if (!changes.connection) return;
+
+    /**
+     * Set main info if is remote connection
+     */
+    if (this.connection) {
+
+      // Some applications like SFTP, DatastoreBrowser have 2 file windows. We use this value to know which window this file belongs
+      this.applicationType = 'server';
+
+      // Used to check which handler to use for (copy/move/create...) files & folders
+      this.connectionType = this.connection.type;
+      this.connectionUuid = this.connection.uuid;
+    }
+  }
+
+  ngAfterViewInit(): void {
     this.selectable.add(this.selectableFileElement.nativeElement);
   }
 
@@ -127,44 +144,69 @@ export class AnyOpsOSLibFileComponent implements OnInit, AfterViewInit {
   }
 
   getFileType(longName: string): string {
-    return this.FileSystem.getFileType(longName);
+    return this.FileSystemUiHelpers.getFileType(longName);
   }
 
   UIrenameFile(file: AnyOpsOSFile): void {
-    this.FileSystemUi.UIrenameFile(this.currentPath, file, this.selector, (this.connection ? this.connection.type : null), (this.connection ? { connection: this.connection } : null));
+    this.LibFileSystemUi.UIrenameFile(
+      this.currentPath,
+      file,
+      this.viewContainerRef,
+      this.connectionType,
+      (this.connection ? { connection: this.connection } : undefined)
+    );
   }
 
-  UIdeleteSelected(file: AnyOpsOSFile): void {
-    this.FileSystemUi.UIdeleteSelected(this.currentPath, file, this.selector, (this.connection ? this.connection.type : null), (this.connection ? { connection: this.connection } : null));
+  UIdeleteFile(file: AnyOpsOSFile): void {
+    this.LibFileSystemUi.UIdeleteFile(
+      this.currentPath,
+      file,
+      this.viewContainerRef,
+      this.connectionType,
+      (this.connection ? { connection: this.connection } : undefined)
+    );
   }
 
   UIcopyFile(file: AnyOpsOSFile): void {
-    this.FileSystemUi.UIcopyFile(this.currentPath, file, `${this.application.uuid + (this.subApplication ? '#' + this.subApplication : '')}`, (this.connection ? this.connection.uuid : null));
+    this.LibFileSystemUi.UIcopyFile(
+      this.currentPath,
+      file,
+      `${this.application.uuid}#${this.applicationType}`,
+     this.connectionUuid
+    );
   }
 
   UIcutFile(file: AnyOpsOSFile): void {
-    this.FileSystemUi.UIcutFile(this.currentPath, file, `${this.application.uuid + (this.subApplication ? '#' + this.subApplication : '')}`, (this.connection ? this.connection.uuid : null));
+    this.LibFileSystemUi.UIcutFile(
+      this.currentPath,
+      file,
+      `${this.application.uuid}#${this.applicationType}`,
+      this.connectionUuid
+    );
   }
 
-  UIdownloadFileToanyOpsOS(file: AnyOpsOSFile): void {
-    this.FileSystemUi.sendDownloadRemoteFile({
-      path: this.currentPath,
-      fileName: file.fileName,
-      connectionUuid: this.connection.uuid,
-      applicationId: this.application.uuid
-    });
+  UIdownloadFile(file: AnyOpsOSFile): void {
+    // TODO get dstPath
+    this.LibFileSystemUi.UIdownloadFile(
+      this.currentPath + file.fileName,
+      (this.connection ? '/' : null) + file.fileName,
+      this.connectionType,
+      `${this.application.uuid}#${this.applicationType}`,
+      (this.connection ? { connection: this.connection } : undefined)
+    );
+
   }
 
-  UIdownloadFileToLocal(file: AnyOpsOSFile): void {
-    // TODO
-  }
-
-  UIuploadFileToRemote(file: AnyOpsOSFile): void {
-    this.FileSystemUi.sendUploadToRemote({
-      path: this.currentPath,
-      fileName: file.fileName,
-      applicationId: this.application.uuid
-    });
+  UIuploadFile(file: AnyOpsOSFile): void {
+    // TODO get dstPath
+    this.LibFileSystemUi.UIuploadFile(
+      this.currentPath + file.fileName,
+      '/' + file.fileName,
+      null,
+      this.connectionType,
+      `${this.application.uuid}#${this.applicationType}`,
+      (this.connection ? { connection: this.connection } : undefined)
+    );
   }
 
   UIfilePermissions(file: AnyOpsOSFile): void {
@@ -172,10 +214,7 @@ export class AnyOpsOSLibFileComponent implements OnInit, AfterViewInit {
   }
 
   UIdoWithFile(file: AnyOpsOSFile): void {
-    let realApplication = this.application.uuid;
-    if (this.subApplication) realApplication = this.application.uuid + '#' + this.subApplication;
-
-    this.FileSystemUi.UIdoWithFile(realApplication, this.currentPath, file);
+    this.LibFileSystemUi.UIdoWithFile(this.currentPath, file, `${this.application.uuid}#${this.applicationType}`);
   }
 
 }

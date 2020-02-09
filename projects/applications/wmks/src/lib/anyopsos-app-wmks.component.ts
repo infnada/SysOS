@@ -1,8 +1,9 @@
 import {AfterViewInit, Component, Input} from '@angular/core';
 
 import {Application} from '@anyopsos/lib-application';
-import {AnyOpsOSLibVmwareService} from '@anyopsos/lib-vmware';
-import {ImDataObject, VMWareVM} from '@anyopsos/app-infrastructure-manager';
+import {AnyOpsOSLibVmwareSoapApiService} from '@anyopsos/lib-vmware';
+import {VMWareVM} from '@anyopsos/module-vmware';
+import {DataObject} from '@anyopsos/backend/app/types/data-object';
 
 import {AnyOpsOSExtLibJqueryService} from '@anyopsos/ext-lib-jquery';
 
@@ -24,10 +25,10 @@ export class BodyComponent implements AfterViewInit {
   message: string;
   hideSpinner: boolean;
 
-  currentVm: ImDataObject & { info: { data: VMWareVM } };
+  currentVm: DataObject & { info: { data: VMWareVM } };
 
   constructor(private jQuery: AnyOpsOSExtLibJqueryService,
-              private VMWare: AnyOpsOSLibVmwareService) {
+              private readonly LibVmwareSoapApiService: AnyOpsOSLibVmwareSoapApiService,) {
 
     this.WMKS = WmksLib(jQuery.$);
 
@@ -90,20 +91,13 @@ export class BodyComponent implements AfterViewInit {
       this.currentVm = this.application.initData.vm;
 
       console.log(this.application.initData);
-      this.VMWare.connectvCenterSoap(this.application.initData.connection).then((connectSoapResult) => {
-        if (connectSoapResult.status === 'error') {
-          throw {
-            error: connectSoapResult.error,
-            description: 'Failed to connect to vCenter'
-          };
-        }
 
-        return this.VMWare.AcquireTicket(
-          this.application.initData.connection,
-          {$type: 'VirtualMachine', _value: this.application.initData.vm.info.obj.name},
-          'webmks'
-        );
-
+      return this.LibVmwareSoapApiService.callSoapApi(this.application.initData.connection.uuid, 'AcquireTicket', {
+        _this: {
+          $type: 'VirtualMachine',
+          _value: this.application.initData.vm.info.obj.name
+        },
+        ticketType: 'webmks'
       }).then((acquireTicketResult) => {
         if (acquireTicketResult.status === 'error') {
           throw {

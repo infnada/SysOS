@@ -1,0 +1,78 @@
+.modal-header {
+  background-color: #7bb6ef;
+  text-align: center;
+  padding: 0;
+  height: 33px;
+  border-radius: 0;
+  position: relative;
+}
+
+.modal-title {
+  width: 100%;
+  line-height: 32px;
+}
+
+.modal-body {
+  min-height: 50px;
+  max-height: calc(100vh - 300px);
+  overflow: auto;
+}
+
+.window__controls > span {
+  display: block;
+  float: left;
+  height: 32px;
+  width: 32px;
+  line-height: 32px;
+  font-size: 12px;
+  transition: all 100ms;
+  cursor: default;
+  color: rgba(0, 0, 0, 0.5);
+}
+.window__controls > span:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+}
+.window__controls > .window__close {
+  color: white;
+  background-color: #398ada;
+}
+.window__controls > .window__close:hover {
+  background-color: #e53935;
+}
+
+.window__controls--right {
+  right: 0;
+}
+
+.window__maximize {
+  position: relative;
+}
+.window__maximize > i {
+  box-sizing: content-box;
+  width: 6px;
+  height: 6px;
+  border-radius: 2px;
+  border: 2px solid rgba(0, 0, 0, 0.6);
+}
+.window--maximized .window__maximize > i {
+  margin-bottom: -1px;
+  margin-left: -4px;
+  width: 5px;
+  height: 5px;
+  transition: all 100ms 350ms;
+}
+.window--maximized .window__maximize > i:after {
+  box-sizing: content-box;
+  content: '';
+  display: block;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  width: 6px;
+  height: 6px;
+  border: inherit;
+  border-radius: inherit;
+  border-left: 0;
+  border-bottom: 0;
+  transition: all 100ms 350ms;
+}

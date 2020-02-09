@@ -14,26 +14,25 @@ import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
 })
 export class DesktopComponent implements OnInit {
   openedApplications: Application[];
-  taskbarItemOpen: string;
 
-  currentPath: string = '/home/root/Desktop/';
+  readonly currentPath: string = '/home/root/Desktop/';
   currentData: AnyOpsOSFile[] = [];
 
   currentActive: number = 0;
 
-  constructor(private logger: AnyOpsOSLibLoggerService,
-              private FileSystem: AnyOpsOSLibFileSystemService,
-              private FileSystemUi: AnyOpsOSLibFileSystemUiService,
-              private Applications: AnyOpsOSLibApplicationService) {
+  constructor(private readonly logger: AnyOpsOSLibLoggerService,
+              private readonly LibFileSystem: AnyOpsOSLibFileSystemService,
+              private readonly LibFileSystemUi: AnyOpsOSLibFileSystemUiService,
+              private readonly LibApplication: AnyOpsOSLibApplicationService) {
 
-    this.FileSystemUi.getObserverRefreshPath().subscribe(path => {
+    // Reload Desktop data if needed
+    this.LibFileSystemUi.getObserverRefreshPath().subscribe(path => {
       if (path === '/home/root/Desktop/') this.reloadPath();
     });
   }
 
   ngOnInit(): void {
-    this.Applications.openedApplications.subscribe(applications => this.openedApplications = applications);
-    this.Applications.taskbarItemOpen.subscribe(application => this.taskbarItemOpen = application);
+    this.LibApplication.openedApplications.subscribe((applications: Application[]) => this.openedApplications = applications);
 
     this.reloadPath();
   }
@@ -50,8 +49,8 @@ export class DesktopComponent implements OnInit {
    * Get current path data
    */
   private reloadPath(): void {
-    this.FileSystem.getFolder(this.currentPath).subscribe(
-      (res: BackendResponse & { data: AnyOpsOSFile[] }) => {
+    this.LibFileSystem.getFolder(this.currentPath).subscribe(
+      (res: BackendResponse & { data: AnyOpsOSFile[]; }) => {
         if (res.status === 'error') return this.logger.error('anyOpsOS', 'Error while reloading desktop files', null, res.data);
 
         this.currentData = res.data;
@@ -63,7 +62,7 @@ export class DesktopComponent implements OnInit {
   }
 
   setCurrentHoverApplication(): void {
-    this.Applications.setCurrentHoverApplication('desktop');
+    this.LibApplication.setCurrentHoverApplication('desktop');
   }
 
 }

@@ -22,10 +22,10 @@ export class AppComponent implements OnInit {
               private cookieService: CookieService,
               private logger: AnyOpsOSLibLoggerService,
               private Main: MainService,
-              private Modal: AnyOpsOSLibModalService,
+              private readonly LibModal: AnyOpsOSLibModalService,
               private UserState: AnyOpsOSLibUserService) {
 
-    this.Modal.setMainContainerRef(this.viewContainerRef);
+    this.LibModal.setMainContainerRef(this.viewContainerRef);
   }
 
   ngOnInit(): void {
@@ -38,23 +38,21 @@ export class AppComponent implements OnInit {
       this.logger.debug('anyOpsOS', 'Getting session', null);
       this.UserState.getSession().subscribe(
         (res: BackendResponse) => {
-          if (res.status === 'ok') {
-            this.logger.info('anyOpsOS', 'Getting session -> User logged in', null);
-            this.UserState.setState({
-              userLoggedIn: true,
-              username: 'root'
-            });
-
-            /**
-             * INIT
-             */
-            this.Main.init();
-          }
-
           if (res.status === 'error') {
             this.logger.debug('anyOpsOS', 'Getting session -> Removing uniqueId cookie', null);
             return this.cookieService.delete('uniqueId');
           }
+
+          this.logger.info('anyOpsOS', 'Getting session -> User logged in', null);
+          this.UserState.setState({
+            userLoggedIn: true,
+            username: 'root'
+          });
+
+          /**
+           * INIT
+           */
+          this.Main.init();
         },
         (error: BackendResponse) => {
           this.logger.debug('anyOpsOS', 'Getting session -> Removing uniqueId cookie', null, error);

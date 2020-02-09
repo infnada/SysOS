@@ -7,8 +7,7 @@
     "tslib": "^1.10.0"
   },
   "dependencies": {
-    "@ng-bootstrap/ng-bootstrap": "^5.1.4",
-    "@anyopsos/lib-file-system": "~0.0.1",
+    "@anyopsos/lib-angular-material": "~0.0.1",
     "@anyopsos/lib-logger": "~0.0.1"
   },
   "homepage": "https://github.com/anyOpsOS/anyOpsOS#readme",

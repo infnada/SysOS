@@ -50,8 +50,9 @@ export {MatTableDataSource} from '@angular/material/table';
 export {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
 export {MatMenuTrigger} from '@angular/material/menu';
 export {MatSnackBar} from '@angular/material/snack-bar';
+export {MatDialog, MatDialogConfig, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 
-export {CdkDragRelease, CdkDragStart} from '@angular/cdk/drag-drop';
+export {CdkDragRelease, CdkDragStart, moveItemInArray} from '@angular/cdk/drag-drop';
 export {FlatTreeControl} from '@angular/cdk/tree';
 export {CdkDragDrop} from '@angular/cdk/drag-drop';
 export {COMMA, ENTER} from '@angular/cdk/keycodes';

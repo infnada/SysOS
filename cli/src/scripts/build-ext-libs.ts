@@ -22,14 +22,14 @@ export class BuildExtLibs {
     for (const project of projectInOrder) {
 
       await awaitSpawn('npm.cmd', ['run', 'ng', 'build', project], {
-        cwd: `${__dirname}/../../../src/frontend`,
+        cwd: `${process.cwd()}/src/frontend`,
         stdio: 'inherit'
       });
 
     }
 
     // Build others
-    const data = await readFile(`${__dirname}/../../../angular.json`, 'utf8');
+    const data = await readFile(`${process.cwd()}/angular.json`, 'utf8');
     const ngCli = JSON.parse(data);
 
     for (const project of Object.keys(ngCli.projects)) {
@@ -39,7 +39,7 @@ export class BuildExtLibs {
       if (projectInOrder.includes(project)) continue;
 
       await awaitSpawn('npm.cmd', ['run', 'ng', 'build', project], {
-        cwd: `${__dirname}/../../../src/frontend`,
+        cwd: `${process.cwd()}/src/frontend`,
         stdio: 'inherit'
       });
     }

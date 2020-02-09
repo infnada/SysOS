@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 
-import {ImDataObject} from '../types/im-data-object';
+import {DataObject} from '@anyopsos/backend/app/types/data-object';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +10,7 @@ export class AnyOpsOSAppInfrastructureManagerNodeMonitorService {
   constructor() {
   }
 
-  haveMonitor(object: ImDataObject): boolean {
+  haveMonitor(object: DataObject): boolean {
     return object.type === 'VirtualMachine' || object.type === 'Pod';
   }
 }

@@ -7,13 +7,13 @@
   "swagger": "2.0",
   "projectName": "snmp",
   "paths": {
-    "/api/snmp/{type}/{connectionUuid}/{oid}": {
+    "/api/snmp/{workspaceUuid}/{connectionUuid}/{oid}": {
       "get": {
         "operationId": "AnyOpsOSSnmpApiController.getSnmp",
         "parameters": [
           {
             "in": "path",
-            "name": "type",
+            "name": "workspaceUuid",
             "required": true,
             "type": "string"
           },
@@ -26,8 +26,7 @@
           {
             "in": "path",
             "name": "oid",
-            "required": true,
-            "type": "string"
+            "required": true
           }
         ],
         "responses": {

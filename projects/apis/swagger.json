@@ -59,20 +59,26 @@
         ]
       }
     },
-    "/api/config-file/{configUuid}/{fileName}": {
+    "/api/config-file/{workspaceUuid}/{fileName}/{configUuid}": {
       "get": {
         "operationId": "AnyOpsOSConfigFileApiController.getConfigFile",
         "parameters": [
           {
             "in": "path",
-            "name": "configUuid",
-            "required": false,
+            "name": "workspaceUuid",
+            "required": true,
             "type": "string"
           },
           {
             "in": "path",
             "name": "fileName",
             "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "configUuid",
+            "required": false,
             "type": "string"
           }
         ],
@@ -94,14 +100,20 @@
         "parameters": [
           {
             "in": "path",
-            "name": "configUuid",
-            "required": false,
+            "name": "workspaceUuid",
+            "required": true,
             "type": "string"
           },
           {
             "in": "path",
             "name": "fileName",
             "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "configUuid",
+            "required": false,
             "type": "string"
           },
           {
@@ -137,14 +149,20 @@
         "parameters": [
           {
             "in": "path",
-            "name": "configUuid",
-            "required": false,
+            "name": "workspaceUuid",
+            "required": true,
             "type": "string"
           },
           {
             "in": "path",
             "name": "fileName",
             "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "configUuid",
+            "required": false,
             "type": "string"
           },
           {
@@ -180,14 +198,20 @@
         "parameters": [
           {
             "in": "path",
-            "name": "configUuid",
-            "required": false,
+            "name": "workspaceUuid",
+            "required": true,
             "type": "string"
           },
           {
             "in": "path",
             "name": "fileName",
             "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "configUuid",
+            "required": false,
             "type": "string"
           }
         ],
@@ -205,9 +229,17 @@
         ]
       }
     },
-    "/api/credential/": {
+    "/api/credential/{workspaceUuid}": {
       "get": {
         "operationId": "AnyOpsOSCredentialApiController.getAllCredentials",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful response"
@@ -217,13 +249,31 @@
         "tags": [
           "Any Ops OS Credential Api"
         ],
-        "parameters": [],
         "produces": [
           "text/html; charset=utf-8"
         ]
       },
       "put": {
         "operationId": "AnyOpsOSCredentialApiController.putCredential",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "credential": {}
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful response"
@@ -233,7 +283,30 @@
         "tags": [
           "Any Ops OS Credential Api"
         ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/credential/{workspaceUuid}/{credentialUuid}": {
+      "patch": {
+        "operationId": "AnyOpsOSCredentialApiController.patchCredential",
         "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "credentialUuid",
+            "required": true,
+            "type": "string"
+          },
           {
             "name": "body",
             "in": "body",
@@ -246,15 +319,6 @@
             }
           }
         ],
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "text/html; charset=utf-8"
-        ]
-      },
-      "patch": {
-        "operationId": "AnyOpsOSCredentialApiController.patchCredential",
         "responses": {
           "200": {
             "description": "Successful response"
@@ -264,31 +328,22 @@
         "tags": [
           "Any Ops OS Credential Api"
         ],
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "properties": {
-                "credential": {}
-              },
-              "required": [],
-              "type": "object"
-            }
-          }
-        ],
         "consumes": [
           "application/json"
         ],
         "produces": [
           "text/html; charset=utf-8"
         ]
-      }
-    },
-    "/api/credential/{credentialUuid}": {
+      },
       "delete": {
         "operationId": "AnyOpsOSCredentialApiController.deleteCredential",
         "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
           {
             "in": "path",
             "name": "credentialUuid",
@@ -310,13 +365,13 @@
         ]
       }
     },
-    "/api/file/{fileName}": {
+    "/api/file/{srcPath}": {
       "get": {
         "operationId": "AnyOpsOSFileApiController.getFile",
         "parameters": [
           {
             "in": "path",
-            "name": "fileName",
+            "name": "srcPath",
             "required": true,
             "type": "string"
           }
@@ -339,7 +394,7 @@
         "parameters": [
           {
             "in": "path",
-            "name": "fileName",
+            "name": "srcPath",
             "required": true,
             "type": "string"
           }
@@ -358,9 +413,17 @@
         ]
       }
     },
-    "/api/file/": {
+    "/api/file/{dstPath}": {
       "put": {
         "operationId": "AnyOpsOSFileApiController.newFile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "dstPath",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful response"
@@ -369,24 +432,6 @@
         "summary": "New file",
         "tags": [
           "Any Ops OS File Api"
-        ],
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "properties": {
-                "path": {
-                  "type": "string"
-                }
-              },
-              "required": [],
-              "type": "object"
-            }
-          }
-        ],
-        "consumes": [
-          "application/json"
         ],
         "produces": [
           "text/html; charset=utf-8"
@@ -411,7 +456,7 @@
             "in": "body",
             "schema": {
               "properties": {
-                "path": {
+                "dstPath": {
                   "type": "string"
                 },
                 "url": {
@@ -434,7 +479,7 @@
         ]
       }
     },
-    "/api/file/{type}/{fileName}": {
+    "/api/file/{type}/{srcPath}": {
       "patch": {
         "operationId": "AnyOpsOSFileApiController.patchFile",
         "parameters": [
@@ -446,7 +491,7 @@
           },
           {
             "in": "path",
-            "name": "fileName",
+            "name": "srcPath",
             "required": true,
             "type": "string"
           },
@@ -484,13 +529,13 @@
         ]
       }
     },
-    "/api/folder/{folderName}": {
+    "/api/folder/{srcPath}": {
       "get": {
         "operationId": "AnyOpsOSFolderApiController.getFolder",
         "parameters": [
           {
             "in": "path",
-            "name": "folderName",
+            "name": "srcPath",
             "required": true,
             "type": "string"
           }
@@ -507,13 +552,15 @@
         "produces": [
           "text/html; charset=utf-8"
         ]
-      },
+      }
+    },
+    "/api/folder/{dstPath}": {
       "put": {
         "operationId": "AnyOpsOSFolderApiController.createFolder",
         "parameters": [
           {
             "in": "path",
-            "name": "folderName",
+            "name": "dstPath",
             "required": true,
             "type": "string"
           }
@@ -532,10 +579,16 @@
         ]
       }
     },
-    "/api/kubernetes/resource/{connectionUuid}/{resourceLink}": {
+    "/api/kubernetes/resource/{workspaceUuid}/{connectionUuid}/{resourceLink}": {
       "get": {
         "operationId": "AnyOpsOSKubernetesApiController.getKubernetesResource",
         "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
           {
             "in": "path",
             "name": "connectionUuid",
@@ -564,10 +617,16 @@
         ]
       }
     },
-    "/api/kubernetes/log/{connectionUuid}/{terminalUuid}/{namespace}/{pod}/{container}/{showContainerName}": {
+    "/api/kubernetes/log/{workspaceUuid}/{connectionUuid}/{terminalUuid}/{namespace}/{pod}/{container}/{showContainerName}": {
       "get": {
         "operationId": "AnyOpsOSKubernetesApiController.getContainerLogs",
         "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
           {
             "in": "path",
             "name": "connectionUuid",
@@ -619,99 +678,25 @@
         ]
       }
     },
-    "/api/kubernetes/log/{logUuid}": {
-      "delete": {
-        "operationId": "AnyOpsOSKubernetesApiController.stopContainerLogs",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "logUuid",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response"
-          }
-        },
-        "summary": "Stop container logs",
-        "tags": [
-          "Any Ops OS Kubernetes Api"
-        ],
-        "produces": [
-          "text/html; charset=utf-8"
-        ]
-      }
-    },
-    "/api/kubernetes/exec/{connectionUuid}/{terminalUuid}/{namespace}/{pod}/{container}/{command}": {
-      "get": {
-        "operationId": "AnyOpsOSKubernetesApiController.executeIntoContainer",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "connectionUuid",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "in": "path",
-            "name": "terminalUuid",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "in": "path",
-            "name": "namespace",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "in": "path",
-            "name": "pod",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "in": "path",
-            "name": "container",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "in": "path",
-            "name": "command",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response"
-          }
-        },
-        "summary": "Execute into container",
-        "tags": [
-          "Any Ops OS Kubernetes Api"
-        ],
-        "produces": [
-          "text/html; charset=utf-8"
-        ]
-      }
-    },
-    "/api/kubernetes/shell/{type}/{connectionUuid}/{terminalUuid}/{namespace}/{pod}/{container}/{command}": {
+    "/api/kubernetes/{workspaceUuid}/{connectionUuid}/{type}/{terminalUuid}/{namespace}/{pod}/{container}/{command}": {
       "get": {
         "operationId": "AnyOpsOSKubernetesApiController.shellIntoContainer",
         "parameters": [
           {
             "in": "path",
-            "name": "type",
+            "name": "workspaceUuid",
             "required": true,
             "type": "string"
           },
           {
             "in": "path",
             "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "type",
             "required": true,
             "type": "string"
           },
@@ -760,35 +745,16 @@
         ]
       }
     },
-    "/api/kubernetes/shell/{terminalUuid}": {
-      "delete": {
-        "operationId": "AnyOpsOSKubernetesApiController.stopContainerShell",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "terminalUuid",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response"
-          }
-        },
-        "summary": "Stop container shell",
-        "tags": [
-          "Any Ops OS Kubernetes Api"
-        ],
-        "produces": [
-          "text/html; charset=utf-8"
-        ]
-      }
-    },
-    "/api/monitor/charts/{connectionUuid}/{type}/": {
+    "/api/monitor/charts/{workspaceUuid}/{connectionUuid}/{type}/": {
       "get": {
         "operationId": "AnyOpsOSMonitorApiController.getMonitorCharts",
         "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
           {
             "in": "path",
             "name": "connectionUuid",
@@ -816,10 +782,16 @@
         ]
       }
     },
-    "/api/monitor/chart/{connectionUuid}/{type}/": {
+    "/api/monitor/chart/{workspaceUuid}/{connectionUuid}/{type}/": {
       "get": {
         "operationId": "AnyOpsOSMonitorApiController.getMonitorChart",
         "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
           {
             "in": "path",
             "name": "connectionUuid",
@@ -853,10 +825,16 @@
         ]
       }
     },
-    "/api/monitor/data/{connectionUuid}/{type}/": {
+    "/api/monitor/data/{workspaceUuid}/{connectionUuid}/{type}/": {
       "get": {
         "operationId": "AnyOpsOSMonitorApiController.getMonitorData",
         "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
           {
             "in": "path",
             "name": "connectionUuid",
@@ -890,10 +868,16 @@
         ]
       }
     },
-    "/api/monitor/alarms/{connectionUuid}/{type}/": {
+    "/api/monitor/alarms/{workspaceUuid}/{connectionUuid}/{type}/": {
       "get": {
         "operationId": "AnyOpsOSMonitorApiController.getMonitorAlarms",
         "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
           {
             "in": "path",
             "name": "connectionUuid",
@@ -927,10 +911,16 @@
         ]
       }
     },
-    "/api/monitor/alarm_log/{connectionUuid}/{type}/": {
+    "/api/monitor/alarm_log/{workspaceUuid}/{connectionUuid}/{type}/": {
       "get": {
         "operationId": "AnyOpsOSMonitorApiController.getMonitorAlarmsLog",
         "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
           {
             "in": "path",
             "name": "connectionUuid",
@@ -958,10 +948,53 @@
         ]
       }
     },
-    "/api/monitor/badge/{connectionUuid}/{type}/": {
+    "/api/monitor/badge/{workspaceUuid}/{connectionUuid}/{type}/": {
+      "get": {
+        "operationId": "AnyOpsOSMonitorApiController.getMonitorBadge",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "type",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Get monitor badge",
+        "tags": [
+          "Any Ops OS Monitor Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/monitor/{workspaceUuid}/{connectionUuid}/{type}/": {
       "get": {
         "operationId": "AnyOpsOSMonitorApiController.monitorTestRemoteConnection",
         "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
           {
             "in": "path",
             "name": "connectionUuid",
@@ -989,34 +1022,145 @@
         ]
       }
     },
-    "/api/netapp/": {
+    "/api/netapp-file/{workspaceUuid}/{connectionUuid}/{vfiler}/{srcPath}/{dstPath}": {
       "get": {
-        "operationId": "AnyOpsOSNetappApiController.callNetapp",
+        "operationId": "AnyOpsOSNetappFileApiController.downloadFile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "vfiler",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "srcPath",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "dstPath",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful response"
           }
         },
-        "summary": "Call netapp",
+        "summary": "Download file",
         "tags": [
-          "Any Ops OS Netapp Api"
+          "Any Ops OS Netapp File Api"
         ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      },
+      "put": {
+        "operationId": "AnyOpsOSNetappFileApiController.uploadFile",
         "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "vfiler",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "srcPath",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "dstPath",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Upload file",
+        "tags": [
+          "Any Ops OS Netapp File Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/netapp-file/{workspaceUuid}/{connectionUuid}/{vfiler}/{type}/{fileName}": {
+      "patch": {
+        "operationId": "AnyOpsOSNetappFileApiController.patchFile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "vfiler",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "type",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "fileName",
+            "required": true,
+            "type": "string"
+          },
           {
             "name": "body",
             "in": "body",
             "schema": {
               "properties": {
-                "credentialUuid": {
+                "dstPath": {
                   "type": "string"
                 },
-                "host": {
-                  "type": "string"
-                },
-                "port": {
-                  "type": "number"
-                },
-                "xml": {
+                "permissions": {
                   "type": "string"
                 }
               },
@@ -1024,6 +1168,15 @@
               "type": "object"
             }
           }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Patch file",
+        "tags": [
+          "Any Ops OS Netapp File Api"
         ],
         "consumes": [
           "application/json"
@@ -1033,10 +1186,283 @@
         ]
       }
     },
-    "/api/remote-file/{connectionUuid}/download_from_url": {
+    "/api/netapp-file/{workspaceUuid}/{connectionUuid}/{vfiler}/{srcPath}": {
+      "delete": {
+        "operationId": "AnyOpsOSNetappFileApiController.deleteFile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "vfiler",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "srcPath",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Delete file",
+        "tags": [
+          "Any Ops OS Netapp File Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/vmware-folder/{workspaceUuid}/{connectionUuid}/{vfiler}/{srcPath}": {
+      "get": {
+        "operationId": "AnyOpsOSVmwareFolderApiController.getVmwareFolder",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "vfiler",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "srcPath",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Get vmware folder",
+        "tags": [
+          "Any Ops OS Vmware Folder Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/vmware-folder/{workspaceUuid}/{connectionUuid}/{vfiler}/{dstPath}": {
+      "put": {
+        "operationId": "AnyOpsOSVmwareFolderApiController.createVmwareFolder",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "vfiler",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "dstPath",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Create vmware folder",
+        "tags": [
+          "Any Ops OS Vmware Folder Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/netapp/soap/{workspaceUuid}/{connectionUuid}/{vfiler}": {
+      "post": {
+        "operationId": "AnyOpsOSNetappApiController.netappCallSoap",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "vfiler",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "action": {
+                  "type": "string"
+                },
+                "data": {}
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Netapp call soap",
+        "tags": [
+          "Any Ops OS Netapp Api"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/sftp-file/{workspaceUuid}/{connectionUuid}/{srcPath}/{dstPath}": {
+      "get": {
+        "operationId": "AnyOpsOSRemoteFileApiController.downloadFile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "srcPath",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "dstPath",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Download file",
+        "tags": [
+          "Any Ops OS Remote File Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      },
+      "put": {
+        "operationId": "AnyOpsOSRemoteFileApiController.uploadFile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "srcPath",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "dstPath",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Upload file",
+        "tags": [
+          "Any Ops OS Remote File Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/sftp-file/{workspaceUuid}/{connectionUuid}/download_from_url": {
       "post": {
         "operationId": "AnyOpsOSRemoteFileApiController.getRemoteFile",
         "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
           {
             "in": "path",
             "name": "connectionUuid",
@@ -1048,7 +1474,7 @@
             "in": "body",
             "schema": {
               "properties": {
-                "path": {
+                "dstPath": {
                   "type": "string"
                 },
                 "url": {
@@ -1080,10 +1506,16 @@
         ]
       }
     },
-    "/api/remote-file/{connectionUuid}/{type}/{fileName}": {
+    "/api/sftp-file/{workspaceUuid}/{connectionUuid}/{type}/{fileName}": {
       "patch": {
         "operationId": "AnyOpsOSRemoteFileApiController.patchFile",
         "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
           {
             "in": "path",
             "name": "connectionUuid",
@@ -1136,10 +1568,16 @@
         ]
       }
     },
-    "/api/remote-file/{connectionUuid}/{fileName}": {
+    "/api/sftp-file/{workspaceUuid}/{connectionUuid}/{srcPath}": {
       "delete": {
         "operationId": "AnyOpsOSRemoteFileApiController.deleteFile",
         "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
           {
             "in": "path",
             "name": "connectionUuid",
@@ -1148,7 +1586,7 @@
           },
           {
             "in": "path",
-            "name": "fileName",
+            "name": "srcPath",
             "required": true,
             "type": "string"
           }
@@ -1167,10 +1605,16 @@
         ]
       }
     },
-    "/api/remote-folder/{connectionUuid}/{folderName}": {
+    "/api/sftp-folder/{workspaceUuid}/{connectionUuid}/{srcPath}": {
       "get": {
         "operationId": "AnyOpsOSRemoteFolderApiController.getRemoteFolder",
         "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
           {
             "in": "path",
             "name": "connectionUuid",
@@ -1179,7 +1623,7 @@
           },
           {
             "in": "path",
-            "name": "folderName",
+            "name": "srcPath",
             "required": true,
             "type": "string"
           }
@@ -1196,10 +1640,18 @@
         "produces": [
           "text/html; charset=utf-8"
         ]
-      },
+      }
+    },
+    "/api/sftp-folder/{workspaceUuid}/{connectionUuid}/{dstPath}": {
       "put": {
         "operationId": "AnyOpsOSRemoteFolderApiController.createRemoteFolder",
         "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
           {
             "in": "path",
             "name": "connectionUuid",
@@ -1208,7 +1660,7 @@
           },
           {
             "in": "path",
-            "name": "folderName",
+            "name": "dstPath",
             "required": true,
             "type": "string"
           }
@@ -1227,13 +1679,13 @@
         ]
       }
     },
-    "/api/snmp/{type}/{connectionUuid}/{oid}": {
+    "/api/snmp/{workspaceUuid}/{connectionUuid}/{oid}": {
       "get": {
         "operationId": "AnyOpsOSSnmpApiController.getSnmp",
         "parameters": [
           {
             "in": "path",
-            "name": "type",
+            "name": "workspaceUuid",
             "required": true,
             "type": "string"
           },
@@ -1246,8 +1698,7 @@
           {
             "in": "path",
             "name": "oid",
-            "required": true,
-            "type": "string"
+            "required": true
           }
         ],
         "responses": {
@@ -1264,9 +1715,322 @@
         ]
       }
     },
-    "/api/vmware/getClientVersion": {
+    "/api/vmware-file/{workspaceUuid}/{connectionUuid}/{srcPath}/{dstPath}": {
+      "get": {
+        "operationId": "AnyOpsOSVmwareFileApiController.downloadFile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "srcPath",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "dstPath",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Download file",
+        "tags": [
+          "Any Ops OS Vmware File Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      },
+      "put": {
+        "operationId": "AnyOpsOSVmwareFileApiController.uploadFile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "srcPath",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "dstPath",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Upload file",
+        "tags": [
+          "Any Ops OS Vmware File Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/vmware-file/{workspaceUuid}/{connectionUuid}/{type}/{fileName}/{srcDatastoreName}/{srcDatacenterName}": {
+      "patch": {
+        "operationId": "AnyOpsOSVmwareFileApiController.patchFile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "type",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "fileName",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "srcDatastoreName",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "srcDatacenterName",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "dstPath": {
+                  "type": "string"
+                },
+                "dstDatastoreName": {
+                  "type": "string"
+                },
+                "dstDatacenterName": {
+                  "type": "string"
+                },
+                "permissions": {
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Patch file",
+        "tags": [
+          "Any Ops OS Vmware File Api"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/vmware-file/{workspaceUuid}/{connectionUuid}/{srcPath}/{datastoreName}/{datacenterName}": {
+      "delete": {
+        "operationId": "AnyOpsOSVmwareFileApiController.deleteFile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "srcPath",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "datastoreName",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "datacenterName",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Delete file",
+        "tags": [
+          "Any Ops OS Vmware File Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/vmware-folder/{workspaceUuid}/{connectionUuid}/{srcPath}/{datastoreName}/{datastoreBrowserName}": {
+      "get": {
+        "operationId": "AnyOpsOSVmwareFolderApiController.getVmwareFolder",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "srcPath",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "datastoreName",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "datastoreBrowserName",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Get vmware folder",
+        "tags": [
+          "Any Ops OS Vmware Folder Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/vmware-folder/{workspaceUuid}/{connectionUuid}/{dstPath}": {
+      "put": {
+        "operationId": "AnyOpsOSVmwareFolderApiController.createVmwareFolder",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "dstPath",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Create vmware folder",
+        "tags": [
+          "Any Ops OS Vmware Folder Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/vmware/getClientVersion/{workspaceUuid}/{connectionUuid}": {
       "post": {
         "operationId": "AnyOpsOSVmwareApiController.getVmwareClientVersion",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful response"
@@ -1276,17 +2040,34 @@
         "tags": [
           "Any Ops OS Vmware Api"
         ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/vmware/rest/{workspaceUuid}/{connectionUuid}": {
+      "post": {
+        "operationId": "AnyOpsOSVmwareApiController.vmwareCallRest",
         "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
           {
             "name": "body",
             "in": "body",
             "schema": {
               "properties": {
-                "host": {
+                "apiPath": {
                   "type": "string"
-                },
-                "port": {
-                  "type": "number"
                 }
               },
               "required": [],
@@ -1294,46 +2075,14 @@
             }
           }
         ],
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "text/html; charset=utf-8"
-        ]
-      }
-    },
-    "/api/vmware/connect": {
-      "post": {
-        "operationId": "AnyOpsOSVmwareApiController.vmwareConnect",
         "responses": {
           "200": {
             "description": "Successful response"
           }
         },
-        "summary": "Vmware connect",
+        "summary": "Vmware call rest",
         "tags": [
           "Any Ops OS Vmware Api"
-        ],
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "properties": {
-                "host": {
-                  "type": "string"
-                },
-                "port": {
-                  "type": "number"
-                },
-                "credentialUuid": {
-                  "type": "string"
-                }
-              },
-              "required": [],
-              "type": "object"
-            }
-          }
         ],
         "consumes": [
           "application/json"
@@ -1343,91 +2092,37 @@
         ]
       }
     },
-    "/api/vmware/connectSoap": {
-      "post": {
-        "operationId": "AnyOpsOSVmwareApiController.vmwareConnectSoap",
-        "responses": {
-          "200": {
-            "description": "Successful response"
-          }
-        },
-        "summary": "Vmware connect soap",
-        "tags": [
-          "Any Ops OS Vmware Api"
-        ],
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "properties": {
-                "host": {
-                  "type": "string"
-                },
-                "port": {
-                  "type": "number"
-                },
-                "credentialUuid": {
-                  "type": "string"
-                }
-              },
-              "required": [],
-              "type": "object"
-            }
-          }
-        ],
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "text/html; charset=utf-8"
-        ]
-      }
-    },
-    "/api/vmware/call": {
-      "post": {
-        "operationId": "AnyOpsOSVmwareApiController.vmwareCall",
-        "responses": {
-          "200": {
-            "description": "Successful response"
-          }
-        },
-        "summary": "Vmware call",
-        "tags": [
-          "Any Ops OS Vmware Api"
-        ],
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "properties": {
-                "host": {
-                  "type": "string"
-                },
-                "port": {
-                  "type": "number"
-                },
-                "path": {
-                  "type": "string"
-                }
-              },
-              "required": [],
-              "type": "object"
-            }
-          }
-        ],
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "text/html; charset=utf-8"
-        ]
-      }
-    },
-    "/api/vmware/callSoap": {
+    "/api/vmware/soap/{workspaceUuid}/{connectionUuid}": {
       "post": {
         "operationId": "AnyOpsOSVmwareApiController.vmwareCallSoap",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "action": {
+                  "type": "string"
+                },
+                "data": {}
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful response"
@@ -1437,30 +2132,6 @@
         "tags": [
           "Any Ops OS Vmware Api"
         ],
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "properties": {
-                "host": {
-                  "type": "string"
-                },
-                "port": {
-                  "type": "number"
-                },
-                "action": {
-                  "type": "string"
-                },
-                "xml": {
-                  "type": "string"
-                }
-              },
-              "required": [],
-              "type": "object"
-            }
-          }
-        ],
         "consumes": [
           "application/json"
         ],
@@ -1469,9 +2140,39 @@
         ]
       }
     },
-    "/api/vmware/upload_to_datastore": {
+    "/api/vmware/upload_to_datastore/{workspaceUuid}/{connectionUuid}": {
       "post": {
         "operationId": "AnyOpsOSVmwareApiController.uploadToDatastore",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "dstPath": {
+                  "type": "string"
+                },
+                "datastoreUrl": {
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful response"
@@ -1480,27 +2181,6 @@
         "summary": "Upload to datastore",
         "tags": [
           "Any Ops OS Vmware Api"
-        ],
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "properties": {
-                "path": {
-                  "type": "string"
-                },
-                "url": {
-                  "type": "string"
-                },
-                "credentialUuid": {
-                  "type": "string"
-                }
-              },
-              "required": [],
-              "type": "object"
-            }
-          }
         ],
         "consumes": [
           "application/json"

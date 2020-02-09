@@ -4,62 +4,75 @@ import {join} from 'path';
 import {getLogger, Logger} from 'log4js';
 
 import {AnyOpsOSGetPathModule} from '@anyopsos/module-get-path';
-import {AnyOpsOSConfigFileModule} from '@anyopsos/module-config-file';
+import {AnyOpsOSWorkspaceModule} from '@anyopsos/module-workspace';
 
-import {UserToSessionToDbMap} from './types/user-to-session-to-db-map';
+import {WorkspaceDbMap} from './types/workspace-db-map';
 import {KdbxCredential} from './types/kxdb-credential';
 import {Credential} from './types/credential';
 
-const logger: Logger = getLogger('mainlog');
-const loadedDbs: UserToSessionToDbMap = {};
+import {CREDENTIAL_FILE_NAME} from './anyopsos-module-credential.constants';
+
+
+const logger: Logger = getLogger('mainLog');
+const loadedDbs: WorkspaceDbMap = {};
 
 export class AnyOpsOSCredentialModule {
 
-  /**
-   * Saves the DB on disk
-   * TODO (SECURITY) anyone can "override" any db
-   */
-  private async saveDb(db: Kdbx, userUuid: string): Promise<void> {
-    logger.debug(`[Module Credentials] -> saveDb -> userUuid [${userUuid}]`);
+  private readonly GetPathModule: AnyOpsOSGetPathModule;
+  private readonly WorkspaceModule: AnyOpsOSWorkspaceModule;
 
-    // @ts-ignore TODO
-    const user: User = await new AnyOpsOSConfigFileModule().get(new AnyOpsOSGetPathModule().shadow, userUuid);
-    const dataAsArrayBuffer: ArrayBuffer = await db.save();
+  constructor(private readonly userUuid: string,
+              private readonly sessionUuid: string,
+              private readonly workspaceUuid: string) {
 
-    return outputFile(join(new AnyOpsOSGetPathModule().filesystem, user.kdbxPath), Buffer.from(dataAsArrayBuffer));
+    this.GetPathModule = new AnyOpsOSGetPathModule();
+    this.WorkspaceModule = new AnyOpsOSWorkspaceModule(this.userUuid, this.sessionUuid);
   }
 
   /**
-   * Creates new KeePass empty database
+   * Saves the DB on disk
+   */
+  private async saveDb(): Promise<void> {
+    logger.debug(`[Module Credentials] -> saveDb -> userUuid [${this.userUuid}]`);
+
+    const dataAsArrayBuffer: ArrayBuffer = await loadedDbs[this.workspaceUuid].save();
+    const credentialPath: string = join(this.WorkspaceModule.getWorkspacePath(this.workspaceUuid), CREDENTIAL_FILE_NAME);
+
+    return outputFile(credentialPath, Buffer.from(dataAsArrayBuffer));
+  }
+
+  /**
+   * Creates new KeePass empty database. This is only called by anyOpsOS
    * TODO check if user already exists on shadow.json and if dbfile already exists
    * TODO (SECURITY) anyone can "flush" any db
+   * TODO this is not working
    */
   async createNewDb(userUuid: string, name: string): Promise<void> {
     logger.debug(`[Module Credentials] -> createNewDb -> userUuid [${userUuid}], name [${name}]`);
 
     // @ts-ignore - NO KEYFILE (2nd argument)
     const credentials: Credentials = new Credentials(ProtectedValue.fromString('root'));
-    const db: Kdbx = Kdbx.create(credentials, name);
+    loadedDbs[this.workspaceUuid] = Kdbx.create(credentials, name);
 
-    return this.saveDb(db, userUuid);
+    return this.saveDb();
   }
 
   /**
    * Loads a KeePass database in memory
-   * TODO: (SECURITY) all db is loaded in memory...
    */
-  async loadCredentialDb(userUuid: string, sessionUuid: string, password: string, kdbxPath: string): Promise<boolean> {
-    logger.debug(`[Module Credentials] -> loadCredentialDb -> userUuid [${userUuid}], kdbxPath [${kdbxPath}]`);
+  async loadCredentialDb(password: string): Promise<boolean> {
+    logger.debug(`[Module Credentials] -> loadCredentialDb -> userUuid [${this.userUuid}]`);
 
-    const dataAsArrayBuffer = await readFile(join(new AnyOpsOSGetPathModule().filesystem, kdbxPath));
+    const credentialPath: string = join(this.WorkspaceModule.getWorkspacePath(this.workspaceUuid), CREDENTIAL_FILE_NAME);
+    const dataAsArrayBuffer = await readFile(credentialPath);
 
     // @ts-ignore - NO KEYFILE (2nd argument)
     const credentials: Credentials = new Credentials(ProtectedValue.fromString(password));
 
     return Kdbx.load(dataAsArrayBuffer.buffer, credentials).then((db: Kdbx) => {
 
-      if (!loadedDbs[userUuid]) loadedDbs[userUuid] = {};
-      loadedDbs[userUuid][sessionUuid] = db;
+      loadedDbs[this.workspaceUuid] = db;
+
       return true;
     }).catch((e) => {
       console.log(e);
@@ -70,12 +83,13 @@ export class AnyOpsOSCredentialModule {
   /**
    * Gets all credentials but without protected values
    */
-  async getCredentials(userUuid: string, sessionUuid: string): Promise<Credential[]> {
-    logger.debug(`[Module Credentials] -> getCredentials -> userUuid [${userUuid}]`);
+  async getCredentials(): Promise<Credential[]> {
+    logger.debug(`[Module Credentials] -> getCredentials -> userUuid [${this.userUuid}]`);
 
     const credentials: Credential[] = [];
-    await loadedDbs[userUuid][sessionUuid].getDefaultGroup().entries.forEach((entry: Entry) => {
+    await loadedDbs[this.workspaceUuid].getDefaultGroup().entries.forEach((entry: Entry) => {
       credentials.push({
+        // @ts-ignore TODO
         uuid: entry.uuid.id,
         // @ts-ignore TODO
         description: entry.fields.Title,
@@ -92,10 +106,10 @@ export class AnyOpsOSCredentialModule {
   /**
    * Gets a credential by uuid
    */
-  async getCredential(userUuid: string, sessionUuid: string, credentialUuid: string): Promise<KdbxCredential> {
-    logger.debug(`[Module Credentials] -> getCredentials -> userUuid [${userUuid}], credentialUuid [${credentialUuid}]`);
+  async getCredential(credentialUuid: string): Promise<KdbxCredential> {
+    logger.debug(`[Module Credentials] -> getCredentials -> userUuid [${this.userUuid}], credentialUuid [${credentialUuid}]`);
 
-    const credential = loadedDbs[userUuid][sessionUuid].getDefaultGroup().entries.find((entry: Entry) => entry.uuid.id === credentialUuid);
+    const credential = loadedDbs[this.workspaceUuid].getDefaultGroup().entries.find((entry: Entry) => entry.uuid.id === credentialUuid);
     if (!credential) throw new Error('resource_not_found');
 
     return credential as KdbxCredential;
@@ -104,29 +118,30 @@ export class AnyOpsOSCredentialModule {
   /**
    * Creates a credential
    */
-  async newCredential(userUuid: string, sessionUuid: string, credential: Credential): Promise<{ uuid: string; }> {
-    logger.debug(`[Module Credentials] -> newCredential -> userUuid [${userUuid}], description [${credential.description}]`);
+  async putCredential(credential: Credential): Promise<{ uuid: string; }> {
+    logger.debug(`[Module Credentials] -> putCredential -> userUuid [${this.userUuid}], description [${credential.description}]`);
 
-    const group: Group = loadedDbs[userUuid][sessionUuid].getDefaultGroup();
-    const entry: Entry = loadedDbs[userUuid][sessionUuid].createEntry(group);
+    const group: Group = loadedDbs[this.workspaceUuid].getDefaultGroup();
+    const entry: Entry = loadedDbs[this.workspaceUuid].createEntry(group);
 
     this.setEntryFields(entry, credential);
-    this.saveDb(loadedDbs[userUuid][sessionUuid], userUuid);
+    this.saveDb();
 
+    // @ts-ignore TODO
     return { uuid: entry.uuid.id };
   }
 
   /**
    * Edits a credential by uuid
    */
-  async editCredential(userUuid: string, sessionUuid: string, credential: Credential): Promise<{ uuid: string; }> {
-    logger.debug(`[Module Credentials] -> editCredential -> userUuid [${userUuid}], credentialUuid [${credential.uuid}], description [${credential.description}]`);
+  async patchCredential(credentialUuid: string, credential: Credential): Promise<{ uuid: string; }> {
+    logger.debug(`[Module Credentials] -> patchCredential -> userUuid [${this.userUuid}], credentialUuid [${credential.uuid}], credentialUuid [${credentialUuid}], description [${credential.description}]`);
 
-    const entry: Entry = await this.getCredential(userUuid, sessionUuid, credential.uuid);
+    const entry: Entry = await this.getCredential(credential.uuid);
     if (!entry) throw new Error('resource_not_found');
 
     this.setEntryFields(entry, credential);
-    await this.saveDb(loadedDbs[userUuid][sessionUuid], userUuid);
+    await this.saveDb();
 
     return { uuid: credential.uuid };
   }
@@ -137,6 +152,7 @@ export class AnyOpsOSCredentialModule {
   private setEntryFields(entry: Entry, credential: Credential) {
     entry.fields.Title = credential.description;
     entry.fields.UserName = credential.username;
+    // @ts-ignore TODO
     entry.fields.Password = ProtectedValue.fromString(credential.password);
     entry.fields.Type = credential.type;
   }
@@ -144,15 +160,15 @@ export class AnyOpsOSCredentialModule {
   /**
    * Deletes a credential by uuid
    */
-  async deleteCredential(userUuid: string, sessionUuid: string, credentialUuid: string): Promise<void> {
-    logger.debug(`[Module Credentials] -> deleteCredential -> userUuid [${userUuid}], credentialUuid [${credentialUuid}]`);
+  async deleteCredential(credentialUuid: string): Promise<void> {
+    logger.debug(`[Module Credentials] -> deleteCredential -> userUuid [${this.userUuid}], credentialUuid [${credentialUuid}]`);
 
-    const entry = await this.getCredential(userUuid, sessionUuid, credentialUuid);
+    const entry = await this.getCredential(credentialUuid,);
     if (!entry) throw new Error('resource_not_found');
 
-    loadedDbs[userUuid][sessionUuid].remove(entry);
+    loadedDbs[this.workspaceUuid].remove(entry);
 
-    return this.saveDb(loadedDbs[userUuid][sessionUuid], userUuid);
+    return this.saveDb();
   }
 
 }

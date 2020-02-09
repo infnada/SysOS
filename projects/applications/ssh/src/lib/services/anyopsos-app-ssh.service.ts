@@ -1,60 +1,66 @@
-import {Injectable} from '@angular/core';
+import {Injectable, ViewContainerRef} from '@angular/core';
 
 import {BehaviorSubject, Observable} from 'rxjs';
 import {v4 as uuidv4} from 'uuid';
-import {Socket} from 'ngx-socket-io';
 
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
-import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
+import {MatDialogRef} from '@anyopsos/lib-angular-material';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
-import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
-
-import {SshConnection} from '../types/ssh-connection';
+import {AnyOpsOSLibSshConnectionsStateService, AnyOpsOSLibSshHelpersService, AnyOpsOSLibSshService} from '@anyopsos/lib-ssh';
+import {ConnectionSsh} from '@anyopsos/module-ssh';
+import {ConnectionTypes} from '@anyopsos/backend/app/types/connection-types';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AnyOpsOSAppSshService {
-  private $connections: BehaviorSubject<SshConnection[]>;
-  private $activeConnection: BehaviorSubject<string>;
-  private dataStore: {  // This is where we will store our data in memory
-    connections: SshConnection[],
-    activeConnection: string
+  private readonly $activeConnection: BehaviorSubject<ConnectionSsh | null>;
+  private readonly $activeConnectionUuid: BehaviorSubject<string | null>;
+  private dataStore: {
+    activeConnection: ConnectionSsh | null;
+    activeConnectionUuid: string | null;
   };
-  connections: Observable<any>;
-  activeConnection: Observable<any>;
+  readonly activeConnection: Observable<ConnectionSsh | null>;
+  readonly activeConnectionUuid: Observable<string | null>;
 
-  private connectionsInitialized: boolean = false;
-  private connectionToTerminalMap: string[] = [];
+  private readonly connectionToTerminalMap: string[] = [];
+  private bodyContainer: ViewContainerRef;
 
-  constructor(private logger: AnyOpsOSLibLoggerService,
-              private socket: Socket,
-              private FileSystem: AnyOpsOSLibFileSystemService,
-              private Modal: AnyOpsOSLibModalService) {
-    this.dataStore = {connections: [], activeConnection: null};
-    this.$connections = new BehaviorSubject(this.dataStore.connections);
+  constructor(private readonly logger: AnyOpsOSLibLoggerService,
+              private readonly LibModal: AnyOpsOSLibModalService,
+              private readonly LibSshConnectionsState: AnyOpsOSLibSshConnectionsStateService,
+              private readonly LibSshHelpers: AnyOpsOSLibSshHelpersService,
+              private readonly LibSsh: AnyOpsOSLibSshService) {
+
+    this.dataStore = { activeConnection: null, activeConnectionUuid: null };
     this.$activeConnection = new BehaviorSubject(this.dataStore.activeConnection);
-    this.connections = this.$connections.asObservable();
+    this.$activeConnectionUuid = new BehaviorSubject(this.dataStore.activeConnectionUuid);
     this.activeConnection = this.$activeConnection.asObservable();
-
-    this.socket
-      .fromEvent('ssh__data')
-      .subscribe((sockData: { uuid: string, data: any }) => {
-        console.log(sockData);
-      });
-
-    this.socket
-      .fromEvent('ssh__prop')
-      .subscribe((sockData: { uuid: string, prop: string, text: string }) => {
-        console.log(sockData);
-      });
+    this.activeConnectionUuid = this.$activeConnectionUuid.asObservable();
   }
 
   /**
-   * Terminal Map
+   * Setter & Getter of bodyContainerRef
+   * This is used by Modals
+   */
+  setBodyContainerRef(bodyContainer: ViewContainerRef): void {
+    this.bodyContainer = bodyContainer;
+  }
+
+  getBodyContainerRef(): ViewContainerRef {
+    return this.bodyContainer;
+  }
+
+  /**
+   * Setter & Getter of Terminal Map
    */
   setTerminalMap(connectionUuid: string, terminalUuid: string): void {
     this.connectionToTerminalMap[connectionUuid] = terminalUuid;
+  }
+
+  deleteTerminalMap(connectionUuid: string): void {
+    this.connectionToTerminalMap[connectionUuid] = undefined;
+    delete this.connectionToTerminalMap[connectionUuid];
   }
 
   getTerminalMap(connectionUuid: string): string {
@@ -62,46 +68,33 @@ export class AnyOpsOSAppSshService {
   }
 
   /**
-   * Called by Module when the application loads
+   * Updates current activeConnectionUuid state
    */
-  // TODO if autologin is true, Backend should already started the connection and the state should be 'connected'
-  initConnections(): void {
-    if (this.connectionsInitialized) throw new Error('connections_already_initialized');
+  setActiveConnectionUuid(connectionUuid: string = null): void {
+    this.dataStore.activeConnectionUuid = connectionUuid;
 
-    this.FileSystem.getConfigFile('applications/ssh/config.json')
-      .subscribe((res: BackendResponse & { data: SshConnection[]; }) => {
-        this.logger.info('Ssh', 'Get connections successfully');
+    // broadcast data to subscribers
+    this.$activeConnectionUuid.next(Object.assign({}, this.dataStore).activeConnectionUuid);
 
-        res.data.forEach((connection) => connection.state = 'disconnected');
-        this.dataStore.connections = res.data;
-        this.connectionsInitialized = true;
-
-        // broadcast data to subscribers
-        this.$connections.next(Object.assign({}, this.dataStore).connections);
-
-        res.data.forEach((connection) => {
-          if (connection.autologin) this.sendConnect(connection);
-        });
-      },
-      error => {
-        this.logger.error('Ssh', 'Error while getting connections', null, error);
-      });
+    this.connectionsUpdated();
   }
 
-  getActiveConnection(): SshConnection {
-    if (this.dataStore.activeConnection === null) return null;
+  getActiveConnection(): Promise<ConnectionSsh | null> {
+    if (this.dataStore.activeConnectionUuid === null) return null;
 
-    return this.dataStore.connections.find(obj => obj.uuid === this.dataStore.activeConnection);
+    return this.LibSshHelpers.getConnectionByUuid(this.dataStore.activeConnectionUuid, 'ssh') as Promise<ConnectionSsh>;
   }
 
-  getConnectionByUuid(connectionUuid: string): SshConnection {
-    if (!connectionUuid) throw new Error('connectionUuid');
+  /**
+   * Called every time the Ssh connections state is updated
+   */
+  async connectionsUpdated(): Promise<void> {
 
-    return this.dataStore.connections.find(obj => obj.uuid === connectionUuid);
-  }
-
-  setActiveConnection(connectionUuid: string = null): void {
-    this.dataStore.activeConnection = connectionUuid;
+    if (!this.dataStore.activeConnectionUuid) {
+      this.dataStore.activeConnection = null;
+    } else {
+      this.dataStore.activeConnection = await this.LibSshHelpers.getConnectionByUuid(this.dataStore.activeConnectionUuid, 'ssh') as ConnectionSsh;
+    }
 
     // broadcast data to subscribers
     this.$activeConnection.next(Object.assign({}, this.dataStore).activeConnection);
@@ -110,230 +103,89 @@ export class AnyOpsOSAppSshService {
   /**
    * Called by user to start new SSH connection (Shell)
    */
-  connect(connection: SshConnection, saveOnly: boolean = false): void {
-    if (!connection) throw new Error('connection_not_found');
-
-    this.logger.debug('Ssh', 'Connect received', arguments);
+  async connect(connection: ConnectionSsh, saveOnly: boolean = false): Promise<ConnectionSsh> {
+    if (!connection) throw new Error('resource_invalid');
+    this.logger.debug('Ssh', 'Connect received');
 
     // Editing an existing connection
     if (connection.uuid) {
-      connection.state = 'disconnected';
-
-      // Completely rewrite connection information
-      const currentConnectionIndex = this.dataStore.connections.findIndex((obj) => obj.uuid === connection.uuid);
-      this.dataStore.connections[currentConnectionIndex] = connection;
+      await this.LibSshConnectionsState.patchFullConnection(connection);
 
     // New connection received
     } else {
       connection = {
+        type: 'ssh',
         uuid: uuidv4(),
         description: connection.description,
         host: connection.host,
         port: connection.port,
         credential: connection.credential,
         hopServerUuid: connection.hopServerUuid,
-        autologin: connection.autologin,
-        save: connection.save,
+        autoLogin: connection.autoLogin,
         state: 'disconnected'
       };
 
-      this.dataStore.connections.push(connection);
+      await this.LibSshConnectionsState.putConnection(connection);
     }
 
-    // broadcast data to subscribers
-    this.$connections.next(Object.assign({}, this.dataStore).connections);
-
-    // Save connection to Backend on demand
-    if (connection.save) this.saveConnection(connection, saveOnly);
-
     // Connect to the server
-    if (!saveOnly) this.sendConnect(connection);
+    if (!saveOnly) await this.LibSsh.sendConnect(connection.uuid);
+
+    return connection;
   }
 
-  /**
-   * Initialize SSH connection with Backend
-   */
-  private sendConnect(connection: SshConnection): void {
+  async deleteConnection(connectionUuid?: string): Promise<void> {
+    if (!connectionUuid) connectionUuid = this.dataStore.activeConnectionUuid;
 
-    Promise.resolve().then(() => {
-
-      // If current connection have hopServerUuid, make sure it's Online and then Start the current connection
-      if (connection.hopServerUuid && this.getConnectionByUuid(connection.hopServerUuid).state === 'disconnected') {
-        return this.socketConnectServer(this.getConnectionByUuid(connection.hopServerUuid));
-      }
-
-    }).then(() => {
-
-      // Start current connection
-      return this.socketConnectServer(connection);
-    }).then(() => {
-      this.Modal.closeModal('.window--ssh .window__main');
-
-      if (this.getActiveConnection() === null) this.setActiveConnection(connection.uuid);
-    }).catch((e) => {
-
-      // Connection called from user
-      if (this.Modal.isModalOpened('.window--ssh .window__main')) {
-
-        // Show error on screen
-        this.Modal.changeModalType('danger', '.window--ssh .window__main');
-        this.Modal.changeModalText((
-          e === 'ECONNREFUSED' ? 'Connection refused' :
-          e === 'ENOTFOUND' ? 'Remote address not found' : e
-        ), '.window--ssh .window__main');
-
-      // Connection called at anyOpsOS initial load (initConnections)
-      } else {
-        if (this.getActiveConnection().uuid === connection.uuid) this.setActiveConnection(null);
-      }
-
-    });
-
-  }
-
-  /**
-   * Send a message to Backend and setups the connection
-   */
-  socketConnectServer(connection: SshConnection): Promise<any> {
-    const loggerArgs = arguments;
-
-    this.logger.info('ssh', 'Connecting to server', loggerArgs);
-
-    return new Promise((resolve, reject) => {
-
-      // Create new SSH session
-      this.socket.emit('[ssh-session]', {
-        type: 'ssh',
-        host: connection.host,
-        port: connection.port,
-        credential: connection.credential,
-        uuid: connection.uuid,
-        hopServerUuid: connection.hopServerUuid
-      }, (data: { status: 'error' | 'ok', data: any }) => {
-        if (data.status === 'error') {
-          this.logger.error('Ssh', 'Error while emitting [ssh-session]', loggerArgs, data.data);
-          this.getConnectionByUuid(connection.uuid).error = data.data;
-
-          return reject(data.data);
-        }
-
-        // Set connection state as connected and remove any previous errors
-        this.getConnectionByUuid(connection.uuid).state = 'connected';
-        this.getConnectionByUuid(connection.uuid).error = null;
-
-        // broadcast data to subscribers
-        this.$connections.next(Object.assign({}, this.dataStore).connections);
-
-        return resolve();
-      });
-    });
-
-  }
-
-  saveConnection(connection: SshConnection, saveOnly: boolean = false): void {
-    const loggerArgs = arguments;
-
-    if (!connection) throw new Error('connection_not_found');
-    this.logger.debug('Ssh', 'Saving connection', arguments);
-
-    this.FileSystem.patchConfigFile(connection, 'applications/ssh/config.json', connection.uuid).subscribe(
-      () => {
-        this.logger.debug('Ssh', 'Saved connection successfully', loggerArgs);
-
-        if (saveOnly) this.Modal.closeModal('.window--ssh .window__main');
-      },
-      error => {
-        this.logger.error('Ssh', 'Error while saving connection', loggerArgs, error);
-      });
-  }
-
-  // TODO check if connection is part of hopServerUuid of any other connections
-  disconnectConnection(connectionUuid?: string): void {
-    if (!connectionUuid) connectionUuid = this.dataStore.activeConnection;
-
-    this.logger.debug('Ssh', 'Disconnecting connection', arguments);
-
-    this.socket.emit('[ssh-disconnect]', {
-      type: 'ssh',
-      uuid: connectionUuid
-    });
-
-    this.getConnectionByUuid(connectionUuid).state = 'disconnected';
-
-    // broadcast data to subscribers
-    this.$connections.next(Object.assign({}, this.dataStore).connections);
-  }
-
-  // TODO check if connection is part of hopServerUuid of any other connections
-  deleteConnection(connectionUuid?: string): void {
-    const loggerArgs = arguments;
-
-    if (!connectionUuid) connectionUuid = this.dataStore.activeConnection;
-
-    const configFile = 'applications/ssh/config.json';
-
-    this.Modal.openRegisteredModal('question', '.window--ssh .window__main',
+    const currentConnection: ConnectionSsh = await this.LibSshHelpers.getConnectionByUuid(connectionUuid, 'ssh') as ConnectionSsh;
+    const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('question', this.bodyContainer,
       {
-        title: 'Delete connection ' + this.getConnectionByUuid(connectionUuid).description,
+        title: `Delete connection ${currentConnection.description}`,
         text: 'Remove the selected connection from the inventory?',
         yes: 'Delete',
         yesClass: 'warn',
         no: 'Cancel',
-        boxContent: 'This action is permanent.',
+        boxContent: 'This action is permanent. Anything using this connection as a dependency will be deleted as well.',
         boxClass: 'text-danger',
         boxIcon: 'warning'
       }
-    ).then((modalInstance) => {
-      modalInstance.result.then((result: boolean) => {
-        if (result === true) {
+    );
 
-          this.logger.debug('Ssh', 'Deleting connection', loggerArgs);
+    modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+      if (result !== true) return;
 
-          this.disconnectConnection(connectionUuid);
-          this.setActiveConnection(null);
+      this.logger.debug('Ssh', 'Deleting connection');
 
-          this.FileSystem.deleteConfigFile(configFile, connectionUuid).subscribe(
-            () => {
-              this.dataStore.connections = this.dataStore.connections.filter((connection) => {
-                return connection.uuid !== connectionUuid;
-              });
+      this.setActiveConnectionUuid();
 
-              // broadcast data to subscribers
-              this.$connections.next(Object.assign({}, this.dataStore).connections);
-
-              this.logger.debug('Ssh', 'Connection deleted successfully', loggerArgs);
-            },
-            error => {
-              this.logger.error('Ssh', 'Error while deleting connection', loggerArgs, error);
-            });
-
-        }
-      });
+      await this.LibSsh.deleteConnection(connectionUuid);
     });
   }
 
-  editConnection(connectionUuid?: string): void {
-    if (!connectionUuid) connectionUuid = this.dataStore.activeConnection;
+  async editConnection(connectionUuid?: string): Promise<void> {
+    if (!connectionUuid) connectionUuid = this.dataStore.activeConnectionUuid;
 
-    if (this.getConnectionByUuid(connectionUuid).state === 'disconnected') {
-      this.setActiveConnection(connectionUuid);
-      return;
-    }
+    const currentConnection: ConnectionSsh = await this.LibSshHelpers.getConnectionByUuid(connectionUuid, 'ssh') as ConnectionSsh;
+    if (currentConnection.state === 'disconnected') return this.setActiveConnectionUuid(connectionUuid);
 
-    this.Modal.openRegisteredModal('question', '.window--ssh .window__main',
+    const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('question', this.bodyContainer,
       {
-        title: 'Edit connection ' + this.getConnectionByUuid(connectionUuid).description,
+        title: `Edit connection ${currentConnection.description}`,
         text: 'Your connection will be disconnected before editing it. Continue?',
         yes: 'Continue',
-        no: 'Cancel'
+        yesClass: 'warn',
+        no: 'Cancel',
+        boxContent: 'Anything using this as a dependency will be disconnected.',
+        boxClass: 'text-danger',
+        boxIcon: 'warning'
       }
-    ).then((modalInstance) => {
-      modalInstance.result.then((result: boolean) => {
-        if (result === true) {
-          this.disconnectConnection(connectionUuid);
-          this.setActiveConnection(connectionUuid);
-        }
-      });
+    );
+
+    modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+      if (result !== true) return;
+
+      await this.LibSsh.disconnectConnection(connectionUuid);
+      this.setActiveConnectionUuid(connectionUuid);
     });
   }
 }

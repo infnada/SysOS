@@ -1,88 +1,137 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
 
-import {map} from 'rxjs/operators';
+import {Socket} from 'ngx-socket-io';
 
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
+import {AnyOpsOSLibWorkspaceService} from '@anyopsos/lib-workspace';
+import {AnyOpsOSLibSshHelpersService, AnyOpsOSLibSshService} from '@anyopsos/lib-ssh';
+import {ConnectionKubernetes} from '@anyopsos/module-kubernetes';
+import {ConnectionSsh} from '@anyopsos/module-ssh';
+import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
+
+import {AnyOpsOSLibKubernetesConnectionsStateService} from './anyopsos-lib-kubernetes-connections-state.service';
+import {AnyOpsOSLibKubernetesHelpersService} from './anyopsos-lib-kubernetes-helpers.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AnyOpsOSLibKubernetesService {
 
-  constructor(private http: HttpClient,
-              private logger: AnyOpsOSLibLoggerService) {
+  constructor(private readonly socket: Socket,
+              private readonly logger: AnyOpsOSLibLoggerService,
+              private readonly LibWorkspace: AnyOpsOSLibWorkspaceService,
+              private readonly LibKubernetesConnectionsState: AnyOpsOSLibKubernetesConnectionsStateService,
+              private readonly LibKuberneteshHelpers: AnyOpsOSLibKubernetesHelpersService,
+              private readonly LibSshHelpers: AnyOpsOSLibSshHelpersService,
+              private readonly LibSsh: AnyOpsOSLibSshService) {
   }
 
   /**
-   * Custom errorHandler function for KubernetesFactory
+   * Initialize Kubernetes connection with Backend
    */
-  private errorHandler(e: any): { status: string, error: any } {
-    console.error({
-      status: 'error',
-      error: (e.html && e.html.head[0].title ? e.html.head[0].title : e)
+  async sendConnect(connectionUuid: string): Promise<void> {
+    this.logger.debug('LibKubernetes', 'sendConnect -> Connecting...');
+
+    const currentConnection: ConnectionKubernetes = await this.LibKuberneteshHelpers.getConnectionByUuid(connectionUuid);
+    if (currentConnection.state === 'connected') throw new Error('already_connected');
+
+    // If current connection have hopServerUuid, make sure it's Online and then Start the current connection
+    if (currentConnection.hopServerUuid) {
+      await this.LibSsh.sendConnect(currentConnection.hopServerUuid);
+      const hopServer: ConnectionSsh = await this.LibSshHelpers.getConnectionByUuid(currentConnection.hopServerUuid, 'ssh') as ConnectionSsh;
+      if (hopServer.state === 'disconnected') await this.LibSsh.sendConnect(currentConnection.hopServerUuid);
+    }
+
+    // Start current connection
+    await this.socketConnectServer(currentConnection);
+  }
+
+  /**
+   * Send a message to Backend and setups the connection
+   */
+  private socketConnectServer(connection: ConnectionKubernetes): Promise<any> {
+    const loggerArgs = arguments;
+    this.logger.info('LibKubernetes', 'Connecting to socket', loggerArgs);
+
+    return new Promise((resolve, reject) => {
+
+      // Create new Kubernetes session
+      this.socket.emit('[kubernetes-session]', {
+        connectionUuid: connection.uuid,
+        workspaceUuid: this.LibWorkspace.getCurrentWorkspaceUuid()
+      }, async (data: BackendResponse) => {
+
+        if (data.status === 'error') {
+          this.logger.error('LibKubernetes', 'Error while emitting [kubernetes-session]', loggerArgs, data.data);
+          await this.LibKubernetesConnectionsState.patchConnection(connection.uuid, 'error', data.data);
+
+          return reject(data.data);
+        }
+
+        // Set connection state as connected and remove any previous errors
+        await this.LibKubernetesConnectionsState.patchConnection(connection.uuid, 'state', 'connected');
+        await this.LibKubernetesConnectionsState.patchConnection(connection.uuid, 'error', null);
+
+        return resolve();
+      });
     });
-
-    return {
-      status: 'error',
-      error: (e.html && e.html.head[0].title ? e.html.head[0].title : e)
-    };
   }
 
-  getResourceBySelfLink(object): Promise<any> {
-    return this.http.get(`/api/kubernetes/resource/${object.info.mainUuid}/${encodeURIComponent(object.info.data.metadata.selfLink)}`).pipe(map((data: any) => {
-        if (data.status === 'error') return this.errorHandler(data.errno ? data.errno : data.data);
-        if (!data.data) return this.errorHandler(data.data);
+  /**
+   * Disconnects a connection
+   */
+  disconnectConnection(connectionUuid: string): Promise<void> {
+    const loggerArgs = arguments;
+    this.logger.debug('LibKubernetes', 'Disconnecting connection', loggerArgs);
 
-        return data;
-      },
-      error => {
-        this.logger.error('[Kubernetes] -> getResourceBySelfLink -> Error while doing the call -> ', error);
-      })).toPromise();
+    return new Promise(async (resolve, reject) => {
+
+      const currentConnection: ConnectionKubernetes = await this.LibKuberneteshHelpers.getConnectionByUuid(connectionUuid);
+      if (currentConnection.state === 'disconnected') throw new Error('already_disconnected');
+
+      this.socket.emit('[kubernetes-disconnect]', {
+        connectionUuid,
+        workspaceUuid: this.LibWorkspace.getCurrentWorkspaceUuid()
+      }, async (data: BackendResponse) => {
+
+        if (data.status === 'error') {
+          this.logger.error('LibKubernetes', 'Error while emitting [kubernetes-disconnect]', loggerArgs, data.data);
+          await this.LibKubernetesConnectionsState.patchConnection(connectionUuid, 'error', data.data);
+
+          return reject(data.data);
+        }
+
+        // Set connection state as connected and remove any previous errors
+        await this.LibKubernetesConnectionsState.patchConnection(connectionUuid, 'state', 'disconnected');
+        await this.LibKubernetesConnectionsState.patchConnection(connectionUuid, 'error', null);
+
+        return resolve();
+      });
+    });
   }
 
-  getContainerLogsToSocket(connectionUuid: string, terminalUuid: string, namespace: string, pod: string, container: string, showContainersName: boolean = false): Promise<any> {
-    return this.http.get(`/api/kubernetes/log/${connectionUuid}/${terminalUuid}/${namespace}/${pod}/${container}/${showContainersName}`).pipe(map((data: any) => {
-        if (data.status === 'error') return this.errorHandler(data.errno ? data.errno : data.data);
+  /**
+   * Deletes a connection
+   */
+  deleteConnection(connectionUuid: string): Promise<void> {
+    const loggerArgs = arguments;
+    this.logger.debug('LibKubernetes', 'Deleting connection', arguments);
 
-        return data;
-      },
-      error => {
-        this.logger.error('[Kubernetes] -> getContainerLogsToSocket -> Error while doing the call -> ', error);
-      })).toPromise();
+    return new Promise(async (resolve, reject) => {
+
+      const currentConnection: ConnectionKubernetes = await this.LibKuberneteshHelpers.getConnectionByUuid(connectionUuid);
+      if (!currentConnection) {
+        this.logger.error('LibKubernetes', 'deleteConnection -> Resource invalid', loggerArgs);
+        throw new Error('resource_invalid');
+      }
+
+      if (currentConnection.state === 'connected') await this.disconnectConnection(connectionUuid);
+
+      this.LibKubernetesConnectionsState.deleteConnection(connectionUuid).then(() => {
+        return resolve();
+      }).catch((e: any) => {
+        return reject(e);
+      });
+    });
   }
-
-  endContainerLogs(logUuid: string): Promise<any> {
-    return this.http.delete(`/api/kubernetes/log/${logUuid}`).pipe(map((data: any) => {
-        if (data.status === 'error') return this.errorHandler(data.errno ? data.errno : data.data);
-
-        return data;
-      },
-      error => {
-        this.logger.error('[Kubernetes] -> endContainerLogs -> Error while doing the call -> ', error);
-      })).toPromise();
-  }
-
-  getContainerShellToSocket(type: string, connectionUuid: string, terminalUuid: string, namespace: string, pod: string, container: string, command: string = '/bin/sh'): Promise<any> {
-    return this.http.get(`/api/kubernetes/shell/${type}/${connectionUuid}/${terminalUuid}/${namespace}/${pod}/${container}/${encodeURIComponent(command)}`).pipe(map((data: any) => {
-        if (data.status === 'error') return this.errorHandler(data.errno ? data.errno : data.data);
-
-        return data;
-      },
-      error => {
-        this.logger.error('[Kubernetes] -> getContainerShellToSocket -> Error while doing the call -> ', error);
-      })).toPromise();
-  }
-
-  endContainerShell(terminalUuid: string): Promise<any> {
-    return this.http.delete(`/api/kubernetes/shell/${terminalUuid}`).pipe(map((data: any) => {
-        if (data.status === 'error') return this.errorHandler(data.errno ? data.errno : data.data);
-
-        return data;
-      },
-      error => {
-        this.logger.error('[Kubernetes] -> endContainerShell -> Error while doing the call -> ', error);
-      })).toPromise();
-  }
-
 }

@@ -1,7 +1,0 @@
-import {SecurityError} from './security-error';
-
-import {ManagedObjectReference} from './managed-object-reference';
-export interface NoPermission extends SecurityError {
-  object: ManagedObjectReference;
-  privilegeId: string;
-}

@@ -3,7 +3,7 @@ Generated with `routing-controllers-openapi`
 
 ## Version: 1.0.0
 
-### /api/vmware/getClientVersion
+### /api/vmware/getClientVersion/{workspaceUuid}/{connectionUuid}
 
 #### POST
 ##### Summary:
@@ -14,7 +14,8 @@ Get vmware client version
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| body | body |  | No | object |
+| workspaceUuid | path |  | Yes | string |
+| connectionUuid | path |  | Yes | string |
 
 ##### Responses
 
@@ -22,17 +23,19 @@ Get vmware client version
 | ---- | ----------- |
 | 200 | Successful response |
 
-### /api/vmware/connect
+### /api/vmware/rest/{workspaceUuid}/{connectionUuid}
 
 #### POST
 ##### Summary:
 
-Vmware connect
+Vmware call rest
 
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
+| workspaceUuid | path |  | Yes | string |
+| connectionUuid | path |  | Yes | string |
 | body | body |  | No | object |
 
 ##### Responses
@@ -41,45 +44,7 @@ Vmware connect
 | ---- | ----------- |
 | 200 | Successful response |
 
-### /api/vmware/connectSoap
-
-#### POST
-##### Summary:
-
-Vmware connect soap
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| body | body |  | No | object |
-
-##### Responses
-
-| Code | Description |
-| ---- | ----------- |
-| 200 | Successful response |
-
-### /api/vmware/call
-
-#### POST
-##### Summary:
-
-Vmware call
-
-##### Parameters
-
-| Name | Located in | Description | Required | Schema |
-| ---- | ---------- | ----------- | -------- | ---- |
-| body | body |  | No | object |
-
-##### Responses
-
-| Code | Description |
-| ---- | ----------- |
-| 200 | Successful response |
-
-### /api/vmware/callSoap
+### /api/vmware/soap/{workspaceUuid}/{connectionUuid}
 
 #### POST
 ##### Summary:
@@ -90,6 +55,8 @@ Vmware call soap
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
+| workspaceUuid | path |  | Yes | string |
+| connectionUuid | path |  | Yes | string |
 | body | body |  | No | object |
 
 ##### Responses
@@ -98,7 +65,7 @@ Vmware call soap
 | ---- | ----------- |
 | 200 | Successful response |
 
-### /api/vmware/upload_to_datastore
+### /api/vmware/upload_to_datastore/{workspaceUuid}/{connectionUuid}
 
 #### POST
 ##### Summary:
@@ -109,6 +76,8 @@ Upload to datastore
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
+| workspaceUuid | path |  | Yes | string |
+| connectionUuid | path |  | Yes | string |
 | body | body |  | No | object |
 
 ##### Responses

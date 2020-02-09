@@ -14,8 +14,8 @@
   },
   "devDependencies": {
     "@anyopsos/backend": "~0.0.1",
+    "@types/node": "^12.12.21",
     "@types/request": "^2.48.4",
-    "isomorphic-ws": "^4.0.1",
     "socket.io": "^2.3.0",
     "typescript": "^3.7.4"
   },

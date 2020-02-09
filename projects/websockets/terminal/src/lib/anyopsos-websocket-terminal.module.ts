@@ -3,10 +3,10 @@ import {getLogger, Logger} from 'log4js';
 import {Socket} from 'socket.io';
 
 import {AnyOpsOSTerminalModule, TerminalTypes} from '@anyopsos/module-terminal';
-
 import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
 
-const logger: Logger = getLogger('mainlog');
+
+const logger: Logger = getLogger('mainLog');
 
 @SocketController()
 export class AnyOpsOSTerminalWebsocketController {
@@ -22,11 +22,13 @@ export class AnyOpsOSTerminalWebsocketController {
   terminalCreateMessage(@ConnectedSocket() socket: Socket,
                         @SocketId() id: string,
                         @SocketSessionParam('userUuid') userUuid: string,
-                        @SocketSessionParam('sessionID') sessionUuid: string,
-                        @MessageBody() terminalType: TerminalTypes) {
-    logger.info(`[Websocket terminal] -> create -> id [${id}], type [${terminalType}]`);
+                        @SocketSessionParam('sessionId') sessionUuid: string,
+                        @MessageBody() terminalData: { connectionUuid: string; workspaceUuid: string; terminalType: TerminalTypes; }) {
+    logger.info(`[Websocket terminal] -> create -> id [${id}], connectionUuid [${terminalData.connectionUuid}], workspaceUuid [${terminalData.workspaceUuid}], type [${terminalData.terminalType}]`);
 
-    return new AnyOpsOSTerminalModule(socket).createTerminal(userUuid, sessionUuid, terminalType).then((terminalUuid: string) => {
+    const TerminalsModule: AnyOpsOSTerminalModule = new AnyOpsOSTerminalModule(userUuid, sessionUuid, terminalData.workspaceUuid, terminalData.connectionUuid);
+
+    return TerminalsModule.createTerminal(socket, terminalData.terminalType).then((terminalUuid: string) => {
       return {status: 'ok', data: terminalUuid} as BackendResponse;
     }).catch((e: Error) => {
       return {status: 'error', data: e.toString()} as BackendResponse;
@@ -38,12 +40,17 @@ export class AnyOpsOSTerminalWebsocketController {
   terminalDeleteMessage(@ConnectedSocket() socket: Socket,
                         @SocketId() id: string,
                         @SocketSessionParam('userUuid') userUuid: string,
-                        @SocketSessionParam('sessionID') sessionUuid: string,
-                        @MessageBody() terminalUuid: string) {
-    logger.info(`[Websocket terminal] -> delete -> id [${id}], terminalUuid [${terminalUuid}]`);
+                        @SocketSessionParam('sessionId') sessionUuid: string,
+                        @MessageBody() terminalData: { connectionUuid: string; workspaceUuid: string; terminalUuid: string; }) {
+    logger.info(`[Websocket terminal] -> delete -> id [${id}], connectionUuid [${terminalData.connectionUuid}], workspaceUuid [${terminalData.workspaceUuid}], terminalUuid [${terminalData.terminalUuid}]`);
 
-    new AnyOpsOSTerminalModule(socket).deleteTerminal(userUuid, sessionUuid, terminalUuid);
-    return {status: 'ok'} as BackendResponse;
+    const TerminalsModule: AnyOpsOSTerminalModule = new AnyOpsOSTerminalModule(userUuid, sessionUuid, terminalData.workspaceUuid, terminalData.connectionUuid);
+
+    return TerminalsModule.deleteTerminal(terminalData.terminalUuid).then(() => {
+      return {status: 'ok', data: terminalData.terminalUuid} as BackendResponse;
+    }).catch((e: Error) => {
+      return {status: 'error', data: e.toString()} as BackendResponse;
+    });
   }
 
   @OnMessage('[terminal-geometry]')
@@ -51,11 +58,13 @@ export class AnyOpsOSTerminalWebsocketController {
   terminalGeometryMessage(@ConnectedSocket() socket: Socket,
                           @SocketId() id: string,
                           @SocketSessionParam('userUuid') userUuid: string,
-                          @SocketSessionParam('sessionID') sessionUuid: string,
-                          @MessageBody() data: { terminalUuid: string; cols: number; rows: number; }) {
-    logger.info(`[Websocket terminal] -> geometry -> id [${id}], terminalUuid [${data.terminalUuid}]`);
+                          @SocketSessionParam('sessionId') sessionUuid: string,
+                          @MessageBody() terminalData: { connectionUuid: string; workspaceUuid: string; terminalUuid: string; cols: number; rows: number; }) {
+    logger.info(`[Websocket terminal] -> geometry -> id [${id}], connectionUuid [${terminalData.connectionUuid}], workspaceUuid [${terminalData.workspaceUuid}], terminalUuid [${terminalData.terminalUuid}]`);
 
-    new AnyOpsOSTerminalModule(socket).setTerminalGeometry(userUuid, sessionUuid, data);
+    const TerminalsModule: AnyOpsOSTerminalModule = new AnyOpsOSTerminalModule(userUuid, sessionUuid, terminalData.workspaceUuid, terminalData.connectionUuid);
+
+    TerminalsModule.setTerminalGeometry(terminalData.terminalUuid, terminalData.cols, terminalData.rows);
     return {status: 'ok'} as BackendResponse;
   }
 
@@ -64,12 +73,14 @@ export class AnyOpsOSTerminalWebsocketController {
   terminalStdinMessage(@ConnectedSocket() socket: Socket,
                        @SocketId() id: string,
                        @SocketSessionParam('userUuid') userUuid: string,
-                       @SocketSessionParam('sessionID') sessionUuid: string,
-                       @MessageBody() data: { terminalUuid: string; data: string; }) {
-    logger.info(`[Websocket terminal] -> stdin -> id [${id}], terminalUuid [${data.terminalUuid}]`);
+                       @SocketSessionParam('sessionId') sessionUuid: string,
+                       @MessageBody() terminalData: { connectionUuid: string; workspaceUuid: string; terminalUuid: string; data: string; }) {
+    logger.info(`[Websocket terminal] -> stdin -> id [${id}], connectionUuid [${terminalData.connectionUuid}], workspaceUuid [${terminalData.workspaceUuid}], terminalUuid [${terminalData.terminalUuid}]`);
 
-    new AnyOpsOSTerminalModule(socket).terminalStdin(userUuid, sessionUuid, data);
-    return {status: 'ok', data: data.terminalUuid} as BackendResponse;
+    const TerminalsModule: AnyOpsOSTerminalModule = new AnyOpsOSTerminalModule(userUuid, sessionUuid, terminalData.workspaceUuid, terminalData.connectionUuid);
+
+    TerminalsModule.terminalStdin(terminalData.terminalUuid, terminalData.data);
+    return {status: 'ok', data: terminalData.terminalUuid} as BackendResponse;
   }
 
 }

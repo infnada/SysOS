@@ -1,4 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
 
 import {Application} from '@anyopsos/lib-application';
 
@@ -10,6 +10,7 @@ import {AnyOpsOSAppBackupsManagerService} from '../services/anyopsos-app-backups
   styleUrls: ['./body.component.scss']
 })
 export class BodyComponent implements OnInit {
+  @ViewChild('bodyContainer', {static: true, read: ViewContainerRef}) bodyContainer: ViewContainerRef;
   @Input() application: Application;
 
   viewSide: boolean = true;
@@ -18,6 +19,9 @@ export class BodyComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Set bodyContainerRef, this is used by Modals
+    this.BackupsManager.setBodyContainerRef(this.bodyContainer);
+
     console.log(this.application);
     if (this.application.initData) {
 

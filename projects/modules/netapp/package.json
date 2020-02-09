@@ -3,10 +3,20 @@
   "version": "0.0.1",
   "main": "src/index.ts",
   "dependencies": {
+    "log4js": "^6.1.1",
     "node-fetch": "^2.6.0",
+    "socket-controllers": "https://github.com/anyOpsOS/socket-controllers.git#build",
+    "validator": "^12.2.0",
     "xml2js": "^0.4.23"
   },
+  "peerDependencies": {
+    "@anyopsos/backend": "~0.0.1",
+    "@anyopsos/module-config-file": "~0.0.1",
+    "@anyopsos/module-workspace": "~0.0.1",
+    "@anyopsos/module-credentia": "~0.0.1"
+  },
   "devDependencies": {
+    "@types/node": "^12.12.21",
     "@types/node-fetch": "^2.5.4",
     "@types/xml2js": "^0.4.5",
     "typescript": "^3.7.4"

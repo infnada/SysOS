@@ -1,11 +1,12 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {takeUntil} from 'rxjs/operators';
-import {Subject} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 
-import {Application} from '@anyopsos/lib-application';
+import {AnyOpsOSLibApplicationService, Application} from '@anyopsos/lib-application';
+import {AnyOpsOSLibSshService} from '@anyopsos/lib-ssh';
+import {ConnectionSsh} from '@anyopsos/module-ssh';
 
 import {AnyOpsOSAppSshService} from '../../services/anyopsos-app-ssh.service';
-import {SshConnection} from '../../types/ssh-connection';
 
 @Component({
   selector: 'aassh-actions',
@@ -13,20 +14,22 @@ import {SshConnection} from '../../types/ssh-connection';
   styleUrls: ['./actions.component.scss']
 })
 export class ActionsComponent implements OnDestroy, OnInit {
-  @Input() application: Application;
+  @Input() private readonly application: Application;
 
-  private destroySubject$: Subject<void> = new Subject();
+  private readonly destroySubject$: Subject<void> = new Subject();
 
-  activeConnection: string;
+  activeConnectionUuid: string;
 
-  constructor(private Ssh: AnyOpsOSAppSshService) {
+  constructor(private readonly LibApplication: AnyOpsOSLibApplicationService,
+              private readonly LibSsh: AnyOpsOSLibSshService,
+              private readonly Ssh: AnyOpsOSAppSshService) {
   }
 
   ngOnInit(): void {
 
-    // Listen for activeConnection change
-    this.Ssh.activeConnection
-      .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnectionUuid: string) => this.activeConnection = activeConnectionUuid);
+    // Listen for activeConnectionUuid change
+    this.Ssh.activeConnectionUuid
+      .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnectionUuid: string) => this.activeConnectionUuid = activeConnectionUuid);
   }
 
   ngOnDestroy(): void {
@@ -35,31 +38,43 @@ export class ActionsComponent implements OnDestroy, OnInit {
     this.destroySubject$.next();
   }
 
-  getActiveConnection(): SshConnection {
-    return this.Ssh.getActiveConnection();
+  getActiveConnectionObs(): Observable<ConnectionSsh> {
+    return this.Ssh.activeConnection;
   }
 
   newConnection(): void {
 
-    // even if activeConnection === null, set it again to reset possible Form changes
-    this.Ssh.setActiveConnection(null);
+    // even if activeConnectionUuid === null, set it again to reset possible Form changes
+    this.Ssh.setActiveConnectionUuid();
   }
 
   disconnectConnection(): void {
-    if (this.activeConnection === null) return;
+    if (this.activeConnectionUuid === null) return;
 
-    this.Ssh.disconnectConnection();
+    this.LibSsh.disconnectConnection(this.activeConnectionUuid).then(() => {
+
+      // Remove terminalMap to not reuse the same on reconnect
+      this.Ssh.deleteTerminalMap(this.activeConnectionUuid);
+    });
   }
 
   deleteConnection(): void {
-    if (this.activeConnection === null) return;
+    if (this.activeConnectionUuid === null) return;
 
     this.Ssh.deleteConnection();
   }
 
   editConnection(): void {
-    if (this.activeConnection === null) return;
+    if (this.activeConnectionUuid === null) return;
 
     this.Ssh.editConnection();
+  }
+
+  isSftpApplicationInstalled(): boolean {
+    return this.LibApplication.isApplicationInstalled('sftp');
+  }
+
+  openSftp(): void {
+    this.LibApplication.openApplication('sftp', this.activeConnectionUuid)
   }
 }

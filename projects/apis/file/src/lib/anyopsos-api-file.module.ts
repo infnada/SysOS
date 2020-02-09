@@ -1,22 +1,8 @@
-import {
-  Controller,
-  Get,
-  Authorized,
-  Req,
-  Res,
-  Param,
-  Post,
-  UploadedFiles,
-  BodyParam,
-  Patch,
-  Delete,
-  Put
-} from 'routing-controllers';
+import {Controller, Get, Authorized, Req, Res, Param, Post, BodyParam, Patch, Delete, Put, UploadedFile} from 'routing-controllers';
 import {SessionParam} from 'routing-controllers/decorator/SessionParam';
 import {Request, Response} from 'express';
 import {getLogger, Logger} from 'log4js';
-import {diskStorage, Options} from 'multer';
-import {pathExistsSync} from 'fs-extra';
+import {pathExistsSync, stat, Stats} from 'fs-extra';
 import {join} from 'path';
 
 import {AnyOpsOSApiGlobalsModule} from '@anyopsos/module-api-globals';
@@ -24,40 +10,33 @@ import {AnyOpsOSGetPathModule} from '@anyopsos/module-get-path';
 import {AnyOpsOSFileSystemModule} from '@anyopsos/module-file-system';
 
 
-const logger: Logger = getLogger('mainlog');
-const getMulterOptions = (path: string): Options => {
-  return {
-    storage: diskStorage({
-      destination: (req: Express.Request, file: Express.Multer.File, callback: (error: Error | null, destination: string) => void): void => {
-        callback(null, join(new AnyOpsOSGetPathModule().filesystem, path));
-      },
-      filename: (req: Express.Request, file: Express.Multer.File, callback: (error: Error | null, filename: string) => void): void => {
-        callback(null, file.fieldname);
-      }
-    }),
-    limits: {
-      fieldNameSize: 255
-    }
-  };
-};
+const logger: Logger = getLogger('mainLog');
 
 @Authorized()
 @Controller('/api/file')
 export class AnyOpsOSFileApiController {
 
   // TODO not using file-system module
-  @Get('/:fileName')
+  @Get('/:srcPath')
   async getFile(@Req() request: Request,
                 @Res() response: Response,
-                @Param('fileName') fileName: string) {
-    logger.info(`[API File] -> Get file -> file [${fileName}]`);
+                @SessionParam('userUuid') userUuid: string,
+                @SessionParam('id') sessionUuid: string,
+                @Param('srcPath') srcPath: string) {
+    logger.info(`[API File] -> Get file -> srcPath [${srcPath}]`);
 
-    const filePath: string = join(new AnyOpsOSGetPathModule().filesystem, fileName);
+    const GetPathModule: AnyOpsOSGetPathModule = new AnyOpsOSGetPathModule();
 
-    if (!pathExistsSync(filePath)) throw new Error('resource_not_found');
+    if (srcPath.indexOf('\0') !== -1) throw new Error('param_security_stop');
+
+    const realSrcPath: string = join(GetPathModule.filesystem, srcPath);
+    if (!pathExistsSync(realSrcPath)) throw new Error('resource_not_found');
+
+    const fileStats: Stats = await stat(realSrcPath);
+    if (fileStats.isDirectory()) throw new Error('resource_invalid');
 
     const options = {
-      root: new AnyOpsOSGetPathModule().filesystem,
+      root: GetPathModule.filesystem,
       dotfiles: 'allow',
       headers: {
         'x-timestamp': Date.now(),
@@ -68,7 +47,7 @@ export class AnyOpsOSFileApiController {
     try {
       await new Promise((resolve, reject) => {
 
-        response.sendFile(fileName, options, (e: Error) => {
+        response.sendFile(srcPath, options, (e: Error) => {
           if (e) reject(e);
           resolve();
         });
@@ -81,21 +60,23 @@ export class AnyOpsOSFileApiController {
     return;
   }
 
-  // TODO not using file-system module
-  @Put('/')
-  newFile(@Req() request: Request,
-          @Res() response: Response,
-          @BodyParam('path') path: string,
-          @UploadedFiles('files', {
-            required: true,
-            // TODO extract path from BodyParam
-            options: getMulterOptions('/')
-          }) files: Express.Multer.File[]) {
-    logger.info(`[API File] -> Creating file`);
+  @Put('/:dstPath')
+  async newFile(@Req() request: Request,
+                @Res() response: Response,
+                @SessionParam('userUuid') userUuid: string,
+                @SessionParam('id') sessionUuid: string,
+                @Param('dstPath') dstPath: string,
+                @UploadedFile('file') file: Express.Multer.File) {
+    logger.info(`[API File] -> Creating file -> dstPath [${dstPath}], file [${file.originalname}]`);
 
-    // TODO: check file already exists
+    const FileSystemModule: AnyOpsOSFileSystemModule = new AnyOpsOSFileSystemModule(userUuid, sessionUuid);
+    const ApiGlobalsModule: AnyOpsOSApiGlobalsModule = new AnyOpsOSApiGlobalsModule(request, response);
 
-    return new AnyOpsOSApiGlobalsModule(request, response).validResponse();
+    const realDstPath: string = join(dstPath, file.originalname);
+
+    await FileSystemModule.putFile(file, realDstPath);
+
+    return ApiGlobalsModule.validResponse();
   }
 
   @Post('/download_from_url')
@@ -103,43 +84,59 @@ export class AnyOpsOSFileApiController {
                        @Res() response: Response,
                        @SessionParam('userUuid') userUuid: string,
                        @SessionParam('id') sessionUuid: string,
-                       @BodyParam('path') path: string,
+                       @BodyParam('dstPath') dstPath: string,
                        @BodyParam('url') url: string,
                        @BodyParam('credentialUuid') credentialUuid?: string) {
-    logger.info(`[API File] -> Creating file -> Downloading file from internet -> path [${path}], url [${url}]`);
+    logger.info(`[API File] -> Creating file -> Downloading file from internet -> dstPath [${dstPath}], url [${url}]`);
 
-    await new AnyOpsOSFileSystemModule(userUuid, sessionUuid).downloadFileFromUrl(url, path, null, credentialUuid);
-    return new AnyOpsOSApiGlobalsModule(request, response).validResponse();
+    const FileSystemModule: AnyOpsOSFileSystemModule = new AnyOpsOSFileSystemModule(userUuid, sessionUuid);
+    const ApiGlobalsModule: AnyOpsOSApiGlobalsModule = new AnyOpsOSApiGlobalsModule(request, response);
+
+    await FileSystemModule.downloadFileFromUrl(url, dstPath, credentialUuid);
+
+    return ApiGlobalsModule.validResponse();
   }
 
-  @Patch('/:type/:fileName')
+  @Patch('/:type/:srcPath')
   async patchFile(@Req() request: Request,
                   @Res() response: Response,
+                  @SessionParam('userUuid') userUuid: string,
+                  @SessionParam('id') sessionUuid: string,
                   @Param('type') type: 'copy' | 'move' | 'rename' | 'chmod' | 'chown',
-                  @Param('fileName') fileName: string,
-                  @BodyParam('dstPath') dstPath?: string,
-                  @BodyParam('permissions') permissions?: string) {
-    logger.info(`[API File] -> Rename/Move/Copy/Chown/Chmod file -> type [${type}], file [${fileName}], dstPath [${dstPath}]`);
+                  @Param('srcPath') srcPath: string,
+                  @BodyParam('dstPath', { required: false }) dstPath?: string,
+                  @BodyParam('permissions', { required: false }) permissions?: string) {
+    logger.info(`[API File] -> Rename/Move/Copy/Chown/Chmod file -> type [${type}], srcPath [${srcPath}], dstPath [${dstPath}]`);
 
-    const srcPath: string = join(new AnyOpsOSGetPathModule().filesystem, fileName);
-    const realDstPath: string = join(new AnyOpsOSGetPathModule().filesystem, dstPath);
+    const FileSystemModule: AnyOpsOSFileSystemModule = new AnyOpsOSFileSystemModule(userUuid, sessionUuid);
+    const ApiGlobalsModule: AnyOpsOSApiGlobalsModule = new AnyOpsOSApiGlobalsModule(request, response);
 
-    if (type === 'copy' || type === 'move' || type === 'rename') await new AnyOpsOSFileSystemModule().patchFile(type, srcPath, realDstPath);
-    if (type === 'chmod' || type === 'chown') await new AnyOpsOSFileSystemModule().patchFilePermissions(type, srcPath, permissions);
+    // 'dst' is required by 'copy' | 'move' | 'rename'
+    // 'permissions' is required by 'chmod' | 'chown'
+    if (typeof dstPath === 'undefined' && typeof permissions === 'undefined') {
+      return ApiGlobalsModule.invalidResponse('dst_or_permissions_undefined');
+    }
 
-    return new AnyOpsOSApiGlobalsModule(request, response).validResponse();
+    if ((type === 'copy' || type === 'move' || type === 'rename') && dstPath) await FileSystemModule.patchFile(type, srcPath, dstPath);
+    if ((type === 'chmod' || type === 'chown') && permissions) await FileSystemModule.patchFilePermissions(type, srcPath, permissions);
+
+    return ApiGlobalsModule.validResponse();
   }
 
-  @Delete('/:fileName')
+  @Delete('/:srcPath')
   async deleteFile(@Req() request: Request,
                    @Res() response: Response,
-                   @Param('fileName') fileName: string) {
-    logger.info(`[API File] -> Delete file -> file [${fileName}]`);
+                   @SessionParam('userUuid') userUuid: string,
+                   @SessionParam('id') sessionUuid: string,
+                   @Param('srcPath') srcPath: string) {
+    logger.info(`[API File] -> Delete file -> srcPath [${srcPath}]`);
 
-    const filePath: string = join(new AnyOpsOSGetPathModule().filesystem, fileName);
+    const FileSystemModule: AnyOpsOSFileSystemModule = new AnyOpsOSFileSystemModule(userUuid, sessionUuid);
+    const ApiGlobalsModule: AnyOpsOSApiGlobalsModule = new AnyOpsOSApiGlobalsModule(request, response);
 
-    await new AnyOpsOSFileSystemModule().deleteFile(filePath);
-    return new AnyOpsOSApiGlobalsModule(request, response).validResponse();
+    await FileSystemModule.deleteFile(srcPath);
+
+    return ApiGlobalsModule.validResponse();
   }
 
 }

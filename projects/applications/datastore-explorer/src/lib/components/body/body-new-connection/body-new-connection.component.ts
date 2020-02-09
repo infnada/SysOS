@@ -12,6 +12,7 @@ import {ImConnection, ConnectionVmware, ConnectionNetapp, ImDataObject, NetAppVo
 import {DatastoreExplorerConnection} from '../../../types/datastore-explorer-connection';
 import {AnyOpsOSAppDatastoreExplorerService} from '../../../services/anyopsos-app-datastore-explorer.service';
 import {AnyOpsOSAppDatastoreExplorerServerService} from '../../../services/anyopsos-app-datastore-explorer-server.service';
+import {MatDialogRef} from '@angular/material';
 
 @Component({
   selector: 'aade-body-new-connection',
@@ -30,8 +31,8 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
   newConnectionType: string = null;
 
   constructor(private readonly formBuilder: FormBuilder,
-              private Applications: AnyOpsOSLibApplicationService,
-              private Modal: AnyOpsOSLibModalService,
+              private readonly LibApplication: AnyOpsOSLibApplicationService,
+              private readonly LibModal: AnyOpsOSLibModalService,
               private serviceInjector: AnyOpsOSLibServiceInjectorService,
               private DatastoreExplorer: AnyOpsOSAppDatastoreExplorerService,
               private DatastoreExplorerServer: AnyOpsOSAppDatastoreExplorerServerService) {
@@ -129,7 +130,7 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
     return this.InfrastructureManager.getConnectionByUuid(datastore.info.mainUuid);
   }
 
-  sendConnect(): void {
+  async sendConnect(): Promise<void> {
     // stop here if form is invalid
     if (this.connectionForm.invalid) return;
 
@@ -149,9 +150,8 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
       type: this.newConnectionType
     };
 
-    this.Modal.openLittleModal('PLEASE WAIT', 'Connecting to server...', '.window--datastore-explorer .window__main', 'plain').then(() => {
-      return this.DatastoreExplorer.connect(datastoreConnection);
-    }).then(() => {
+    const littleModalRef: MatDialogRef<any> = await this.LibModal.openLittleModal(this.DatastoreExplorer.serverBodyContainer, 'PLEASE WAIT', 'Connecting to server...');
+    return this.DatastoreExplorer.connect(datastoreConnection, littleModalRef).then(() => {
       return this.DatastoreExplorerServer.reloadPath(this.getActiveConnection().uuid);
     });
   }
@@ -161,6 +161,6 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
   }
 
   manageIMConnections(): void {
-    this.Applications.openApplication('infrastructure-manager');
+    this.LibApplication.openApplication('infrastructure-manager');
   }
 }

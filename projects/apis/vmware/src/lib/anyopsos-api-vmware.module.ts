@@ -1,136 +1,102 @@
-import {Controller, Authorized, Req, Res, Post, BodyParam, CookieParam} from 'routing-controllers';
+import {Controller, Authorized, Req, Res, Post, BodyParam, Param} from 'routing-controllers';
 import {SessionParam} from 'routing-controllers/decorator/SessionParam';
 import {Request, Response} from 'express';
 import {getLogger, Logger} from 'log4js';
-import {Response as fetchResponse} from 'node-fetch';
-import {parse} from 'url';
-import {join} from 'path';
-import {spawn} from 'child-process-promise';
 
 import {AnyOpsOSApiGlobalsModule} from '@anyopsos/module-api-globals';
-import {AnyOpsOSGetPathModule} from '@anyopsos/module-get-path';
-import {AnyOpsOSCredentialModule, KdbxCredential} from '@anyopsos/module-credential';
-import {AnyOpsOSVmwareModule} from '@anyopsos/module-vmware';
+import {AnyOpsOSVmwareModule, AnyOpsOSVmwareFileSystemModule} from '@anyopsos/module-vmware';
+import {VmwareSdkFunctions, VmwareSdkFunctionsInput} from '@anyopsos/sdk-vmware';
+import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
 
-const logger: Logger = getLogger('mainlog');
+
+const logger: Logger = getLogger('mainLog');
 
 @Authorized()
 @Controller('/api/vmware')
 export class AnyOpsOSVmwareApiController {
 
-  @Post('/getClientVersion')
+  /**
+   * Node info
+   */
+  @Post('/getClientVersion/:workspaceUuid/:connectionUuid')
   async getVmwareClientVersion(@Req() request: Request,
                                @Res() response: Response,
-                               @BodyParam('host') host: string,
-                               @BodyParam('port') port: number) {
-    logger.info(`[API VMWare] -> getClientVersion -> host [${host}], port [${port}]`);
+                               @SessionParam('userUuid') userUuid: string,
+                               @SessionParam('id') sessionUuid: string,
+                               @Param('workspaceUuid') workspaceUuid: string,
+                               @Param('connectionUuid') connectionUuid: string) {
+    logger.info(`[API VMWare] -> getClientVersion -> workspaceUuid [${workspaceUuid}], connectionUuid [${connectionUuid}]`);
 
-    const version: any = await new AnyOpsOSVmwareModule().getClientVersion(host, port);
-    return new AnyOpsOSApiGlobalsModule(request, response).jsonDataResponse(version);
+    const VmwareModule: AnyOpsOSVmwareModule = new AnyOpsOSVmwareModule(userUuid, sessionUuid, workspaceUuid, connectionUuid);
+    const ApiGlobalsModule: AnyOpsOSApiGlobalsModule = new AnyOpsOSApiGlobalsModule(request, response);
+
+    const clientVersion: BackendResponse = await VmwareModule.getClientVersion();
+
+    return ApiGlobalsModule.jsonDataResponse(clientVersion);
   }
 
-  @Post('/connect')
-  async vmwareConnect(@Req() request: Request,
-                      @Res() response: Response,
-                      @SessionParam('userUuid') userUuid: string,
-                      @SessionParam('id') sessionUuid: string,
-                      @BodyParam('host') host: string,
-                      @BodyParam('port') port: number,
-                      @BodyParam('credentialUuid') credentialUuid: string) {
-    logger.info(`[API VMWare] -> connect -> host [${host}], port [${port}]`);
+  /**
+   * Node APIs
+   */
+  @Post('/rest/:workspaceUuid/:connectionUuid')
+  async vmwareCallRest(@Req() request: Request,
+                       @Res() response: Response,
+                       @SessionParam('userUuid') userUuid: string,
+                       @SessionParam('id') sessionUuid: string,
+                       @BodyParam('apiPath') apiPath: string,
+                       @Param('workspaceUuid') workspaceUuid: string,
+                       @Param('connectionUuid') connectionUuid: string) {
+    logger.info(`[API VMWare] -> call -> workspaceUuid [${workspaceUuid}], connectionUuid [${connectionUuid}], apiPath [${apiPath}]`);
 
-    const credential: KdbxCredential = await new AnyOpsOSCredentialModule().getCredential(userUuid, sessionUuid, credentialUuid);
-    const vmwareResponse: fetchResponse = await new AnyOpsOSVmwareModule().connect(host, port, credential.fields.UserName, credential.fields.Password.getText());
+    const VmwareModule: AnyOpsOSVmwareModule = new AnyOpsOSVmwareModule(userUuid, sessionUuid, workspaceUuid, connectionUuid);
+    const ApiGlobalsModule: AnyOpsOSApiGlobalsModule = new AnyOpsOSApiGlobalsModule(request, response);
 
-    if (!vmwareResponse.ok) return new AnyOpsOSApiGlobalsModule(request, response).invalidResponse(vmwareResponse.statusText);
+    const restResult: BackendResponse = await VmwareModule.callRestApi(apiPath);
 
-    // Save the vmware-api-session and host to cookies on the client
-    // TODO this will not work on multiple vmware sessions (FIX!! with some kind of storage)
-    if (vmwareResponse.headers.raw()['set-cookie'] && vmwareResponse.headers.raw()['set-cookie'][0].startsWith('vmware-api-session')) {
-      response.cookie('api-session', vmwareResponse.headers.raw()['set-cookie'][0], {maxAge: 900000, httpOnly: true});
-    }
-
-    return new AnyOpsOSApiGlobalsModule(request, response).validResponse();
+    return ApiGlobalsModule.jsonDataResponse(restResult);
   }
 
-  @Post('/connectSoap')
-  async vmwareConnectSoap(@Req() request: Request,
-                          @Res() response: Response,
-                          @SessionParam('userUuid') userUuid: string,
-                          @SessionParam('id') sessionUuid: string,
-                          @BodyParam('host') host: string,
-                          @BodyParam('port') port: number,
-                          @BodyParam('credentialUuid') credentialUuid: string) {
-    logger.info(`[API VMWare] -> connectSoap -> host [${host}], port [${port}]`);
-
-    const credential: KdbxCredential = await new AnyOpsOSCredentialModule().getCredential(userUuid, sessionUuid, credentialUuid);
-    const vmwareResponse: fetchResponse = await new AnyOpsOSVmwareModule().connectSoap(host, port, credential.fields.UserName, credential.fields.Password.getText());
-
-    if (!vmwareResponse.ok) return new AnyOpsOSApiGlobalsModule(request, response).invalidResponse(vmwareResponse.statusText);
-
-    // Save the vmware-api-session and host to cookies on the client
-    // TODO this will not work on multiple vmware sessions (FIX!! with some kind of storage)
-    if (vmwareResponse.headers.raw()['set-cookie'] && vmwareResponse.headers.raw()['set-cookie'][0].startsWith('vmware-api-session')) {
-      response.cookie('api-session-soap', vmwareResponse.headers.raw()['set-cookie'][0], {maxAge: 900000, httpOnly: true});
-    }
-
-    return new AnyOpsOSApiGlobalsModule(request, response).validResponse();
-  }
-
-  @Post('/call')
-  async vmwareCall(@Req() request: Request,
-                   @Res() response: Response,
-                   @BodyParam('host') host: string,
-                   @BodyParam('port') port: number,
-                   @BodyParam('path') path: string,
-                   @CookieParam('api-session') apiCookie: string) {
-    logger.info(`[API VMWare] -> call -> host [${host}], port [${port}], path [${path}]`);
-
-    if (!apiCookie) return new AnyOpsOSApiGlobalsModule(request, response).invalidResponse('no_vmware_login_cookie');
-
-    const vmwareResponse: any = await new AnyOpsOSVmwareModule().callApi(host, port, path, apiCookie);
-    return new AnyOpsOSApiGlobalsModule(request, response).jsonDataResponse(JSON.parse(vmwareResponse));
-  }
-
-  @Post('/callSoap')
+  @Post('/soap/:workspaceUuid/:connectionUuid')
   async vmwareCallSoap(@Req() request: Request,
                        @Res() response: Response,
-                       @BodyParam('host') host: string,
-                       @BodyParam('port') port: number,
-                       @BodyParam('action') action: string,
-                       @BodyParam('xml') xml: string,
-                       @CookieParam('api-session') apiCookie: string) {
-    logger.info(`[API VMWare] -> call -> host [${host}], port [${port}], action [${action}]`);
+                       @SessionParam('userUuid') userUuid: string,
+                       @SessionParam('id') sessionUuid: string,
+                       @BodyParam('action') action: VmwareSdkFunctions,
+                       // @ts-ignore TODO
+                       @BodyParam('data') data: VmwareSdkFunctionsInput<any>,
+                       @Param('workspaceUuid') workspaceUuid: string,
+                       @Param('connectionUuid') connectionUuid: string) {
+    logger.info(`[API VMWare] -> call -> workspaceUuid [${workspaceUuid}], connectionUuid [${connectionUuid}], action [${action}]`);
 
-    if (!apiCookie) return new AnyOpsOSApiGlobalsModule(request, response).invalidResponse('no_vmware_login_cookie');
+    const VmwareModule: AnyOpsOSVmwareModule = new AnyOpsOSVmwareModule(userUuid, sessionUuid, workspaceUuid, connectionUuid);
+    const ApiGlobalsModule: AnyOpsOSApiGlobalsModule = new AnyOpsOSApiGlobalsModule(request, response);
 
-    const vmwareResponse: any = await new AnyOpsOSVmwareModule().callApiSoap(host, port, action, xml, apiCookie);
-    return new AnyOpsOSApiGlobalsModule(request, response).jsonDataResponse(JSON.parse(vmwareResponse));
+    // @ts-ignore TODO
+    const soapResult: BackendResponse = await VmwareModule.callSoapApi(action, data);
+
+    return ApiGlobalsModule.jsonDataResponse(soapResult);
   }
 
-  @Post('/upload_to_datastore')
+  /**
+   * File-System
+   */
+  @Post('/upload_to_datastore/:workspaceUuid/:connectionUuid')
   async uploadToDatastore(@Req() request: Request,
                           @Res() response: Response,
                           @SessionParam('userUuid') userUuid: string,
                           @SessionParam('id') sessionUuid: string,
-                          @BodyParam('path') path: string,
-                          @BodyParam('url') url: string,
-                          @BodyParam('credentialUuid') credentialUuid?: string) {
-    logger.info(`[API VMWare] -> uploadToDatastore -> Uploading file to datastore -> path [${path}], url [${url}]`);
+                          @BodyParam('dstPath') dstPath: string,
+                          @BodyParam('datastoreUrl') datastoreUrl: string,
+                          @Param('workspaceUuid') workspaceUuid: string,
+                          @Param('connectionUuid') connectionUuid: string) {
+    logger.info(`[API VMWare] -> uploadToDatastore -> Uploading file to datastore -> workspaceUuid [${workspaceUuid}], connectionUuid [${connectionUuid}], dstPath [${dstPath}], datastoreUrl [${datastoreUrl}]`);
 
-    const fileUrl = parse(url).href;
-    const uploadPath = join(new AnyOpsOSGetPathModule().filesystem, path);
+    const VmwareFileSystemModule: AnyOpsOSVmwareFileSystemModule = new AnyOpsOSVmwareFileSystemModule(userUuid, sessionUuid, workspaceUuid, connectionUuid);
+    const ApiGlobalsModule: AnyOpsOSApiGlobalsModule = new AnyOpsOSApiGlobalsModule(request, response);
 
-    let curlData;
+    await VmwareFileSystemModule.uploadToDatastore(dstPath, datastoreUrl);
 
-    if (credentialUuid) {
-      const credential: KdbxCredential = await new AnyOpsOSCredentialModule().getCredential(userUuid, sessionUuid, credentialUuid);
-      curlData = await spawn('curl', ['-k', '-X', 'PUT', '--user', credential.fields.UserName + ':' + credential.fields.Password.getText(), fileUrl, '-T', uploadPath], { capture: [ 'stdout', 'stderr' ]});
-    } else {
-      curlData = await spawn('curl', ['-k', '-X', 'PUT', fileUrl, '-T', uploadPath], { capture: [ 'stdout', 'stderr' ]});
-    }
-
-    return new AnyOpsOSApiGlobalsModule(request, response).jsonDataResponse(curlData);
+    return ApiGlobalsModule.validResponse();
   }
 
 }

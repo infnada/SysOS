@@ -13,7 +13,7 @@ export class AnyOpsOSAppInfrastructureManagerUtilsService {
     const res2 = [];
     const arr1 = addr1.split('.');
     const arr2 = addr2.split('.');
-    const arrmask  = mask.split('.');
+    const arrmask = mask.split('.');
 
     for (let i = 0; i < arr1.length; i++) {
       res1.push(parseInt(arr1[i], 10) & parseInt(arrmask[i], 10));

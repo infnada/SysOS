@@ -7,41 +7,51 @@
   "swagger": "2.0",
   "projectName": "netapp",
   "paths": {
-    "/api/netapp/": {
-      "get": {
-        "operationId": "AnyOpsOSNetappApiController.callNetapp",
-        "responses": {
-          "200": {
-            "description": "Successful response"
-          }
-        },
-        "summary": "Call netapp",
-        "tags": [
-          "Any Ops OS Netapp Api"
-        ],
+    "/api/netapp/soap/{workspaceUuid}/{connectionUuid}/{vfiler}": {
+      "post": {
+        "operationId": "AnyOpsOSNetappApiController.netappCallSoap",
         "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "vfiler",
+            "required": false,
+            "type": "string"
+          },
           {
             "name": "body",
             "in": "body",
             "schema": {
               "properties": {
-                "credentialUuid": {
+                "action": {
                   "type": "string"
                 },
-                "host": {
-                  "type": "string"
-                },
-                "port": {
-                  "type": "number"
-                },
-                "xml": {
-                  "type": "string"
-                }
+                "data": {}
               },
               "required": [],
               "type": "object"
             }
           }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Netapp call soap",
+        "tags": [
+          "Any Ops OS Netapp Api"
         ],
         "consumes": [
           "application/json"

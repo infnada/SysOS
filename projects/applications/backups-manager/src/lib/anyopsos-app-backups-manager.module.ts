@@ -20,10 +20,10 @@ import {MenuComponent} from './menu/menu.component';
   exports: []
 })
 export class AnyOpsOSAppBackupsManagerModule {
-  constructor(private Applications: AnyOpsOSLibApplicationService,
+  constructor(private readonly LibApplication: AnyOpsOSLibApplicationService,
               private BackupsManager: AnyOpsOSAppBackupsManagerService) {
 
-    Applications.registerApplication({
+    this.LibApplication.registerApplication({
       uuid: 'backups-manager',
       ico: 'fas fa-hdd',
       name: 'Backups Manager',

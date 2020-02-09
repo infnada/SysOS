@@ -6,8 +6,8 @@ import {LoggerModule, NgxLoggerLevel} from 'ngx-logger';
 @NgModule({
   declarations: [],
   imports: [
-    LoggerModule.forRoot({level: NgxLoggerLevel.DEBUG}),
-    HttpClientModule
+    HttpClientModule,
+    LoggerModule.forRoot({level: NgxLoggerLevel.DEBUG})
   ],
   exports: []
 })

@@ -1,10 +1,15 @@
-import {SshSessionsModule} from '@anyopsos/module-ssh';
+import {AnyOpsOSSshSessionStateModule} from '@anyopsos/module-ssh';
 
 export class SoftwareMonitorModule {
 
+  private readonly SshSessionStateModule: AnyOpsOSSshSessionStateModule;
+
   constructor(private readonly userUuid: string,
               private readonly sessionUuid: string,
+              private readonly workspaceUuid: string,
               private readonly connectionUuid: string) {
+
+    this.SshSessionStateModule = new AnyOpsOSSshSessionStateModule(this.userUuid, this.sessionUuid, this.workspaceUuid, this.connectionUuid);
   }
 
   async getUpdates(): Promise<{
@@ -16,9 +21,8 @@ export class SoftwareMonitorModule {
   }[]> {
     const packages = [];
     let m;
-    let cmdData = await new SshSessionsModule().execAsync(this.userUuid, this.sessionUuid, this.connectionUuid, 'yum', ['check-update']);
-
-    cmdData = cmdData.split(/\r?\n/);
+    const cmdResult: string = await this.SshSessionStateModule.execAsync('yum', ['check-update']);
+    const cmdData: string[] = cmdResult.split(/\r?\n/);
 
     // Parse data
     for (let i = 0, len = cmdData.length; i < len; i++) {
@@ -33,7 +37,7 @@ export class SoftwareMonitorModule {
           arch: m[2],
           version: m[3],
           source: m[4],
-          epoch: (e ? e[0] : null)
+          epoch: e?.[0]
         });
       }
     }

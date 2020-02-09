@@ -1,12 +1,14 @@
-import {Component, OnInit, Input, OnDestroy} from '@angular/core';
+import {Component, OnInit, Input, OnDestroy, ViewChild, ViewContainerRef} from '@angular/core';
 
 import {takeUntil} from 'rxjs/operators';
 import {Subject} from 'rxjs';
 
 import {Application} from '@anyopsos/lib-application';
+import {AnyOpsOSLibSshHelpersService} from '@anyopsos/lib-ssh';
+import {ConnectionSsh, ConnectionSftp} from '@anyopsos/module-ssh';
 
 import {AnyOpsOSAppSftpService} from '../../services/anyopsos-app-sftp.service';
-import {SftpConnection} from '../../types/sftp-connection';
+import {ConnectionTypes} from '@anyopsos/backend/app/types/connection-types';
 
 @Component({
   selector: 'aasftp-body',
@@ -14,28 +16,37 @@ import {SftpConnection} from '../../types/sftp-connection';
   styleUrls: ['./body.component.scss']
 })
 export class BodyComponent implements OnDestroy, OnInit {
-  @Input() application: Application;
+  @ViewChild('bodyContainer', {static: true, read: ViewContainerRef}) private readonly bodyContainer: ViewContainerRef;
+  @Input() readonly application: Application;
 
-  private destroySubject$: Subject<void> = new Subject();
+  private readonly destroySubject$: Subject<void> = new Subject();
 
   viewSide: boolean = true;
 
-  connections: SftpConnection[];
-  activeConnection: string;
+  connections: ConnectionSftp[];
+  activeConnectionUuid: string | null;
   viewExchange: boolean;
 
-  constructor(private Sftp: AnyOpsOSAppSftpService) {
+  constructor(private readonly LibSshHelpers: AnyOpsOSLibSshHelpersService,
+              private readonly Sftp: AnyOpsOSAppSftpService) {
   }
 
   ngOnInit(): void {
 
     // Listen for connections changes
-    this.Sftp.connections
-      .pipe(takeUntil(this.destroySubject$)).subscribe((connections: SftpConnection[]) => this.connections = connections);
+    this.LibSshHelpers.getAllConnectionsObserver()
+      .pipe(takeUntil(this.destroySubject$)).subscribe((connections: (ConnectionSsh | ConnectionSftp)[]) => {
 
-    // Listen for activeConnection change
-    this.Sftp.activeConnection
-      .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnectionUuid: string) => this.activeConnection = activeConnectionUuid);
+        const sftpConnections: ConnectionSftp[] = connections.filter((connection: ConnectionSsh | ConnectionSftp) => connection.type === 'sftp') as ConnectionSftp[];
+        this.onConnectionsChange(sftpConnections);
+    });
+
+    // Set bodyContainerRef, this is used by Modals
+    this.Sftp.setBodyContainerRef(this.bodyContainer);
+
+    // Listen for activeConnectionUuid change
+    this.Sftp.activeConnectionUuid
+      .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnectionUuid: string | null) => this.activeConnectionUuid = activeConnectionUuid);
 
     // Listen for viewExchange change
     this.Sftp.viewExchange
@@ -48,11 +59,16 @@ export class BodyComponent implements OnDestroy, OnInit {
     this.destroySubject$.next();
   }
 
+  private onConnectionsChange(connections: ConnectionSftp[]): void {
+    this.connections = connections;
+    this.Sftp.connectionsUpdated();
+  }
+
   toggleSide(): void {
     this.viewSide = !this.viewSide;
   }
 
-  setActiveConnection(connection: SftpConnection): void {
-    this.Sftp.setActiveConnection(connection.uuid);
+  setActiveConnection(connection: ConnectionSftp): void {
+    this.Sftp.setActiveConnectionUuid(connection.uuid);
   }
 }

@@ -7,10 +7,16 @@
   "swagger": "2.0",
   "projectName": "monitor",
   "paths": {
-    "/api/monitor/charts/{connectionUuid}/{type}/": {
+    "/api/monitor/charts/{workspaceUuid}/{connectionUuid}/{type}/": {
       "get": {
         "operationId": "AnyOpsOSMonitorApiController.getMonitorCharts",
         "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
           {
             "in": "path",
             "name": "connectionUuid",
@@ -38,10 +44,16 @@
         ]
       }
     },
-    "/api/monitor/chart/{connectionUuid}/{type}/": {
+    "/api/monitor/chart/{workspaceUuid}/{connectionUuid}/{type}/": {
       "get": {
         "operationId": "AnyOpsOSMonitorApiController.getMonitorChart",
         "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
           {
             "in": "path",
             "name": "connectionUuid",
@@ -75,10 +87,16 @@
         ]
       }
     },
-    "/api/monitor/data/{connectionUuid}/{type}/": {
+    "/api/monitor/data/{workspaceUuid}/{connectionUuid}/{type}/": {
       "get": {
         "operationId": "AnyOpsOSMonitorApiController.getMonitorData",
         "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
           {
             "in": "path",
             "name": "connectionUuid",
@@ -112,10 +130,16 @@
         ]
       }
     },
-    "/api/monitor/alarms/{connectionUuid}/{type}/": {
+    "/api/monitor/alarms/{workspaceUuid}/{connectionUuid}/{type}/": {
       "get": {
         "operationId": "AnyOpsOSMonitorApiController.getMonitorAlarms",
         "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
           {
             "in": "path",
             "name": "connectionUuid",
@@ -149,10 +173,16 @@
         ]
       }
     },
-    "/api/monitor/alarm_log/{connectionUuid}/{type}/": {
+    "/api/monitor/alarm_log/{workspaceUuid}/{connectionUuid}/{type}/": {
       "get": {
         "operationId": "AnyOpsOSMonitorApiController.getMonitorAlarmsLog",
         "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
           {
             "in": "path",
             "name": "connectionUuid",
@@ -180,10 +210,53 @@
         ]
       }
     },
-    "/api/monitor/badge/{connectionUuid}/{type}/": {
+    "/api/monitor/badge/{workspaceUuid}/{connectionUuid}/{type}/": {
+      "get": {
+        "operationId": "AnyOpsOSMonitorApiController.getMonitorBadge",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "type",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Get monitor badge",
+        "tags": [
+          "Any Ops OS Monitor Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/monitor/{workspaceUuid}/{connectionUuid}/{type}/": {
       "get": {
         "operationId": "AnyOpsOSMonitorApiController.monitorTestRemoteConnection",
         "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
           {
             "in": "path",
             "name": "connectionUuid",

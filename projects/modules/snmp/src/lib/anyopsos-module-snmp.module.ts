@@ -1,14 +1,83 @@
-import {SnmpIface} from './types/snmp-iface';
+// @ts-ignore
+import * as netSnmp from 'net-snmp';
+
+import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
+
+import {AnyOpsOSSnmpSessionStateModule} from './anyopsos-module-snmp-session-state';
 import {VarBind} from './types/var-bind';
 
-// TODO this is a PoC
 export class AnyOpsOSSnmpModule {
 
-  constructor(private Connection: any) {
+  private readonly SnmpSessionsModule: AnyOpsOSSnmpSessionStateModule;
+
+  constructor(private readonly userUuid: string,
+              private readonly sessionUuid: string,
+              private readonly workspaceUuid: string,
+              private readonly connectionUuid: string) {
+
+    this.SnmpSessionsModule = new AnyOpsOSSnmpSessionStateModule(this.userUuid, this.sessionUuid, this.workspaceUuid, this.connectionUuid);
+  }
+
+  /**
+   * Creates a new connection
+   */
+  async newConnection(): Promise<BackendResponse> {
+
+    const snmpSession: any = await this.SnmpSessionsModule.createSession();
+
+    snmpSession.on('close', () => {
+      // this.SocketModule.emitProp(data.type, 'CONN CLOSE', data.uuid, 'status');
+    });
+    snmpSession.on('error', (e: Error) => {
+      // e.toString() this.SocketModule.emitProp(data.type, 'CONN ERROR ' + e, data.uuid, 'status');
+    });
+
+    return {status: 'ok', data: 'connected'};
 
   }
 
-  ifaces: { [id: string]: SnmpIface } = {};
+  /**
+   * Disconnects a connection
+   */
+  disconnectConnection(): Promise<BackendResponse> {
+
+    return this.SnmpSessionsModule.disconnectSession().then(() => {
+
+      return {status: 'ok', data: 'disconnected'} as BackendResponse;
+
+    }).catch((e: Error) => {
+      throw e;
+    });
+  }
+
+  getOid(oid: string | string[]): Promise<BackendResponse> {
+
+    if (!Array.isArray(oid)) oid = [oid];
+
+    return new Promise(async (resolve, reject) => {
+      const snmpSession: netSnmp.Session = this.SnmpSessionsModule.getSession();
+
+      snmpSession.get(oid, (e: Error, varBinds: VarBind[]) => {
+        if (e) return reject(e);
+
+        varBinds.map((varBind: VarBind) => {
+          if (netSnmp.isVarbindError(varBind)) return reject(e);
+
+          return varBind;
+
+        });
+
+        return {
+          status: 'ok',
+          data: varBinds
+        } as BackendResponse;
+
+      });
+    });
+
+  }
+
+  /*ifaces: { [id: string]: SnmpIface } = {};
 
   private changeInterfaceById(id: string, key: string, value: string) {
     // @ts-ignore TODO
@@ -140,5 +209,5 @@ export class AnyOpsOSSnmpModule {
     ]).then(() => {
       return this.ifaces;
     });
-  }
+  }*/
 }

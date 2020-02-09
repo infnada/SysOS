@@ -1,5 +1,6 @@
 <div class="folders" tabindex="0"
      #selectableContainer
+     #modalContainer
      cdkDropList
      (cdkDropListDropped)="UIonDropItem()"
      (click)="handleFolderClick($event)"
@@ -11,61 +12,69 @@
     <mat-spinner class="loading-spinner"></mat-spinner>
   </div>
 
-  <div class="p-3 text-center" *ngIf="currentData.length === 0">
+  <div class="p-3 text-center" *ngIf="!currentData || currentData.length === 0">
     This folder is empty.
   </div>
 
-  <ng-container *ngIf="viewAsList === false">
-    <alfile-anyopsos-lib-file *ngFor="let file of currentData | filterBy: search; index as $index"
-                        cdkDrag
-                        cdkDragBoundary=".desktop"
-                        [cdkDragData]=file
-                        (cdkDragStarted)="onDragStart($event)"
+  <ng-container *ngIf="currentData">
 
-                        [application]=application
-                        [subApplication]=subApplication
-                        [currentPath]=currentPath
-                        [isCurrentActive]="$index === currentActive"
-                        [selector]=selector
-                        [viewAsList]=viewAsList
-                        [connection]=connection
+    <!-- Normal view -->
+    <ng-container *ngIf="viewAsList === false">
+      <alfile-anyopsos-lib-file *ngFor="let file of currentData | filterBy: search; index as $index"
+                                cdkDrag
+                                cdkDragBoundary=".desktop"
+                                [cdkDragData]=file
+                                (cdkDragStarted)="onDragStart($event)"
 
-                        [selectable]=Selectable
-                        [file]=file
-                        (click)="setCurrentActive($index)"></alfile-anyopsos-lib-file>
-  </ng-container>
+                                [file]=file
+                                [application]=application
+                                [connection]=connection
 
-  <ng-container *ngIf="viewAsList === true">
-    <table class="table table-hover">
-      <thead>
-      <tr>
-        <th>Name</th>
-        <th>Size</th>
-        <th>Type</th>
-      </tr>
-      </thead>
-      <tbody>
+                                [currentPath]=currentPath
+                                [isCurrentActive]="$index === currentActive"
+                                [viewAsList]=viewAsList
 
-      <alfile-anyopsos-lib-file style="display: contents" *ngFor="let file of currentData | filterBy: search; index as $index"
-                          cdkDrag
-                          cdkDragBoundary=".desktop"
-                          [cdkDragData]=file
-                          (cdkDragStarted)="onDragStart($event)"
+                                [viewContainerRef]=viewContainerRef
+                                [selectable]=Selectable
 
-                          [application]=application
-                          [subApplication]=subApplication
-                          [currentPath]=currentPath
-                          [isCurrentActive]="$index === currentActive"
-                          [selector]=selector
-                          [viewAsList]=viewAsList
-                          [connection]=connection
+                                (click)="setCurrentActive($index)"></alfile-anyopsos-lib-file>
+    </ng-container>
 
-                          [selectable]=Selectable
-                          [file]=file
-                          (click)="setCurrentActive($index)"></alfile-anyopsos-lib-file>
+    <!-- Table view -->
+    <ng-container *ngIf="viewAsList === true">
+      <table class="table table-hover">
+        <thead>
+        <tr>
+          <th>Name</th>
+          <th>Size</th>
+          <th>Type</th>
+        </tr>
+        </thead>
+        <tbody>
 
-      </tbody>
-    </table>
+        <alfile-anyopsos-lib-file style="display: contents" *ngFor="let file of currentData | filterBy: search; index as $index"
+                                  cdkDrag
+                                  cdkDragBoundary=".desktop"
+                                  [cdkDragData]=file
+                                  (cdkDragStarted)="onDragStart($event)"
+
+                                  [file]=file
+                                  [application]=application
+                                  [connection]=connection
+
+                                  [currentPath]=currentPath
+                                  [isCurrentActive]="$index === currentActive"
+                                  [viewAsList]=viewAsList
+
+                                  [viewContainerRef]=viewContainerRef
+                                  [selectable]=Selectable
+
+                                  (click)="setCurrentActive($index)"></alfile-anyopsos-lib-file>
+
+        </tbody>
+      </table>
+    </ng-container>
+
   </ng-container>
 
   <div style="position: fixed"

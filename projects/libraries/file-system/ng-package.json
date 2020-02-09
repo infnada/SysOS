@@ -5,6 +5,11 @@
     "entryFile": "src/public-api.ts"
   },
   "whitelistedNonPeerDependencies": [
-    "@anyopsos/lib-logger"
+    "@anyopsos/lib-angular-material",
+    "@anyopsos/lib-logger",
+    "@anyopsos/lib-modal",
+    "@anyopsos/lib-file-system-ui",
+    "@anyopsos/module-config-file",
+    "@anyopsos/backend"
   ]
 }

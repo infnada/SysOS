@@ -38,7 +38,7 @@
   <div class="secondary-content__new__box__toggle toggle_left pointer visible-lg" *ngIf="!viewSide" (click)="toggleSide()">
     <i class="fas fa-arrow-right sidebar-open-font open-sidebar"></i>
   </div>
-  <div class="window__main">
+  <div class="window__main" #bodyContainer>
     <div class="col">
       <!--<div ng-if="bmB.showNewBackupType == true">
         <div ng-include="'templates/applications/new-backup-type-backupsm.html'" include-replace></div>

@@ -98,7 +98,7 @@
   <div class="secondary-content__new__box__toggle toggle_left pointer visible-lg" *ngIf="!viewSide" (click)="toggleSide()">
     <i class="fas fa-arrow-right sidebar-open-font open-sidebar"></i>
   </div>
-  <div id="infrastructure-manager_main-body" class="window__main no_padding">
+  <div id="infrastructure-manager_main-body" class="window__main no_padding" #bodyContainer>
 
     <aaim-body-new-connection [application]="application" *ngIf="activeConnection === null || (activeConnection && getActiveConnection().state === 'disconnected')"></aaim-body-new-connection>
 

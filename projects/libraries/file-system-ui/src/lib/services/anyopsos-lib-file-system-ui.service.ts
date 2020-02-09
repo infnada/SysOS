@@ -1,261 +1,160 @@
-import {Injectable} from '@angular/core';
+import {Injectable, ViewContainerRef} from '@angular/core';
 
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
-import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
-import {AnyOpsOSLibApplicationService} from '@anyopsos/lib-application';
-import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
-import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
 import {AnyOpsOSFile} from '@anyopsos/backend/app/types/anyopsos-file';
+
+import {CutCopyFile} from '../types/cut-copy-file';
+import {FileSystemHandler} from '../types/file-system-handler';
+import {SendFileExchange} from '../types/send-file-exchange';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AnyOpsOSLibFileSystemUiService {
 
-  private subjectRefreshPath: Subject<string> = new Subject();
-  private subjectGoToPath: Subject<{ application: string; path: string; }> = new Subject();
-  private subjectDownloadRemoteFile: Subject<{ path: string; fileName: string; connectionUuid: string; applicationId: string; }> = new Subject();
-  private subjectUploadFileToRemote: Subject<{ path: string; fileName: string; applicationId: string; }> = new Subject();
-  private subjectUploadFileToanyOpsOS: Subject<{ dst: string; file: File; applicationId: string; }> = new Subject();
+  private readonly subjectRefreshPath: Subject<string> = new Subject();
+  private readonly subjectGoToPath: Subject<{ application: string; path: string; }> = new Subject();
+  private readonly subjectFileExchange: Subject<SendFileExchange> = new Subject();
 
-  private $copyFile: BehaviorSubject<object>;
-  private $cutFile: BehaviorSubject<object>;
-
-  private dataStore: {  // This is where we will store our data in memory
-    copyFile: {
-      fileName: string;
-      currentPath: string;
-      fullPath: string;
-    };
-    cutFile: {
-      fileName: string;
-      currentPath: string;
-      fullPath: string;
-    };
+  private readonly $copyFile: BehaviorSubject<CutCopyFile>;
+  private readonly $cutFile: BehaviorSubject<CutCopyFile>;
+  private dataStore: {
+    copyFile: CutCopyFile;
+    cutFile: CutCopyFile;
   };
-  copyFile: Observable<any>;
-  cutFile: Observable<any>;
+  readonly copyFile: Observable<CutCopyFile>;
+  readonly cutFile: Observable<CutCopyFile>;
 
-  currentCutCopyApplication: string = null;
-  currentCutCopyConnectionUuid: string = null;
+  private currentCutCopyApplication: string = null;
+  private currentCutCopyConnectionUuid: string = null;
 
-  constructor(private logger: AnyOpsOSLibLoggerService,
-              private Modal: AnyOpsOSLibModalService,
-              private FileSystem: AnyOpsOSLibFileSystemService,
-              private Applications: AnyOpsOSLibApplicationService) {
+  constructor(private readonly logger: AnyOpsOSLibLoggerService) {
 
-    this.dataStore = {copyFile: null, cutFile: null};
+    this.dataStore = { copyFile: null, cutFile: null };
     this.$copyFile = new BehaviorSubject(this.dataStore.copyFile);
     this.$cutFile = new BehaviorSubject(this.dataStore.cutFile);
     this.copyFile = this.$copyFile.asObservable();
     this.cutFile = this.$cutFile.asObservable();
-
   }
 
   /**
    * handlers by custom Applications
    */
-  private createFolderHandlers: {[type: string]: { fn: any }} = {};
-  private renameFileHandlers: {[type: string]: { fn: any }} = {};
+  private doWithFileHandlers: {[type: string]: { fn: any }} = {};
+
+  private getFolderHandlers: {[type: string]: { fn: any }} = {};
+  private putFolderHandlers: {[type: string]: { fn: any }} = {};
+
+  private getFileHandlers: {[type: string]: { fn: any }} = {};
   private deleteFileHandlers: {[type: string]: { fn: any }} = {};
-  private downloadFromURLFileHandlers: {[type: string]: { fn: any }} = {};
+  private renameFileHandlers: {[type: string]: { fn: any }} = {};
+
   private moveFileHandlers: {[type: string]: { fn: any }} = {};
   private copyFileHandlers: {[type: string]: { fn: any }} = {};
+
+  private downloadFileHandlers: {[type: string]: { fn: any }} = {};
+  private uploadFileHandlers: {[type: string]: { fn: any }} = {};
+  private downloadFromURLFileHandlers: {[type: string]: { fn: any }} = {};
 
   /**
    * Called by custom Applications
    */
-  createHandler(handlerType: 'folder' | 'rename' | 'delete' | 'download' | 'move' | 'copy', type: string, fn: (data?) => any) {
+  createHandler(handlerType: FileSystemHandler, type: string, fn: (data?) => Promise<any>) {
 
-    if (handlerType === 'folder') this.createFolderHandlers[type] = {fn};
+    if (handlerType === 'do_with_file') this.doWithFileHandlers[type] = {fn};
+    if (handlerType === 'get_folder') this.getFolderHandlers[type] = {fn};
+    if (handlerType === 'put_folder') this.putFolderHandlers[type] = {fn};
+    if (handlerType === 'get_file') this.getFileHandlers[type] = {fn};
     if (handlerType === 'rename') this.renameFileHandlers[type] = {fn};
     if (handlerType === 'delete') this.deleteFileHandlers[type] = {fn};
-    if (handlerType === 'download') this.downloadFromURLFileHandlers[type] = {fn};
     if (handlerType === 'move') this.moveFileHandlers[type] = {fn};
     if (handlerType === 'copy') this.copyFileHandlers[type] = {fn};
+    if (handlerType === 'download') this.downloadFileHandlers[type] = {fn};
+    if (handlerType === 'upload') this.uploadFileHandlers[type] = {fn};
+    if (handlerType === 'download_from_url') this.downloadFromURLFileHandlers[type] = {fn};
 
+  }
+
+  /**
+   * ---------
+   * Folder API
+   * ---------
+   */
+
+  /**
+   * Creates a new folder
+   */
+  async UIgetFolder(srcPath: string, connectionType: string = null, data: { [key: string]: any; } = {}): Promise<AnyOpsOSFile[]> {
+
+    if (this.getFolderHandlers[connectionType]) {
+      data.srcPath = srcPath;
+
+      return this.getFolderHandlers[connectionType].fn(data).then((pathData: AnyOpsOSFile[]) => {
+        return pathData;
+      });
+    }
   }
 
   /**
    * Creates a new folder
    */
-  UIcreateFolder(currentPath: string, selector: string, type: string = null, data?: any): void {
-    const loggerArgs = arguments;
+  async UIputFolder(dstPath: string, viewContainerRef: ViewContainerRef, connectionType: string = null, data: { [key: string]: any; } = {}): Promise<unknown> {
 
-    this.Modal.openRegisteredModal('input', selector,
-      {
-        title: 'Create new folder',
-        buttonText: 'Create',
-        inputPlaceholder: 'Folder name',
-        inputValue: 'NewFolder'
-      }
-    ).then((modalInstance) => {
-      modalInstance.result.then((folderName: string) => {
-        if (!folderName) return;
+    if (this.putFolderHandlers[connectionType]) {
+      data.dstPath = dstPath;
+      data.viewContainerRef = viewContainerRef;
 
-        // Default anyOpsOS handlers
-        if (type === null || type === 'linux') {
-          return this.FileSystem.putFolder((type === null ? null : data.connection.uuid), currentPath, folderName).subscribe(
-            (res: BackendResponse) => {
-              if (res.status === 'error') return this.logger.error('FileSystemUI', 'UIcreateFolder -> Error while creating folder', loggerArgs, res.data);
-
-              this.refreshPath(currentPath);
-            },
-            error => {
-              this.logger.error('FileSystemUI', 'UIcreateFolder -> Error while creating folder', loggerArgs, error);
-            });
-        }
-
-        data.name = folderName;
-        data.currentPath = currentPath;
-        data.selector = selector;
-
-        // Application specific handlers
-        if (this.createFolderHandlers[type]) this.createFolderHandlers[type].fn(data);
+      return this.putFolderHandlers[connectionType].fn(data).then((putData: unknown) => {
+        return putData;
       });
-    });
+    }
+  }
+
+  /**
+   * ---------
+   * File API
+   * ---------
+   */
+
+  /**
+   * Deletes selected files or folders
+   */
+  async UIdeleteFile(srcPath: string, file: AnyOpsOSFile, viewContainerRef: ViewContainerRef, connectionType: string = null, data: { [key: string]: any; } = {}): Promise<unknown> {
+
+    if (this.deleteFileHandlers[connectionType]) {
+      data.srcPath = srcPath;
+      data.file = file;
+      data.viewContainerRef = viewContainerRef;
+
+      return this.deleteFileHandlers[connectionType].fn(data).then((deleteData: unknown) => {
+        return deleteData;
+      });
+    }
   }
 
   /**
    * Rename file
    */
-  UIrenameFile(currentPath: string, file: AnyOpsOSFile, selector: string, type: string = null, data?: any): void {
-    const loggerArgs = arguments;
+  async UIrenameFile(srcPath: string, file: AnyOpsOSFile, viewContainerRef: ViewContainerRef, connectionType: string = null, data: { [key: string]: any; } = {}): Promise<unknown> {
 
-    this.Modal.openRegisteredModal('input', selector,
-      {
-        title: 'Rename file',
-        buttonText: 'Rename',
-        inputPlaceholder: 'File name',
-        inputValue: file.fileName
-      }
-    ).then((modalInstance) => {
-      modalInstance.result.then((fileName: string) => {
-        if (!fileName) return;
+    if (this.renameFileHandlers[connectionType]) {
+      data.srcPath = srcPath;
+      data.file = file;
+      data.viewContainerRef = viewContainerRef;
 
-        // Default anyOpsOS handlers
-        if (type === null || type === 'linux') {
-          return this.FileSystem.renameFile(currentPath, file.fileName, fileName, (type === null ? null : data.connection.uuid)).subscribe(
-            (res: BackendResponse) => {
-              if (res.status === 'error') return this.logger.error('FileSystemUI', 'UIrenameFile -> Error while renaming file', loggerArgs, res.data);
-
-              this.refreshPath(currentPath);
-            },
-            error => {
-              this.logger.error('FileSystemUI', 'UIrenameFile -> Error while renaming file', loggerArgs, error);
-            });
-        }
-
-        data.name = fileName;
-        data.currentPath = currentPath;
-        data.file = file;
-        data.selector = selector;
-
-        // Application specific handlers
-        if (this.renameFileHandlers[type]) this.renameFileHandlers[type].fn(data);
+      return this.renameFileHandlers[connectionType].fn(data).then((renameData: unknown) => {
+        return renameData;
       });
-    });
-  }
-
-  /**
-   * Deletes selected files or folders
-   */
-  UIdeleteSelected(currentPath: string, file: AnyOpsOSFile, selector: string, type: string = null, data?: any): void {
-    const loggerArgs = arguments;
-
-    this.Modal.openRegisteredModal('question', selector,
-      {
-        title: `Delete file ${file.fileName}`,
-        text: `Delete ${file.fileName} from ${
-          type === null ? 'anyOpsOS' :
-            type === 'linux' ? `${data.connection.host} Server` :
-              (data.typeText ? data.typeText : type)
-        }?`,
-        yes: 'Delete',
-        yesClass: 'warn',
-        no: 'Cancel',
-        boxContent: 'This action is permanent.',
-        boxClass: 'text-danger',
-        boxIcon: 'warning'
-      }
-    ).then((modalInstance) => {
-      modalInstance.result.then((result: boolean) => {
-        if (result === true) {
-
-          // Default anyOpsOS handlers
-          if (type === null || type === 'linux') {
-            return this.FileSystem.deleteFile(currentPath, file.fileName, (type === null ? null : data.connection.uuid)).subscribe(
-              (res: BackendResponse) => {
-                if (res.status === 'error') return this.logger.error('FileSystemUI', 'UIdeleteSelected -> Error while deleting file', loggerArgs, res.data);
-
-                this.refreshPath(currentPath);
-              },
-              error => {
-                this.logger.error('FileSystemUI', 'UIdeleteSelected -> Error while deleting folder', loggerArgs, error);
-              });
-          }
-
-          data.currentPath = currentPath;
-          data.file = file;
-          data.selector = selector;
-
-          // Application specific handlers
-          if (this.deleteFileHandlers[type]) this.deleteFileHandlers[type].fn(data);
-        }
-      });
-    });
-  }
-
-  /**
-   * Downloads content from URL
-   */
-  UIdownloadFromURL(currentPath: string, selector: string, type: string = null, data?: any): void {
-    const loggerArgs = arguments;
-
-    this.Modal.openRegisteredModal('input', selector,
-      {
-        title: 'Download file from URL',
-        buttonText: 'Download',
-        inputPlaceholder: 'File URL',
-        inputValue: ''
-      }
-    ).then((modalInstance) => {
-      modalInstance.result.then((url: string) => {
-        if (!url) return;
-
-        // Default anyOpsOS handlers
-        if (type === null || type === 'linux') {
-          return this.FileSystem.downloadFileFromUrl(currentPath, url, (type === null ? null : data.connection.uuid)).subscribe(
-            (res: BackendResponse) => {
-              if (res.status === 'error') return this.logger.error('FileSystemUI', 'UIdownloadFromURL -> Error while downloading file', loggerArgs, res.data);
-
-              this.refreshPath(currentPath);
-              this.logger.log('File downloaded to ' + currentPath, 'Download file from URL');
-            },
-            error => {
-              this.logger.error('FileSystemUI', 'UIdownloadFromURL -> Error while downloading file', loggerArgs, error);
-            });
-        }
-
-        data.name = url;
-        data.currentPath = currentPath;
-        data.selector = selector;
-
-        // Application specific handlers
-        if (this.downloadFromURLFileHandlers[type]) this.downloadFromURLFileHandlers[type].fn(data);
-      });
-    });
+    }
   }
 
   /**
    * Paste selected files or folders
    */
-  UIpasteFile(currentPath: string, type: string = null, applicationId: string = null, connectionUuid: string = null, data?: any): void {
-    const loggerArgs = arguments;
-
-    this.logger.debug('FileSystemUI', 'UIpasteFile', loggerArgs);
+  UIpasteFile(dstPath: string, connectionType: string = null, applicationId: string = null, connectionUuid: string = null, data: { [key: string]: any; } = {}): Promise<unknown> {
+    this.logger.debug('FileSystemUI', 'UIpasteFile', arguments);
 
     if (this.currentCutCopyApplication && applicationId && this.currentCutCopyConnectionUuid && connectionUuid && this.currentCutCopyApplication !== applicationId) {
       this.logger.error('FileSystemUI', 'Drag&Drop -> C&P, D&D Remote to Remote is not allowed', arguments);
@@ -263,117 +162,114 @@ export class AnyOpsOSLibFileSystemUiService {
     }
 
     // Do not cut/copy files to same directory
-    if (this.dataStore.cutFile && this.currentCutCopyApplication === applicationId && this.dataStore.cutFile.currentPath === currentPath) return;
-    if (this.dataStore.copyFile && this.currentCutCopyApplication === applicationId && this.dataStore.copyFile.currentPath === currentPath) return;
+    if (this.dataStore.cutFile && this.currentCutCopyApplication === applicationId && this.dataStore.cutFile.currentPath === dstPath) return;
+    if (this.dataStore.copyFile && this.currentCutCopyApplication === applicationId && this.dataStore.copyFile.currentPath === dstPath) return;
 
-    // Normal handler
-    if (type === null || type === 'linux') {
+    // Download from remote
+    if (this.currentCutCopyConnectionUuid && !connectionUuid) {
 
-      // Download from remote application
-      if (this.currentCutCopyConnectionUuid && !connectionUuid) {
-        this.sendDownloadRemoteFile({
-          path: (this.dataStore.cutFile ? this.dataStore.cutFile.currentPath : this.dataStore.copyFile.currentPath),
-          fileName: (this.dataStore.cutFile ? this.dataStore.cutFile.fileName : this.dataStore.copyFile.fileName),
-          connectionUuid: this.currentCutCopyConnectionUuid,
-          applicationId: this.currentCutCopyApplication
+      if (this.downloadFileHandlers[connectionType]) {
+        data.srcPath = (this.dataStore.cutFile ? this.dataStore.cutFile.currentPath : this.dataStore.copyFile.currentPath);
+        data.dstPath = dstPath;
+        data.applicationId = applicationId;
+
+        return this.downloadFileHandlers[connectionType].fn(data).then((downloadData: unknown) => {
+          this.dataStore.copyFile = null;
+          this.$copyFile.next(Object.assign({}, this.dataStore).copyFile);
+          this.dataStore.cutFile = null;
+          this.$cutFile.next(Object.assign({}, this.dataStore).cutFile);
+
+          return downloadData;
         });
-
-        return;
-        // Always make a copy
       }
 
-      // Upload to remote application
-      if (!this.currentCutCopyConnectionUuid && connectionUuid) {
-        this.sendUploadToRemote({
-          path: (this.dataStore.cutFile ? this.dataStore.cutFile.currentPath : this.dataStore.copyFile.currentPath),
-          fileName: (this.dataStore.cutFile ? this.dataStore.cutFile.fileName : this.dataStore.copyFile.fileName),
-          applicationId
+      return;
+    }
+
+    // Upload to remote
+    if (!this.currentCutCopyConnectionUuid && connectionUuid) {
+
+      if (this.uploadFileHandlers[connectionType]) {
+        data.srcPath = (this.dataStore.cutFile ? this.dataStore.cutFile.currentPath : this.dataStore.copyFile.currentPath);
+        data.dstPath = dstPath;
+        data.applicationId = applicationId;
+
+        return this.uploadFileHandlers[connectionType].fn(data).then((uploadData: unknown) => {
+
+          // Reset copyFile & cutFile
+          this.dataStore.copyFile = null;
+          this.$copyFile.next(Object.assign({}, this.dataStore).copyFile);
+          this.dataStore.cutFile = null;
+          this.$cutFile.next(Object.assign({}, this.dataStore).cutFile);
+
+          return uploadData;
         });
-
-        return;
-        // Always make a copy
       }
 
-      if (this.dataStore.cutFile) {
-        this.FileSystem.moveFile(
-          this.dataStore.cutFile.fullPath,
-          currentPath + this.dataStore.cutFile.fileName,
-          (type === null ? null : data.connection.uuid)
-        ).subscribe(
-          (res: BackendResponse) => {
-            if (res.status === 'error') return this.logger.error('FileSystemUI', 'UIpasteFile -> Error while moving file', loggerArgs, res.data);
+      return;
+    }
 
-            // Refresh origin and remote paths
-            this.refreshPath(this.dataStore.cutFile.currentPath);
-            this.refreshPath(currentPath);
+    // Normal handlers
+    if (this.dataStore.cutFile) {
 
-            // Reset cut & broadcast data to subscribers
-            this.dataStore.cutFile = null;
-            this.$cutFile.next(Object.assign({}, this.dataStore).cutFile);
-          },
-          error => {
-            this.logger.error('FileSystemUI', 'UIpasteFile -> Error while moving file', loggerArgs, error);
-          });
+      if (this.moveFileHandlers[connectionType]) {
+        data.cutFile = this.dataStore.cutFile;
+        data.dstPath = dstPath;
 
-        return;
-      }
+        return  this.moveFileHandlers[connectionType].fn(data).then((cutData: unknown) => {
 
-      if (this.dataStore.copyFile) {
-        this.FileSystem.copyFile(
-          this.dataStore.copyFile.fullPath,
-          currentPath + this.dataStore.copyFile.fileName,
-          (type === null ? null : data.connection.uuid),
-        ).subscribe(
-          (res: BackendResponse) => {
-            if (res.status === 'error') return this.logger.error('FileSystemUI', 'UIpasteFile -> Error while copying file', loggerArgs, res.data);
+          // Reset cutFrom
+          this.dataStore.cutFile = null;
+          this.$cutFile.next(Object.assign({}, this.dataStore).cutFile);
 
-            // Refresh remote path
-            this.refreshPath(currentPath);
-
-            // Reset copy & broadcast data to subscribers
-            this.dataStore.copyFile = null;
-            this.$copyFile.next(Object.assign({}, this.dataStore).copyFile);
-          },
-          error => {
-            this.logger.error('FileSystemUI', 'UIpasteFile -> Error while copying file', loggerArgs, error);
-          });
-
-        return;
+          return cutData;
+        });
       }
     }
 
-    // Application specific handlers
-    data.cutFrom = this.dataStore.cutFile;
-    data.copyFrom = this.dataStore.copyFile;
-    data.pasteTo = currentPath;
+    if (this.dataStore.copyFile) {
 
-    if (this.dataStore.cutFile && this.moveFileHandlers[type]) return this.moveFileHandlers[type].fn(data);
-    if (this.dataStore.copyFile && this.copyFileHandlers[type]) return this.copyFileHandlers[type].fn(data);
+      if (this.moveFileHandlers[connectionType]) {
+        data.copyFile = this.dataStore.copyFile;
+        data.dstPath = dstPath;
+
+        return this.moveFileHandlers[connectionType].fn(data).then((copyData: unknown) => {
+
+          // Reset copyFile
+          this.dataStore.copyFile = null;
+          this.$copyFile.next(Object.assign({}, this.dataStore).copyFile);
+
+          return copyData;
+        });
+      }
+    }
   }
 
   /**
    * Copy File
    */
-  UIcopyFile(currentPath: string, file: AnyOpsOSFile, applicationId: string = null, connectionUuid: string = null): void {
+  UIcopyFile(srcPath: string, file: AnyOpsOSFile, applicationId: string, connectionUuid: string = null): void {
     this.logger.debug('FileSystemUI', 'UIcopyFile', arguments);
+
+    this.currentCutCopyApplication = applicationId;
+    this.currentCutCopyConnectionUuid = connectionUuid;
 
     this.dataStore.cutFile = null;
     this.dataStore.copyFile = {
       fileName: file.fileName,
-      currentPath,
-      fullPath: currentPath + file.fileName
+      currentPath: srcPath,
+      fullPath: srcPath + file.fileName
     };
 
     // broadcast data to subscribers
     this.$cutFile.next(Object.assign({}, this.dataStore).cutFile);
     this.$copyFile.next(Object.assign({}, this.dataStore).copyFile);
-
   }
 
   /**
    * Cut file
    */
-  UIcutFile(currentPath: string, file: AnyOpsOSFile, applicationId: string = null, connectionUuid: string = null): void {
+  UIcutFile(srcPath: string, file: AnyOpsOSFile, applicationId: string, connectionUuid: string = null): void {
     this.logger.debug('FileSystemUI', 'UIcutFile', arguments);
 
     this.currentCutCopyApplication = applicationId;
@@ -382,8 +278,8 @@ export class AnyOpsOSLibFileSystemUiService {
     this.dataStore.copyFile = null;
     this.dataStore.cutFile = {
       fileName: file.fileName,
-      currentPath,
-      fullPath: currentPath + file.fileName
+      currentPath: srcPath,
+      fullPath: srcPath + file.fileName
     };
 
     // broadcast data to subscribers
@@ -392,68 +288,89 @@ export class AnyOpsOSLibFileSystemUiService {
   }
 
   /**
-   * Checks if is a file or folder and do something
+   * Downloads content from URL
    */
-  UIdoWithFile(applicationId: string, currentPath: string, file: AnyOpsOSFile): void {
-    const loggerArgs = arguments;
+  async UIdownloadFromURL(dstPath: string, viewContainerRef: ViewContainerRef, connectionType: string = null, data: { [key: string]: any; } = {}): Promise<unknown> {
 
-    // Rewrite desktop folders to open file-explorer when clicking on it
-    if (applicationId === null) applicationId = 'file-explorer';
+    if (this.downloadFromURLFileHandlers[connectionType]) {
+      data.dstPath = dstPath;
+      data.viewContainerRef = viewContainerRef;
 
-    let realApplication = applicationId;
-    const filetype = this.FileSystem.getFileType(file.longName);
-
-    // Like SFTP application, applicationId could have a 'sub application'. The # symbol separates its values. Ex: sftp#local or sftp#server
-    if (applicationId.indexOf('#') !== -1) realApplication = applicationId.substring(0, applicationId.indexOf('#'));
-
-    if (filetype === 'folder') {
-
-      if (!this.Applications.isApplicationOpened(realApplication)) {
-        this.Applications.openApplication(realApplication, {
-          path: currentPath + file.fileName + '/'
-        });
-      } else {
-
-        this.sendGoToPath({
-          application: applicationId,
-          path: currentPath + file.fileName + '/'
-        });
-
-      }
-
-    } else {
-      const filePath = currentPath + file.fileName;
-
-      // TODO remote applications?
-      this.FileSystem.getFile(filePath).subscribe(
-        (res: any) => {
-
-          if (!this.Applications.isApplicationOpened('notepad')) {
-            this.Applications.openApplication('notepad', {
-              data: res
-            });
-          } else {
-            // TODO: open new notepad tab
-          }
-
-        },
-        error => {
-          this.logger.error('FileSystemUI', 'UIdoWithFile -> Error while getting file contents', loggerArgs, error);
-        });
+      return this.downloadFromURLFileHandlers[connectionType].fn(data).then((downloadFromUrlData: unknown) => {
+        return downloadFromUrlData;
+      });
     }
   }
 
-  refreshPath(path: string): void {
-    this.subjectRefreshPath.next(path);
+  /**
+   * Upload file
+   */
+  async UIuploadFile(srcPath: string, dstPath: string, file: File, connectionType: string = null, applicationId: string = null, data: { [key: string]: any; } = {}): Promise<unknown> {
+
+    if (this.uploadFileHandlers[connectionType]) {
+      data.srcPath = srcPath;
+      data.dstPath = dstPath;
+      data.file = file;
+      data.applicationId = applicationId;
+
+      return this.uploadFileHandlers[connectionType].fn(data).then((uploadData: unknown) => {
+        return uploadData;
+      });
+    }
   }
 
   /**
-   * Observers
+   * Download file
    */
+  async UIdownloadFile(srcPath: string, dstPath: string, connectionType: string = null, applicationId: string = null, data: { [key: string]: any; } = {}): Promise<unknown> {
+
+    if (this.uploadFileHandlers[connectionType]) {
+      data.srcPath = srcPath;
+      data.dstPath = dstPath;
+      data.applicationId = applicationId;
+
+      return this.uploadFileHandlers[connectionType].fn(data).then((uploadData: unknown) => {
+        return uploadData;
+      });
+    }
+  }
+
+  /**
+   * Checks if is a file or folder and do something
+   */
+  UIdoWithFile(srcPath: string, file: AnyOpsOSFile, applicationId: string = null, connectionType: string = null, data: { [key: string]: any; } = {}): void {
+    if (this.uploadFileHandlers[connectionType]) {
+      data.srcPath = srcPath;
+      data.file = file;
+      data.applicationId = applicationId;
+
+      return this.doWithFileHandlers[connectionType].fn(data).then((doWithFileData: unknown) => {
+        return doWithFileData;
+      });
+    }
+  }
+
+  /**
+   * ---------
+   * Observers
+   * ---------
+   */
+
+  /**
+   * This Observer is fired when data in a certain path changes. So all applications maintain a valid state for the current 'path'
+   */
+  sendRefreshPath(path: string): void {
+    this.subjectRefreshPath.next(path);
+  }
+
   getObserverRefreshPath(): Observable<string> {
     return this.subjectRefreshPath.asObservable();
   }
 
+
+  /**
+   * Workaround to share pathChange between Controllers (like Action and Body Controllers)
+   */
   sendGoToPath(data: { application: string; path: string; }): void {
     this.subjectGoToPath.next(data);
   }
@@ -462,27 +379,16 @@ export class AnyOpsOSLibFileSystemUiService {
     return this.subjectGoToPath.asObservable();
   }
 
-  sendDownloadRemoteFile(data: { path: string; fileName: string; connectionUuid: string; applicationId: string; }): void {
-    this.subjectDownloadRemoteFile.next(data);
+  /**
+   * Uploads & Downloads Observers
+   *
+   * Used by others to see when a files is uploading or downloading
+   */
+  sendFileExchange(data: SendFileExchange): void {
+    this.subjectFileExchange.next(data);
   }
 
-  getObserverDownloadRemoteFile(): Observable<{ path: string; fileName: string; connectionUuid: string; applicationId: string; }> {
-    return this.subjectDownloadRemoteFile.asObservable();
-  }
-
-  sendUploadToRemote(data: { path: string; fileName: string; applicationId: string; }): void {
-    this.subjectUploadFileToRemote.next(data);
-  }
-
-  getObserverUploadToRemote(): Observable<{ path: string; fileName: string; applicationId: string; }> {
-    return this.subjectUploadFileToRemote.asObservable();
-  }
-
-  sendUploadToAnyOpsOS(data: { dst: string; file: File; applicationId: string; }): void {
-    this.subjectUploadFileToanyOpsOS.next(data);
-  }
-
-  getObserverUploadToAnyOpsOS(): Observable<{ dst: string; file: File; applicationId: string; }> {
-    return this.subjectUploadFileToanyOpsOS.asObservable();
+  getObserverSendFileExchange(): Observable<SendFileExchange> {
+    return this.subjectFileExchange.asObservable();
   }
 }

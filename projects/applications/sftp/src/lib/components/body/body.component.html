@@ -3,7 +3,7 @@
   <div class="window__side" *ngIf="viewSide">
 
     <ng-container *ngFor="let connection of connections; index as $index">
-      <div class="menu__item" *ngIf="connection != undefined" [ngClass]="{'active': connection.uuid === activeConnection}" (click)="setActiveConnection(connection)">
+      <div class="menu__item" *ngIf="connection != undefined" [ngClass]="{'active': connection.uuid === activeConnectionUuid}" (click)="setActiveConnection(connection)">
         <h5 class="position-relative">
           {{connection.description}} <small class="d-block">({{connection.host}})</small>
           <i class="fas fa-circle connection-state" [ngClass]="{'text-danger': connection.state === 'disconnected', 'text-warning': connection.state === 'connected', 'text-success': connection.state === 'ready'}"></i>
@@ -22,9 +22,9 @@
   </div>
   <div class="window__main row no_padding" [ngClass]="{'with__stats': viewExchange === true}">
 
-    <aasftp-body-local [application]="application"></aasftp-body-local>
-    <aasftp-body-server [application]="application"></aasftp-body-server>
-    <aasftp-body-exchange [application]="application"></aasftp-body-exchange>
+    <alfolder-explorer-main [application]="application"></alfolder-explorer-main>
+    <aasftp-body-server [application]="application" #bodyContainer></aasftp-body-server>
+    <aasftp-body-exchange></aasftp-body-exchange>
 
   </div>
 </div>

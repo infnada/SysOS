@@ -1,7 +1,7 @@
-import {SocketController, SocketId, OnConnect, OnDisconnect, MessageBody} from 'socket-controllers';
+import {SocketController, SocketId, OnConnect, OnDisconnect} from 'socket-controllers';
 import {getLogger, Logger} from 'log4js';
 
-const logger: Logger = getLogger('mainlog');
+const logger: Logger = getLogger('mainLog');
 
 @SocketController()
 export class AnyOpsOSMainWebsocketController {

@@ -3,9 +3,9 @@ import {Injectable} from '@angular/core';
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {v4 as uuidv4} from 'uuid';
 
-import {AnyOpsOSLibNetappService} from '@anyopsos/lib-netapp';
-import {AnyOpsOSLibVmwareService} from '@anyopsos/lib-vmware';
-import {VMWareFirewallRule} from '@anyopsos/app-infrastructure-manager';
+import {AnyOpsOSLibNetappSoapApiService, AnyOpsOSLibNetappSoapApiHelpersService, AnyOpsOSLibNetappFileSystemService} from '@anyopsos/lib-netapp';
+import {AnyOpsOSLibVmwareSoapApiService, AnyOpsOSLibVmwareSoapApiHelpersService} from '@anyopsos/lib-vmware';
+import {VMWareFirewallRule} from '@anyopsos/module-vmware';
 
 import {MountVolumeSnapshot} from '../types/mount-volume-snapshot';
 import {RestoreVolumeFiles} from '../types/restore-volume-files';
@@ -19,9 +19,12 @@ import {BackupVm} from '../types/backup-vm';
 })
 export class AnyOpsOSAppBackupsManagerHelpersService {
 
-  constructor(private logger: AnyOpsOSLibLoggerService,
-              private NetApp: AnyOpsOSLibNetappService,
-              private VMWare: AnyOpsOSLibVmwareService) {
+  constructor(private readonly logger: AnyOpsOSLibLoggerService,
+              private readonly LibNetappSoapApiService: AnyOpsOSLibNetappSoapApiService,
+              private readonly LibNetappSoapApiHelpersService: AnyOpsOSLibNetappSoapApiHelpersService,
+              private readonly LibNetappFileSystemService: AnyOpsOSLibNetappFileSystemService,
+              private readonly LibVmwareSoapApiService: AnyOpsOSLibVmwareSoapApiService,
+              private readonly LibVmwareSoapApiHelpersService: AnyOpsOSLibVmwareSoapApiHelpersService) {
 
   }
 
@@ -148,12 +151,17 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
       if (data.powerOnVm) {
         // Power On VM
         this.logger.debug('Backups Manager', 'Powering on vm', loggerArgs);
-        return this.VMWare.PowerOnVM_Task(
-          data.virtual,
-          {$type: 'VirtualMachine', _value: data.vm.info.obj.name},
-          {$type: 'HostSystem', _value: data.host.info.obj.name},
-          true
-        );
+
+        return this.LibVmwareSoapApiService.callSoapApi(data.virtual.uuid, 'PowerOnVM_Task', {
+          _this: {
+            $type: 'VirtualMachine',
+            _value: data.vm.info.obj.name
+          },
+          host: {
+            $type: 'HostSystem',
+            _value: data.host.info.obj.name
+          }
+        });
       }
 
       return res;
@@ -183,12 +191,17 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
       if (data.powerOnVm) {
         // Power On VM
         this.logger.debug('Backups Manager', 'Powering on vm', loggerArgs);
-        return this.VMWare.PowerOnVM_Task(
-          data.virtual,
-          {$type: 'VirtualMachine', _value: data.vm.info.obj.name},
-          {$type: 'HostSystem', _value: data.host.info.obj.name},
-          true
-        );
+
+        return this.LibVmwareSoapApiService.callSoapApi(data.virtual.uuid, 'PowerOnVM_Task', {
+          _this: {
+            $type: 'VirtualMachine',
+            _value: data.vm.info.obj.name
+          },
+          host: {
+            $type: 'HostSystem',
+            _value: data.host.info.obj.name
+          }
+        });
       }
 
     }).then((res) => {
@@ -491,11 +504,7 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
   checkLicenses(data: MountVolumeSnapshot | RestoreVolumeFiles | RestoreVmGuestFiles | VmInstantRecovery) {
     this.logger.debug('Backups Manager', 'Check storage licenses', arguments);
 
-    return this.NetApp.getLicenses(
-      data.storage.credential,
-      data.storage.host,
-      data.storage.port
-    ).then((res) => {
+    return this.LibNetappSoapApiService.callSoapApi(data.storage.uuid, 'license-v2-status-list-info', {}).then((res) => {
       if (res.status === 'error') throw new Error('Failed to get licenses');
 
       const flexClone = res.data.filter(obj => {
@@ -528,15 +537,13 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
 
     // Create Volume Clone
     this.logger.debug('Backups Manager', 'Cloning volume from snapshot', arguments);
-    return this.NetApp.cloneVolumeFromSnapshot(
-      data.storage.credential,
-      data.storage.host,
-      data.storage.port,
-      data.vserver.name,
-      data.volume.name,
-      data.volumeName,
-      data.snapshot.name
-    ).then((res) => {
+
+    return this.LibNetappSoapApiService.callSoapApi(data.storage.uuid, 'volume-clone-create', {
+      'parent-volume': data.volume.name,
+      volume: data.volumeName,
+      'space-reserve': 'none',
+      'parent-snapshot': data.snapshot.name
+    }).then((res) => {
       if (res.status === 'error') {
 
         // Error duplicated volume, try next.
@@ -550,15 +557,13 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
 
       // Mount Volume Point
       this.logger.debug('Backups Manager', 'Mounting namespace of cloned volume', loggerArgs);
-      return this.NetApp.mountVolume(
-        data.storage.credential,
-        data.storage.host,
-        data.storage.port,
-        data.vserver.name,
-        data.volumeName,
-        '/' + data.volumeName
-      );
 
+      return this.LibNetappSoapApiService.callSoapApi(data.storage.uuid, 'volume-mount', {
+        'activate-junction': true,
+        'junction-path': '/' + data.volumeName,
+        'volume-name': data.volumeName,
+        'export-policy-override': false
+      });
     }).then((res) => {
       if (res.status === 'error') throw new Error('Failed to mount Volume');
 
@@ -605,17 +610,20 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
     }
 
     this.logger.debug('Backups Manager', 'Updating firewall rules', arguments);
-    return this.VMWare.getHostFirewallSystem(data.virtual, data.host.info.obj.name).then((firewallSystem) => {
+
+    return this.LibVmwareSoapApiHelpersService.getHostFirewallSystem(data.virtual.uuid, data.host.info.obj.name).then((firewallSystem) => {
       if (firewallSystem.status === 'error') throw new Error('Failed to get Host firewallSystem from vCenter');
 
-      return this.VMWare.UpdateRuleset(
-        data.virtual,
-        {$type: 'HostFirewallSystem', _value: firewallSystem.data},
-        ruleName,
-        {
+      return this.LibVmwareSoapApiService.callSoapApi(data.virtual.uuid, 'UpdateRuleset', {
+        _this: {
+          $type: 'HostFirewallSystem',
+          _value: firewallSystem.data
+        },
+        id: ruleName,
+        spec: {
           allowedHosts: ipsRule
         }
-      );
+      });
     });
   }
 
@@ -625,7 +633,7 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
    */
   checkESXiFirewall(data: MountVolumeSnapshot | RestoreVolumeFiles | RestoreVmGuestFiles | VmInstantRecovery): Promise<any> {
 
-    return this.VMWare.getHostFirewallRules(data.virtual, data.host.info.obj.name).then((firewallRulesData) => {
+    return this.LibVmwareSoapApiHelpersService.getHostFirewallRules(data.virtual.uuid, data.host.info.obj.name).then((firewallRulesData) => {
       if (firewallRulesData.status === 'error') throw new Error('Failed to get Host firewall rules from vCenter');
 
       console.log(firewallRulesData);
@@ -635,7 +643,8 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
 
       // Check if storage interface is NFS and which protocol versions are enabled
       if (data.iface.info.data['data-protocols']['data-protocol'] === 'nfs') {
-        return this.NetApp.getNFSService(data.storage.credential, data.storage.host, data.storage.port, data.vserver.name).then((serviceData) => {
+
+        return this.LibNetappSoapApiService.callSoapApi(data.storage.uuid, 'nfs-service-get', {}).then((serviceData) => {
           if (serviceData.status === 'error') throw new Error('Failed to get NFS service status from Storage');
 
           // NFS v4.1
@@ -662,13 +671,10 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
 
     this.logger.debug('Backups Manager', 'Get Volume Exports', arguments);
 
-    return this.NetApp.getNFSExportRulesList(
-      data.storage.credential,
-      data.storage.host,
-      data.storage.port,
-      data.vserver.name,
-      `/${data.volumeName}`
-    ).then((res) => {
+    return this.LibNetappSoapApiService.callSoapApi(data.storage.uuid, 'nfs-exportfs-list-rules-2', {
+      pathname: `/${data.volumeName}`,
+      persistent: true
+    }).then((res) => {
       if (res.status === 'error') throw new Error('Failed to get Volume Exports');
 
       console.log(res);
@@ -682,12 +688,11 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
 
         // TODO: check connectivity from NFS node
         this.logger.debug('Backups Manager', 'Getting network system', loggerArgs);
-        return this.VMWare.getHostConfigManagerNetworkSystem(data.virtual, data.host.info.obj.name).then((networkSystemData) => {
+        return this.LibVmwareSoapApiHelpersService.getHostConfigManagerNetworkSystem(data.virtual.uuid, data.host.info.obj.name).then((networkSystemData) => {
           if (networkSystemData.status === 'error') throw new Error('Failed to get networkSystem from vCenter');
 
           const networkSystem = networkSystemData.data;
-          return this.VMWare.getHostNetworkInfoConsoleVnic(data.virtual, networkSystem);
-
+          return this.LibVmwareSoapApiHelpersService.getHostConfigManagerNetworkSystem(data.virtual.uuid, networkSystem);
         }).then((networkInfo) => {
           if (res.status === 'error') throw new Error('Failed to get NetworkInfoConsoleVnic from vCenter');
 
@@ -701,14 +706,21 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
 
           if (esxiHostExport.length === 0) {
             this.logger.debug('Backups Manager', 'No Volume Export matched, create it', loggerArgs);
-            return this.NetApp.setExportRule(
-              data.storage.credential,
-              data.storage.host,
-              data.storage.port,
-              data.vserver.name,
-              data.volume.info.data['volume-export-attributes'].policy,
-              esxiExportAddress // TODO
-            );
+
+            return this.LibNetappSoapApiService.callSoapApi(data.storage.uuid, 'export-rule-create', {
+              'client-match': esxiExportAddress,
+              'policy-name': data.volume.info.data['volume-export-attributes'].policy,
+              'ro-rule': {
+                'security-flavor': 'any'
+              },
+              'rw-rule': {
+                'security-flavor': 'never'
+              },
+              'rule-index': 1,
+              'super-user-security': {
+                'security-flavor': 'any'
+              }
+            });
           }
 
         }).then((setExportRuleData) => {
@@ -730,11 +742,7 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
 
     this.logger.debug('Backups Manager', 'Connection to vCenter using SOAP', arguments);
 
-    return this.VMWare.connectvCenterSoap(data.virtual).then((res) => {
-      if (res.status === 'error') throw new Error('Failed to connect to vCenter');
-
-      return this.checkStorageVolumeExports(data);
-    }).then(() => {
+    return this.checkStorageVolumeExports(data).then(() => {
 
       return this.checkESXiFirewall(data);
     }).then(() => {
@@ -743,8 +751,8 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
       this.logger.debug('Backups Manager', 'Getting datastore system', loggerArgs);
 
       return Promise.all([
-        this.VMWare.getHostConfigManagerDatastoreSystem(data.virtual, data.host.info.obj.name),
-        this.NetApp.getNFSService(data.storage.credential, data.storage.host, data.storage.port, data.vserver.name)
+        this.LibVmwareSoapApiHelpersService.getHostConfigManagerDatastoreSystem(data.virtual.uuid, data.host.info.obj.name),
+        this.LibNetappSoapApiService.callSoapApi(data.storage.uuid, 'nfs-service-get', {})
       ]);
     }).then((res) => {
       if (res[0].status === 'error') throw new Error('Failed to get datastoreSystem from vCenter');
@@ -754,17 +762,19 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
 
       this.logger.debug('Backups Manager', 'Mount volume to ESXi', loggerArgs);
 
-      return this.VMWare.CreateNasDatastore(
-        data.virtual,
-        {$type: 'HostDatastoreSystem', _value: datastoreSystem},
-        {
+      return this.LibVmwareSoapApiService.callSoapApi(data.virtual.uuid, 'CreateNasDatastore', {
+        _this: {
+          $type: 'HostDatastoreSystem',
+          _value: datastoreSystem
+        },
+        spec: {
           accessMode: 'readWrite',
           remoteHost: data.iface.info.data.address,
           remotePath: data.datastorePath,
           localPath: `/${data.volumeName}/`,
           type: (res[1].data['is-nfsv41-enabled'] ? 'NFS41' : 'NFS')
         }
-      );
+      });
 
     }).then((res) => {
       if (res.status === 'error') throw new Error('Failed to mount Datastore to host');
@@ -796,8 +806,8 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
     vmPath = vmPath.substring(0, vmPath.lastIndexOf('/') + 1).substr(1);
 
     // Get VM in Datastore (check if exist)
-    return this.VMWare.getVMFileDataFromDatastore(
-      data.virtual,
+    return this.LibVmwareSoapApiHelpersService.getVMFileDataFromDatastore(
+      data.virtual.uuid,
       esxiRestoredDatastore,
       data.datastorePath,
       vmPath,
@@ -809,17 +819,24 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
       // Register VM
       // TODO: check if VM with same name exists
       this.logger.debug('Backups Manager', 'Register VM to ESXi', loggerArgs);
-      return this.VMWare.RegisterVM_Task(
-        data.virtual,
-        {$type: 'Folder', _value: data.folder.info.obj.name},
-        '[' + data.datastorePath + '] ' + data.vm['summary.config.vmPathName'].split(']').pop().substr(1),
-        data.vm.name,
-        false,
-        {$type: 'ResourcePool', _value: data.resourcePool.info.obj.name},
-        {$type: 'HostSystem', _value: data.host.info.obj.name},
-        true
 
-      );
+      return this.LibVmwareSoapApiService.callSoapApi(data.virtual.uuid, 'RegisterVM_Task', {
+        _this: {
+          $type: 'Folder',
+          _value: data.folder.info.obj.name
+        },
+        path: '[' + data.datastorePath + '] ' + data.vm['summary.config.vmPathName'].split(']').pop().substr(1),
+        name: data.vm.name,
+        asTemplate: false,
+        pool: {
+          $type: 'ResourcePool',
+          _value: data.resourcePool.info.obj.name
+        },
+        host: {
+          $type: 'HostSystem',
+          _value: data.host.info.obj.name
+        }
+      });
 
     }).then((res) => {
       if (res.status === 'error') throw new Error('Failed to register VM to vCenter');
@@ -834,12 +851,15 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
       const newVMUuid = uuidv4();
       this.logger.debug('Backups Manager', 'Reconfigure VM uuid', loggerArgs);
       // TODO
-      return this.VMWare.ReconfigVM_Task(
-        data.virtual,
-        {$type: 'VirtualMachine', _value: data.vm.info.obj.name},
-        {uuid: newVMUuid},
-        true
-      );
+      return this.LibVmwareSoapApiService.callSoapApi(data.virtual.uuid, 'ReconfigVM_Task', {
+        _this: {
+          $type: 'VirtualMachine',
+          _value: data.vm.info.obj.name
+        },
+        spec: {
+          uuid: newVMUuid
+        }
+      });
     }).then((res) => {
       if (res.status === 'error') throw new Error('Failed to change VM uuid');
 
@@ -866,15 +886,11 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
     let vmPath;
 
     this.logger.debug('Backups Manager', 'Connection to vCenter using SOAP', arguments);
-    return this.VMWare.connectvCenterSoap(data.virtual).then((res) => {
-      if (res.status === 'error') throw new Error('Failed to connect to vCenter');
 
-      this.logger.debug('Backups Manager', 'Get VM path', loggerArgs);
-      return this.VMWare.getVMPath(data.virtual, data.vm.info.obj.name);
-    }).then((res) => {
+    return this.LibVmwareSoapApiHelpersService.getVMPath(data.virtual.uuid, data.vm.info.obj.name).then((res) => {
       if (res && res.status === 'error') throw new Error('Failed to get VM path');
 
-      const regex = /\[*\]\s(.*)\/.*\.vmx/gi;
+      const regex = /\[*]\s(.*)\/.*\.vmx/gi;
       const str = res.data.propSet['config.files.vmPathName'];
 
       vmPath = regex.exec(str)[1];
@@ -882,17 +898,20 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
       if (!vmPath) throw new Error('SAFETY STOP: VM cannot be on root folder');
 
       this.logger.debug('Backups Manager', 'Get VM runtime', loggerArgs);
-      return this.VMWare.getVMRuntime(data.virtual, data.vm.info.obj.name);
+
+      return this.LibVmwareSoapApiHelpersService.getVMRuntime(data.virtual.uuid, data.vm.info.obj.name);
     }).then((res) => {
       if (res && res.status === 'error') throw new Error('Failed to get VM runtime');
 
       if (res.data.propSet.runtime.powerState === 'poweredOn') {
         this.logger.debug('Backups Manager', 'Powering off VM', loggerArgs);
-        return this.VMWare.PowerOffVM_Task(
-          data.virtual,
-          {$type: 'VirtualMachine', _value: data.vm.info.obj.name},
-          true
-        );
+
+        return this.LibVmwareSoapApiService.callSoapApi(data.virtual.uuid, 'PowerOffVM_Task', {
+          _this: {
+            $type: 'VirtualMachine',
+            _value: data.vm.info.obj.name
+          }
+        });
       }
 
       return res;
@@ -901,30 +920,20 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
       if (res.status === 'error') throw new Error('Failed to power off VM at vCenter');
 
       this.logger.debug('Backups Manager', 'Get snapshot files from storage', loggerArgs);
-      return this.NetApp.getSnapshotFiles(
-        data.storage.credential,
-        data.storage.host,
-        data.storage.port,
-        data.vserver.name,
-        data.volume.name,
-        data.snapshot.name,
-        '/' + vmPath
-      );
+
+      // TODO, folder recursive
+      return this.LibNetappFileSystemService.getFolder(`/vol/${data.volume.name}/.snapshot/${data.snapshot.name}/${vmPath}`);
     }).then((res) => {
       if (res.status === 'error') throw new Error('Failed to get Snapshot files');
 
       res.data.forEach((file: { name: string }) => {
         if (file.name.indexOf('.lck') >= 0) return;
 
-        sfrPromises.push(this.NetApp.snapshotRestoreFile(
-          data.storage.credential,
-          data.storage.host,
-          data.storage.port,
-          data.vserver.name,
-          data.volume.name,
-          data.snapshot.name,
-          '/vol/' + data.volume.name + '/' + vmPath + '/' + file.name
-        ).then((forRes) => {
+        sfrPromises.push(this.LibNetappSoapApiService.callSoapApi(data.storage.uuid, 'snapshot-restore-file', {
+          path: '/vol/' + data.volume.name + '/' + vmPath + '/' + file.name,
+          snapshot: data.snapshot.name,
+          volume: data.volume.name
+        }).then((forRes) => {
           this.logger.debug('Backups Manager', 'Restoring file from storage snapshot', loggerArgs);
 
           if (forRes.status === 'error') throw new Error('Failed to restore file from storage snapshot');
@@ -936,10 +945,13 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
     }).then(() => {
 
       this.logger.debug('Backups Manager', 'Reloading VM', loggerArgs);
-      return this.VMWare.Reload(
-        data.virtual,
-        {$type: 'VirtualMachine', _value: data.vm.info.obj.name}
-      );
+
+      return this.LibVmwareSoapApiService.callSoapApi(data.virtual.uuid, 'Reload', {
+        _this: {
+          $type: 'VirtualMachine',
+          _value: data.vm.info.obj.name
+        }
+      });
 
     }).then((res) => {
       if (res.status === 'error') throw new Error('Failed to reload VM');
@@ -974,7 +986,8 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
     };
 
     this.logger.debug('Backups Manager', 'Get all VM snapshots', arguments);
-    return this.VMWare.getVMSnapshots(data.virtual, data.vm.info.obj.name).then((res) => {
+
+    return this.LibVmwareSoapApiHelpersService.getVMSnapshots(data.virtual.uuid, data.vm.info.obj.name).then((res) => {
       if (res.status === 'error') throw new Error('Failed to get VM Snapshots');
 
       // No snapshots found
@@ -987,13 +1000,14 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
 
       if (lastSnapshot.name.startsWith('anyOpsOS_backup_')) {
         this.logger.debug('Backups Manager', 'Reverting VM to snapshot', loggerArgs);
-        return this.VMWare.RevertToSnapshot_Task(
-          data.virtual,
-          {$type: 'VirtualMachineSnapshot', _value: lastSnapshot.snapshot.name},
-          null,
-          null,
-          true
-        );
+
+        return this.LibVmwareSoapApiService.callSoapApi(data.virtual.uuid, 'RevertToSnapshot_Task', {
+          _this: {
+            $type: 'VirtualMachineSnapshot',
+            _value: lastSnapshot.snapshot.name
+          },
+          suppressPowerOn: false
+        });
       }
 
       this.logger.debug('Backups Manager', 'Last snapshot is not from anyOpsOS backup', loggerArgs);
@@ -1007,13 +1021,15 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
 
       if (lastSnapshot.name.startsWith('anyOpsOS_backup_')) {
         this.logger.debug('Backups Manager', 'Deleting VM snapshot', loggerArgs);
-        return this.VMWare.RemoveSnapshot_Task(
-          data.virtual,
-          {$type: 'VirtualMachineSnapshot', _value: lastSnapshot.snapshot.name},
-          true,
-          true,
-          true
-        );
+
+        return this.LibVmwareSoapApiService.callSoapApi(data.virtual.uuid, 'RemoveSnapshot_Task', {
+          _this: {
+            $type: 'VirtualMachineSnapshot',
+            _value: lastSnapshot.snapshot.name
+          },
+          removeChildren: true,
+          consolidate: true
+        });
       }
 
       return res;

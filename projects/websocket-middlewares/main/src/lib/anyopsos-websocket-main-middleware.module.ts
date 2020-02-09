@@ -2,7 +2,7 @@ import {Middleware, MiddlewareInterface} from 'socket-controllers';
 import {getLogger, Logger} from 'log4js';
 import {Socket} from 'socket.io';
 
-const logger: Logger = getLogger('mainlog');
+const logger: Logger = getLogger('mainLog');
 
 @Middleware()
 export class AnyOpsOSMainWebsocketMiddleware implements MiddlewareInterface {

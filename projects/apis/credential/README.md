@@ -3,7 +3,7 @@ Generated with `routing-controllers-openapi`
 
 ## Version: 1.0.0
 
-### /api/credential/
+### /api/credential/{workspaceUuid}
 
 #### GET
 ##### Summary:
@@ -14,6 +14,7 @@ Get all credentials
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
+| workspaceUuid | path |  | Yes | string |
 
 ##### Responses
 
@@ -30,6 +31,7 @@ Put credential
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
+| workspaceUuid | path |  | Yes | string |
 | body | body |  | No | object |
 
 ##### Responses
@@ -37,6 +39,8 @@ Put credential
 | Code | Description |
 | ---- | ----------- |
 | 200 | Successful response |
+
+### /api/credential/{workspaceUuid}/{credentialUuid}
 
 #### PATCH
 ##### Summary:
@@ -47,6 +51,8 @@ Patch credential
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
+| workspaceUuid | path |  | Yes | string |
+| credentialUuid | path |  | Yes | string |
 | body | body |  | No | object |
 
 ##### Responses
@@ -54,8 +60,6 @@ Patch credential
 | Code | Description |
 | ---- | ----------- |
 | 200 | Successful response |
-
-### /api/credential/{credentialUuid}
 
 #### DELETE
 ##### Summary:
@@ -66,6 +70,7 @@ Delete credential
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
+| workspaceUuid | path |  | Yes | string |
 | credentialUuid | path |  | Yes | string |
 
 ##### Responses

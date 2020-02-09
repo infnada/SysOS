@@ -15,7 +15,7 @@ export class TabMonitorComponent implements OnInit {
   @Input() nmObject: ImDataObject;
   @Input() monitorConnection: NetdataConnection;
 
-  constructor(private Applications: AnyOpsOSLibApplicationService,
+  constructor(private readonly LibApplication: AnyOpsOSLibApplicationService,
               public VmwareTemplateHelpers: AnyOpsOSAppInfrastructureVmwareTemplateHelpersService) {
   }
 
@@ -23,7 +23,7 @@ export class TabMonitorComponent implements OnInit {
   }
 
   manageMonitors() {
-    this.Applications.openApplication('monitor');
+    this.LibApplication.openApplication('monitor');
   }
 
 }

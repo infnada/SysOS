@@ -5,7 +5,7 @@
       <mat-tab disabled="true">
         <ng-template matTabLabel>
           <div class="object horizontal-flex-container">
-            <div role="titlebar-icon" [ngClass]="VmwareTemplateHelpers.getObjectIconClass(dockerObject)"></div>
+            <div role="titlebar-icon" [ngClass]="InfrastructureManagerTemplateHelper.getObjectIcon(dockerObject)"></div>
             <div role="titlebar-title" class="summary-name-label">{{dockerObject.name}}</div>
           </div>
         </ng-template>

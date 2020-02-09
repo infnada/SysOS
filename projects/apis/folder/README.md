@@ -3,7 +3,7 @@ Generated with `routing-controllers-openapi`
 
 ## Version: 1.0.0
 
-### /api/folder/{folderName}
+### /api/folder/{srcPath}
 
 #### GET
 ##### Summary:
@@ -14,13 +14,15 @@ Get folder
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| folderName | path |  | Yes | string |
+| srcPath | path |  | Yes | string |
 
 ##### Responses
 
 | Code | Description |
 | ---- | ----------- |
 | 200 | Successful response |
+
+### /api/folder/{dstPath}
 
 #### PUT
 ##### Summary:
@@ -31,7 +33,7 @@ Create folder
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| folderName | path |  | Yes | string |
+| dstPath | path |  | Yes | string |
 
 ##### Responses
 

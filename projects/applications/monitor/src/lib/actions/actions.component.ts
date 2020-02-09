@@ -24,7 +24,7 @@ export class ActionsComponent implements OnDestroy, OnInit {
   activeConnection: string;
   connection;
 
-  constructor(private Modal: AnyOpsOSLibModalService,
+  constructor(private readonly LibModal: AnyOpsOSLibModalService,
               private Utils: AnyOpsOSLibUtilsService,
               private Monitor: AnyOpsOSAppMonitorService,
               private Netdata: AnyOpsOSExtLibNetdataService) {
@@ -95,7 +95,7 @@ export class ActionsComponent implements OnDestroy, OnInit {
     this.NETDATA = this.connection.NETDATA;
     this.NETDATA.pause(() => {});
 
-    this.Modal.openRegisteredModal('monitor-options', '.window--monitor .window__main', {
+    this.LibModal.openRegisteredModal('monitor-options', '.window--monitor .window__main', {
       connection: this.connection
     }).then((modalInstance) => {
       modalInstance.result.then(() => {
@@ -110,7 +110,7 @@ export class ActionsComponent implements OnDestroy, OnInit {
     this.NETDATA = this.connection.NETDATA;
     this.NETDATA.pause(() => {});
 
-    this.Modal.openRegisteredModal('monitor-alarms', '.window--monitor .window__main', {
+    this.LibModal.openRegisteredModal('monitor-alarms', '.window--monitor .window__main', {
       connection: this.connection
     }).then((modalInstance) => {
       modalInstance.result.then(() => {
@@ -127,7 +127,7 @@ export class ActionsComponent implements OnDestroy, OnInit {
       this.connection = this.Netdata.newDashboard({uuid: null});
     }
 
-    this.Modal.openRegisteredModal('monitor-import', '.window--monitor .window__main', {
+    this.LibModal.openRegisteredModal('monitor-import', '.window--monitor .window__main', {
       connection: this.connection
     }).then((modalInstance) => {
       modalInstance.result.then(() => {
@@ -141,7 +141,7 @@ export class ActionsComponent implements OnDestroy, OnInit {
     this.NETDATA = this.connection.NETDATA;
     this.NETDATA.pause(() => {});
 
-    this.Modal.openRegisteredModal('monitor-export', '.window--monitor .window__main', {
+    this.LibModal.openRegisteredModal('monitor-export', '.window--monitor .window__main', {
       connection: this.connection
     }).then((modalInstance) => {
       modalInstance.result.then(() => {
@@ -156,7 +156,7 @@ export class ActionsComponent implements OnDestroy, OnInit {
       this.NETDATA.pause(() => {});
     }
 
-    this.Modal.openRegisteredModal('monitor-help', '.window--monitor .window__main', {}).then((modalInstance) => {
+    this.LibModal.openRegisteredModal('monitor-help', '.window--monitor .window__main', {}).then((modalInstance) => {
       modalInstance.result.then(() => {
         if (this.NETDATA) this.NETDATA.unpause();
       });

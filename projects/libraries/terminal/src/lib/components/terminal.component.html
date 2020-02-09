@@ -6,8 +6,9 @@
     #terminalRef
   ></div>
   <div class="terminal-status-bar" style="background-color: rgb(97, 216, 164);" [style.opacity]="currentTerminal?.state === 'connected' && customTerminalMessage === null ? '0' : '0.9'">
-    <h3 *ngIf="currentTerminal?.state !== 'connected'">Connecting...</h3>
-    <h3 *ngIf="currentTerminal?.state === 'connected' && customTerminalMessage === null">Connected</h3>
-    <h3 *ngIf="currentTerminal?.state === 'connected' && customTerminalMessage !== null">{{customTerminalMessage}}</h3>
+    <h3 *ngIf="customTerminalMessage !== null">{{customTerminalMessage}}</h3>
+    <h3 *ngIf="currentTerminal?.state !== 'connected' && !customTerminalMessage">Connecting...</h3>
+    <h3 *ngIf="currentTerminal?.state === 'connected' && !customTerminalMessage">Connected</h3>
+
   </div>
 </div>

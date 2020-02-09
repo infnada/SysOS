@@ -1,19 +1,24 @@
-import {SshSessionsModule} from '@anyopsos/module-ssh';
+import {AnyOpsOSSshSessionStateModule} from '@anyopsos/module-ssh';
 
 export class ServerMonitorModule {
 
+  private readonly SshSessionStateModule: AnyOpsOSSshSessionStateModule;
+
   constructor(private readonly userUuid: string,
               private readonly sessionUuid: string,
+              private readonly workspaceUuid: string,
               private readonly connectionUuid: string) {
+
+    this.SshSessionStateModule = new AnyOpsOSSshSessionStateModule(this.userUuid, this.sessionUuid, this.workspaceUuid, this.connectionUuid);
   }
 
   async getRelease(): Promise<string> {
-    const cmdData = await new SshSessionsModule().execAsync(this.userUuid, this.sessionUuid, this.connectionUuid, 'cat', ['/etc/centos-release']);
+    const cmdData = await this.SshSessionStateModule.execAsync('cat', ['/etc/centos-release']);
     return cmdData.replace(/(\n|\r)+$/, '');
   }
 
   async getKernel(): Promise<string> {
-    const cmdData = await new SshSessionsModule().execAsync(this.userUuid, this.sessionUuid, this.connectionUuid, 'uname', ['-r']);
+    const cmdData = await this.SshSessionStateModule.execAsync('uname', ['-r']);
     return cmdData.replace(/(\n|\r)+$/, '');
   }
 
@@ -21,15 +26,15 @@ export class ServerMonitorModule {
     const cpuOptions: {option: unknown, data: unknown}[] = [];
 
     return Promise.all([
-      new SshSessionsModule().execAsync(this.userUuid, this.sessionUuid, this.connectionUuid, 'lscpu'),
-      new SshSessionsModule().execAsync(this.userUuid, this.sessionUuid, this.connectionUuid, 'cat', ['/proc/loadavg'])
-    ]).then((data) => {
+      this.SshSessionStateModule.execAsync('lscpu'),
+      this.SshSessionStateModule.execAsync('cat', ['/proc/loadavg'])
+    ]).then((cmdResult: [string, string]) => {
 
-      data[0] = data[0].split(/\r?\n/);
-      data[0].pop();
+      const cpuResult: string[] = cmdResult[0].split(/\r?\n/);
+      cpuResult.pop();
 
-      for (let i = 0, len = data[0].length; i < len; i++) {
-        const currentData = data[0][i].split(/:\s+/);
+      for (let i = 0, len = cpuResult.length; i < len; i++) {
+        const currentData = cpuResult[i].split(/:\s+/);
 
         cpuOptions.push({
           option: currentData[0],
@@ -39,7 +44,7 @@ export class ServerMonitorModule {
 
       cpuOptions.push({
         option: 'Load average',
-        data: data[1].replace(/\r?\n/, '')
+        data: cmdResult[1].replace(/\r?\n/, '')
       });
 
       return cpuOptions;
@@ -49,8 +54,8 @@ export class ServerMonitorModule {
   async getDisk(): Promise<{}[]> {
     const diskOptions = [];
 
-    let cmdData = await new SshSessionsModule().execAsync(this.userUuid, this.sessionUuid, this.connectionUuid, 'df', ['-h', '-x', 'tmpfs', '-x', 'devtmpfs']);
-    cmdData = cmdData.split(/\r?\n/);
+    const cmdResult: string = await this.SshSessionStateModule.execAsync('df', ['-h', '-x', 'tmpfs', '-x', 'devtmpfs']);
+    const cmdData = cmdResult.split(/\r?\n/);
     cmdData.shift();
     cmdData.pop();
 
@@ -72,17 +77,15 @@ export class ServerMonitorModule {
   }
 
   async getMemType(): Promise<string> {
-    let cmdData = await new SshSessionsModule().execAsync(this.userUuid, this.sessionUuid, this.connectionUuid,
-      'dmidecode', ['--type', '17', '|', 'grep', '-i', '"deta"', '|', 'head', '-1']);
-    cmdData = cmdData.split(/\r?\n/);
+    const cmdResult: string = await this.SshSessionStateModule.execAsync('dmidecode', ['--type', '17', '|', 'grep', '-i', '"deta"', '|', 'head', '-1']);
+    const cmdData: string[] = cmdResult.split(/\r?\n/);
 
     return cmdData[0].substr(cmdData[0].indexOf(':') + 2);
   }
 
   async getMemSpeed(): Promise<string> {
-    let cmdData = await new SshSessionsModule().execAsync(this.userUuid, this.sessionUuid, this.connectionUuid,
-      'dmidecode', ['|', 'grep', '-i', '"Current speed"', '|', 'grep', '"MHz"', '|', 'head', '-1']);
-    cmdData = cmdData.split(/\r?\n/);
+    const cmdResult: string = await this.SshSessionStateModule.execAsync('dmidecode', ['|', 'grep', '-i', '"Current speed"', '|', 'grep', '"MHz"', '|', 'head', '-1']);
+    const cmdData: string[] = cmdResult.split(/\r?\n/);
 
     return cmdData[0].substr(cmdData[0].indexOf(':') + 2);
   }
@@ -95,8 +98,8 @@ export class ServerMonitorModule {
       this.getMemType()
     ]).then(async (result) => {
 
-      let cmdData = await new SshSessionsModule().execAsync(this.userUuid, this.sessionUuid, this.connectionUuid, 'free', ['-m']);
-      cmdData = cmdData.split(/\r?\n/);
+      const cmdResult: string = await this.SshSessionStateModule.execAsync('free', ['-m']);
+      const cmdData: string[] = cmdResult.split(/\r?\n/);
       cmdData.shift();
       cmdData.pop();
 

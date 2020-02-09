@@ -9,6 +9,7 @@
     "@anyopsos/module-kubernetes": "~0.0.1"
   },
   "devDependencies": {
+    "@types/node": "^12.12.21",
     "@types/ssh2": "^0.5.39",
     "ssh2": "^0.8.7",
     "socket.io": "^2.3.0",

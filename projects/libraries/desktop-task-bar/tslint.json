@@ -1,0 +1,17 @@
+{
+  "extends": "../../../tslint.json",
+  "rules": {
+    "directive-selector": [
+      true,
+      "attribute",
+      "aldtaskBar",
+      "camelCase"
+    ],
+    "component-selector": [
+      true,
+      "element",
+      "aldtask-bar",
+      "kebab-case"
+    ]
+  }
+}

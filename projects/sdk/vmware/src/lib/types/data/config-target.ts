@@ -1,0 +1,52 @@
+import {DynamicData} from './dynamic-data';
+
+import {VirtualMachineCdromInfo} from './virtual-machine-cdrom-info';
+import {VirtualMachineDatastoreInfo} from './virtual-machine-datastore-info';
+import {DistributedVirtualPortgroupInfo} from './distributed-virtual-portgroup-info';
+import {DistributedVirtualSwitchInfo} from './distributed-virtual-switch-info';
+import {VirtualMachineFloppyInfo} from './virtual-machine-floppy-info';
+import {VirtualMachineIdeDiskDeviceInfo} from './virtual-machine-ide-disk-device-info';
+import {VirtualMachineLegacyNetworkSwitchInfo} from './virtual-machine-legacy-network-switch-info';
+import {VirtualMachineNetworkInfo} from './virtual-machine-network-info';
+import {OpaqueNetworkTargetInfo} from './opaque-network-target-info';
+import {VirtualMachineParallelInfo} from './virtual-machine-parallel-info';
+import {VirtualMachinePciPassthroughInfo} from './virtual-machine-pci-passthrough-info';
+import {ResourcePoolRuntimeInfo} from './resource-pool-runtime-info';
+import {VirtualMachineScsiDiskDeviceInfo} from './virtual-machine-scsi-disk-device-info';
+import {VirtualMachineScsiPassthroughInfo} from './virtual-machine-scsi-passthrough-info';
+import {VirtualMachineSerialInfo} from './virtual-machine-serial-info';
+import {VirtualMachinePciSharedGpuPassthroughInfo} from './virtual-machine-pci-shared-gpu-passthrough-info';
+import {VirtualMachineSoundInfo} from './virtual-machine-sound-info';
+import {VirtualMachineSriovInfo} from './virtual-machine-sriov-info';
+import {VirtualMachineUsbInfo} from './virtual-machine-usb-info';
+import {VirtualMachineVFlashModuleInfo} from './virtual-machine-v-flash-module-info';
+
+export interface ConfigTarget extends DynamicData {
+  autoVmotion?: boolean;
+  availablePersistentMemoryReservationMB?: number;
+  cdRom?: VirtualMachineCdromInfo[];
+  datastore?: VirtualMachineDatastoreInfo[];
+  distributedVirtualPortgroup?: DistributedVirtualPortgroupInfo[];
+  distributedVirtualSwitch?: DistributedVirtualSwitchInfo[];
+  floppy?: VirtualMachineFloppyInfo[];
+  ideDisk?: VirtualMachineIdeDiskDeviceInfo[];
+  legacyNetworkInfo?: VirtualMachineLegacyNetworkSwitchInfo[];
+  maxMemMBOptimalPerf: number;
+  network?: VirtualMachineNetworkInfo[];
+  numCpuCores: number;
+  numCpus: number;
+  numNumaNodes: number;
+  opaqueNetwork?: OpaqueNetworkTargetInfo[];
+  parallel?: VirtualMachineParallelInfo[];
+  pciPassthrough?: VirtualMachinePciPassthroughInfo[];
+  resourcePool?: ResourcePoolRuntimeInfo;
+  scsiDisk?: VirtualMachineScsiDiskDeviceInfo[];
+  scsiPassthrough?: VirtualMachineScsiPassthroughInfo[];
+  serial?: VirtualMachineSerialInfo[];
+  sharedGpuPassthroughTypes?: VirtualMachinePciSharedGpuPassthroughInfo[];
+  smcPresent: boolean;
+  sound?: VirtualMachineSoundInfo[];
+  sriov?: VirtualMachineSriovInfo[];
+  usb?: VirtualMachineUsbInfo[];
+  vFlashModule?: VirtualMachineVFlashModuleInfo[];
+}

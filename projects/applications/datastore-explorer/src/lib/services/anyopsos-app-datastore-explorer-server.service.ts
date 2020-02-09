@@ -2,17 +2,24 @@ import {Injectable} from '@angular/core';
 
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 
+import {MatDialogRef} from '@anyopsos/lib-angular-material';
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibServiceInjectorService} from '@anyopsos/lib-service-injector';
 import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
-import {AnyOpsOSLibVmwareService} from '@anyopsos/lib-vmware';
+import {AnyOpsOSLibVmwareSoapApiHelpersService} from '@anyopsos/lib-vmware';
 import {AnyOpsOSLibNetappService} from '@anyopsos/lib-netapp';
-import {ImDataObject, NetAppVolume, NetAppVserver, VMWareDatastore} from '@anyopsos/app-infrastructure-manager';
+import {VMWareDatastore} from '@anyopsos/module-vmware';
+import {NetAppVolume, NetAppVserver} from '@anyopsos/module-netapp';
+import {DataObject} from '@anyopsos/backend/app/types/data-object';
 import {AnyOpsOSFile} from '@anyopsos/backend/app/types/anyopsos-file';
+
 
 import {AnyOpsOSAppDatastoreExplorerService} from './anyopsos-app-datastore-explorer.service';
 import {DatastoreExplorerConnection} from '../types/datastore-explorer-connection';
+
+
+
 
 @Injectable({
   providedIn: 'root'
@@ -39,13 +46,12 @@ export class AnyOpsOSAppDatastoreExplorerServerService {
   viewAsList: Observable<boolean>;
   search: Observable<{ fileName: string; }>;
 
-  constructor(private logger: AnyOpsOSLibLoggerService,
-              private serviceInjector: AnyOpsOSLibServiceInjectorService,
-              private FileSystem: AnyOpsOSLibFileSystemService,
-              private Modal: AnyOpsOSLibModalService,
-              private VMWare: AnyOpsOSLibVmwareService,
-              private NetApp: AnyOpsOSLibNetappService,
-              private DatastoreExplorer: AnyOpsOSAppDatastoreExplorerService) {
+  constructor(private readonly logger: AnyOpsOSLibLoggerService,
+              private readonly serviceInjector: AnyOpsOSLibServiceInjectorService,
+              private readonly LibFileSystem: AnyOpsOSLibFileSystemService,
+              private readonly LibModal: AnyOpsOSLibModalService,
+              private readonly LibVmwareSoapApiHelpersService: AnyOpsOSLibVmwareSoapApiHelpersService,
+              private readonly DatastoreExplorer: AnyOpsOSAppDatastoreExplorerService) {
     this.InfrastructureManagerObjectHelper = this.serviceInjector.get('AnyOpsOSAppInfrastructureManagerObjectHelperService');
 
     this.dataStore = {currentPath: '/', currentData: [], viewAsList: false, search: {fileName: null}};
@@ -64,20 +70,21 @@ export class AnyOpsOSAppDatastoreExplorerServerService {
     // TODO
   }
 
-  reloadPath(connectionUuid: string, path?: string): void {
+  async reloadPath(connectionUuid: string, path?: string): Promise<void> {
     const loggerArgs = arguments;
 
     this.subjectLoadingData.next(true);
 
     const connection: DatastoreExplorerConnection = this.DatastoreExplorer.getConnectionByUuid(connectionUuid);
 
-    this.Modal.openLittleModal('PLEASE WAIT', 'Getting data...', '.window--datastore-explorer .window__main', 'plain').then(() => {
+    const littleModalRef: MatDialogRef<any> = await this.LibModal.openLittleModal(this.DatastoreExplorer.serverBodyContainer, 'PLEASE WAIT', 'Getting data...');
 
+    return Promise.resolve().then(() => {
       if (connection.type === 'vmware') {
-        const datastore: ImDataObject & { info: { data: VMWareDatastore } } = connection.data.obj;
+        const datastore: DataObject & { info: { data: VMWareDatastore } } = connection.data.obj;
 
-        return this.VMWare.getFilesDataFromDatastore(
-          connection,
+        return this.LibVmwareSoapApiHelpersService.getFilesDataFromDatastore(
+          connection.uuid,
           `datastoreBrowser-${datastore.info.obj.name}`,
           datastore.name,
           (path ? path : this.dataStore.currentPath)
@@ -85,8 +92,8 @@ export class AnyOpsOSAppDatastoreExplorerServerService {
       }
 
       if (connection.type === 'netapp') {
-        const volume: ImDataObject & { info: { data: NetAppVolume } } = connection.data.obj;
-        const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(connectionUuid, 'vserver', volume.info.parent);
+        const volume: DataObject & { info: { data: NetAppVolume } } = connection.data.obj;
+        const vServer: DataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(connectionUuid, 'vserver', volume.info.parent);
 
         return this.NetApp.getVolumeFiles(
           connection.credential,
@@ -160,11 +167,11 @@ export class AnyOpsOSAppDatastoreExplorerServerService {
       }
 
       this.subjectLoadingData.next(false);
-      this.Modal.closeModal('.window--datastore-explorer .window__main');
+      this.LibModal.closeModal(littleModalRef.id);
 
     }).catch(error => {
       this.logger.error('DatastoreExplorer', 'Error while getting fileSystemPath -> ', loggerArgs, error);
-      this.Modal.closeModal('.window--datastore-explorer .window__main');
+      this.LibModal.closeModal(littleModalRef.id);
     });
 
   }

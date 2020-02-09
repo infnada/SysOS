@@ -7,49 +7,49 @@
   </a>
   <a class="window__item separator"></a>
   <a class="window__item" matTooltip="Edit connection" (click)="editConnection()">
-    <i class="fas fa-edit" [ngClass]="{'text-primary': activeConnection !== null}"></i>
+    <i class="fas fa-edit" [ngClass]="{'text-primary': activeConnectionUuid !== null}"></i>
   </a>
   <a class="window__item" matTooltip="Disconnect" (click)="disconnectConnection()">
-    <i class="fas fa-times" [ngClass]="{'text-danger': activeConnection !== null}"></i>
+    <i class="fas fa-times" [ngClass]="{'text-danger': activeConnectionUuid !== null}"></i>
   </a>
   <a class="window__item" matTooltip="Delete" (click)="deleteConnection()">
-    <i class="fas fa-trash" [ngClass]="{'text-danger': activeConnection !== null}"></i>
+    <i class="fas fa-trash" [ngClass]="{'text-danger': activeConnectionUuid !== null}"></i>
   </a>
   <a class="window__item" matTooltip="Connection options" (click)="configureConnection()">
-    <i class="fas fa-cog" [ngClass]="{'text-primary': activeConnection !== null}"></i>
+    <i class="fas fa-cog" [ngClass]="{'text-primary': activeConnectionUuid !== null}"></i>
   </a>
   <a class="window__item separator"></a>
   <a class="window__item" matTooltip="Power status">
-    <i class="fas fa-power-off" [ngClass]="{'text-danger': activeConnection !== null}"></i>
+    <i class="fas fa-power-off" [ngClass]="{'text-danger': activeConnectionUuid !== null}"></i>
   </a>
   <a class="window__item" matTooltip="Refresh" (click)="remoteRefresh();">
-    <i class="fas fa-sync-alt" [ngClass]="{'text-success': activeConnection !== null}"></i>
+    <i class="fas fa-sync-alt" [ngClass]="{'text-success': activeConnectionUuid !== null}"></i>
   </a>
   <a class="window__item" matTooltip="SSH" (click)="openWithApp('ssh')">
-    <i class="fas fa-terminal" [ngClass]="{'text-primary': activeConnection !== null}"></i>
+    <i class="fas fa-terminal" [ngClass]="{'text-primary': activeConnectionUuid !== null}"></i>
   </a>
   <a class="window__item" matTooltip="File explorer" (click)="openWithApp('sftp')">
-    <i class="fas fa-upload" [ngClass]="{'text-primary': activeConnection !== null}"></i>
+    <i class="fas fa-upload" [ngClass]="{'text-primary': activeConnectionUuid !== null}"></i>
   </a>
   <a class="window__item" matTooltip="Hardware monitor">
-    <i class="fas fa-microchip" [ngClass]="{'text-primary': activeConnection !== null}"></i>
+    <i class="fas fa-microchip" [ngClass]="{'text-primary': activeConnectionUuid !== null}"></i>
   </a>
   <a class="window__item" matTooltip="Alerts">
-    <i class="fas fa-bullhorn" [ngClass]="{'text-primary': activeConnection !== null}"></i>
+    <i class="fas fa-bullhorn" [ngClass]="{'text-primary': activeConnectionUuid !== null}"></i>
   </a>
   <a class="window__item" matTooltip="Services">
-    <i class="fas fa-cubes" [ngClass]="{'text-primary': activeConnection !== null}"></i>
+    <i class="fas fa-cubes" [ngClass]="{'text-primary': activeConnectionUuid !== null}"></i>
   </a>
   <a class="window__item" matTooltip="Firewall">
-    <i class="fas fa-exchange-alt" [ngClass]="{'text-primary': activeConnection !== null}"></i>
+    <i class="fas fa-exchange-alt" [ngClass]="{'text-primary': activeConnectionUuid !== null}"></i>
   </a>
   <a class="window__item" matTooltip="HIDS" (click)="runHIDS()">
-    <i class="fas fa-shield-alt" [ngClass]="{'text-primary': activeConnection !== null}"></i>
+    <i class="fas fa-shield-alt" [ngClass]="{'text-primary': activeConnectionUuid !== null}"></i>
   </a>
   <a class="window__item separator"></a>
 
   <!-- VMWare VM actions -->
-  <ng-container *ngIf="getActiveObjectType() === 'VirtualMachine'">
+  <ng-container *ngIf="(getActiveObjectObs() | async)?.type === 'VirtualMachine'">
     <a class="window__item" matTooltip="Power On">
       <i class="vm-ui-icon-vmPowerOn"></i>
     </a>
@@ -68,14 +68,14 @@
   </ng-container>
 
   <!-- Kubernetes Node actions -->
-  <ng-container *ngIf="getActiveObjectType() === 'Node'">
+  <ng-container *ngIf="(getActiveObjectObs() | async)?.type === 'Node'">
     <a class="window__item" matTooltip="Exec Shell">
       <i class="fas fa-terminal text-primary"></i>
     </a>
   </ng-container>
 
   <!-- Kubernetes Pod actions -->
-  <ng-container *ngIf="getActiveObjectType() === 'Pod'">
+  <ng-container *ngIf="(getActiveObjectObs() | async)?.type === 'Pod'">
     <a class="window__item" matTooltip="Exec Shell" (click)="execShell()">
       <i class="fas fa-terminal text-primary"></i>
     </a>
@@ -86,18 +86,18 @@
 
   <a class="window__item" matTooltip="Scale resource"
      (click)="scaleResource()"
-     *ngIf="getActiveObjectType() === 'Deployment' || getActiveObjectType() === 'ReplicaSet' || getActiveObjectType() === 'StatefulSet'">
+     *ngIf="(getActiveObjectObs() | async)?.type === 'Deployment' || (getActiveObjectObs() | async)?.type === 'ReplicaSet' || (getActiveObjectObs() | async)?.type === 'StatefulSet'">
     <i class="fas fa-ellipsis-h text-primary"></i>
   </a>
 
   <!-- Kubernetes CronJob actions -->
-  <ng-container *ngIf="getActiveObjectType() === 'ConJob'">
+  <ng-container *ngIf="(getActiveObjectObs() | async)?.type === 'ConJob'">
     <a class="window__item" matTooltip="Trigger Resource" (click)="triggerResource()">
       <i class="fas fa-pen text-primary"></i>
     </a>
   </ng-container>
 
-  <ng-container *ngIf="getActiveConnectionType() === 'kubernetes'">
+  <ng-container *ngIf="(getActiveConnectionObs() | async)?.type === 'kubernetes'">
     <a class="window__item" matTooltip="View Logs" (click)="getLogs()">
       <i class="fas fa-align-left text-primary"></i>
     </a>

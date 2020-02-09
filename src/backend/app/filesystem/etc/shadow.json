@@ -1,7 +1,7 @@
 [
   {
-    "username": "root",
     "uuid": "4ea13e1b-398b-4a30-99df-28720b026d20",
-    "kdbxPath": "/home/root/credentials.kdbx"
+    "username": "root",
+    "home": "/home/root"
   }
 ]

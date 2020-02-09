@@ -1,15 +1,13 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
-import {Application} from '@anyopsos/lib-application';
-import {AnyOpsOSLibFileSystemUiService} from '@anyopsos/lib-file-system-ui';
+import {AnyOpsOSLibFileSystemUiService, SendFileExchange} from '@anyopsos/lib-file-system-ui';
 
 import {AnyOpsOSAppSftpService} from '../../../services/anyopsos-app-sftp.service';
-import {AnyOpsOSAppSftpLocalService} from '../../../services/anyopsos-app-sftp-local.service';
-import {AnyOpsOSAppSftpServerService} from '../../../services/anyopsos-app-sftp-server.service';
+import {ConnectionTypes} from '@anyopsos/backend/app/types/connection-types';
 
 @Component({
   selector: 'aasftp-body-exchange',
@@ -17,13 +15,9 @@ import {AnyOpsOSAppSftpServerService} from '../../../services/anyopsos-app-sftp-
   styleUrls: ['./body-exchange.component.scss']
 })
 export class BodyExchangeComponent implements OnDestroy, OnInit {
-  @Input() application: Application;
+  private readonly destroySubject$: Subject<void> = new Subject();
 
-  private destroySubject$: Subject<void> = new Subject();
-
-  private activeConnection: string;
-  private currentLocalPath: string;
-  private currentRemotePath: string;
+  private activeConnectionUuid: string | null;
 
   viewExchange: boolean;
   filesExchange: {
@@ -36,11 +30,9 @@ export class BodyExchangeComponent implements OnDestroy, OnInit {
     exchange: string
   }[] = [];
 
-  constructor(private logger: AnyOpsOSLibLoggerService,
-              private FileSystemUi: AnyOpsOSLibFileSystemUiService,
-              private Sftp: AnyOpsOSAppSftpService,
-              private SftpLocal: AnyOpsOSAppSftpLocalService,
-              private SftpServer: AnyOpsOSAppSftpServerService) {
+  constructor(private readonly logger: AnyOpsOSLibLoggerService,
+              private readonly LibFileSystemUi: AnyOpsOSLibFileSystemUiService,
+              private readonly Sftp: AnyOpsOSAppSftpService) {
 
   }
 
@@ -51,31 +43,14 @@ export class BodyExchangeComponent implements OnDestroy, OnInit {
       .pipe(takeUntil(this.destroySubject$)).subscribe((view: boolean) => this.viewExchange = view);
 
     // Listen for activeConnection change
-    this.Sftp.activeConnection
-      .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnectionUuid: string) => this.activeConnection = activeConnectionUuid);
+    this.Sftp.activeConnectionUuid
+      .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnectionUuid: string | null) => this.activeConnectionUuid = activeConnectionUuid);
 
-    // Listen for local currentPath change
-    this.SftpLocal.currentPath
-      .pipe(takeUntil(this.destroySubject$)).subscribe((path: string) => this.currentLocalPath = path);
-
-    // Listen for server currentPath change
-    this.SftpServer.currentPath
-      .pipe(takeUntil(this.destroySubject$)).subscribe((path: string) => this.currentRemotePath = path);
-
-    // Watcher sent by FileComponent
-    this.FileSystemUi.getObserverDownloadRemoteFile()
-      .pipe(takeUntil(this.destroySubject$)).subscribe((data) => this.onDownloadRemoteFile(data));
-
-    // Watcher sent by FileComponent
-    this.FileSystemUi.getObserverUploadToRemote()
-      .pipe(takeUntil(this.destroySubject$)).subscribe((data) => this.onUploadToRemote(data));
-
-    // Watcher sent by SftpBodyLocal
-    this.FileSystemUi.getObserverUploadToAnyOpsOS()
-      .pipe(takeUntil(this.destroySubject$)).subscribe((data) => this.onUploadToAnyOpsOS(data));
-
-    this.SftpServer.getObserverFileProgress()
-      .pipe(takeUntil(this.destroySubject$)).subscribe((data) => this.onFileProgress(data));
+    /**
+     * Uploads & Downloads observer
+     */
+    this.LibFileSystemUi.getObserverSendFileExchange()
+      .pipe(takeUntil(this.destroySubject$)).subscribe((data: SendFileExchange) => this.onSendFileExchange(data));
   }
 
   ngOnDestroy(): void {
@@ -84,97 +59,10 @@ export class BodyExchangeComponent implements OnDestroy, OnInit {
     this.destroySubject$.next();
   }
 
-  private onDownloadRemoteFile(data): void {
-    if (data.applicationId === 'sftp#server') {
-      this.filesExchange.push({
-        uuid: data.connectionUuid,
-        name: data.fileName,
-        source: data.path + data.fileName,
-        path: this.currentLocalPath + data.fileName,
-        size: 0, // data.file.attrs.size,
-        progress: 0,
-        exchange: 'download'
-      });
-
-      this.SftpServer.downloadFileToanyOpsOS(
-        data.path + data.fileName,
-        this.currentLocalPath + data.fileName,
-        data.connectionUuid
-      );
-    }
-  }
-
-  private onUploadToRemote(data): void {
-    if (data.applicationId === 'sftp#server') {
-      this.filesExchange.push({
-        uuid: this.activeConnection,
-        name: data.fileName,
-        source: data.path + data.fileName,
-        path: this.currentRemotePath + data.fileName,
-        size: 0, // data.file.attrs.size,
-        progress: 0,
-        exchange: 'upload'
-      });
-
-      this.SftpLocal.uploadFileToRemote(
-        data.path + data.fileName,
-        this.currentRemotePath + data.fileName,
-        this.activeConnection
-      );
-    }
-  }
-
-  private onUploadToAnyOpsOS(data): void {
-    console.log(data.file);
-    let percentage = 0;
-
-    if (data.applicationId === 'sftp') {
-      this.filesExchange.push({
-        uuid: this.activeConnection,
-        name: data.file.name,
-        source: 'local',
-        path: data.dst + data.file.name,
-        size: data.file.size,
-        progress: 0,
-        exchange: 'local'
-      });
-
-      this.SftpLocal.uploadFileToAnyOpsOS(
-        data.dst,
-        data.file
-      ).subscribe(
-        (event: {loaded: number, total: number}) => {
-          const result: number = parseInt(((event.loaded * 100) / event.total).toFixed(), 10);
-
-          if (result !== percentage) {
-            percentage = result;
-
-            // set percentage
-            this.filesExchange.filter((e) => {
-              return e.exchange === 'local' && e.path === data.dst + data.file.name && e.uuid === this.activeConnection;
-            })[0].progress = result;
-          }
-
-          if (result === 100) this.SftpLocal.reloadPath();
-
-        },
-        error => this.logger.log('Error Uploading', error)
-      );
-    }
-  }
-
-  private onFileProgress(data): void {
-
-    // Get path without fileName
-    if (data.progress === 100 && data.exchange === 'download') {
-      this.SftpLocal.reloadPath(data.destination.substring(0, data.destination.lastIndexOf('/') + 1));
-    }
-    if (data.progress === 100 && data.exchange === 'upload') {
-      this.SftpServer.reloadPath(this.activeConnection, data.destination.substring(0, data.destination.lastIndexOf('/') + 1));
-    }
-
-    this.filesExchange.filter((e) => {
-      return e.exchange === data.exchange && e.path === data.destination && e.uuid === data.uuid;
-    })[0].progress = data.progress;
+  /**
+   * Uploads & Downloads observer
+   */
+  private onSendFileExchange(data: SendFileExchange): void {
+    this.logger.debug('LibFolderExplorer', 'onSendFileExchange', arguments);
   }
 }

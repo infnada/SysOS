@@ -4,6 +4,7 @@ import {Socket} from 'ngx-socket-io';
 import {Terminal as xtermTerminal} from 'xterm';
 import {FitAddon} from 'xterm-addon-fit';
 
+import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
 
 import {Terminal as TerminalData} from '../types/terminal';
@@ -15,12 +16,14 @@ export class AnyOpsOSLibTerminalService {
 
   private terminals: TerminalData[] = [];
 
-  constructor(private socket: Socket) {
+  constructor(private readonly socket: Socket,
+              private readonly logger: AnyOpsOSLibLoggerService) {
+
     this.socket
       .fromEvent('[terminal-stdout]')
       .subscribe((sockData: { terminalUuid: string, data: any }) => {
 
-        const currentTerminal = this.terminals[sockData.terminalUuid];
+        const currentTerminal: TerminalData = this.terminals[sockData.terminalUuid];
         if (currentTerminal) currentTerminal.terminal.write(sockData.data);
       });
 
@@ -28,13 +31,15 @@ export class AnyOpsOSLibTerminalService {
       .fromEvent('[terminal-disconnected]')
       .subscribe((sockData: { terminalUuid: string, data: any }) => {
 
-        const currentTerminal = this.terminals[sockData.terminalUuid];
+        const currentTerminal: TerminalData = this.terminals[sockData.terminalUuid];
         if (currentTerminal) currentTerminal.state = 'disconnected';
       });
   }
 
-  createTerminal(terminalUuid: string): TerminalData {
+  createTerminal(workspaceUuid: string, connectionUuid: string, terminalUuid: string): TerminalData {
     this.terminals[terminalUuid] = {
+      workspaceUuid,
+      connectionUuid,
       fitAddon: new FitAddon(),
       terminal: new xtermTerminal({
         convertEol: true,
@@ -50,24 +55,28 @@ export class AnyOpsOSLibTerminalService {
 
     this.terminals[terminalUuid].terminal.onData((data) => {
       this.socket.emit('[terminal-stdin]', {
-        data,
-        terminalUuid
+        workspaceUuid,
+        connectionUuid,
+        terminalUuid,
+        data
       }, (resultData: BackendResponse) => {
-        if (resultData.status === 'error') return console.log(resultData.data);
+        if (resultData.status === 'error') this.logger.error('LibTerminal', 'Error on [terminal-stdin]', null, resultData.data);
       });
     });
 
     this.terminals[terminalUuid].terminal.onResize((size: { cols: number, rows: number }) => {
       this.socket.emit('[terminal-geometry]', {
+        workspaceUuid,
+        connectionUuid,
+        terminalUuid,
         cols: size.cols,
-        rows: size.rows,
-        terminalUuid
+        rows: size.rows
       }, (resultData: BackendResponse) => {
-        if (resultData.status === 'error') return console.log(resultData.data);
+        if (resultData.status === 'error') this.logger.error('LibTerminal', 'Error on [terminal-geometry]', null, resultData.data);
       });
     });
 
-    this.terminals[terminalUuid].terminal.onTitleChange((data: unknown) => {
+    this.terminals[terminalUuid].terminal.onTitleChange((data: string) => {
       console.log(data);
     });
 
@@ -78,8 +87,12 @@ export class AnyOpsOSLibTerminalService {
     if (!this.terminals[terminalUuid]) return;
 
     this.terminals[terminalUuid].terminal.dispose();
-    this.socket.emit('[terminal-delete]', terminalUuid, (resultData: BackendResponse) => {
-      if (resultData.status === 'error') return console.log(resultData.data);
+    this.socket.emit('[terminal-delete]', {
+      workspaceUuid: this.terminals[terminalUuid].workspaceUuid,
+      connectionUuid: this.terminals[terminalUuid].connectionUuid,
+      terminalUuid
+    }, (resultData: BackendResponse) => {
+      if (resultData.status === 'error') return this.logger.error('LibTerminal', 'Error on [terminal-delete]', null, resultData.data);
 
       this.terminals[terminalUuid] = undefined;
       delete this.terminals[terminalUuid];

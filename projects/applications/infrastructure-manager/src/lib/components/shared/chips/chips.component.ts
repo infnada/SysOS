@@ -2,6 +2,8 @@ import {Component, Input, OnInit} from '@angular/core';
 
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
 
+import {AnyOpsOSAppInfrastructureManagerService} from '../../../services/anyopsos-app-infrastructure-manager.service';
+
 export interface StringMap {
   [key: string]: string;
 }
@@ -39,7 +41,10 @@ export class ChipsComponent implements OnInit {
   keys: string[];
   isShowingAll = false;
 
-  constructor(private Modal: AnyOpsOSLibModalService) {}
+  constructor(private readonly LibModal: AnyOpsOSLibModalService,
+              private readonly InfrastructureManager: AnyOpsOSAppInfrastructureManagerService) {
+
+  }
 
   ngOnInit(): void {
     if (!this.map) {
@@ -74,12 +79,12 @@ export class ChipsComponent implements OnInit {
   }
 
   openChipDialog(key: string, value: string): void {
-    this.Modal.openRegisteredModal(
+    this.LibModal.openRegisteredModal(
       'json-textarea',
-      '.window--infrastructure-manager .window__main',
+      this.InfrastructureManager.getBodyContainerRef(),
       {
         title: key,
-        data: value,
+        jsonData: value,
       }
     );
   }

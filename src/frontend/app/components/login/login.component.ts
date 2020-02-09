@@ -17,8 +17,6 @@ export class LoginComponent {
   capsOn: boolean = false;
   invalidLogin: boolean = false;
 
-  loginExpanded: boolean = false;
-
   date: string;
   time: string;
 
@@ -27,7 +25,7 @@ export class LoginComponent {
               private Main: MainService) {
 
     setInterval(() => {
-      this.date = new Date().toLocaleDateString("en-US", {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      this.date = new Date().toLocaleDateString('en-US', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'});
       this.time = new Date().toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit', hour12: true});
     }, 1000);
   }

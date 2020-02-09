@@ -1,12 +1,12 @@
 import {configure, getLogger, connectLogger, Logger} from 'log4js';
-import {createServer, Server} from 'http';
+import {createServer, IncomingMessage, Server, ServerResponse} from 'http';
 import {createServer as createServers, Server as Servers, ServerOptions} from 'https';
 import {Application, Request, Response, RequestHandler, static as expressStatic, NextFunction} from 'express';
 import {ServeStaticOptions} from 'serve-static';
 import {urlencoded, json} from 'body-parser';
 import {useExpressServer, Action} from 'routing-controllers';
 import {useSocketServer} from 'socket-controllers';
-import {readFileSync, readJSONSync} from 'fs-extra';
+import {readFileSync} from 'fs-extra';
 import {join} from 'path';
 import express from 'express';
 import socketIo from 'socket.io';
@@ -22,6 +22,7 @@ import favicon from 'serve-favicon';
 import * as helmet from 'helmet';
 
 import {AnyOpsOSGetPathModule} from '@anyopsos/module-get-path';
+import {AnyOpsOSConfigFileModule} from '@anyopsos/module-config-file';
 import {AnyOpsOSApiFinalMiddleware} from '@anyopsos/api-middleware-final';
 import {AnyOpsOSApiErrorHandlerMiddleware} from '@anyopsos/api-middleware-error-handler';
 
@@ -29,49 +30,64 @@ import {AnyOpsOSApiErrorHandlerMiddleware} from '@anyopsos/api-middleware-error-
  * App class will create all the backend listeners HTTP/HTTPS/WSS
  */
 export class App {
-  private readonly mainConfigPath: string = new AnyOpsOSGetPathModule().mainConfig;
-  private readonly mainConfig: { [key: string]: any; } = readJSONSync(this.mainConfigPath);
-
-  private app: Application;
-  private server: Server;
-  private servers: Servers;
-  private io: socketIo.Server;
-  private logger: Logger;
-  private options: ServerOptions = {
-    key: readFileSync(__dirname + '/ssl/key.pem'),
-    cert: readFileSync(__dirname + '/ssl/cert.pem')
-  };
-  private expressOptions: ServeStaticOptions = {
-    index: 'index.html',
-    dotfiles: 'ignore',
-    etag: false,
-    extensions: ['htm', 'html'],
-    maxAge: '1s',
-    redirect: false,
-    setHeaders: (response: Response) => {
-      response.set('x-timestamp', Date.now().toString());
-    }
-  };
-  private MemoryStore = MemoryStore(session);
-  private sessionStore = new this.MemoryStore({
-    checkPeriod: 86400000 // prune expired entries every 24h
-  });
-  private Session: RequestHandler = session({
-    store: this.sessionStore,
-    secret: this.mainConfig.session.secret,
-    name: this.mainConfig.session.name,
-    resave: false,
-    saveUninitialized: true,
-    rolling: true,
-    cookie: {
-      expires: new Date(Date.now() + 8 * 60 * 60 * 1000)
-    }
-  });
-  private sessionCookie: string = this.mainConfig.session.name;
-  private sessionSecret: string = this.mainConfig.session.secret;
-  private uniqueCookie: string = this.mainConfig.uniqueCookie;
+  private mainConfigPath!: string;
+  private mainConfig!: { [key: string]: any; };
+  private app!: Application;
+  private server!: Server;
+  private servers!: Servers;
+  private io!: socketIo.Server;
+  private logger!: Logger;
+  private options!: ServerOptions;
+  private expressOptions!: ServeStaticOptions;
+  private MemoryStore!: any;
+  private sessionStore!: MemoryStore;
+  private Session!: RequestHandler;
+  private sessionCookie!: string;
+  private sessionSecret!: string;
+  private uniqueCookie!: string;
 
   constructor() {
+    this.init();
+  }
+
+  private async init() {
+    this.mainConfigPath = new AnyOpsOSGetPathModule().mainConfig;
+    this.mainConfig = await new AnyOpsOSConfigFileModule().get(this.mainConfigPath);
+    this.options = {
+      key: readFileSync(__dirname + '/ssl/key.pem'),
+      cert: readFileSync(__dirname + '/ssl/cert.pem')
+    };
+    this.expressOptions = {
+      index: 'index.html',
+      dotfiles: 'ignore',
+      etag: false,
+      extensions: ['htm', 'html'],
+      maxAge: '1s',
+      redirect: false,
+      setHeaders: (response: Response) => {
+        response.set('x-timestamp', Date.now().toString());
+      }
+    };
+    this.MemoryStore = MemoryStore(session);
+    this.sessionStore = new this.MemoryStore({
+      checkPeriod: 86400000 // prune expired entries every 24h
+    });
+    this.Session = session({
+      store: this.sessionStore,
+      secret: this.mainConfig.session.secret,
+      name: this.mainConfig.session.name,
+      resave: false,
+      saveUninitialized: true,
+      rolling: true,
+      cookie: {
+        expires: new Date(Date.now() + 8 * 60 * 60 * 1000)
+      }
+    });
+    this.sessionCookie = this.mainConfig.session.name;
+    this.sessionSecret = this.mainConfig.session.secret;
+    this.uniqueCookie = this.mainConfig.uniqueCookie;
+
+    // Start
     this.createApp();
     this.logging();
     this.createServer();
@@ -171,11 +187,11 @@ export class App {
       },
       categories: {
         default: {appenders: ['console'], level: 'trace'},
-        mainlog: {appenders: ['console'], level: 'trace'}
+        mainLog: {appenders: ['console'], level: 'trace'}
       }
     });
 
-    this.logger = getLogger('mainlog');
+    this.logger = getLogger('mainLog');
     this.app.use(connectLogger(this.logger, {
       level: 'trace',
       format: ':remote-addr - :remote-user [:date] \":method :url HTTP/:http-version\"' +
@@ -186,7 +202,7 @@ export class App {
 
   private createServer(): void {
 
-    this.server = createServer((req: Request, res: Response) => {
+    this.server = createServer((req: IncomingMessage, res: ServerResponse): void => {
       res.writeHead(301, {Location: 'https://' + req.headers.host + ':' + this.mainConfig.listen.ports + req.url});
       res.end();
     });
@@ -222,6 +238,7 @@ export class App {
 
             if (sockSession) {
               sockSession.socketId = socket.id;
+              sockSession.sessionId = sessionID;
               this.sessionStore.set(sessionID, sockSession);
             }
 

@@ -1,4 +1,4 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
 
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
@@ -20,6 +20,7 @@ import {DatastoreExplorerConnection} from '../../../types/datastore-explorer-con
   providers: [AnyOpsOSLibSelectableService]
 })
 export class BodyServerComponent implements OnDestroy, OnInit {
+  @ViewChild('serverBodyContainer', {static: true}) serverBodyContainer: ViewContainerRef;
   @Input() application: Application;
 
   private destroySubject$: Subject<void> = new Subject();
@@ -38,17 +39,19 @@ export class BodyServerComponent implements OnDestroy, OnInit {
   files: File[] = [];
   progress: number;
 
-  constructor(private FileSystem: AnyOpsOSLibFileSystemService,
-              private FileSystemUi: AnyOpsOSLibFileSystemUiService,
-              private Applications: AnyOpsOSLibApplicationService,
+  constructor(private readonly LibFileSystem: AnyOpsOSLibFileSystemService,
+              private readonly LibFileSystemUi: AnyOpsOSLibFileSystemUiService,
+              private readonly LibApplication: AnyOpsOSLibApplicationService,
               private DatastoreExplorer: AnyOpsOSAppDatastoreExplorerService,
               private DatastoreExplorerServer: AnyOpsOSAppDatastoreExplorerServerService) {
   }
 
   ngOnInit(): void {
+    // Set bodyContainerRef, this is used by Modals
+    this.DatastoreExplorer.setServerBodyContainerRef(this.serverBodyContainer);
 
     // Listen for refreshPath call
-    this.FileSystemUi.getObserverRefreshPath()
+    this.LibFileSystemUi.getObserverRefreshPath()
       .pipe(takeUntil(this.destroySubject$)).subscribe((path: string) => {
         if (path === this.currentPath) this.reloadPath();
       });
@@ -114,7 +117,7 @@ export class BodyServerComponent implements OnDestroy, OnInit {
   }
 
   goToPath(path: string): void {
-    this.FileSystemUi.sendGoToPath({
+    this.LibFileSystemUi.sendGoToPath({
       application: 'datastore-explorer#server',
       path
     });

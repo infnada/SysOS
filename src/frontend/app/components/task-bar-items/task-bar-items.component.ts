@@ -1,27 +1,33 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 
 import {MatMenuTrigger} from '@anyopsos/lib-angular-material';
-import {AnyOpsOSLibApplicationService, Application, TaskbarApplication} from '@anyopsos/lib-application';
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
+import {AnyOpsOSLibApplicationService, Application} from '@anyopsos/lib-application';
+import {AnyOpsOSLibDesktopTaskBarService, TaskbarApplication} from '@anyopsos/lib-desktop-task-bar';
 import {ContextMenuItem} from '@anyopsos/lib-types';
+import {takeUntil} from 'rxjs/operators';
+import {Subject} from 'rxjs';
+
 
 @Component({
   selector: 'app-task-bar-items',
   templateUrl: './task-bar-items.component.html',
   styleUrls: ['./task-bar-items.component.scss']
 })
-export class TaskBarItemsComponent implements OnInit {
-  @ViewChild(MatMenuTrigger, {static: false}) contextMenuApp: MatMenuTrigger;
-  @Input() application: Application;
+export class TaskBarItemsComponent implements OnInit, OnDestroy {
+  @ViewChild(MatMenuTrigger, {static: false}) readonly contextMenuApp: MatMenuTrigger;
+  @Input() readonly application: Application;
 
-  taskbarItemOpen: string;
-  contextMenuPosition = {x: '0px', y: '0px'};
-  appContextMenuItems: ContextMenuItem[] = [
+  private readonly destroySubject$: Subject<void> = new Subject();
+
+  private activeApplication: string;
+  readonly contextMenuPosition = {x: '0px', y: '0px'};
+  readonly appContextMenuItems: ContextMenuItem[] = [
     {
       id: 1, text: (application: Application) => {
         return '<span class="fa-stack">' +
-          '<i class="fa-stack-2x ' + this.getApplicationById(application.uuid).ico + '"></i>' +
-          '</span> ' + this.getApplicationById(application.uuid).name;
+          '<i class="fa-stack-2x ' + this.getApplicationByUuid(application.uuid).ico + '"></i>' +
+          '</span> ' + this.getApplicationByUuid(application.uuid).name;
       }, action: (application: Application) => {
         this.toggleApplication(application.uuid);
       }
@@ -35,29 +41,34 @@ export class TaskBarItemsComponent implements OnInit {
             '</span> Unpin from Task Bar';
         }
         return '<span class="fa-stack"><i class="fas fa-stack-2x fa-thumbtack fa-rotate-90"></i></span> Pin to Task Bar';
-      }, action: (application: Application) => {
+      }, action: (application: TaskbarApplication) => {
         this.PinOrUnpinApplication(application);
       }
     },
     {
       id: 4, text: '<span class="fa-stack"><i class="fas fa-stack-2x fa-times"></i></span> Close', action: (application: Application) => {
-        this.Applications.sendCloseApplication(application);
+        this.LibApplication.sendCloseApplication(application);
       }, disabled: (application: Application) => {
         return !this.isApplicationOpened(application.uuid);
       }
     }
   ];
 
-  constructor(private logger: AnyOpsOSLibLoggerService,
-              private Applications: AnyOpsOSLibApplicationService) {
+  constructor(private readonly logger: AnyOpsOSLibLoggerService,
+              private readonly LibApplication: AnyOpsOSLibApplicationService,
+              private readonly LibDesktopTaskBar: AnyOpsOSLibDesktopTaskBarService) {
   }
 
   ngOnInit(): void {
-    this.Applications.taskbarItemOpen.subscribe((applicationUuid: string) => this.taskbarItemOpen = applicationUuid);
+    this.LibApplication.activeApplication.pipe(takeUntil(this.destroySubject$)).subscribe((applicationUuid: string) => this.activeApplication = applicationUuid);
   }
 
-  private PinOrUnpinApplication(application: Application) {
-    this.Applications.registerTaskBarApplication({
+  ngOnDestroy(): void {
+    this.destroySubject$.next();
+  }
+
+  private PinOrUnpinApplication(application: TaskbarApplication): void {
+    this.LibDesktopTaskBar.registerTaskBarApplication({
       uuid: application.uuid,
       pinned: !application.pinned
     }, true);
@@ -81,16 +92,19 @@ export class TaskBarItemsComponent implements OnInit {
     if (typeof item.text === 'function') return item.text(application);
   }
 
-  getApplicationById(applicationUuid: string): Application {
-    const application: Application = this.Applications.getApplicationById(applicationUuid);
-    if (application) return this.Applications.getApplicationById(applicationUuid);
+  getApplicationByUuid(applicationUuid: string): Application {
+    const application: Application = this.LibApplication.getApplicationByUuid(applicationUuid);
+    if (application) return this.LibApplication.getApplicationByUuid(applicationUuid);
 
     this.logger.error('TaskBarItems', 'Error while getting pinned application. Unpin.');
-    this.PinOrUnpinApplication(application);
+    this.PinOrUnpinApplication({
+      uuid: applicationUuid,
+      pinned: true // PinOrUnpinApplication will change it back with !pinned (so, false), that's why we specify 'true' here
+    });
   }
 
   isStartOpened(applicationUuid: string): boolean {
-    return this.taskbarItemOpen === applicationUuid && applicationUuid === 'start';
+    return this.activeApplication === applicationUuid && applicationUuid === 'start';
   }
 
   isItemOpened(applicationUuid: string): boolean {
@@ -98,19 +112,19 @@ export class TaskBarItemsComponent implements OnInit {
   }
 
   isItemActive(applicationUuid: string): boolean {
-    return this.taskbarItemOpen === applicationUuid && applicationUuid !== 'start';
+    return this.activeApplication === applicationUuid && applicationUuid !== 'start';
   }
 
   isApplicationOpened(applicationUuid: string): boolean {
-    return this.Applications.isApplicationOpened(applicationUuid);
+    return this.LibApplication.isApplicationOpened(applicationUuid);
   }
 
   toggleApplication(applicationUuid: string): void {
-    if (applicationUuid === 'start') return this.Applications.toggleApplication(applicationUuid);
+    if (applicationUuid === 'start') return this.LibApplication.toggleApplication(applicationUuid);
 
     // Open application
-    if (!this.isApplicationOpened(applicationUuid)) return this.Applications.openApplication(applicationUuid);
-    this.Applications.sendToggleApplication(applicationUuid);
+    if (!this.isApplicationOpened(applicationUuid)) return this.LibApplication.openApplication(applicationUuid);
+    this.LibApplication.sendToggleApplication(applicationUuid);
   }
 
 }

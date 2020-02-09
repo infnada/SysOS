@@ -7,9 +7,23 @@
   "swagger": "2.0",
   "projectName": "vmware",
   "paths": {
-    "/api/vmware/getClientVersion": {
+    "/api/vmware/getClientVersion/{workspaceUuid}/{connectionUuid}": {
       "post": {
         "operationId": "AnyOpsOSVmwareApiController.getVmwareClientVersion",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful response"
@@ -19,17 +33,34 @@
         "tags": [
           "Any Ops OS Vmware Api"
         ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/vmware/rest/{workspaceUuid}/{connectionUuid}": {
+      "post": {
+        "operationId": "AnyOpsOSVmwareApiController.vmwareCallRest",
         "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
           {
             "name": "body",
             "in": "body",
             "schema": {
               "properties": {
-                "host": {
+                "apiPath": {
                   "type": "string"
-                },
-                "port": {
-                  "type": "number"
                 }
               },
               "required": [],
@@ -37,46 +68,14 @@
             }
           }
         ],
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "text/html; charset=utf-8"
-        ]
-      }
-    },
-    "/api/vmware/connect": {
-      "post": {
-        "operationId": "AnyOpsOSVmwareApiController.vmwareConnect",
         "responses": {
           "200": {
             "description": "Successful response"
           }
         },
-        "summary": "Vmware connect",
+        "summary": "Vmware call rest",
         "tags": [
           "Any Ops OS Vmware Api"
-        ],
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "properties": {
-                "host": {
-                  "type": "string"
-                },
-                "port": {
-                  "type": "number"
-                },
-                "credentialUuid": {
-                  "type": "string"
-                }
-              },
-              "required": [],
-              "type": "object"
-            }
-          }
         ],
         "consumes": [
           "application/json"
@@ -86,91 +85,37 @@
         ]
       }
     },
-    "/api/vmware/connectSoap": {
-      "post": {
-        "operationId": "AnyOpsOSVmwareApiController.vmwareConnectSoap",
-        "responses": {
-          "200": {
-            "description": "Successful response"
-          }
-        },
-        "summary": "Vmware connect soap",
-        "tags": [
-          "Any Ops OS Vmware Api"
-        ],
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "properties": {
-                "host": {
-                  "type": "string"
-                },
-                "port": {
-                  "type": "number"
-                },
-                "credentialUuid": {
-                  "type": "string"
-                }
-              },
-              "required": [],
-              "type": "object"
-            }
-          }
-        ],
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "text/html; charset=utf-8"
-        ]
-      }
-    },
-    "/api/vmware/call": {
-      "post": {
-        "operationId": "AnyOpsOSVmwareApiController.vmwareCall",
-        "responses": {
-          "200": {
-            "description": "Successful response"
-          }
-        },
-        "summary": "Vmware call",
-        "tags": [
-          "Any Ops OS Vmware Api"
-        ],
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "properties": {
-                "host": {
-                  "type": "string"
-                },
-                "port": {
-                  "type": "number"
-                },
-                "path": {
-                  "type": "string"
-                }
-              },
-              "required": [],
-              "type": "object"
-            }
-          }
-        ],
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "text/html; charset=utf-8"
-        ]
-      }
-    },
-    "/api/vmware/callSoap": {
+    "/api/vmware/soap/{workspaceUuid}/{connectionUuid}": {
       "post": {
         "operationId": "AnyOpsOSVmwareApiController.vmwareCallSoap",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "action": {
+                  "type": "string"
+                },
+                "data": {}
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful response"
@@ -180,30 +125,6 @@
         "tags": [
           "Any Ops OS Vmware Api"
         ],
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "properties": {
-                "host": {
-                  "type": "string"
-                },
-                "port": {
-                  "type": "number"
-                },
-                "action": {
-                  "type": "string"
-                },
-                "xml": {
-                  "type": "string"
-                }
-              },
-              "required": [],
-              "type": "object"
-            }
-          }
-        ],
         "consumes": [
           "application/json"
         ],
@@ -212,9 +133,39 @@
         ]
       }
     },
-    "/api/vmware/upload_to_datastore": {
+    "/api/vmware/upload_to_datastore/{workspaceUuid}/{connectionUuid}": {
       "post": {
         "operationId": "AnyOpsOSVmwareApiController.uploadToDatastore",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "dstPath": {
+                  "type": "string"
+                },
+                "datastoreUrl": {
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful response"
@@ -223,27 +174,6 @@
         "summary": "Upload to datastore",
         "tags": [
           "Any Ops OS Vmware Api"
-        ],
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "properties": {
-                "path": {
-                  "type": "string"
-                },
-                "url": {
-                  "type": "string"
-                },
-                "credentialUuid": {
-                  "type": "string"
-                }
-              },
-              "required": [],
-              "type": "object"
-            }
-          }
         ],
         "consumes": [
           "application/json"

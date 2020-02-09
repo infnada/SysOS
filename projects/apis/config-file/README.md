@@ -3,7 +3,7 @@ Generated with `routing-controllers-openapi`
 
 ## Version: 1.0.0
 
-### /api/config-file/{configUuid}/{fileName}
+### /api/config-file/{workspaceUuid}/{fileName}/{configUuid}
 
 #### GET
 ##### Summary:
@@ -14,8 +14,9 @@ Get config file
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| configUuid | path |  | No | string |
+| workspaceUuid | path |  | Yes | string |
 | fileName | path |  | Yes | string |
+| configUuid | path |  | No | string |
 
 ##### Responses
 
@@ -32,8 +33,9 @@ Put config file
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| configUuid | path |  | No | string |
+| workspaceUuid | path |  | Yes | string |
 | fileName | path |  | Yes | string |
+| configUuid | path |  | No | string |
 | body | body |  | No | object |
 
 ##### Responses
@@ -51,8 +53,9 @@ Patch config file
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| configUuid | path |  | No | string |
+| workspaceUuid | path |  | Yes | string |
 | fileName | path |  | Yes | string |
+| configUuid | path |  | No | string |
 | body | body |  | No | object |
 
 ##### Responses
@@ -70,8 +73,9 @@ Delete config file
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| configUuid | path |  | No | string |
+| workspaceUuid | path |  | Yes | string |
 | fileName | path |  | Yes | string |
+| configUuid | path |  | No | string |
 
 ##### Responses
 

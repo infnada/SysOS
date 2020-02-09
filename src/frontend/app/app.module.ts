@@ -13,14 +13,23 @@ import {SocketIoModule, SocketIoConfig} from 'ngx-socket-io';
 import {MonacoEditorModule} from 'ngx-monaco-editor'; // this is an application required module...
 
 // Internal libraries
+import {AnyOpsOSLibAngularMaterialModule} from '@anyopsos/lib-angular-material';
+import {AnyOpsOSLibLoggerModule} from '@anyopsos/lib-logger';
+import {AnyOpsOSLibCredentialModule} from '@anyopsos/lib-credential';
+import {AnyOpsOSLibServiceInjectorModule} from '@anyopsos/lib-service-injector';
+import {AnyOpsOSLibFileSystemModule} from '@anyopsos/lib-file-system';
 import {AnyOpsOSLibFileModule} from '@anyopsos/lib-file';
+import {AnyOpsOSLibSelectableService} from '@anyopsos/lib-selectable';
 import {AnyOpsOSLibFolderModule} from '@anyopsos/lib-folder';
 import {AnyOpsOSLibApplicationModule} from '@anyopsos/lib-application';
 import {AnyOpsOSLibPipesModule} from '@anyopsos/lib-pipes';
-import {AnyOpsOSLibSelectableService} from '@anyopsos/lib-selectable';
-import {AnyOpsOSLibServiceInjectorModule} from '@anyopsos/lib-service-injector';
-import {AnyOpsOSLibLoggerModule} from '@anyopsos/lib-logger';
-import {AnyOpsOSLibAngularMaterialModule} from '@anyopsos/lib-angular-material';
+
+import {AnyOpsOSLibSshModule} from '@anyopsos/lib-ssh';
+import {AnyOpsOSLibKubernetesModule} from '@anyopsos/lib-kubernetes';
+import {AnyOpsOSLibDockerModule} from '@anyopsos/lib-docker';
+import {AnyOpsOSLibVmwareModule} from '@anyopsos/lib-vmware';
+import {AnyOpsOSLibNetappModule} from '@anyopsos/lib-netapp';
+import {AnyOpsOSLibSnmpModule} from '@anyopsos/lib-snmp';
 
 // App Components
 import {BootstrapComponent} from './components/bootstrap/bootstrap.component';
@@ -36,7 +45,8 @@ import {CapsLockDirective} from './directives/caps-lock.directive';
 
 import {HttpErrorInterceptor} from './interceptors/http-error-interceptor';
 
-import {SystemJsLoaderService} from "./services/system-js-loader.service";
+import {SystemJsLoaderService} from './services/system-js-loader.service';
+
 
 const config: SocketIoConfig = {
   url: window.location.host,
@@ -73,12 +83,21 @@ export function createCompiler(fn: CompilerFactory): Compiler {
     SocketIoModule.forRoot(config),
 
     AnyOpsOSLibApplicationModule,
+    AnyOpsOSLibFileSystemModule,
     AnyOpsOSLibFileModule,
     AnyOpsOSLibFolderModule,
     AnyOpsOSLibServiceInjectorModule,
     AnyOpsOSLibLoggerModule,
     AnyOpsOSLibAngularMaterialModule,
     AnyOpsOSLibPipesModule,
+
+    AnyOpsOSLibCredentialModule,
+    AnyOpsOSLibSshModule,
+    AnyOpsOSLibKubernetesModule,
+    AnyOpsOSLibDockerModule,
+    AnyOpsOSLibVmwareModule,
+    AnyOpsOSLibNetappModule,
+    AnyOpsOSLibSnmpModule,
 
     MonacoEditorModule.forRoot()
   ],

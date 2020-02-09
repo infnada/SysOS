@@ -48,20 +48,20 @@ export class AnyOpsOSLibApplicationComponent implements OnInit, AfterViewInit {
 
   constructor(private compiler: Compiler,
               private logger: AnyOpsOSLibLoggerService,
-              private Applications: AnyOpsOSLibApplicationService) {
+              private readonly LibApplication: AnyOpsOSLibApplicationService) {
 
     /**
      * broadcast functions
      */
 
     // Called from Task Bar Context Menu
-    this.closeAppSubscription = this.Applications.getObserverCloseApplication().subscribe((application: Application) => {
+    this.closeAppSubscription = this.LibApplication.getObserverCloseApplication().subscribe((application: Application) => {
       this.logger.debug('Applications', `Closing application [${application.uuid}]`);
 
       if (application.uuid === this.application.uuid) this.close();
     });
 
-    this.togglingAppSubscription = this.Applications.getObserverToggleApplication().subscribe((applicationUuid: string) => {
+    this.togglingAppSubscription = this.LibApplication.getObserverToggleApplication().subscribe((applicationUuid: string) => {
       this.logger.debug('Applications', `Toggling application [${applicationUuid}]`);
 
       // Called to minimize all applications
@@ -72,12 +72,12 @@ export class AnyOpsOSLibApplicationComponent implements OnInit, AfterViewInit {
 
         // Application minimized, set it active
         if (this.isMinimized) {
-          this.Applications.toggleApplication(applicationUuid);
+          this.LibApplication.toggleApplication(applicationUuid);
           return this.isMinimized = false;
         }
 
         // Application opened but not active
-        if (!this.Applications.isActiveApplication(applicationUuid)) return this.Applications.toggleApplication(applicationUuid);
+        if (!this.LibApplication.isActiveApplication(applicationUuid)) return this.LibApplication.toggleApplication(applicationUuid);
 
         // Application is active, minimize it
         return this.minimize();
@@ -200,7 +200,7 @@ export class AnyOpsOSLibApplicationComponent implements OnInit, AfterViewInit {
 
   onDragStart(event: CdkDragStart<string[]>): void {
     this.logger.debug('Applications', 'onDragStart event');
-    this.Applications.toggleApplication(this.application.uuid);
+    this.LibApplication.toggleApplication(this.application.uuid);
 
     // $(this).css({'z-index' : zIndex++});
 
@@ -213,7 +213,7 @@ export class AnyOpsOSLibApplicationComponent implements OnInit, AfterViewInit {
    * ng-class functions
    */
   isVisible(): boolean {
-    return this.Applications.isActiveApplication(this.application.uuid);
+    return this.LibApplication.isActiveApplication(this.application.uuid);
   }
 
   /*
@@ -221,9 +221,9 @@ export class AnyOpsOSLibApplicationComponent implements OnInit, AfterViewInit {
    */
   focusApplication(): void {
     this.logger.debug('Applications', 'focusApplication event');
-    if (this.Applications.isActiveApplication(this.application.uuid)) return;
+    if (this.LibApplication.isActiveApplication(this.application.uuid)) return;
     if (this.isMinimized) return;
-    this.Applications.toggleApplication(this.application.uuid);
+    this.LibApplication.toggleApplication(this.application.uuid);
   }
 
   close(): void {
@@ -234,12 +234,12 @@ export class AnyOpsOSLibApplicationComponent implements OnInit, AfterViewInit {
 
     setTimeout(() => {
       this.isClosing = false;
-      this.Applications.closeApplication(this.application.uuid);
+      this.LibApplication.closeApplication(this.application.uuid);
       // hide $(parentWindow).hide()
     }, 500);
 
     // Close application in taskbar
-    this.Applications.toggleApplication(null);
+    this.LibApplication.toggleApplication(null);
 
     // TODO: Set closest application active. Issue #3
     // var closest = $('.window').not('.window--minimized, .window--closing,
@@ -255,7 +255,7 @@ export class AnyOpsOSLibApplicationComponent implements OnInit, AfterViewInit {
   minimize(): void {
     this.logger.debug('Applications', 'minimize event');
     this.isMinimized = true;
-    this.Applications.toggleApplication(null);
+    this.LibApplication.toggleApplication(null);
   }
 
   maximize(): void {
@@ -287,7 +287,7 @@ export class AnyOpsOSLibApplicationComponent implements OnInit, AfterViewInit {
   }
 
   setCurrentHoverApplication(app: string): void {
-    this.Applications.setCurrentHoverApplication(app);
+    this.LibApplication.setCurrentHoverApplication(app);
   }
 
   appCss(): { height: string, width: string, top: string, left: string } {

@@ -7,10 +7,16 @@
   "swagger": "2.0",
   "projectName": "kubernetes",
   "paths": {
-    "/api/kubernetes/resource/{connectionUuid}/{resourceLink}": {
+    "/api/kubernetes/resource/{workspaceUuid}/{connectionUuid}/{resourceLink}": {
       "get": {
         "operationId": "AnyOpsOSKubernetesApiController.getKubernetesResource",
         "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
           {
             "in": "path",
             "name": "connectionUuid",
@@ -39,10 +45,16 @@
         ]
       }
     },
-    "/api/kubernetes/log/{connectionUuid}/{terminalUuid}/{namespace}/{pod}/{container}/{showContainerName}": {
+    "/api/kubernetes/log/{workspaceUuid}/{connectionUuid}/{terminalUuid}/{namespace}/{pod}/{container}/{showContainerName}": {
       "get": {
         "operationId": "AnyOpsOSKubernetesApiController.getContainerLogs",
         "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
           {
             "in": "path",
             "name": "connectionUuid",
@@ -94,99 +106,25 @@
         ]
       }
     },
-    "/api/kubernetes/log/{logUuid}": {
-      "delete": {
-        "operationId": "AnyOpsOSKubernetesApiController.stopContainerLogs",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "logUuid",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response"
-          }
-        },
-        "summary": "Stop container logs",
-        "tags": [
-          "Any Ops OS Kubernetes Api"
-        ],
-        "produces": [
-          "text/html; charset=utf-8"
-        ]
-      }
-    },
-    "/api/kubernetes/exec/{connectionUuid}/{terminalUuid}/{namespace}/{pod}/{container}/{command}": {
-      "get": {
-        "operationId": "AnyOpsOSKubernetesApiController.executeIntoContainer",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "connectionUuid",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "in": "path",
-            "name": "terminalUuid",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "in": "path",
-            "name": "namespace",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "in": "path",
-            "name": "pod",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "in": "path",
-            "name": "container",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "in": "path",
-            "name": "command",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response"
-          }
-        },
-        "summary": "Execute into container",
-        "tags": [
-          "Any Ops OS Kubernetes Api"
-        ],
-        "produces": [
-          "text/html; charset=utf-8"
-        ]
-      }
-    },
-    "/api/kubernetes/shell/{type}/{connectionUuid}/{terminalUuid}/{namespace}/{pod}/{container}/{command}": {
+    "/api/kubernetes/{workspaceUuid}/{connectionUuid}/{type}/{terminalUuid}/{namespace}/{pod}/{container}/{command}": {
       "get": {
         "operationId": "AnyOpsOSKubernetesApiController.shellIntoContainer",
         "parameters": [
           {
             "in": "path",
-            "name": "type",
+            "name": "workspaceUuid",
             "required": true,
             "type": "string"
           },
           {
             "in": "path",
             "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "type",
             "required": true,
             "type": "string"
           },
@@ -227,31 +165,6 @@
           }
         },
         "summary": "Shell into container",
-        "tags": [
-          "Any Ops OS Kubernetes Api"
-        ],
-        "produces": [
-          "text/html; charset=utf-8"
-        ]
-      }
-    },
-    "/api/kubernetes/shell/{terminalUuid}": {
-      "delete": {
-        "operationId": "AnyOpsOSKubernetesApiController.stopContainerShell",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "terminalUuid",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response"
-          }
-        },
-        "summary": "Stop container shell",
         "tags": [
           "Any Ops OS Kubernetes Api"
         ],

@@ -7,8 +7,9 @@ import {AnyOpsOSApiGlobalsModule} from '@anyopsos/module-api-globals';
 import {AnyOpsOSConfigFileModule} from '@anyopsos/module-config-file';
 import {AnyOpsOSGetPathModule} from '@anyopsos/module-get-path';
 import {AnyOpsOSCredentialModule, User} from '@anyopsos/module-credential';
+import {AnyOpsOSWorkspaceModule} from '@anyopsos/module-workspace';
 
-const logger = getLogger('mainlog');
+const logger = getLogger('mainLog');
 
 @Controller('/api/auth')
 export class AnyOpsOSAuthApiController {
@@ -19,7 +20,9 @@ export class AnyOpsOSAuthApiController {
           @Res() response: Response) {
     logger.info(`[API auth] -> Check auth`);
 
-    return new AnyOpsOSApiGlobalsModule(request, response).validResponse();
+    const ApiGlobalsModule: AnyOpsOSApiGlobalsModule = new AnyOpsOSApiGlobalsModule(request, response);
+
+    return ApiGlobalsModule.validResponse();
   }
 
   @Post('/')
@@ -30,20 +33,32 @@ export class AnyOpsOSAuthApiController {
               @BodyParam('password') password: string) {
     logger.info(`[API auth] -> Login -> user [${username}]`);
 
-    const mainConfig: { [key: string]: any; } = await new AnyOpsOSConfigFileModule().get(new AnyOpsOSGetPathModule().mainConfig);
-    // @ts-ignore TODO
-    const users: User[] = await new AnyOpsOSConfigFileModule().get(new AnyOpsOSGetPathModule().shadow);
-    const user: User = users.find((usr: User) => usr.username === username);
-    if (!user) return new AnyOpsOSApiGlobalsModule(request, response).invalidResponse('resource_not_found');
+    const ConfigFileModule: AnyOpsOSConfigFileModule = new AnyOpsOSConfigFileModule();
+    const GetPathModule: AnyOpsOSGetPathModule = new AnyOpsOSGetPathModule();
+    const ApiGlobalsModule: AnyOpsOSApiGlobalsModule = new AnyOpsOSApiGlobalsModule(request, response);
 
-    const successLoad: boolean = await new AnyOpsOSCredentialModule().loadCredentialDb(user.uuid, sessionUuid, password, user.kdbxPath);
-    if (!successLoad) return new AnyOpsOSApiGlobalsModule(request, response).invalidResponse('resource_invalid');
+    const mainConfig: { [key: string]: any; } = await ConfigFileModule.get(GetPathModule.mainConfig);
+
+    const users: User[] = await ConfigFileModule.get(GetPathModule.shadow) as User[];
+    const user: User | undefined = users.find((usr: User) => usr.username === username);
+    if (!user) return ApiGlobalsModule.invalidResponse('resource_not_found');
+
+    const WorkspaceModule: AnyOpsOSWorkspaceModule = new AnyOpsOSWorkspaceModule(user.uuid, sessionUuid);
+
+    // If no workspaceUuid is provided, load the default one
+    const workspaceUuid: string = WorkspaceModule.getDefaultWorkspaceUuid();
+
+    const CredentialModule: AnyOpsOSCredentialModule = new AnyOpsOSCredentialModule(user.uuid, sessionUuid, workspaceUuid);
+
+    const successLoad: boolean = await CredentialModule.loadCredentialDb(password);
+    if (!successLoad) return ApiGlobalsModule.invalidResponse('resource_invalid');
 
     // Logged in!
+    // @ts-ignore TODO
     request.session.userUuid = user.uuid;
     response.cookie(mainConfig.uniqueCookie, user.uuid, {signed: true});
 
-    return new AnyOpsOSApiGlobalsModule(request, response).validResponse();
+    return ApiGlobalsModule.validResponse();
   }
 
 }

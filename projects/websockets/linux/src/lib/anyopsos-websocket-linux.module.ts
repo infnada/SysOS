@@ -2,7 +2,7 @@ import {SocketController, ConnectedSocket, SocketId, MessageBody, OnMessage} fro
 import {getLogger} from 'log4js';
 import {Socket} from 'socket.io';
 
-const logger = getLogger('mainlog');
+const logger = getLogger('mainLog');
 
 @SocketController()
 export class AnyOpsOSLinuxWebsocketController {

@@ -2,6 +2,7 @@
   "name": "@anyopsos/module-api-globals",
   "version": "0.0.1",
   "devDependencies": {
+    "@types/node": "^12.12.21",
     "express": "^4.17.1",
     "typescript": "^3.7.4"
   },

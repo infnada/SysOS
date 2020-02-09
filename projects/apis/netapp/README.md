@@ -3,17 +3,19 @@ Generated with `routing-controllers-openapi`
 
 ## Version: 1.0.0
 
-### /api/netapp/
+### /api/netapp/soap/{workspaceUuid}/{connectionUuid}
 
-#### GET
+#### POST
 ##### Summary:
 
-Call netapp
+Netapp call soap
 
 ##### Parameters
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
+| workspaceUuid | path |  | Yes | string |
+| connectionUuid | path |  | Yes | string |
 | body | body |  | No | object |
 
 ##### Responses

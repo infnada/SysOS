@@ -1,10 +1,11 @@
-import {Injectable} from '@angular/core';
+import {Injectable, ViewContainerRef} from '@angular/core';
 
 import {BehaviorSubject, Observable} from 'rxjs';
 import {v4 as uuidv4} from 'uuid';
 import {Socket} from 'ngx-socket-io';
 
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
+import {MatDialogRef} from '@anyopsos/lib-angular-material';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
 import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
 import {AnyOpsOSLibVmwareService} from '@anyopsos/lib-vmware';
@@ -27,10 +28,13 @@ export class AnyOpsOSAppDatastoreExplorerService {
   activeConnection: Observable<any>;
   viewExchange: Observable<any>;
 
+  localBodyContainer: ViewContainerRef;
+  serverBodyContainer: ViewContainerRef;
+
   constructor(private logger: AnyOpsOSLibLoggerService,
               private socket: Socket,
-              private FileSystem: AnyOpsOSLibFileSystemService,
-              private Modal: AnyOpsOSLibModalService,
+              private readonly LibFileSystem: AnyOpsOSLibFileSystemService,
+              private readonly LibModal: AnyOpsOSLibModalService,
               private VMWare: AnyOpsOSLibVmwareService) {
     this.dataStore = {connections: [], activeConnection: null, viewExchange: false};
     this.$connections = new BehaviorSubject(this.dataStore.connections);
@@ -39,6 +43,17 @@ export class AnyOpsOSAppDatastoreExplorerService {
     this.connections = this.$connections.asObservable();
     this.activeConnection = this.$activeConnection.asObservable();
     this.viewExchange = this.$viewExchange.asObservable();
+  }
+
+  /**
+   * Sets the bodyContainerRef, this is used by Modals
+   */
+  setLocalBodyContainerRef(localBodyContainer: ViewContainerRef) {
+    this.localBodyContainer = localBodyContainer;
+  }
+
+  setServerBodyContainerRef(serverBodyContainer: ViewContainerRef) {
+    this.serverBodyContainer = serverBodyContainer;
   }
 
   toggleExchange(): void {
@@ -67,7 +82,7 @@ export class AnyOpsOSAppDatastoreExplorerService {
     this.$activeConnection.next(Object.assign({}, this.dataStore).activeConnection);
   }
 
-  connect(connection: DatastoreExplorerConnection): Promise<any> {
+  connect(connection: DatastoreExplorerConnection, littleModalRef: MatDialogRef<any>): Promise<any> {
     if (!connection) throw new Error('connection_not_found');
 
     this.logger.debug('Datastore Explorer', 'Connect received', arguments);
@@ -99,24 +114,24 @@ export class AnyOpsOSAppDatastoreExplorerService {
 
     this.setActiveConnection(connection.uuid);
 
-    return this.initConnection().catch(e => {
+    return this.initConnection(littleModalRef).catch(e => {
       // Show error on screen
-      this.Modal.changeModalType('danger', '.window--datastore-explorer .window__main');
-      this.Modal.changeModalText(e, '.window--datastore-explorer .window__main');
+      this.LibModal.changeModalType(littleModalRef.id, 'danger');
+      this.LibModal.changeModalText(littleModalRef.id, e);
     });
   }
 
-  private initConnection(): Promise<void> {
+  private initConnection(littleModalRef: MatDialogRef<any>): Promise<void> {
 
     if (this.getActiveConnection().type === 'vmware') {
-      this.Modal.changeModalText('Connecting to Datastore...', '.window--datastore-explorer .window__main');
+      this.LibModal.changeModalText(littleModalRef.id, 'Connecting to Datastore...');
 
       return this.VMWare.connectvCenterSoap(this.getActiveConnection()).then((data) => {
         if (data.status === 'error') throw new Error('Failed to connect to vCenter');
 
         this.getActiveConnection().state = 'connected';
 
-        this.Modal.closeModal('.window--datastore-explorer .window__main');
+        this.LibModal.closeModal(littleModalRef.id);
       });
     }
 
@@ -143,14 +158,14 @@ export class AnyOpsOSAppDatastoreExplorerService {
     this.$connections.next(Object.assign({}, this.dataStore).connections);
   }
 
-  deleteConnection(connectionUuid?: string): void {
+  async deleteConnection(connectionUuid?: string): Promise<void> {
     const loggerArgs = arguments;
 
     if (!connectionUuid) connectionUuid = this.dataStore.activeConnection;
 
     const configFile = 'applications/datastore-explorer/config.json';
 
-    this.Modal.openRegisteredModal('question', '.window--datastore-explorer .window__main',
+    const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('question', this.serverBodyContainer,
       {
         title: `Delete connection ${this.getConnectionByUuid(connectionUuid).data.obj.name}`,
         text: 'Remove the selected connection from the inventory?',
@@ -161,33 +176,33 @@ export class AnyOpsOSAppDatastoreExplorerService {
         boxClass: 'text-danger',
         boxIcon: 'warning'
       }
-    ).then((modalInstance) => {
-      modalInstance.result.then((result: boolean) => {
-        if (result === true) {
+    );
 
-          this.logger.debug('Datastore Explorer', 'Deleting connection', loggerArgs);
+    modalInstance.afterClosed().subscribe(async (result: boolean) => {
+      if (result === true) {
 
-          this.disconnectConnection(connectionUuid);
-          this.setActiveConnection(null);
+        this.logger.debug('Datastore Explorer', 'Deleting connection', loggerArgs);
 
-          this.FileSystem.deleteConfigFile(configFile, connectionUuid).subscribe(
-            () => {
-              this.dataStore.connections = this.dataStore.connections.filter((connection) => {
-                return connection.uuid !== connectionUuid;
-              });
+        this.disconnectConnection(connectionUuid);
+        this.setActiveConnection(null);
 
-              // broadcast data to subscribers
-              this.$connections.next(Object.assign({}, this.dataStore).connections);
-
-              this.logger.debug('Datastore Explorer', 'Connection deleted successfully', loggerArgs);
-            },
-            error => {
-              this.logger.error('Datastore Explorer', 'Error while deleting connection', loggerArgs, error);
+        this.LibFileSystem.deleteConfigFile(configFile, connectionUuid).subscribe(
+          () => {
+            this.dataStore.connections = this.dataStore.connections.filter((connection) => {
+              return connection.uuid !== connectionUuid;
             });
 
-        }
-      });
-    });
+            // broadcast data to subscribers
+            this.$connections.next(Object.assign({}, this.dataStore).connections);
 
+            this.logger.debug('Datastore Explorer', 'Connection deleted successfully', loggerArgs);
+          },
+          error => {
+            this.logger.error('Datastore Explorer', 'Error while deleting connection', loggerArgs, error);
+          });
+
+      }
+    });
   }
+
 }

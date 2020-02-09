@@ -18,8 +18,6 @@ import {StatusComponent} from './components/status/status.component';
 import {ChipsComponent} from './components/shared/chips/chips.component';
 
 import {AnyOpsOSAppInfrastructureManagerService} from './services/anyopsos-app-infrastructure-manager.service';
-import {AnyOpsOSAppInfrastructureVmwareService} from './services/vmware/anyopsos-app-infrastructure-vmware.service';
-import {AnyOpsOSAppInfrastructureNetappService} from './services/netapp/anyopsos-app-infrastructure-netapp.service';
 import {AnyOpsOSAppInfrastructureManagerObjectHelperService} from './services/anyopsos-app-infrastructure-manager-object-helper.service';
 import {AnyOpsOSAppInfrastructureManagerNodeGraphService} from './services/anyopsos-app-infrastructure-manager-node-graph.service';
 import {AnyOpsOSAppInfrastructureManagerNodeLinkService} from './services/anyopsos-app-infrastructure-manager-node-link.service';
@@ -123,21 +121,18 @@ import {SwitchFeaturesComponent} from './components/body/tabs/tab-summary/vmware
 })
 export class AnyOpsOSAppInfrastructureManagerModule {
   constructor(private serviceInjector: AnyOpsOSLibServiceInjectorService,
-              private Applications: AnyOpsOSLibApplicationService,
+              private readonly LibApplication: AnyOpsOSLibApplicationService,
               private InfrastructureManager: AnyOpsOSAppInfrastructureManagerService,
               private InfrastructureManagerObjectHelpers: AnyOpsOSAppInfrastructureManagerObjectHelperService,
               private InfrastructureManagerNodeLink: AnyOpsOSAppInfrastructureManagerNodeLinkService,
-              private InfrastructureManagerNodeGraph: AnyOpsOSAppInfrastructureManagerNodeGraphService,
-              private InfrastructureVmware: AnyOpsOSAppInfrastructureVmwareService,
-              private InfrastructureNetApp: AnyOpsOSAppInfrastructureNetappService) {
+              private InfrastructureManagerNodeGraph: AnyOpsOSAppInfrastructureManagerNodeGraphService) {
 
     this.serviceInjector.set('AnyOpsOSAppInfrastructureManagerService', this.InfrastructureManager);
     this.serviceInjector.set('AnyOpsOSAppInfrastructureManagerNodeLinkService', this.InfrastructureManagerNodeLink);
     this.serviceInjector.set('AnyOpsOSAppInfrastructureManagerNodeGraphService', this.InfrastructureManagerNodeGraph);
-    this.serviceInjector.set('AnyOpsOSAppInfrastructureVmwareService', this.InfrastructureVmware);
     this.serviceInjector.set('AnyOpsOSAppInfrastructureManagerObjectHelperService', this.InfrastructureManagerObjectHelpers);
 
-    Applications.registerApplication({
+    this.LibApplication.registerApplication({
       uuid: 'infrastructure-manager',
       ico: 'fas fa-server',
       name: 'Infrastructure Manager',
@@ -146,9 +141,5 @@ export class AnyOpsOSAppInfrastructureManagerModule {
       status: true,
       style: {width: '1700px', height: '800px', top: '4%', left: '7%'}
     });
-
-    this.InfrastructureManager.initConnections();
-    this.InfrastructureVmware.registerFileSystemUiHandlers();
-    this.InfrastructureNetApp.registerFileSystemUiHandlers();
   }
 }

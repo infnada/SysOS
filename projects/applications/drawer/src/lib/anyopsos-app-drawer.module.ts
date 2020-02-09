@@ -15,9 +15,9 @@ import {MenuComponent} from './menu/menu.component';
 })
 export class AnyOpsOSAppDrawerModule {
 
-  constructor(private Applications: AnyOpsOSLibApplicationService) {
+  constructor(private readonly LibApplication: AnyOpsOSLibApplicationService) {
 
-    Applications.registerApplication({
+    this.LibApplication.registerApplication({
       uuid: 'drawer',
       ico: 'fas fa-paint-brush',
       name: 'Drawer',

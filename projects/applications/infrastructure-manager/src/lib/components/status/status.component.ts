@@ -1,11 +1,11 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {takeUntil} from 'rxjs/operators';
-import {Subject} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 
 import {Application} from '@anyopsos/lib-application';
 
 import {AnyOpsOSAppInfrastructureManagerService} from '../../services/anyopsos-app-infrastructure-manager.service';
-import {ConnectionTypes} from '../../types/connections/connection-types';
+import {ConnectionTypes} from '@anyopsos/backend/app/types/connection-types';
 
 @Component({
   selector: 'aaim-status',
@@ -13,19 +13,20 @@ import {ConnectionTypes} from '../../types/connections/connection-types';
   styleUrls: ['./status.component.scss']
 })
 export class StatusComponent implements OnInit, OnDestroy {
-  @Input() application: Application;
+  @Input() private readonly application: Application;
 
-  private destroySubject$: Subject<void> = new Subject();
-  activeConnection: string;
+  private readonly destroySubject$: Subject<void> = new Subject();
 
-  constructor(private InfrastructureManager: AnyOpsOSAppInfrastructureManagerService) {
+  activeConnectionUuid: string | null;
+
+  constructor(private readonly InfrastructureManager: AnyOpsOSAppInfrastructureManagerService) {
   }
 
   ngOnInit(): void {
 
-    // Listen for activeConnection change
-    this.InfrastructureManager.activeConnection
-      .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnectionUuid: string) => this.activeConnection = activeConnectionUuid);
+    // Listen for activeConnectionUuid change
+    this.InfrastructureManager.activeConnectionUuid
+      .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnectionUuid: string | null) => this.activeConnectionUuid = activeConnectionUuid);
   }
 
   ngOnDestroy(): void {
@@ -34,14 +35,14 @@ export class StatusComponent implements OnInit, OnDestroy {
     this.destroySubject$.next();
   }
 
-  getActiveConnection(): ConnectionTypes {
-    return this.InfrastructureManager.getActiveConnection();
+  getActiveConnectionObs(): Observable<ConnectionTypes | null> {
+    return this.InfrastructureManager.activeConnection;
   }
 
-  getHostOrClusterName(): string {
-    const connection = this.InfrastructureManager.getActiveConnection();
+  async getHostOrClusterName(): Promise<string> {
+    const connection: ConnectionTypes | null = await this.InfrastructureManager.getActiveConnection();
 
-    if (connection.type === 'kubernetes' || connection.type === 'docker') return connection.clusterName;
+    if (connection?.type === 'kubernetes' || connection?.type === 'docker') return connection.clusterName;
     return connection.host;
   }
 

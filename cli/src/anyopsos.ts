@@ -1,5 +1,6 @@
 import {copy, move, unlink, pathExistsSync, readdir, ensureDir, outputJson, outputFile, stat, truncate} from 'fs-extra';
 import {read as readLines} from 'read-last-lines';
+import {blue, red, blueBright} from 'chalk';
 import * as yargs from 'yargs';
 import rimraf from 'rimraf';
 import awaitSpawn from 'await-spawn';
@@ -24,7 +25,7 @@ process.on('uncaughtException', error => {
 });
 
 ((): void => {
-  const mainPathCwd = `${__dirname}/../../`;
+  const mainPathCwd = `${process.cwd()}`;
 
   let packageType;
   let packageLongType;
@@ -32,6 +33,8 @@ process.on('uncaughtException', error => {
   let projectPath;
 
   const yarnInstall = async (argv) => {
+    console.log(blueBright(`[anyOpsOS Cli. Internals] Running 'yarn install' on workspace @anyopsos/${packageType}-${argv.name}\n`));
+
     await awaitSpawn('yarn.cmd', ['workspace', `@anyopsos/${packageType}-${argv.name}`, 'install'], {
       cwd: mainPathCwd,
       stdio: 'inherit'
@@ -64,7 +67,9 @@ process.on('uncaughtException', error => {
         argv.type === 'application' ? 'aa' :
           argv.type === 'modal' ? 'am' :
             argv.type;
-    projectPath = `${__dirname}/../../projects/${packageLongType}/${argv.name ? argv.name : argv.moduleName}`;
+    projectPath = `${process.cwd()}/projects/${packageLongType}/${argv.name ? argv.name : argv.moduleName}`;
+
+    if (!argv.prefix) argv.prefix = argv.name;
   };
 
   /**
@@ -75,23 +80,15 @@ process.on('uncaughtException', error => {
    * Creates main angular module (library)
    */
   const createLibrary = async (argv): Promise<void> => {
-    console.log('Creating module');
+    console.log(blue(`[anyOpsOS Cli.] Generating module ${argv.name} of type ${packageType}`));
+    console.log(red(`[anyOpsOS Cli.] Do not cancel this command...\n`));
 
     if (packageType === 'api' || packageType === 'module' || packageType === 'websocket') {
 
       await ensureDir(`${projectPath}/src`);
-      await outputJson(`${projectPath}/tsconfig.lib.json`, {
-        extends: '../../tsconfig.json',
+      await outputJson(`${projectPath}/tsconfig.json`, {
+        extends: '../../../tsconfig.backend.json',
         compilerOptions: {
-          emitDecoratorMetadata: true,
-          experimentalDecorators: true,
-          module: 'commonjs',
-          esModuleInterop: true,
-          allowSyntheticDefaultImports: true,
-          target: 'es2015',
-          noImplicitAny: true,
-          moduleResolution: 'node',
-          sourceMap: true,
           outDir: `../../../dist/${packageLongType}/${argv.name}`,
           baseUrl: '.',
           paths: {
@@ -121,10 +118,10 @@ process.on('uncaughtException', error => {
    * Renames and moves the created project to its final location
    */
   const moveLibraryToFinalLocation = async (argv): Promise<void> => {
-    console.log('Moving module');
+    console.log(blueBright(`[anyOpsOS Cli. Internals] Moving module ${argv.name} to its final location\n`));
 
     await move(
-      `${__dirname}/../../projects/any-ops-o-s-${packageType}-${argv.name}`,
+      `${process.cwd()}/projects/any-ops-o-s-${packageType}-${argv.name}`,
       `${projectPath}`
     );
   };
@@ -133,16 +130,16 @@ process.on('uncaughtException', error => {
    * Sets correct parameters/paths on files like (tsconfig, tslint, package, ng-package, angular).json
    */
   const standarizeLibraryFiles = async (argv): Promise<void> => {
-    console.log('Editing module files');
+    console.log(blueBright(`[anyOpsOS Cli. Internals] Editing project files to include module ${argv.name}.\n`));
 
     const packageFile = editJsonFile(`${projectPath}/package.json`);
     const ngPackageFile = editJsonFile(`${projectPath}/ng-package.json`);
     const tsConfigLibFile = editJsonFile(`${projectPath}/tsconfig.lib.json`);
     const tsConfigSpecFile = editJsonFile(`${projectPath}/tsconfig.spec.json`);
     const tsLintFile = editJsonFile(`${projectPath}/tslint.json`);
-    const modulesTsConfigFile = editJsonFile(`${__dirname}/../../projects/tsconfig.json`);
-    const mainTsConfigFile = editJsonFile(`${__dirname}/../../tsconfig.json`);
-    const mainAngularFile = editJsonFile(`${__dirname}/../../angular.json`);
+    const modulesTsConfigFile = editJsonFile(`${process.cwd()}/projects/tsconfig.json`);
+    const mainTsConfigFile = editJsonFile(`${process.cwd()}/tsconfig.json`);
+    const mainAngularFile = editJsonFile(`${process.cwd()}/angular.json`);
 
     packageFile.set('name', `@anyopsos/${packageType}-${argv.name}`);
     packageFile.set('homepage', 'https://github.com/anyOpsOS/anyOpsOS#readme');
@@ -182,7 +179,7 @@ process.on('uncaughtException', error => {
     await mainTsConfigFile.save();
 
     let currentAngularProject = mainAngularFile.get(`projects.any-ops-o-s-${packageType}-${argv.name}`);
-    currentAngularProject = JSON.parse(JSON.stringify(currentAngularProject).replace(/projects\/any-ops-o-s-(lib|ext-lib|module|app)-[a-z-]*/gi, `projects/${packageLongType}/${argv.name}`));
+    currentAngularProject = JSON.parse(JSON.stringify(currentAngularProject).replace(/projects\/any-ops-o-s-(lib|ext-lib|modal|app)-[a-z-]*/gi, `projects/${packageLongType}/${argv.name}`));
     currentAngularProject.schematics = {
       '@schematics/angular:component': {
         style: 'scss'
@@ -198,7 +195,7 @@ process.on('uncaughtException', error => {
    * Delete unwanted default files created by ng generate
    */
   const deleteDefaultFiles = async (argv): Promise<void> => {
-    console.log('Deleting default files');
+    console.log(blueBright(`[anyOpsOS Cli. Internals] Deleting some angular default generated files.\n`));
 
     await unlink(`${projectPath}/src/lib/any-ops-o-s-${packageType}-${argv.name}.component.spec.ts`, (e) => { if (e) throw e; });
     await unlink(`${projectPath}/src/lib/any-ops-o-s-${packageType}-${argv.name}.component.ts`, (e) => { if (e) throw e; });
@@ -210,7 +207,7 @@ process.on('uncaughtException', error => {
    * Sets correct name to library Module file
    */
   const renameLibraryModuleFile = async (argv): Promise<void> => {
-    console.log('Rename module file');
+    console.log(blueBright(`[anyOpsOS Cli. Internals] Renaming module.\n`));
 
     await move(
       `${projectPath}/src/lib/any-ops-o-s-${packageType}-${argv.name}.module.ts`,
@@ -219,7 +216,7 @@ process.on('uncaughtException', error => {
   };
 
   const removeUnwantedCodeFromFiles = async (argv): Promise<void> => {
-    console.log('Remove unwanted code from files');
+    console.log(blueBright(`[anyOpsOS Cli. Internals] Removing unwanted code from module files.\n`));
 
     // Remove unwanted exports from public-api
     await replaceInFile({
@@ -237,10 +234,14 @@ process.on('uncaughtException', error => {
   };
 
   const copyLicenseFile = async (): Promise<void> => {
-    await copy(`${__dirname}/../../LICENSE`, `${projectPath}/LICENSE`, (e) => { if (e) throw e; });
+    console.log(blue(`[anyOpsOS Cli.] Copying LICENSE file.\n`));
+
+    await copy(`${process.cwd()}/LICENSE`, `${projectPath}/LICENSE`, (e) => { if (e) throw e; });
   };
 
   const createReadMe = async (argv): Promise<void> => {
+    console.log(blue(`[anyOpsOS Cli.] Creating empty README.\n`));
+
     await outputFile(`${projectPath}/README.md`, `${packageType} ${argv.name}`);
   };
 
@@ -252,7 +253,7 @@ process.on('uncaughtException', error => {
    * Create base application type files
    */
   const createBaseApplicationFiles = async (argv): Promise<void> => {
-    console.log('Generating new components');
+    console.log(blueBright(`[anyOpsOS Cli. Internals] Generating Application base components.\n`));
 
     await awaitSpawn('ng.cmd', ['generate', 'component', `components/body`, '--project', `anyopsos-${packageType}-${argv.name}`], {
       cwd: mainPathCwd,
@@ -273,10 +274,166 @@ process.on('uncaughtException', error => {
   };
 
   /**
+   * Create base modal type files
+   */
+  const createBaseModalFiles = async (argv): Promise<void> => {
+    console.log(blueBright(`[anyOpsOS Cli. Internals] Generating Modal base components.\n`));
+
+    await awaitSpawn('ng.cmd', ['generate', 'component', `entry`, '--project', `anyopsos-${packageType}-${argv.name}`], {
+      cwd: mainPathCwd,
+      stdio: 'inherit'
+    });
+    await awaitSpawn('ng.cmd', ['generate', 'component', `anyopsos-${packageType}-${argv.name}`, '--flat', '--project', `anyopsos-${packageType}-${argv.name}`], {
+      cwd: mainPathCwd,
+      stdio: 'inherit'
+    });
+
+    // Set package.json dependencies
+    const packageFile = editJsonFile(`${projectPath}/package.json`);
+    packageFile.set('dependencies', {
+      '@anyopsos/lib-angular-material': '~0.0.1',
+      '@anyopsos/lib-modal': '~0.0.1'
+    });
+    await packageFile.save();
+
+    // Whitelist dependencies
+    const ngPackageFile = editJsonFile(`${projectPath}/ng-package.json`);
+    ngPackageFile.set('whitelistedNonPeerDependencies', [
+      '@anyopsos/lib-angular-material',
+      '@anyopsos/lib-modal'
+    ]);
+    await ngPackageFile.save();
+
+    let dynamicModule = argv.name
+      .toLowerCase()
+      .replace(/-(.)/g, (match, group1) => group1.toUpperCase());
+
+    dynamicModule = `${dynamicModule.charAt(0).toUpperCase()}${dynamicModule.slice(1)}`;
+
+    const fulldynamicComponent = `AnyOpsOSModal${dynamicModule}Component`;
+    const fulldynamicModule = `AnyOpsOSModal${dynamicModule}Module`;
+
+    // Rewrite module file
+    await outputFile(`${projectPath}/src/lib/anyopsos-modal-${argv.name}.module.ts`, `import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
+
+import {AnyOpsOSLibAngularMaterialModule} from '@anyopsos/lib-angular-material';
+import {AnyOpsOSLibModalModule, AnyOpsOSLibModalRegisteredStateService} from '@anyopsos/lib-modal';
+
+import {EntryComponent} from './entry/entry.component';
+import {${fulldynamicComponent}} from './anyopsos-modal-${argv.name}.component';
+
+@NgModule({
+  declarations: [
+    ${fulldynamicComponent},
+    EntryComponent
+  ],
+  imports: [
+    CommonModule,
+    // Shared module import
+    AnyOpsOSLibAngularMaterialModule,
+    AnyOpsOSLibModalModule
+  ],
+  exports: [],
+  providers: [],
+  entryComponents: [
+    ${fulldynamicComponent}
+  ]
+})
+export class ${fulldynamicModule} {
+
+  constructor(private readonly ModalRegisteredState: AnyOpsOSLibModalRegisteredStateService) {
+
+    ModalRegisteredState.putModal({
+      uuid: '${argv.name}',
+      size: 'sm'
+    });
+
+  }
+
+}
+`);
+
+    // Delete unwanted entry files
+    await unlink(`${projectPath}/src/lib/entry/entry.component.html`);
+    await unlink(`${projectPath}/src/lib/entry/entry.component.scss`);
+
+    // Rewrite entry file
+    await outputFile(`${projectPath}/src/lib/entry/entry.component.ts`, `import {Component, Input, OnInit, Output} from '@angular/core';
+
+import {MatDialog, MatDialogConfig, MatDialogRef} from '@anyopsos/lib-angular-material';
+
+import {${fulldynamicComponent}} from '../anyopsos-modal-${argv.name}.component';
+
+/**
+ * This file is called by @anyopsos/lib-modal and is used to open a Modal.
+ * You should NOT edit any of this content.
+ */
+@Component({
+  template: ''
+})
+export class EntryComponent implements OnInit {
+  @Input() private readonly dialogConfig: MatDialogConfig;
+  @Output() private dialogRef: MatDialogRef<any>;
+
+  constructor(private readonly dialog: MatDialog) {
+  }
+
+  ngOnInit(): void {
+    this.dialogRef = this.dialog.open(${fulldynamicComponent}, this.dialogConfig);
+  }
+}
+`);
+
+    // Rewrite modal file
+    await outputFile(`${projectPath}/src/lib/anyopsos-modal-${argv.name}.component.ts`, `import {Component, Inject, OnInit, ViewChild} from '@angular/core';
+
+import {MAT_DIALOG_DATA, MatDialogRef} from '@anyopsos/lib-angular-material';
+import {BodyComponent, ModalData} from '@anyopsos/lib-modal';
+
+@Component({
+  selector: 'am${argv.prefix}-anyopsos-modal-${argv.name}',
+  templateUrl: './anyopsos-modal-${argv.name}.component.html',
+  styleUrls: ['./anyopsos-modal-${argv.name}.component.scss']
+})
+export class ${fulldynamicComponent} implements OnInit {
+  @ViewChild('modalBody', {static: true}) modalBody: BodyComponent;
+
+  constructor(public readonly dialogRef: MatDialogRef<${fulldynamicComponent}>,
+              @Inject(MAT_DIALOG_DATA) public readonly data: ModalData) {
+  }
+
+  ngOnInit(): void {
+
+    // Do not delete this
+    this.modalBody.dialogRef = this.dialogRef;
+    this.modalBody.title = this.data.title;
+    this.modalBody.type = this.data.type;
+  }
+
+}
+`);
+
+    // Rewrite modal html file
+    await outputFile(`${projectPath}/src/lib/anyopsos-modal-${argv.name}.component.html`, `<almodal-body #modalBody>
+
+  <!-- Put modal contant here -->
+  <span>Hello from ${argv.name} Modal!</span>
+
+</almodal-body>
+
+<!-- Put footer buttons here -->
+<almodal-buttons>
+  <button class="btn" type="button" (click)="dialogRef.close()" mat-flat-button>Close</button>
+</almodal-buttons>
+`);
+  };
+
+  /**
    * Create base library/external-library type files
    */
   const createBaseLibFiles = async (argv): Promise<void> => {
-    console.log('Generating new services');
+    console.log(blueBright(`[anyOpsOS Cli. Internals] Generating Library base components.\n`));
 
     await awaitSpawn('ng.cmd', ['generate', 'service', `services/anyopsos-${packageType}-${argv.name}`, '--project', `anyopsos-${packageType}-${argv.name}`], {
       cwd: mainPathCwd,
@@ -288,7 +445,7 @@ process.on('uncaughtException', error => {
    * Create base api type files
    */
   const createBaseApiFiles = async (argv): Promise<void> => {
-    console.log('Generating new api files');
+    console.log(blueBright(`[anyOpsOS Cli. Internals] Generating API base components.\n`));
 
     let dynamicModule = argv.name
       .toLowerCase()
@@ -309,6 +466,7 @@ process.on('uncaughtException', error => {
         '@anyopsos/module-api-globals': '~0.0.1'
       },
       devDependencies: {
+        '@types/node': '^12.12.21',
         'class-validator': '^0.11.0',
         express: '^4.17.1',
         'routing-controllers': '^0.8.0',
@@ -333,7 +491,7 @@ import {getLogger} from 'log4js';
 
 import {AnyOpsOSApiGlobalsModule} from '@anyopsos/module-api-globals';
 
-const logger = getLogger('mainlog');
+const logger = getLogger('mainLog');
 
 @Authorized()
 @Controller('/api/${argv.name}')
@@ -356,7 +514,7 @@ export class ${fulldynamicModule} {
    * Create base module type files
    */
   const createBaseModuleFiles = async (argv): Promise<void> => {
-    console.log('Generating new module files');
+    console.log(blueBright(`[anyOpsOS Cli. Internals] Generating Module base components.\n`));
 
     let dynamicModule = argv.name
       .toLowerCase()
@@ -369,6 +527,7 @@ export class ${fulldynamicModule} {
       version: '0.0.1',
       main: 'src/index.ts',
       devDependencies: {
+        '@types/node': '^12.12.21',
         typescript: '^3.7.4'
       },
       homepage: 'https://github.com/anyOpsOS/anyOpsOS#readme',
@@ -398,7 +557,7 @@ export class ${fulldynamicModule} {
    * Create base api type files
    */
   const createBaseWebsocketFiles = async (argv): Promise<void> => {
-    console.log('Generating new api files');
+    console.log(blueBright(`[anyOpsOS Cli. Internals] Generating WebSocket base components.\n`));
 
     let dynamicModule = argv.name
       .toLowerCase()
@@ -418,6 +577,7 @@ export class ${fulldynamicModule} {
       peerDependencies: {
       },
       devDependencies: {
+        '@types/node': '^12.12.21',
         'socket.io': '^2.3.0',
         'socket-controllers': '^0.0.5',
         typescript: '^3.7.4'
@@ -439,7 +599,7 @@ export class ${fulldynamicModule} {
 import {getLogger} from 'log4js';
 import {Socket} from 'socket.io';
 
-const logger = getLogger('mainlog');
+const logger = getLogger('mainLog');
 
 @SocketController()
 export class ${fulldynamicModule} {
@@ -464,6 +624,8 @@ export class ${fulldynamicModule} {
 
   // TODO: provably we can do this modifying the angular.json file
   const removeSourceMaps = async (filename: string): Promise<void> => {
+    console.log(blueBright(`[anyOpsOS Cli. Internals] Removing sourcemap line from bundle.`));
+
     const lines2nuke = 1;
 
     return new Promise((resolve, reject) => {
@@ -474,7 +636,6 @@ export class ${fulldynamicModule} {
           truncate(filename, stats.size - toVanquish, (e: Error) => {
             if (e) return reject(err);
 
-            console.log(`${filename} truncated!`);
             return resolve();
           });
         });
@@ -484,46 +645,45 @@ export class ${fulldynamicModule} {
 
   const buildModules = async (argv): Promise<void> => {
 
-    console.log('Building modules');
-
     if (argv.moduleName) {
 
-      await awaitSpawn('tsc.cmd', ['--build', `${projectPath}/tsconfig.lib.json`], {
-        cwd: `${__dirname}/../../`,
+      console.log(blue(`[anyOpsOS Cli.] Building module ${argv.moduleName}.\n`));
+      await awaitSpawn('tsc.cmd', ['--build', `${projectPath}/tsconfig.json`], {
+        cwd: `${process.cwd()}`,
         stdio: 'inherit'
       });
 
       // Copy to filesystem
-      console.log(`Copying module ${argv.moduleName}`);
+      console.log(blueBright(`[anyOpsOS Cli. Internals] Copying module ${argv.moduleName} to anyOpsOS filesystem.\n`));
       await copy(
-        `${__dirname}/../../dist/modules/${argv.moduleName}/`,
-        `${__dirname}/../../dist/anyOpsOS/filesystem/bin/modules/module-${argv.moduleName}`
+        `${process.cwd()}/dist/modules/${argv.moduleName}/`,
+        `${process.cwd()}/dist/anyOpsOS/filesystem/bin/modules/module-${argv.moduleName}`
       );
 
     } else {
 
-      const projectsFiles = await readdir(`${__dirname}/../../projects/modules/`);
-      await Promise.all(projectsFiles.map(async (directory: string): Promise<void> => {
+      const projectsFiles = await readdir(`${process.cwd()}/projects/modules/`);
 
-        console.log(`Building module ${directory}`);
-        await awaitSpawn('tsc.cmd', ['--build', `${__dirname}/../../projects/modules/${directory}/tsconfig.lib.json`], {
-          cwd: `${__dirname}/../../`,
+      for (const directory of projectsFiles) {
+        console.log(blue(`[anyOpsOS Cli.] Building module ${directory}.\n`));
+        await awaitSpawn('tsc.cmd', ['--build', `${process.cwd()}/projects/modules/${directory}/tsconfig.json`], {
+          cwd: `${process.cwd()}`,
           stdio: 'inherit'
         });
-        console.log(`End building module ${directory}`);
-
-      }));
+      }
 
       // Copy to filesystem
-      const directoryFiles = await readdir(`${__dirname}/../../dist/modules/`);
+      const directoryFiles = await readdir(`${process.cwd()}/dist/modules/`);
       await directoryFiles.map(async (directory: string): Promise<void> => {
 
-        console.log(`Copying module ${directory}`);
+        console.log(blueBright(`[anyOpsOS Cli. Internals] Copying module ${directory} to anyOpsOS filesystem.`));
         await copy(
-          `${__dirname}/../../dist/modules/${directory}/`,
-          `${__dirname}/../../dist/anyOpsOS/filesystem/bin/modules/module-${directory}`
+          `${process.cwd()}/dist/modules/${directory}/`,
+          `${process.cwd()}/dist/anyOpsOS/filesystem/bin/modules/module-${directory}`
         );
       });
+
+      console.log('\n');
 
     }
 
@@ -531,46 +691,45 @@ export class ${fulldynamicModule} {
 
   const buildApiMiddlewares = async (argv): Promise<void> => {
 
-    console.log('Building api middlewares');
-
     if (argv.moduleName) {
 
-      await awaitSpawn('tsc.cmd', ['--build', `${projectPath}/tsconfig.lib.json`], {
-        cwd: `${__dirname}/../../`,
+      console.log(blue(`[anyOpsOS Cli.] Building API Middleware ${argv.moduleName}.\n`));
+      await awaitSpawn('tsc.cmd', ['--build', `${projectPath}/tsconfig.json`], {
+        cwd: `${process.cwd()}`,
         stdio: 'inherit'
       });
 
       // Copy to filesystem
-      console.log(`Copying api middleware ${argv.moduleName}`);
+      console.log(blueBright(`[anyOpsOS Cli. Internals] Copying API Middleware ${argv.moduleName} to anyOpsOS filesystem.\n`));
       await copy(
-        `${__dirname}/../../dist/api-middlewares/${argv.moduleName}/`,
-        `${__dirname}/../../dist/anyOpsOS/filesystem/bin/modules/api-middleware-${argv.moduleName}`
+        `${process.cwd()}/dist/api-middlewares/${argv.moduleName}/`,
+        `${process.cwd()}/dist/anyOpsOS/filesystem/bin/modules/api-middleware-${argv.moduleName}`
       );
 
     } else {
 
-      const projectsFiles = await readdir(`${__dirname}/../../projects/api-middlewares/`);
-      await Promise.all(projectsFiles.map(async (directory: string): Promise<void> => {
+      const projectsFiles = await readdir(`${process.cwd()}/projects/api-middlewares/`);
 
-        console.log(`Building api-middleware ${directory}`);
-        await awaitSpawn('tsc.cmd', ['--build', `${__dirname}/../../projects/api-middlewares/${directory}/tsconfig.lib.json`], {
-          cwd: `${__dirname}/../../`,
+      for (const directory of projectsFiles) {
+        console.log(blue(`[anyOpsOS Cli.] Building API Middleware ${directory}.\n`));
+        await awaitSpawn('tsc.cmd', ['--build', `${process.cwd()}/projects/api-middlewares/${directory}/tsconfig.json`], {
+          cwd: `${process.cwd()}`,
           stdio: 'inherit'
         });
-        console.log(`End building module ${directory}`);
-
-      }));
+      }
 
       // Copy to filesystem
-      const directoryFiles = await readdir(`${__dirname}/../../dist/api-middlewares/`);
+      const directoryFiles = await readdir(`${process.cwd()}/dist/api-middlewares/`);
       await directoryFiles.map(async (directory: string): Promise<void> => {
 
-        console.log(`Copying api-middleware ${directory}`);
+        console.log(blueBright(`[anyOpsOS Cli. Internals] Copying API Middleware ${directory} to anyOpsOS filesystem.`));
         await copy(
-          `${__dirname}/../../dist/api-middlewares/${directory}/`,
-          `${__dirname}/../../dist/anyOpsOS/filesystem/bin/modules/api-middleware-${directory}`
+          `${process.cwd()}/dist/api-middlewares/${directory}/`,
+          `${process.cwd()}/dist/anyOpsOS/filesystem/bin/modules/api-middleware-${directory}`
         );
       });
+
+      console.log('\n');
 
     }
 
@@ -578,44 +737,41 @@ export class ${fulldynamicModule} {
 
   const buildApis = async (argv): Promise<void> => {
 
-    console.log('Building apis');
-
     if (argv.moduleName) {
 
-      await awaitSpawn('tsc.cmd', ['--build', `${projectPath}/tsconfig.lib.json`], {
-        cwd: `${__dirname}/../../`,
+      console.log(blue(`[anyOpsOS Cli.] Building API ${argv.moduleName}.\n`));
+      await awaitSpawn('tsc.cmd', ['--build', `${projectPath}/tsconfig.json`], {
+        cwd: `${process.cwd()}`,
         stdio: 'inherit'
       });
 
       // Copy to filesystem
-      console.log(`Copying api ${argv.moduleName}`);
+      console.log(blueBright(`[anyOpsOS Cli. Internals] Copying API ${argv.moduleName} to anyOpsOS filesystem.\n`));
       await copy(
-        `${__dirname}/../../dist/apis/${argv.moduleName}/`,
-        `${__dirname}/../../dist/anyOpsOS/filesystem/bin/apis/${argv.moduleName}`
+        `${process.cwd()}/dist/apis/${argv.moduleName}/`,
+        `${process.cwd()}/dist/anyOpsOS/filesystem/bin/apis/${argv.moduleName}`
       );
 
     } else {
 
-      const projectsFiles = await readdir(`${__dirname}/../../projects/apis/`);
-      await Promise.all(projectsFiles.map(async (directory: string): Promise<void> => {
+      const projectsFiles = await readdir(`${process.cwd()}/projects/apis/`);
 
+      for (const directory of projectsFiles) {
         // TODO hardcoded end to not check swagger file. Test if its a directory with fs.stat
-        if (directory === 'swagger.json') return;
+        if (directory === 'swagger.json') continue;
 
-        console.log(`Building api ${directory}`);
-        await awaitSpawn('tsc.cmd', ['--build', `${__dirname}/../../projects/apis/${directory}/tsconfig.lib.json`], {
-          cwd: `${__dirname}/../../`,
+        console.log(blue(`[anyOpsOS Cli.] Building API ${directory}.\n`));
+        await awaitSpawn('tsc.cmd', ['--build', `${process.cwd()}/projects/apis/${directory}/tsconfig.json`], {
+          cwd: `${process.cwd()}`,
           stdio: 'inherit'
         });
-        console.log(`End building api ${directory}`);
-
-      }));
+      }
 
       // Copy to filesystem
-      console.log(`Copying apis`);
+      console.log(blueBright(`[anyOpsOS Cli. Internals] Copying APIs to anyOpsOS filesystem.\n`));
       await copy(
-        `${__dirname}/../../dist/apis/`,
-        `${__dirname}/../../dist/anyOpsOS/filesystem/bin/apis/`
+        `${process.cwd()}/dist/apis/`,
+        `${process.cwd()}/dist/anyOpsOS/filesystem/bin/apis/`
       );
     }
 
@@ -626,41 +782,38 @@ export class ${fulldynamicModule} {
 
   const buildWebsockets = async (argv): Promise<void> => {
 
-    console.log('Building websockets');
-
     if (argv.moduleName) {
 
-      await awaitSpawn('tsc.cmd', ['--build', `${projectPath}/tsconfig.lib.json`], {
-        cwd: `${__dirname}/../../`,
+      console.log(blue(`[anyOpsOS Cli.] Building WebSocket ${argv.moduleName}.\n`));
+      await awaitSpawn('tsc.cmd', ['--build', `${projectPath}/tsconfig.json`], {
+        cwd: `${process.cwd()}`,
         stdio: 'inherit'
       });
 
       // Copy to filesystem
-      console.log(`Copying websocket ${argv.moduleName}`);
+      console.log(blueBright(`[anyOpsOS Cli. Internals] Copying WebSocket ${argv.moduleName} to anyOpsOS filesystem.\n`));
       await copy(
-        `${__dirname}/../../dist/websockets/${argv.moduleName}/`,
-        `${__dirname}/../../dist/anyOpsOS/filesystem/bin/websockets/${argv.moduleName}`
+        `${process.cwd()}/dist/websockets/${argv.moduleName}/`,
+        `${process.cwd()}/dist/anyOpsOS/filesystem/bin/websockets/${argv.moduleName}`
       );
 
     } else {
 
-      const projectsFiles = await readdir(`${__dirname}/../../projects/websockets/`);
-      await Promise.all(projectsFiles.map(async (directory: string): Promise<void> => {
+      const projectsFiles = await readdir(`${process.cwd()}/projects/websockets/`);
 
-        console.log(`Building websocket ${directory}`);
-        await awaitSpawn('tsc.cmd', ['--build', `${__dirname}/../../projects/websockets/${directory}/tsconfig.lib.json`], {
-          cwd: `${__dirname}/../../`,
+      for (const directory of projectsFiles) {
+        console.log(blue(`[anyOpsOS Cli.] Building WebSocket ${directory}.\n`));
+        await awaitSpawn('tsc.cmd', ['--build', `${process.cwd()}/projects/websockets/${directory}/tsconfig.json`], {
+          cwd: `${process.cwd()}`,
           stdio: 'inherit'
         });
-        console.log(`End building websocket ${directory}`);
-
-      }));
+      }
 
       // Copy to filesystem
-      console.log(`Copying websockets`);
+      console.log(blueBright(`[anyOpsOS Cli. Internals] Copying WebSockets to anyOpsOS filesystem.\n`));
       await copy(
-        `${__dirname}/../../dist/websockets/`,
-        `${__dirname}/../../dist/anyOpsOS/filesystem/bin/websockets/`
+        `${process.cwd()}/dist/websockets/`,
+        `${process.cwd()}/dist/anyOpsOS/filesystem/bin/websockets/`
       );
     }
 
@@ -668,16 +821,16 @@ export class ${fulldynamicModule} {
 
   const buildBackend = async (): Promise<void> => {
 
-    console.log('Building backend');
+    console.log(blue(`[anyOpsOS Cli.] Building anyOpsOS Backend.\n`));
     await awaitSpawn('tsc.cmd', ['--build', 'src/backend/tsconfig.json'], {
-      cwd: `${__dirname}/../../`,
+      cwd: `${process.cwd()}`,
       stdio: 'inherit'
     });
   };
 
   const buildFrontend = async (): Promise<void> => {
 
-    console.log('Building frontend');
+    console.log(blue(`[anyOpsOS Cli.] Building anyOpsOS Frontend.\n`));
     await awaitSpawn('ng.cmd', ['build'], {
       cwd: mainPathCwd,
       stdio: 'inherit'
@@ -687,11 +840,15 @@ export class ${fulldynamicModule} {
   const buildLibrary = async (argv): Promise<void> => {
 
     if (argv.moduleName) {
+
+      console.log(blue(`[anyOpsOS Cli.] Building anyOpsOS Library ${argv.moduleName}.\n`));
       await awaitSpawn('ng.cmd', ['build', `anyopsos-lib-${argv.moduleName}`], {
         cwd: mainPathCwd,
         stdio: 'inherit'
       });
     } else {
+
+      console.log(blue(`[anyOpsOS Cli.] Building anyOpsOS Libraries.\n`));
       await new BuildLibs().build();
     }
 
@@ -700,10 +857,11 @@ export class ${fulldynamicModule} {
   const moveExternalLibraryAsDep = async (): Promise<void> => {
 
     // Move Netdata to Deps
-    if (pathExistsSync(`${__dirname}/../../dist/anyOpsOS/filesystem/bin/libs/anyopsos-ext-lib-netdata.umd.js`)) {
+    console.log(blueBright(`[anyOpsOS Cli. Internals] Moving fileSystem dependencies.\n`));
+    if (pathExistsSync(`${process.cwd()}/dist/anyOpsOS/filesystem/bin/libs/anyopsos-ext-lib-netdata.umd.js`)) {
       await move(
-        `${__dirname}/../../dist/anyOpsOS/filesystem/bin/libs/anyopsos-ext-lib-netdata.umd.js`,
-        `${__dirname}/../../dist/anyOpsOS/filesystem/bin/libs/deps/anyopsos-ext-lib-netdata.umd.js`,
+        `${process.cwd()}/dist/anyOpsOS/filesystem/bin/libs/anyopsos-ext-lib-netdata.umd.js`,
+        `${process.cwd()}/dist/anyOpsOS/filesystem/bin/libs/deps/anyopsos-ext-lib-netdata.umd.js`,
         {
           overwrite: true
         }
@@ -717,55 +875,59 @@ export class ${fulldynamicModule} {
     if (argv.moduleName) {
 
       // Build
+      console.log(blue(`[anyOpsOS Cli.] Building anyOpsOS External Library ${argv.moduleName}.\n`));
       await awaitSpawn('ng.cmd', ['build', `anyopsos-ext-lib-${argv.moduleName}`], {
         cwd: mainPathCwd,
         stdio: 'inherit'
       });
 
-      await removeSourceMaps(`${__dirname}/../../dist/external-libraries/${argv.moduleName}/bundles/anyopsos-ext-lib-${argv.moduleName}.umd.js`);
+      await removeSourceMaps(`${process.cwd()}/dist/external-libraries/${argv.moduleName}/bundles/anyopsos-ext-lib-${argv.moduleName}.umd.js`);
 
       // Run postbuild script if exists
       if (pathExistsSync(`${projectPath}/scripts/postbuild.js`)) {
 
-        console.log(`Running postbuild script for ${argv.moduleName}`);
+        console.log(blue(`[anyOpsOS Cli.] Running anyOpsOS External Library ${argv.moduleName} postbuild script.\n`));
         await require(`${projectPath}/scripts/postbuild.js`);
       }
 
       // Copy to filesystem
-      console.log(`Copying library ${argv.moduleName}`);
+      console.log(blueBright(`[anyOpsOS Cli. Internals] Copying External Library ${argv.moduleName} to anyOpsOS filesystem.\n`));
       await copy(
-        `${__dirname}/../../dist/external-libraries/${argv.moduleName}/bundles/anyopsos-ext-lib-${argv.moduleName}.umd.js`,
-        `${__dirname}/../../dist/anyOpsOS/filesystem/bin/libs/anyopsos-ext-lib-${argv.moduleName}.umd.js`
+        `${process.cwd()}/dist/external-libraries/${argv.moduleName}/bundles/anyopsos-ext-lib-${argv.moduleName}.umd.js`,
+        `${process.cwd()}/dist/anyOpsOS/filesystem/bin/libs/anyopsos-ext-lib-${argv.moduleName}.umd.js`
       );
     } else {
 
       // Build
+      console.log(blue(`[anyOpsOS Cli.] Building anyOpsOS External Libraries.\n`));
       await new BuildExtLibs().build();
 
       // Run postbuild script if exists
-      const projectsFiles = await readdir(`${__dirname}/../../projects/external-libraries/`);
+      const projectsFiles = await readdir(`${process.cwd()}/projects/external-libraries/`);
       await Promise.all(projectsFiles.map(async (directory: string): Promise<void> => {
 
-        if (pathExistsSync(`${__dirname}/../../projects/external-libraries/${directory}/scripts/postbuild.js`)) {
+        if (pathExistsSync(`${process.cwd()}/projects/external-libraries/${directory}/scripts/postbuild.js`)) {
 
-          console.log(`Running postbuild script for ${directory}`);
-          await require(`${__dirname}/../../projects/external-libraries/${directory}/scripts/postbuild.js`);
+          console.log(blue(`[anyOpsOS Cli.] Running anyOpsOS External Library ${directory} postbuild script.\n`));
+          await require(`${process.cwd()}/projects/external-libraries/${directory}/scripts/postbuild.js`);
         }
 
       }));
 
       // Copy to filesystem
-      const directoryFiles = await readdir(`${__dirname}/../../dist/external-libraries/`);
-      await directoryFiles.map(async (directory: string): Promise<void> => {
+      const directoryFiles = await readdir(`${process.cwd()}/dist/external-libraries/`);
+      await Promise.all(directoryFiles.map(async (directory: string): Promise<void> => {
 
-        await removeSourceMaps(`${__dirname}/../../dist/external-libraries/${directory}/bundles/anyopsos-ext-lib-${directory}.umd.js`);
+        await removeSourceMaps(`${process.cwd()}/dist/external-libraries/${directory}/bundles/anyopsos-ext-lib-${directory}.umd.js`);
 
-        console.log(`Copying library ${directory}`);
+        console.log(blueBright(`[anyOpsOS Cli. Internals] Copying External Library ${directory} to anyOpsOS filesystem.`));
         await copy(
-          `${__dirname}/../../dist/external-libraries/${directory}/bundles/anyopsos-ext-lib-${directory}.umd.js`,
-          `${__dirname}/../../dist/anyOpsOS/filesystem/bin/libs/anyopsos-ext-lib-${directory}.umd.js`
+          `${process.cwd()}/dist/external-libraries/${directory}/bundles/anyopsos-ext-lib-${directory}.umd.js`,
+          `${process.cwd()}/dist/anyOpsOS/filesystem/bin/libs/anyopsos-ext-lib-${directory}.umd.js`
         );
-      });
+      }));
+
+      console.log('\n');
     }
 
     await moveExternalLibraryAsDep();
@@ -777,55 +939,59 @@ export class ${fulldynamicModule} {
     if (argv.moduleName) {
 
       // Build
+      console.log(blue(`[anyOpsOS Cli.] Building anyOpsOS Application ${argv.moduleName}.\n`));
       await awaitSpawn('ng.cmd', ['build', `anyopsos-app-${argv.moduleName}`], {
         cwd: mainPathCwd,
         stdio: 'inherit'
       });
 
-      await removeSourceMaps(`${__dirname}/../../dist/applications/${argv.moduleName}/bundles/anyopsos-app-${argv.moduleName}.umd.js`);
+      await removeSourceMaps(`${process.cwd()}/dist/applications/${argv.moduleName}/bundles/anyopsos-app-${argv.moduleName}.umd.js`);
 
       // Run postbuild script if exists
       if (pathExistsSync(`${projectPath}/scripts/postbuild.js`)) {
 
-        console.log(`Running postbuild script for ${argv.moduleName}`);
+        console.log(blue(`[anyOpsOS Cli.] Running anyOpsOS Application ${argv.moduleName} postbuild script.\n`));
         await require(`${projectPath}/scripts/postbuild.js`);
       }
 
       // Copy to filesystem
-      console.log(`Copying application ${argv.moduleName}`);
+      console.log(blueBright(`[anyOpsOS Cli. Internals] Copying Application ${argv.moduleName} to anyOpsOS filesystem.\n`));
       await copy(
-        `${__dirname}/../../dist/applications/${argv.moduleName}/bundles/anyopsos-app-${argv.moduleName}.umd.js`,
-        `${__dirname}/../../dist/anyOpsOS/filesystem/bin/applications/anyopsos-app-${argv.moduleName}.umd.js`
+        `${process.cwd()}/dist/applications/${argv.moduleName}/bundles/anyopsos-app-${argv.moduleName}.umd.js`,
+        `${process.cwd()}/dist/anyOpsOS/filesystem/bin/applications/anyopsos-app-${argv.moduleName}.umd.js`
       );
     } else {
 
       // Build
+      console.log(blue(`[anyOpsOS Cli.] Building anyOpsOS Applications.\n`));
       await new BuildApps().build();
 
       // Run postbuild script if exists
-      const projectsFiles = await readdir(`${__dirname}/../../projects/applications/`);
+      const projectsFiles = await readdir(`${process.cwd()}/projects/applications/`);
       await projectsFiles.map(async (directory: string): Promise<void> => {
 
-        if (pathExistsSync(`${__dirname}/../../projects/applications/${directory}/scripts/postbuild.js`)) {
+        if (pathExistsSync(`${process.cwd()}/projects/applications/${directory}/scripts/postbuild.js`)) {
 
-          console.log(`Running postbuild script for ${directory}`);
-          await require(`${__dirname}/../../projects/applications/${directory}/scripts/postbuild.js`);
+          console.log(blue(`[anyOpsOS Cli.] Running anyOpsOS Application ${directory} postbuild script.\n`));
+          await require(`${process.cwd()}/projects/applications/${directory}/scripts/postbuild.js`);
         }
 
       });
 
       // Copy to filesystem
-      const directoryFiles = await readdir(`${__dirname}/../../dist/applications/`);
+      const directoryFiles = await readdir(`${process.cwd()}/dist/applications/`);
       await directoryFiles.map(async (directory: string): Promise<void> => {
 
-        await removeSourceMaps(`${__dirname}/../../dist/applications/${directory}/bundles/anyopsos-app-${directory}.umd.js`);
+        await removeSourceMaps(`${process.cwd()}/dist/applications/${directory}/bundles/anyopsos-app-${directory}.umd.js`);
 
-        console.log(`Copying application ${directory}`);
+        console.log(blueBright(`[anyOpsOS Cli. Internals] Copying Application ${directory} to anyOpsOS filesystem.`));
         await copy(
-          `${__dirname}/../../dist/applications/${directory}/bundles/anyopsos-app-${directory}.umd.js`,
-          `${__dirname}/../../dist/anyOpsOS/filesystem/bin/applications/anyopsos-app-${directory}.umd.js`
+          `${process.cwd()}/dist/applications/${directory}/bundles/anyopsos-app-${directory}.umd.js`,
+          `${process.cwd()}/dist/anyOpsOS/filesystem/bin/applications/anyopsos-app-${directory}.umd.js`
         );
       });
+
+      console.log('\n');
     }
 
   };
@@ -835,59 +1001,77 @@ export class ${fulldynamicModule} {
     if (argv.moduleName) {
 
       // Build
+      console.log(blue(`[anyOpsOS Cli.] Building anyOpsOS Modal ${argv.moduleName}.\n`));
       await awaitSpawn('ng.cmd', ['build', `anyopsos-modal-${argv.moduleName}`], {
         cwd: mainPathCwd,
         stdio: 'inherit'
       });
 
+      await removeSourceMaps(`${process.cwd()}/dist/modals/${argv.moduleName}/bundles/anyopsos-modal-${argv.moduleName}.umd.js`);
+
       // Run postbuild script if exists
       if (pathExistsSync(`${projectPath}/scripts/postbuild.js`)) {
 
-        console.log(`Running postbuild script for ${argv.moduleName}`);
+        console.log(blue(`[anyOpsOS Cli.] Running anyOpsOS Modal ${argv.moduleName} postbuild script.\n`));
         await require(`${projectPath}/scripts/postbuild.js`);
       }
 
       // Copy to filesystem
-      console.log(`Copying modal ${argv.moduleName}`);
+      console.log(blueBright(`[anyOpsOS Cli. Internals] Copying Modal ${argv.moduleName} to anyOpsOS filesystem.\n`));
       await copy(
-        `${__dirname}/../../dist/modals/${argv.moduleName}/bundles/anyopsos-modal-${argv.moduleName}.umd.js`,
-        `${__dirname}/../../dist/anyOpsOS/filesystem/bin/modals/anyopsos-modal-${argv.moduleName}.umd.js`
+        `${process.cwd()}/dist/modals/${argv.moduleName}/bundles/anyopsos-modal-${argv.moduleName}.umd.js`,
+        `${process.cwd()}/dist/anyOpsOS/filesystem/bin/modals/anyopsos-modal-${argv.moduleName}.umd.js`
       );
     } else {
 
       // Build
+      console.log(blue(`[anyOpsOS Cli.] Building anyOpsOS Modals.\n`));
       await new BuildModals().build();
 
       // Run postbuild script if exists
-      const projectsFiles = await readdir(`${__dirname}/../../projects/modals/`);
+      const projectsFiles = await readdir(`${process.cwd()}/projects/modals/`);
       await projectsFiles.map(async (directory: string): Promise<void> => {
 
-        if (pathExistsSync(`${__dirname}/../../projects/modals/${directory}/scripts/postbuild.js`)) {
+        if (pathExistsSync(`${process.cwd()}/projects/modals/${directory}/scripts/postbuild.js`)) {
 
-          console.log(`Running postbuild script for ${directory}`);
-          await require(`${__dirname}/../../projects/modals/${directory}/scripts/postbuild.js`);
+          console.log(blue(`[anyOpsOS Cli.] Running anyOpsOS Modal ${directory} postbuild script.\n`));
+          await require(`${process.cwd()}/projects/modals/${directory}/scripts/postbuild.js`);
         }
 
       });
 
       // Copy to filesystem
-      const directoryFiles = await readdir(`${__dirname}/../../dist/modals/`);
+      const directoryFiles = await readdir(`${process.cwd()}/dist/modals/`);
       await directoryFiles.map(async (directory: string): Promise<void> => {
 
-        console.log(`Copying modal ${directory}`);
+        await removeSourceMaps(`${process.cwd()}/dist/modals/${directory}/bundles/anyopsos-modal-${directory}.umd.js`);
+
+        console.log(blueBright(`[anyOpsOS Cli. Internals] Copying Modal ${directory} to anyOpsOS filesystem.`));
         await copy(
-          `${__dirname}/../../dist/modals/${directory}/bundles/anyopsos-modal-${directory}.umd.js`,
-          `${__dirname}/../../dist/anyOpsOS/filesystem/bin/modals/anyopsos-modal-${directory}.umd.js`
+          `${process.cwd()}/dist/modals/${directory}/bundles/anyopsos-modal-${directory}.umd.js`,
+          `${process.cwd()}/dist/anyOpsOS/filesystem/bin/modals/anyopsos-modal-${directory}.umd.js`
         );
       });
+
+      console.log('\n');
     }
 
   };
 
   const buildAll = async (argv): Promise<void> => {
 
-    console.log('Erasing \'dist\'');
-    await rimraf(`${__dirname}/../../dist/`, (e) => { if (e) throw e; });
+    console.log(red(`[anyOpsOS Cli.] Erasing destination folder.\n`));
+
+    // TODO delete this with glob (all but 'cli' folder)
+    await rimraf(`${process.cwd()}/dist/anyOpsOS`, (e) => { if (e) throw e; });
+    await rimraf(`${process.cwd()}/dist/api-middlewares`, (e) => { if (e) throw e; });
+    await rimraf(`${process.cwd()}/dist/apis`, (e) => { if (e) throw e; });
+    await rimraf(`${process.cwd()}/dist/applications`, (e) => { if (e) throw e; });
+    await rimraf(`${process.cwd()}/dist/external-libraries`, (e) => { if (e) throw e; });
+    await rimraf(`${process.cwd()}/dist/libraries`, (e) => { if (e) throw e; });
+    await rimraf(`${process.cwd()}/dist/modals`, (e) => { if (e) throw e; });
+    await rimraf(`${process.cwd()}/dist/modules`, (e) => { if (e) throw e; });
+    await rimraf(`${process.cwd()}/dist/websockets`, (e) => { if (e) throw e; });
 
     await buildModules(argv);
     await buildApiMiddlewares(argv);
@@ -896,8 +1080,10 @@ export class ${fulldynamicModule} {
 
     await buildBackend();
 
-    await copy(`${__dirname}/../../src/backend/app/ssl`, `${__dirname}/../../dist/anyOpsOS/ssl`);
-    await copy(`${__dirname}/../../src/backend/app/filesystem`, `${__dirname}/../../dist/anyOpsOS/filesystem`);
+    console.log(blueBright(`[anyOpsOS Cli. Internals] Copying ssl certificate to anyOpsOS.\n`));
+    await copy(`${process.cwd()}/src/backend/app/ssl`, `${process.cwd()}/dist/anyOpsOS/ssl`);
+    console.log(blueBright(`[anyOpsOS Cli. Internals] Generating default anyOpsOS fileSystem.\n`));
+    await copy(`${process.cwd()}/src/backend/app/filesystem`, `${process.cwd()}/dist/anyOpsOS/filesystem`);
 
     await buildLibrary(argv);
     await buildFrontend();
@@ -912,7 +1098,7 @@ export class ${fulldynamicModule} {
     .command({
       aliases: 'n',
       command: 'new <type> <name> [prefix]',
-      describe: 'creates a new anyOpsOS module type',
+      describe: 'creates a new anyOpsOS module of defined type',
       builder: {
         type: {
           alias: 't',
@@ -930,7 +1116,7 @@ export class ${fulldynamicModule} {
 
           await createLibrary(argv);
 
-          if (packageType !== 'api' && packageType !== 'module' && packageType !== 'websocket') {
+          if (packageType === 'app' || packageType === 'modal' || packageType === 'lib' || packageType === 'ext-lib') {
             await moveLibraryToFinalLocation(argv);
 
             await standarizeLibraryFiles(argv);
@@ -944,9 +1130,11 @@ export class ${fulldynamicModule} {
 
           await copyLicenseFile();
 
-          if (packageType === 'application') await createBaseApplicationFiles(argv);
+          if (packageType === 'app') await createBaseApplicationFiles(argv);
 
-          if (packageType === 'library' || packageType === 'external-library') await createBaseLibFiles(argv);
+          if (packageType === 'modal') await createBaseModalFiles(argv);
+
+          if (packageType === 'lib' || packageType === 'ext-lib') await createBaseLibFiles(argv);
 
           if (packageType === 'api') await createBaseApiFiles(argv);
 
@@ -955,7 +1143,7 @@ export class ${fulldynamicModule} {
           if (packageType === 'websocket') await createBaseWebsocketFiles(argv);
 
           if (packageType === 'api' || packageType === 'module' || packageType === 'websocket') {
-            await createReadMe(argv);
+            if (packageType !== 'api') await createReadMe(argv);
             await yarnInstall(argv);
           }
 
@@ -1018,7 +1206,7 @@ export class ${fulldynamicModule} {
 
           if (argv.type === 'backend' || argv.type === 'all') {
             awaitSpawn('tslint', ['-p', 'backend/tsconfig.json'], {
-              cwd: `${__dirname}/../../`,
+              cwd: `${process.cwd()}`,
               stdio: 'inherit'
             });
           }

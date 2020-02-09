@@ -2,45 +2,41 @@ import {Injectable} from '@angular/core';
 
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
+import {DataObject} from '@anyopsos/backend/app/types/data-object';
+import {VMWareVM} from '@anyopsos/module-vmware/src';
 
 import {AnyOpsOSAppInfrastructureManagerService} from '../anyopsos-app-infrastructure-manager.service';
-
-import {VMWareVM} from '../../types/vmware-vm';
-import {ImDataObject} from '../../types/im-data-object';
+import {MatDialogRef} from '@anyopsos/lib-angular-material';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AnyOpsOSAppInfrastructureVmwareBackupService {
 
-  constructor(private logger: AnyOpsOSLibLoggerService,
-              private Modal: AnyOpsOSLibModalService,
-              private InfrastructureManager: AnyOpsOSAppInfrastructureManagerService) {
+  constructor(private readonly logger: AnyOpsOSLibLoggerService,
+              private readonly LibModal: AnyOpsOSLibModalService,
+              private readonly InfrastructureManager: AnyOpsOSAppInfrastructureManagerService) {
   }
 
-  restoreGuestFiles(obj: ImDataObject & { info: { data: VMWareVM } }): void {
-    const loggerArgs = arguments;
+  async restoreGuestFiles(obj: DataObject & { info: { data: VMWareVM } }): Promise<void> {
+    this.logger.debug('Infrastructure Manager', 'Ask for recovery VM Guest Files');
 
-    this.logger.debug('Infrastructure Manager', 'Ask for recovery VM Guest Files', arguments);
-
-    this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
+    const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('question', this.InfrastructureManager.getBodyContainerRef(),
       {
         title: 'Restore guest files',
         text: `Do you want to perform a VM Guest Files recovery of ${obj.name}?`,
         yes: 'Restore',
         no: 'Cancel'
       }
-    ).then((modalInstance) => {
-      modalInstance.result.then((result: boolean) => {
-        if (result === true) {
+    );
 
-          this.logger.debug('Infrastructure Manager', 'Launching Backups Manager for restore entire VM', loggerArgs);
+    modalInstance.afterClosed().subscribe((result: boolean): Promise<void> => {
+      if (!result) return;
 
-          // Open Backups Manager Application
-          this.InfrastructureManager.openBackupsManager('restore_vm_guest_files', {
-            vm: obj
-          });
-        }
+      this.logger.debug('Infrastructure Manager', 'Launching Backups Manager for restore entire VM');
+
+      this.InfrastructureManager.openBackupsManager('restore_vm_guest_files', {
+        vm: obj
       });
     });
   }
@@ -48,28 +44,25 @@ export class AnyOpsOSAppInfrastructureVmwareBackupService {
   /**
    * Performs an instant VM recovery from storage snapshot
    */
-  instantVM(obj: ImDataObject & { info: { data: VMWareVM } }): void {
-    const loggerArgs = arguments;
+  async instantVM(obj: DataObject & { info: { data: VMWareVM } }): Promise<void> {
+    this.logger.debug('Infrastructure Manager', 'Ask for Instant VM recovery');
 
-    this.logger.debug('Infrastructure Manager', 'Ask for Instant VM recovery', arguments);
-
-    this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
+    const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('question', this.InfrastructureManager.getBodyContainerRef(),
       {
         title: 'Instant VM recovery',
         text: `Do you want to perform an Instant VM recovery of ${obj.name}?`,
         yes: 'Restore',
         no: 'Cancel'
       }
-    ).then((modalInstance) => {
-      modalInstance.result.then((result: boolean) => {
-        if (result === true) {
+    );
 
-          this.logger.debug('Infrastructure Manager', 'Launching Backups Manager for Instant VM recovery', loggerArgs);
+    modalInstance.afterClosed().subscribe((result: boolean): Promise<void> => {
+      if (!result) return;
 
-          this.InfrastructureManager.openBackupsManager('vm_instant_recovery', {
-            vm: obj
-          });
-        }
+      this.logger.debug('Infrastructure Manager', 'Launching Backups Manager for Instant VM recovery');
+
+      this.InfrastructureManager.openBackupsManager('vm_instant_recovery', {
+        vm: obj
       });
     });
   }
@@ -77,43 +70,38 @@ export class AnyOpsOSAppInfrastructureVmwareBackupService {
   /**
    * Performs a full VM recovery from storage snapshot
    */
-  restoreVM(obj: ImDataObject & { info: { data: VMWareVM } }): void {
-    const loggerArgs = arguments;
+  async restoreVM(obj: DataObject & { info: { data: VMWareVM } }): Promise<void> {
+    this.logger.debug('Infrastructure Manager', 'Ask for restore entire VM');
 
-    this.logger.debug('Infrastructure Manager', 'Ask for restore entire VM', arguments);
-
-    this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
+    const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('question', this.InfrastructureManager.getBodyContainerRef(),
       {
         title: 'Restore entire VM',
         text: `Do you want to perform a entire VM restore of ${obj.name}?`,
         yes: 'Restore',
         no: 'Cancel'
       }
-    ).then((modalInstance) => {
-      modalInstance.result.then((result: boolean) => {
-        if (result === true) {
+    );
 
-          this.logger.debug('Infrastructure Manager', 'Launching Backups Manager for restore entire VM', loggerArgs);
+    modalInstance.afterClosed().subscribe((result: boolean): Promise<void> => {
+      if (!result) return;
 
-          this.InfrastructureManager.openBackupsManager('restore_vm', {
-            vm: obj
-          });
+      this.logger.debug('Infrastructure Manager', 'Launching Backups Manager for restore entire VM');
 
-        }
+      this.InfrastructureManager.openBackupsManager('restore_vm', {
+        vm: obj
       });
     });
   }
 
-  backupVM(obj: ImDataObject & { info: { data: VMWareVM } }): void {
+  backupVM(obj: DataObject & { info: { data: VMWareVM } }): void {
     this.logger.debug('Infrastructure Manager', 'Launching VM Backup', arguments);
 
     // TODO: ManagedObjectReference is an array even if all VM files are in same datastore
     /*if (!this.InfrastructureManager.getLinkByVMwareDatastore(connectionUuid, vm.info.data.datastore.ManagedObjectReference[0].name)) {
-      this.Modal.openLittleModal(
+      this.LibModal.openLittleModal(
         'Error while creating Backup',
         'Not found any compatible NetApp storage. Make sure VMs that you want to backup are inside a NetApp volume and this is managed by anyOpsOS.',
-        '.window--infrastructure-manager .window__main',
-        'plain'
+        this.InfrastructureManager.getBodyContainerRef()
       ).then();
       return;
     }*/

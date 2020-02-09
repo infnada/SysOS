@@ -6,6 +6,7 @@ import {AnyOpsOSLibAngularMaterialModule} from '@anyopsos/lib-angular-material';
 import {AnyOpsOSLibApplicationService} from '@anyopsos/lib-application';
 import {AnyOpsOSLibFileModule} from '@anyopsos/lib-file';
 import {AnyOpsOSLibFolderModule} from '@anyopsos/lib-folder';
+import {AnyOpsOSLibFolderExplorerModule} from '@anyopsos/lib-folder-explorer';
 import {AnyOpsOSLibPipesModule} from '@anyopsos/lib-pipes';
 
 import {ActionsComponent} from './components/actions/actions.component';
@@ -38,16 +39,17 @@ import {StatusComponent} from './components/status/status.component';
     ReactiveFormsModule,
     // Shared module import
     AnyOpsOSLibAngularMaterialModule,
-    AnyOpsOSLibFolderModule,
     AnyOpsOSLibFileModule,
+    AnyOpsOSLibFolderModule,
+    AnyOpsOSLibFolderExplorerModule,
     AnyOpsOSLibPipesModule
   ],
   exports: []
 })
 export class AnyOpsOSAppDatastoreExplorerModule {
-  constructor(private Applications: AnyOpsOSLibApplicationService) {
+  constructor(private readonly LibApplication: AnyOpsOSLibApplicationService) {
 
-    Applications.registerApplication({
+    this.LibApplication.registerApplication({
       uuid: 'datastore-explorer',
       ico: 'fas fa-database',
       name: 'Datastore Explorer',

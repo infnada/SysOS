@@ -5,8 +5,7 @@
     "entryFile": "src/public-api.ts"
   },
   "whitelistedNonPeerDependencies": [
-    "@ng-bootstrap/ng-bootstrap",
-    "@anyopsos/lib-file-system",
+    "@anyopsos/lib-angular-material",
     "@anyopsos/lib-logger"
   ]
 }

@@ -2,10 +2,11 @@ import {SocketController, ConnectedSocket, SocketId, MessageBody, OnMessage, OnD
 import {getLogger, Logger} from 'log4js';
 import {Socket} from 'socket.io';
 
-import {ConnectionKubernetes, AnyOpsOSKubernetesModule} from '@anyopsos/module-kubernetes';
+import {AnyOpsOSKubernetesModule} from '@anyopsos/module-kubernetes';
 import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
 
-const logger: Logger = getLogger('mainlog');
+
+const logger: Logger = getLogger('mainLog');
 
 @SocketController()
 export class AnyOpsOSKubernetesWebsocketController {
@@ -16,29 +17,39 @@ export class AnyOpsOSKubernetesWebsocketController {
     // TODO disconnect client sessions
   }
 
-  @OnMessage('[kubernetes-session]')
-  kubernetesNewSession(@ConnectedSocket() socket: Socket,
+  @OnMessage('[kubernetes-disconnect]')
+  @ReturnAck()
+  kubernetesDisconnect(@ConnectedSocket() socket: Socket,
                        @SocketId() id: string,
                        @SocketSessionParam('userUuid') userUuid: string,
-                       @SocketSessionParam('sessionID') sessionUuid: string,
-                       @MessageBody() messageData: ConnectionKubernetes) {
-    logger.info(`[Websocket kubernetes] -> newSession -> id [${id}], clusterServer [${messageData.clusterServer}]`);
+                       @SocketSessionParam('sessionId') sessionUuid: string,
+                       @MessageBody() connectionData: { connectionUuid: string; workspaceUuid: string; }) {
+    logger.info(`[Websocket kubernetes] -> disconnect -> id [${id}], connectionUuid [${connectionData.connectionUuid}], workspaceUuid [${connectionData.workspaceUuid}]`);
 
-    return new AnyOpsOSKubernetesModule(socket).newConnection(userUuid, sessionUuid, messageData).then((result: BackendResponse) => {
+    const KubernetesModule: AnyOpsOSKubernetesModule = new AnyOpsOSKubernetesModule(userUuid, sessionUuid, connectionData.workspaceUuid, connectionData.connectionUuid);
+
+    return KubernetesModule.disconnectConnection().then((result: BackendResponse) => {
       return result;
     }).catch((e: Error) => {
       return {status: 'error', data: e.toString()} as BackendResponse;
     });
   }
 
-  @OnMessage('[kubernetes-disconnect]')
-  @ReturnAck()
-  kubernetesDisconnect(@ConnectedSocket() socket: Socket,
+  @OnMessage('[kubernetes-session]')
+  kubernetesNewSession(@ConnectedSocket() socket: Socket,
                        @SocketId() id: string,
-                       @MessageBody() connectionUuid: string) {
-    logger.info(`[Websocket kubernetes] -> disconnect -> id [${id}], connectionUuid [${connectionUuid}]`);
+                       @SocketSessionParam('userUuid') userUuid: string,
+                       @SocketSessionParam('sessionId') sessionUuid: string,
+                       @MessageBody() connectionData: { connectionUuid: string; workspaceUuid: string; }) {
+    logger.info(`[Websocket kubernetes] -> newSession -> id [${id}], connectionUuid [${connectionData.connectionUuid}], workspaceUuid [${connectionData.workspaceUuid}]`);
 
-    // TODO this.ConnectionsModule.closeConnection(data.type, data.uuid);
+    const KubernetesModule: AnyOpsOSKubernetesModule = new AnyOpsOSKubernetesModule(userUuid, sessionUuid, connectionData.workspaceUuid, connectionData.connectionUuid);
+
+    return KubernetesModule.newConnection().then((result: BackendResponse) => {
+      return result;
+    }).catch((e: Error) => {
+      return {status: 'error', data: e.toString()} as BackendResponse;
+    });
   }
 
 }

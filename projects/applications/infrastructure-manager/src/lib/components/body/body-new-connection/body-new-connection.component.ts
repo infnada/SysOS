@@ -33,9 +33,9 @@ export class BodyNewConnectionComponent implements OnInit, OnDestroy {
   newConnectionType: string = null;
 
   constructor(private readonly formBuilder: FormBuilder,
-              private Applications: AnyOpsOSLibApplicationService,
+              private readonly LibApplication: AnyOpsOSLibApplicationService,
               private serviceInjector: AnyOpsOSLibServiceInjectorService,
-              private Modal: AnyOpsOSLibModalService,
+              private readonly LibModal: AnyOpsOSLibModalService,
               private Utils: AnyOpsOSLibUtilsService,
               private InfrastructureManager: AnyOpsOSAppInfrastructureManagerService,
               private InfrastructureManagerNodeGraph: AnyOpsOSAppInfrastructureManagerNodeGraphService) {
@@ -164,7 +164,7 @@ export class BodyNewConnectionComponent implements OnInit, OnDestroy {
     // stop here if form is invalid
     if (this.connectionForm.invalid) return;
 
-    this.Modal.openLittleModal('PLEASE WAIT', (saveOnly ? 'Saving connection...' : 'Connecting to server...'), '.window--infrastructure-manager .window__main', 'plain').then(() => {
+    this.LibModal.openLittleModal('PLEASE WAIT', (saveOnly ? 'Saving connection...' : 'Connecting to server...'), '.window--infrastructure-manager .window__main', 'plain').then(() => {
       this.InfrastructureManager.connect(this.connectionForm.value, saveOnly);
       this.submitted = false;
 
@@ -179,7 +179,7 @@ export class BodyNewConnectionComponent implements OnInit, OnDestroy {
   }
 
   manageCredentials() {
-    this.Applications.openApplication('credentials-manager');
+    this.LibApplication.openApplication('credentials-manager');
   }
 
   getActiveConnection(): ConnectionTypes {

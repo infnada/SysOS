@@ -2,186 +2,6 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "paths": {
-      "@anyopsos/lib-angular-material": [
-        "dist/libraries/angular-material"
-      ],
-      "@anyopsos/lib-angular-material/*": [
-        "dist/libraries/angular-material/*"
-      ],
-      "@anyopsos/lib-logger": [
-        "dist/libraries/logger"
-      ],
-      "@anyopsos/lib-logger/*": [
-        "dist/libraries/logger/*"
-      ],
-      "@anyopsos/ext-lib-mxgraph": [
-        "dist/external-libraries/mxgraph"
-      ],
-      "@anyopsos/ext-lib-mxgraph/*": [
-        "dist/external-libraries/mxgraph/*"
-      ],
-      "@anyopsos/lib-application": [
-        "dist/libraries/application"
-      ],
-      "@anyopsos/lib-application/*": [
-        "dist/libraries/application/*"
-      ],
-      "@anyopsos/lib-modal": [
-        "dist/libraries/modal"
-      ],
-      "@anyopsos/lib-modal/*": [
-        "dist/libraries/modal/*"
-      ],
-      "@anyopsos/lib-vmware": [
-        "dist/libraries/vmware"
-      ],
-      "@anyopsos/lib-vmware/*": [
-        "dist/libraries/vmware/*"
-      ],
-      "@anyopsos/lib-netapp": [
-        "dist/libraries/netapp"
-      ],
-      "@anyopsos/lib-netapp/*": [
-        "dist/libraries/netapp/*"
-      ],
-      "@anyopsos/lib-kubernetes": [
-        "dist/libraries/kubernetes"
-      ],
-      "@anyopsos/lib-kubernetes/*": [
-        "dist/libraries/kubernetes/*"
-      ],
-      "@anyopsos/lib-terminal": [
-        "dist/libraries/terminal"
-      ],
-      "@anyopsos/lib-terminal/*": [
-        "dist/libraries/terminal/*"
-      ],
-      "@anyopsos/ext-lib-theia": [
-        "dist/external-libraries/theia"
-      ],
-      "@anyopsos/ext-lib-theia/*": [
-        "dist/external-libraries/theia/*"
-      ],
-      "@anyopsos/lib-user": [
-        "dist/libraries/user"
-      ],
-      "@anyopsos/lib-user/*": [
-        "dist/libraries/user/*"
-      ],
-      "@anyopsos/lib-utils": [
-        "dist/libraries/utils"
-      ],
-      "@anyopsos/lib-utils/*": [
-        "dist/libraries/utils/*"
-      ],
-      "@anyopsos/lib-types": [
-        "dist/libraries/types"
-      ],
-      "@anyopsos/lib-types/*": [
-        "dist/libraries/types/*"
-      ],
-      "@anyopsos/lib-file-system-ui": [
-        "dist/libraries/file-system-ui"
-      ],
-      "@anyopsos/lib-file-system-ui/*": [
-        "dist/libraries/file-system-ui/*"
-      ],
-      "@anyopsos/lib-file-system": [
-        "dist/libraries/file-system"
-      ],
-      "@anyopsos/lib-file-system/*": [
-        "dist/libraries/file-system/*"
-      ],
-      "@anyopsos/lib-file": [
-        "dist/libraries/file"
-      ],
-      "@anyopsos/lib-file/*": [
-        "dist/libraries/file/*"
-      ],
-      "@anyopsos/lib-folder": [
-        "dist/libraries/folder"
-      ],
-      "@anyopsos/lib-folder/*": [
-        "dist/libraries/folder/*"
-      ],
-      "@anyopsos/lib-pipes": [
-        "dist/libraries/pipes"
-      ],
-      "@anyopsos/lib-pipes/*": [
-        "dist/libraries/pipes/*"
-      ],
-      "@anyopsos/lib-scroll-spy": [
-        "dist/libraries/scroll-spy"
-      ],
-      "@anyopsos/lib-scroll-spy/*": [
-        "dist/libraries/scroll-spy/*"
-      ],
-      "@anyopsos/lib-selectable": [
-        "dist/libraries/selectable"
-      ],
-      "@anyopsos/lib-selectable/*": [
-        "dist/libraries/selectable/*"
-      ],
-      "@anyopsos/lib-service-injector": [
-        "dist/libraries/service-injector"
-      ],
-      "@anyopsos/lib-service-injector/*": [
-        "dist/libraries/service-injector/*"
-      ],
-      "@anyopsos/ext-lib-dygraphs": [
-        "dist/external-libraries/dygraphs"
-      ],
-      "@anyopsos/ext-lib-dygraphs/*": [
-        "dist/external-libraries/dygraphs/*"
-      ],
-      "@anyopsos/ext-lib-easy-pie-chart": [
-        "dist/external-libraries/easy-pie-chart"
-      ],
-      "@anyopsos/ext-lib-easy-pie-chart/*": [
-        "dist/external-libraries/easy-pie-chart/*"
-      ],
-      "@anyopsos/ext-lib-gauge-js": [
-        "dist/external-libraries/gauge-js"
-      ],
-      "@anyopsos/ext-lib-gauge-js/*": [
-        "dist/external-libraries/gauge-js/*"
-      ],
-      "@anyopsos/ext-lib-jquery": [
-        "dist/external-libraries/jquery"
-      ],
-      "@anyopsos/ext-lib-jquery/*": [
-        "dist/external-libraries/jquery/*"
-      ],
-      "@anyopsos/ext-lib-lz-string": [
-        "dist/external-libraries/lz-string"
-      ],
-      "@anyopsos/ext-lib-lz-string/*": [
-        "dist/external-libraries/lz-string/*"
-      ],
-      "@anyopsos/ext-lib-netdata": [
-        "dist/external-libraries/netdata"
-      ],
-      "@anyopsos/ext-lib-netdata/*": [
-        "dist/external-libraries/netdata/*"
-      ],
-      "@anyopsos/ext-lib-pako": [
-        "dist/external-libraries/pako"
-      ],
-      "@anyopsos/ext-lib-pako/*": [
-        "dist/external-libraries/pako/*"
-      ],
-      "@anyopsos/ext-lib-perfect-scrollbar": [
-        "dist/external-libraries/perfect-scrollbar"
-      ],
-      "@anyopsos/ext-lib-perfect-scrollbar/*": [
-        "dist/external-libraries/perfect-scrollbar/*"
-      ],
-      "@anyopsos/ext-lib-weavescope": [
-        "dist/external-libraries/weavescope"
-      ],
-      "@anyopsos/ext-lib-weavescope/*": [
-        "dist/external-libraries/weavescope/*"
-      ],
       "@anyopsos/app-backups-manager": [
         "dist/applications/backups-manager"
       ],
@@ -254,11 +74,269 @@
       "@anyopsos/app-wmks/*": [
         "dist/applications/wmks/*"
       ],
+      "@anyopsos/ext-lib-dygraphs": [
+        "dist/external-libraries/dygraphs"
+      ],
+      "@anyopsos/ext-lib-dygraphs/*": [
+        "dist/external-libraries/dygraphs/*"
+      ],
+      "@anyopsos/ext-lib-easy-pie-chart": [
+        "dist/external-libraries/easy-pie-chart"
+      ],
+      "@anyopsos/ext-lib-easy-pie-chart/*": [
+        "dist/external-libraries/easy-pie-chart/*"
+      ],
+      "@anyopsos/ext-lib-gauge-js": [
+        "dist/external-libraries/gauge-js"
+      ],
+      "@anyopsos/ext-lib-gauge-js/*": [
+        "dist/external-libraries/gauge-js/*"
+      ],
+      "@anyopsos/ext-lib-jquery": [
+        "dist/external-libraries/jquery"
+      ],
+      "@anyopsos/ext-lib-jquery/*": [
+        "dist/external-libraries/jquery/*"
+      ],
+      "@anyopsos/ext-lib-lz-string": [
+        "dist/external-libraries/lz-string"
+      ],
+      "@anyopsos/ext-lib-lz-string/*": [
+        "dist/external-libraries/lz-string/*"
+      ],
+      "@anyopsos/ext-lib-mxgraph": [
+        "dist/external-libraries/mxgraph"
+      ],
+      "@anyopsos/ext-lib-mxgraph/*": [
+        "dist/external-libraries/mxgraph/*"
+      ],
+      "@anyopsos/ext-lib-netdata": [
+        "dist/external-libraries/netdata"
+      ],
+      "@anyopsos/ext-lib-netdata/*": [
+        "dist/external-libraries/netdata/*"
+      ],
+      "@anyopsos/ext-lib-pako": [
+        "dist/external-libraries/pako"
+      ],
+      "@anyopsos/ext-lib-pako/*": [
+        "dist/external-libraries/pako/*"
+      ],
+      "@anyopsos/ext-lib-perfect-scrollbar": [
+        "dist/external-libraries/perfect-scrollbar"
+      ],
+      "@anyopsos/ext-lib-perfect-scrollbar/*": [
+        "dist/external-libraries/perfect-scrollbar/*"
+      ],
       "@anyopsos/ext-lib-spin-js": [
         "dist/external-libraries/spin-js"
       ],
       "@anyopsos/ext-lib-spin-js/*": [
         "dist/external-libraries/spin-js/*"
+      ],
+      "@anyopsos/ext-lib-theia": [
+        "dist/external-libraries/theia"
+      ],
+      "@anyopsos/ext-lib-theia/*": [
+        "dist/external-libraries/theia/*"
+      ],
+      "@anyopsos/ext-lib-weavescope": [
+        "dist/external-libraries/weavescope"
+      ],
+      "@anyopsos/ext-lib-weavescope/*": [
+        "dist/external-libraries/weavescope/*"
+      ],
+      "@anyopsos/lib-angular-material": [
+        "dist/libraries/angular-material"
+      ],
+      "@anyopsos/lib-angular-material/*": [
+        "dist/libraries/angular-material/*"
+      ],
+      "@anyopsos/lib-application": [
+        "dist/libraries/application"
+      ],
+      "@anyopsos/lib-application/*": [
+        "dist/libraries/application/*"
+      ],
+      "@anyopsos/lib-credential": [
+        "dist/libraries/credential"
+      ],
+      "@anyopsos/lib-credential/*": [
+        "dist/libraries/credential/*"
+      ],
+      "@anyopsos/lib-desktop-task-bar": [
+        "dist/libraries/desktop-task-bar"
+      ],
+      "@anyopsos/lib-desktop-task-bar/*": [
+        "dist/libraries/desktop-task-bar/*"
+      ],
+      "@anyopsos/lib-docker": [
+        "dist/libraries/docker"
+      ],
+      "@anyopsos/lib-docker/*": [
+        "dist/libraries/docker/*"
+      ],
+      "@anyopsos/lib-file": [
+        "dist/libraries/file"
+      ],
+      "@anyopsos/lib-file-system": [
+        "dist/libraries/file-system"
+      ],
+      "@anyopsos/lib-file-system-ui": [
+        "dist/libraries/file-system-ui"
+      ],
+      "@anyopsos/lib-file-system-ui/*": [
+        "dist/libraries/file-system-ui/*"
+      ],
+      "@anyopsos/lib-file-system/*": [
+        "dist/libraries/file-system/*"
+      ],
+      "@anyopsos/lib-file/*": [
+        "dist/libraries/file/*"
+      ],
+      "@anyopsos/lib-folder": [
+        "dist/libraries/folder"
+      ],
+      "@anyopsos/lib-folder-explorer": [
+        "dist/libraries/folder-explorer"
+      ],
+      "@anyopsos/lib-folder-explorer/*": [
+        "dist/libraries/folder-explorer/*"
+      ],
+      "@anyopsos/lib-folder/*": [
+        "dist/libraries/folder/*"
+      ],
+      "@anyopsos/lib-kubernetes": [
+        "dist/libraries/kubernetes"
+      ],
+      "@anyopsos/lib-kubernetes/*": [
+        "dist/libraries/kubernetes/*"
+      ],
+      "@anyopsos/lib-loader": [
+        "dist/libraries/loader"
+      ],
+      "@anyopsos/lib-loader/*": [
+        "dist/libraries/loader/*"
+      ],
+      "@anyopsos/lib-logger": [
+        "dist/libraries/logger"
+      ],
+      "@anyopsos/lib-logger/*": [
+        "dist/libraries/logger/*"
+      ],
+      "@anyopsos/lib-modal": [
+        "dist/libraries/modal"
+      ],
+      "@anyopsos/lib-modal/*": [
+        "dist/libraries/modal/*"
+      ],
+      "@anyopsos/lib-netapp": [
+        "dist/libraries/netapp"
+      ],
+      "@anyopsos/lib-netapp/*": [
+        "dist/libraries/netapp/*"
+      ],
+      "@anyopsos/lib-pipes": [
+        "dist/libraries/pipes"
+      ],
+      "@anyopsos/lib-pipes/*": [
+        "dist/libraries/pipes/*"
+      ],
+      "@anyopsos/lib-scroll-spy": [
+        "dist/libraries/scroll-spy"
+      ],
+      "@anyopsos/lib-scroll-spy/*": [
+        "dist/libraries/scroll-spy/*"
+      ],
+      "@anyopsos/lib-selectable": [
+        "dist/libraries/selectable"
+      ],
+      "@anyopsos/lib-selectable/*": [
+        "dist/libraries/selectable/*"
+      ],
+      "@anyopsos/lib-service-injector": [
+        "dist/libraries/service-injector"
+      ],
+      "@anyopsos/lib-service-injector/*": [
+        "dist/libraries/service-injector/*"
+      ],
+      "@anyopsos/lib-snmp": [
+        "dist/libraries/snmp"
+      ],
+      "@anyopsos/lib-snmp/*": [
+        "dist/libraries/snmp/*"
+      ],
+      "@anyopsos/lib-ssh": [
+        "dist/libraries/ssh"
+      ],
+      "@anyopsos/lib-ssh/*": [
+        "dist/libraries/ssh/*"
+      ],
+      "@anyopsos/lib-terminal": [
+        "dist/libraries/terminal"
+      ],
+      "@anyopsos/lib-terminal/*": [
+        "dist/libraries/terminal/*"
+      ],
+      "@anyopsos/lib-types": [
+        "dist/libraries/types"
+      ],
+      "@anyopsos/lib-types/*": [
+        "dist/libraries/types/*"
+      ],
+      "@anyopsos/lib-user": [
+        "dist/libraries/user"
+      ],
+      "@anyopsos/lib-user/*": [
+        "dist/libraries/user/*"
+      ],
+      "@anyopsos/lib-utils": [
+        "dist/libraries/utils"
+      ],
+      "@anyopsos/lib-utils/*": [
+        "dist/libraries/utils/*"
+      ],
+      "@anyopsos/lib-vmware": [
+        "dist/libraries/vmware"
+      ],
+      "@anyopsos/lib-vmware/*": [
+        "dist/libraries/vmware/*"
+      ],
+      "@anyopsos/lib-workspace": [
+        "dist/libraries/workspace"
+      ],
+      "@anyopsos/lib-workspace/*": [
+        "dist/libraries/workspace/*"
+      ],
+      "@anyopsos/modal-default-input": [
+        "dist/modals/default-input"
+      ],
+      "@anyopsos/modal-default-input/*": [
+        "dist/modals/default-input/*"
+      ],
+      "@anyopsos/modal-default-json-textarea": [
+        "dist/modals/default-json-textarea"
+      ],
+      "@anyopsos/modal-default-json-textarea/*": [
+        "dist/modals/default-json-textarea/*"
+      ],
+      "@anyopsos/modal-default-plain": [
+        "dist/modals/default-plain"
+      ],
+      "@anyopsos/modal-default-plain/*": [
+        "dist/modals/default-plain/*"
+      ],
+      "@anyopsos/modal-default-question": [
+        "dist/modals/default-question"
+      ],
+      "@anyopsos/modal-default-question/*": [
+        "dist/modals/default-question/*"
+      ],
+      "@anyopsos/lib-linux": [
+        "dist/libraries/linux"
+      ],
+      "@anyopsos/lib-linux/*": [
+        "dist/libraries/linux/*"
       ]
     }
   }

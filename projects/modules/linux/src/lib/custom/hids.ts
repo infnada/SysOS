@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import {SshSessionsModule} from '@anyopsos/module-ssh';
+import {AnyOpsOSSshSessionStateModule} from '@anyopsos/module-ssh';
 
 export interface HidsResult {
   line: string;
@@ -14,26 +14,28 @@ export interface HidsResult {
 }
 
 export class HidsModule {
-
-  constructor(private readonly userUuid: string,
-              private readonly sessionUuid: string,
-              private readonly connectionUuid: string) {
-
-  }
-
-  private first: string;
-  private second: string;
-
+  private currentResult!: HidsResult;
+  private first: string = '';
+  private second: string = '';
   private matched: number = 0;
-  private currentResult: HidsResult;
 
   /**
    * Final Array of results
    */
   private results: HidsResult[] = [];
 
-  private parseNameType(line: string): Promise<string> {
-    let condition: string;
+  private readonly SshSessionStateModule: AnyOpsOSSshSessionStateModule;
+
+  constructor(private readonly userUuid: string,
+              private readonly sessionUuid: string,
+              private readonly workspaceUuid: string,
+              private readonly connectionUuid: string) {
+
+    this.SshSessionStateModule = new AnyOpsOSSshSessionStateModule(this.userUuid, this.sessionUuid, this.workspaceUuid, this.connectionUuid);
+  }
+
+  private parseNameType(line: string): Promise<string | null> {
+    let condition: string | null;
     let m;
 
     return new Promise((resolve) => {
@@ -60,10 +62,10 @@ export class HidsModule {
     let totalMatch: number = 0;
     let matchedStatus: number = 0;
 
-    let cmdData = await new SshSessionsModule().execAsync(this.userUuid, this.sessionUuid, this.connectionUuid, `cat ${this.first}`);
+    let cmdData = await this.SshSessionStateModule.execAsync(`cat ${this.first}`);
     cmdData = cmdData.trim();
 
-    const fileContents: string = cmdData.split(/\r?\n/);
+    const fileContents: string[] = cmdData.split(/\r?\n/);
     if (fileContents.length === 0) return 0;
 
     // Each line of file
@@ -117,7 +119,7 @@ export class HidsModule {
     let totalMatch: number = 0;
     let matchedStatus: number = 0;
 
-    let cmdData = await new SshSessionsModule().execAsync(this.userUuid, this.sessionUuid, this.connectionUuid, this.first);
+    let cmdData = await this.SshSessionStateModule.execAsync(this.first);
     cmdData = cmdData.trim();
 
     const dataContents = cmdData.split(/\r?\n/);
@@ -242,7 +244,7 @@ export class HidsModule {
 
         return this.parseNameType(line).then((condition) => {
 
-          if (condition === null) return resolve('nothing_to_do_condition');
+          if (!condition) return resolve('nothing_to_do_condition');
 
           // Set new name to results
           this.currentResult = {

@@ -1,8 +1,8 @@
-import {NgModuleFactory, NgModuleRef} from '@angular/core';
+import {ModuleWithComponentFactories, NgModuleRef} from '@angular/core';
 
 export interface Modal {
-  modalId: string;
+  uuid: string;
   size: string;
-  factory?: NgModuleFactory<any>;
+  factory?: ModuleWithComponentFactories<any>;
   modRef?: NgModuleRef<any>;
 }

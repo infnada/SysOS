@@ -1,747 +1,137 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
 
-import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
+import {Socket} from 'ngx-socket-io';
 
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
+import {AnyOpsOSLibWorkspaceService} from '@anyopsos/lib-workspace';
+import {AnyOpsOSLibSshHelpersService, AnyOpsOSLibSshService} from '@anyopsos/lib-ssh';
+import {ConnectionNetapp} from '@anyopsos/module-netapp';
+import {ConnectionSsh} from '@anyopsos/module-ssh';
+import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
+
+import {AnyOpsOSLibNetappConnectionsStateService} from './anyopsos-lib-netapp-connections-state.service';
+import {AnyOpsOSLibNetappHelpersService} from './anyopsos-lib-netapp-helpers.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AnyOpsOSLibNetappService {
 
-  constructor(private http: HttpClient,
-              private logger: AnyOpsOSLibLoggerService) {
+  constructor(private readonly socket: Socket,
+              private readonly logger: AnyOpsOSLibLoggerService,
+              private readonly LibWorkspace: AnyOpsOSLibWorkspaceService,
+              private readonly LibNetappConnectionsState: AnyOpsOSLibNetappConnectionsStateService,
+              private readonly LibNetapphHelpers: AnyOpsOSLibNetappHelpersService,
+              private readonly LibSshHelpers: AnyOpsOSLibSshHelpersService,
+              private readonly LibSsh: AnyOpsOSLibSshService) {
   }
 
-  // netapp-manageability-sdk-ontap-9.3-api-documentation/doc/WebHelp/index.htm
+  /**
+   * Initialize Netapp connection with Backend
+   */
+  async sendConnect(connectionUuid: string): Promise<void> {
+    this.logger.debug('LibNetapp', 'sendConnect -> Connecting...');
 
+    const currentConnection: ConnectionNetapp = await this.LibNetapphHelpers.getConnectionByUuid(connectionUuid);
+    if (currentConnection.state === 'connected') throw new Error('already_connected');
 
-  private parseNetAppObject(data, parent?) {
+    // If current connection have hopServerUuid, make sure it's Online and then Start the current connection
+    if (currentConnection.hopServerUuid) {
+      await this.LibSsh.sendConnect(currentConnection.hopServerUuid);
+      const hopServer: ConnectionSsh = await this.LibSshHelpers.getConnectionByUuid(currentConnection.hopServerUuid, 'ssh') as ConnectionSsh;
+      if (hopServer.state === 'disconnected') await this.LibSsh.sendConnect(currentConnection.hopServerUuid);
+    }
 
-    if (!parent) parent = {};
+    // Start current connection
+    await this.socketConnectServer(currentConnection);
+  }
 
-    Object.entries(data).forEach(([key, value]) => {
+  /**
+   * Send a message to Backend and setups the connection
+   */
+  private socketConnectServer(connection: ConnectionNetapp): Promise<any> {
+    const loggerArgs = arguments;
+    this.logger.info('LibNetapp', 'Connecting to socket', loggerArgs);
 
-      if (Array.isArray(value) && value.length === 1 && value[0] !== Object(value[0])) {
-        parent[key] = (value[0] === 'true' ? true : value[0] === 'false' ? false : value[0]);
-      } else if (Array.isArray(value) && value.length === 1 && value[0] === Object(value[0])) {
-        parent[key] = this.parseNetAppObject(value[0], parent[key]);
-      } else if (Array.isArray(value) && value.length > 1 && value[0] === Object(value[0])) {
-        parent[key] = value;
+    return new Promise((resolve, reject) => {
 
-        Object.entries(value).forEach(([k, v]) => {
-          parent[key][k] = this.parseNetAppObject(v, parent[k]);
-        });
+      // Create new Netapp session
+      this.socket.emit('[netapp-session]', {
+        connectionUuid: connection.uuid,
+        workspaceUuid: this.LibWorkspace.getCurrentWorkspaceUuid()
+      }, async (data: BackendResponse) => {
 
-      } else {
-        parent[key] = value;
-      }
+        if (data.status === 'error') {
+          this.logger.error('LibNetapp', 'Error while emitting [netapp-session]', loggerArgs, data.data);
+          await this.LibNetappConnectionsState.patchConnection(connection.uuid, 'error', data.data);
+
+          return reject(data.data);
+        }
+
+        // Set connection state as connected and remove any previous errors
+        await this.LibNetappConnectionsState.patchConnection(connection.uuid, 'state', 'connected');
+        await this.LibNetappConnectionsState.patchConnection(connection.uuid, 'error', null);
+
+        return resolve();
+      });
     });
-
-    return parent;
-
   }
 
   /**
-   * Custom errorHandler function for NetAppFactory
+   * Disconnects a connection
    */
-  private errorHandler(e: any): { status: string, error: any } {
-    console.error({
-      status: 'error',
-      error: (e.html && e.html.head[0].title ? e.html.head[0].title : e)
+  disconnectConnection(connectionUuid: string): Promise<void> {
+    const loggerArgs = arguments;
+    this.logger.debug('LibNetapp', 'Disconnecting connection', loggerArgs);
+
+    return new Promise(async (resolve, reject) => {
+
+      const currentConnection: ConnectionNetapp = await this.LibNetapphHelpers.getConnectionByUuid(connectionUuid);
+      if (currentConnection.state === 'disconnected') throw new Error('already_disconnected');
+
+      this.socket.emit('[netapp-disconnect]', {
+        connectionUuid,
+        workspaceUuid: this.LibWorkspace.getCurrentWorkspaceUuid()
+      }, async (data: BackendResponse) => {
+
+        if (data.status === 'error') {
+          this.logger.error('LibNetapp', 'Error while emitting [netapp-disconnect]', loggerArgs, data.data);
+          await this.LibNetappConnectionsState.patchConnection(connectionUuid, 'error', data.data);
+
+          return reject(data.data);
+        }
+
+        // Set connection state as connected and remove any previous errors
+        await this.LibNetappConnectionsState.patchConnection(connectionUuid, 'state', 'disconnected');
+        await this.LibNetappConnectionsState.patchConnection(connectionUuid, 'error', null);
+
+        return resolve();
+      });
     });
-
-    return {
-      status: 'error',
-      error: (e.html && e.html.head[0].title ? e.html.head[0].title : e)
-    };
   }
 
   /**
-   * Custom validResponse function for NetAppFactory
+   * Deletes a connection
    */
-  private validResponse(data: any): { status: string, data: any } {
-    return {
-      status: 'ok',
-      data
-    };
-  }
+  deleteConnection(connectionUuid: string): Promise<void> {
+    const loggerArgs = arguments;
+    this.logger.debug('LibNetapp', 'Deleting connection', arguments);
 
-  private doCall(credentialUuid: string, host: string, port: string, xml: string): Observable<any> {
+    return new Promise(async (resolve, reject) => {
 
-    return this.http.post('/api/netapp', {
-      credentialUuid,
-      host,
-      port,
-      xml
-    }).pipe(map((data: any) => {
-        if (data.status === 'error') return this.errorHandler(data.errno ? data.errno : data.data);
-        if (!data.data.netapp) return this.errorHandler(data.data.response);
-        if (data.data.netapp.results[0].$.status === 'failed') {
-          return this.errorHandler(data.data.netapp.results[0].$);
-        }
+      const currentConnection: ConnectionNetapp = await this.LibNetapphHelpers.getConnectionByUuid(connectionUuid);
+      if (!currentConnection) {
+        this.logger.error('LibNetapp', 'deleteConnection -> Resource invalid', loggerArgs);
+        throw new Error('resource_invalid');
+      }
 
-        return data.data.netapp.results[0];
-      },
-      error => {
-        this.logger.error('[NetApp] -> doCall -> Error while doing the call -> ', error);
-      }));
+      if (currentConnection.state === 'connected') await this.disconnectConnection(connectionUuid);
 
-  }
-
-  /**
-   * PUBLIC FUNCTIONS
-   */
-  getSystemVersion(credentialUuid, host, port): Promise<any> {
-    return this.doCall(
-      credentialUuid,
-      host,
-      port,
-      `<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin'><system-get-version/></netapp>`
-    ).pipe(map((data: any) => {
-      if (data.status === 'error') return data;
-
-      return this.validResponse({
-        build_timestamp: data['build-timestamp'][0],
-        is_clustered: data['is-clustered'][0],
-        version: data.version[0],
-        version_tuple: {
-          generation: data['version-tuple'][0]['system-version-tuple'][0].generation[0],
-          major: data['version-tuple'][0]['system-version-tuple'][0].major[0],
-          minor: data['version-tuple'][0]['system-version-tuple'][0].minor[0]
-        }
+      this.LibNetappConnectionsState.deleteConnection(connectionUuid).then(() => {
+        return resolve();
+      }).catch((e: any) => {
+        return reject(e);
       });
-
-    })).toPromise();
-  }
-
-  getOntapiVersion(credentialUuid, host, port): Promise<any> {
-    return this.doCall(
-      credentialUuid,
-      host,
-      port,
-      `<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin'><system-get-ontapi-version/></netapp>`
-    ).pipe(map((data: any) => {
-      if (data.status === 'error') return data;
-
-      return this.validResponse({
-        major_version: data['major-version'][0],
-        minor_version: data['minor-version'][0]
-      });
-
-    })).toPromise();
-  }
-
-  getLicenses(credentialUuid, host, port): Promise<any> {
-    return this.doCall(
-      credentialUuid,
-      host,
-      port,
-      `<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin'><license-v2-status-list-info/></netapp>`
-    ).pipe(map((data: any) => {
-      if (data.status === 'error') return data;
-
-      const results = [];
-
-      data['license-v2-status']['0']['license-v2-status-info'].forEach(license => {
-        results.push(this.parseNetAppObject(license));
-      });
-
-      return this.validResponse(results);
-    })).toPromise();
-  }
-
-  getMetrocluster(credentialUuid, host, port): Promise<any> {
-    return this.doCall(
-      credentialUuid,
-      host,
-      port,
-      `<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin'><metrocluster-get/></netapp>`
-    ).pipe(map((data: any) => {
-      if (data.status === 'error') return data;
-
-      return this.validResponse({
-        local_cluster_name: data.attributes[0]['metrocluster-info'][0]['local-cluster-name'][0],
-        local_configuration_state: data.attributes[0]['metrocluster-info'][0]['local-configuration-state'][0]
-      });
-
-    })).toPromise();
-  }
-
-  getClusterIdentity(credentialUuid, host, port): Promise<any> {
-    return this.doCall(
-      credentialUuid,
-      host,
-      port,
-      `<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin'><cluster-identity-get/></netapp>`
-    ).pipe(map((data: any) => {
-      if (data.status === 'error') return data;
-
-      return this.validResponse({
-        cluster_contact: data.attributes[0]['cluster-identity-info'][0]['cluster-contact'][0],
-        cluster_location: data.attributes[0]['cluster-identity-info'][0]['cluster-location'][0],
-        cluster_name: data.attributes[0]['cluster-identity-info'][0]['cluster-name'][0],
-        cluster_serial_number: data.attributes[0]['cluster-identity-info'][0]['cluster-serial-number'][0],
-        cluster_uuid: data.attributes[0]['cluster-identity-info'][0]['cluster-uuid'][0],
-        rdb_uuid: data.attributes[0]['cluster-identity-info'][0]['rdb-uuid'][0]
-      });
-    })).toPromise();
-  }
-
-  getQtrees(credentialUuid, host, port, vfiler, results = [], nextTag = null): Promise<any> {
-    const xml = `
-<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
-  <qtree-list-iter>
-    <max-records>10</max-records>
-    ${nextTag ? '<tag>' + nextTag + '</tag>' : ''}
-  </qtree-list-iter>
-</netapp>`;
-
-    return this.doCall(credentialUuid, host, port, xml).pipe(map((data: any) => {
-      if (data.status === 'error') return data;
-
-      // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
-      if (data['attributes-list']) {
-
-        data['attributes-list'][0]['qtree-info'].forEach(qtree => {
-          results.push(this.parseNetAppObject(qtree));
-        });
-
-        if (data['next-tag']) {
-          nextTag = data['next-tag'][0].replace(/</g, '&lt;').replace(/>/g, '&gt;');
-          return this.getQtrees(credentialUuid, host, port, vfiler, results, nextTag);
-        }
-      }
-
-      return this.validResponse(results);
-    })).toPromise();
-  }
-
-  getNetInterfaces(credentialUuid, host, port, vfiler?, results = [], nextTag = null): Promise<any> {
-    const xml = `
-<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
-  <net-interface-get-iter>
-    <max-records>10</max-records>
-    ${nextTag ? '<tag>' + nextTag + '</tag>' : ''}
-  </net-interface-get-iter>
-</netapp>`;
-
-    return this.doCall(credentialUuid, host, port, xml).pipe(map((data: any) => {
-      if (data.status === 'error') return data;
-
-      // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
-      if (data['attributes-list']) {
-
-        data['attributes-list'][0]['net-interface-info'].forEach(netiface => {
-          results.push(this.parseNetAppObject(netiface));
-        });
-
-        if (data['next-tag']) {
-          nextTag = data['next-tag'][0].replace(/</g, '&lt;').replace(/>/g, '&gt;');
-          return this.getNetInterfaces(credentialUuid, host, port, vfiler, results, nextTag);
-        }
-      }
-
-      return this.validResponse(results);
-    })).toPromise();
-  }
-
-  getFcpInterfaces(credentialUuid, host, port, vfiler?, results = [], nextTag = null): Promise<any> {
-    const xml = `
-<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
-  <fcp-interface-get-iter>
-    <max-records>10</max-records>
-    ${nextTag ? '<tag>' + nextTag + '</tag>' : ''}
-  </fcp-interface-get-iter>
-</netapp>`;
-
-    return this.doCall(credentialUuid, host, port, xml).pipe(map((data: any) => {
-      if (data.status === 'error') return data;
-
-      // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
-      if (data['attributes-list']) {
-
-        data['attributes-list'][0]['fcp-interface-info'].forEach(fcpiface => {
-          results.push(this.parseNetAppObject(fcpiface));
-        });
-
-        if (data['next-tag']) {
-          nextTag = data['next-tag'][0].replace(/</g, '&lt;').replace(/>/g, '&gt;');
-          return this.getFcpInterfaces(credentialUuid, host, port, vfiler, results, nextTag);
-        }
-      }
-
-      return this.validResponse(results);
-    })).toPromise();
-  }
-
-  getFcpAdapters(credentialUuid, host, port, results = [], nextTag = null): Promise<any> {
-    const xml = `
-<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin'>
-  <fcp-adapter-get-iter>
-    <max-records>10</max-records>
-    ${nextTag ? '<tag>' + nextTag + '</tag>' : ''}
-  </fcp-adapter-get-iter>
-</netapp>`;
-
-    return this.doCall(credentialUuid, host, port, xml).pipe(map((data: any) => {
-      if (data.status === 'error') return data;
-
-      // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
-      if (data['attributes-list']) {
-
-        data['attributes-list'][0]['fcp-config-adapter-info'].forEach(fcpadapter => {
-          results.push(this.parseNetAppObject(fcpadapter));
-        });
-
-        if (data['next-tag']) {
-          nextTag = data['next-tag'][0].replace(/</g, '&lt;').replace(/>/g, '&gt;');
-          return this.getFcpAdapters(credentialUuid, host, port, results, nextTag);
-        }
-      }
-
-      return this.validResponse(results);
-    })).toPromise();
-  }
-
-  getNFSService(credentialUuid, host, port, vfiler): Promise<any> {
-    return this.doCall(
-      credentialUuid,
-      host,
-      port,
-      `<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? 'vfiler=\'' + vfiler + '\'' : ''}><nfs-service-get/></netapp>`
-    ).pipe(map((data: any) => {
-      if (data.status === 'error') return data;
-
-      return this.validResponse(this.parseNetAppObject(data.attributes[0]['nfs-info'][0]));
-    })).toPromise();
-  }
-
-  getVservers(credentialUuid, host, port, results = [], nextTag = null): Promise<any> {
-    const xml = `
-<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin'>
-  <vserver-get-iter>
-    <max-records>10</max-records>
-    ${nextTag ? '<tag>' + nextTag + '</tag>' : ''}
-  </vserver-get-iter>
-</netapp>`;
-
-    return this.doCall(credentialUuid, host, port, xml).pipe(map((data: any) => {
-      if (data.status === 'error') return data;
-
-      // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
-      if (data['attributes-list']) {
-
-        data['attributes-list'][0]['vserver-info'].forEach(vserver => {
-          results.push(this.parseNetAppObject(vserver));
-        });
-
-        if (data['next-tag']) {
-          nextTag = data['next-tag'][0].replace(/</g, '&lt;').replace(/>/g, '&gt;');
-          return this.getVservers(credentialUuid, host, port, results, nextTag);
-        }
-      }
-
-      return this.validResponse(results);
-    })).toPromise();
-  }
-
-  getVolumes(credentialUuid, host, port, vfiler, results = [], nextTag = null): Promise<any> {
-    const xml = `
-<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
-  <volume-get-iter>
-    <max-records>10</max-records>
-    ${nextTag ? '<tag>' + nextTag + '</tag>' : ''}
-  </volume-get-iter>
-</netapp>`;
-
-    return this.doCall(credentialUuid, host, port, xml).pipe(map((data: any) => {
-      if (data.status === 'error') return data;
-
-      // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
-      if (data['attributes-list']) {
-
-        data['attributes-list'][0]['volume-attributes'].forEach(volume => {
-          results.push(this.parseNetAppObject(volume));
-        });
-
-        if (data['next-tag']) {
-          nextTag = data['next-tag'][0].replace(/</g, '&lt;').replace(/>/g, '&gt;');
-          return this.getVolumes(credentialUuid, host, port, vfiler, results, nextTag);
-        }
-      }
-
-      return this.validResponse(results);
-    })).toPromise();
-  }
-
-  getVolumeFiles(credentialUuid, host, port, vfiler, volume, path = '', results = [], nextTag = null): Promise<any> {
-    const xml = `
-<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
-  <file-list-directory-iter>
-    <path>/vol/${volume}/${path}</path>
-    ${nextTag ? '<tag>' + nextTag + '</tag>' : ''}
-  </file-list-directory-iter>
-</netapp>`;
-
-    return this.doCall(credentialUuid, host, port, xml).pipe(map((data: any) => {
-      if (data.status === 'error') return data;
-
-      // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
-      if (data['attributes-list']) {
-
-        // For each file found
-        data['attributes-list'][0]['file-info'].forEach(file => {
-          file = this.parseNetAppObject(file);
-          if (file.name === '.' || file.name === '..') return;
-
-          file.path = path;
-          results.push(file);
-        });
-
-        if (data['next-tag']) {
-          nextTag = data['next-tag'][0].replace(/</g, '&lt;').replace(/>/g, '&gt;');
-          return this.getVolumeFiles(credentialUuid, host, port, vfiler, volume, path, results, nextTag);
-        }
-      }
-
-      return this.validResponse(results);
-    })).toPromise();
-  }
-
-  getSnapshots(credentialUuid, host, port, vfiler, volume, results = [], nextTag = null): Promise<any> {
-    const xml = `
-<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
-  <snapshot-get-iter>
-    <max-records>10</max-records>
-    ${volume ? '<query><snapshot-info><volume>' + volume + '</volume></snapshot-info></query>' : ''}${nextTag ? '<tag>' + nextTag + '</tag>' : ''}
-  </snapshot-get-iter>
-</netapp>`;
-
-    return this.doCall(credentialUuid, host, port, xml).pipe(map((data: any) => {
-      if (data.status === 'error') return data;
-
-      // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
-      if (data['attributes-list']) {
-
-        data['attributes-list'][0]['snapshot-info'].forEach(snapshot => {
-          results.push(this.parseNetAppObject(snapshot));
-        });
-
-        if (data['next-tag']) {
-          nextTag = data['next-tag'][0].replace(/</g, '&lt;').replace(/>/g, '&gt;');
-          return this.getSnapshots(credentialUuid, host, port, vfiler, volume, results, nextTag);
-        }
-      }
-
-      return this.validResponse(results);
-    })).toPromise();
-  }
-
-  getSnapshotFiles(credentialUuid, host, port, vfiler, volume, snapshot, path = '', results = [], nextTag = null): Promise<any> {
-    const diPromises = [];
-    const xml = `
-<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
-  <file-list-directory-iter>
-    <path>/vol/${volume}/.snapshot/${snapshot}${path}</path>
-    ${nextTag ? '<tag>' + nextTag + '</tag>' : ''}
-  </file-list-directory-iter>
-</netapp>`;
-
-    return this.doCall(credentialUuid, host, port, xml).pipe(map((data: any) => {
-      if (data.status === 'error') return data;
-
-      // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
-      if (data['attributes-list']) {
-
-        // For each file found
-        data['attributes-list'][0]['file-info'].forEach(file => {
-          file = this.parseNetAppObject(file);
-          if (file.name === '.' || file.name === '..') return;
-
-          file.path = path;
-          results.push(file);
-
-          // Get directories
-          if (file['file-type'] === 'directory') {
-            diPromises.push(this.getSnapshotFiles(credentialUuid, host, port, vfiler, volume, snapshot, path + '/' + file.name, results));
-          }
-        });
-
-        // if directory found
-        if (diPromises.length > 0) {
-
-          // Get all files in each found directory
-          return Promise.all(diPromises).then(res => {
-
-            res = res[0].data;
-
-            if (data['next-tag']) {
-              nextTag = data['next-tag'][0].replace(/</g, '&lt;').replace(/>/g, '&gt;');
-              return this.getSnapshotFiles(credentialUuid, host, port, vfiler, volume, snapshot, path, res, nextTag);
-            }
-
-            return this.validResponse(res);
-
-          });
-        }
-
-        if (data['next-tag']) {
-          nextTag = data['next-tag'][0].replace(/</g, '&lt;').replace(/>/g, '&gt;');
-          return this.getSnapshotFiles(credentialUuid, host, port, vfiler, volume, snapshot, path, results, nextTag);
-        }
-      }
-
-      return this.validResponse(results);
-    })).toPromise();
-  }
-
-  getSnapshotFileInfo(credentialUuid, host, port, vfiler, volume, snapshot): Promise<any> {
-    const xml = `
-<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
-  <file-get-file-info>
-    <path>/vol/${volume}/.snapshot/${snapshot}</path>
-  </file-get-file-info>
-</netapp>`;
-
-    return this.doCall(credentialUuid, host, port, xml).pipe(map((data: any) => {
-      if (data.status === 'error') return data;
-
-      return this.validResponse(this.parseNetAppObject(data['file-info'][0]));
-    })).toPromise();
-  }
-
-  snapshotRestoreFile(credentialUuid, host, port, vfiler, volume, snapshot, dst): Promise<any> {
-    const xml = `
-<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
-  <snapshot-restore-file>
-    <path>${dst}</path>
-    <snapshot>${snapshot}</snapshot>
-    <volume>${volume}</volume>
-  </snapshot-restore-file>
-</netapp>`;
-
-    return this.doCall(credentialUuid, host, port, xml).pipe(map((data: any) => {
-      if (data.status === 'error') return data;
-
-      return this.validResponse(data.data.data.response.netapp);
-    })).toPromise();
-  }
-
-  createSnapshot(credentialUuid, host, port, vfiler, volume, name?): Promise<any> {
-    const snapshotName = volume + '_anyOpsOS_' + (name ? name : '') + '_' + new Date().toISOString().split('.')[0].replace(/:/g, '');
-    const xml = `
-<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
-  <snapshot-create>
-    <async>False</async>
-    <snapshot>${snapshotName}</snapshot>
-    <volume>${volume}</volume>
-  </snapshot-create>
-</netapp>`;
-
-    return this.doCall(credentialUuid, host, port, xml).pipe(map((data: any) => {
-      if (data.status === 'error') return data;
-
-      return this.validResponse(data.$.status);
-    })).toPromise();
-  }
-
-  deleteSnapshot(credentialUuid, host, port, vfiler, volume, snapshotName, snapshotUuid): Promise<any> {
-    const xml = `
-<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
-  <snapshot-delete>
-    <snapshot>${snapshotName}</snapshot>
-    ${snapshotUuid ? '<snapshot-instance-uuid>' + snapshotUuid + '</snapshot-instance-uuid>' : ''}
-    <volume>${volume}</volume>
-  </snapshot-delete>
-</netapp>`;
-
-    return this.doCall(credentialUuid, host, port, xml).pipe(map((data: any) => {
-      if (data.status === 'error') return data;
-
-      return this.validResponse(data.$.status);
-    })).toPromise();
-  }
-
-  getLuns(credentialUuid, host, port, vfiler, volume, results = [], nextTag = null): Promise<any> {
-    const xml = `
-<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
-  <lun-get-iter>
-    <max-records>10</max-records>
-    ${volume ? '<query><lun-info><volume>' + volume + '</volume></lun-info></query>' : ''}${nextTag ? '<tag>' + nextTag + '</tag>' : ''}
-  </lun-get-iter>
-</netapp>`;
-
-    return this.doCall(credentialUuid, host, port, xml).pipe(map((data: any) => {
-      if (data.status === 'error') return data;
-
-      // attributes-list could be 0 length on second+ iteration caused by max-results and next-tag.
-      if (data['attributes-list']) {
-
-        data['attributes-list'][0]['lun-info'].forEach(lun => {
-          results.push(this.parseNetAppObject(lun));
-        });
-
-        if (data['next-tag']) {
-          nextTag = data['next-tag'][0].replace(/</g, '&lt;').replace(/>/g, '&gt;');
-          return this.getLuns(credentialUuid, host, port, vfiler, volume, results, nextTag);
-        }
-      }
-
-      return this.validResponse(results);
-    })).toPromise();
-  }
-
-  cloneVolumeFromSnapshot(credentialUuid, host, port, vfiler, parentVolume, volume, snapshot): Promise<any> {
-    const xml = `<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
-  <volume-clone-create>
-    <parent-volume>${parentVolume}</parent-volume>
-    <volume>${volume}</volume>
-    <space-reserve>none</space-reserve>
-    <parent-snapshot>${snapshot}</parent-snapshot>
-  </volume-clone-create>
-</netapp>`;
-
-    return this.doCall(credentialUuid, host, port, xml).pipe(map((data: any) => {
-      if (data.status === 'error') return data;
-
-      return this.validResponse(data.$.status);
-    })).toPromise();
-  }
-
-  mountVolume(credentialUuid, host, port, vfiler, volume, junction): Promise<any> {
-    const xml = `
-<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
-  <volume-mount>
-    <activate-junction>true</activate-junction>
-    <junction-path>${junction}</junction-path>
-    <volume-name>${volume}</volume-name>
-    <export-policy-override>false</export-policy-override>
-  </volume-mount>
-</netapp>`;
-
-    return this.doCall(credentialUuid, host, port, xml).pipe(map((data: any) => {
-      if (data.status === 'error') return data;
-
-      return this.validResponse(data.$.status);
-    })).toPromise();
-  }
-
-  unmountVolume(credentialUuid, host, port, vfiler, volume): Promise<any> {
-    const xml = `
-<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
-  <volume-unmount>
-    <volume-name>${volume}</volume-name>
-    <force>True</force>
-  </volume-unmount>
-</netapp>`;
-
-    return this.doCall(credentialUuid, host, port, xml).pipe(map((data: any) => {
-      if (data.status === 'error') return data;
-
-      return this.validResponse(data.$.status);
-    })).toPromise();
-  }
-
-  setVolumeOffline(credentialUuid, host, port, vfiler, volume): Promise<any> {
-    const xml = `
-<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
-  <volume-offline>
-    <name>${volume}</name>
-  </volume-offline>
-</netapp>`;
-
-    return this.doCall(credentialUuid, host, port, xml).pipe(map((data: any) => {
-      if (data.status === 'error') return data;
-
-      return this.validResponse(data.$.status);
-    })).toPromise();
-  }
-
-  destroyVolume(credentialUuid, host, port, vfiler, volume): Promise<any> {
-    const xml = `
-<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
-  <volume-destroy>
-    <name>${volume}</name>
-  </volume-destroy>
-</netapp>`;
-
-    return this.doCall(credentialUuid, host, port, xml).pipe(map((data: any) => {
-      if (data.status === 'error') return data;
-
-      return this.validResponse(data.$.status);
-    })).toPromise();
-  }
-
-  getNFSExportRulesList(credentialUuid, host, port, vfiler, volumePath): Promise<any> {
-    const results = [];
-    const xml = `
-<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
-  <nfs-exportfs-list-rules-2>
-    <pathname>${volumePath}</pathname>
-    <persistent>True</persistent>
-  </nfs-exportfs-list-rules-2>
-</netapp>`;
-
-    return this.doCall(credentialUuid, host, port, xml).pipe(map((data: any) => {
-      if (data.status === 'error') return data;
-
-      if (data.rules[0]['exports-rule-info-2']) {
-        data.rules[0]['exports-rule-info-2'][0]['security-rules'][0]['security-rule-info'].forEach(rule => {
-          results.push(this.parseNetAppObject(rule));
-        });
-
-        return this.validResponse(this.parseNetAppObject(data.rules[0]));
-      }
-
-      return this.validResponse([]);
-
-    })).toPromise();
-  }
-
-  getExportRules(credentialUuid, host, port, vfiler, policy): Promise<any> {
-    const results = [];
-    const xml = `
-<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
-  <export-rule-get-iter>${policy ? '<query><export-rule-info><policy-name>' + policy + '</policy-name></export-rule-info></query>' : ''}</export-rule-get-iter>
-</netapp>`;
-
-    return this.doCall(credentialUuid, host, port, xml).pipe(map((data: any) => {
-      if (data.status === 'error') return data;
-
-      data['attributes-list'][0]['export-rule-info'].forEach(rule => {
-        results.push(this.parseNetAppObject(rule));
-      });
-
-      return this.validResponse(data);
-    })).toPromise();
-  }
-
-  setExportRule(credentialUuid, host, port, vfiler, policy, client): Promise<any> {
-    const xml = `
-<netapp version='1.15' xmlns='http://www.netapp.com/filer/admin' ${vfiler ? ' vfiler=\'' + vfiler + '\'' : ''}>
-  <export-rule-create>
-    <client-match>${client}</client-match>
-    <policy-name>${policy}</policy-name>
-    <ro-rule>
-      <security-flavor>any</security-flavor>
-    </ro-rule>
-    <rw-rule>
-      <security-flavor>never</security-flavor>
-    </rw-rule>
-    <rule-index>1</rule-index>
-    <super-user-security>
-      <security-flavor>any</security-flavor>
-    </super-user-security>
-  </export-rule-create>
-</netapp>`;
-
-    return this.doCall(credentialUuid, host, port, xml).pipe(map((data: any) => {
-      if (data.status === 'error') return data;
-
-      return this.validResponse(data);
-    })).toPromise();
+    });
   }
 }

@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 
-import {ImDataObject} from '../types/im-data-object';
+import {DataObject} from '@anyopsos/backend/app/types/data-object';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +10,7 @@ export class AnyOpsOSAppInfrastructureManagerTemplateHelperService {
   constructor() {
   }
 
-  getObjectIcon(object: ImDataObject): { type: 'class' | 'image'; data: string} {
+  getObjectIcon(object: DataObject): { type: 'class' | 'image'; data: string} {
     if (object.type === 'standalone') return {type: 'class', data: 'mr-1 text-primary fas fa-folder'};
     if (object.type === 'linux') return {type: 'class', data: 'mr-1 text-primary fab fa-linux'};
     if (object.type === 'windows') return {type: 'class', data: 'mr-1 text-primary fab fa-windows'};
@@ -57,10 +57,10 @@ export class AnyOpsOSAppInfrastructureManagerTemplateHelperService {
     if (object.type === 'volume') return {type: 'image', data: 'vs-icon vsphere-icon-datastore'};
     if (object.type === 'snapshot') return {type: 'class', data: 'mr-1 fas fa-camera'};
 
-    // KUBERNETES
+    // DOCKER
     if (object.type === 'docker') return {type: 'class', data: 'mr-1 text-primary fas fa-docker'};
 
-    // DOCKER
+    // KUBERNETES
     if (object.type === 'kubernetes') return {type: 'image', data: '/assets/img/logos/Kubernetes-logo.png'};
     if (object.type === 'Namespace') return {type: 'image', data: '/assets/img/kubernetes/ns-128.png'};
     if (object.type === 'DaemonSet') return {type: 'image', data: '/assets/img/kubernetes/ds-128.png'};

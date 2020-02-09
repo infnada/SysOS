@@ -1,0 +1,17 @@
+{
+  "extends": "../../../tslint.json",
+  "rules": {
+    "directive-selector": [
+      true,
+      "attribute",
+      "amjsontextarea",
+      "camelCase"
+    ],
+    "component-selector": [
+      true,
+      "element",
+      "amjsontextarea",
+      "kebab-case"
+    ]
+  }
+}

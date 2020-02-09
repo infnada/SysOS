@@ -1,46 +1,44 @@
 import {Injectable} from '@angular/core';
 
+import {MatDialogRef} from '@anyopsos/lib-angular-material';
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
-import {AnyOpsOSLibVmwareService} from '@anyopsos/lib-vmware';
+import {VMWareVM} from '@anyopsos/module-vmware';
+import {NetAppSnapshot, NetAppVolume, NetAppVserver} from '@anyopsos/module-netapp';
+import {DataObject} from '@anyopsos/backend/app/types/data-object';
 
 import {AnyOpsOSAppInfrastructureManagerService} from '../anyopsos-app-infrastructure-manager.service';
 import {AnyOpsOSAppInfrastructureManagerObjectHelperService} from '../anyopsos-app-infrastructure-manager-object-helper.service';
-
-import {ImDataObject} from '../../types/im-data-object';
-import {NetAppVolume} from '../../types/netapp-volume';
-import {NetAppSnapshot} from '../../types/netapp-snapshot';
-import {VMWareVM} from '../../types/vmware-vm';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AnyOpsOSAppInfrastructureNetappBackupService {
 
-  constructor(private logger: AnyOpsOSLibLoggerService,
-              private Modal: AnyOpsOSLibModalService,
-              private VMWare: AnyOpsOSLibVmwareService,
-              private InfrastructureManager: AnyOpsOSAppInfrastructureManagerService,
-              private InfrastructureManagerObjectHelper: AnyOpsOSAppInfrastructureManagerObjectHelperService) {
+  constructor(private readonly logger: AnyOpsOSLibLoggerService,
+              private readonly LibModal: AnyOpsOSLibModalService,
+              private readonly InfrastructureManager: AnyOpsOSAppInfrastructureManagerService,
+              private readonly InfrastructureManagerObjectHelper: AnyOpsOSAppInfrastructureManagerObjectHelperService) {
   }
 
   /**
    * Checks if the vServers have allowed any of the available protocols
    */
-  private checkProtocols(obj: ImDataObject & { info: { data: NetAppSnapshot | NetAppVolume } }): boolean {
-    const vServer = this.InfrastructureManagerObjectHelper.getParentObjectByType(obj.info.mainUuid, 'vserver', obj.info.parent);
+  private async checkProtocols(obj: DataObject & { info: { data: NetAppSnapshot | NetAppVolume } }): Promise<boolean> {
+    const vServer: DataObject & { info: { data: NetAppVserver } } = await this.InfrastructureManagerObjectHelper.getParentObjectByType(obj.info.mainUuid, 'netapp', 'vserver', obj.info.parent);
 
     if (!Array.isArray(vServer.info.data['allowed-protocols'].protocol) ||
       (!vServer.info.data['allowed-protocols'].protocol.includes('nfs') &&
         !vServer.info.data['allowed-protocols'].protocol.includes('iscsi') &&
         !vServer.info.data['allowed-protocols'].protocol.includes('fcp'))
     ) {
-      this.Modal.openLittleModal(
+
+      await this.LibModal.openLittleModal(
+        this.InfrastructureManager.getBodyContainerRef(),
         'UNABLE TO PROCEED',
-        'The selected Snapshot belongs to a Vserver without any supported protocol (NFS, FC/FCoE, iSCSI) configured.',
-        '.window--infrastructure-manager .window__main',
-        'plain'
+        'The selected Snapshot belongs to a Vserver without any supported protocol (NFS, FC/FCoE, iSCSI) configured.'
       );
+
       return false;
     }
 
@@ -50,97 +48,86 @@ export class AnyOpsOSAppInfrastructureNetappBackupService {
   /**
    * Storage Volume Snapshots Backup/Restore
    */
-  mountSnapShotAsDatastore(obj: ImDataObject & { info: { data: NetAppSnapshot } }): void {
-    const loggerArgs = arguments;
+  async mountSnapShotAsDatastore(obj: DataObject & { info: { data: NetAppSnapshot } }): Promise<void> {
+    this.logger.debug('Infrastructure Manager', 'Ask for mount storage snapshot into a datastore');
 
-    this.logger.debug('Infrastructure Manager', 'Ask for mount storage snapshot into a datastore', arguments);
+    if (!await this.checkProtocols(obj)) return;
 
-    if (!this.checkProtocols(obj)) return;
-
-    this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
+    const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('question', this.InfrastructureManager.getBodyContainerRef(),
       {
         title: 'Mount Snapshot as Datastore',
         text: 'Do you want to mount the Storage Snapshot to an ESXi host?',
         yes: 'Mount',
         no: 'Cancel'
       }
-    ).then((modalInstance) => {
-      modalInstance.result.then((result: boolean) => {
-        if (result === true) {
+    );
 
-          this.logger.debug('Infrastructure Manager', 'Launching Backups Manager for mounting storage snapshot into a datastore', loggerArgs);
+    modalInstance.afterClosed().subscribe((result: boolean): Promise<void> => {
+      if (!result) return;
 
-          // Open Backups Manager Application
-          this.InfrastructureManager.openBackupsManager('mount_volume_snapshot', {
-            snapshot: obj
-          });
-        }
+      this.logger.debug('Infrastructure Manager', 'Launching Backups Manager for mounting storage snapshot into a datastore');
+
+      // Open Backups Manager Application
+      this.InfrastructureManager.openBackupsManager('mount_volume_snapshot', {
+        snapshot: obj
       });
     });
   }
 
-  restoreVolumeFiles(obj: ImDataObject & { info: { data: NetAppSnapshot | NetAppVolume } }): void {
-    const loggerArgs = arguments;
+  async restoreVolumeFiles(obj: DataObject & { info: { data: NetAppSnapshot | NetAppVolume } }): Promise<void> {
+    this.logger.debug('Infrastructure Manager', 'Ask for mount storage snapshot into a datastore to restore files');
 
-    this.logger.debug('Infrastructure Manager', 'Ask for mount storage snapshot into a datastore to restore files', arguments);
+    if (!await this.checkProtocols(obj)) return;
 
-    if (!this.checkProtocols(obj)) return;
-
-    this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
+    const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('question', this.InfrastructureManager.getBodyContainerRef(),
       {
         title: 'Restore Datastore Files',
         text: 'Do you want to mount the Storage Snapshot to an ESXi host and restore Volume files?',
         yes: 'Restore',
         no: 'Cancel'
       }
-    ).then((modalInstance) => {
-      modalInstance.result.then((result: boolean) => {
-        if (result === true) {
+    );
 
-          this.logger.debug('Infrastructure Manager', 'Launching Backups Manager for restoring a volume files', loggerArgs);
+    modalInstance.afterClosed().subscribe((result: boolean): Promise<void> => {
+      if (!result) return;
 
-          // Open Backups Manager Application
-          this.InfrastructureManager.openBackupsManager('restore_volume_files', (obj.type === 'volume' ? {
-            volume: obj
-          } : {
-            snapshot: obj
-          }));
-        }
-      });
+        this.logger.debug('Infrastructure Manager', 'Launching Backups Manager for restoring a volume files');
+
+        // Open Backups Manager Application
+        this.InfrastructureManager.openBackupsManager('restore_volume_files', (obj.type === 'volume' ? {
+          volume: obj
+        } : {
+          snapshot: obj
+        }));
     });
   }
 
-  restoreGuestFiles(vm: ImDataObject & { info: { data: VMWareVM } }, snapshot: ImDataObject & { info: { data: NetAppSnapshot } }): void {
-    const loggerArgs = arguments;
+  async restoreGuestFiles(vm: DataObject & { info: { data: VMWareVM } }, snapshot: DataObject & { info: { data: NetAppSnapshot } }): Promise<void> {
+    this.logger.debug('Infrastructure Manager', 'Ask for recovery VM Guest Files');
 
-    this.logger.debug('Infrastructure Manager', 'Ask for recovery VM Guest Files', arguments);
-
-    this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
+    const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('question', this.InfrastructureManager.getBodyContainerRef(),
       {
         title: 'Restore guest files',
         text: `Do you want to perform a VM Guest Files recovery of ${vm.name}?`,
         yes: 'Restore',
         no: 'Cancel'
       }
-    ).then((modalInstance) => {
-      modalInstance.result.then((result: boolean) => {
-        if (result === true) {
+    );
 
-          this.logger.debug('Infrastructure Manager', 'Launching Backups Manager for restore entire VM', loggerArgs);
+    modalInstance.afterClosed().subscribe((result: boolean): Promise<void> => {
+      if (!result) return;
 
-          // Open Backups Manager Application
-          this.InfrastructureManager.openBackupsManager('restore_vm_guest_files', {
-            vm,
-            snapshot
-          });
-        }
+      this.logger.debug('Infrastructure Manager', 'Launching Backups Manager for restore entire VM');
+
+      // Open Backups Manager Application
+      this.InfrastructureManager.openBackupsManager('restore_vm_guest_files', {
+        vm,
+        snapshot
       });
     });
   }
 
-  instantVM(vm: ImDataObject & { info: { data: VMWareVM } }, snapshot?: ImDataObject & { info: { data: NetAppSnapshot } }): void {
-    const loggerArgs = arguments;
-
+  async instantVM(vm: DataObject & { info: { data: VMWareVM } }, snapshot?: DataObject & { info: { data: NetAppSnapshot } }): Promise<void> {
     // Not linked VM
     /*if (!vm.data) {
 
@@ -154,65 +141,58 @@ export class AnyOpsOSAppInfrastructureNetappBackupService {
       };
     }*/
 
-    this.logger.debug('Infrastructure Manager', 'Ask for Instant VM recovery ', arguments);
+    this.logger.debug('Infrastructure Manager', 'Ask for Instant VM recovery ');
 
-    this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
+    const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('question', this.InfrastructureManager.getBodyContainerRef(),
       {
         title: 'Instant VM recovery',
         text: `Do you want to perform an Instant VM recovery of ${vm.name}?`,
         yes: 'Restore',
         no: 'Cancel'
       }
-    ).then((modalInstance) => {
-      modalInstance.result.then((result: boolean) => {
-        if (result === true) {
+    );
 
-          this.logger.debug('Infrastructure Manager', 'Launching Backups Manager for Instant VM recovery', loggerArgs);
+    modalInstance.afterClosed().subscribe((result: boolean): Promise<void> => {
+      if (!result) return;
 
-          this.InfrastructureManager.openBackupsManager('vm_instant_recovery', {
-            snapshot,
-            vm
-          });
+      this.logger.debug('Infrastructure Manager', 'Launching Backups Manager for Instant VM recovery');
 
-        }
+      this.InfrastructureManager.openBackupsManager('vm_instant_recovery', {
+        snapshot,
+        vm
       });
     });
   }
 
-  restoreVM(snapshot: ImDataObject & { info: { data: NetAppSnapshot } }, vm: ImDataObject & { info: { data: VMWareVM } }): void {
-    const loggerArgs = arguments;
-
-    this.logger.debug('Infrastructure Manager', 'Ask for restore entire VM', arguments);
+  async restoreVM(snapshot: DataObject & { info: { data: NetAppSnapshot } }, vm: DataObject & { info: { data: VMWareVM } }): Promise<void> {
+    this.logger.debug('Infrastructure Manager', 'Ask for restore entire VM');
 
     if (!vm.info.data) {
-      this.Modal.openLittleModal(
+      this.LibModal.openLittleModal(
+        this.InfrastructureManager.getBodyContainerRef(),
         'Error while restoring Backup',
-        `Not found any linked VirtualMachine for ${vm.name}, maybe original VM was deleted from vCenter. Try doing an Instant VM restore`,
-        '.window--infrastructure-manager .window__main',
-        'plain'
+        `Not found any linked VirtualMachine for ${vm.name}, maybe original VM was deleted from vCenter. Try doing an Instant VM restore`
       ).then();
       return;
     }
 
-    this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
+    const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('question', this.InfrastructureManager.getBodyContainerRef(),
       {
         title: 'Restore entire VM',
         text: `Do you want to perform a entire VM restore of ${vm.name}?`,
         yes: 'Restore',
         no: 'Cancel'
       }
-    ).then((modalInstance) => {
-      modalInstance.result.then((result: boolean) => {
-        if (result === true) {
+    );
 
-          this.logger.debug('Infrastructure Manager', 'Launching Backups Manager for restore entire VM', loggerArgs);
+    modalInstance.afterClosed().subscribe((result: boolean): Promise<void> => {
+      if (!result) return;
 
-          this.InfrastructureManager.openBackupsManager('restore_vm', {
-            snapshot,
-            vm
-          });
+      this.logger.debug('Infrastructure Manager', 'Launching Backups Manager for restore entire VM');
 
-        }
+      this.InfrastructureManager.openBackupsManager('restore_vm', {
+        snapshot,
+        vm
       });
     });
   }

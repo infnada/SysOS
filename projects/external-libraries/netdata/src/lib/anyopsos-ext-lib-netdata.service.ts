@@ -16,6 +16,7 @@ import {AnyOpsOSExtLibLzStringService} from '@anyopsos/ext-lib-lz-string';
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
 import {NetdataConnection} from './types/netdata-connection';
+import {MatDialogRef} from '@anyopsos/lib-angular-material';
 
 let NETDATA = null;
 
@@ -43,7 +44,7 @@ export class AnyOpsOSExtLibNetdataService {
               private LZStringService: AnyOpsOSExtLibLzStringService,
               private http: HttpClient,
               private logger: AnyOpsOSLibLoggerService,
-              private Modal: AnyOpsOSLibModalService) {
+              private readonly LibModal: AnyOpsOSLibModalService) {
     const classThis = this;
     // Set easyPieChart
     this.jQuery.$.fn.easyPieChart = function(options) {
@@ -791,32 +792,33 @@ export class AnyOpsOSExtLibNetdataService {
     currentNetdata.alarms.chart_div_id_prefix = 'chart_';
     currentNetdata.alarms.chart_div_animation_duration = 0;
 
-    currentNetdata.pause(() => {
-      if (currentNetdata.netdataSnapshotData) {
+    currentNetdata.pause(async () => {
+      if (!currentNetdata.netdataSnapshotData) return this.initializeCharts(connection);
 
-        this.Modal.openRegisteredModal('monitor-xss', '.window--monitor .window__main', {
+      // TODO viewContainerRef
+      const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('monitor-xss', null,
+        {
           url: currentNetdata.serverDefault
-        }).then((modalInstance) => {
-          modalInstance.result.then((res) => {
-            if (res === 'xssModalKeepXss') {
-              currentNetdata.xss.enabled = true;
-              currentNetdata.xss.enabled_for_data = true;
-              currentConnection.customInfo = false;
-            }
+        }
+      );
 
-            if (res === 'xssModalDisableXss') {
-              currentNetdata.xss.enabled = false;
-              currentNetdata.xss.enabled_for_data = false;
-              currentConnection.customInfo = true;
-            }
+      modalInstance.afterClosed().subscribe(async (result: 'xssModalKeepXss' | 'xssModalDisableXss') => {
+        if (!result) return;
 
-            this.initializeCharts(connection);
-          });
+        if (result === 'xssModalKeepXss') {
+          currentNetdata.xss.enabled = true;
+          currentNetdata.xss.enabled_for_data = true;
+          currentConnection.customInfo = false;
+        }
 
-        });
-      } else {
+        if (result === 'xssModalDisableXss') {
+          currentNetdata.xss.enabled = false;
+          currentNetdata.xss.enabled_for_data = false;
+          currentConnection.customInfo = true;
+        }
+
         this.initializeCharts(connection);
-      }
+      });
     });
 
   }

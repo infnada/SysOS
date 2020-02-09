@@ -1,8 +1,9 @@
-import {Injectable} from '@angular/core';
+import {Injectable, ViewContainerRef} from '@angular/core';
 
 import {v4 as uuidv4} from 'uuid';
 
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
+import {MatDialogRef} from '@anyopsos/lib-angular-material';
 import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
 import {AnyOpsOSLibServiceInjectorService} from '@anyopsos/lib-service-injector';
@@ -38,15 +39,24 @@ export class AnyOpsOSAppBackupsManagerService {
   private InfrastructureManager;
   private InfrastructureManagerObjectHelper;
 
+  bodyContainer: ViewContainerRef;
+
   constructor(private logger: AnyOpsOSLibLoggerService,
-              private Modal: AnyOpsOSLibModalService,
+              private readonly LibModal: AnyOpsOSLibModalService,
               private serviceInjector: AnyOpsOSLibServiceInjectorService,
-              private Applications: AnyOpsOSLibApplicationService,
-              private FileSystem: AnyOpsOSLibFileSystemService,
+              private readonly LibApplication: AnyOpsOSLibApplicationService,
+              private readonly LibFileSystem: AnyOpsOSLibFileSystemService,
               private BackupManagerHelpers: AnyOpsOSAppBackupsManagerHelpersService) {
 
     this.InfrastructureManager = this.serviceInjector.get('AnyOpsOSAppInfrastructureManagerService');
     this.InfrastructureManagerObjectHelper = this.serviceInjector.get('AnyOpsOSAppInfrastructureManagerObjectHelperService');
+  }
+
+  /**
+   * Sets the bodyContainerRef, this is used by Modals
+   */
+  setBodyContainerRef(bodyContainer: ViewContainerRef) {
+    this.bodyContainer = bodyContainer;
   }
 
   setActive(uuid: string): void {
@@ -54,7 +64,7 @@ export class AnyOpsOSAppBackupsManagerService {
   }
 
   initBackups(): void {
-    this.FileSystem.getConfigFile('applications/backups-manager/backups.json').subscribe(
+    this.LibFileSystem.getConfigFile('applications/backups-manager/backups.json').subscribe(
       // TODO data type
     (res: BackendResponse & { data: unknown; }) => {
       this.logger.info('Backups Manager', 'Got backups successfully');
@@ -67,7 +77,7 @@ export class AnyOpsOSAppBackupsManagerService {
   }
 
   initRestores(): void {
-    this.FileSystem.getConfigFile('applications/backups-manager/restores.json').subscribe(
+    this.LibFileSystem.getConfigFile('applications/backups-manager/restores.json').subscribe(
       // TODO data type
     (res: BackendResponse & { data: unknown; }) => {
       this.logger.info('Backups Manager', 'Got restores successfully');
@@ -79,432 +89,423 @@ export class AnyOpsOSAppBackupsManagerService {
     });
   }
 
-  mountVolumeSnapshot(dataObj: { snapshot: ImDataObject & { info: { data: NetAppSnapshot } } }): void {
+  async mountVolumeSnapshot(dataObj: { snapshot: ImDataObject & { info: { data: NetAppSnapshot } } }): Promise<void> {
     const loggerArgs = arguments;
 
     this.logger.debug('Backups Manager', 'Received event mountVolumeSnapshot -> Initializing mount of Volume', arguments);
 
-    this.Modal.openRegisteredModal('backups-manager-recovery-wizard', '.window--backups-manager .window__main',
+    const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('backups-manager-recovery-wizard', this.bodyContainer,
       {
         type: 'mount_volume_snapshot',
         title: `Select required data to Mount a Volume Snapshot`,
         data: dataObj
       }
-    ).then((modalInstance) => {
-      modalInstance.result.then((
-        selectedData: {
-          selectedSnapshot: ImDataObject & { info: { data: NetAppSnapshot } };
-          selectedIface: ImDataObject & { info: { data: NetAppIface } };
-          selectedHost: ImDataObject & { info: { data: VMWareHost } };
-        }) => {
-        if (!selectedData) return;
+    );
 
-        this.logger.debug('Backups Manager', 'Received restore data from Modal', loggerArgs);
+    modalInstance.afterClosed().subscribe(async (
+      selectedData: {
+        selectedSnapshot: ImDataObject & { info: { data: NetAppSnapshot } };
+        selectedIface: ImDataObject & { info: { data: NetAppIface } };
+        selectedHost: ImDataObject & { info: { data: VMWareHost } };
+      }
+    ) => {
+      if (!selectedData) return;
 
-        const virtual: ConnectionVmware = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedHost.info.mainUuid);
-        const storage: ConnectionNetapp = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedSnapshot.info.mainUuid);
-        const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
-          storage.uuid,
-          'vserver',
-          selectedData.selectedSnapshot.info.parent
-        );
-        const volume: ImDataObject & { info: { data: NetAppVolume } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
-          storage.uuid,
-          'volume',
-          selectedData.selectedSnapshot.info.parent
-        );
+      this.logger.debug('Backups Manager', 'Received restore data from Modal', loggerArgs);
 
-        const data: MountVolumeSnapshot = {
-          uuid: uuidv4(),
-          storage,
-          vserver: vServer,
-          volume,
-          snapshot: selectedData.selectedSnapshot,
-          virtual,
-          host: selectedData.selectedHost,
-          iface: selectedData.selectedIface,
-        };
+      const virtual: ConnectionVmware = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedHost.info.mainUuid);
+      const storage: ConnectionNetapp = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedSnapshot.info.mainUuid);
+      const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
+        storage.uuid,
+        'vserver',
+        selectedData.selectedSnapshot.info.parent
+      );
+      const volume: ImDataObject & { info: { data: NetAppVolume } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
+        storage.uuid,
+        'volume',
+        selectedData.selectedSnapshot.info.parent
+      );
 
-        this.BackupManagerHelpers.setRestore(data.uuid, {
-          name: `Datastore mount (${data.volume.name})`,
-          data,
-          state: ['init'],
-          log: []
-        });
-        this.setActive(data.uuid);
+      const data: MountVolumeSnapshot = {
+        uuid: uuidv4(),
+        storage,
+        vserver: vServer,
+        volume,
+        snapshot: selectedData.selectedSnapshot,
+        virtual,
+        host: selectedData.selectedHost,
+        iface: selectedData.selectedIface,
+      };
 
-        return this.Modal.openLittleModal(
-          'PLEASE WAIT',
-          `Mounting ${data.volume.name} from Snapshot...`,
-          '.window--backups-manager .window__main',
-          'plain'
-        ).then(() => {
-
-          return this.BackupManagerHelpers.mountRestoreSnapshotDatastore(data);
-        }).then((res) => {
-          if (res instanceof Error) throw new Error('Failed to mount Volume Snapshot');
-
-          this.logger.debug('Backups Manager', 'Restore finished successfully', loggerArgs);
-
-          this.Modal.closeModal('.window--backups-manager .window__main');
-          this.BackupManagerHelpers.setRestoreState(data.uuid, 'end');
-        }).catch((e) => {
-          this.Modal.closeModal('.window--backups-manager .window__main');
-          return this.Applications.errorHandler(e.message);
-        });
-
+      this.BackupManagerHelpers.setRestore(data.uuid, {
+        name: `Datastore mount (${data.volume.name})`,
+        data,
+        state: ['init'],
+        log: []
       });
+      this.setActive(data.uuid);
+
+      const littleModalRef: MatDialogRef<any> = await this.LibModal.openLittleModal(
+        this.bodyContainer,
+        'PLEASE WAIT',
+        `Mounting ${data.volume.name} from Snapshot...`
+      );
+
+      return this.BackupManagerHelpers.mountRestoreSnapshotDatastore(data).then((res) => {
+        if (res instanceof Error) throw new Error('Failed to mount Volume Snapshot');
+
+        this.logger.debug('Backups Manager', 'Restore finished successfully', loggerArgs);
+
+        this.LibModal.closeModal(littleModalRef.id);
+        this.BackupManagerHelpers.setRestoreState(data.uuid, 'end');
+      }).catch((e) => {
+        this.LibModal.closeModal(littleModalRef.id);
+        return this.LibApplication.errorHandler(e.message);
+      });
+
     });
   }
 
-  restoreVolumeFiles(dataObj: { snapshot?: ImDataObject & { info: { data: NetAppSnapshot } }, volume?: ImDataObject & { info: { data: NetAppVolume } }  }) {
+  async restoreVolumeFiles(dataObj: { snapshot?: ImDataObject & { info: { data: NetAppSnapshot } }, volume?: ImDataObject & { info: { data: NetAppVolume } }  }): Promise<void> {
     const loggerArgs = arguments;
 
     this.logger.debug('Backups Manager', 'Received event RestoreVolumeFiles -> Initializing restore of datastore files', arguments);
-
-    this.Modal.openRegisteredModal('backups-manager-recovery-wizard', '.window--backups-manager .window__main',
+    const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('backups-manager-recovery-wizard', this.bodyContainer,
       {
         type: 'restore_volume_files',
         title: `Select required data to Restore Volume Files`,
         data: dataObj
       }
-    ).then((modalInstance) => {
-      modalInstance.result.then((
-        selectedData: {
-          selectedSnapshot: ImDataObject & { info: { data: NetAppSnapshot } };
-          selectedIface: ImDataObject & { info: { data: NetAppIface } };
-          selectedHost: ImDataObject & { info: { data: VMWareHost } };
-        }) => {
-        if (!selectedData) return;
+    );
 
-        this.logger.debug('Backups Manager', 'Received restore data from Modal', loggerArgs);
+    modalInstance.afterClosed().subscribe(async (
+      selectedData: {
+        selectedSnapshot: ImDataObject & { info: { data: NetAppSnapshot } };
+        selectedIface: ImDataObject & { info: { data: NetAppIface } };
+        selectedHost: ImDataObject & { info: { data: VMWareHost } };
+      }
+    ) => {
+      if (!selectedData) return;
 
-        const virtual: ConnectionVmware = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedHost.info.mainUuid);
-        const storage: ConnectionNetapp = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedSnapshot.info.mainUuid);
-        const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
-          storage.uuid,
-          'vserver',
-          selectedData.selectedSnapshot.info.parent
-        );
-        const volume: ImDataObject & { info: { data: NetAppVolume } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
-          storage.uuid,
-          'volume',
-          selectedData.selectedSnapshot.info.parent
-        );
+      this.logger.debug('Backups Manager', 'Received restore data from Modal', loggerArgs);
 
-        const data: RestoreVolumeFiles = {
-          uuid: uuidv4(),
-          storage,
-          vserver: vServer,
-          volume,
-          snapshot: selectedData.selectedSnapshot,
-          virtual,
-          host: selectedData.selectedHost,
-          iface: selectedData.selectedIface,
-          esxiDatastoreName: 'anyOpsOS_' + volume['volume-id-attributes']['junction-path'].substr(1)
-        };
+      const virtual: ConnectionVmware = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedHost.info.mainUuid);
+      const storage: ConnectionNetapp = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedSnapshot.info.mainUuid);
+      const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
+        storage.uuid,
+        'vserver',
+        selectedData.selectedSnapshot.info.parent
+      );
+      const volume: ImDataObject & { info: { data: NetAppVolume } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
+        storage.uuid,
+        'volume',
+        selectedData.selectedSnapshot.info.parent
+      );
 
-        this.BackupManagerHelpers.setRestore(data.uuid, {
-          name: `Datastore restore (${data.volume['volume-id-attributes'].name})`,
-          data,
-          state: ['init'],
-          log: []
-        });
-        this.setActive(data.uuid);
+      const data: RestoreVolumeFiles = {
+        uuid: uuidv4(),
+        storage,
+        vserver: vServer,
+        volume,
+        snapshot: selectedData.selectedSnapshot,
+        virtual,
+        host: selectedData.selectedHost,
+        iface: selectedData.selectedIface,
+        esxiDatastoreName: 'anyOpsOS_' + volume['volume-id-attributes']['junction-path'].substr(1)
+      };
 
-        this.Modal.openLittleModal(
-          'PLEASE WAIT',
-          `Restoring ${data.volume.name} files from Snapshot...`,
-          '.window--backups-manager .window__main',
-          'plain'
-        ).then(() => {
-
-          return this.BackupManagerHelpers.restoreSnapshotDatastoreFiles(data);
-        }).then((res) => {
-          if (res instanceof Error) throw new Error('Failed to restore snapshot into datastore files');
-
-          this.logger.debug('Backups Manager', 'Restore finished successfully', loggerArgs);
-
-          // Open Datastore Brower application
-          this.Applications.openApplication('datastore-explorer', {
-              credential: data.virtual.credential,
-              host: data.virtual.host,
-              port: data.virtual.port,
-              type: 'vmware',
-              data: {},
-              original_datastore: data.volume.name
-          });
-
-          this.Modal.closeModal('.window--backups-manager .window__main');
-          this.BackupManagerHelpers.setRestoreState(data.uuid, 'end');
-        }).catch((e) => {
-          this.Modal.closeModal('.window--backups-manager .window__main');
-          return this.Applications.errorHandler(e.message);
-        });
-
+      this.BackupManagerHelpers.setRestore(data.uuid, {
+        name: `Datastore restore (${data.volume['volume-id-attributes'].name})`,
+        data,
+        state: ['init'],
+        log: []
       });
-    });
+      this.setActive(data.uuid);
 
+      const littleModalRef: MatDialogRef<any> = await this.LibModal.openLittleModal(
+        this.bodyContainer,
+        'PLEASE WAIT',
+        `Restoring ${data.volume.name} files from Snapshot...`,
+      );
+
+      return this.BackupManagerHelpers.restoreSnapshotDatastoreFiles(data).then((res) => {
+        if (res instanceof Error) throw new Error('Failed to restore snapshot into datastore files');
+
+        this.logger.debug('Backups Manager', 'Restore finished successfully', loggerArgs);
+
+        // Open Datastore Brower application
+        this.LibApplication.openApplication('datastore-explorer', {
+            credential: data.virtual.credential,
+            host: data.virtual.host,
+            port: data.virtual.port,
+            type: 'vmware',
+            data: {},
+            original_datastore: data.volume.name
+        });
+
+        this.LibModal.closeModal(littleModalRef.id);
+        this.BackupManagerHelpers.setRestoreState(data.uuid, 'end');
+      }).catch((e) => {
+        this.LibModal.closeModal(littleModalRef.id);
+        return this.LibApplication.errorHandler(e.message);
+      });
+
+    });
   }
 
-  restoreVmGuestFiles(dataObj: { vm: ImDataObject & { info: { data: VMWareVM } }, snapshot?: ImDataObject & { info: { data: NetAppSnapshot } } }) {
+  async restoreVmGuestFiles(dataObj: { vm: ImDataObject & { info: { data: VMWareVM } }, snapshot?: ImDataObject & { info: { data: NetAppSnapshot } } }): Promise<void> {
     const loggerArgs = arguments;
 
     this.logger.debug('Backups Manager', `Received event restoreVmGuestFiles -> Initializing restore of VM guest files [${dataObj.vm.name}]`, arguments);
 
-    this.Modal.openRegisteredModal('backups-manager-recovery-wizard', '.window--backups-manager .window__main',
+    const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('backups-manager-recovery-wizard', this.bodyContainer,
       {
         type: 'restore_vm_guest_files',
         title: `Select required data to Restore VM (${dataObj.vm.name}) Guest Files`,
         data: dataObj
       }
-    ).then((modalInstance) => {
-      modalInstance.result.then((
-        selectedData: {
-          selectedSnapshot: ImDataObject & { info: { data: NetAppSnapshot } };
-          selectedIface: ImDataObject & { info: { data: NetAppIface } };
-          selectedHost: ImDataObject & { info: { data: VMWareHost } };
-          selectedFolder: ImDataObject & { info: { data: VMWareFolder } };
-          selectedResourcePool: ImDataObject & { info: { data: VMWareResourcePool } };
-        }) => {
-        if (!selectedData) return;
+    );
 
-        this.logger.debug('Backups Manager', 'Received restore data from Modal', loggerArgs);
+    modalInstance.afterClosed().subscribe(async (
+      selectedData: {
+        selectedSnapshot: ImDataObject & { info: { data: NetAppSnapshot } };
+        selectedIface: ImDataObject & { info: { data: NetAppIface } };
+        selectedHost: ImDataObject & { info: { data: VMWareHost } };
+        selectedFolder: ImDataObject & { info: { data: VMWareFolder } };
+        selectedResourcePool: ImDataObject & { info: { data: VMWareResourcePool } };
+      }
+    ) => {
+      if (!selectedData) return;
 
-        const virtual: ConnectionVmware = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedHost.info.mainUuid);
-        const storage: ConnectionNetapp = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedSnapshot.info.mainUuid);
-        const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
-          storage.uuid,
-          'vserver',
-          selectedData.selectedSnapshot.info.parent
-        );
-        const volume: ImDataObject & { info: { data: NetAppVolume } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
-          storage.uuid,
-          'volume',
-          selectedData.selectedSnapshot.info.parent
-        );
+      this.logger.debug('Backups Manager', 'Received restore data from Modal', loggerArgs);
 
-        // TODO: folder.folder & resource_pool.resource_pool are required to publish the VM
-        const data: RestoreVmGuestFiles = {
-          uuid: uuidv4(),
-          storage,
-          vserver: vServer,
-          volume,
-          snapshot: selectedData.selectedSnapshot,
-          virtual,
-          host: selectedData.selectedHost,
-          iface: selectedData.selectedIface,
-          vm: dataObj.vm,
-          folder: selectedData.selectedFolder,
-          resourcePool: selectedData.selectedResourcePool,
-        };
+      const virtual: ConnectionVmware = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedHost.info.mainUuid);
+      const storage: ConnectionNetapp = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedSnapshot.info.mainUuid);
+      const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
+        storage.uuid,
+        'vserver',
+        selectedData.selectedSnapshot.info.parent
+      );
+      const volume: ImDataObject & { info: { data: NetAppVolume } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
+        storage.uuid,
+        'volume',
+        selectedData.selectedSnapshot.info.parent
+      );
 
-        this.BackupManagerHelpers.setRestore(data.uuid, {
-          name: `VM guest files (${data.vm.name})`,
-          data,
-          state: ['init'],
-          log: []
-        });
-        this.setActive(data.uuid);
+      // TODO: folder.folder & resource_pool.resource_pool are required to publish the VM
+      const data: RestoreVmGuestFiles = {
+        uuid: uuidv4(),
+        storage,
+        vserver: vServer,
+        volume,
+        snapshot: selectedData.selectedSnapshot,
+        virtual,
+        host: selectedData.selectedHost,
+        iface: selectedData.selectedIface,
+        vm: dataObj.vm,
+        folder: selectedData.selectedFolder,
+        resourcePool: selectedData.selectedResourcePool,
+      };
 
-        this.Modal.openLittleModal(
-          'PLEASE WAIT',
-          `Restoring ${data.vm.name} guest files from Snapshot...`,
-          '.window--backups-manager .window__main',
-          'plain'
-        ).then(() => {
-
-          return this.BackupManagerHelpers.restoreSnapshotVMGuestFiles(data);
-        }).then((res) => {
-          if (res instanceof Error) throw new Error('Failed to restore snapshot into VM guest files');
-
-          this.logger.debug('Backups Manager', 'Restore finished successfully', loggerArgs);
-
-          this.Modal.closeModal('.window--backups-manager .window__main');
-          this.BackupManagerHelpers.setRestoreState(data.uuid, 'end');
-        }).catch((e) => {
-          this.Modal.closeModal('.window--backups-manager .window__main');
-          return this.Applications.errorHandler(e.message);
-        });
-
+      this.BackupManagerHelpers.setRestore(data.uuid, {
+        name: `VM guest files (${data.vm.name})`,
+        data,
+        state: ['init'],
+        log: []
       });
-    });
+      this.setActive(data.uuid);
 
+      const littleModalRef: MatDialogRef<any> = await this.LibModal.openLittleModal(
+        this.bodyContainer,
+        'PLEASE WAIT',
+        `Restoring ${data.vm.name} guest files from Snapshot...`,
+      );
+
+      return this.BackupManagerHelpers.restoreSnapshotVMGuestFiles(data).then((res) => {
+        if (res instanceof Error) throw new Error('Failed to restore snapshot into VM guest files');
+
+        this.logger.debug('Backups Manager', 'Restore finished successfully', loggerArgs);
+
+        this.LibModal.closeModal(littleModalRef.id);
+        this.BackupManagerHelpers.setRestoreState(data.uuid, 'end');
+      }).catch((e) => {
+        this.LibModal.closeModal(littleModalRef.id);
+        return this.LibApplication.errorHandler(e.message);
+      });
+
+    });
   }
 
-  vmInstantRecovery(dataObj: { vm: ImDataObject & { info: { data: VMWareVM } }, snapshot?: ImDataObject & { info: { data: NetAppSnapshot } } }) {
+  async vmInstantRecovery(dataObj: { vm: ImDataObject & { info: { data: VMWareVM } }, snapshot?: ImDataObject & { info: { data: NetAppSnapshot } } }): Promise<void> {
     const loggerArgs = arguments;
 
     this.logger.debug('Backups Manager', `Received event vmInstantRecovery -> Initializing restore of VM [${dataObj.vm.name}]`, arguments);
 
-    this.Modal.openRegisteredModal('backups-manager-recovery-wizard', '.window--backups-manager .window__main',
+    const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('backups-manager-recovery-wizard', this.bodyContainer,
       {
         type: 'vm_instant_recovery',
         title: `Select required data to perform an Instant VM (${dataObj.vm.name})`,
         data: dataObj
       }
-    ).then((modalInstance) => {
-      modalInstance.result.then((
-        selectedData: {
-          selectedSnapshot: ImDataObject & { info: { data: NetAppSnapshot } };
-          selectedIface: ImDataObject & { info: { data: NetAppIface } };
-          selectedHost: ImDataObject & { info: { data: VMWareHost } };
-          selectedFolder: ImDataObject & { info: { data: VMWareFolder } };
-          selectedResourcePool: ImDataObject & { info: { data: VMWareResourcePool } };
-          vmName: string;
-          powerOnVm: boolean;
-        }) => {
-        if (!selectedData) return;
+    );
 
-        const virtual: ConnectionVmware = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedHost.info.mainUuid);
-        const storage: ConnectionNetapp = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedSnapshot.info.mainUuid);
-        const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
-          storage.uuid,
-          'vserver',
-          selectedData.selectedSnapshot.info.parent
-        );
-        const volume: ImDataObject & { info: { data: NetAppVolume } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
-          storage.uuid,
-          'volume',
-          selectedData.selectedSnapshot.info.parent
-        );
+    modalInstance.afterClosed().subscribe(async (
+      selectedData: {
+        selectedSnapshot: ImDataObject & { info: { data: NetAppSnapshot } };
+        selectedIface: ImDataObject & { info: { data: NetAppIface } };
+        selectedHost: ImDataObject & { info: { data: VMWareHost } };
+        selectedFolder: ImDataObject & { info: { data: VMWareFolder } };
+        selectedResourcePool: ImDataObject & { info: { data: VMWareResourcePool } };
+        vmName: string;
+        powerOnVm: boolean;
+      }
+    ) => {
+      if (!selectedData) return;
 
-        const data: VmInstantRecovery = {
-          uuid: uuidv4(),
-          storage,
-          vserver: vServer,
-          volume,
-          snapshot: selectedData.selectedSnapshot,
-          virtual,
-          host: selectedData.selectedHost,
-          iface: selectedData.selectedIface,
-          vm: dataObj.vm,
-          folder: selectedData.selectedFolder,
-          resourcePool: selectedData.selectedResourcePool,
-          vmName: selectedData.vmName,
-          powerOnVm: selectedData.powerOnVm
-        };
+      const virtual: ConnectionVmware = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedHost.info.mainUuid);
+      const storage: ConnectionNetapp = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedSnapshot.info.mainUuid);
+      const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
+        storage.uuid,
+        'vserver',
+        selectedData.selectedSnapshot.info.parent
+      );
+      const volume: ImDataObject & { info: { data: NetAppVolume } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
+        storage.uuid,
+        'volume',
+        selectedData.selectedSnapshot.info.parent
+      );
 
-        this.BackupManagerHelpers.setRestore(data.uuid, {
-          name: `VM instant recovery (${data.vm.name})`,
-          data,
-          state: ['init'],
-          log: []
-        });
-        this.setActive(data.uuid);
+      const data: VmInstantRecovery = {
+        uuid: uuidv4(),
+        storage,
+        vserver: vServer,
+        volume,
+        snapshot: selectedData.selectedSnapshot,
+        virtual,
+        host: selectedData.selectedHost,
+        iface: selectedData.selectedIface,
+        vm: dataObj.vm,
+        folder: selectedData.selectedFolder,
+        resourcePool: selectedData.selectedResourcePool,
+        vmName: selectedData.vmName,
+        powerOnVm: selectedData.powerOnVm
+      };
 
-        this.logger.debug('Backups Manager', 'Received restore data from Modal as new location', loggerArgs);
-
-        this.Modal.openLittleModal(
-          'PLEASE WAIT',
-          `Restoring ${data.vm.name} from Snapshot...`,
-          '.window--backups-manager .window__main',
-          'plain'
-        ).then(() => {
-
-          return this.BackupManagerHelpers.restoreSnapshotIntoInstantVM(data);
-        }).then((res) => {
-          if (res instanceof Error) throw new Error('Failed to restore snapshot into Instant VM');
-
-          this.logger.debug('Backups Manager', 'Restore finished successfully', loggerArgs);
-
-          this.Modal.closeModal('.window--backups-manager .window__main');
-          this.BackupManagerHelpers.setRestoreState(data.uuid, 'end');
-        }).catch((e) => {
-          this.Modal.closeModal('.window--backups-manager .window__main');
-          return this.Applications.errorHandler(e.message);
-        });
-
+      this.BackupManagerHelpers.setRestore(data.uuid, {
+        name: `VM instant recovery (${data.vm.name})`,
+        data,
+        state: ['init'],
+        log: []
       });
-    });
+      this.setActive(data.uuid);
 
+      this.logger.debug('Backups Manager', 'Received restore data from Modal as new location', loggerArgs);
+
+      const littleModalRef: MatDialogRef<any> = await this.LibModal.openLittleModal(
+        this.bodyContainer,
+        'PLEASE WAIT',
+        `Restoring ${data.vm.name} from Snapshot...`,
+      );
+
+      return this.BackupManagerHelpers.restoreSnapshotIntoInstantVM(data).then((res) => {
+        if (res instanceof Error) throw new Error('Failed to restore snapshot into Instant VM');
+
+        this.logger.debug('Backups Manager', 'Restore finished successfully', loggerArgs);
+
+        this.LibModal.closeModal(littleModalRef.id);
+        this.BackupManagerHelpers.setRestoreState(data.uuid, 'end');
+      }).catch((e) => {
+        this.LibModal.closeModal(littleModalRef.id);
+        return this.LibApplication.errorHandler(e.message);
+      });
+
+    });
   }
 
-  restoreVm(dataObj: { vm: ImDataObject & { info: { data: VMWareVM } }, snapshot?: ImDataObject & { info: { data: NetAppSnapshot } } }) {
+  async restoreVm(dataObj: { vm: ImDataObject & { info: { data: VMWareVM } }, snapshot?: ImDataObject & { info: { data: NetAppSnapshot } } }): Promise<void> {
     const loggerArgs = arguments;
 
     this.logger.debug('Backups Manager', `Received event restoreVm -> Initializing restore of VM [${dataObj.vm.name}]`, arguments);
 
-    this.Modal.openRegisteredModal('backups-manager-recovery-wizard', '.window--backups-manager .window__main',
+    const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('backups-manager-recovery-wizard', this.bodyContainer,
       {
         type: 'restore_vm',
         title: `Select required data to Restore VM (${dataObj.vm.name})`,
         data: dataObj
       }
-    ).then((modalInstance) => {
-      modalInstance.result.then((selectedData: {
+    );
+
+    modalInstance.afterClosed().subscribe(async (
+      selectedData: {
         selectedSnapshot: ImDataObject & { info: { data: NetAppSnapshot } };
         selectedIface: ImDataObject & { info: { data: NetAppIface } };
         selectedHost: ImDataObject & { info: { data: VMWareHost } };
         selectedFolder: ImDataObject & { info: { data: VMWareFolder } };
         selectedResourcePool: ImDataObject & { info: { data: VMWareResourcePool } };
         powerOnVm: boolean;
-      }) => {
-        if (!selectedData) return;
+      }
+    ) => {
+      if (!selectedData) return;
 
-        const virtual: ConnectionVmware = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedHost.info.mainUuid);
-        const storage: ConnectionNetapp = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedSnapshot.info.mainUuid);
-        const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
-          storage.uuid,
-          'vserver',
-          selectedData.selectedSnapshot.info.parent
-        );
-        const volume: ImDataObject & { info: { data: NetAppVolume } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
-          storage.uuid,
-          'volume',
-          selectedData.selectedSnapshot.info.parent
-        );
+      const virtual: ConnectionVmware = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedHost.info.mainUuid);
+      const storage: ConnectionNetapp = this.InfrastructureManager.getConnectionByUuid(selectedData.selectedSnapshot.info.mainUuid);
+      const vServer: ImDataObject & { info: { data: NetAppVserver } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
+        storage.uuid,
+        'vserver',
+        selectedData.selectedSnapshot.info.parent
+      );
+      const volume: ImDataObject & { info: { data: NetAppVolume } } = this.InfrastructureManagerObjectHelper.getParentObjectByType(
+        storage.uuid,
+        'volume',
+        selectedData.selectedSnapshot.info.parent
+      );
 
-        const data: RestoreVm = {
-          uuid: uuidv4(),
-          storage,
-          vserver: vServer,
-          volume,
-          snapshot: selectedData.selectedSnapshot,
-          virtual,
-          host: selectedData.selectedHost,
-          vm: dataObj.vm,
-          folder: selectedData.selectedFolder,
-          resourcePool: selectedData.selectedResourcePool,
-          powerOnVm: selectedData.powerOnVm
-        };
+      const data: RestoreVm = {
+        uuid: uuidv4(),
+        storage,
+        vserver: vServer,
+        volume,
+        snapshot: selectedData.selectedSnapshot,
+        virtual,
+        host: selectedData.selectedHost,
+        vm: dataObj.vm,
+        folder: selectedData.selectedFolder,
+        resourcePool: selectedData.selectedResourcePool,
+        powerOnVm: selectedData.powerOnVm
+      };
 
-        this.BackupManagerHelpers.setRestore(data.uuid, {
-          name: `VM restore (${data.vm.name})`,
-          data,
-          state: ['init'],
-          log: []
-        });
-        this.setActive(data.uuid);
-
-        this.logger.debug('Backups Manager', 'Received restore data from Modal as Original location', loggerArgs);
-
-        this.Modal.openLittleModal(
-          'PLEASE WAIT',
-          `Restoring ${data.vm.name} from Snapshot...`,
-          '.window--backups-manager .window__main',
-          'plain'
-        ).then(() => {
-
-          return this.BackupManagerHelpers.restoreSnapshotIntoVM(data);
-        }).then((res) => {
-          if (res instanceof Error) throw new Error('Failed to restore snapshot into VM');
-
-          this.logger.debug('Backups Manager', 'Restore finished successfully', loggerArgs);
-
-          this.Modal.closeModal('.window--backups-manager .window__main');
-          this.BackupManagerHelpers.setRestoreState(data.uuid, 'end');
-        }).catch((e) => {
-          this.Modal.closeModal('.window--backups-manager .window__main');
-          return this.Applications.errorHandler(e.message);
-        });
-
+      this.BackupManagerHelpers.setRestore(data.uuid, {
+        name: `VM restore (${data.vm.name})`,
+        data,
+        state: ['init'],
+        log: []
       });
-    });
+      this.setActive(data.uuid);
 
+      this.logger.debug('Backups Manager', 'Received restore data from Modal as Original location', loggerArgs);
+
+      const littleModalRef: MatDialogRef<any> = await this.LibModal.openLittleModal(
+        this.bodyContainer,
+        'PLEASE WAIT',
+        `Restoring ${data.vm.name} from Snapshot...`,
+      );
+
+      return this.BackupManagerHelpers.restoreSnapshotIntoVM(data).then((res) => {
+        if (res instanceof Error) throw new Error('Failed to restore snapshot into VM');
+
+        this.logger.debug('Backups Manager', 'Restore finished successfully', loggerArgs);
+
+        this.LibModal.closeModal(littleModalRef.id);
+        this.BackupManagerHelpers.setRestoreState(data.uuid, 'end');
+      }).catch((e) => {
+        this.LibModal.closeModal(littleModalRef.id);
+        return this.LibApplication.errorHandler(e.message);
+      });
+
+    });
   }
 
-  backupVm(data: BackupVm) {
+  async backupVm(data: BackupVm): Promise<void> {
     const loggerArgs = arguments;
 
     data.uuid = uuidv4();
@@ -521,41 +522,41 @@ export class AnyOpsOSAppBackupsManagerService {
     });
     this.setActive(data.uuid);
 
-    this.Modal.openRegisteredModal('backups-manager-backup-wizard', '.window--backups-manager .window__main',
+    const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('backups-manager-backup-wizard', this.bodyContainer,
       {
         title: 'Backup Wizard',
         backupObject: data.vm
       }
-    ).then((modalInstance) => {
-      modalInstance.result.then((selectedData) => {
-        if (!selectedData) return;
+    );
 
-        data.backupName = `VM backup (${selectedData.backupName})`;
+    modalInstance.afterClosed().subscribe(async (
+      selectedData
+    ) => {
+      if (!selectedData) return;
 
-        this.logger.debug('Backups Manager', 'Received backup data from Modal', loggerArgs);
+      data.backupName = `VM backup (${selectedData.backupName})`;
 
-        this.Modal.openLittleModal(
-          'PLEASE WAIT',
-          `Backing up ${selectedData.backupName}...`,
-          '.window--backups-manager .window__main',
-          'plain'
-        );
+      this.logger.debug('Backups Manager', 'Received backup data from Modal', loggerArgs);
 
-        return this.BackupManagerHelpers.startVMBackup(data).then((res) => {
-          if (res instanceof Error) throw new Error('Failed to backup VM');
+      const littleModalRef: MatDialogRef<any> = await this.LibModal.openLittleModal(
+        this.bodyContainer,
+        'PLEASE WAIT',
+        `Backing up ${selectedData.backupName}...`,
+      );
 
-          this.logger.debug('Backups Manager', 'Backup finished successfully', loggerArgs);
+      return this.BackupManagerHelpers.startVMBackup(data).then((res) => {
+        if (res instanceof Error) throw new Error('Failed to backup VM');
 
-          this.Modal.closeModal('.window--backups-manager .window__main');
-          this.BackupManagerHelpers.setBackupState(data.uuid, 'end');
-        }).catch((e) => {
-          this.Modal.closeModal('.window--backups-manager .window__main');
-          return this.Applications.errorHandler(e.message);
-        });
+        this.logger.debug('Backups Manager', 'Backup finished successfully', loggerArgs);
 
+        this.LibModal.closeModal(littleModalRef.id);
+        this.BackupManagerHelpers.setBackupState(data.uuid, 'end');
+      }).catch((e) => {
+        this.LibModal.closeModal(littleModalRef.id);
+        return this.LibApplication.errorHandler(e.message);
       });
-    });
 
+    });
   }
 
 }

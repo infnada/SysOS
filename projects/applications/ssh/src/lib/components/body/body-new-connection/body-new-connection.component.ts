@@ -1,16 +1,20 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 
 import {takeUntil} from 'rxjs/operators';
 import {Subject} from 'rxjs';
 
-import {Application, AnyOpsOSLibApplicationService} from '@anyopsos/lib-application';
-import {AnyOpsOSLibServiceInjectorService} from '@anyopsos/lib-service-injector';
+import {MatDialogRef} from '@anyopsos/lib-angular-material';
+import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
+import {AnyOpsOSLibApplicationService} from '@anyopsos/lib-application';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
+import {AnyOpsOSLibCredentialHelpersService} from '@anyopsos/lib-credential';
+import {AnyOpsOSLibSshHelpersService} from '@anyopsos/lib-ssh';
 import {Credential} from '@anyopsos/module-credential';
+import {ConnectionSsh, ConnectionSftp} from '@anyopsos/module-ssh';
 
 import {AnyOpsOSAppSshService} from '../../../services/anyopsos-app-ssh.service';
-import {SshConnection} from '../../../types/ssh-connection';
+
 
 @Component({
   selector: 'aassh-body-new-connection',
@@ -18,46 +22,49 @@ import {SshConnection} from '../../../types/ssh-connection';
   styleUrls: ['./body-new-connection.component.scss']
 })
 export class BodyNewConnectionComponent implements OnDestroy, OnInit {
-  @Input() application: Application;
-
-  private destroySubject$: Subject<void> = new Subject();
-  private CredentialsManager;
+  private readonly destroySubject$: Subject<void> = new Subject();
 
   credentials: Credential[];
-  connections: SshConnection[];
+  connections: ConnectionSsh[];
   connectionForm: FormGroup;
 
   constructor(private readonly formBuilder: FormBuilder,
-              private Applications: AnyOpsOSLibApplicationService,
-              private serviceInjector: AnyOpsOSLibServiceInjectorService,
-              private Modal: AnyOpsOSLibModalService,
-              private Ssh: AnyOpsOSAppSshService) {
-
-    this.CredentialsManager = this.serviceInjector.get('AnyOpsOSAppCredentialsManagerService');
+              private readonly logger: AnyOpsOSLibLoggerService,
+              private readonly LibApplication: AnyOpsOSLibApplicationService,
+              private readonly LibModal: AnyOpsOSLibModalService,
+              private readonly LibCredentialHelpers: AnyOpsOSLibCredentialHelpersService,
+              private readonly LibSshHelpers: AnyOpsOSLibSshHelpersService,
+              private readonly Ssh: AnyOpsOSAppSshService) {
   }
 
   ngOnInit(): void {
+
+    // Create main Form
     this.connectionForm = this.formBuilder.group({
       description: ['', Validators.required],
       host: ['', Validators.required],
       port: [22, Validators.required],
       credential: ['', Validators.required],
       hopServerUuid: [],
-      save: [true],
-      autologin: [false],
-      uuid: [null]
+      autoLogin: [false],
+      uuid: [null],
+      type: ['ssh']
     });
 
     // Listen for credentials changes
-    this.CredentialsManager.credentials
+    this.LibCredentialHelpers.getAllCredentialsObserver()
       .pipe(takeUntil(this.destroySubject$)).subscribe((credentials: Credential[]) => this.credentials = credentials);
 
     // Listen for connections changes
-    this.Ssh.connections
-      .pipe(takeUntil(this.destroySubject$)).subscribe((connections: SshConnection[]) => this.onConnectionsChange(connections));
+    this.LibSshHelpers.getAllConnectionsObserver()
+      .pipe(takeUntil(this.destroySubject$)).subscribe((connections: (ConnectionSsh | ConnectionSftp)[]) => {
 
-    // Listen for activeConnection change
-    this.Ssh.activeConnection
+      const sshConnections: ConnectionSsh[] = connections.filter((connection: ConnectionSsh | ConnectionSftp) => connection.type === 'ssh') as ConnectionSsh[];
+      this.onConnectionsChange(sshConnections);
+    });
+
+    // Listen for activeConnectionUuid change
+    this.Ssh.activeConnectionUuid
       .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnectionUuid: string) => this.onActiveConnectionChange(activeConnectionUuid));
   }
 
@@ -68,27 +75,28 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
     this.destroySubject$.next();
   }
 
-  private onConnectionsChange(connections: SshConnection[]): void {
+  private onConnectionsChange(connections: ConnectionSsh[]): void {
     this.connections = connections;
 
     if (this.connections.length === 0) return this.connectionForm.controls.hopServerUuid.disable();
     this.connectionForm.controls.hopServerUuid.enable();
   }
 
-  private onActiveConnectionChange(activeConnectionUuid: string): void {
+  private async onActiveConnectionChange(activeConnectionUuid: string): Promise<void> {
+
+    // Reset main Form
     if (!activeConnectionUuid) {
       return this.connectionForm.reset({
         port: 22,
-        save: true,
-        autologin: false,
+        autoLogin: false,
         hopServerUuid: null,
         uuid: null
       });
     }
 
     // Set Form controls with currentConnection data
-    const currentConnection = this.getActiveConnection();
-    Object.keys(currentConnection).forEach((item) => {
+    const currentConnection: ConnectionSsh = await this.Ssh.getActiveConnection();
+    Object.keys(currentConnection).forEach((item: string) => {
       if (this.connectionForm.controls[item]) this.connectionForm.controls[item].setValue(currentConnection[item]);
     });
   }
@@ -98,20 +106,33 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
    */
   get f(): { [key: string]: AbstractControl } { return this.connectionForm.controls; }
 
-  sendConnect(saveOnly: boolean = false): void {
+  /**
+   * Initialize connection with main Form data
+   */
+  async sendConnect(saveOnly: boolean = false): Promise<void> {
+
     // stop here if form is invalid
     if (this.connectionForm.invalid) return;
 
-    this.Modal.openLittleModal('PLEASE WAIT', (saveOnly ? 'Saving connection...' : 'Connecting to server...'), '.window--ssh .window__main', 'plain').then(() => {
-      this.Ssh.connect(this.connectionForm.value, saveOnly);
+    const littleModalRef: MatDialogRef<any> = await this.LibModal.openLittleModal(
+      this.Ssh.getBodyContainerRef(),
+      'PLEASE WAIT',
+      (saveOnly ? 'Saving connection...' : 'Connecting to server...')
+    );
+
+    this.Ssh.connect(this.connectionForm.value, saveOnly).then((connection: ConnectionSsh) => {
+      this.Ssh.setActiveConnectionUuid(connection.uuid);
+
+      this.LibModal.closeModal(littleModalRef.id);
+    }).catch((e: any) => {
+      this.logger.error('Ssh', 'Error while connecting', null, e);
+
+      this.LibModal.changeModalType(littleModalRef.id, 'danger');
+      this.LibModal.changeModalText(littleModalRef.id, e);
     });
   }
 
   manageCredentials(): void {
-    this.Applications.openApplication('credentials-manager');
-  }
-
-  getActiveConnection(): SshConnection {
-    return this.Ssh.getActiveConnection();
+    this.LibApplication.openApplication('credentials-manager');
   }
 }

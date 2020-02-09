@@ -3,31 +3,34 @@ import {HttpClient} from '@angular/common/http';
 
 import {BehaviorSubject, Observable} from 'rxjs';
 
+import {UserState} from '../types/user-state';
+
 @Injectable({
   providedIn: 'root'
 })
 export class AnyOpsOSLibUserService {
-  private stateSource = new BehaviorSubject({
+  private readonly stateSource: BehaviorSubject<UserState> = new BehaviorSubject({
     userLoggedIn: false,
     username: 'root'
   });
-  currentState = this.stateSource.asObservable();
 
-  constructor(private http: HttpClient) {
+  readonly currentState = this.stateSource.asObservable();
+
+  constructor(private readonly http: HttpClient) {
   }
 
-  setState(data: any): void {
+  setState(data: UserState): void {
     this.stateSource.next(data);
   }
 
-  loginUser(username: string, password: string): Observable<any> {
+  loginUser(username: string, password: string): Observable<Object> {
     return this.http.post('/api/auth', {
       username,
       password
     });
   }
 
-  getSession() {
+  getSession(): Observable<Object> {
     return this.http.get('/api/auth');
   }
 }

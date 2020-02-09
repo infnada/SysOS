@@ -4,7 +4,7 @@ import {getLogger, Logger} from 'log4js';
 
 import {AnyOpsOSApiGlobalsModule} from '@anyopsos/module-api-globals';
 
-const logger: Logger = getLogger('mainlog');
+const logger: Logger = getLogger('mainLog');
 
 @Middleware({ type: 'after' })
 export class AnyOpsOSApiErrorHandlerMiddleware implements ExpressErrorMiddlewareInterface {
@@ -12,7 +12,7 @@ export class AnyOpsOSApiErrorHandlerMiddleware implements ExpressErrorMiddleware
   public error(e: any, request: Request, response: Response, next?: NextFunction): void {
 
     if (!response.headersSent) {
-      logger.info(`[API error-handler middleware] ${e.httpCode ? e.httpCode : 500} -> url [${request.originalUrl}] -> ${e}`);
+      logger.info(`[API error-handler middleware] ${e.httpCode ? e.httpCode : 500} -> method [${request.method}], url [${request.originalUrl}] -> ${e}`);
       new AnyOpsOSApiGlobalsModule(request, response).serverError(e);
     }
   }

@@ -7,13 +7,13 @@
   "swagger": "2.0",
   "projectName": "folder",
   "paths": {
-    "/api/folder/{folderName}": {
+    "/api/folder/{srcPath}": {
       "get": {
         "operationId": "AnyOpsOSFolderApiController.getFolder",
         "parameters": [
           {
             "in": "path",
-            "name": "folderName",
+            "name": "srcPath",
             "required": true,
             "type": "string"
           }
@@ -30,13 +30,15 @@
         "produces": [
           "text/html; charset=utf-8"
         ]
-      },
+      }
+    },
+    "/api/folder/{dstPath}": {
       "put": {
         "operationId": "AnyOpsOSFolderApiController.createFolder",
         "parameters": [
           {
             "in": "path",
-            "name": "folderName",
+            "name": "dstPath",
             "required": true,
             "type": "string"
           }

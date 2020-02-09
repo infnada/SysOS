@@ -1,6 +1,6 @@
 <div id="login">
   <div class="container w-50">
-    <div class="profile" [ngClass]="{'profile--open': loginExpanded}">
+    <div class="profile">
       <h1 style="
           font-family: monospace;
           font-weight: 700;
@@ -8,9 +8,9 @@
           position: absolute;
           margin-top: -100px;
       ">anyOpsOS</h1>
-      <h1>{{getDate()}}</h1>
-      <h2 class="mb-5">{{getTime()}}</h2>
-      <button class="profile__avatar" id="toggleProfile" (click)="loginExpanded = !loginExpanded">
+      <h5>{{getDate()}}</h5>
+      <h6 class="mb-5">{{getTime()}}</h6>
+      <button class="profile__avatar" id="toggleProfile">
         <i class="fas fa-user fa-5x fa-user-login"></i>
       </button>
       <div class="profile__form">

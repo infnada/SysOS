@@ -7,20 +7,26 @@
   "swagger": "2.0",
   "projectName": "config-file",
   "paths": {
-    "/api/config-file/{configUuid}/{fileName}": {
+    "/api/config-file/{workspaceUuid}/{fileName}/{configUuid}": {
       "get": {
         "operationId": "AnyOpsOSConfigFileApiController.getConfigFile",
         "parameters": [
           {
             "in": "path",
-            "name": "configUuid",
-            "required": false,
+            "name": "workspaceUuid",
+            "required": true,
             "type": "string"
           },
           {
             "in": "path",
             "name": "fileName",
             "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "configUuid",
+            "required": false,
             "type": "string"
           }
         ],
@@ -42,14 +48,20 @@
         "parameters": [
           {
             "in": "path",
-            "name": "configUuid",
-            "required": false,
+            "name": "workspaceUuid",
+            "required": true,
             "type": "string"
           },
           {
             "in": "path",
             "name": "fileName",
             "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "configUuid",
+            "required": false,
             "type": "string"
           },
           {
@@ -85,14 +97,20 @@
         "parameters": [
           {
             "in": "path",
-            "name": "configUuid",
-            "required": false,
+            "name": "workspaceUuid",
+            "required": true,
             "type": "string"
           },
           {
             "in": "path",
             "name": "fileName",
             "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "configUuid",
+            "required": false,
             "type": "string"
           },
           {
@@ -128,14 +146,20 @@
         "parameters": [
           {
             "in": "path",
-            "name": "configUuid",
-            "required": false,
+            "name": "workspaceUuid",
+            "required": true,
             "type": "string"
           },
           {
             "in": "path",
             "name": "fileName",
             "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "configUuid",
+            "required": false,
             "type": "string"
           }
         ],

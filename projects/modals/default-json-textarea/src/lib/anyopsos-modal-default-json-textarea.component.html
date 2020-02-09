@@ -1,0 +1,11 @@
+<almodal-body #modalBody>
+
+  <!-- Put modal contant here -->
+  <alutil-text-input [text]="jsonData" [readOnly]="true" [mode]="'json'" *ngIf="data"></alutil-text-input>
+
+</almodal-body>
+
+<!-- Put footer buttons here -->
+<almodal-buttons>
+  <button class="btn" type="button" (click)="dialogRef.close()" mat-flat-button color="primary">Close</button>
+</almodal-buttons>

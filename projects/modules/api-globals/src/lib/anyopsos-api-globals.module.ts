@@ -1,13 +1,18 @@
 import {Request, Response} from 'express';
+import {getLogger} from 'log4js';
 
 import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
 
+
+const logger = getLogger('mainLog');
+
 export class AnyOpsOSApiGlobalsModule {
 
-  constructor(private request: Request, private response: Response) {
+  constructor(private readonly request: Request,
+              private readonly response: Response) {
   }
 
-  public responseAsIs(status: number, contentType: string, data: unknown): void {
+  public responseAsIs(status: number, contentType: string = 'text/plain', data: unknown): void {
     this.response.set('Content-Type', contentType);
     this.response.status(status).send(data);
   }
@@ -49,7 +54,7 @@ export class AnyOpsOSApiGlobalsModule {
   }
 
   public serverError(e: any): Response {
-    console.log(e);
+    logger.error(`[Module ApiGlobals] -> serverError -> ${e}`);
 
     this.response.status(e.httpCode ? e.httpCode : 500);
     return this.response.json(

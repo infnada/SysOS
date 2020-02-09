@@ -1,124 +1,134 @@
-import {get} from 'request';
+import {Request} from 'express';
+import fetch, {Headers, Response} from 'node-fetch';
+
+import {AnyOpsOSMonitorSessionStateModule} from './anyopsos-module-monitor-session-state';
+
+import {ConnectionMonitor} from './types/connection-monitor';
+import {ConnectionMonitorServer} from './types/connection-monitor-server';
+import {ForwarderResponse} from './types/forwarder-response';
 
 export class AnyOpsOSMonitorModule {
 
-  private chartsDatabase: {
-    charts: {
-      [key: string]: {
-        alarms: {};
-        chart_type: string;
-        context: string;
-        data_url: string;
-        dimensions: {
+  private readonly MonitorSessionStateModule: AnyOpsOSMonitorSessionStateModule;
 
-        };
-        duration: number;
-        enabled: boolean;
-        family: string;
-        first_entry: number;
-        green: number;
-        id: string;
-        last_entry: number;
-        module: string;
-        name: string;
-        plugin: string;
-        priority: number;
-        red: number;
-        title: string;
-        type: string;
-        units: string;
-        update_every: number;
+  constructor(private readonly userUuid: string,
+              private readonly sessionUuid: string,
+              private readonly workspaceUuid: string,
+              private readonly connectionUuid: string,
+              private readonly request: Request) {
+
+    this.MonitorSessionStateModule = new AnyOpsOSMonitorSessionStateModule(this.userUuid, this.sessionUuid, this.workspaceUuid, this.connectionUuid);
+  }
+
+  private doRequest(url: string, requestHeaders: Headers): Promise<ForwarderResponse> {
+    let resStatus: number;
+    let contentType: string | null;
+
+    // TODO port?
+
+    return fetch(url, {
+      method: 'GET',
+      headers: requestHeaders
+    }).then((res: Response) => {
+      resStatus = res.status;
+      contentType = res.headers.get('content-type');
+
+      return (res.headers.get('content-type')?.includes('json') ? res.json() : res.text());
+    }).then((res: any) => {
+
+      // Return data
+      return {
+        resStatus,
+        contentType,
+        data: res
       };
-    };
-    custom_info: string;
-    history: number;
-    hostname: string;
-    os: string;
-    release_channel: string;
-    timezone: string;
-    update_every: number;
-    version: string;
-    charts_count: number;
-    dimensions_count: number;
-    alarms_count: number;
-  };
-  private dataDatabase: { [key: string]: any[] } = {};
 
-
-  constructor() {
+    }).catch(e => e);
   }
 
-  // TODO: this is temporal to check internal monitoring works OK
-  initChartsDatabase() {
-    setInterval(() => {
-      get({
-        url: 'https://frankfurt.my-netdata.io/api/v1/allmetrics?format=json&help=no&types=no&timestamps=yes&names=no&oldunits=no&hideunits=yes&data=as-collected',
-        json: true,
-      }, (error, response, body) => {
-        Object.keys(body).forEach(obj => {
-          if (!this.dataDatabase[obj]) this.dataDatabase[obj] = [];
+  /**
+   * Function used to forward Netdata requests to original destination host providing credentials/tokens if needed
+   */
+  private async forwardRequest(urlPath: string) {
 
-          const alreadyExist = this.dataDatabase[obj].find(e => {
-            return e[0] === body[obj].last_updated * 1000;
-          });
+    const mainServer: ConnectionMonitorServer = await this.MonitorSessionStateModule.getConnectionMainServer();
+    const currentConnection: ConnectionMonitor = await this.MonitorSessionStateModule.getConnection();
+    const url: string = currentConnection.host + urlPath + (
+      Object.keys(this.request.query).length ?
+        '?' + Object.keys(this.request.query).map(k => `${k}${(this.request.query[k] ? '=' + this.request.query[k] : '')}`).join('&') :
+        ''
+      );
 
-          if (alreadyExist) return;
+    const requestHeaders: any = new Headers();
 
-          const dataToPush = [];
-          dataToPush.push(body[obj].last_updated * 1000);
-          Object.keys(body[obj].dimensions).forEach(d => {
-            dataToPush.push(body[obj].dimensions[d].value);
-          });
+    if (!currentConnection.credential) return this.doRequest(url, requestHeaders);
 
-          if (obj === 'system.cpu') dataToPush.pop(); // remove idle dimension
-
-          this.dataDatabase[obj].push(dataToPush);
-        });
-      });
-    }, 1000);
-  }
-
-  getDataDatabase() {
-    return this.dataDatabase;
-  }
-
-  getCharts() {
-    if (!this.chartsDatabase) {
-      // TODO: this is temporal to check internal monitoring works OK
-      this.initChartsDatabase();
-
-      get({
-        url: 'https://frankfurt.my-netdata.io/api/v1/charts',
-        json: true,
-      }, (error, response, body) => {
-        this.chartsDatabase = body;
-      });
+    // TODO all credential types
+    if (mainServer.credential.fields.Type === 'basic') {
+      requestHeaders.append('Authorization', `Basic ${Buffer.from(mainServer.credential.fields.UserName + ':' + mainServer.credential.fields.Password.getText()).toString('base64')}`);
     }
 
-    return this.chartsDatabase;
+    return this.doRequest(url, requestHeaders);
   }
 
-  getChart() {
+  async getCharts(): Promise<ForwarderResponse> {
+    const currentConnection: ConnectionMonitor = await this.MonitorSessionStateModule.getConnection();
 
+    if (currentConnection.type === 'netdata-credential') return this.forwardRequest('/api/v1/charts');
+
+    return this.forwardRequest('/api/v1/charts');
   }
 
-  getChartData() {
+  async getChart(): Promise<ForwarderResponse> {
+    const currentConnection: ConnectionMonitor = await this.MonitorSessionStateModule.getConnection();
 
+    if (currentConnection.type === 'netdata-credential') return this.forwardRequest('/api/v1/chart');
+
+    return this.forwardRequest('/api/v1/chart');
   }
 
-  getAlarms() {
+  async getChartData(): Promise<ForwarderResponse> {
+    const currentConnection: ConnectionMonitor = await this.MonitorSessionStateModule.getConnection();
 
+    if (currentConnection.type === 'netdata-credential') return this.forwardRequest('/api/v1/data');
+
+    return this.forwardRequest('/api/v1/data');
   }
 
-  getAlarmsLog() {
+  async getAlarms(): Promise<ForwarderResponse> {
+    const currentConnection: ConnectionMonitor = await this.MonitorSessionStateModule.getConnection();
 
+    if (currentConnection.type === 'netdata-credential') return this.forwardRequest('/api/v1/alarms');
+
+    return this.forwardRequest('/api/v1/alarms');
   }
 
-  getBadge() {
+  async getAlarmsLog(): Promise<ForwarderResponse> {
+    const currentConnection: ConnectionMonitor = await this.MonitorSessionStateModule.getConnection();
 
+    if (currentConnection.type === 'netdata-credential') return this.forwardRequest('/api/v1/alarm_log');
+
+    return this.forwardRequest('/api/v1/alarm_log');
   }
 
-  testRemoteConnection(): boolean {
+  async getBadge(): Promise<ForwarderResponse> {
+    const currentConnection: ConnectionMonitor = await this.MonitorSessionStateModule.getConnection();
+
+    if (currentConnection.type === 'netdata-credential') return this.forwardRequest('/api/v1/badge.svg');
+
+    return this.forwardRequest('/api/v1/badge.svg');
+  }
+
+  async createSession(): Promise<boolean> {
+    const currentConnection: ConnectionMonitor = await this.MonitorSessionStateModule.getConnection();
+
+    if (currentConnection.type === 'netdata-credential') {
+      const forwarderResult: ForwarderResponse = await this.forwardRequest('');
+
+      if (forwarderResult.resStatus === 200) return true;
+      return false;
+    }
+
     return true;
   }
 }

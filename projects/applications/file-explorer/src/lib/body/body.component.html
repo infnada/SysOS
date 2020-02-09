@@ -26,34 +26,8 @@
     </ul>
   </div>
   <div class="window__main row no_padding">
-    <div class="col folders__body">
 
-      <aafe-actions-body [application]="application"></aafe-actions-body>
+    <alfolder-explorer-main [application]="application"></alfolder-explorer-main>
 
-      <div id="local_body">
-
-        <ngfUploadStatus
-          [(percent)] = "progress"
-          [httpEvent] = "httpEvent"
-        ></ngfUploadStatus>
-        <div class="dropzone" ngfDrop selectable="1" multiple="1"
-             [(files)]="files"
-             (filesChange)="uploadFiles($event)"
-        >
-          Drop files here (from local system) or click to upload.
-        </div>
-
-        <alfolder-anyopsos-lib-folder
-          [application]=application
-          [currentPath]=currentPath
-          [currentData]=currentData
-          [currentActive]=currentActive
-          [selector]="'.window--file-explorer .window__main'"
-          [viewAsList]=viewAsList
-          [loadingData]=loadingData
-          [search]=search></alfolder-anyopsos-lib-folder>
-
-      </div>
-    </div>
   </div>
 </div>

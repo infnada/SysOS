@@ -4,7 +4,7 @@ import {getLogger, Logger} from 'log4js';
 
 import {AnyOpsOSApiGlobalsModule} from '@anyopsos/module-api-globals';
 
-const logger: Logger = getLogger('mainlog');
+const logger: Logger = getLogger('mainLog');
 
 @Middleware({ type: 'after' })
 export class AnyOpsOSApiFinalMiddleware implements ExpressMiddlewareInterface {

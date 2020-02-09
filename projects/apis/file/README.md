@@ -3,7 +3,7 @@ Generated with `routing-controllers-openapi`
 
 ## Version: 1.0.0
 
-### /api/file/{fileName}
+### /api/file/{srcPath}
 
 #### GET
 ##### Summary:
@@ -14,7 +14,7 @@ Get file
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| fileName | path |  | Yes | string |
+| srcPath | path |  | Yes | string |
 
 ##### Responses
 
@@ -31,7 +31,7 @@ Delete file
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| fileName | path |  | Yes | string |
+| srcPath | path |  | Yes | string |
 
 ##### Responses
 
@@ -39,7 +39,7 @@ Delete file
 | ---- | ----------- |
 | 200 | Successful response |
 
-### /api/file/
+### /api/file/{dstPath}
 
 #### PUT
 ##### Summary:
@@ -50,7 +50,7 @@ New file
 
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
-| body | body |  | No | object |
+| dstPath | path |  | Yes | string |
 
 ##### Responses
 
@@ -77,7 +77,7 @@ New file from url
 | ---- | ----------- |
 | 200 | Successful response |
 
-### /api/file/{type}/{fileName}
+### /api/file/{type}/{srcPath}
 
 #### PATCH
 ##### Summary:
@@ -89,7 +89,7 @@ Patch file
 | Name | Located in | Description | Required | Schema |
 | ---- | ---------- | ----------- | -------- | ---- |
 | type | path |  | Yes | string |
-| fileName | path |  | Yes | string |
+| srcPath | path |  | Yes | string |
 | body | body |  | No | object |
 
 ##### Responses

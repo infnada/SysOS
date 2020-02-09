@@ -1,0 +1,12 @@
+{
+  "$schema": "../../../node_modules/ng-packagr/ng-package.schema.json",
+  "dest": "../../../dist/modals/default-question",
+  "lib": {
+    "entryFile": "src/public-api.ts"
+  },
+  "whitelistedNonPeerDependencies": [
+    "@anyopsos/lib-angular-material",
+    "@anyopsos/lib-modal",
+    "@anyopsos/lib-utils"
+  ]
+}

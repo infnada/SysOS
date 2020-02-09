@@ -1,12 +1,15 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 
 import {takeUntil} from 'rxjs/operators';
-import {Subject} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 
-import {Application} from '@anyopsos/lib-application';
+import {AnyOpsOSLibApplicationService, Application} from '@anyopsos/lib-application';
+import {AnyOpsOSLibSshService} from '@anyopsos/lib-ssh';
+import {ConnectionSftp} from '@anyopsos/module-ssh';
 
 import {AnyOpsOSAppSftpService} from '../../services/anyopsos-app-sftp.service';
-import {SftpConnection} from '../../types/sftp-connection';
+import {ConnectionTypes} from '@anyopsos/backend/app/types/connection-types';
+
 
 @Component({
   selector: 'aasftp-actions',
@@ -18,15 +21,19 @@ export class ActionsComponent implements OnDestroy, OnInit {
 
   private destroySubject$: Subject<void> = new Subject();
 
-  activeConnection: string;
+  activeConnectionUuid: string | null;
 
-  constructor(private Sftp: AnyOpsOSAppSftpService) { }
+  constructor(private readonly LibApplication: AnyOpsOSLibApplicationService,
+              private readonly LibSsh: AnyOpsOSLibSshService,
+              private readonly Sftp: AnyOpsOSAppSftpService) {
+
+  }
 
   ngOnInit(): void {
 
     // Listen for activeConnection change
-    this.Sftp.activeConnection
-      .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnectionUuid: string) => this.activeConnection = activeConnectionUuid);
+    this.Sftp.activeConnectionUuid
+      .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnectionUuid: string | null) => this.activeConnectionUuid = activeConnectionUuid);
   }
 
   ngOnDestroy(): void {
@@ -35,8 +42,8 @@ export class ActionsComponent implements OnDestroy, OnInit {
     this.destroySubject$.next();
   }
 
-  getActiveConnection(): SftpConnection {
-    return this.Sftp.getActiveConnection();
+  getActiveConnectionObs(): Observable<ConnectionSftp | null> {
+    return this.Sftp.activeConnection;
   }
 
   toggleExchange(): void {
@@ -46,24 +53,32 @@ export class ActionsComponent implements OnDestroy, OnInit {
   newConnection(): void {
 
     // even if activeConnection === null, set it again to reset possible Form changes
-    this.Sftp.setActiveConnection(null);
+    this.Sftp.setActiveConnectionUuid();
   }
 
   disconnectConnection(): void {
-    if (this.activeConnection === null) return;
+    if (this.activeConnectionUuid === null) return;
 
-    this.Sftp.disconnectConnection();
+    this.LibSsh.disconnectConnection(this.activeConnectionUuid);
   }
 
   deleteConnection(): void {
-    if (this.activeConnection === null) return;
+    if (this.activeConnectionUuid === null) return;
 
     this.Sftp.deleteConnection();
   }
 
   editConnection(): void {
-    if (this.activeConnection === null) return;
+    if (this.activeConnectionUuid === null) return;
 
     this.Sftp.editConnection();
+  }
+
+  isSshApplicationInstalled(): boolean {
+    return this.LibApplication.isApplicationInstalled('ssh');
+  }
+
+  openSsh(): void {
+    this.LibApplication.openApplication('ssh', this.activeConnectionUuid)
   }
 }

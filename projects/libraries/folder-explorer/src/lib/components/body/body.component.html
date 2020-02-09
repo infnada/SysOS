@@ -1,0 +1,20 @@
+<div class="dropzone" ngfDrop selectable="1" multiple="1"
+     *ngIf="!connection"
+     [(files)]="files"
+     (filesChange)="uploadFiles($event)"
+>
+  Drop files here (from local system) or click to upload.
+</div>
+
+<alfolder-anyopsos-lib-folder
+  [application]=application
+  [connection]=connection
+
+  [currentPath]=currentPath
+  [currentData]=currentData
+  [currentActive]=currentActive
+
+  [viewAsList]=viewAsList
+  [loadingData]=loadingData
+  [search]=search
+></alfolder-anyopsos-lib-folder>

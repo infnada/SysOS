@@ -17,9 +17,9 @@ import {BodyComponent} from './anyopsos-app-wmks.component';
   exports: [BodyComponent]
 })
 export class AnyOpsOSAppWmksModule {
-  constructor(private Applications: AnyOpsOSLibApplicationService) {
+  constructor(private readonly LibApplication: AnyOpsOSLibApplicationService) {
 
-    Applications.registerApplication({
+    this.LibApplication.registerApplication({
       uuid: 'wmks',
       ico: 'fas fa-tv',
       name: 'VM Remote Console',

@@ -9,7 +9,6 @@
     "rxjs": "~6.5.3"
   },
   "dependencies": {
-    "ngx-socket-io": "^3.0.1",
     "uuid": "^3.3.2",
     "@anyopsos/lib-angular-material": "~0.0.1",
     "@anyopsos/lib-application": "~0.0.1",
@@ -17,7 +16,13 @@
     "@anyopsos/lib-logger": "~0.0.1",
     "@anyopsos/lib-modal": "~0.0.1",
     "@anyopsos/lib-service-injector": "~0.0.1",
+    "@anyopsos/lib-ssh": "~0.0.1",
     "@anyopsos/lib-terminal": "~0.0.1"
+  },
+  "devDependencies": {
+    "@anyopsos/backend": "~0.0.1",
+    "@anyopsos/module-credential": "~0.0.1",
+    "@anyopsos/module-ssh": "~0.0.1"
   },
   "homepage": "https://github.com/anyOpsOS/anyOpsOS#readme",
   "repository": {

@@ -7,8 +7,8 @@ import {Application} from '@anyopsos/lib-application';
   styleUrls: ['./menu.component.scss']
 })
 export class MenuComponent implements OnInit {
-  @Input() application: Application;
-  @Input() isMenuOpened: boolean;
+  @Input() private readonly application: Application;
+  @Input() readonly isMenuOpened: boolean;
 
   constructor() { }
 

@@ -73,7 +73,7 @@ export class AnyOpsOSAppInfrastructureAsCodeProjectTreeService {
    * Build the file structure tree. The `value` is the Json object, or a sub-tree of a Json object.
    * The return value is the list of `FileNode`.
    */
-  private buildFileTree(obj: {[key: string]: any}, level: number, parentId: string = '0'): FileNode[] {
+  private buildFileTree(obj: { [key: string]: any; }, level: number, parentId: string = '0'): FileNode[] {
     return Object.keys(obj).reduce<FileNode[]>((accumulator, key, idx) => {
       const value = obj[key];
       const node = new FileNode();

@@ -4,10 +4,11 @@ import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {MatSort, MatTableDataSource} from '@anyopsos/lib-angular-material';
 import {Application} from '@anyopsos/lib-application';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
-import {AnyOpsOSLibVmwareService, TaskInfo} from '@anyopsos/lib-vmware';
+import {AnyOpsOSLibVmwareSoapApiService} from '@anyopsos/lib-vmware';
+import {ConnectionVmware} from '@anyopsos/module-vmware';
+import {TaskInfo} from '@anyopsos/sdk-vmware/src/lib/types/data/task-info';
 
 import {AnyOpsOSAppInfrastructureManagerService} from '../../../services/anyopsos-app-infrastructure-manager.service';
-import {ConnectionVmware} from '../../../types/connections/connection-vmware';
 
 @Component({
   selector: 'aaim-vmware-recent-tasks',
@@ -22,41 +23,46 @@ export class VmwareRecentTasksComponent implements OnInit {
   dataSource: MatTableDataSource<TaskInfo>;
   viewRecentTasks: boolean = true;
 
-  constructor(private logger: AnyOpsOSLibLoggerService,
-              private Modal: AnyOpsOSLibModalService,
-              private VMWare: AnyOpsOSLibVmwareService,
-              private InfrastructureManager: AnyOpsOSAppInfrastructureManagerService) {
+  constructor(private readonly logger: AnyOpsOSLibLoggerService,
+              private readonly LibModal: AnyOpsOSLibModalService,
+              private readonly LibVmwareSoapApiService: AnyOpsOSLibVmwareSoapApiService,
+              private readonly InfrastructureManager: AnyOpsOSAppInfrastructureManagerService) {
 
   }
 
   ngOnInit(): void {
-    this.Modal.openLittleModal('PLEASE WAIT', 'Getting VMware Tasks...', '.vmware-tasks', 'plain').then(() => {
+    this.LibModal.openLittleModal('PLEASE WAIT', 'Getting VMware Tasks...', '.vmware-tasks', 'plain').then(async () => {
 
-      return this.VMWare.connectvCenterSoap(this.InfrastructureManager.getActiveConnection() as ConnectionVmware);
-    }).then((data) => {
-      if (data.status === 'error') throw new Error('Failed to connect to vCenter');
+      const currentConnection: ConnectionVmware = await this.InfrastructureManager.getActiveConnection() as ConnectionVmware;
 
       const date = new Date();
       date.setHours(date.getHours() - 2);
 
-      return this.VMWare.CreateCollectorForTasks(
-        this.InfrastructureManager.getActiveConnection() as ConnectionVmware,
-        {
+      return this.LibVmwareSoapApiService.callSoapApi(currentConnection.uuid, 'CreateCollectorForTasks', {
+        _this: {
+          $type: 'TaskManager',
+          _value: 'TaskManager'
+        },
+        filter: {
           time: {
             timeType: 'queuedTime',
             beginTime: date.toISOString()
           }
         }
-      );
+      });
 
-    }).then((createCollectorResult) => {
+    }).then(async (createCollectorResult) => {
       if (createCollectorResult.status === 'error') throw new Error('Failed to CreateCollectorForTasks to vCenter');
 
-      return this.VMWare.ReadNextTasks(
-        this.InfrastructureManager.getActiveConnection() as ConnectionVmware,
-        { $type: 'TaskHistoryCollector', _value: createCollectorResult.data.name },
-        100
-      );
+      const currentConnection: ConnectionVmware = await this.InfrastructureManager.getActiveConnection() as ConnectionVmware;
+
+      return this.LibVmwareSoapApiService.callSoapApi(currentConnection.uuid, 'ReadNextTasks', {
+        _this: {
+          $type: 'TaskHistoryCollector',
+          _value: createCollectorResult.data.name
+        },
+        maxCount: 100
+      });
 
     }).then((ReadNextTasksResult) => {
       if (ReadNextTasksResult.status === 'error') throw new Error('Failed to ReadNextTasks to vCenter');
@@ -65,13 +71,13 @@ export class VmwareRecentTasksComponent implements OnInit {
       this.dataSource = new MatTableDataSource(ReadNextTasksResult.data);
       this.dataSource.sort = this.sort;
 
-      this.Modal.closeModal('.vmware-tasks');
+      this.LibModal.closeModal('.vmware-tasks');
     }).catch((e) => {
       this.logger.error('Infrastructure Manager', 'Error while getting VMware Tasks data', null, e.description);
 
-      if (this.Modal.isModalOpened('.vmware-tasks')) {
-        this.Modal.changeModalType('danger', '.vmware-tasks');
-        this.Modal.changeModalText((e.description ? e.description : e.message), '.vmware-tasks');
+      if (this.LibModal.isModalOpened('.vmware-tasks')) {
+        this.LibModal.changeModalType('danger', '.vmware-tasks');
+        this.LibModal.changeModalText((e.description ? e.description : e.message), '.vmware-tasks');
       }
 
       throw e;

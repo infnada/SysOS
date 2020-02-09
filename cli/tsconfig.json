@@ -3,12 +3,16 @@
   "compilerOptions": {
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "rootDir": "src",
-    "outDir": "build",
+    "rootDir": ".",
+    "outDir": "../dist/cli",
     "module": "commonjs",
     "esModuleInterop": true
   },
   "include": [
-    "src/**/*"
+    "src/**/*",
+    "bin/*"
+  ],
+  "exclude": [
+    "node_modules"
   ]
 }

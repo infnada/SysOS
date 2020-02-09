@@ -1,0 +1,14 @@
+<almodal-body #modalBody>
+
+  <!-- Put modal contant here -->
+  <span [innerHTML]="text"></span>
+
+  <alutil-notice-box [icon]="boxIcon" [content]="boxContent" [class]="boxClass" *ngIf="boxContent"></alutil-notice-box>
+
+</almodal-body>
+
+<!-- Put footer buttons here -->
+<almodal-buttons>
+  <button class="btn" type="button" (click)="dialogRef.close()" mat-flat-button>{{no}}</button>
+  <button class="btn" type="button" (click)="dialogRef.close(true)" mat-flat-button color="{{yesClass}}">{{yes}}</button>
+</almodal-buttons>

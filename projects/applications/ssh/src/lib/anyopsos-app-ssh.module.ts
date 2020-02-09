@@ -33,13 +33,13 @@ import {StatusComponent} from './components/status/status.component';
   exports: []
 })
 export class AnyOpsOSAppSshModule {
-  constructor(private serviceInjector: AnyOpsOSLibServiceInjectorService,
-              private Applications: AnyOpsOSLibApplicationService,
-              private Ssh: AnyOpsOSAppSshService) {
+  constructor(private readonly serviceInjector: AnyOpsOSLibServiceInjectorService,
+              private readonly LibApplication: AnyOpsOSLibApplicationService,
+              private readonly Ssh: AnyOpsOSAppSshService) {
 
     this.serviceInjector.set('AnyOpsOSAppSshService', this.Ssh);
 
-    Applications.registerApplication({
+    this.LibApplication.registerApplication({
       uuid: 'ssh',
       ico: 'fas fa-terminal',
       name: 'SSH',
@@ -48,7 +48,5 @@ export class AnyOpsOSAppSshModule {
       status: true,
       style: {width: '900px', height: '686px', top: '7%', left: '10%'}
     });
-
-    this.Ssh.initConnections();
   }
 }

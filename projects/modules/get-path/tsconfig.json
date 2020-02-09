@@ -1,0 +1,16 @@
+{
+  "extends": "../../../tsconfig.backend.json",
+  "compilerOptions": {
+    "outDir": "../../../dist/modules/get-path",
+    "baseUrl": ".",
+    "paths": {
+      "*": [
+        "node_modules/*",
+        "src/types/*"
+      ]
+    }
+  },
+  "include": [
+    "src/**/*"
+  ]
+}

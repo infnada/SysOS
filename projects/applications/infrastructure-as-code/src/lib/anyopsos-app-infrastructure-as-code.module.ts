@@ -37,9 +37,9 @@ import { DynamicInventoryComponent } from './components/body/body-new-project/pr
 })
 export class AnyOpsOSAppInfrastructureAsCodeModule {
 
-  constructor(private Applications: AnyOpsOSLibApplicationService) {
+  constructor(private readonly LibApplication: AnyOpsOSLibApplicationService) {
 
-    Applications.registerApplication({
+    this.LibApplication.registerApplication({
       uuid: 'infrastructure-as-code',
       ico: 'fas fa-code',
       name: 'Infrastructure as Code',

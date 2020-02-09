@@ -4,17 +4,20 @@
   </a>
   <a class="window__item separator" ></a>
   <a class="window__item" matTooltip="Edit connection" (click)="editConnection()">
-    <i class="fas fa-edit" [ngClass]="{'text-primary': activeConnection !== null}"></i>
+    <i class="fas fa-edit" [ngClass]="{'text-primary': activeConnectionUuid}"></i>
   </a>
   <a class="window__item" matTooltip="Disconnect" (click)="disconnectConnection()">
-    <i class="fas fa-times" [ngClass]="{'text-danger': activeConnection !== null && (getActiveConnection().state === 'connected' || getActiveConnection().state === 'ready')}"></i>
+    <i class="fas fa-times" [ngClass]="{'text-danger': activeConnectionUuid !== null && ((getActiveConnectionObs() | async)?.state === 'connected' || (getActiveConnectionObs() | async)?.state === 'ready')}"></i>
   </a>
   <a class="window__item" matTooltip="Delete" (click)="deleteConnection()">
-    <i class="fas fa-trash" [ngClass]="{'text-danger': activeConnection !== null}"></i>
+    <i class="fas fa-trash" [ngClass]="{'text-danger': activeConnectionUuid !== null}"></i>
   </a>
   <a class="window__item separator"></a>
   <a class="window__item" matTooltip="Exchange Tab" (click)="toggleExchange()">
-    <i class="fas fa-exchange-alt" [ngClass]="{'text-danger': activeConnection !== null}"></i>
+    <i class="fas fa-exchange-alt" [ngClass]="{'text-danger': activeConnectionUuid !== null}"></i>
   </a>
   <a class="window__item separator"></a>
+  <a class="window__item" matTooltip="SSH" (click)="openSsh()" *ngIf="isSshApplicationInstalled()">
+    <i class="fas fa-terminal" [ngClass]="{'text-primary': activeConnectionUuid}"></i>
+  </a>
 </div>

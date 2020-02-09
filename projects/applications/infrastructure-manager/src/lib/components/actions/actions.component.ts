@@ -1,15 +1,15 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {takeUntil} from 'rxjs/operators';
-import {Subject} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 
+import {MatDialogRef} from '@anyopsos/lib-angular-material';
 import {Application} from '@anyopsos/lib-application';
 import {AnyOpsOSLibUtilsService} from '@anyopsos/lib-utils';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
 
 import {AnyOpsOSAppInfrastructureManagerService} from '../../services/anyopsos-app-infrastructure-manager.service';
-
-import {ImDataObject} from '../../types/im-data-object';
-import {ConnectionTypes} from '../../types/connections/connection-types';
+import {ConnectionTypes} from '@anyopsos/backend/app/types/connection-types';
+import {DataObject} from '@anyopsos/backend/app/types/data-object';
 
 @Component({
   selector: 'aaim-actions',
@@ -17,21 +17,22 @@ import {ConnectionTypes} from '../../types/connections/connection-types';
   styleUrls: ['./actions.component.scss']
 })
 export class ActionsComponent implements OnDestroy, OnInit {
-  @Input() application: Application;
+  @Input() private readonly application: Application;
 
-  private destroySubject$: Subject<void> = new Subject();
-  activeConnection: string;
+  private readonly destroySubject$: Subject<void> = new Subject();
 
-  constructor(private Utils: AnyOpsOSLibUtilsService,
-              private Modal: AnyOpsOSLibModalService,
-              private InfrastructureManager: AnyOpsOSAppInfrastructureManagerService) {
+  activeConnectionUuid: string | null;
+
+  constructor(private readonly Utils: AnyOpsOSLibUtilsService,
+              private readonly LibModal: AnyOpsOSLibModalService,
+              private readonly InfrastructureManager: AnyOpsOSAppInfrastructureManagerService) {
   }
 
   ngOnInit(): void {
 
-    // Listen for activeConnection change
-    this.InfrastructureManager.activeConnection
-      .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnectionUuid: string) => this.activeConnection = activeConnectionUuid);
+    // Listen for activeConnectionUuid change
+    this.InfrastructureManager.activeConnectionUuid
+      .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnectionUuid: string | null) => this.activeConnectionUuid = activeConnectionUuid);
   }
 
   ngOnDestroy(): void {
@@ -40,60 +41,56 @@ export class ActionsComponent implements OnDestroy, OnInit {
     this.destroySubject$.next();
   }
 
-  getActiveConnection(): ConnectionTypes {
+  getActiveConnection(): Promise<ConnectionTypes | null> {
     return this.InfrastructureManager.getActiveConnection();
   }
 
-  getActiveObject(): ImDataObject {
+  getActiveConnectionObs(): Observable<ConnectionTypes | null> {
+    return this.InfrastructureManager.activeConnection;
+  }
+
+  getActiveObject(): Promise<DataObject | null> {
     return this.InfrastructureManager.getActiveObject();
   }
 
-  getActiveConnectionType(): string {
-    const activeConnection = this.getActiveConnection();
-
-    if (activeConnection) return activeConnection.type;
-    return null;
-  }
-
-  getActiveObjectType(): string {
-    const activeObject = this.getActiveObject();
-
-    if (activeObject) return activeObject.type;
-    return null;
+  getActiveObjectObs(): Observable<DataObject | null> {
+    return this.InfrastructureManager.activeObject;
   }
 
   /**
    * Button actions
    */
-  goHome(): void {
-    if (this.activeConnection === null || this.getActiveConnection().state === 'disconnected') this.Utils.scrollTo('infrastructure-manager_main-body');
-    if (this.activeConnection === null) return;
+  async goHome(): Promise<void> {
+    const currentConnection: ConnectionTypes | null = await this.getActiveConnection();
 
-    this.InfrastructureManager.setActiveConnection(null);
+    if (this.activeConnectionUuid === null || currentConnection?.state === 'disconnected') this.Utils.angularElementScrollTo(this.InfrastructureManager.getBodyContainerRef().element.nativeElement);
+    if (this.activeConnectionUuid === null) return;
+
+    this.InfrastructureManager.setActiveConnectionUuid(null);
   }
 
   newConnection(): void {
-    if (this.activeConnection === null) return this.Utils.scrollTo('infrastructure-manager_main-body', true);
+    if (this.activeConnectionUuid === null) return this.Utils.angularElementScrollTo(this.InfrastructureManager.getBodyContainerRef().element.nativeElement, true);
 
     // even if activeConnection === null, set it again to reset possible Form changes
-    this.InfrastructureManager.setActiveConnection(null);
+    this.InfrastructureManager.setActiveConnectionUuid(null);
     setTimeout(() => this.Utils.scrollTo('infrastructure-manager_main-body', true), 100);
   }
 
   editConnection(): void {
-    if (this.activeConnection === null) return;
+    if (this.activeConnectionUuid === null) return;
 
     this.InfrastructureManager.editConnection();
   }
 
   disconnectConnection(): void {
-    if (this.activeConnection === null) return;
+    if (this.activeConnectionUuid === null) return;
 
     this.InfrastructureManager.disconnectConnection();
   }
 
   deleteConnection(): void {
-    if (this.activeConnection === null) return;
+    if (this.activeConnectionUuid === null) return;
 
     this.InfrastructureManager.deleteConnection();
   }
@@ -115,123 +112,151 @@ export class ActionsComponent implements OnDestroy, OnInit {
   /**
    * Kubernetes
    */
-  createResource() {
-    this.Modal.openRegisteredModal(
+  async createResource() {
+
+    const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal(
       'infrastructure-manager-kubernetes-create-resource',
-      '.window--infrastructure-manager .window__main',
+      this.InfrastructureManager.getBodyContainerRef(),
       {}
-    ).then((modalInstance) => {
-      modalInstance.result.then((result) => {
-        console.log(result);
-      });
+    );
+
+    modalInstance.afterClosed().subscribe((result: string) => {
+      if (!result) return;
+
+      console.log(result);
     });
   }
 
-  triggerResource() {
-    this.Modal.openRegisteredModal(
+  async triggerResource() {
+
+    const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal(
       'infrastructure-manager-kubernetes-edit-resource',
-      '.window--infrastructure-manager .window__main',
+      this.InfrastructureManager.getBodyContainerRef(),
       {
         object: this.getActiveObject()
       }
-    ).then((modalInstance) => {
-      modalInstance.result.then((result) => {
-        console.log(result);
-      });
+    );
+
+    modalInstance.afterClosed().subscribe((result: string) => {
+      if (!result) return;
+
+      console.log(result);
     });
   }
 
-  editResource() {
-    this.Modal.openRegisteredModal(
+  async editResource() {
+
+    const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal(
       'infrastructure-manager-kubernetes-edit-resource',
-      '.window--infrastructure-manager .window__main',
+      this.InfrastructureManager.getBodyContainerRef(),
       {
         object: this.getActiveObject()
       }
-    ).then((modalInstance) => {
-      modalInstance.result.then((result) => {
-        console.log(result);
-      });
+    );
+
+    modalInstance.afterClosed().subscribe((result: string) => {
+      if (!result) return;
+
+      console.log(result);
     });
   }
 
-  deleteResource() {
-    this.Modal.openRegisteredModal('question', '.window--infrastructure-manager .window__main',
+  async deleteResource() {
+
+    const activeObject: DataObject = await this.getActiveObject();
+
+    const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('question', this.InfrastructureManager.getBodyContainerRef(),
       {
         title: 'Delete a resource',
-        text: `Are you sure you want to delete ${this.getActiveObject().type} <i>${this.getActiveObject().name}</i> ${
-          this.getActiveObject().info.data.metadata.namespace ? `in namespace <i>${this.getActiveObject().info.data.metadata.namespace}</i>` : ''
+        text: `Are you sure you want to delete ${activeObject.type} <i>${activeObject.name}</i> ${
+          activeObject.info.data.metadata.namespace ? `in namespace <i>${activeObject.info.data.metadata.namespace}</i>` : ''
         }?`,
         yes: 'Delete',
         yesClass: 'warn',
         no: 'Cancel',
         boxContent: `<span>This action is equivalent to: </span>
 <code>kubectl delete ${
-  this.getActiveObject().info.data.metadata.namespace ? `-n ${this.getActiveObject().info.data.metadata.namespace}` : ''
+          activeObject.info.data.metadata.namespace ? `-n ${activeObject.info.data.metadata.namespace}` : ''
 }
-${this.getActiveObject().type} ${this.getActiveObject().name}</code>`,
+${activeObject.type} ${activeObject.name}</code>`,
         boxIcon: 'info'
       }
-    ).then((modalInstance) => {
-      modalInstance.result.then((result: boolean) => {
-        if (result !== true) return;
-      });
+    );
+
+    modalInstance.afterClosed().subscribe((result: string) => {
+      if (!result) return;
+
+      console.log(result);
     });
   }
 
-  scaleResource() {
-    this.Modal.openRegisteredModal(
+  async scaleResource() {
+
+    const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal(
       'infrastructure-manager-kubernetes-scale-resource',
-      '.window--infrastructure-manager .window__main',
+      this.InfrastructureManager.getBodyContainerRef(),
       {
         object: this.getActiveObject()
       }
-    ).then((modalInstance) => {
+    );
 
+    modalInstance.afterClosed().subscribe((result: string) => {
+      if (!result) return;
+
+      console.log(result);
     });
   }
 
-  getLogs() {
-    this.Modal.openRegisteredModal(
+  async getLogs() {
+
+    const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal(
       'infrastructure-manager-kubernetes-logs',
-      '.window--infrastructure-manager .window__main',
+      this.InfrastructureManager.getBodyContainerRef(),
       {
         object: this.getActiveObject()
       }
-    ).then((modalInstance) => {
-      modalInstance.result.then((result) => {
-        console.log(result);
-      });
+    );
+
+    modalInstance.afterClosed().subscribe((result: string) => {
+      if (!result) return;
+
+      console.log(result);
     });
   }
 
-  execShell() {
-    this.Modal.openRegisteredModal(
+  async execShell() {
+
+    const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal(
       'infrastructure-manager-kubernetes-shell',
-      '.window--infrastructure-manager .window__main',
+      this.InfrastructureManager.getBodyContainerRef(),
       {
         object: this.getActiveObject(),
         shellType: 'exec'
       }
-    ).then((modalInstance) => {
-      modalInstance.result.then((result) => {
-        console.log(result);
-      });
+    );
+
+    modalInstance.afterClosed().subscribe((result: string) => {
+      if (!result) return;
+
+      console.log(result);
     });
   }
 
-  attachShell() {
-    this.Modal.openRegisteredModal(
+  async attachShell() {
+
+    const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal(
       'infrastructure-manager-kubernetes-shell',
-      '.window--infrastructure-manager .window__main',
+      this.InfrastructureManager.getBodyContainerRef(),
       {
         object: this.getActiveObject(),
         shellType: 'attach'
       }
-    ).then((modalInstance) => {
-      modalInstance.result.then((result) => {
-        console.log(result);
-      });
+    );
+
+    modalInstance.afterClosed().subscribe((result: string) => {
+      if (!result) return;
+
+      console.log(result);
     });
   }
 

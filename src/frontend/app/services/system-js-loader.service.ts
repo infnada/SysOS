@@ -14,15 +14,16 @@ import * as angularCommonHttp from '@angular/common/http';
 import * as rxjs from 'rxjs';
 import * as rxjsOperators from 'rxjs/operators';
 
-import * as ngBootstrap from '@ng-bootstrap/ng-bootstrap';
 // import * as ngxMaterialFileInput from 'ngx-material-file-input';
 import * as ngxSocketIo from 'ngx-socket-io';
 import * as uuid from 'uuid';
 import * as jsYaml from 'js-yaml';
 
 import * as AnyOpsOSLibAngularMaterial from '@anyopsos/lib-angular-material';
-import * as AnyOpsOSLibApplications from '@anyopsos/lib-application';
+import * as AnyOpsOSLibApplication from '@anyopsos/lib-application';
+import * as AnyOpsOSLibCredential from '@anyopsos/lib-credential';
 import * as AnyOpsOSLibFolder from '@anyopsos/lib-folder';
+import * as AnyOpsOSLibFolderExplorer from '@anyopsos/lib-folder-explorer';
 import * as AnyOpsOSLibFile from '@anyopsos/lib-file';
 import * as AnyOpsOSLibFileSystem from '@anyopsos/lib-file-system';
 import * as AnyOpsOSLibFileSystemUi from '@anyopsos/lib-file-system-ui';
@@ -34,6 +35,7 @@ import * as AnyOpsOSLibPipes from '@anyopsos/lib-pipes';
 import * as AnyOpsOSLibScrollSpy from '@anyopsos/lib-scroll-spy';
 import * as AnyOpsOSLibSelectable from '@anyopsos/lib-selectable';
 import * as AnyOpsOSLibServiceInjector from '@anyopsos/lib-service-injector';
+import * as AnyOpsOSLibSsh from '@anyopsos/lib-ssh';
 import * as AnyOpsOSLibTerminal from '@anyopsos/lib-terminal';
 import * as AnyOpsOSLibTypes from '@anyopsos/lib-types';
 import * as AnyOpsOSLibUser from '@anyopsos/lib-user';
@@ -55,7 +57,6 @@ export class SystemJsLoaderService {
     SystemJS.set('@angular/common', SystemJS.newModule(angularCommon));
     SystemJS.set('@angular/common/http', SystemJS.newModule(angularCommonHttp));
 
-    SystemJS.set('@ng-bootstrap/ng-bootstrap', SystemJS.newModule(ngBootstrap));
     SystemJS.set('rxjs', SystemJS.newModule(rxjs));
     SystemJS.set('rxjs/operators', SystemJS.newModule(rxjsOperators));
 
@@ -65,8 +66,10 @@ export class SystemJsLoaderService {
     SystemJS.set('js-yaml', SystemJS.newModule(jsYaml));
 
     SystemJS.set('@anyopsos/lib-angular-material', SystemJS.newModule(AnyOpsOSLibAngularMaterial));
-    SystemJS.set('@anyopsos/lib-application', SystemJS.newModule(AnyOpsOSLibApplications));
+    SystemJS.set('@anyopsos/lib-application', SystemJS.newModule(AnyOpsOSLibApplication));
+    SystemJS.set('@anyopsos/lib-credential', SystemJS.newModule(AnyOpsOSLibCredential));
     SystemJS.set('@anyopsos/lib-folder', SystemJS.newModule(AnyOpsOSLibFolder));
+    SystemJS.set('@anyopsos/lib-folder-explorer', SystemJS.newModule(AnyOpsOSLibFolderExplorer));
     SystemJS.set('@anyopsos/lib-file', SystemJS.newModule(AnyOpsOSLibFile));
     SystemJS.set('@anyopsos/lib-file-system', SystemJS.newModule(AnyOpsOSLibFileSystem));
     SystemJS.set('@anyopsos/lib-file-system-ui', SystemJS.newModule(AnyOpsOSLibFileSystemUi));
@@ -78,6 +81,7 @@ export class SystemJsLoaderService {
     SystemJS.set('@anyopsos/lib-scroll-spy', SystemJS.newModule(AnyOpsOSLibScrollSpy));
     SystemJS.set('@anyopsos/lib-selectable', SystemJS.newModule(AnyOpsOSLibSelectable));
     SystemJS.set('@anyopsos/lib-service-injector', SystemJS.newModule(AnyOpsOSLibServiceInjector));
+    SystemJS.set('@anyopsos/lib-ssh', SystemJS.newModule(AnyOpsOSLibSsh));
     SystemJS.set('@anyopsos/lib-terminal', SystemJS.newModule(AnyOpsOSLibTerminal));
     SystemJS.set('@anyopsos/lib-types', SystemJS.newModule(AnyOpsOSLibTypes));
     SystemJS.set('@anyopsos/lib-user', SystemJS.newModule(AnyOpsOSLibUser));

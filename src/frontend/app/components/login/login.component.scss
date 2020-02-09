@@ -1,5 +1,5 @@
 #login {
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(7px);
   position: absolute;
   overflow: hidden;
   top: 0;
@@ -14,14 +14,15 @@
   margin: 0;
   font-family: 'Work Sans', Arial, Helvetica, sans-serif;
   min-height: 100%;
-  color: #777;
+  color: #666;
 
   button.profile__avatar {
     cursor: pointer;
     border: 0;
     padding: 0;
     background-color: transparent;
-    color: #fff
+    color: #f7f7f7;
+    border-radius: 50%;
   }
 
   .container {
@@ -33,7 +34,6 @@
     padding: 0;
     margin: 0;
     transform: translate(-50%,-50%);
-    animation: intro .7s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 
     h1, h2 {
       color: #fff;
@@ -43,31 +43,16 @@
     .profile {
       position: relative;
     }
-    .profile--open .profile__form {
+    .profile__form {
+      position: relative;
+      background: #afbcff1c;
+      border-radius: .25em;
       visibility: visible;
       height: auto;
       opacity: 1;
-      padding-top: 12em;
+      padding: 12em 3em 3em;
       max-width: 400px;
       margin: 0 auto;
-    }
-    .profile--open .profile__fields {
-      opacity: 1;
-      visibility: visible;
-    }
-    .profile--open .profile__avatar {
-      transform: translate(-50%, 2.5em);
-      border-radius: 50%;
-      color: #000;
-    }
-    .profile__form {
-      position: relative;
-      background: white;
-      visibility: hidden;
-      opacity: 0;
-      height: 0;
-      padding: 3em;
-      border-radius: .25em;
       -webkit-filter: drop-shadow(0 0 2em rgba(0,0,0,0.2));
       transition:
         opacity .4s ease-in-out,
@@ -76,22 +61,21 @@
         padding .4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     .profile__fields {
-      opacity: 0;
-      visibility: hidden;
+      opacity: 1;
+      visibility: visible;
       transition: opacity .2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
     .profile__avatar {
       position: absolute;
       z-index: 1;
       left: 50%;
+      margin-top: 35px;
       transform: translateX(-50%);
       border-radius: 1.25em;
       overflow: hidden;
       width: 4.5em;
       height: 4.5em;
       display: block;
-      transition: transform .3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      will-change: transform;
     }
     .profile__avatar:focus {
       outline: 0;
@@ -126,7 +110,7 @@
       line-height: 2rem;
       font-size: 20px;
       border-bottom: 1px solid #eee;
-      color: #777;
+      color: #dadeff;
       transition: all .2s ease-in;
       text-align: center;
     }
@@ -138,8 +122,7 @@
     .input:focus + .label,
     input:valid + .label {
       transform: translateY(-100%);
-      font-size: 1.3rem;
-      color: #101010;
+      color: #ffffff;
     }
 
     /* Button */

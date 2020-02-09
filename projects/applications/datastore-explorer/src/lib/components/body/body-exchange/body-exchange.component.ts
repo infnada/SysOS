@@ -35,7 +35,7 @@ export class BodyExchangeComponent implements OnDestroy, OnInit {
     exchange: string
   }[] = [];
 
-  constructor(private FileSystemUi: AnyOpsOSLibFileSystemUiService,
+  constructor(private readonly LibFileSystemUi: AnyOpsOSLibFileSystemUiService,
               private DatastoreExplorer: AnyOpsOSAppDatastoreExplorerService,
               private DatastoreExplorerServer: AnyOpsOSAppDatastoreExplorerServerService,
               private DatastoreExplorerLocal: AnyOpsOSAppDatastoreExplorerLocalService) {
@@ -60,15 +60,15 @@ export class BodyExchangeComponent implements OnDestroy, OnInit {
       .pipe(takeUntil(this.destroySubject$)).subscribe((path: string) => this.currentRemotePath = path);
 
     // Watcher sent by FileComponent
-    this.FileSystemUi.getObserverDownloadRemoteFile()
+    this.LibFileSystemUi.getObserverDownloadRemoteFile()
       .pipe(takeUntil(this.destroySubject$)).subscribe((data) => this.onDownloadRemoteFile(data));
 
     // Watcher sent by FileComponent
-    this.FileSystemUi.getObserverUploadToRemote()
+    this.LibFileSystemUi.getObserverUploadToRemote()
       .pipe(takeUntil(this.destroySubject$)).subscribe((data) => this.onUploadToRemote(data));
 
     // Watcher sent by DatastoreExplorerBodyLocal
-    this.FileSystemUi.getObserverUploadToAnyOpsOS()
+    this.LibFileSystemUi.getObserverUploadToAnyOpsOS()
       .pipe(takeUntil(this.destroySubject$)).subscribe((data) => this.onUploadToAnyOpsOS(data));
 
     this.DatastoreExplorerServer.getObserverFileProgress()

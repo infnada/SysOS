@@ -11,6 +11,7 @@
   },
   "devDependencies": {
     "@anyopsos/backend": "~0.0.1",
+    "@types/node": "^12.12.21",
     "@types/dockerode": "^2.5.21",
     "socket.io": "^2.3.0",
     "typescript": "^3.7.4"

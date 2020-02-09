@@ -8,11 +8,7 @@
     "rxjs": "~6.5.3"
   },
   "dependencies": {
-    "@anyopsos/lib-logger": "~0.0.1",
-    "@anyopsos/lib-modal": "~0.0.1",
-    "@anyopsos/lib-application": "~0.0.1",
-    "@anyopsos/lib-file-system": "~0.0.1",
-    "@anyopsos/lib-types": "~0.0.1"
+    "@anyopsos/lib-logger": "~0.0.1"
   },
   "homepage": "https://github.com/anyOpsOS/anyOpsOS#readme",
   "repository": {

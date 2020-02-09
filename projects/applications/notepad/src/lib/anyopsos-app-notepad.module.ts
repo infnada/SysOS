@@ -21,9 +21,9 @@ import {MenuComponent} from './menu/menu.component';
 })
 export class AnyOpsOSAppNotepadModule {
 
-  constructor(private Applications: AnyOpsOSLibApplicationService) {
+  constructor(private readonly LibApplication: AnyOpsOSLibApplicationService) {
 
-    Applications.registerApplication({
+    this.LibApplication.registerApplication({
       uuid: 'notepad',
       ico: 'fas fa-pencil-alt',
       name: 'Notepad',

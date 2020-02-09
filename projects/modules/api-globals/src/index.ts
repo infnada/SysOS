@@ -1,1 +1,1 @@
-export {AnyOpsOSApiGlobalsModule} from './lib/anyopsos-api-globals.module';
+export * from './lib/anyopsos-api-globals.module';

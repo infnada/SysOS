@@ -1,0 +1,17 @@
+{
+  "extends": "../../../tslint.json",
+  "rules": {
+    "directive-selector": [
+      true,
+      "attribute",
+      "alfolderExplorer",
+      "camelCase"
+    ],
+    "component-selector": [
+      true,
+      "element",
+      "alfolder-explorer",
+      "kebab-case"
+    ]
+  }
+}
