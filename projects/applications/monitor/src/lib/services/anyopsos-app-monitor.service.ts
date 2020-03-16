@@ -1,55 +1,71 @@
-import {Injectable} from '@angular/core';
+import {Injectable, ViewContainerRef} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 
 import {BehaviorSubject, Observable} from 'rxjs';
 import {v4 as uuidv4} from 'uuid';
 
+import {MatDialogRef} from '@anyopsos/lib-angular-material';
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
-import {AnyOpsOSLibServiceInjectorService} from '@anyopsos/lib-service-injector';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
 import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
 import {AnyOpsOSExtLibNetdataService} from '@anyopsos/ext-lib-netdata';
-import {ConnectionMonitor, MONITOR_CONFIG_FILE} from '@anyopsos/module-monitor';
-import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
+import {ConnectionMonitor} from '@anyopsos/module-monitor';
+import {BackendResponse} from '@anyopsos/backend-core/app/types/backend-response';
+
+// TODO extract it from '@anyopsos/module-monitor'
+const MONITOR_CONFIG_FILE = 'monitor.json';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AnyOpsOSAppMonitorService {
-
-  private CredentialsManager;
-
   private NETDATA;
 
-  private $connections: BehaviorSubject<ConnectionMonitor[]>;
-  private $activeConnection: BehaviorSubject<string>;
-  private dataStore: {  // This is where we will store our data in memory
-    connections: ConnectionMonitor[],
-    activeConnection: string
+  private readonly $connections: BehaviorSubject<ConnectionMonitor[]>;
+  private readonly $activeConnection: BehaviorSubject<ConnectionMonitor | null>;
+  private readonly $activeConnectionUuid: BehaviorSubject<string | null>;
+  private dataStore: {
+    connections: ConnectionMonitor[];
+    activeConnection: ConnectionMonitor | null;
+    activeConnectionUuid: string | null;
   };
-  connections: Observable<any>;
-  activeConnection: Observable<any>;
+  readonly connections: Observable<ConnectionMonitor[]>;
+  readonly activeConnection: Observable<ConnectionMonitor | null>;
+  readonly activeConnectionUuid: Observable<string | null>;
 
-  constructor(private http: HttpClient,
-              private logger: AnyOpsOSLibLoggerService,
-              private serviceInjector: AnyOpsOSLibServiceInjectorService,
+  private bodyContainer: ViewContainerRef;
+
+  constructor(private readonly http: HttpClient,
+              private readonly logger: AnyOpsOSLibLoggerService,
               private readonly LibModal: AnyOpsOSLibModalService,
               private readonly LibFileSystem: AnyOpsOSLibFileSystemService,
               private Netdata: AnyOpsOSExtLibNetdataService) {
 
-    this.CredentialsManager = this.serviceInjector.get('AnyOpsOSAppCredentialsManagerService');
-
-    this.dataStore = {connections: [], activeConnection: null};
+    this.dataStore = { connections: [], activeConnection: null, activeConnectionUuid: null };
     this.$connections = new BehaviorSubject(this.dataStore.connections);
     this.$activeConnection = new BehaviorSubject(this.dataStore.activeConnection);
+    this.$activeConnectionUuid = new BehaviorSubject(this.dataStore.activeConnectionUuid);
     this.connections = this.$connections.asObservable();
     this.activeConnection = this.$activeConnection.asObservable();
+    this.activeConnectionUuid = this.$activeConnectionUuid.asObservable();
   }
 
-  getConnectionByUuid(uuid: string): ConnectionMonitor {
-    if (!uuid) throw new Error('uuid');
+  /**
+   * Setter & Getter of bodyContainerRef
+   * This is used by Modals
+   */
+  setBodyContainerRef(bodyContainer: ViewContainerRef): void {
+    this.bodyContainer = bodyContainer;
+  }
 
-    return this.dataStore.connections.find(obj => obj.uuid === uuid);
+  getBodyContainerRef(): ViewContainerRef {
+    return this.bodyContainer;
+  }
+
+  getConnectionByUuid(connectionUuid: string): ConnectionMonitor {
+    if (!connectionUuid) throw new Error('invalid_resource');
+
+    return this.dataStore.connections.find(obj => obj.uuid === connectionUuid);
   }
 
   getConnectionByLink(linkUuid: string): ConnectionMonitor {
@@ -59,13 +75,30 @@ export class AnyOpsOSAppMonitorService {
   }
 
   getActiveConnection(): ConnectionMonitor {
-    if (this.dataStore.activeConnection === null) return null;
+    if (this.dataStore.activeConnectionUuid === null) return null;
 
-    return this.dataStore.connections.find(obj => obj.uuid === this.dataStore.activeConnection);
+    return this.dataStore.connections.find(obj => obj.uuid === this.dataStore.activeConnectionUuid);
   }
 
-  setActiveConnection(connectionUuid: string): void {
-    this.dataStore.activeConnection = connectionUuid;
+  setActiveConnectionUuid(connectionUuid: string): void {
+    this.dataStore.activeConnectionUuid = connectionUuid;
+
+    // broadcast data to subscribers
+    this.$activeConnectionUuid.next(Object.assign({}, this.dataStore).activeConnectionUuid);
+
+    this.connectionsUpdated();
+  }
+
+  /**
+   * Called every time the connections state is updated
+   */
+  connectionsUpdated(): void {
+
+    if (!this.dataStore.activeConnectionUuid) {
+      this.dataStore.activeConnection = null;
+    } else {
+      this.dataStore.activeConnection = this.getConnectionByUuid(this.dataStore.activeConnectionUuid);
+    }
 
     // broadcast data to subscribers
     this.$activeConnection.next(Object.assign({}, this.dataStore).activeConnection);
@@ -93,17 +126,14 @@ export class AnyOpsOSAppMonitorService {
       });
   }
 
-  connect(connection: ConnectionMonitor, saveOnly: boolean = false): void {
-    if (!connection) throw new Error('connection_not_found');
-
-    this.logger.debug('Monitor', 'Connect received', arguments);
+  async connect(connection: ConnectionMonitor, saveOnly: boolean = false): Promise<ConnectionMonitor> {
+    if (!connection) throw new Error('resource_invalid');
+    this.logger.debug('Monitor', 'Connect received');
 
     if (connection.uuid) {
       connection.state = 'disconnected';
 
-      const currentConnectionIndex = this.dataStore.connections.findIndex((obj) => {
-        return obj.uuid === connection.uuid;
-      });
+      const currentConnectionIndex = this.dataStore.connections.findIndex((obj) => obj.uuid === connection.uuid);
 
       this.dataStore.connections[currentConnectionIndex] = connection;
 
@@ -129,9 +159,10 @@ export class AnyOpsOSAppMonitorService {
     // broadcast data to subscribers
     this.$connections.next(Object.assign({}, this.dataStore).connections);
 
-    if (connection.save) this.saveConnection(connection, saveOnly);
+    await this.saveConnection(connection, saveOnly);
+    if (!saveOnly) await this.sendConnect(connection);
 
-    if (!saveOnly) this.sendConnect(connection);
+    return connection;
   }
 
   setConnectionReady(connection: ConnectionMonitor): void {
@@ -149,7 +180,7 @@ export class AnyOpsOSAppMonitorService {
       this.setConnectionReady(connection);
 
       this.LibModal.closeModal('.window--monitor .window__main');
-      this.setActiveConnection(connection.uuid);
+      this.setActiveConnectionUuid(connection.uuid);
 
     // TODO: race/catch condition on saveConnection() this will not work if connection info not exists on backend
     // Internal or Netdata with credentials connection
@@ -161,26 +192,17 @@ export class AnyOpsOSAppMonitorService {
           // Error while connecting
           if (res.status === 'error') {
             this.logger.error('Monitor', 'sendConnect -> Error while connecting', loggerArgs, res.data);
-            if (this.LibModal.isModalOpened('.window--monitor .window__main')) {
-              this.LibModal.changeModalType('danger', '.window--monitor .window__main');
-              this.LibModal.changeModalText(res.data, '.window--monitor .window__main');
-            }
-            return;
+            throw res.data;
           }
 
           this.logger.info('Monitor', 'Connected successfully', loggerArgs);
 
           this.setConnectionReady(connection);
-
-          this.LibModal.closeModal('.window--monitor .window__main');
-          this.setActiveConnection(connection.uuid);
+          this.setActiveConnectionUuid(connection.uuid);
         },
         error => {
-          if (this.LibModal.isModalOpened('.window--monitor .window__main')) {
-            this.LibModal.changeModalType('danger', '.window--monitor .window__main');
-            this.LibModal.changeModalText(error, '.window--monitor .window__main');
-          }
           this.logger.error('Monitor', 'Error while connecting', loggerArgs, error);
+          throw error;
         });
     }
 
@@ -203,8 +225,8 @@ export class AnyOpsOSAppMonitorService {
       });
   }
 
-  disconnectConnection(connectionUuid?: string): void {
-    if (!connectionUuid) connectionUuid = this.dataStore.activeConnection;
+  disconnectConnection(connectionUuid: string = null): void {
+    if (!connectionUuid) connectionUuid = this.dataStore.activeConnectionUuid;
 
     this.logger.debug('Monitor', 'Disconnecting connection', arguments);
 
@@ -218,78 +240,74 @@ export class AnyOpsOSAppMonitorService {
     this.$connections.next(Object.assign({}, this.dataStore).connections);
   }
 
-  deleteConnection(connectionUuid?: string): void {
-    const loggerArgs = arguments;
-
-    if (!connectionUuid) connectionUuid = this.dataStore.activeConnection;
+  async deleteConnection(connectionUuid: string = null): Promise<void> {
+    if (!connectionUuid) connectionUuid = this.dataStore.activeConnectionUuid;
 
     const configFile = 'applications/monitor/config.json';
 
-    this.LibModal.openRegisteredModal('question', '.window--monitor .window__main',
+    const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('question', this.bodyContainer,
       {
-        title: 'Delete connection ' + this.getConnectionByUuid(connectionUuid).description,
+        title: `Delete connection ${this.getConnectionByUuid(connectionUuid).description}`,
         text: 'Remove the selected connection from the inventory?',
         yes: 'Delete',
         yesClass: 'warn',
         no: 'Cancel',
-        boxContent: 'This action is permanent.',
+        boxContent: 'This action is permanent. Anything using this connection as a dependency will be deleted as well.',
         boxClass: 'text-danger',
         boxIcon: 'warning'
       }
-    ).then((modalInstance) => {
-      modalInstance.result.then((result: boolean) => {
-        if (result === true) {
+    );
 
-          this.logger.debug('Monitor', 'Deleting connection', loggerArgs);
+    modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+      if (result !== true) return;
 
-          this.disconnectConnection(connectionUuid);
-          this.setActiveConnection(null);
+      this.logger.debug('Monitor', 'Deleting connection');
 
-          this.LibFileSystem.deleteConfigFile(configFile, connectionUuid).subscribe(
-            () => {
-              this.dataStore.connections = this.dataStore.connections.filter((connection) => {
-                return connection.uuid !== connectionUuid;
-              });
+      this.disconnectConnection(connectionUuid);
+      this.setActiveConnectionUuid(null);
 
-              // broadcast data to subscribers
-              this.$connections.next(Object.assign({}, this.dataStore).connections);
+      this.LibFileSystem.deleteConfigFile(configFile, connectionUuid).subscribe(
+      () => {
+        this.dataStore.connections = this.dataStore.connections.filter((connection) => {
+          return connection.uuid !== connectionUuid;
+        });
 
-              this.logger.debug('Monitor', 'Connection deleted successfully', loggerArgs);
-            },
-            error => {
-              this.logger.error('Monitor', 'Error while deleting connection', loggerArgs, error);
-            });
+        // broadcast data to subscribers
+        this.$connections.next(Object.assign({}, this.dataStore).connections);
 
-        }
+        this.logger.debug('Monitor', 'Connection deleted successfully');
+      },
+      error => {
+        this.logger.error('Monitor', 'Error while deleting connection', null, error);
       });
+
     });
   }
 
-  editConnection(uuid?: string): void {
-    if (!uuid) uuid = this.dataStore.activeConnection;
+  async editConnection(connectionUuid: string = null): Promise<void> {
+    if (!connectionUuid) connectionUuid = this.dataStore.activeConnectionUuid;
 
-    if (this.getConnectionByUuid(uuid).state === 'disconnected') {
-      this.setActiveConnection(uuid);
-      this.disconnectConnection();
-      return;
-    }
+    if (this.getConnectionByUuid(connectionUuid).state === 'disconnected') return this.setActiveConnectionUuid(connectionUuid);
 
-    this.LibModal.openRegisteredModal('question', '.window--monitor .window__main',
+    const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('question', this.bodyContainer,
       {
-        title: 'Edit connection ' + this.getConnectionByUuid(uuid).description,
+        title: `Edit connection ${this.getConnectionByUuid(connectionUuid).description}`,
         text: 'Your connection will be disconnected before editing it. Continue?',
         yes: 'Continue',
-        no: 'Cancel'
+        yesClass: 'warn',
+        no: 'Cancel',
+        boxContent: 'Anything using this as a dependency will be disconnected.',
+        boxClass: 'text-danger',
+        boxIcon: 'warning'
       }
-    ).then((modalInstance) => {
-      modalInstance.result.then((result: boolean) => {
-        if (result === true) {
+    );
 
-          this.setActiveConnection(uuid);
-          this.disconnectConnection();
+    modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
+      if (result !== true) return;
 
-        }
-      });
+      this.disconnectConnection();
+      this.setActiveConnectionUuid(connectionUuid);
+
     });
   }
 }

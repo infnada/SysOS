@@ -5,8 +5,8 @@ import {AnyOpsOSLibFileSystemUiHelpersService} from '@anyopsos/lib-file-system-u
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibApplicationService} from '@anyopsos/lib-application';
 import {AnyOpsOSLibModalRegisteredStateService} from '@anyopsos/lib-modal';
-import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
-import {AnyOpsOSFile} from '@anyopsos/backend/app/types/anyopsos-file';
+import {BackendResponse} from '@anyopsos/backend-core/app/types/backend-response';
+import {AnyOpsOSFile} from '@anyopsos/backend-core/app/types/anyopsos-file';
 
 
 declare const SystemJS: any;

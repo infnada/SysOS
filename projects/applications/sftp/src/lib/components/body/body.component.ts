@@ -8,7 +8,6 @@ import {AnyOpsOSLibSshHelpersService} from '@anyopsos/lib-ssh';
 import {ConnectionSsh, ConnectionSftp} from '@anyopsos/module-ssh';
 
 import {AnyOpsOSAppSftpService} from '../../services/anyopsos-app-sftp.service';
-import {ConnectionTypes} from '@anyopsos/backend/app/types/connection-types';
 
 @Component({
   selector: 'aasftp-body',

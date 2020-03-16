@@ -3,12 +3,13 @@ import {Injectable} from '@angular/core';
 import {MatDialogRef} from '@anyopsos/lib-angular-material';
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
-import {VMWareVM} from '@anyopsos/module-vmware';
-import {NetAppSnapshot, NetAppVolume, NetAppVserver} from '@anyopsos/module-netapp';
-import {DataObject} from '@anyopsos/backend/app/types/data-object';
+import {AnyOpsOSLibNodeHelpersService} from '@anyopsos/lib-node';
+import {VMWareVM} from '@anyopsos/module-node-vmware';
+import {NetAppSnapshot, NetAppVolume, NetAppVserver} from '@anyopsos/module-node-netapp';
+import {DataObject} from '@anyopsos/backend-core/app/types/data-object';
 
 import {AnyOpsOSAppInfrastructureManagerService} from '../anyopsos-app-infrastructure-manager.service';
-import {AnyOpsOSAppInfrastructureManagerObjectHelperService} from '../anyopsos-app-infrastructure-manager-object-helper.service';
+
 
 @Injectable({
   providedIn: 'root'
@@ -17,15 +18,15 @@ export class AnyOpsOSAppInfrastructureNetappBackupService {
 
   constructor(private readonly logger: AnyOpsOSLibLoggerService,
               private readonly LibModal: AnyOpsOSLibModalService,
-              private readonly InfrastructureManager: AnyOpsOSAppInfrastructureManagerService,
-              private readonly InfrastructureManagerObjectHelper: AnyOpsOSAppInfrastructureManagerObjectHelperService) {
+              private readonly LibNodeHelpers: AnyOpsOSLibNodeHelpersService,
+              private readonly InfrastructureManager: AnyOpsOSAppInfrastructureManagerService) {
   }
 
   /**
    * Checks if the vServers have allowed any of the available protocols
    */
   private async checkProtocols(obj: DataObject & { info: { data: NetAppSnapshot | NetAppVolume } }): Promise<boolean> {
-    const vServer: DataObject & { info: { data: NetAppVserver } } = await this.InfrastructureManagerObjectHelper.getParentObjectByType(obj.info.mainUuid, 'netapp', 'vserver', obj.info.parent);
+    const vServer: DataObject & { info: { data: NetAppVserver } } = this.LibNodeHelpers.getParentObjectByType(obj.info.mainUuid, 'netapp', 'vserver', obj.info.parent);
 
     if (!Array.isArray(vServer.info.data['allowed-protocols'].protocol) ||
       (!vServer.info.data['allowed-protocols'].protocol.includes('nfs') &&

@@ -5,8 +5,8 @@ import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibFileSystemUiHelpersService, AnyOpsOSLibFileSystemUiService, CutCopyFile, SendFileExchange} from '@anyopsos/lib-file-system-ui';
 import {AnyOpsOSLibApplicationService} from '@anyopsos/lib-application';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
-import {AnyOpsOSFile} from '@anyopsos/backend/app/types/anyopsos-file';
-import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
+import {AnyOpsOSFile} from '@anyopsos/backend-core/app/types/anyopsos-file';
+import {BackendResponse} from '@anyopsos/backend-core/app/types/backend-response';
 
 import {AnyOpsOSLibFileSystemService} from './anyopsos-lib-file-system.service';
 

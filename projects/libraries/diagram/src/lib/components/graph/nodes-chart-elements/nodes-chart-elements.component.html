@@ -1,0 +1,34 @@
+<ng-container *ngFor="let element of orderedElements$ | async; trackBy: trackElementBy">
+
+  <!-- Overlay -->
+  <ng-container *ngIf="element.isOverlay; else container">
+    <svg:rect class="nodes-chart-overlay"
+          [ngClass]="{'active': element.isActive}"
+          [attr.transform]="getScale()"
+          fill="hsl(240, 20%, 98%)"
+          x="-1"
+          y="-1"
+          width="2"
+          height="2"></svg:rect>
+  </ng-container>
+
+  <!-- Not Overlay -->
+  <ng-template #container>
+    <ng-container *ngIf="element.points; then edge; else node"></ng-container>
+  </ng-template>
+
+  <!-- Edge -->
+  <ng-template #edge>
+    <svg:g aldiagram-edge-container
+       [edgeElement]="element"
+       [isAnimated]="this.isAnimated"></svg:g>
+  </ng-template>
+
+  <!-- Node -->
+  <ng-template #node>
+    <svg:g aldiagram-node-container
+       [nodeElement]="element"
+       [isAnimated]="this.isAnimated"></svg:g>
+  </ng-template>
+
+</ng-container>

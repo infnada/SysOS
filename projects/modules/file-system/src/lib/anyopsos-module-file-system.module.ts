@@ -1,24 +1,24 @@
+import {getLogger, Logger} from 'log4js';
 import {copy, ensureDir, move, outputFile, pathExistsSync, readdir, remove, stat, Stats} from 'fs-extra';
 import {parse} from 'url';
 import {join} from 'path';
 import {spawn} from 'child-process-promise';
-import {getLogger, Logger} from 'log4js';
 
-import {AnyOpsOSGetPathModule} from '@anyopsos/module-get-path';
-import {AnyOpsOSCredentialModule, KdbxCredential} from '@anyopsos/module-credential';
-import {AnyOpsOSFile} from '@anyopsos/backend/app/types/anyopsos-file';
+import {AnyOpsOSSysGetPathModule} from '@anyopsos/module-sys-get-path';
+import {AnyOpsOSCredentialModule, Credential} from '@anyopsos/module-credential';
+import {AnyOpsOSFile} from '@anyopsos/backend-core/app/types/anyopsos-file';
 
 
 const logger: Logger = getLogger('mainLog');
 
 export class AnyOpsOSFileSystemModule {
 
-  private readonly GetPathModule: AnyOpsOSGetPathModule;
+  private readonly GetPathModule: AnyOpsOSSysGetPathModule;
 
   constructor(private readonly userUuid: string,
               private readonly sessionUuid: string) {
 
-    this.GetPathModule = new AnyOpsOSGetPathModule();
+    this.GetPathModule = new AnyOpsOSSysGetPathModule();
   }
 
   private octalToRWX(octalNotation: string): string {
@@ -122,7 +122,7 @@ export class AnyOpsOSFileSystemModule {
 
     // TODO
     const options = {
-      root: new AnyOpsOSGetPathModule().filesystem,
+      root: new AnyOpsOSSysGetPathModule().filesystem,
       dotfiles: 'allow',
       headers: {
         'x-timestamp': Date.now(),
@@ -164,9 +164,9 @@ export class AnyOpsOSFileSystemModule {
 
       const CredentialModule: AnyOpsOSCredentialModule = new AnyOpsOSCredentialModule(this.userUuid, this.sessionUuid, workspaceUuid);
 
-      const credential: KdbxCredential = await CredentialModule.getCredential(credentialUuid);
+      const credential: Credential = await CredentialModule.getCredential(credentialUuid);
 
-      curlData = await spawn('curl', ['-k', '--user', `${credential.fields.UserName}:${credential.fields.Password.getText()}`, fileUrl], { capture: [ 'stdout', 'stderr' ]});
+      curlData = await spawn('curl', ['-k', '--user', `${credential.username}:${credential.password}`, fileUrl], { capture: [ 'stdout', 'stderr' ]});
     } else {
       curlData = await spawn('curl', ['-k', fileUrl], { capture: [ 'stdout', 'stderr' ]});
     }

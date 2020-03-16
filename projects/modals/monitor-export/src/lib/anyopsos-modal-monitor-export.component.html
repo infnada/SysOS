@@ -1,0 +1,76 @@
+<almodal-body #modalBody class="modal-monitor-export">
+
+  <!-- Put modal content here -->
+  <div *ngIf="showProgress" id="saveSnapshotModalProgressSection">
+    Please wait while we collect all the dashboard data...
+    <mat-progress-bar mode="determinate" [value]="progressPcent"></mat-progress-bar>
+
+    <div class="mt-3 alert alert-{{progressType}}" role="alert" [innerHTML]="progressText"></div>
+  </div>
+
+  <div *ngIf="!showProgress" id="saveSnapshotResolutionRadio" style="text-align: center;">
+    <p>Select the desired resolution of the snapshot. This is the <b>seconds of data per point</b>.</p>
+    <mat-slider *ngIf="slider"
+                [max]="slider.max"
+                [min]="slider.min"
+                [step]="slider.step"
+                [thumbLabel]="true"
+                [displayWith]="slider.displayWith"
+                [tickInterval]="'auto'"
+                [(ngModel)]="slider.value" class="m-3">
+    </mat-slider>
+
+    <mat-form-field
+      [floatLabel]="'auto'"
+      [hideRequiredMarker]="false" class="w-100">
+      <input matInput placeholder="Filename" [formControl]="filename" [(ngModel)]="snapshotName" required>
+      <mat-error *ngIf="filename.invalid">You must enter a snapshot name</mat-error>
+    </mat-form-field>
+
+    <mat-form-field class="w-100">
+      <mat-select placeholder="Compression" [(ngModel)]="compressionType">
+        <mat-option value="none">uncompressed</mat-option>
+        <mat-option value="pako.deflate">pako.deflate (gzip, binary)</mat-option>
+        <mat-option value="pako.deflate.base64">pako.deflate.base64 (gzip, ascii)</mat-option>
+        <mat-option value="lzstring.uri">lzstring.uri (LZ, ascii)</mat-option>
+        <mat-option value="lzstring.utf16">lzstring.utf16 (LZ, utf16)</mat-option>
+        <mat-option value="lzstring.base64">lzstring.base64 (LZ, ascii)</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field
+      [floatLabel]="'auto'" class="w-100">
+      <input matInput placeholder="Any comments abouts this snapshot?" [(ngModel)]="snapshotComment">
+    </mat-form-field>
+
+    <mat-radio-group aria-labelledby="save-snapshot-to" class="text-left mt-3 vertical-radio-group" [(ngModel)]="saveAt">
+      <mat-radio-button [value]="'anyopsos'">Save snapshot to anyOpsOS</mat-radio-button>
+      <mat-radio-button [value]="'download'">Download snapshot file</mat-radio-button>
+    </mat-radio-group>
+
+  </div>
+
+  <div class="mt-3 alert alert-{{snapshotExpectedSize()[0]}}" role="alert" [innerHTML]="snapshotExpectedSize()[1]"></div>
+
+  <p>
+    The generated snapshot will include all charts of this dashboard, <b>for the visible timeframe</b>, so align, pan and zoom the charts as needed.
+    The scroll position of the dashboard will also be saved.
+    The snapshot will be downloaded as a file, to your computer, that can be imported back into any netdata dashboard (no need to import it back on this server).
+  </p>
+  <p>
+    <small>
+      Snapshot files include all the information of the dashboard, including the URL of the origin server, its netdata unique ID, etc.
+      So, if you share the snapshot file with third parties, they will be able to access the origin server, if this server is exposed on the internet.
+      <br/>
+      Snapshots are handled entirely by the web browser. The netdata servers are not aware of them.
+    </small>
+  </p>
+
+  <div id="hiddenDownloadLinks" style="display: none;" hidden></div>
+
+</almodal-body>
+
+<!-- Put footer buttons here -->
+<almodal-buttons>
+  <button class="btn" type="button" (click)="dialogRef.close()" mat-flat-button>Close</button>
+</almodal-buttons>

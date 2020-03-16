@@ -140,12 +140,6 @@
       "@anyopsos/ext-lib-theia/*": [
         "dist/external-libraries/theia/*"
       ],
-      "@anyopsos/ext-lib-weavescope": [
-        "dist/external-libraries/weavescope"
-      ],
-      "@anyopsos/ext-lib-weavescope/*": [
-        "dist/external-libraries/weavescope/*"
-      ],
       "@anyopsos/lib-angular-material": [
         "dist/libraries/angular-material"
       ],
@@ -170,11 +164,11 @@
       "@anyopsos/lib-desktop-task-bar/*": [
         "dist/libraries/desktop-task-bar/*"
       ],
-      "@anyopsos/lib-docker": [
-        "dist/libraries/docker"
+      "@anyopsos/lib-node-docker": [
+        "dist/libraries/node-docker"
       ],
-      "@anyopsos/lib-docker/*": [
-        "dist/libraries/docker/*"
+      "@anyopsos/lib-node-docker/*": [
+        "dist/libraries/node-docker/*"
       ],
       "@anyopsos/lib-file": [
         "dist/libraries/file"
@@ -206,11 +200,11 @@
       "@anyopsos/lib-folder/*": [
         "dist/libraries/folder/*"
       ],
-      "@anyopsos/lib-kubernetes": [
-        "dist/libraries/kubernetes"
+      "@anyopsos/lib-node-kubernetes": [
+        "dist/libraries/node-kubernetes"
       ],
-      "@anyopsos/lib-kubernetes/*": [
-        "dist/libraries/kubernetes/*"
+      "@anyopsos/lib-node-kubernetes/*": [
+        "dist/libraries/node-kubernetes/*"
       ],
       "@anyopsos/lib-loader": [
         "dist/libraries/loader"
@@ -230,11 +224,11 @@
       "@anyopsos/lib-modal/*": [
         "dist/libraries/modal/*"
       ],
-      "@anyopsos/lib-netapp": [
-        "dist/libraries/netapp"
+      "@anyopsos/lib-node-netapp": [
+        "dist/libraries/node-netapp"
       ],
-      "@anyopsos/lib-netapp/*": [
-        "dist/libraries/netapp/*"
+      "@anyopsos/lib-node-netapp/*": [
+        "dist/libraries/node-netapp/*"
       ],
       "@anyopsos/lib-pipes": [
         "dist/libraries/pipes"
@@ -260,11 +254,11 @@
       "@anyopsos/lib-service-injector/*": [
         "dist/libraries/service-injector/*"
       ],
-      "@anyopsos/lib-snmp": [
-        "dist/libraries/snmp"
+      "@anyopsos/lib-node-snmp": [
+        "dist/libraries/node-snmp"
       ],
-      "@anyopsos/lib-snmp/*": [
-        "dist/libraries/snmp/*"
+      "@anyopsos/lib-node-snmp/*": [
+        "dist/libraries/node-snmp/*"
       ],
       "@anyopsos/lib-ssh": [
         "dist/libraries/ssh"
@@ -296,11 +290,11 @@
       "@anyopsos/lib-utils/*": [
         "dist/libraries/utils/*"
       ],
-      "@anyopsos/lib-vmware": [
-        "dist/libraries/vmware"
+      "@anyopsos/lib-node-vmware": [
+        "dist/libraries/node-vmware"
       ],
-      "@anyopsos/lib-vmware/*": [
-        "dist/libraries/vmware/*"
+      "@anyopsos/lib-node-vmware/*": [
+        "dist/libraries/node-vmware/*"
       ],
       "@anyopsos/lib-workspace": [
         "dist/libraries/workspace"
@@ -332,11 +326,89 @@
       "@anyopsos/modal-default-question/*": [
         "dist/modals/default-question/*"
       ],
-      "@anyopsos/lib-linux": [
-        "dist/libraries/linux"
+      "@anyopsos/lib-node-linux": [
+        "dist/libraries/node-linux"
       ],
-      "@anyopsos/lib-linux/*": [
-        "dist/libraries/linux/*"
+      "@anyopsos/lib-node-linux/*": [
+        "dist/libraries/node-linux/*"
+      ],
+      "@anyopsos/lib-node": [
+        "dist/libraries/node"
+      ],
+      "@anyopsos/lib-node/*": [
+        "dist/libraries/node/*"
+      ],
+      "@anyopsos/lib-diagram": [
+        "dist/libraries/diagram"
+      ],
+      "@anyopsos/lib-diagram/*": [
+        "dist/libraries/diagram/*"
+      ],
+      "@anyopsos/modal-kubernetes-create-resource": [
+        "dist/modals/kubernetes-create-resource"
+      ],
+      "@anyopsos/modal-kubernetes-create-resource/*": [
+        "dist/modals/kubernetes-create-resource/*"
+      ],
+      "@anyopsos/modal-kubernetes-edit-resource": [
+        "dist/modals/kubernetes-edit-resource"
+      ],
+      "@anyopsos/modal-kubernetes-edit-resource/*": [
+        "dist/modals/kubernetes-edit-resource/*"
+      ],
+      "@anyopsos/modal-kubernetes-logs": [
+        "dist/modals/kubernetes-logs"
+      ],
+      "@anyopsos/modal-kubernetes-logs/*": [
+        "dist/modals/kubernetes-logs/*"
+      ],
+      "@anyopsos/modal-kubernetes-scale-resource": [
+        "dist/modals/kubernetes-scale-resource"
+      ],
+      "@anyopsos/modal-kubernetes-scale-resource/*": [
+        "dist/modals/kubernetes-scale-resource/*"
+      ],
+      "@anyopsos/modal-kubernetes-shell": [
+        "dist/modals/kubernetes-shell"
+      ],
+      "@anyopsos/modal-kubernetes-shell/*": [
+        "dist/modals/kubernetes-shell/*"
+      ],
+      "@anyopsos/modal-monitor-alarms": [
+        "dist/modals/monitor-alarms"
+      ],
+      "@anyopsos/modal-monitor-alarms/*": [
+        "dist/modals/monitor-alarms/*"
+      ],
+      "@anyopsos/modal-monitor-export": [
+        "dist/modals/monitor-export"
+      ],
+      "@anyopsos/modal-monitor-export/*": [
+        "dist/modals/monitor-export/*"
+      ],
+      "@anyopsos/modal-monitor-help": [
+        "dist/modals/monitor-help"
+      ],
+      "@anyopsos/modal-monitor-help/*": [
+        "dist/modals/monitor-help/*"
+      ],
+      "@anyopsos/modal-monitor-import": [
+        "dist/modals/monitor-import"
+      ],
+      "@anyopsos/modal-monitor-import/*": [
+        "dist/modals/monitor-import/*"
+      ],
+      "@anyopsos/modal-monitor-options": [
+        "dist/modals/monitor-options"
+      ],
+      "@anyopsos/modal-monitor-options/*": [
+        "dist/modals/monitor-options/*"
+      ],
+      "@anyopsos/modal-monitor-xss": [
+        "dist/modals/monitor-xss"
+      ],
+      "@anyopsos/modal-monitor-xss/*": [
+        "dist/modals/monitor-xss/*"
       ]
     }
   }

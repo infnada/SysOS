@@ -4,8 +4,9 @@ import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {MatDialogRef} from '@anyopsos/lib-angular-material';
 import {AnyOpsOSLibApplicationService} from '@anyopsos/lib-application';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
-import {DataObject} from '@anyopsos/backend/app/types/data-object';
-import {ConnectionVmware, VMWareVM} from '@anyopsos/module-vmware/src';
+import {AnyOpsOSLibNodeHelpersService} from '@anyopsos/lib-node';
+import {ConnectionVmware, VMWareVM} from '@anyopsos/module-node-vmware';
+import {DataObject} from '@anyopsos/backend-core/app/types/data-object';
 
 import {AnyOpsOSAppInfrastructureManagerService} from './anyopsos-app-infrastructure-manager.service';
 import {AnyOpsOSAppInfrastructureNetappBackupService} from './netapp/anyopsos-app-infrastructure-netapp-backup.service';
@@ -15,6 +16,7 @@ import {AnyOpsOSAppInfrastructureVmwareNodeActionsService} from './vmware/anyops
 
 import {ImTreeNode} from '../types/im-tree-node';
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -23,6 +25,7 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
   constructor(private readonly logger: AnyOpsOSLibLoggerService,
               private readonly LibApplication: AnyOpsOSLibApplicationService,
               private readonly LibModal: AnyOpsOSLibModalService,
+              private readonly LibNodeHelpers: AnyOpsOSLibNodeHelpersService,
               private readonly InfrastructureManager: AnyOpsOSAppInfrastructureManagerService,
               private readonly InfrastructureManagerNetappBackup: AnyOpsOSAppInfrastructureNetappBackupService,
               private readonly InfrastructureManagerVMWareBackup: AnyOpsOSAppInfrastructureVmwareBackupService,
@@ -37,12 +40,12 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
     return [
       {
         id: 0, text: '<i class="fas fa-pencil"></i> Edit Connection', action: (node: ImTreeNode) => {
-          this.InfrastructureManager.editConnection(node.info.uuid);
+          this.InfrastructureManager.editConnection(node.info.uuid, 'kubernetes');
         }
       },
       {
         id: 2, text: '<i class="fas fa-trash text-danger"></i> Delete Connection', action: (node: ImTreeNode) => {
-          this.InfrastructureManager.deleteConnection(node.info.uuid);
+          this.InfrastructureManager.deleteConnection(node.info.uuid, 'kubernetes');
         }
       }
     ];
@@ -55,12 +58,12 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
     return [
       {
         id: 0, text: '<i class="fas fa-pencil"></i> Edit Connection', action: (node: ImTreeNode) => {
-          this.InfrastructureManager.editConnection(node.info.uuid);
+          this.InfrastructureManager.editConnection(node.info.uuid, 'netapp');
         }
       },
       {
         id: 2, text: '<i class="fas fa-trash text-danger"></i> Delete Connection', action: (node: ImTreeNode) => {
-          this.InfrastructureManager.deleteConnection(node.info.uuid);
+          this.InfrastructureManager.deleteConnection(node.info.uuid, 'netapp');
         }
       }
     ];
@@ -71,7 +74,7 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
       {
         id: 1, text: '<i class="fas fa-file"></i> Show datastore files', action: (node: ImTreeNode) => {
           this.openDatastoreExplorer(node.info.uuid, 'netapp', {
-            volume: node.info.volume
+            volume: node
           });
         }
       },
@@ -135,12 +138,12 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
     return [
       {
         id: 0, text: '<i class="fas fa-pencil"></i> Edit Connection', action: (node: ImTreeNode) => {
-          this.InfrastructureManager.editConnection(node.info.uuid);
+          this.InfrastructureManager.editConnection(node.info.uuid, 'vmware');
         }
       },
       {
         id: 2, text: '<i class="fas fa-trash text-danger"></i> Delete Connection', action: (node: ImTreeNode) => {
-          this.InfrastructureManager.deleteConnection(node.info.uuid);
+          this.InfrastructureManager.deleteConnection(node.info.uuid, 'vmware');
         }
       },
       {id: 1, text: 'divider'},
@@ -2413,9 +2416,9 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
   }
 
   private async openRemoteConsole(vm: DataObject & { info: { data: VMWareVM } }): Promise<void> {
-    this.logger.debug('Infrastructure Manager', 'Opening Remote Console APP', arguments);
+    this.logger.debug('Infrastructure Manager', 'Opening Remote Console APP');
 
-    const connection: ConnectionVmware = await this.InfrastructureManager.getConnectionByUuid(vm.info.mainUuid, 'vmware') as ConnectionVmware;
+    const connection: ConnectionVmware = await this.LibNodeHelpers.getConnectionByUuid(vm.info.mainUuid, 'vmware') as ConnectionVmware;
 
     this.LibApplication.openApplication('wmks', {
       connection,
@@ -2424,7 +2427,7 @@ export class AnyOpsOSAppInfrastructureManagerContextMenusService {
   }
 
   private openDatastoreExplorer(connectionUuid: string, type: 'vmware' | 'netapp', data: any): void {
-    this.logger.debug('Infrastructure Manager', 'Opening Datastore Explorer APP', arguments);
+    this.logger.debug('Infrastructure Manager', 'Opening Datastore Explorer APP');
 
     this.LibApplication.openApplication('datastore-explorer', {
       connectionUuid,

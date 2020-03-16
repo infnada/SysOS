@@ -25,28 +25,27 @@ import {AnyOpsOSLibApplicationModule} from '@anyopsos/lib-application';
 import {AnyOpsOSLibPipesModule} from '@anyopsos/lib-pipes';
 
 import {AnyOpsOSLibSshModule} from '@anyopsos/lib-ssh';
-import {AnyOpsOSLibKubernetesModule} from '@anyopsos/lib-kubernetes';
-import {AnyOpsOSLibDockerModule} from '@anyopsos/lib-docker';
-import {AnyOpsOSLibVmwareModule} from '@anyopsos/lib-vmware';
-import {AnyOpsOSLibNetappModule} from '@anyopsos/lib-netapp';
-import {AnyOpsOSLibSnmpModule} from '@anyopsos/lib-snmp';
+import {AnyOpsOSLibNodeLinuxModule} from '@anyopsos/lib-node-linux';
+import {AnyOpsOSLibNodeKubernetesModule} from '@anyopsos/lib-node-kubernetes';
+import {AnyOpsOSLibNodeDockerModule} from '@anyopsos/lib-node-docker';
+import {AnyOpsOSLibNodeVmwareModule} from '@anyopsos/lib-node-vmware';
+import {AnyOpsOSLibNodeNetappModule} from '@anyopsos/lib-node-netapp';
+import {AnyOpsOSLibNodeSnmpModule} from '@anyopsos/lib-node-snmp';
 
 // App Components
-import {BootstrapComponent} from './components/bootstrap/bootstrap.component';
 import {AppComponent} from './components/app.component';
+import {InitializeComponent} from './components/initialize/initialize.component';
 import {LoginComponent} from './components/login/login.component';
+import {DesktopComponent} from './components/desktop/desktop.component';
+
 import {StartMenuComponent} from './components/start-menu/start-menu.component';
 import {StartMenuItemsComponent} from './components/start-menu-items/start-menu-items.component';
 import {TaskBarComponent} from './components/task-bar/task-bar.component';
 import {TaskBarItemsComponent} from './components/task-bar-items/task-bar-items.component';
-import {DesktopComponent} from './components/desktop/desktop.component';
 
 import {CapsLockDirective} from './directives/caps-lock.directive';
-
 import {HttpErrorInterceptor} from './interceptors/http-error-interceptor';
-
 import {SystemJsLoaderService} from './services/system-js-loader.service';
-
 
 const config: SocketIoConfig = {
   url: window.location.host,
@@ -64,14 +63,14 @@ export function createCompiler(fn: CompilerFactory): Compiler {
 @NgModule({
   declarations: [
     AppComponent,
+    InitializeComponent,
     LoginComponent,
+    DesktopComponent,
     StartMenuComponent,
     StartMenuItemsComponent,
     TaskBarComponent,
     TaskBarItemsComponent,
-    DesktopComponent,
-    CapsLockDirective,
-    BootstrapComponent
+    CapsLockDirective
   ],
   imports: [
     CommonModule,
@@ -93,11 +92,12 @@ export function createCompiler(fn: CompilerFactory): Compiler {
 
     AnyOpsOSLibCredentialModule,
     AnyOpsOSLibSshModule,
-    AnyOpsOSLibKubernetesModule,
-    AnyOpsOSLibDockerModule,
-    AnyOpsOSLibVmwareModule,
-    AnyOpsOSLibNetappModule,
-    AnyOpsOSLibSnmpModule,
+    AnyOpsOSLibNodeLinuxModule,
+    AnyOpsOSLibNodeKubernetesModule,
+    AnyOpsOSLibNodeDockerModule,
+    AnyOpsOSLibNodeVmwareModule,
+    AnyOpsOSLibNodeNetappModule,
+    AnyOpsOSLibNodeSnmpModule,
 
     MonacoEditorModule.forRoot()
   ],

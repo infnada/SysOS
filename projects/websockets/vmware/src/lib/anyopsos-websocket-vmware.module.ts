@@ -2,8 +2,9 @@ import {SocketController, ConnectedSocket, SocketId, MessageBody, OnMessage, OnD
 import {getLogger} from 'log4js';
 import {Socket} from 'socket.io';
 
-import {AnyOpsOSVmwareModule} from '@anyopsos/module-vmware';
-import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
+import {AnyOpsOSNodeVmwareModule} from '@anyopsos/module-node-vmware';
+import {BackendResponse} from '@anyopsos/backend-core/app/types/backend-response';
+
 
 const logger = getLogger('mainLog');
 
@@ -25,7 +26,7 @@ export class AnyOpsOSVmwareWebsocketController {
                    @MessageBody() connectionData: { connectionUuid: string; workspaceUuid: string; }) {
     logger.info(`[Websocket vmware] -> disconnect -> id [${id}], connectionUuid [${connectionData.connectionUuid}], workspaceUuid [${connectionData.workspaceUuid}]`);
 
-    const VmwareModule: AnyOpsOSVmwareModule = new AnyOpsOSVmwareModule(userUuid, sessionUuid, connectionData.workspaceUuid, connectionData.connectionUuid);
+    const VmwareModule: AnyOpsOSNodeVmwareModule = new AnyOpsOSNodeVmwareModule(userUuid, sessionUuid, connectionData.workspaceUuid, connectionData.connectionUuid);
 
     return VmwareModule.disconnectConnection().then((result: BackendResponse) => {
       return result;
@@ -43,7 +44,7 @@ export class AnyOpsOSVmwareWebsocketController {
                    @MessageBody() connectionData: { connectionUuid: string; workspaceUuid: string; }) {
     logger.info(`[Websocket vmware] -> newSession -> id [${id}], connectionUuid [${connectionData.connectionUuid}], workspaceUuid [${connectionData.workspaceUuid}]`);
 
-    const VmwareModule: AnyOpsOSVmwareModule = new AnyOpsOSVmwareModule(userUuid, sessionUuid, connectionData.workspaceUuid, connectionData.connectionUuid);
+    const VmwareModule: AnyOpsOSNodeVmwareModule = new AnyOpsOSNodeVmwareModule(userUuid, sessionUuid, connectionData.workspaceUuid, connectionData.connectionUuid);
 
     return VmwareModule.newConnection().then((result: BackendResponse) => {
       return result;

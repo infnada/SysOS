@@ -117,12 +117,12 @@ export class BodyComponent implements OnDestroy, OnInit {
   /**
    * Show credential data at DOM Form based on activeCredentialUuid
    */
-  private async onActiveCredentialChange(activeCredentialUuid: string | null) {
+  private onActiveCredentialChange(activeCredentialUuid: string | null): void {
     this.activeCredentialUuid = activeCredentialUuid;
     if (!activeCredentialUuid) return this.credentialForm.reset();
 
     // Set Form controls with currentCredential data
-    const currentCredential = await this.CredentialsManager.getActiveCredential();
+    const currentCredential = this.CredentialsManager.getActiveCredential();
     Object.keys(currentCredential).forEach((item) => {
       if (this.credentialForm.controls[item]) this.credentialForm.controls[item].setValue(currentCredential[item]);
     });

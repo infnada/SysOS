@@ -1,27 +1,19 @@
-import {
-  ConnectionVmware,
-  ConnectionNetapp,
-  ImDataObject,
-  NetAppSnapshot,
-  NetAppVolume,
-  NetAppVserver,
-  NetAppIface,
-  VMWareVM,
-  VMWareHost, VMWareFolder, VMWareResourcePool
-} from '@anyopsos/app-infrastructure-manager';
+import {ConnectionNetapp, NetAppIface, NetAppSnapshot, NetAppVolume, NetAppVserver} from '@anyopsos/module-node-netapp';
+import {ConnectionVmware, VMWareFolder, VMWareHost, VMWareResourcePool, VMWareVM} from '@anyopsos/module-node-vmware';
+import {DataObject} from '@anyopsos/backend-core/app/types/data-object';
 
 export interface RestoreVmGuestFiles {
   storage: ConnectionNetapp;
-  vserver: ImDataObject & { info: { data: NetAppVserver } };
-  volume: ImDataObject & { info: { data: NetAppVolume } };
-  snapshot: ImDataObject & { info: { data: NetAppSnapshot } };
-  vm: ImDataObject & { info: { data: VMWareVM } };
+  vserver: DataObject & { info: { data: NetAppVserver } };
+  volume: DataObject & { info: { data: NetAppVolume } };
+  snapshot: DataObject & { info: { data: NetAppSnapshot } };
+  vm: DataObject & { info: { data: VMWareVM } };
   uuid: string;
   virtual: ConnectionVmware;
-  host: ImDataObject & { info: { data: VMWareHost } };
-  folder: ImDataObject & { info: { data: VMWareFolder } };
-  resourcePool: ImDataObject & { info: { data: VMWareResourcePool } };
-  iface: ImDataObject & { info: { data: NetAppIface } };
+  host: DataObject & { info: { data: VMWareHost } };
+  folder: DataObject & { info: { data: VMWareFolder } };
+  resourcePool: DataObject & { info: { data: VMWareResourcePool } };
+  iface: DataObject & { info: { data: NetAppIface } };
   volumeName?: string;
   datastorePath?: string;
 }

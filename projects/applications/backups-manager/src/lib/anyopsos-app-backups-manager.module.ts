@@ -21,7 +21,7 @@ import {MenuComponent} from './menu/menu.component';
 })
 export class AnyOpsOSAppBackupsManagerModule {
   constructor(private readonly LibApplication: AnyOpsOSLibApplicationService,
-              private BackupsManager: AnyOpsOSAppBackupsManagerService) {
+              private readonly BackupsManager: AnyOpsOSAppBackupsManagerService) {
 
     this.LibApplication.registerApplication({
       uuid: 'backups-manager',

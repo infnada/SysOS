@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.backend.json",
+  "compilerOptions": {
+    "outDir": "../../dist/anyOpsOS/fileSystem",
+    "baseUrl": "./app",
+    "paths": {
+      "*": [
+        "node_modules/*"
+      ]
+    }
+  },
+  "include": [
+    "app/**/*"
+  ]
+}

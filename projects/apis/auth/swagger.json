@@ -59,6 +59,39 @@
         "produces": [
           "text/html; charset=utf-8"
         ]
+      },
+      "put": {
+        "operationId": "AnyOpsOSAuthApiController.createUser",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Create user",
+        "tags": [
+          "Any Ops OS Auth Api"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "username": {
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
       }
     }
   }

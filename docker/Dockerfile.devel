@@ -1,0 +1,11 @@
+FROM registry.access.redhat.com/ubi8/ubi-minimal:8.1
+
+MAINTAINER anyOpsOS
+
+WORKDIR /var/www
+
+RUN microdnf -y update && \
+microdnf -y install nodejs git python3 make gcc && \
+npm install -g yarn
+
+CMD ["/bin/bash"]

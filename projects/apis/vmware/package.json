@@ -8,9 +8,9 @@
   },
   "peerDependencies": {
     "@anyopsos/module-api-globals": "~0.0.1",
-    "@anyopsos/module-get-path": "~0.0.1",
+    "@anyopsos/module-sys-get-path": "~0.0.1",
     "@anyopsos/module-credential": "~0.0.1",
-    "@anyopsos/module-vmware": "~0.0.1"
+    "@anyopsos/module-node-vmware": "~0.0.1"
   },
   "devDependencies": {
     "@types/child-process-promise": "^2.2.1",

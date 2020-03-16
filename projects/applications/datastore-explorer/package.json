@@ -17,11 +17,11 @@
     "@anyopsos/lib-folder": "~0.0.1",
     "@anyopsos/lib-logger": "~0.0.1",
     "@anyopsos/lib-modal": "~0.0.1",
-    "@anyopsos/lib-netapp": "~0.0.1",
+    "@anyopsos/lib-node-netapp": "~0.0.1",
     "@anyopsos/lib-selectable": "~0.0.1",
     "@anyopsos/lib-service-injector": "~0.0.1",
     "@anyopsos/lib-types": "~0.0.1",
-    "@anyopsos/lib-vmware": "~0.0.1",
+    "@anyopsos/lib-node-vmware": "~0.0.1",
     "@anyopsos/app-infrastructure-manager": "~0.0.1",
     "uuid": "^3.3.2",
     "ngx-socket-io": "^3.0.1"

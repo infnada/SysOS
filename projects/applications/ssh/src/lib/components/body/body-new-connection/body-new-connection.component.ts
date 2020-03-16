@@ -82,7 +82,7 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
     this.connectionForm.controls.hopServerUuid.enable();
   }
 
-  private async onActiveConnectionChange(activeConnectionUuid: string): Promise<void> {
+  private onActiveConnectionChange(activeConnectionUuid: string): void {
 
     // Reset main Form
     if (!activeConnectionUuid) {
@@ -95,7 +95,7 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
     }
 
     // Set Form controls with currentConnection data
-    const currentConnection: ConnectionSsh = await this.Ssh.getActiveConnection();
+    const currentConnection: ConnectionSsh = this.Ssh.getActiveConnection();
     Object.keys(currentConnection).forEach((item: string) => {
       if (this.connectionForm.controls[item]) this.connectionForm.controls[item].setValue(currentConnection[item]);
     });

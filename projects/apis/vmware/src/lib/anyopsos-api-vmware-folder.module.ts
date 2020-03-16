@@ -4,8 +4,8 @@ import {Request, Response} from 'express';
 import {getLogger, Logger} from 'log4js';
 
 import {AnyOpsOSApiGlobalsModule} from '@anyopsos/module-api-globals';
-import {AnyOpsOSVmwareFileSystemModule} from '@anyopsos/module-vmware';
-import {AnyOpsOSFile} from '@anyopsos/backend/app/types/anyopsos-file';
+import {AnyOpsOSNodeVmwareFileSystemModule} from '@anyopsos/module-node-vmware';
+import {AnyOpsOSFile} from '@anyopsos/backend-core/app/types/anyopsos-file';
 
 
 const logger: Logger = getLogger('mainLog');
@@ -27,7 +27,7 @@ export class AnyOpsOSVmwareFolderApiController {
                         @Param('datastoreBrowserName') datastoreBrowserName: string) {
     logger.info(`[API VmwareFolder] -> Reading folder files -> workspaceUuid [${workspaceUuid}], connectionUuid [${connectionUuid}], srcPath [${srcPath}]`);
 
-    const VmwareFileSystemModule: AnyOpsOSVmwareFileSystemModule = new AnyOpsOSVmwareFileSystemModule(userUuid, sessionUuid, workspaceUuid, connectionUuid);
+    const VmwareFileSystemModule: AnyOpsOSNodeVmwareFileSystemModule = new AnyOpsOSNodeVmwareFileSystemModule(userUuid, sessionUuid, workspaceUuid, connectionUuid);
     const ApiGlobalsModule: AnyOpsOSApiGlobalsModule = new AnyOpsOSApiGlobalsModule(request, response);
 
     const pathData: AnyOpsOSFile[] = await VmwareFileSystemModule.getFolder(srcPath, datastoreName, datastoreBrowserName);
@@ -47,7 +47,7 @@ export class AnyOpsOSVmwareFolderApiController {
                            @Param('datacenterName') datacenterName: string) {
     logger.info(`[API VmwareFolder] -> Creating folder -> workspaceUuid [${workspaceUuid}], connectionUuid [${connectionUuid}], dstPath [${dstPath}]`);
 
-    const VmwareFileSystemModule: AnyOpsOSVmwareFileSystemModule = new AnyOpsOSVmwareFileSystemModule(userUuid, sessionUuid, workspaceUuid, connectionUuid);
+    const VmwareFileSystemModule: AnyOpsOSNodeVmwareFileSystemModule = new AnyOpsOSNodeVmwareFileSystemModule(userUuid, sessionUuid, workspaceUuid, connectionUuid);
     const ApiGlobalsModule: AnyOpsOSApiGlobalsModule = new AnyOpsOSApiGlobalsModule(request, response);
 
     await VmwareFileSystemModule.putFolder(dstPath, datastoreName, datacenterName);

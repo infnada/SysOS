@@ -1,0 +1,42 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: anyopsos
+  labels:
+    app: anyopsos-redis
+spec:
+  selector:
+    app: anyopsos-redis
+  type: ClusterIP
+  ports:
+    - port: 6379
+      targetPort: 6379
+      protocol: TCP
+      name: redis
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: anyopsos
+  name: anyopsos-redis
+spec:
+  selector:
+    matchLabels:
+      app: anyopsos-redis
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: anyopsos-redis
+    spec:
+      containers:
+        - name: master
+          image: redis
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+          ports:
+            - containerPort: 6379

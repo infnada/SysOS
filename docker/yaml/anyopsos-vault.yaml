@@ -1,0 +1,126 @@
+# Networking
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vault
+  namespace: anyopsos
+  labels:
+    app: anyopsos-vault
+spec:
+  selector:
+    app: anyopsos-vault
+  type: ClusterIP
+  ports:
+    - port: 443
+      targetPort: 8200
+      protocol: TCP
+      name: vault-api
+
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: vault
+  namespace: anyopsos
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+spec:
+  tls:
+    - hosts:
+      - vault.anyopsos.local
+  rules:
+    - host: vault.anyopsos.local
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: vault
+              servicePort: vault-api
+# Roles
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: anyopsos-k8s-vault
+  namespace: anyopsos
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: role-tokenreview-binding
+  namespace: anyopsos
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:auth-delegator
+subjects:
+  - kind: ServiceAccount
+    name: anyopsos-k8s-vault
+    namespace: anyopsos
+
+# Vault
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: anyopsos-vault
+  namespace: anyopsos
+  labels:
+    app: anyopsos-vault
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: anyopsos-vault
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: anyopsos-vault
+    spec:
+      restartPolicy: Always
+      serviceAccountName: anyopsos-k8s-vault
+      volumes:
+        - name: certificates
+          secret:
+            secretName: anyopsos-certificates
+        - name: configurations
+          configMap:
+            name: vault-config
+      containers:
+        - name: vault
+          image: vault:1.3.3
+          args: ["server"]
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+          ports:
+            - containerPort: 8200
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            capabilities:
+              add:
+                - IPC_LOCK
+          volumeMounts:
+            # Configs
+            - name: configurations
+              mountPath: /vault/config/vault.json
+              subPath: vault.json
+              readOnly: true
+            # Certificates
+            - name: certificates
+              mountPath: /dev/shm/ca.cert
+              subPath: ca.cert
+              readOnly: true
+            - name: certificates
+              mountPath: /dev/shm/vault.cert
+              subPath: vault.cert
+              readOnly: true
+            - name: certificates
+              mountPath: /dev/shm/vault.key
+              subPath: vault.key
+              readOnly: true

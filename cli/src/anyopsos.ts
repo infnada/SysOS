@@ -417,7 +417,7 @@ export class ${fulldynamicComponent} implements OnInit {
     // Rewrite modal html file
     await outputFile(`${projectPath}/src/lib/anyopsos-modal-${argv.name}.component.html`, `<almodal-body #modalBody>
 
-  <!-- Put modal contant here -->
+  <!-- Put modal content here -->
   <span>Hello from ${argv.name} Modal!</span>
 
 </almodal-body>
@@ -657,7 +657,7 @@ export class ${fulldynamicModule} {
       console.log(blueBright(`[anyOpsOS Cli. Internals] Copying module ${argv.moduleName} to anyOpsOS filesystem.\n`));
       await copy(
         `${process.cwd()}/dist/modules/${argv.moduleName}/`,
-        `${process.cwd()}/dist/anyOpsOS/filesystem/bin/modules/module-${argv.moduleName}`
+        `${process.cwd()}/dist/anyOpsOS/fileSystem/filesystem/bin/modules/module-${argv.moduleName}`
       );
 
     } else {
@@ -679,7 +679,7 @@ export class ${fulldynamicModule} {
         console.log(blueBright(`[anyOpsOS Cli. Internals] Copying module ${directory} to anyOpsOS filesystem.`));
         await copy(
           `${process.cwd()}/dist/modules/${directory}/`,
-          `${process.cwd()}/dist/anyOpsOS/filesystem/bin/modules/module-${directory}`
+          `${process.cwd()}/dist/anyOpsOS/fileSystem/filesystem/bin/modules/module-${directory}`
         );
       });
 
@@ -703,7 +703,7 @@ export class ${fulldynamicModule} {
       console.log(blueBright(`[anyOpsOS Cli. Internals] Copying API Middleware ${argv.moduleName} to anyOpsOS filesystem.\n`));
       await copy(
         `${process.cwd()}/dist/api-middlewares/${argv.moduleName}/`,
-        `${process.cwd()}/dist/anyOpsOS/filesystem/bin/modules/api-middleware-${argv.moduleName}`
+        `${process.cwd()}/dist/anyOpsOS/fileSystem/filesystem/bin/modules/api-middleware-${argv.moduleName}`
       );
 
     } else {
@@ -725,7 +725,7 @@ export class ${fulldynamicModule} {
         console.log(blueBright(`[anyOpsOS Cli. Internals] Copying API Middleware ${directory} to anyOpsOS filesystem.`));
         await copy(
           `${process.cwd()}/dist/api-middlewares/${directory}/`,
-          `${process.cwd()}/dist/anyOpsOS/filesystem/bin/modules/api-middleware-${directory}`
+          `${process.cwd()}/dist/anyOpsOS/fileSystem/filesystem/bin/modules/api-middleware-${directory}`
         );
       });
 
@@ -749,7 +749,7 @@ export class ${fulldynamicModule} {
       console.log(blueBright(`[anyOpsOS Cli. Internals] Copying API ${argv.moduleName} to anyOpsOS filesystem.\n`));
       await copy(
         `${process.cwd()}/dist/apis/${argv.moduleName}/`,
-        `${process.cwd()}/dist/anyOpsOS/filesystem/bin/apis/${argv.moduleName}`
+        `${process.cwd()}/dist/anyOpsOS/fileSystem/filesystem/bin/apis/${argv.moduleName}`
       );
 
     } else {
@@ -771,7 +771,7 @@ export class ${fulldynamicModule} {
       console.log(blueBright(`[anyOpsOS Cli. Internals] Copying APIs to anyOpsOS filesystem.\n`));
       await copy(
         `${process.cwd()}/dist/apis/`,
-        `${process.cwd()}/dist/anyOpsOS/filesystem/bin/apis/`
+        `${process.cwd()}/dist/anyOpsOS/fileSystem/filesystem/bin/apis/`
       );
     }
 
@@ -794,7 +794,7 @@ export class ${fulldynamicModule} {
       console.log(blueBright(`[anyOpsOS Cli. Internals] Copying WebSocket ${argv.moduleName} to anyOpsOS filesystem.\n`));
       await copy(
         `${process.cwd()}/dist/websockets/${argv.moduleName}/`,
-        `${process.cwd()}/dist/anyOpsOS/filesystem/bin/websockets/${argv.moduleName}`
+        `${process.cwd()}/dist/anyOpsOS/fileSystem/filesystem/bin/websockets/${argv.moduleName}`
       );
 
     } else {
@@ -813,7 +813,7 @@ export class ${fulldynamicModule} {
       console.log(blueBright(`[anyOpsOS Cli. Internals] Copying WebSockets to anyOpsOS filesystem.\n`));
       await copy(
         `${process.cwd()}/dist/websockets/`,
-        `${process.cwd()}/dist/anyOpsOS/filesystem/bin/websockets/`
+        `${process.cwd()}/dist/anyOpsOS/fileSystem/filesystem/bin/websockets/`
       );
     }
 
@@ -821,8 +821,20 @@ export class ${fulldynamicModule} {
 
   const buildBackend = async (): Promise<void> => {
 
-    console.log(blue(`[anyOpsOS Cli.] Building anyOpsOS Backend.\n`));
-    await awaitSpawn('tsc.cmd', ['--build', 'src/backend/tsconfig.json'], {
+    console.log(blue(`[anyOpsOS Cli.] Building anyOpsOS Backend fileSystem.\n`));
+    await awaitSpawn('tsc.cmd', ['--build', 'src/backend-fileSystem/tsconfig.json'], {
+      cwd: `${process.cwd()}`,
+      stdio: 'inherit'
+    });
+
+    console.log(blue(`[anyOpsOS Cli.] Building anyOpsOS Backend Auth.\n`));
+    await awaitSpawn('tsc.cmd', ['--build', 'src/backend-auth/tsconfig.json'], {
+      cwd: `${process.cwd()}`,
+      stdio: 'inherit'
+    });
+
+    console.log(blue(`[anyOpsOS Cli.] Building anyOpsOS Backend Core.\n`));
+    await awaitSpawn('tsc.cmd', ['--build', 'src/backend-core/tsconfig.json'], {
       cwd: `${process.cwd()}`,
       stdio: 'inherit'
     });
@@ -858,10 +870,10 @@ export class ${fulldynamicModule} {
 
     // Move Netdata to Deps
     console.log(blueBright(`[anyOpsOS Cli. Internals] Moving fileSystem dependencies.\n`));
-    if (pathExistsSync(`${process.cwd()}/dist/anyOpsOS/filesystem/bin/libs/anyopsos-ext-lib-netdata.umd.js`)) {
+    if (pathExistsSync(`${process.cwd()}/dist/anyOpsOS/fileSystem/filesystem/bin/libs/anyopsos-ext-lib-netdata.umd.js`)) {
       await move(
-        `${process.cwd()}/dist/anyOpsOS/filesystem/bin/libs/anyopsos-ext-lib-netdata.umd.js`,
-        `${process.cwd()}/dist/anyOpsOS/filesystem/bin/libs/deps/anyopsos-ext-lib-netdata.umd.js`,
+        `${process.cwd()}/dist/anyOpsOS/fileSystem/filesystem/bin/libs/anyopsos-ext-lib-netdata.umd.js`,
+        `${process.cwd()}/dist/anyOpsOS/fileSystem/filesystem/bin/libs/deps/anyopsos-ext-lib-netdata.umd.js`,
         {
           overwrite: true
         }
@@ -894,7 +906,7 @@ export class ${fulldynamicModule} {
       console.log(blueBright(`[anyOpsOS Cli. Internals] Copying External Library ${argv.moduleName} to anyOpsOS filesystem.\n`));
       await copy(
         `${process.cwd()}/dist/external-libraries/${argv.moduleName}/bundles/anyopsos-ext-lib-${argv.moduleName}.umd.js`,
-        `${process.cwd()}/dist/anyOpsOS/filesystem/bin/libs/anyopsos-ext-lib-${argv.moduleName}.umd.js`
+        `${process.cwd()}/dist/anyOpsOS/fileSystem/filesystem/bin/libs/anyopsos-ext-lib-${argv.moduleName}.umd.js`
       );
     } else {
 
@@ -923,7 +935,7 @@ export class ${fulldynamicModule} {
         console.log(blueBright(`[anyOpsOS Cli. Internals] Copying External Library ${directory} to anyOpsOS filesystem.`));
         await copy(
           `${process.cwd()}/dist/external-libraries/${directory}/bundles/anyopsos-ext-lib-${directory}.umd.js`,
-          `${process.cwd()}/dist/anyOpsOS/filesystem/bin/libs/anyopsos-ext-lib-${directory}.umd.js`
+          `${process.cwd()}/dist/anyOpsOS/fileSystem/filesystem/bin/libs/anyopsos-ext-lib-${directory}.umd.js`
         );
       }));
 
@@ -958,7 +970,7 @@ export class ${fulldynamicModule} {
       console.log(blueBright(`[anyOpsOS Cli. Internals] Copying Application ${argv.moduleName} to anyOpsOS filesystem.\n`));
       await copy(
         `${process.cwd()}/dist/applications/${argv.moduleName}/bundles/anyopsos-app-${argv.moduleName}.umd.js`,
-        `${process.cwd()}/dist/anyOpsOS/filesystem/bin/applications/anyopsos-app-${argv.moduleName}.umd.js`
+        `${process.cwd()}/dist/anyOpsOS/fileSystem/filesystem/bin/applications/anyopsos-app-${argv.moduleName}.umd.js`
       );
     } else {
 
@@ -987,7 +999,7 @@ export class ${fulldynamicModule} {
         console.log(blueBright(`[anyOpsOS Cli. Internals] Copying Application ${directory} to anyOpsOS filesystem.`));
         await copy(
           `${process.cwd()}/dist/applications/${directory}/bundles/anyopsos-app-${directory}.umd.js`,
-          `${process.cwd()}/dist/anyOpsOS/filesystem/bin/applications/anyopsos-app-${directory}.umd.js`
+          `${process.cwd()}/dist/anyOpsOS/fileSystem/filesystem/bin/applications/anyopsos-app-${directory}.umd.js`
         );
       });
 
@@ -1020,7 +1032,7 @@ export class ${fulldynamicModule} {
       console.log(blueBright(`[anyOpsOS Cli. Internals] Copying Modal ${argv.moduleName} to anyOpsOS filesystem.\n`));
       await copy(
         `${process.cwd()}/dist/modals/${argv.moduleName}/bundles/anyopsos-modal-${argv.moduleName}.umd.js`,
-        `${process.cwd()}/dist/anyOpsOS/filesystem/bin/modals/anyopsos-modal-${argv.moduleName}.umd.js`
+        `${process.cwd()}/dist/anyOpsOS/fileSystem/filesystem/bin/modals/anyopsos-modal-${argv.moduleName}.umd.js`
       );
     } else {
 
@@ -1049,7 +1061,7 @@ export class ${fulldynamicModule} {
         console.log(blueBright(`[anyOpsOS Cli. Internals] Copying Modal ${directory} to anyOpsOS filesystem.`));
         await copy(
           `${process.cwd()}/dist/modals/${directory}/bundles/anyopsos-modal-${directory}.umd.js`,
-          `${process.cwd()}/dist/anyOpsOS/filesystem/bin/modals/anyopsos-modal-${directory}.umd.js`
+          `${process.cwd()}/dist/anyOpsOS/fileSystem/filesystem/bin/modals/anyopsos-modal-${directory}.umd.js`
         );
       });
 
@@ -1080,10 +1092,8 @@ export class ${fulldynamicModule} {
 
     await buildBackend();
 
-    console.log(blueBright(`[anyOpsOS Cli. Internals] Copying ssl certificate to anyOpsOS.\n`));
-    await copy(`${process.cwd()}/src/backend/app/ssl`, `${process.cwd()}/dist/anyOpsOS/ssl`);
     console.log(blueBright(`[anyOpsOS Cli. Internals] Generating default anyOpsOS fileSystem.\n`));
-    await copy(`${process.cwd()}/src/backend/app/filesystem`, `${process.cwd()}/dist/anyOpsOS/filesystem`);
+    await copy(`${process.cwd()}/src/backend-fileSystem/app/filesystem`, `${process.cwd()}/dist/anyOpsOS/fileSystem/filesystem`);
 
     await buildLibrary(argv);
     await buildFrontend();
@@ -1091,6 +1101,144 @@ export class ${fulldynamicModule} {
     await buildApplication(argv);
     await buildModal(argv);
   };
+
+  const lintAll = async (argv): Promise<void> => {
+
+    console.log(red(`[anyOpsOS Cli.] Erasing destination folder.\n`));
+
+    await lintModules(argv);
+    await lintApiMiddlewares(argv);
+    await lintApis(argv);
+    await lintWebsockets(argv);
+
+    await lintBackend();
+
+    await lintLibrary(argv);
+    await lintFrontend();
+    await lintExternalLibrary(argv);
+    await lintApplication(argv);
+    await lintModal(argv);
+  };
+
+  const lintModules = async (argv): Promise<void> => {
+    if (argv.moduleName) {
+
+      console.log(blue(`[anyOpsOS Cli.] Linting Module ${argv.moduleName}.\n`));
+      await awaitSpawn('tslint.cmd', ['-p', `${projectPath}/tsconfig.json`], {
+        cwd: `${process.cwd()}`,
+        stdio: 'inherit'
+      });
+
+    } else {
+
+      const projectsFiles = await readdir(`${process.cwd()}/projects/modules/`);
+
+      for (const directory of projectsFiles) {
+        console.log(blue(`[anyOpsOS Cli.] Linting Module ${directory}.\n`));
+        await awaitSpawn('tslint.cmd', ['-p', `${process.cwd()}/projects/modules/${directory}/tsconfig.json`], {
+          cwd: `${process.cwd()}`,
+          stdio: 'inherit'
+        });
+      }
+
+    }
+  };
+  const lintApiMiddlewares = async (argv): Promise<void> => {
+    if (argv.moduleName) {
+
+      console.log(blue(`[anyOpsOS Cli.] Linting API Middleware ${argv.moduleName}.\n`));
+      await awaitSpawn('tslint.cmd', ['-p', `${projectPath}/tsconfig.json`], {
+        cwd: `${process.cwd()}`,
+        stdio: 'inherit'
+      });
+
+    } else {
+
+      const projectsFiles = await readdir(`${process.cwd()}/projects/api-middlewares/`);
+
+      for (const directory of projectsFiles) {
+        console.log(blue(`[anyOpsOS Cli.] Linting API Middleware ${directory}.\n`));
+        await awaitSpawn('tslint.cmd', ['-p', `${process.cwd()}/projects/api-middlewares/${directory}/tsconfig.json`], {
+          cwd: `${process.cwd()}`,
+          stdio: 'inherit'
+        });
+      }
+
+    }
+  };
+  const lintApis = async (argv): Promise<void> => {
+    if (argv.moduleName) {
+
+      console.log(blue(`[anyOpsOS Cli.] Linting API ${argv.moduleName}.\n`));
+      await awaitSpawn('tslint.cmd', ['-p', `${projectPath}/tsconfig.json`], {
+        cwd: `${process.cwd()}`,
+        stdio: 'inherit'
+      });
+
+    } else {
+
+      const projectsFiles = await readdir(`${process.cwd()}/projects/apis/`);
+
+      for (const directory of projectsFiles) {
+        // TODO hardcoded end to not check swagger file. Test if its a directory with fs.stat
+        if (directory === 'swagger.json') continue;
+
+        console.log(blue(`[anyOpsOS Cli.] Linting API ${directory}.\n`));
+        await awaitSpawn('tslint.cmd', ['-p', `${process.cwd()}/projects/apis/${directory}/tsconfig.json`], {
+          cwd: `${process.cwd()}`,
+          stdio: 'inherit'
+        });
+      }
+
+    }
+  };
+  const lintWebsockets = async (argv): Promise<void> => {
+    if (argv.moduleName) {
+
+      console.log(blue(`[anyOpsOS Cli.] Linting WebSocket ${argv.moduleName}.\n`));
+      await awaitSpawn('tslint.cmd', ['-p', `${projectPath}/tsconfig.json`], {
+        cwd: `${process.cwd()}`,
+        stdio: 'inherit'
+      });
+
+    } else {
+
+      const projectsFiles = await readdir(`${process.cwd()}/projects/websockets/`);
+
+      for (const directory of projectsFiles) {
+        console.log(blue(`[anyOpsOS Cli.] Linting WebSocket ${directory}.\n`));
+        await awaitSpawn('tslint.cmd', ['-p', `${process.cwd()}/projects/websockets/${directory}/tsconfig.json`], {
+          cwd: `${process.cwd()}`,
+          stdio: 'inherit'
+        });
+      }
+
+    }
+  };
+  const lintBackend = async (): Promise<void> => {
+    await awaitSpawn('tslint.cmd', ['-p', 'src/backend-fileSystem/tsconfig.json'], {
+      cwd: `${process.cwd()}`,
+      stdio: 'inherit'
+    });
+    await awaitSpawn('tslint.cmd', ['-p', 'src/backend-auth/tsconfig.json'], {
+      cwd: `${process.cwd()}`,
+      stdio: 'inherit'
+    });
+    await awaitSpawn('tslint.cmd', ['-p', 'src/backend-core/tsconfig.json'], {
+      cwd: `${process.cwd()}`,
+      stdio: 'inherit'
+    });
+  };
+  const lintLibrary = async (argv): Promise<void> => {};
+  const lintFrontend = async (): Promise<void> => {
+    await awaitSpawn('ng.cmd', ['lint'], {
+      cwd: mainPathCwd,
+      stdio: 'inherit'
+    });
+  };
+  const lintExternalLibrary = async (argv): Promise<void> => {};
+  const lintApplication = async (argv): Promise<void> => {};
+  const lintModal = async (argv): Promise<void> => {};
 
   // tslint:disable-next-line:no-unused-expression
   yargs
@@ -1190,7 +1338,7 @@ export class ${fulldynamicModule} {
     })
     .command({
       aliases: 'l',
-      command: 'lint <type>',
+      command: 'lint <type> [moduleName]',
       describe: 'lints anyOpsOS module type',
       builder: {
         type: {
@@ -1198,25 +1346,26 @@ export class ${fulldynamicModule} {
           demand: true,
           describe: 'specify module type',
           hidden: true,
-          choices: ['all', 'backend', 'frontend']
+          choices: ['all', 'backend', 'frontend', 'library', 'external-library', 'application', 'modal', 'module', 'api-middleware', 'api', 'websocket']
         }
       },
-      handler: (argv: & { type: string; }) => {
+      handler: async (argv: & { type: string; moduleName?: string }) => {
         try {
 
-          if (argv.type === 'backend' || argv.type === 'all') {
-            awaitSpawn('tslint', ['-p', 'backend/tsconfig.json'], {
-              cwd: `${process.cwd()}`,
-              stdio: 'inherit'
-            });
-          }
+          if (argv.moduleName) setVars(argv);
 
-          if (argv.type === 'frontend' || argv.type === 'all') {
-            awaitSpawn('ng.cmd', ['lint'], {
-              cwd: mainPathCwd,
-              stdio: 'inherit'
-            });
-          }
+          if (argv.type === 'all') return await lintAll(argv);
+          if (argv.type === 'module') return await lintModules(argv);
+          if (argv.type === 'api-middleware') return await lintApiMiddlewares(argv);
+          if (argv.type === 'api') return await lintApis(argv);
+          if (argv.type === 'websocket') return await lintWebsockets(argv);
+          if (argv.type === 'backend') return await lintBackend();
+          if (argv.type === 'frontend') return await lintFrontend();
+          if (argv.type === 'library') return await lintLibrary(argv);
+          if (argv.type === 'external-library') return await lintExternalLibrary(argv);
+          if (argv.type === 'application') return await lintApplication(argv);
+          if (argv.type === 'modal') return await lintModal(argv);
+
         } catch (err) {
           console.error(err);
           process.exit(1);
@@ -1231,6 +1380,42 @@ export class ${fulldynamicModule} {
         try {
 
           awaitSpawn('node', ['dist/anyOpsOS/index.js'], {
+            cwd: mainPathCwd,
+            stdio: 'inherit'
+          });
+
+        } catch (err) {
+          console.error(err);
+          process.exit(1);
+        }
+      }
+    })
+    .command({
+      command: 'devel',
+      describe: 'Runs a Docker container with anyOpsOS files mounted on /var/www',
+      handler: async () => {
+        try {
+
+          // Check if devel container is already created
+          const dockerContainers: string = await awaitSpawn('docker', ['ps', '-a'], {
+            cwd: mainPathCwd
+          });
+
+          console.log(dockerContainers.toString());
+
+          // Get local yarn cache directory
+          const localYarnCacheDir: string = await awaitSpawn('docker', ['ps', '-a'], {
+            cwd: mainPathCwd
+          });
+
+          // Build devel image
+          await awaitSpawn('docker', ['build', '-f', 'docker/Dockerfile.devel', '-t', 'anyopsos-devel', './docker'], {
+            cwd: mainPathCwd,
+            stdio: 'inherit'
+          });
+
+          // Run image
+          await awaitSpawn('docker', ['run', '--rm', '-ti', '-v', `${process.cwd()}:/var/www`, '-v', `${localYarnCacheDir.toString()}:/usr/local/share/.cache/yarn/v6`, '--name', 'anyopsos-devel', 'anyopsos-devel'], {
             cwd: mainPathCwd,
             stdio: 'inherit'
           });

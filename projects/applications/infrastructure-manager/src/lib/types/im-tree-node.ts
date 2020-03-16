@@ -1,7 +1,18 @@
 export interface ImTreeNode {
   name: string;
   type: string;
-  uuid: string;
-  info: any;
-  children?: [] | ImTreeNode[];
+  info: {
+    uuid: string;
+    mainUuid?: string;
+    obj: {
+      type: string;
+      name: string;
+    };
+    parent: {
+      type: string;
+      name: string;
+    } | null;
+    data: any;
+  };
+  children?: ImTreeNode[];
 }

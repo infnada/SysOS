@@ -1,0 +1,65 @@
+<almodal-body #modalBody class="modal-monitor-alarms">
+
+  <!-- Put modal content here -->
+  <mat-tab-group dynamicHeight>
+
+    <!-- Active alarms -->
+    <mat-tab label="Active">
+      <table class="table" *ngIf="activeAlarms.length !== 0">
+        <tr *ngFor="let alarm of activeAlarms">
+          <ammonitor-alarms-alarm [NETDATA]="NETDATA" [options]="options" [alarm]="alarm"></ammonitor-alarms-alarm>
+        </tr>
+      </table>
+
+      <div *ngIf="activeAlarms.length === 0">
+        <div style="width:100%; height: 100px; text-align: center;">
+          <span style="font-size: 50px;"><i class="fas fa-thumbs-up"></i></span><br/>Everything is normal. No raised alarms.
+        </div>
+      </div>
+    </mat-tab>
+
+    <!-- All alarms -->
+    <mat-tab label="All">
+      <h4 *ngIf="families.length === 0">No alarms are running in this system.</h4>
+
+      <mat-accordion>
+        <mat-expansion-panel *ngFor="let family of families | orderBy: ['priority', 'name'];">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              {{family.name}}
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <!-- Alarm -->
+          <ng-template matExpansionPanelContent>
+            <table class="table">
+              <tbody>
+              <tr *ngFor="let alarm of family.arr">
+                <ammonitor-alarms-alarm [NETDATA]="NETDATA" [options]="options" [alarm]="alarm"></ammonitor-alarms-alarm>
+              </tr>
+              </tbody>
+            </table>
+          </ng-template>
+        </mat-expansion-panel>
+      </mat-accordion>
+
+    </mat-tab>
+
+    <!-- Alarms log -->
+    <mat-tab label="Log">
+      <h3>Alarm Log</h3>
+      <table id="alarms_log_table">
+
+      </table>
+    </mat-tab>
+  </mat-tab-group>
+
+  <hr/>
+  <a href="https://github.com/netdata/netdata/tree/master/web/api/badges#netdata-badges" target="_blank">netdata badges</a> refresh automatically. Their color indicates the state of the alarm: <span style="color: #e05d44"><b>&nbsp;red&nbsp;</b></span> is critical, <span style="color:#fe7d37"><b>&nbsp;orange&nbsp;</b></span> is warning, <span style="color: #4c1"><b>&nbsp;bright green&nbsp;</b></span> is ok, <span style="color: #9f9f9f"><b>&nbsp;light grey&nbsp;</b></span> is undefined (i.e. no data or no status), <span style="color: #000"><b>&nbsp;black&nbsp;</b></span> is not initialized. You can copy and paste their URLs to embed them in any web page.<br/>netdata can send notifications for these alarms. Check <a href="https://github.com/netdata/netdata/blob/master/health/notifications/health_alarm_notify.conf" target="_blank">this configuration file</a> for more information.
+
+</almodal-body>
+
+<!-- Put footer buttons here -->
+<almodal-buttons>
+  <button class="btn" type="button" (click)="dialogRef.close()" mat-flat-button>Close</button>
+</almodal-buttons>

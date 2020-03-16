@@ -2,11 +2,12 @@ import {Component, Input, OnChanges, SimpleChanges} from '@angular/core';
 
 import {Application} from '@anyopsos/lib-application';
 import {AnyOpsOSLibServiceInjectorService} from '@anyopsos/lib-service-injector';
+import {AnyOpsOSLibNodeTemplateHelpersService} from '@anyopsos/lib-node';
 import {AnyOpsOSExtLibNetdataService, NetdataConnection} from '@anyopsos/ext-lib-netdata';
+import {DataObject} from '@anyopsos/backend-core/app/types/data-object';
 
-import {ImDataObject} from '../../../types/im-data-object';
-import {AnyOpsOSAppInfrastructureManagerTemplateHelperService} from '../../../services/anyopsos-app-infrastructure-manager-template-helper.service';
 import {AnyOpsOSAppInfrastructureManagerNodeMonitorService} from '../../../services/anyopsos-app-infrastructure-manager-node-monitor.service';
+
 
 @Component({
   selector: 'aaim-body-vmware',
@@ -14,7 +15,7 @@ import {AnyOpsOSAppInfrastructureManagerNodeMonitorService} from '../../../servi
   styleUrls: ['./body-vmware.component.scss']
 })
 export class BodyVmwareComponent implements OnChanges {
-  @Input() vmwareObject: ImDataObject;
+  @Input() vmwareObject: DataObject;
   @Input() application: Application;
 
   private Monitor;
@@ -24,7 +25,7 @@ export class BodyVmwareComponent implements OnChanges {
   constructor(private serviceInjector: AnyOpsOSLibServiceInjectorService,
               private Netdata: AnyOpsOSExtLibNetdataService,
               private InfrastructureManagerNodeMonitor: AnyOpsOSAppInfrastructureManagerNodeMonitorService,
-              public InfrastructureManagerTemplateHelper: AnyOpsOSAppInfrastructureManagerTemplateHelperService) {
+              public readonly LibNodeTemplateHelpers: AnyOpsOSLibNodeTemplateHelpersService) {
 
     this.Monitor = this.serviceInjector.get('AnyOpsOSAppMonitorService');
   }

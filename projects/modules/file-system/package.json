@@ -8,12 +8,12 @@
     "log4js": "^6.1.0"
   },
   "peerDependencies": {
-    "@anyopsos/module-get-path": "~0.0.1",
+    "@anyopsos/module-sys-get-path": "~0.0.1",
     "@anyopsos/module-ssh": "~0.0.1",
     "@anyopsos/module-credential": "~0.0.1"
   },
   "devDependencies": {
-    "@anyopsos/backend": "~0.0.1",
+    "@anyopsos/backend-core": "~0.0.1",
     "@types/node": "^12.12.21",
     "@types/child-process-promise": "^2.2.1",
     "@types/fs-extra": "^8.0.1",

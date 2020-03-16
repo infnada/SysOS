@@ -20,8 +20,8 @@ import {AnyOpsOSLibSelectableService} from '@anyopsos/lib-selectable';
 import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
 import {AnyOpsOSLibFileSystemUiService, CutCopyFile} from '@anyopsos/lib-file-system-ui';
 import {ContextMenuItem} from '@anyopsos/lib-types';
-import {AnyOpsOSFile} from '@anyopsos/backend/app/types/anyopsos-file';
-import {Connection} from '@anyopsos/backend/app/types/connection';
+import {AnyOpsOSFile} from '@anyopsos/backend-core/app/types/anyopsos-file';
+import {Connection} from '@anyopsos/backend-core/app/types/connection';
 
 @Component({
   selector: 'alfolder-anyopsos-lib-folder',
@@ -54,7 +54,7 @@ export class AnyOpsOSLibFolderComponent implements OnDestroy, OnInit, OnChanges 
   private copyFile: CutCopyFile;
   private cutFile: CutCopyFile;
 
-  readonly contextMenuPosition = {x: '0px', y: '0px'};
+  contextMenuPosition = {x: '0px', y: '0px'};
   readonly folderContextMenuItems: ContextMenuItem[] = [
     {
       id: 1, text: '<i class="fas fa-download"></i> Download from URL to current folder', action: () => {

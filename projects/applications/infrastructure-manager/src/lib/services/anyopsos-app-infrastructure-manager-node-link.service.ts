@@ -1,32 +1,29 @@
 import {Injectable} from '@angular/core';
 
-import {DataObject} from '@anyopsos/backend/app/types/data-object';
-
-import {AnyOpsOSAppInfrastructureManagerService} from './anyopsos-app-infrastructure-manager.service';
-import {AnyOpsOSAppInfrastructureManagerObjectHelperService} from './anyopsos-app-infrastructure-manager-object-helper.service';
-import {ConnectionNetapp, NetAppIface, NetAppVolume, NetAppVserver} from '@anyopsos/module-netapp/src';
-import {VMWareDatastore} from '@anyopsos/module-vmware/src';
+import {AnyOpsOSLibNodeHelpersService} from '@anyopsos/lib-node';
+import {ConnectionNetapp, NetAppIface, NetAppVolume, NetAppVserver} from '@anyopsos/module-node-netapp';
+import {VMWareDatastore} from '@anyopsos/module-node-vmware';
+import {DataObject} from '@anyopsos/backend-core/app/types/data-object';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AnyOpsOSAppInfrastructureManagerNodeLinkService {
 
-  constructor(private InfrastructureManager: AnyOpsOSAppInfrastructureManagerService,
-              private InfrastructureManagerObjectHelper: AnyOpsOSAppInfrastructureManagerObjectHelperService) {
+  constructor(private readonly LibNodeHelpers: AnyOpsOSLibNodeHelpersService) {
   }
 
   /**
    * Check if Volume is linked to any managed VMWare Datastore
    * Not perfect code but easier to maintain
    */
-  async checkStorageVolumeLinkWithManagedVMWareDatastore(volumeObj: DataObject & { info: { data: NetAppVolume } }): Promise<(DataObject & { info: { data: VMWareDatastore } })[]> {
+  checkStorageVolumeLinkWithManagedVMWareDatastore(volumeObj: DataObject & { info: { data: NetAppVolume } }): (DataObject & { info: { data: VMWareDatastore } })[] {
     const results = [];
 
-    const datastores: (DataObject & { info: { data: VMWareDatastore } })[] = await this.InfrastructureManagerObjectHelper.getObjectsByType(null, 'vmware', 'Datastore');
+    const datastores: (DataObject & { info: { data: VMWareDatastore } })[] = this.LibNodeHelpers.getObjectsByType(null, 'vmware', 'Datastore');
 
     for (const datastoreObj of datastores) {
-      const linkedWith: DataObject & { info: { data: NetAppVolume } } = await this.checkVMWareDatastoreLinkWithManagedStorageVolume(datastoreObj);
+      const linkedWith: DataObject & { info: { data: NetAppVolume } } = this.checkVMWareDatastoreLinkWithManagedStorageVolume(datastoreObj);
 
       if (linkedWith?.info?.uuid === volumeObj.info.uuid) results.push(datastoreObj);
     }
@@ -37,17 +34,17 @@ export class AnyOpsOSAppInfrastructureManagerNodeLinkService {
   /**
    * Check if VMWare Datastore is linked to any managed storage
    */
-  async checkVMWareDatastoreLinkWithManagedStorageVolume(datastoreObj: DataObject & { info: { data: VMWareDatastore } }): Promise<DataObject & { info: { data: NetAppVolume } }> {
+  checkVMWareDatastoreLinkWithManagedStorageVolume(datastoreObj: DataObject & { info: { data: VMWareDatastore } }): DataObject & { info: { data: NetAppVolume } } {
     const results = [];
 
-    const netappConnections: ConnectionNetapp[] = await this.InfrastructureManager.getConnectionsByType('netapp') as ConnectionNetapp[];
+    const netappConnections: ConnectionNetapp[] = this.LibNodeHelpers.getConnectionsByType('netapp') as ConnectionNetapp[];
     for (const storageObj of netappConnections) {
 
       // Checking for NetApp storage
       if (storageObj.type === 'netapp') {
 
         // check if storage has any interface that match the datastore.remoteHost and datastore.type
-        const netIfaces: (DataObject & { info: { data: NetAppIface } })[] = await this.InfrastructureManagerObjectHelper.getObjectsByType(storageObj.uuid, 'netapp', 'netiface');
+        const netIfaces: (DataObject & { info: { data: NetAppIface } })[] = this.LibNodeHelpers.getObjectsByType(storageObj.uuid, 'netapp', 'netiface');
 
         const foundInterface: DataObject & { info: { data: NetAppIface } } = netIfaces.filter((ifaceObj: DataObject & { info: { data: NetAppIface } }) => {
           return ifaceObj.info.data.address ===  datastoreObj.info.data.info.nas.remoteHost &&
@@ -62,7 +59,7 @@ export class AnyOpsOSAppInfrastructureManagerNodeLinkService {
         if (!foundInterface) continue;
 
         // Search any Data Vservers with allowed protocol that match the datastore.type
-        const vServers: (DataObject & { info: { data: NetAppVserver } })[] = await this.InfrastructureManagerObjectHelper.getObjectsByType(storageObj.uuid, 'netapp', 'vserver');
+        const vServers: (DataObject & { info: { data: NetAppVserver } })[] = this.LibNodeHelpers.getObjectsByType(storageObj.uuid, 'netapp', 'vserver');
 
         const foundVserver: DataObject & { info: { data: NetAppVserver } } = vServers.filter((vserverObj: DataObject & { info: { data: NetAppVserver } }) => {
           return vserverObj.info.data['vserver-type'] === 'data' &&
@@ -75,7 +72,7 @@ export class AnyOpsOSAppInfrastructureManagerNodeLinkService {
         if (!foundVserver) continue;
 
         // Search for each Volume containing as a junction path the current datastore remotePath
-        const volumes: (DataObject & { info: { data: NetAppVolume } })[] = await this.InfrastructureManagerObjectHelper.getChildObjectsByType(storageObj.uuid, 'netapp', 'volume', foundVserver.info.obj);
+        const volumes: (DataObject & { info: { data: NetAppVolume } })[] = this.LibNodeHelpers.getChildObjectsByType(storageObj.uuid, 'netapp', 'volume', foundVserver.info.obj);
         const foundVolume: DataObject & { info: { data: NetAppVolume } } = volumes.filter((volumeObj: DataObject & { info: { data: NetAppVolume } }) => {
           return volumeObj.info.data['volume-id-attributes']['junction-path'] === datastoreObj.info.data.info.nas.remotePath;
         })[0];

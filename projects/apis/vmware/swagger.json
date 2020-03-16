@@ -7,6 +7,391 @@
   "swagger": "2.0",
   "projectName": "vmware",
   "paths": {
+    "/api/vmware-folder/{workspaceUuid}/{connectionUuid}/{vfiler}/{srcPath}": {
+      "get": {
+        "operationId": "AnyOpsOSVmwareFolderApiController.getVmwareFolder",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "vfiler",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "srcPath",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Get vmware folder",
+        "tags": [
+          "Any Ops OS Vmware Folder Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/vmware-folder/{workspaceUuid}/{connectionUuid}/{vfiler}/{dstPath}": {
+      "put": {
+        "operationId": "AnyOpsOSVmwareFolderApiController.createVmwareFolder",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "vfiler",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "dstPath",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Create vmware folder",
+        "tags": [
+          "Any Ops OS Vmware Folder Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/vmware-file/{workspaceUuid}/{connectionUuid}/{srcPath}/{dstPath}": {
+      "get": {
+        "operationId": "AnyOpsOSVmwareFileApiController.downloadFile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "srcPath",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "dstPath",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Download file",
+        "tags": [
+          "Any Ops OS Vmware File Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      },
+      "put": {
+        "operationId": "AnyOpsOSVmwareFileApiController.uploadFile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "srcPath",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "dstPath",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Upload file",
+        "tags": [
+          "Any Ops OS Vmware File Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/vmware-file/{workspaceUuid}/{connectionUuid}/{type}/{fileName}/{srcDatastoreName}/{srcDatacenterName}": {
+      "patch": {
+        "operationId": "AnyOpsOSVmwareFileApiController.patchFile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "type",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "fileName",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "srcDatastoreName",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "srcDatacenterName",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "dstPath": {
+                  "type": "string"
+                },
+                "dstDatastoreName": {
+                  "type": "string"
+                },
+                "dstDatacenterName": {
+                  "type": "string"
+                },
+                "permissions": {
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Patch file",
+        "tags": [
+          "Any Ops OS Vmware File Api"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/vmware-file/{workspaceUuid}/{connectionUuid}/{srcPath}/{datastoreName}/{datacenterName}": {
+      "delete": {
+        "operationId": "AnyOpsOSVmwareFileApiController.deleteFile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "srcPath",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "datastoreName",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "datacenterName",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Delete file",
+        "tags": [
+          "Any Ops OS Vmware File Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/vmware-folder/{workspaceUuid}/{connectionUuid}/{srcPath}/{datastoreName}/{datastoreBrowserName}": {
+      "get": {
+        "operationId": "AnyOpsOSVmwareFolderApiController.getVmwareFolder",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "srcPath",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "datastoreName",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "datastoreBrowserName",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Get vmware folder",
+        "tags": [
+          "Any Ops OS Vmware Folder Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/vmware-folder/{workspaceUuid}/{connectionUuid}/{dstPath}": {
+      "put": {
+        "operationId": "AnyOpsOSVmwareFolderApiController.createVmwareFolder",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "dstPath",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Create vmware folder",
+        "tags": [
+          "Any Ops OS Vmware Folder Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
     "/api/vmware/getClientVersion/{workspaceUuid}/{connectionUuid}": {
       "post": {
         "operationId": "AnyOpsOSVmwareApiController.getVmwareClientVersion",

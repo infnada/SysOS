@@ -2,8 +2,8 @@ import {SocketController, ConnectedSocket, SocketId, MessageBody, OnMessage, OnD
 import {getLogger} from 'log4js';
 import {Socket} from 'socket.io';
 
-import {AnyOpsOSNetappModule} from '@anyopsos/module-netapp';
-import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
+import {AnyOpsOSNodeNetappModule} from '@anyopsos/module-node-netapp';
+import {BackendResponse} from '@anyopsos/backend-core/app/types/backend-response';
 
 const logger = getLogger('mainLog');
 
@@ -25,7 +25,7 @@ export class AnyOpsOSNetappWebsocketController {
                    @MessageBody() connectionData: { connectionUuid: string; workspaceUuid: string; }) {
     logger.info(`[Websocket netapp] -> disconnect -> id [${id}], connectionUuid [${connectionData.connectionUuid}], workspaceUuid [${connectionData.workspaceUuid}]`);
 
-    const NetappModule: AnyOpsOSNetappModule = new AnyOpsOSNetappModule(userUuid, sessionUuid, connectionData.workspaceUuid, connectionData.connectionUuid);
+    const NetappModule: AnyOpsOSNodeNetappModule = new AnyOpsOSNodeNetappModule(userUuid, sessionUuid, connectionData.workspaceUuid, connectionData.connectionUuid);
 
     return NetappModule.disconnectConnection().then((result: BackendResponse) => {
       return result;
@@ -43,7 +43,7 @@ export class AnyOpsOSNetappWebsocketController {
                    @MessageBody() connectionData: { connectionUuid: string; workspaceUuid: string; }) {
     logger.info(`[Websocket netapp] -> newSession -> id [${id}], connectionUuid [${connectionData.connectionUuid}], workspaceUuid [${connectionData.workspaceUuid}]`);
 
-    const NetappModule: AnyOpsOSNetappModule = new AnyOpsOSNetappModule(userUuid, sessionUuid, connectionData.workspaceUuid, connectionData.connectionUuid);
+    const NetappModule: AnyOpsOSNodeNetappModule = new AnyOpsOSNodeNetappModule(userUuid, sessionUuid, connectionData.workspaceUuid, connectionData.connectionUuid);
 
     return NetappModule.newConnection().then((result: BackendResponse) => {
       return result;

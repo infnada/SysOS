@@ -3,7 +3,7 @@ import {BehaviorSubject, Observable} from 'rxjs';
 
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {Credential} from '@anyopsos/module-credential';
-import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
+import {BackendResponse} from '@anyopsos/backend-core/app/types/backend-response';
 
 import {AnyOpsOSLibCredentialApiService} from './anyopsos-lib-credential-api.service';
 
@@ -13,7 +13,7 @@ import {AnyOpsOSLibCredentialApiService} from './anyopsos-lib-credential-api.ser
 export class AnyOpsOSLibCredentialStateService {
   private credentialsInitialized: boolean = false;
 
-  private readonly $credentials: BehaviorSubject<Credential[] |[]>;
+  readonly $credentials: BehaviorSubject<Credential[] |[]>;
   private dataStore: {
     credentials: Credential[],
   };

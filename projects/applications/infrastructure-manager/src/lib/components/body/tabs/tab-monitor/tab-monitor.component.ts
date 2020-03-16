@@ -2,9 +2,9 @@ import {Component, Input, OnInit} from '@angular/core';
 
 import {NetdataConnection} from '@anyopsos/ext-lib-netdata';
 import {AnyOpsOSLibApplicationService} from '@anyopsos/lib-application';
+import {DataObject} from '@anyopsos/backend-core/app/types/data-object';
 
-import {AnyOpsOSAppInfrastructureVmwareTemplateHelpersService} from '../../../../services/vmware/anyopsos-app-infrastructure-vmware-template-helpers.service';
-import {ImDataObject} from '../../../../types/im-data-object';
+
 
 @Component({
   selector: 'aaim-tab-monitor',
@@ -12,11 +12,10 @@ import {ImDataObject} from '../../../../types/im-data-object';
   styleUrls: ['./tab-monitor.component.scss']
 })
 export class TabMonitorComponent implements OnInit {
-  @Input() nmObject: ImDataObject;
+  @Input() nmObject: DataObject;
   @Input() monitorConnection: NetdataConnection;
 
-  constructor(private readonly LibApplication: AnyOpsOSLibApplicationService,
-              public VmwareTemplateHelpers: AnyOpsOSAppInfrastructureVmwareTemplateHelpersService) {
+  constructor(private readonly LibApplication: AnyOpsOSLibApplicationService) {
   }
 
   ngOnInit(): void {

@@ -1,4 +1,4 @@
-import {SocketController, ConnectedSocket, SocketId, MessageBody, OnMessage} from 'socket-controllers';
+import {SocketController, ConnectedSocket, SocketId, MessageBody, OnMessage, ReturnAck} from 'socket-controllers';
 import {getLogger} from 'log4js';
 import {Socket} from 'socket.io';
 
@@ -9,6 +9,7 @@ export class AnyOpsOSLinuxWebsocketController {
 
   // TODO
   @OnMessage('[linux-session]')
+  @ReturnAck()
   newMessageReceived(@ConnectedSocket() socket: Socket,
                      @SocketId() id: string,
                      @MessageBody() message: any) {

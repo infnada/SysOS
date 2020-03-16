@@ -553,7 +553,7 @@ class Init {
     if (pathExistsSync(`${__dirname}/../src/lib/types/methods-output.ts`)) await unlink(`${__dirname}/../src/lib/types/methods-output.ts`);
 
     await writeFile(`${__dirname}/../src/lib/types/methods.ts`, `export type VmwareSdkFunctions =\n`);
-    await writeFile(`${__dirname}/../src/lib/types/methods-output.ts`, `import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';\n`);
+    await writeFile(`${__dirname}/../src/lib/types/methods-output.ts`, `import {BackendResponse} from '@anyopsos/backend-core/app/types/backend-response';\n`);
 
     for (const data of this.methodsData) {
       const methodName: string = data.h1;

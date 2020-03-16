@@ -8,7 +8,7 @@ import {MatDialogRef} from '@anyopsos/lib-angular-material';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
 import {AnyOpsOSLibSshConnectionsStateService, AnyOpsOSLibSshHelpersService, AnyOpsOSLibSshService} from '@anyopsos/lib-ssh';
 import {ConnectionSftp} from '@anyopsos/module-ssh';
-import {ConnectionTypes} from '@anyopsos/backend/app/types/connection-types';
+import {take} from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -77,21 +77,22 @@ export class AnyOpsOSAppSftpService {
     this.connectionsUpdated();
   }
 
-  getActiveConnection(): Promise<ConnectionSftp | null> {
+  getActiveConnection(): ConnectionSftp | null {
     if (this.dataStore.activeConnectionUuid === null) return null;
 
-    return this.LibSshHelpers.getConnectionByUuid(this.dataStore.activeConnectionUuid, 'sftp') as Promise<ConnectionSftp>;
+    // We can use this.dataStore.activeConnection
+    return this.$activeConnection.getValue();
   }
 
   /**
    * Called every time the Ssh connections state is updated
    */
-  async connectionsUpdated(): Promise<void> {
+  connectionsUpdated(): void {
 
     if (!this.dataStore.activeConnectionUuid) {
       this.dataStore.activeConnection = null;
     } else {
-      this.dataStore.activeConnection = await this.LibSshHelpers.getConnectionByUuid(this.dataStore.activeConnectionUuid, 'sftp') as ConnectionSftp;
+      this.dataStore.activeConnection = this.LibSshHelpers.getConnectionByUuid(this.dataStore.activeConnectionUuid, 'sftp') as ConnectionSftp;
     }
 
     // broadcast data to subscribers
@@ -140,7 +141,7 @@ export class AnyOpsOSAppSftpService {
   async deleteConnection(connectionUuid?: string): Promise<void> {
     if (!connectionUuid) connectionUuid = this.dataStore.activeConnectionUuid;
 
-    const currentConnection: ConnectionSftp = await this.LibSshHelpers.getConnectionByUuid(connectionUuid, 'sftp') as ConnectionSftp;
+    const currentConnection: ConnectionSftp = this.LibSshHelpers.getConnectionByUuid(connectionUuid, 'sftp') as ConnectionSftp;
     const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('question', this.bodyContainer,
       {
         title: `Delete connection ${currentConnection.description}`,

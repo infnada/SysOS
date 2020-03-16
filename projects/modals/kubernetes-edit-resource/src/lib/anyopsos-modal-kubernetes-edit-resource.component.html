@@ -1,0 +1,19 @@
+<almodal-body #modalBody>
+
+  <!-- Put modal content here -->
+  <mat-button-toggle-group #group="matButtonToggleGroup">
+    <mat-button-toggle [value]="modes.YAML" [checked]="true">YAML</mat-button-toggle>
+    <mat-button-toggle [value]="modes.JSON">JSON</mat-button-toggle>
+  </mat-button-toggle-group>
+
+  <alutil-text-input [text]="text" [readOnly]="false" [mode]="getSelectedMode()" *ngIf="text"></alutil-text-input>
+
+  <alutil-notice-box [icon]="'info'" [content]="noticeContent()"></alutil-notice-box>
+
+</almodal-body>
+
+<!-- Put footer buttons here -->
+<almodal-buttons>
+  <button class="btn" type="button" (click)="dialogRef.close()" mat-flat-button>Close</button>
+  <button class="btn" type="button" (click)="dialogRef.close(getJSON())" mat-flat-button color="primary">Update</button>
+</almodal-buttons>

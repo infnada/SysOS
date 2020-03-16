@@ -2,11 +2,13 @@
 
   <div class="window__side" *ngIf="viewSide">
 
-    <ng-container *ngFor="let connection of connections; index as $index">
-      <div class="menu__item" *ngIf="connection != undefined" [ngClass]="{'active': connection.uuid === activeConnection}" (click)="setActiveConnection(connection)">
+    <ng-container *ngFor="let connectionObject of connectionObjects; index as $index">
+      <div class="menu__item" *ngIf="connectionObject != undefined" [ngClass]="{'active': connectionObject.info.uuid === activeConnectionObjectUuid}" (click)="setActiveConnection(connectionObject)">
         <h5 class="position-relative">
-          {{connection.data.obj.name}} <small class="d-block">({{connection.host}})</small>
-          <i class="fas fa-circle connection-state" [ngClass]="{'text-danger': connection.state == 'disconnected', 'text-success': connection.state == 'connected'}"></i>
+          {{connectionObject.info.obj.name}} <small class="d-block">({{getMainConnectionHost(connectionObject)}})</small>
+
+          <i [ngClass]="LibNodeTemplateHelpers.getObjectIcon(connectionObject).data" *ngIf="LibNodeTemplateHelpers.getObjectIcon(connectionObject).type === 'class'"></i>
+          <img alt="{{connectionObject.name}}" [src]="LibNodeTemplateHelpers.getObjectIcon(connectionObject).data" width="25px" class="mr-1" *ngIf="LibNodeTemplateHelpers.getObjectIcon(connectionObject).type === 'image'" />
         </h5>
       </div>
     </ng-container>
@@ -22,9 +24,9 @@
   </div>
   <div class="window__main row no_padding" [ngClass]="{'with__stats': viewExchange === true}">
 
-    <alfolder-explorer-body [application]="application"></alfolder-explorer-body>
-    <aade-body-server [application]="application"></aade-body-server>
-    <aade-body-exchange [application]="application"></aade-body-exchange>
+    <alfolder-explorer-main [application]="application"></alfolder-explorer-main>
+    <aade-body-server [application]="application" #bodyContainer></aade-body-server>
+    <aade-body-exchange></aade-body-exchange>
 
   </div>
 </div>

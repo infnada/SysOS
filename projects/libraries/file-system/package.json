@@ -13,7 +13,7 @@
     "@anyopsos/lib-modal": "~0.0.1",
     "@anyopsos/lib-file-system-ui": "~0.0.1",
     "@anyopsos/module-config-file": "~0.0.1",
-    "@anyopsos/backend": "~0.0.1"
+    "@anyopsos/backend-core": "~0.0.1"
   },
   "homepage": "https://github.com/anyOpsOS/anyOpsOS#readme",
   "repository": {

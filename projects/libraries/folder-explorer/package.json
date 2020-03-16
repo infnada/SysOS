@@ -19,7 +19,7 @@
     "@anyopsos/lib-selectable": "~0.0.1"
   },
   "devDependencies": {
-    "@anyopsos/backend": "~0.0.1"
+    "@anyopsos/backend-core": "~0.0.1"
   },
   "homepage": "https://github.com/anyOpsOS/anyOpsOS#readme",
   "repository": {

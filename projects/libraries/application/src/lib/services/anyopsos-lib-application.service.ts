@@ -13,9 +13,9 @@ export class AnyOpsOSLibApplicationService {
   private readonly subjectCloseApplication: Subject<Application> = new Subject();
   private readonly subjectToggleApplication: Subject<string> = new Subject();
 
-  private readonly $applications: BehaviorSubject<Application[]>;
-  private readonly $openedApplications: BehaviorSubject<Application[]>;
-  private readonly $activeApplication: BehaviorSubject<string>;
+  readonly $applications: BehaviorSubject<Application[]>;
+  readonly $openedApplications: BehaviorSubject<Application[]>;
+  readonly $activeApplication: BehaviorSubject<string>;
   private dataStore: {
     applications: Application[];
     openedApplications: Application[];

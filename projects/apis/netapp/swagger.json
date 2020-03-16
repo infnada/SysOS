@@ -7,6 +7,213 @@
   "swagger": "2.0",
   "projectName": "netapp",
   "paths": {
+    "/api/netapp-file/{workspaceUuid}/{connectionUuid}/{vfiler}/{srcPath}/{dstPath}": {
+      "get": {
+        "operationId": "AnyOpsOSNetappFileApiController.downloadFile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "vfiler",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "srcPath",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "dstPath",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Download file",
+        "tags": [
+          "Any Ops OS Netapp File Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      },
+      "put": {
+        "operationId": "AnyOpsOSNetappFileApiController.uploadFile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "vfiler",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "srcPath",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "dstPath",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Upload file",
+        "tags": [
+          "Any Ops OS Netapp File Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/netapp-file/{workspaceUuid}/{connectionUuid}/{vfiler}/{type}/{fileName}": {
+      "patch": {
+        "operationId": "AnyOpsOSNetappFileApiController.patchFile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "vfiler",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "type",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "fileName",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "dstPath": {
+                  "type": "string"
+                },
+                "permissions": {
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Patch file",
+        "tags": [
+          "Any Ops OS Netapp File Api"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/netapp-file/{workspaceUuid}/{connectionUuid}/{vfiler}/{srcPath}": {
+      "delete": {
+        "operationId": "AnyOpsOSNetappFileApiController.deleteFile",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "workspaceUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "connectionUuid",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "vfiler",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "path",
+            "name": "srcPath",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Delete file",
+        "tags": [
+          "Any Ops OS Netapp File Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
     "/api/netapp/soap/{workspaceUuid}/{connectionUuid}/{vfiler}": {
       "post": {
         "operationId": "AnyOpsOSNetappApiController.netappCallSoap",

@@ -1,6 +1,6 @@
 const validator = require('validator');
 
-import {AnyOpsOSWorkspaceModule} from '@anyopsos/module-workspace';
+import {AnyOpsOSSysWorkspaceModule} from '@anyopsos/module-sys-workspace';
 import {AnyOpsOSConfigFileModule} from '@anyopsos/module-config-file';
 import {AnyOpsOSCredentialModule} from '@anyopsos/module-credential';
 
@@ -15,7 +15,7 @@ const monitorSessions: WorkspaceToMonitorMap = {};
 
 export class AnyOpsOSMonitorSessionStateModule {
 
-  private readonly WorkspaceModule: AnyOpsOSWorkspaceModule;
+  private readonly WorkspaceModule: AnyOpsOSSysWorkspaceModule;
   private readonly ConfigFileModule: AnyOpsOSConfigFileModule;
   private readonly CredentialModule: AnyOpsOSCredentialModule;
 
@@ -24,7 +24,7 @@ export class AnyOpsOSMonitorSessionStateModule {
               private readonly workspaceUuid: string,
               private readonly connectionUuid: string) {
 
-    this.WorkspaceModule = new AnyOpsOSWorkspaceModule(this.userUuid, this.sessionUuid);
+    this.WorkspaceModule = new AnyOpsOSSysWorkspaceModule(this.userUuid, this.sessionUuid);
     this.ConfigFileModule = new AnyOpsOSConfigFileModule(this.userUuid, this.sessionUuid, this.workspaceUuid);
     this.CredentialModule = new AnyOpsOSCredentialModule(this.userUuid, this.sessionUuid, this.workspaceUuid);
   }

@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {Credential} from '@anyopsos/module-credential';
-import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
+import {BackendResponse} from '@anyopsos/backend-core/app/types/backend-response';
 
 import {AnyOpsOSLibCredentialStateService} from './anyopsos-lib-credential-state.service';
 import {AnyOpsOSLibCredentialHelpersService} from './anyopsos-lib-credential-helpers.service';
@@ -51,9 +51,9 @@ export class AnyOpsOSLibCredentialService {
   async deleteCredential(credentialUuid: string): Promise<void> {
     this.logger.debug('LibCredential', 'Deleting credential');
 
-    return new Promise(async (resolve, reject) => {
+    return new Promise((resolve, reject) => {
 
-      const currentCredential: Credential = await this.LibCredentialHelpers.getCredentialByUuid(credentialUuid);
+      const currentCredential: Credential = this.LibCredentialHelpers.getCredentialByUuid(credentialUuid);
       if (!currentCredential) {
         this.logger.error('LibCredential', 'deleteCredential -> Resource invalid');
         throw new Error('resource_invalid');

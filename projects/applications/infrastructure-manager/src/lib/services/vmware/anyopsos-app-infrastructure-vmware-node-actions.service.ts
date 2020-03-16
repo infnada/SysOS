@@ -1,10 +1,10 @@
 import {Injectable} from '@angular/core';
 
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
-import {AnyOpsOSLibVmwareSoapApiService, AnyOpsOSLibVmwareSoapApiHelpersService} from '@anyopsos/lib-vmware';
-import {VMWareVM} from '@anyopsos/module-vmware';
+import {AnyOpsOSLibNodeVmwareSoapApiService, AnyOpsOSLibNodeVmwareSoapApiHelpersService} from '@anyopsos/lib-node-vmware';
+import {VMWareVM} from '@anyopsos/module-node-vmware';
 import {VmwareSdkFunctionsOutput} from '@anyopsos/sdk-vmware';
-import {DataObject} from '@anyopsos/backend/app/types/data-object';
+import {DataObject} from '@anyopsos/backend-core/app/types/data-object';
 
 
 @Injectable({
@@ -13,8 +13,8 @@ import {DataObject} from '@anyopsos/backend/app/types/data-object';
 export class AnyOpsOSAppInfrastructureVmwareNodeActionsService {
 
   constructor(private readonly logger: AnyOpsOSLibLoggerService,
-              private readonly LibVmwareSoapApiService: AnyOpsOSLibVmwareSoapApiService,
-              private readonly LibVmwareSoapApiHelpersService: AnyOpsOSLibVmwareSoapApiHelpersService) {
+              private readonly LibNodeVmwareSoapApiService: AnyOpsOSLibNodeVmwareSoapApiService,
+              private readonly LibNodeVmwareSoapApiHelpersService: AnyOpsOSLibNodeVmwareSoapApiHelpersService) {
   }
 
   /**
@@ -22,7 +22,7 @@ export class AnyOpsOSAppInfrastructureVmwareNodeActionsService {
    */
   async doWithVM(connectionUuid: string, vm: DataObject & { info: { data: VMWareVM; } }, action: 'powerOn' | 'powerOff' | 'suspend' | 'reset' | 'powerOffGuestOS' | 'restartGuestOS' | 'refresh'): Promise<void> {
 
-    return this.LibVmwareSoapApiHelpersService.getVMRuntime(connectionUuid, vm.info.obj.name).then((vmRuntimeResult: VmwareSdkFunctionsOutput<'RetrieveProperties'>) => {
+    return this.LibNodeVmwareSoapApiHelpersService.getVMRuntime(connectionUuid, vm.info.obj.name).then((vmRuntimeResult: VmwareSdkFunctionsOutput<'RetrieveProperties'>) => {
       if (vmRuntimeResult.status === 'error') throw {error: vmRuntimeResult.error, description: 'Failed to get VM runtime'};
 
       // powerOn
@@ -30,7 +30,7 @@ export class AnyOpsOSAppInfrastructureVmwareNodeActionsService {
         if (vmRuntimeResult.data.propSet.runtime.powerState === 'poweredOn') return;
 
         // @ts-ignore TODO
-        return this.LibVmwareSoapApiService.callSoapApi(connectionUuid, 'PowerOnVM_Task', {
+        return this.LibNodeVmwareSoapApiService.callSoapApi(connectionUuid, 'PowerOnVM_Task', {
           _this: {
             $type: 'VirtualMachine',
             _value: vm.info.obj.name
@@ -48,7 +48,7 @@ export class AnyOpsOSAppInfrastructureVmwareNodeActionsService {
       if (action === 'powerOff') {
         if (vmRuntimeResult.data.propSet.runtime.powerState === 'poweredOff') return vmRuntimeResult;
 
-        return this.LibVmwareSoapApiService.callSoapApi(connectionUuid, 'PowerOffVM_Task', {
+        return this.LibNodeVmwareSoapApiService.callSoapApi(connectionUuid, 'PowerOffVM_Task', {
           _this: {
             $type: 'VirtualMachine',
             _value: vm.info.obj.name
@@ -61,7 +61,7 @@ export class AnyOpsOSAppInfrastructureVmwareNodeActionsService {
       if (action === 'suspend') {
         if (vmRuntimeResult.data.propSet.runtime.powerState !== 'poweredOn') return vmRuntimeResult;
 
-        return this.LibVmwareSoapApiService.callSoapApi(connectionUuid, 'SuspendVM_Task', {
+        return this.LibNodeVmwareSoapApiService.callSoapApi(connectionUuid, 'SuspendVM_Task', {
           _this: {
             $type: 'VirtualMachine',
             _value: vm.info.obj.name
@@ -74,7 +74,7 @@ export class AnyOpsOSAppInfrastructureVmwareNodeActionsService {
       if (action === 'reset') {
         if (vmRuntimeResult.data.propSet.runtime.powerState !== 'poweredOn') return vmRuntimeResult;
 
-        return this.LibVmwareSoapApiService.callSoapApi(connectionUuid, 'ResetVM_Task', {
+        return this.LibNodeVmwareSoapApiService.callSoapApi(connectionUuid, 'ResetVM_Task', {
           _this: {
             $type: 'VirtualMachine',
             _value: vm.info.obj.name
@@ -87,7 +87,7 @@ export class AnyOpsOSAppInfrastructureVmwareNodeActionsService {
       if (action === 'powerOffGuestOS') {
         if (vmRuntimeResult.data.propSet.runtime.powerState !== 'poweredOn') return vmRuntimeResult;
 
-        return this.LibVmwareSoapApiService.callSoapApi(connectionUuid, 'ShutdownGuest', {
+        return this.LibNodeVmwareSoapApiService.callSoapApi(connectionUuid, 'ShutdownGuest', {
           _this: {
             $type: 'VirtualMachine',
             _value: vm.info.obj.name
@@ -100,7 +100,7 @@ export class AnyOpsOSAppInfrastructureVmwareNodeActionsService {
       if (action === 'restartGuestOS') {
         if (vmRuntimeResult.data.propSet.runtime.powerState !== 'poweredOn') return vmRuntimeResult;
 
-        return this.LibVmwareSoapApiService.callSoapApi(connectionUuid, 'RebootGuest', {
+        return this.LibNodeVmwareSoapApiService.callSoapApi(connectionUuid, 'RebootGuest', {
           _this: {
             $type: 'VirtualMachine',
             _value: vm.info.obj.name

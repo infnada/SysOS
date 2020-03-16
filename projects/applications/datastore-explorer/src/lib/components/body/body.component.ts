@@ -1,12 +1,21 @@
-import {Component, OnInit, Input, OnDestroy} from '@angular/core';
+import {Component, OnInit, Input, OnDestroy, ViewChild, ViewContainerRef} from '@angular/core';
 
-import {Subject} from 'rxjs';
+import {combineLatest, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
 import {Application} from '@anyopsos/lib-application';
+import {AnyOpsOSLibNodeHelpersService, AnyOpsOSLibNodeTemplateHelpersService} from '@anyopsos/lib-node';
+import {AnyOpsOSLibNodeVmwareHelpersService} from '@anyopsos/lib-node-vmware';
+import {AnyOpsOSLibNodeNetappHelpersService} from '@anyopsos/lib-node-netapp';
+import {ConnectionVmware} from '@anyopsos/module-node-vmware';
+import {ConnectionNetapp} from '@anyopsos/module-node-netapp';
 
 import {AnyOpsOSAppDatastoreExplorerService} from '../../services/anyopsos-app-datastore-explorer.service';
-import {DatastoreExplorerConnection} from '../../types/datastore-explorer-connection';
+import {DatastoreExplorerConnectionObject} from '../../types/datastore-explorer-connection-object';
+import {DataObject} from '@anyopsos/backend-core/app/types/data-object';
+import {VMWareDatastore} from '@anyopsos/module-node-vmware';
+import {NetAppVolume} from '@anyopsos/module-node-netapp';
+
 
 @Component({
   selector: 'aade-body',
@@ -14,28 +23,38 @@ import {DatastoreExplorerConnection} from '../../types/datastore-explorer-connec
   styleUrls: ['./body.component.scss']
 })
 export class BodyComponent implements OnDestroy, OnInit {
-  @Input() application: Application;
+  @ViewChild('bodyContainer', {static: true, read: ViewContainerRef}) private readonly bodyContainer: ViewContainerRef;
+  @Input() readonly application: Application;
 
-  private destroySubject$: Subject<void> = new Subject();
+  private readonly destroySubject$: Subject<void> = new Subject();
 
   viewSide: boolean = true;
 
-  connections: DatastoreExplorerConnection[];
-  activeConnection: string;
+  connectionObjects: DatastoreExplorerConnectionObject[];
+  activeConnectionObjectUuid: string | null;
   viewExchange: boolean;
 
-  constructor(private DatastoreExplorer: AnyOpsOSAppDatastoreExplorerService) {
+  constructor(private readonly LibNodeHelpers: AnyOpsOSLibNodeHelpersService,
+              private readonly LibNodeVmwareHelpers: AnyOpsOSLibNodeVmwareHelpersService,
+              private readonly LibNodeNetappHelpers: AnyOpsOSLibNodeNetappHelpersService,
+              private readonly DatastoreExplorer: AnyOpsOSAppDatastoreExplorerService,
+              public readonly LibNodeTemplateHelpers: AnyOpsOSLibNodeTemplateHelpersService) {
   }
 
   ngOnInit(): void {
 
     // Listen for connections changes
-    this.DatastoreExplorer.connections
-      .pipe(takeUntil(this.destroySubject$)).subscribe((connections: DatastoreExplorerConnection[]) => this.connections = connections);
+    combineLatest(
+      this.LibNodeVmwareHelpers.getAllConnectionsObserver(),
+      this.LibNodeNetappHelpers.getAllConnectionsObserver()
+    ).pipe(takeUntil(this.destroySubject$)).subscribe(() => this.onConnectionsChange());
 
-    // Listen for activeConnection change
-    this.DatastoreExplorer.activeConnection
-      .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnectionUuid: string) => this.activeConnection = activeConnectionUuid);
+    // Set bodyContainerRef, this is used by Modals
+    this.DatastoreExplorer.setBodyContainerRef(this.bodyContainer);
+
+    // Listen for activeConnectionUuid change
+    this.DatastoreExplorer.activeConnectionObjectUuid
+      .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnectionObjectUuid: string | null) => this.activeConnectionObjectUuid = activeConnectionObjectUuid);
 
     // Listen for viewExchange change
     this.DatastoreExplorer.viewExchange
@@ -48,11 +67,25 @@ export class BodyComponent implements OnDestroy, OnInit {
     this.destroySubject$.next();
   }
 
+  private onConnectionsChange(): void {
+    const vmwareObjects: (DataObject & { info: { data: VMWareDatastore } })[] = this.LibNodeHelpers.getObjectsByType(null, 'vmware', 'Datastore');
+    const netappObjects: (DataObject & { info: { data: NetAppVolume } })[] = this.LibNodeHelpers.getObjectsByType(null, 'netapp', 'volume');
+
+    this.connectionObjects = [...vmwareObjects, ...netappObjects];
+
+    this.DatastoreExplorer.connectionsUpdated();
+  }
+
   toggleSide(): void {
     this.viewSide = !this.viewSide;
   }
 
-  setActiveConnection(connection: DatastoreExplorerConnection): void {
-    this.DatastoreExplorer.setActiveConnection(connection.uuid);
+  setActiveConnection(connectionObject: DatastoreExplorerConnectionObject): void {
+    this.DatastoreExplorer.setActiveConnectionObjectUuid(connectionObject.info.uuid);
+  }
+
+  getMainConnectionHost(connectionObject: DatastoreExplorerConnectionObject): string | null {
+    const connection: ConnectionVmware | ConnectionNetapp = this.DatastoreExplorer.getMainConnectionFromObject(connectionObject.info.uuid);
+    return connection.host;
   }
 }

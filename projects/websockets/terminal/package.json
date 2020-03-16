@@ -9,7 +9,7 @@
     "@anyopsos/module-terminal": "~0.0.1"
   },
   "devDependencies": {
-    "@anyopsos/backend": "~0.0.1",
+    "@anyopsos/backend-core": "~0.0.1",
     "socket.io": "^2.3.0",
     "socket-controllers": "https://github.com/anyOpsOS/socket-controllers.git#build",
     "typescript": "^3.7.4"

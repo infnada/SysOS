@@ -51,8 +51,8 @@ export class AnyOpsOSSshSessionStateModule {
 
         await sshSessions[this.workspaceUuid][this.connectionUuid].connect({
           sock: stream,
-          username: mainServer.credential.fields.UserName,
-          password: mainServer.credential.fields.Password.getText(),
+          username: mainServer.credential.username,
+          password: mainServer.credential.password,
           tryKeyboard: true,
           algorithms: SSH_ALGORITHMS
         });
@@ -64,8 +64,8 @@ export class AnyOpsOSSshSessionStateModule {
       await sshSessions[this.workspaceUuid][this.connectionUuid].connect({
         host: mainServer.host,
         port: mainServer.port,
-        username: mainServer.credential.fields.UserName,
-        password: mainServer.credential.fields.Password.getText(),
+        username: mainServer.credential.username,
+        password: mainServer.credential.password,
         tryKeyboard: true,
         algorithms: SSH_ALGORITHMS
       });

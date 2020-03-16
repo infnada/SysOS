@@ -1,7 +1,7 @@
 import {Request, Response} from 'express';
 import {getLogger} from 'log4js';
 
-import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
+import {BackendResponse} from '@anyopsos/backend-core/app/types/backend-response';
 
 
 const logger = getLogger('mainLog');

@@ -7,7 +7,7 @@
   },
   "peerDependencies": {
     "@anyopsos/module-api-globals": "~0.0.1",
-    "@anyopsos/module-get-path": "~0.0.1",
+    "@anyopsos/module-sys-get-path": "~0.0.1",
     "@anyopsos/module-ssh": "~0.0.1",
     "@anyopsos/module-credential": "~0.0.1"
   },

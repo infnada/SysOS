@@ -1,7 +1,7 @@
-import {KdbxCredential} from '@anyopsos/module-credential/src';
+import {Credential} from '@anyopsos/module-credential';
 
 export interface ConnectionMonitorServer {
   host: string;
   port: number;
-  credential: KdbxCredential;
+  credential: Credential;
 }

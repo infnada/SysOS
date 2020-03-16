@@ -3,10 +3,10 @@ import {CommonModule} from '@angular/common';
 
 import {AnyOpsOSLibAngularMaterialModule} from '@anyopsos/lib-angular-material';
 import {AnyOpsOSLibModalModule, AnyOpsOSLibModalRegisteredStateService} from '@anyopsos/lib-modal';
+import {AnyOpsOSLibUtilsModule} from '@anyopsos/lib-utils';
 
 import {EntryComponent} from './entry/entry.component';
 import {AnyOpsOSModalDefaultQuestionComponent} from './anyopsos-modal-default-question.component';
-import {AnyOpsOSLibUtilsModule} from '@anyopsos/lib-utils';
 
 @NgModule({
   declarations: [

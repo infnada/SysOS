@@ -4,8 +4,8 @@ import {BehaviorSubject, Observable, Subject} from 'rxjs';
 
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibFileSystemUiService} from '@anyopsos/lib-file-system-ui';
-import {AnyOpsOSFile} from '@anyopsos/backend/app/types/anyopsos-file';
-import {Connection} from '@anyopsos/backend/app/types/connection';
+import {AnyOpsOSFile} from '@anyopsos/backend-core/app/types/anyopsos-file';
+import {Connection} from '@anyopsos/backend-core/app/types/connection';
 
 @Injectable({
   providedIn: 'root'

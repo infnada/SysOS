@@ -10,8 +10,8 @@ import {AnyOpsOSAppBackupsManagerService} from '../services/anyopsos-app-backups
   styleUrls: ['./body.component.scss']
 })
 export class BodyComponent implements OnInit {
-  @ViewChild('bodyContainer', {static: true, read: ViewContainerRef}) bodyContainer: ViewContainerRef;
-  @Input() application: Application;
+  @ViewChild('bodyContainer', {static: true, read: ViewContainerRef}) private readonly bodyContainer: ViewContainerRef;
+  @Input() readonly application: Application;
 
   viewSide: boolean = true;
 

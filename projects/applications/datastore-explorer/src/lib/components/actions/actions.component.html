@@ -1,17 +1,6 @@
 <div class="window__actions">
-  <a class="window__item" matTooltip="New connection" (click)="newConnection()">
-    <i class="fas fa-plus text-success"></i>
-  </a>
-  <a class="window__item separator" ></a>
-  <a class="window__item" matTooltip="Disconnect" (click)="disconnectConnection()">
-    <i class="fas fa-times" [ngClass]="{'text-danger': activeConnection !== null && getActiveConnection().state === 'connected'}"></i>
-  </a>
-  <a class="window__item" matTooltip="Delete" (click)="deleteConnection()">
-    <i class="fas fa-trash" [ngClass]="{'text-danger': activeConnection !== null}"></i>
-  </a>
-  <a class="window__item separator" ></a>
   <a class="window__item" matTooltip="Exchange Tab" (click)="toggleExchange()">
-    <i class="fas fa-exchange-alt" [ngClass]="{'text-danger': activeConnection !== null}"></i>
+    <i class="fas fa-exchange-alt" [ngClass]="{'text-danger': activeConnectionObjectUuid !== null}"></i>
   </a>
   <a class="window__item separator"></a>
 </div>

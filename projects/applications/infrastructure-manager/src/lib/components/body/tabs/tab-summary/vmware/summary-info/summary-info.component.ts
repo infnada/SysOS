@@ -1,7 +1,8 @@
 import {Component, Input, OnInit} from '@angular/core';
 
-import {AnyOpsOSAppInfrastructureVmwareTemplateHelpersService} from '../../../../../../services/vmware/anyopsos-app-infrastructure-vmware-template-helpers.service';
-import {ImDataObject} from '../../../../../../types/im-data-object';
+import {DataObject} from '@anyopsos/backend-core/app/types/data-object';
+
+import {AnyOpsOSLibNodeTemplateHelpersService} from '@anyopsos/lib-node';
 
 @Component({
   selector: 'aaim-summary-info',
@@ -9,9 +10,9 @@ import {ImDataObject} from '../../../../../../types/im-data-object';
   styleUrls: ['./summary-info.component.scss']
 })
 export class SummaryInfoComponent implements OnInit {
-  @Input() vmwareObject: ImDataObject;
+  @Input() vmwareObject: DataObject;
 
-  constructor(public VmwareTemplateHelpers: AnyOpsOSAppInfrastructureVmwareTemplateHelpersService) { }
+  constructor(public readonly LibNodeTemplateHelpers: AnyOpsOSLibNodeTemplateHelpersService) { }
 
   ngOnInit(): void {
   }

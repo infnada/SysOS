@@ -9,7 +9,7 @@
     "@anyopsos/lib-file-system",
     "@anyopsos/lib-logger",
     "@anyopsos/lib-modal",
-    "@anyopsos/lib-netapp",
-    "@anyopsos/lib-vmware"
+    "@anyopsos/lib-node-netapp",
+    "@anyopsos/lib-node-vmware"
   ]
 }

@@ -1,7 +1,7 @@
 import {Client, ClientChannel, ClientErrorExtensions, SFTPWrapper} from 'ssh2';
 
 import {AnyOpsOSTerminalModule} from '@anyopsos/module-terminal';
-import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
+import {BackendResponse} from '@anyopsos/backend-core/app/types/backend-response';
 
 import {AnyOpsOSSshSessionStateModule} from './anyopsos-module-ssh-session-state';
 

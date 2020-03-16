@@ -34,39 +34,19 @@ As said, same with PCI Compliance checks, services management, security audits..
 
 ## Installation
 
-#### Docker Image (recommended)
+This project provides a series of Dockerfiles under [/docker](docker/)
 
-This project provides a Dockerfile under [/docker](docker/)
+#### Development
 
-#### Local
+Follow the procedure from [Development](docs/Development.md)
 
-##### Requirements
-All tests are done with nodejs >= 12.0 as backend on:
-- Windows 10 -> Running over Git bash
-- Centos 7
-- Linux subsystem for Windows -> Ubuntu
+#### Production
 
+Follow the procedure from [Production](docs/Production.md)
 
-- Download this repo. Then;
+## Architecture
 
-`npm install`
-
-`npm build`
-
-`npm prod:start`
-
-- Go with your browser at:
-
-`https://[server_ip]:8080/index.html`
-
-## Default User & Password
-root:root
-
-## Configuration
-
-- How to change the default server port (80/8080):
-
-Edit the main expressjs file located at `/dist/anyOpsOS/filesystem/etc/expressjs/config.json` and change `listen.port` option or `listen.ports` for `https`
+![](docs/assets/architecture/architecture.png)
 
 ## Roadmap
 
@@ -140,9 +120,9 @@ Don't hesitate to provide a Logo and Backgrounds :)
 
 - Libraries to manage infrastructure
 
-`@anyopsos/lib-netapp`
+`@anyopsos/lib-node-netapp`
 
-`@anyopsos/lib-vmware`
+`@anyopsos/lib-node-vmware`
 
 - Internal libraries
 

@@ -6,7 +6,7 @@ import {pathExistsSync, stat, Stats} from 'fs-extra';
 import {join} from 'path';
 
 import {AnyOpsOSApiGlobalsModule} from '@anyopsos/module-api-globals';
-import {AnyOpsOSGetPathModule} from '@anyopsos/module-get-path';
+import {AnyOpsOSSysGetPathModule} from '@anyopsos/module-sys-get-path';
 import {AnyOpsOSFileSystemModule} from '@anyopsos/module-file-system';
 
 
@@ -25,7 +25,7 @@ export class AnyOpsOSFileApiController {
                 @Param('srcPath') srcPath: string) {
     logger.info(`[API File] -> Get file -> srcPath [${srcPath}]`);
 
-    const GetPathModule: AnyOpsOSGetPathModule = new AnyOpsOSGetPathModule();
+    const GetPathModule: AnyOpsOSSysGetPathModule = new AnyOpsOSSysGetPathModule();
 
     if (srcPath.indexOf('\0') !== -1) throw new Error('param_security_stop');
 

@@ -1,0 +1,41 @@
+<div class="header" *ngIf="!simpleLayout && (topologiesLoaded$ | async) && (nodesLoaded$ | async)">
+  <div class="selectors">
+    <aldiagram-search class="float-left ml-5"></aldiagram-search>
+    <aldiagram-topologies class="float-left ml-5"></aldiagram-topologies>
+    <aldiagram-metrics class="float-left ml-5"></aldiagram-metrics>
+  </div>
+</div>
+
+<aldiagram-metrics class="float-left ml-5" *ngIf="simpleLayout"></aldiagram-metrics>
+
+<div class="nodes-wrapper" #diagramApp>
+
+  <!-- Not loaded -->
+  <ng-container *ngIf="!(topologiesLoaded$ | async) || !(nodesLoaded$ | async); else checkNodes">
+    <mat-spinner class="loading-spinner"></mat-spinner>
+  </ng-container>
+
+  <!-- Loaded -->
+  <ng-template #checkNodes>
+
+    <!-- No Nodes -->
+    <ng-container *ngIf="isNodesDisplayEmpty$ | async; else nodes">
+      <span>Nothing to show.</span>
+    </ng-container>
+
+    <!-- Nodes -->
+    <ng-template #nodes>
+      <div class="nodes-chart">
+        <aldiagram-zoomable-canvas></aldiagram-zoomable-canvas>
+      </div>
+    </ng-template>
+
+  </ng-template>
+
+</div>
+
+<ng-content></ng-content>
+
+<div class="tour-step-anchor sidebar" *ngIf="!simpleLayout && (topologiesLoaded$ | async) && (nodesLoaded$ | async)" >
+  <aldiagram-topology-options></aldiagram-topology-options>
+</div>

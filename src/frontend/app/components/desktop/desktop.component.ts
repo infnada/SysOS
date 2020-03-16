@@ -4,8 +4,8 @@ import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
 import {AnyOpsOSLibFileSystemUiService} from '@anyopsos/lib-file-system-ui';
 import {Application, AnyOpsOSLibApplicationService} from '@anyopsos/lib-application';
-import {AnyOpsOSFile} from '@anyopsos/backend/app/types/anyopsos-file';
-import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
+import {AnyOpsOSFile} from '@anyopsos/backend-core/app/types/anyopsos-file';
+import {BackendResponse} from '@anyopsos/backend-core/app/types/backend-response';
 
 @Component({
   selector: 'app-desktop',

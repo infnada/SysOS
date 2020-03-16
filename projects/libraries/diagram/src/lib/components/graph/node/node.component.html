@@ -1,0 +1,33 @@
+<ng-container *ngIf="isAnimated; else notAnimated">
+  <!--<Motion [style]="{size: weakSpring(size), x: weakSpring(x), y: weakSpring(y)} | sanitizeStyle">-->
+  <svg:g [attr.transform]="'translate(' + nodeElement.x + ',' + nodeElement.y + ') scale(' + (nodeElement.scale * 100) / 55 + ')'">
+    <svg:g aldiagram-node-static
+           [nodeElement]="nodeElement"
+           [graphNodeRef]="parentRef"
+           [labelOffset]="labelOffset"
+           [color]="color"
+           [contrastMode]="contrastMode"
+           [forceSvg]="forceSvg"
+           [searchTerms]="searchTerms"
+           [metricColor]="metricColor"
+           [metricFormattedValue]="metricFormattedValue"
+           [metricNumericValue]="metricNumericValue"></svg:g>
+  </svg:g>
+  <!--</Motion>-->
+</ng-container>
+
+<ng-template #notAnimated>
+  <svg:g [attr.transform]="'translate(' + nodeElement.x + ',' + nodeElement.y + ') scale(' + (nodeElement.scale * 100) / 55 + ')'"
+         aldiagram-node-static
+         [nodeElement]="nodeElement"
+         [graphNodeRef]="parentRef"
+         [labelOffset]="labelOffset"
+         [color]="color"
+         [contrastMode]="contrastMode"
+         [forceSvg]="forceSvg"
+         [searchTerms]="searchTerms"
+         [metricColor]="metricColor"
+         [metricFormattedValue]="metricFormattedValue"
+         [metricNumericValue]="metricNumericValue">
+  </svg:g>
+</ng-template>

@@ -6,6 +6,7 @@
   },
   "whitelistedNonPeerDependencies": [
     "@angular/cdk",
-    "@angular/material"
+    "@angular/material",
+    "ngx-material-file-input"
   ]
 }

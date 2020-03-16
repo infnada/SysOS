@@ -2,7 +2,7 @@ import 'reflect-metadata';
 
 import awaitSpawn from 'await-spawn';
 const moduleAlias = require('module-alias');
-moduleAlias.addAlias('@anyopsos', `${process.cwd()}/dist/anyOpsOS/filesystem/bin/modules/`);
+moduleAlias.addAlias('@anyopsos', `${process.cwd()}/dist/anyOpsOS/fileSystem/filesystem/bin/modules/`);
 
 import {getFromContainer, MetadataStorage} from 'class-validator';
 import {validationMetadatasToSchemas} from 'class-validator-jsonschema';
@@ -49,7 +49,7 @@ Converter.convert({
   source: spec,
 }).then(async (converted): Promise<void> => {
 
-  console.log(blueBright(`[anyOpsOS Cli. Internals] Coping API Main swagger.json file.\n`));
+  console.log(blueBright(`[anyOpsOS Cli. Internals] Copying API Main swagger.json file.\n`));
   await writeJson(
     `${process.cwd()}/projects/apis/swagger.json`,
     converted.spec,
@@ -61,7 +61,10 @@ Converter.convert({
 
   Object.keys(converted.spec.paths).map((path: string) => {
 
-    const projectName = path.split('/')[2];
+    let projectName = path.split('/')[2];
+
+    // TODO hardcoded
+    projectName = projectName.includes('vmware-') ? 'vmware' : projectName.includes('netapp-') ? 'netapp' : projectName;
 
     if (!projects[projectName]) {
       projects[projectName] = {
@@ -82,7 +85,7 @@ Converter.convert({
   await Promise.all(
     Object.keys(projects).map(async (project): Promise<void> => {
 
-      console.log(blueBright(`[anyOpsOS Cli. Internals] Coping API ${projects[project].projectName} swagger.json file.`));
+      console.log(blueBright(`[anyOpsOS Cli. Internals] Copying API ${projects[project].projectName} swagger.json file.`));
       await writeJson(
         `${process.cwd()}/projects/apis/${projects[project].projectName}/swagger.json`,
         projects[project],

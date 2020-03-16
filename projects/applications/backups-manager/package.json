@@ -12,8 +12,8 @@
     "@anyopsos/lib-file-system": "~0.0.1",
     "@anyopsos/lib-logger": "~0.0.1",
     "@anyopsos/lib-modal": "~0.0.1",
-    "@anyopsos/lib-netapp": "~0.0.1",
-    "@anyopsos/lib-vmware": "~0.0.1"
+    "@anyopsos/lib-node-netapp": "~0.0.1",
+    "@anyopsos/lib-node-vmware": "~0.0.1"
   },
   "homepage": "https://github.com/anyOpsOS/anyOpsOS#readme",
   "repository": {

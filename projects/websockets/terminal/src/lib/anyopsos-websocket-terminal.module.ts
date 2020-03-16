@@ -3,7 +3,7 @@ import {getLogger, Logger} from 'log4js';
 import {Socket} from 'socket.io';
 
 import {AnyOpsOSTerminalModule, TerminalTypes} from '@anyopsos/module-terminal';
-import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
+import {BackendResponse} from '@anyopsos/backend-core/app/types/backend-response';
 
 
 const logger: Logger = getLogger('mainLog');

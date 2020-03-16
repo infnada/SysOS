@@ -64,8 +64,8 @@ export class AnyOpsOSMonitorModule {
     if (!currentConnection.credential) return this.doRequest(url, requestHeaders);
 
     // TODO all credential types
-    if (mainServer.credential.fields.Type === 'basic') {
-      requestHeaders.append('Authorization', `Basic ${Buffer.from(mainServer.credential.fields.UserName + ':' + mainServer.credential.fields.Password.getText()).toString('base64')}`);
+    if (mainServer.credential.type === 'basic') {
+      requestHeaders.append('Authorization', `Basic ${Buffer.from(mainServer.credential.username + ':' + mainServer.credential.password).toString('base64')}`);
     }
 
     return this.doRequest(url, requestHeaders);

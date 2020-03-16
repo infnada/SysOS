@@ -1,3 +1,41 @@
-<app-login *ngIf="!userLoggedIn"></app-login>
-<app-bootstrap *ngIf="userLoggedIn && !appBootstrapped"></app-bootstrap>
-<app-desktop *ngIf="userLoggedIn && appBootstrapped"></app-desktop>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12 p-0">
+      <div class="min-vh-100 text-center m-0 bg-info d-flex flex-column justify-content-center">
+
+        <!-- Loading Vault state -->
+        <mat-spinner *ngIf="!vaultState; else checkState"></mat-spinner>
+
+        <!-- State Loaded -->
+        <ng-template #checkState>
+
+          <!-- Vault not initialized, sealed or no root user created -->
+          <app-initialize [vaultState]="vaultState" (stateChanged)="onStateChanged()" *ngIf="vaultState.users === 0; else userLogin"></app-initialize>
+
+        </ng-template>
+
+        <!-- Vault initialized. Login -->
+        <ng-template #userLogin>
+
+          <app-login *ngIf="!userLoggedIn; else bootstrapApp"></app-login>
+
+        </ng-template>
+
+        <!-- User logged in. Bootstrap -->
+        <ng-template #bootstrapApp>
+
+          <mat-spinner *ngIf="!appBootstrapped; else desktop"></mat-spinner>
+
+        </ng-template>
+
+        <!-- App Bootstrapped. Show Desktop -->
+        <ng-template #desktop>
+
+          <app-desktop></app-desktop>
+
+        </ng-template>
+
+      </div>
+    </div>
+  </div>
+</div>

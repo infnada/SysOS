@@ -1,0 +1,23 @@
+<div class="topology-options">
+
+  <div class="topology-option" [attr.key]="option.id" *ngFor="let option of options">
+    <div class="topology-option-wrapper">
+
+      <ng-container *ngIf="option.selectType === 'union'">
+        <div [ngClass]="getActiveValue(option, '') ? 'topology-option-action topology-option-action-selected': 'topology-option-action'"
+             (click)="handleNoneClick(option.id)">
+          {{option.noneLabel}}
+        </div>
+      </ng-container>
+
+      <div *ngFor="let item of option.options"
+           [ngClass]="getActiveValue(option, item.value) ? 'topology-option-action topology-option-action-selected': 'topology-option-action'"
+           (click)="handleOptionClick(option.id, item.value)"
+           [attr.key]="item.value">
+        {{item.label}}
+      </div>
+
+    </div>
+  </div>
+
+</div>

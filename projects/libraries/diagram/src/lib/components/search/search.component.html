@@ -1,0 +1,27 @@
+<div style="margin: 0 8px;min-width: 160px;text-align: right;">
+  <div matTooltip="{{searchMatchesCount}} matches" class="diagram-search">
+    <mat-form-field>
+      <span matPrefix><i class="fas fa-search p-2" (click)="openHelp()"></i></span>
+      <mat-chip-list #chipList>
+        <mat-chip
+          *ngFor="let search of pinnedSearches"
+          [selectable]="selectable"
+          [removable]="removable"
+          (removed)="remove(search)">
+          {{search}}
+          <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+        </mat-chip>
+        <input
+          placeholder="Search"
+          #searchInput
+          [disabled]="topologiesLoaded && topologyNodeCountZero"
+          (input)="updateSearch()"
+          [matChipInputFor]="chipList"
+          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+          [matChipInputAddOnBlur]="addOnBlur"
+          (matChipInputTokenEnd)="add($event)">
+      </mat-chip-list>
+      <mat-hint align="start">{{searchHint}} <i class="fas fa-question-circle" (click)="openHelp()"></i> </mat-hint>
+    </mat-form-field>
+  </div>
+</div>

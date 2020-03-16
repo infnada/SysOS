@@ -1,174 +1,104 @@
-import {Credentials, Entry, Group, Kdbx, ProtectedValue} from 'kdbxweb';
-import {outputFile, readFile} from 'fs-extra';
-import {join} from 'path';
 import {getLogger, Logger} from 'log4js';
+import {client} from 'node-vault';
 
-import {AnyOpsOSGetPathModule} from '@anyopsos/module-get-path';
-import {AnyOpsOSWorkspaceModule} from '@anyopsos/module-workspace';
+import {AnyOpsOSSysWorkspaceModule} from '@anyopsos/module-sys-workspace';
+import {AnyOpsOSVaultModule} from '@anyopsos/module-vault';
 
-import {WorkspaceDbMap} from './types/workspace-db-map';
-import {KdbxCredential} from './types/kxdb-credential';
 import {Credential} from './types/credential';
 
-import {CREDENTIAL_FILE_NAME} from './anyopsos-module-credential.constants';
 
+const logger: Logger = getLogger('credential');
 
-const logger: Logger = getLogger('mainLog');
-const loadedDbs: WorkspaceDbMap = {};
-
+/**
+ * This module will only work inside 'anyopsos-auth' Pod since it uses the Kubernetes Pod Service Account to login with Vault
+ */
 export class AnyOpsOSCredentialModule {
 
-  private readonly GetPathModule: AnyOpsOSGetPathModule;
-  private readonly WorkspaceModule: AnyOpsOSWorkspaceModule;
+  private readonly WorkspaceModule: AnyOpsOSSysWorkspaceModule;
+  private readonly VaultModule: AnyOpsOSVaultModule = new AnyOpsOSVaultModule();
+  private readonly vaultClient: client = this.VaultModule.getVaultClient();
 
   constructor(private readonly userUuid: string,
               private readonly sessionUuid: string,
               private readonly workspaceUuid: string) {
 
-    this.GetPathModule = new AnyOpsOSGetPathModule();
-    this.WorkspaceModule = new AnyOpsOSWorkspaceModule(this.userUuid, this.sessionUuid);
+    // TODO: check if userUuid & sessionUuid matches
+    // TODO: check if userUuid is allowed to access the data from workspaceUuid
+    this.WorkspaceModule = new AnyOpsOSSysWorkspaceModule(this.userUuid, this.sessionUuid);
+
+    // this.WorkspaceModule.getUserPermissions();
   }
 
+
   /**
-   * Saves the DB on disk
+   * From here, we must make sure that we are allowed to access/modify the credential/s information by using the Class Constructor provided data
+   * Credentials are split by Workspaces, which means that we have to validate this.userId with this.sessionUuid and then if this.userId belongs to this.workspaceUuid
+   * --------
    */
-  private async saveDb(): Promise<void> {
-    logger.debug(`[Module Credentials] -> saveDb -> userUuid [${this.userUuid}]`);
-
-    const dataAsArrayBuffer: ArrayBuffer = await loadedDbs[this.workspaceUuid].save();
-    const credentialPath: string = join(this.WorkspaceModule.getWorkspacePath(this.workspaceUuid), CREDENTIAL_FILE_NAME);
-
-    return outputFile(credentialPath, Buffer.from(dataAsArrayBuffer));
-  }
 
   /**
-   * Creates new KeePass empty database. This is only called by anyOpsOS
-   * TODO check if user already exists on shadow.json and if dbfile already exists
-   * TODO (SECURITY) anyone can "flush" any db
-   * TODO this is not working
-   */
-  async createNewDb(userUuid: string, name: string): Promise<void> {
-    logger.debug(`[Module Credentials] -> createNewDb -> userUuid [${userUuid}], name [${name}]`);
-
-    // @ts-ignore - NO KEYFILE (2nd argument)
-    const credentials: Credentials = new Credentials(ProtectedValue.fromString('root'));
-    loadedDbs[this.workspaceUuid] = Kdbx.create(credentials, name);
-
-    return this.saveDb();
-  }
-
-  /**
-   * Loads a KeePass database in memory
-   */
-  async loadCredentialDb(password: string): Promise<boolean> {
-    logger.debug(`[Module Credentials] -> loadCredentialDb -> userUuid [${this.userUuid}]`);
-
-    const credentialPath: string = join(this.WorkspaceModule.getWorkspacePath(this.workspaceUuid), CREDENTIAL_FILE_NAME);
-    const dataAsArrayBuffer = await readFile(credentialPath);
-
-    // @ts-ignore - NO KEYFILE (2nd argument)
-    const credentials: Credentials = new Credentials(ProtectedValue.fromString(password));
-
-    return Kdbx.load(dataAsArrayBuffer.buffer, credentials).then((db: Kdbx) => {
-
-      loadedDbs[this.workspaceUuid] = db;
-
-      return true;
-    }).catch((e) => {
-      console.log(e);
-      return false;
-    });
-  }
-
-  /**
-   * Gets all credentials but without protected values
+   * Gets all credentials but without passwords.
+   * This is the main function called by the credentials library (lib-credentials) to show to the users the credentials available for the current workspace
+   * Frontend call this using the API
    */
   async getCredentials(): Promise<Credential[]> {
-    logger.debug(`[Module Credentials] -> getCredentials -> userUuid [${this.userUuid}]`);
+    logger.trace(`[Module Credentials] -> getCredential -> userUuid [${this.userUuid}], workspaceUuid [${this.workspaceUuid}]`);
 
-    const credentials: Credential[] = [];
-    await loadedDbs[this.workspaceUuid].getDefaultGroup().entries.forEach((entry: Entry) => {
-      credentials.push({
-        // @ts-ignore TODO
-        uuid: entry.uuid.id,
-        // @ts-ignore TODO
-        description: entry.fields.Title,
-        // @ts-ignore TODO
-        username: entry.fields.UserName,
-        // @ts-ignore TODO
-        type: entry.fields.Type
-      });
-    });
-
-    return credentials;
+    return this.vaultClient.list(`secret/workspaces/${this.workspaceUuid}`);
   }
 
   /**
-   * Gets a credential by uuid
+   * Returns a credential with the password
+   * This data should never be returned to the user. anyOpsOS doesn't allow to send passwords back to the user
+   * This is used by other modules to connect with "something"
+   * TODO: since this function is exposed by an API, make sure this can't be called by an user from the browser. Validate 'anyopsos-core' Pod certificate
    */
-  async getCredential(credentialUuid: string): Promise<KdbxCredential> {
-    logger.debug(`[Module Credentials] -> getCredentials -> userUuid [${this.userUuid}], credentialUuid [${credentialUuid}]`);
+  async getCredential(credentialUuid: string): Promise<Credential> {
+    logger.trace(`[Module Credentials] -> getCredential -> userUuid [${this.userUuid}], workspaceUuid [${this.workspaceUuid}], credentialUuid [${credentialUuid}]`);
 
-    const credential = loadedDbs[this.workspaceUuid].getDefaultGroup().entries.find((entry: Entry) => entry.uuid.id === credentialUuid);
-    if (!credential) throw new Error('resource_not_found');
-
-    return credential as KdbxCredential;
+    return this.vaultClient.read(`secret/workspaces/${this.workspaceUuid}/${credentialUuid}`);
   }
 
   /**
-   * Creates a credential
+   * Creates a new credential. Some modules can call this as well (infrastructure as code applications...)
+   * Users call this using the API
+   * TODO: check if user is allowed to write data to this workspace (not read-only)
+   * TODO: check if already exists (patch)
    */
-  async putCredential(credential: Credential): Promise<{ uuid: string; }> {
-    logger.debug(`[Module Credentials] -> putCredential -> userUuid [${this.userUuid}], description [${credential.description}]`);
+  async putCredential(credential: Credential): Promise<string> {
+    logger.trace(`[Module Credentials] -> putCredential -> userUuid [${this.userUuid}], workspaceUuid [${this.workspaceUuid}], credentialUuid [${credential.uuid}]`);
 
-    const group: Group = loadedDbs[this.workspaceUuid].getDefaultGroup();
-    const entry: Entry = loadedDbs[this.workspaceUuid].createEntry(group);
+    await this.vaultClient.write(`secret/workspaces/${this.workspaceUuid}/${credential.uuid}`, credential);
 
-    this.setEntryFields(entry, credential);
-    this.saveDb();
-
-    // @ts-ignore TODO
-    return { uuid: entry.uuid.id };
+    return credential.uuid;
   }
 
   /**
-   * Edits a credential by uuid
+   * Modifies a credential. Some modules can call this as well (rotate passwords...)
+   * Users call this using the API
+   * TODO: check if user is allowed to modify data from this workspace (not read-only)
+   * TODO: check if not exists (put)
    */
-  async patchCredential(credentialUuid: string, credential: Credential): Promise<{ uuid: string; }> {
-    logger.debug(`[Module Credentials] -> patchCredential -> userUuid [${this.userUuid}], credentialUuid [${credential.uuid}], credentialUuid [${credentialUuid}], description [${credential.description}]`);
+  async patchCredential(credentialUuid: string, credential: Credential): Promise<string> {
+    logger.trace(`[Module Credentials] -> patchCredential -> userUuid [${this.userUuid}], workspaceUuid [${this.workspaceUuid}], credentialUuid [${credentialUuid}]`);
 
-    const entry: Entry = await this.getCredential(credential.uuid);
-    if (!entry) throw new Error('resource_not_found');
+    await this.vaultClient.write(`secret/workspaces/${this.workspaceUuid}/${credentialUuid}`, credential);
 
-    this.setEntryFields(entry, credential);
-    await this.saveDb();
-
-    return { uuid: credential.uuid };
+    return credential.uuid;
   }
 
   /**
-   * Sets field values for an entry
-   */
-  private setEntryFields(entry: Entry, credential: Credential) {
-    entry.fields.Title = credential.description;
-    entry.fields.UserName = credential.username;
-    // @ts-ignore TODO
-    entry.fields.Password = ProtectedValue.fromString(credential.password);
-    entry.fields.Type = credential.type;
-  }
-
-  /**
-   * Deletes a credential by uuid
+   * Deletes a credential.
+   * Users call this using the API
+   * TODO: check if user is allowed to delete data from this workspace (not read-only)
+   * TODO: check if not exists
    */
   async deleteCredential(credentialUuid: string): Promise<void> {
-    logger.debug(`[Module Credentials] -> deleteCredential -> userUuid [${this.userUuid}], credentialUuid [${credentialUuid}]`);
+    logger.trace(`[Module Credentials] -> deleteCredential -> userUuid [${this.userUuid}], workspaceUuid [${this.workspaceUuid}], credentialUuid [${credentialUuid}]`);
 
-    const entry = await this.getCredential(credentialUuid,);
-    if (!entry) throw new Error('resource_not_found');
+    await this.vaultClient.delete(`secret/workspaces/${this.workspaceUuid}/${credentialUuid}`);
 
-    loadedDbs[this.workspaceUuid].remove(entry);
-
-    return this.saveDb();
+    return;
   }
 
 }

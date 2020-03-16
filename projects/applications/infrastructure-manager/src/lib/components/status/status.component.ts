@@ -5,7 +5,7 @@ import {Observable, Subject} from 'rxjs';
 import {Application} from '@anyopsos/lib-application';
 
 import {AnyOpsOSAppInfrastructureManagerService} from '../../services/anyopsos-app-infrastructure-manager.service';
-import {ConnectionTypes} from '@anyopsos/backend/app/types/connection-types';
+import {ConnectionTypes} from '@anyopsos/backend-core/app/types/connection-types';
 
 @Component({
   selector: 'aaim-status',
@@ -25,8 +25,8 @@ export class StatusComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
 
     // Listen for activeConnectionUuid change
-    this.InfrastructureManager.activeConnectionUuid
-      .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnectionUuid: string | null) => this.activeConnectionUuid = activeConnectionUuid);
+    // this.InfrastructureManager.activeConnectionUuid
+    //  .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnectionUuid: string | null) => this.activeConnectionUuid = activeConnectionUuid);
   }
 
   ngOnDestroy(): void {
@@ -39,8 +39,8 @@ export class StatusComponent implements OnInit, OnDestroy {
     return this.InfrastructureManager.activeConnection;
   }
 
-  async getHostOrClusterName(): Promise<string> {
-    const connection: ConnectionTypes | null = await this.InfrastructureManager.getActiveConnection();
+  getHostOrClusterName(): string {
+    const connection: ConnectionTypes | null = this.InfrastructureManager.getActiveConnection();
 
     if (connection?.type === 'kubernetes' || connection?.type === 'docker') return connection.clusterName;
     return connection.host;

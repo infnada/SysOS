@@ -1,0 +1,28 @@
+{
+  "name": "@anyopsos/module-node-snmp",
+  "version": "0.0.1",
+  "main": "src/index.ts",
+  "dependencies": {
+    "net-snmp": "^2.5.2"
+  },
+  "peerDependencies": {
+    "@anyopsos/module-socket": "~0.0.1"
+  },
+  "devDependencies": {
+    "@anyopsos/backend-core": "~0.0.1",
+    "@types/node": "^12.12.21",
+    "socket.io": "^2.3.0",
+    "typescript": "^3.7.4"
+  },
+  "homepage": "https://github.com/anyOpsOS/anyOpsOS#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anyOpsOS/anyOpsOS.git"
+  },
+  "bugs": "https://github.com/anyOpsOS/anyOpsOS/issues",
+  "keywords": [],
+  "description": "anyOpsOS module snmp",
+  "author": "Isart Navarro <contact@isartnavarro.io> (https://isartnavarro.io)",
+  "license": "GPL-3.0-or-later",
+  "private": true
+}

@@ -5,7 +5,7 @@ import {BehaviorSubject, Observable} from 'rxjs';
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
 import {AnyOpsOSLibApplicationService, Application} from '@anyopsos/lib-application';
-import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
+import {BackendResponse} from '@anyopsos/backend-core/app/types/backend-response';
 
 import {TaskbarApplication} from '../types/taskbar-application';
 
@@ -13,7 +13,7 @@ import {TaskbarApplication} from '../types/taskbar-application';
   providedIn: 'root'
 })
 export class AnyOpsOSLibDesktopTaskBarService {
-  private readonly $taskBarApplications: BehaviorSubject<TaskbarApplication[]>;
+  readonly $taskBarApplications: BehaviorSubject<TaskbarApplication[]>;
   private dataStore: {
     taskBarApplications: TaskbarApplication[];
   };

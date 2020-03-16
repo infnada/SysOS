@@ -8,15 +8,15 @@
         matTreeNodePadding
         matTreeNodePaddingIndent="10"
         (contextmenu)="onTreeContextMenu($event, node)"
-        [ngClass]="{'active-node': activeConnection === (node.info && node.info.uuid) || activeObject === (node.info && node.info.uuid)}"
+        [ngClass]="{'active-node': activeConnectionUuid === node.info.uuid || activeObjectUuid === node.info.uuid}"
         matTooltip="{{node.type}}"
       >
         <!-- use a disabled button to provide padding for tree leaf -->
         <button mat-icon-button disabled></button>
 
         <span (click)="setActiveView(node)">
-          <i [ngClass]="InfrastructureManagerTemplateHelper.getObjectIcon(node).data" *ngIf="InfrastructureManagerTemplateHelper.getObjectIcon(node).type === 'class'"></i>
-          <img alt="{{node.name}}" [src]="InfrastructureManagerTemplateHelper.getObjectIcon(node).data" width="25px" class="mr-1" *ngIf="InfrastructureManagerTemplateHelper.getObjectIcon(node).type === 'image'" />
+          <i [ngClass]="LibNodeTemplateHelpers.getObjectIcon(node).data" *ngIf="LibNodeTemplateHelpers.getObjectIcon(node).type === 'class'"></i>
+          <img alt="{{node.name}}" [src]="LibNodeTemplateHelpers.getObjectIcon(node).data" width="25px" class="mr-1" *ngIf="LibNodeTemplateHelpers.getObjectIcon(node).type === 'image'" />
           {{node.name}}
         </span>
 
@@ -34,7 +34,7 @@
         matTreeNodePadding
         matTreeNodePaddingIndent="10"
         (contextmenu)="onTreeContextMenu($event, node)"
-        [ngClass]="{'active-node': activeConnection === (node.info && node.info.uuid) || activeObject === (node.info && node.info.uuid)}"
+        [ngClass]="{'active-node': activeConnectionUuid === node.info.uuid || activeObjectUuid === node.info.uuid}"
         matTooltip="{{node.type}}"
       >
         <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'toggle ' + node.name">
@@ -44,8 +44,8 @@
         </button>
 
         <span (click)="setActiveView(node)">
-          <i [ngClass]="InfrastructureManagerTemplateHelper.getObjectIcon(node).data" *ngIf="InfrastructureManagerTemplateHelper.getObjectIcon(node).type === 'class'"></i>
-          <img alt="{{node.name}}" [src]="InfrastructureManagerTemplateHelper.getObjectIcon(node).data" width="25px" class="mr-1" *ngIf="InfrastructureManagerTemplateHelper.getObjectIcon(node).type === 'image'" />
+          <i [ngClass]="LibNodeTemplateHelpers.getObjectIcon(node).data" *ngIf="LibNodeTemplateHelpers.getObjectIcon(node).type === 'class'"></i>
+          <img alt="{{node.name}}" [src]="LibNodeTemplateHelpers.getObjectIcon(node).data" width="25px" class="mr-1" *ngIf="LibNodeTemplateHelpers.getObjectIcon(node).type === 'image'" />
           {{node.name}}
         </span>
 
@@ -100,19 +100,26 @@
   </div>
   <div id="infrastructure-manager_main-body" class="window__main no_padding" #bodyContainer>
 
-    <aaim-body-new-connection [application]="application" *ngIf="activeConnection === null || (activeConnection && getActiveConnection().state === 'disconnected')"></aaim-body-new-connection>
+    <aaim-body-new-connection [application]="application" *ngIf="activeConnectionUuid === null || (getActiveConnectionObs() | async)?.state !== 'connected'"></aaim-body-new-connection>
 
-    <ng-container *ngIf="activeConnection !== null && getActiveConnection().state !== 'disconnected' && activeObject !== null">
+    <ng-container *ngIf="activeConnectionUuid !== null && (getActiveConnectionObs() | async).state === 'connected'" [ngSwitch]="(getActiveConnectionObs() | async).type">
       <div class="h-100">
-        <ng-container *ngIf="getActiveConnection().type === 'vmware'">
-          <aaim-body-vmware [application]="application" [vmwareObject]="getActiveObject()"></aaim-body-vmware>
+
+        <ng-container *ngSwitchCase="'vmware'">
+          <aaim-body-vmware [application]="application" [vmwareObject]="getActiveObjectObs() | async"></aaim-body-vmware>
           <aaim-vmware-recent-tasks [application]="application" ></aaim-vmware-recent-tasks>
         </ng-container>
-        <aaim-body-kubernetes [application]="application" [kubernetesObject]="getActiveObject()" *ngIf="getActiveConnection().type === 'kubernetes'"></aaim-body-kubernetes>
-        <aaim-body-docker [application]="application" [dockerObject]="getActiveObject()" *ngIf="getActiveConnection().type === 'docker'"></aaim-body-docker>
-        <aaim-body-netapp [application]="application" [netappObject]="getActiveObject()" *ngIf="getActiveConnection().type === 'netapp'"></aaim-body-netapp>
-        <aaim-body-linux [application]="application" [linuxObject]="getActiveObject()" *ngIf="getActiveConnection().type === 'linux'"></aaim-body-linux>
-        <aaim-body-snmp [application]="application" [snmpObject]="getActiveObject()" *ngIf="getActiveConnection().type === 'snmp'"></aaim-body-snmp>
+
+        <aaim-body-kubernetes [application]="application" [kubernetesObject]="getActiveObjectObs() | async" *ngSwitchCase="'kubernetes'"></aaim-body-kubernetes>
+
+        <aaim-body-docker [application]="application" [dockerObject]="getActiveObjectObs() | async" *ngSwitchCase="'docker'"></aaim-body-docker>
+
+        <aaim-body-netapp [application]="application" [netappObject]="getActiveObjectObs() | async" *ngSwitchCase="'netapp'"></aaim-body-netapp>
+
+        <aaim-body-linux [application]="application" [linuxObject]="getActiveObjectObs() | async" *ngSwitchCase="'linux'"></aaim-body-linux>
+
+        <aaim-body-snmp [application]="application" [snmpObject]="getActiveObjectObs() | async" *ngSwitchCase="'snmp'"></aaim-body-snmp>-->
+
       </div>
     </ng-container>
 

@@ -8,6 +8,7 @@ import {
   ViewChild,
   ViewEncapsulation
 } from '@angular/core';
+
 import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
@@ -55,8 +56,8 @@ export class BodyDashboardComponent implements AfterViewInit, OnDestroy, OnInit 
 
   ngAfterViewInit() {
 
-    // Listen for activeConnection change. TODO: WHY AfterViewInit??
-    this.Monitor.activeConnection
+    // Listen for activeConnectionUuid change. TODO: WHY AfterViewInit??
+    this.Monitor.activeConnectionUuid
       .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnectionUuid: string) => this.onActiveConnectionChange(activeConnectionUuid));
   }
 

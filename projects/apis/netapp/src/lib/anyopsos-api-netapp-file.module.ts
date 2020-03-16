@@ -1,11 +1,11 @@
-import {Controller, Authorized, Req, Res, Post, Param, BodyParam, Patch, Delete, Put, Get} from 'routing-controllers';
+import {Controller, Authorized, Req, Res, Param, BodyParam, Patch, Delete, Put, Get} from 'routing-controllers';
 import {SessionParam} from 'routing-controllers/decorator/SessionParam';
 import {Request, Response} from 'express';
 import {getLogger, Logger} from 'log4js';
 import {EventEmitter} from 'events';
 
 import {AnyOpsOSApiGlobalsModule} from '@anyopsos/module-api-globals';
-import {AnyOpsOSNetappFileSystemModule} from '@anyopsos/module-netapp';
+import {AnyOpsOSNodeNetappFileSystemModule} from '@anyopsos/module-node-netapp';
 
 
 const logger: Logger = getLogger('mainLog');
@@ -27,7 +27,7 @@ export class AnyOpsOSNetappFileApiController {
                      @Param('dstPath') dstPath: string) {
     logger.info(`[API NetappFile] -> Download file -> workspaceUuid [${workspaceUuid}], connectionUuid [${connectionUuid}], srcPath [${srcPath}], dstPath [${dstPath}]`);
 
-    const NetappFileSystemModule: AnyOpsOSNetappFileSystemModule = new AnyOpsOSNetappFileSystemModule(userUuid, sessionUuid, workspaceUuid, connectionUuid);
+    const NetappFileSystemModule: AnyOpsOSNodeNetappFileSystemModule = new AnyOpsOSNodeNetappFileSystemModule(userUuid, sessionUuid, workspaceUuid, connectionUuid);
     const ApiGlobalsModule: AnyOpsOSApiGlobalsModule = new AnyOpsOSApiGlobalsModule(request, response);
 
     const percentageEvent: EventEmitter = await NetappFileSystemModule.getFile(vfiler, srcPath, dstPath);
@@ -52,7 +52,7 @@ export class AnyOpsOSNetappFileApiController {
                    @Param('dstPath') dstPath: string) {
     logger.info(`[API NetappFile] -> Upload file -> workspaceUuid [${workspaceUuid}], connectionUuid [${connectionUuid}], srcPath [${srcPath}], dstPath [${dstPath}]`);
 
-    const NetappFileSystemModule: AnyOpsOSNetappFileSystemModule = new AnyOpsOSNetappFileSystemModule(userUuid, sessionUuid, workspaceUuid, connectionUuid);
+    const NetappFileSystemModule: AnyOpsOSNodeNetappFileSystemModule = new AnyOpsOSNodeNetappFileSystemModule(userUuid, sessionUuid, workspaceUuid, connectionUuid);
     const ApiGlobalsModule: AnyOpsOSApiGlobalsModule = new AnyOpsOSApiGlobalsModule(request, response);
 
     const percentageEvent: EventEmitter = await NetappFileSystemModule.putFile(vfiler, srcPath, dstPath);
@@ -79,7 +79,7 @@ export class AnyOpsOSNetappFileApiController {
                   @BodyParam('permissions', { required: false }) permissions?: string) {
     logger.info(`[API NetappFile] -> Rename/Move/Copy/Chown/Chmod file -> workspaceUuid [${workspaceUuid}], connectionUuid [${connectionUuid}], type [${type}], srcPath [${srcPath}], dstPath [${dstPath}], permissions [${permissions}]`);
 
-    const NetappFileSystemModule: AnyOpsOSNetappFileSystemModule = new AnyOpsOSNetappFileSystemModule(userUuid, sessionUuid, workspaceUuid, connectionUuid);
+    const NetappFileSystemModule: AnyOpsOSNodeNetappFileSystemModule = new AnyOpsOSNodeNetappFileSystemModule(userUuid, sessionUuid, workspaceUuid, connectionUuid);
     const ApiGlobalsModule: AnyOpsOSApiGlobalsModule = new AnyOpsOSApiGlobalsModule(request, response);
 
     // 'dst' is required by 'copy' | 'move' | 'rename'
@@ -105,7 +105,7 @@ export class AnyOpsOSNetappFileApiController {
                    @Param('srcPath') srcPath: string) {
     logger.info(`[API NetappFile] -> Delete file -> workspaceUuid [${workspaceUuid}], connectionUuid [${connectionUuid}], srcPath [${srcPath}]`);
 
-    const NetappFileSystemModule: AnyOpsOSNetappFileSystemModule = new AnyOpsOSNetappFileSystemModule(userUuid, sessionUuid, workspaceUuid, connectionUuid);
+    const NetappFileSystemModule: AnyOpsOSNodeNetappFileSystemModule = new AnyOpsOSNodeNetappFileSystemModule(userUuid, sessionUuid, workspaceUuid, connectionUuid);
     const ApiGlobalsModule: AnyOpsOSApiGlobalsModule = new AnyOpsOSApiGlobalsModule(request, response);
 
     await NetappFileSystemModule.deleteFile(vfiler, srcPath);

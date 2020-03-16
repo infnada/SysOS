@@ -5,7 +5,7 @@ import {Terminal as xtermTerminal} from 'xterm';
 import {FitAddon} from 'xterm-addon-fit';
 
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
-import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
+import {BackendResponse} from '@anyopsos/backend-core/app/types/backend-response';
 
 import {Terminal as TerminalData} from '../types/terminal';
 

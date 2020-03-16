@@ -37,3 +37,20 @@ Login
 | Code | Description |
 | ---- | ----------- |
 | 200 | Successful response |
+
+#### PUT
+##### Summary:
+
+Create user
+
+##### Parameters
+
+| Name | Located in | Description | Required | Schema |
+| ---- | ---------- | ----------- | -------- | ---- |
+| body | body |  | No | object |
+
+##### Responses
+
+| Code | Description |
+| ---- | ----------- |
+| 200 | Successful response |

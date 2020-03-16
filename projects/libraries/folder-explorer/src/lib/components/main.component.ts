@@ -1,7 +1,7 @@
 import {Component, Input, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
 
 import {Application} from '@anyopsos/lib-application';
-import {Connection} from '@anyopsos/backend/app/types/connection';
+import {Connection} from '@anyopsos/backend-core/app/types/connection';
 
 import {AnyOpsOSLibFolderExplorerService} from '../services/anyopsos-lib-folder-explorer.service';
 

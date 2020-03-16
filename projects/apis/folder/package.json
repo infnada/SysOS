@@ -7,11 +7,11 @@
   },
   "peerDependencies": {
     "@anyopsos/module-api-globals": "~0.0.1",
-    "@anyopsos/module-get-path": "~0.0.1",
+    "@anyopsos/module-sys-get-path": "~0.0.1",
     "@anyopsos/module-file-system": "~0.0.1"
   },
   "devDependencies": {
-    "@anyopsos/backend": "~0.0.1",
+    "@anyopsos/backend-core": "~0.0.1",
     "class-validator": "^0.11.0",
     "express": "^4.17.1",
     "routing-controllers": "https://github.com/anyOpsOS/routing-controllers.git#build",

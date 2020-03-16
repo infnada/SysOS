@@ -1,0 +1,35 @@
+{
+  "name": "@anyopsos/module-node-netapp",
+  "version": "0.0.1",
+  "main": "src/index.ts",
+  "dependencies": {
+    "log4js": "^6.1.1",
+    "node-fetch": "^2.6.0",
+    "socket-controllers": "https://github.com/anyOpsOS/socket-controllers.git#build",
+    "validator": "^12.2.0",
+    "xml2js": "^0.4.23"
+  },
+  "peerDependencies": {
+    "@anyopsos/backend-core": "~0.0.1",
+    "@anyopsos/module-config-file": "~0.0.1",
+    "@anyopsos/module-sys-workspace": "~0.0.1",
+    "@anyopsos/module-credentia": "~0.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^12.12.21",
+    "@types/node-fetch": "^2.5.4",
+    "@types/xml2js": "^0.4.5",
+    "typescript": "^3.7.4"
+  },
+  "homepage": "https://github.com/anyOpsOS/anyOpsOS#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anyOpsOS/anyOpsOS.git"
+  },
+  "bugs": "https://github.com/anyOpsOS/anyOpsOS/issues",
+  "keywords": [],
+  "description": "anyOpsOS module netapp",
+  "author": "Isart Navarro <contact@isartnavarro.io> (https://isartnavarro.io)",
+  "license": "GPL-3.0-or-later",
+  "private": true
+}

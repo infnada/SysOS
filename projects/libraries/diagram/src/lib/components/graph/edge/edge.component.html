@@ -1,0 +1,5 @@
+<svg:g id="{{encodeIdAttribute(edgeElement.id)}}" [attr.class]="'edge'" [ngClass]="{'highlighted': edgeElement.highlighted}" (mouseenter)="handleMouseEnter($event)" (mouseleave)="handleMouseLeave()">
+  <svg:path class="shadow" [attr.d]="path" [style.stroke-width]="(10 * thickness).toString() | sanitizeStyle"></svg:path>
+  <svg:path [attr.class]="getAdjacencyClass(edgeElement.id)" [attr.d]="path" [style.stroke-width]="5"></svg:path>
+  <svg:path class="link" [attr.d]="path" [style.marker-end]="(edgeElement.focused || edgeElement.highlighted) && (edgeElement.source !== edgeElement.target) ? 'url(#end-arrow)' : null" [style.stroke-width]="thickness.toString() | sanitizeStyle"></svg:path>
+</svg:g>

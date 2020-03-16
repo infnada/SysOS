@@ -1,11 +1,8 @@
 import {Injectable} from '@angular/core';
 
-import {ConnectionVmware} from '@anyopsos/module-vmware';
-import {ConnectionTypes} from '@anyopsos/backend/app/types/connection-types';
-import {DataObject} from '@anyopsos/backend/app/types/data-object';
-
-import {AnyOpsOSAppInfrastructureManagerService} from './anyopsos-app-infrastructure-manager.service';
-import {AnyOpsOSAppInfrastructureManagerObjectHelperService} from './anyopsos-app-infrastructure-manager-object-helper.service';
+import {AnyOpsOSLibNodeHelpersService} from '@anyopsos/lib-node';
+import {ConnectionTypes} from '@anyopsos/backend-core/app/types/connection-types';
+import {DataObject} from '@anyopsos/backend-core/app/types/data-object';
 
 import {ImTreeNode} from '../types/im-tree-node';
 import {ImGraphNode} from '../types/im-graph-node';
@@ -18,11 +15,10 @@ import {NodeGraphNodeMetadata} from '../types/node-graph-node-metadata';
 export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
 
   private graphType: string;
-  private nodes: { [key: string]: ImGraphNode };
+  private nodes: ImGraphNode[];
   private mainNode: DataObject;
 
-  constructor(private InfrastructureManager: AnyOpsOSAppInfrastructureManagerService,
-              private InfrastructureManagerObjectHelper: AnyOpsOSAppInfrastructureManagerObjectHelperService) {
+  constructor(private readonly LibNodeHelpers: AnyOpsOSLibNodeHelpersService) {
   }
 
   private setPseudoNodes(nodes): { nodes: { [key: string]: ImTreeNode } } {
@@ -77,11 +73,10 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
   /**
    * For each adjacent nodeId, get->set the node
    */
-  private async setAdjacentNodes(mainObj: DataObject): Promise<void> {
-    for (const adjacentUuid of this.nodes[mainObj.info.uuid].adjacency) {
+  private setAdjacentNodes(mainObj: DataObject): void {
+    for (const adjacentUuid of this.nodes.find(n => n.id === mainObj.info.uuid).adjacency) {
 
-      const adjacentType: ConnectionTypes['type'] = this.InfrastructureManagerObjectHelper.extractMainTypeFromObjectUuid(mainObj.info.mainUuid);
-      const currentAdjacentNode = await this.InfrastructureManagerObjectHelper.getObjectByUuid(null, adjacentType, adjacentUuid);
+      const currentAdjacentNode: DataObject = this.LibNodeHelpers.getObjectByUuid(null, null, adjacentUuid);
 
       if (currentAdjacentNode) this.setNode(currentAdjacentNode);
     }
@@ -90,7 +85,7 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
   /**
    * Gets adjacent Parents from a node
    */
-  private getAdjacentParent(objData: DataObject): string {
+  private getAdjacentParent(objData: DataObject): string | void {
 
     // Is main object. Connect to pseudo
     if (!objData.info) {
@@ -100,7 +95,7 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
     } else if (objData.info.parent) {
       if (objData.info.parent.type === 'Folder') return;
 
-      const connectionType: ConnectionTypes['type'] = this.InfrastructureManagerObjectHelper.extractMainTypeFromObjectUuid(objData.info.mainUuid);
+      const connectionType: ConnectionTypes['type'] = this.LibNodeHelpers.extractMainTypeFromObjectUuid(objData.info.uuid);
 
       return `${objData.info.mainUuid}#${connectionType};\u003c${objData.info.parent.name}:${objData.info.parent.type}\u003e`;
 
@@ -113,11 +108,11 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
   /**
    * Gets adjacent Childrens from a node
    */
-  private async getAdjacentChildrens(objData: DataObject): Promise<string[]> {
+  private getAdjacentChildrens(objData: DataObject): string[] {
     if (!objData.info) return [];
 
-    const connectionType: ConnectionTypes['type'] = this.InfrastructureManagerObjectHelper.extractMainTypeFromObjectUuid(objData.info.mainUuid);
-    const childObjects: DataObject[] = await this.InfrastructureManagerObjectHelper.getChildObjects(objData.info.mainUuid, connectionType, objData.info.obj, false);
+    const connectionType: ConnectionTypes['type'] = this.LibNodeHelpers.extractMainTypeFromObjectUuid(objData.info.uuid);
+    const childObjects: DataObject[] = this.LibNodeHelpers.getChildObjects(objData.info.mainUuid, connectionType, objData.info.obj, false);
 
     return childObjects
       .filter(obj => obj.type !== 'Event' && obj.type !== 'Folder')
@@ -162,10 +157,10 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
   /**
    * Gets adjacent Datastores from a HostSystem/StoragePod node
    */
-  private async getAdjacentDatastores(objData: DataObject): Promise<string[]> {
+  private getAdjacentDatastores(objData: DataObject): string[] {
 
     if (objData.type === 'StoragePod') {
-      const childObjects: DataObject[] = await this.InfrastructureManagerObjectHelper.getChildObjectsByType(objData.info.mainUuid, 'vmware', 'Datastore', objData.info.obj);
+      const childObjects: DataObject[] = this.LibNodeHelpers.getChildObjectsByType(objData.info.mainUuid, 'vmware', 'Datastore', objData.info.obj);
       return childObjects.map(obj => obj.info.uuid);
     }
 
@@ -194,7 +189,7 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
    * Since VM Disks are not connection objects, we inspect directly the VM to get the disks information.
    * Gets and returns nodes and adjacent Disks from VM object
    */
-  private async getAdjacentDisks(objData: DataObject): Promise<string[]> {
+  private getAdjacentDisks(objData: DataObject): string[] {
     const adjacentDisks = [];
 
     if (objData.info.data['config.hardware.device'][0].VirtualDevice) {
@@ -217,7 +212,7 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
           adjacentDisks.push(diskId);
 
           // Set special VirtualDisk node
-          this.nodes[diskId] = {
+          this.nodes.push({
             id: diskId,
             nodeInfo: device,
             label: device.deviceInfo[0].label,
@@ -250,11 +245,10 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
               // Datastore
               datastoreId
             ]
-          };
+          });
 
           // Set Datastore node
-          const currentConnection: ConnectionVmware = await this.InfrastructureManager.getConnectionByUuid(objData.info.mainUuid, 'vmware') as ConnectionVmware;
-          const currentAdjacentNode = currentConnection.data.Data.find(obj => obj.info.uuid === datastoreId);
+          const currentAdjacentNode: DataObject = this.LibNodeHelpers.getObjectByUuid(objData.info.mainUuid, 'vmware', datastoreId);
           this.setNode(currentAdjacentNode);
         }
 
@@ -270,7 +264,7 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
    * Since VM Networks are not connection objects, we inspect directly the VM to get the networks information.
    * Gets and returns nodes and adjacent Networks from VM object
    */
-  private async getAdjacentNetworks(objData: DataObject): Promise<string[]> {
+  private getAdjacentNetworks(objData: DataObject): string[] {
     const adjacentNetworks = [];
 
     if (objData.info.data['config.hardware.device'][0].VirtualDevice) {
@@ -284,7 +278,7 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
           adjacentNetworks.push(nicId);
 
           // Set special VirtualDisk node
-          this.nodes[nicId] = {
+          this.nodes.push({
             id: nicId,
             nodeInfo: device,
             label: device.deviceInfo[0].label,
@@ -305,11 +299,10 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
               // Network
               networkId
             ]
-          };
+          });
 
           // Set Network node
-          const currentConnection: ConnectionVmware = await this.InfrastructureManager.getConnectionByUuid(objData.info.mainUuid, 'vmware') as ConnectionVmware;
-          const currentAdjacentNetworkNode = currentConnection.data.Data.find(obj => obj.info.uuid === networkId);
+          const currentAdjacentNetworkNode: DataObject = this.LibNodeHelpers.getObjectByUuid(objData.info.mainUuid, 'vmware', networkId);
           this.setNode(currentAdjacentNetworkNode);
         }
 
@@ -328,9 +321,9 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
   /**
    * Gets adjacent ConfigMaps from a Pod node
    */
-  private async getAdjacentConfigMaps(objData: DataObject): Promise<string[]> {
+  private getAdjacentConfigMaps(objData: DataObject): string[] {
 
-    const childObjects: DataObject[] = await this.InfrastructureManagerObjectHelper.getObjectByCustomFilter(objData.info.mainUuid, 'kubernetes',(imObj) => {
+    const childObjects: DataObject[] = this.LibNodeHelpers.getObjectByCustomFilter(objData.info.mainUuid, 'kubernetes',(imObj) => {
       return imObj.type === 'ConfigMap' &&
         imObj.info.data.metadata.namespace === objData.info.data.metadata.namespace &&
         (
@@ -348,10 +341,10 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
   /**
    * Gets adjacent Pods from a PersistentVolumeClaim/Endpoint/ConfigMap node
    */
-  private async getAdjacentPods(objData: DataObject): Promise<string[]> {
+  private getAdjacentPods(objData: DataObject): string[] {
     if (objData.type === 'PersistentVolumeClaim') {
 
-      const childObjects: DataObject[] = await this.InfrastructureManagerObjectHelper.getObjectByCustomFilter(objData.info.mainUuid, 'kubernetes',(imObj) => {
+      const childObjects: DataObject[] = this.LibNodeHelpers.getObjectByCustomFilter(objData.info.mainUuid, 'kubernetes',(imObj) => {
         return imObj.type === 'Pod' &&
           imObj.info.data.metadata.namespace === objData.info.data.metadata.namespace &&
           imObj.info.data.spec.volumes &&
@@ -364,7 +357,7 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
     if (objData.type === 'Endpoints') {
       if (!objData.info.data.subsets) return [];
 
-      const childObjects: DataObject[] = await this.InfrastructureManagerObjectHelper.getObjectByCustomFilter(objData.info.mainUuid, 'kubernetes',(imObj) => {
+      const childObjects: DataObject[] = this.LibNodeHelpers.getObjectByCustomFilter(objData.info.mainUuid, 'kubernetes',(imObj) => {
         return imObj.type === 'Pod' &&
           objData.info.data.subsets.some(objSubset => {
             return (objSubset.addresses ? objSubset.addresses.some((subsetAddress) =>
@@ -387,7 +380,7 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
 
     if (objData.type === 'ConfigMap') {
 
-      const childObjects: DataObject[] = await this.InfrastructureManagerObjectHelper.getObjectByCustomFilter(objData.info.mainUuid, 'kubernetes',(imObj) => {
+      const childObjects: DataObject[] = this.LibNodeHelpers.getObjectByCustomFilter(objData.info.mainUuid, 'kubernetes',(imObj) => {
         return imObj.type === 'Pod' &&
           imObj.info.data.metadata.namespace === objData.info.data.metadata.namespace &&
           (
@@ -406,11 +399,11 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
   /**
    * Gets adjacent Endpoints from a Service/Pod node
    */
-  private async getAdjacentEndpoints(objData: DataObject): Promise<string[]> {
+  private getAdjacentEndpoints(objData: DataObject): string[] {
 
     if (objData.type === 'Service') {
 
-      const childObjects: DataObject[] = await this.InfrastructureManagerObjectHelper.getObjectByCustomFilter(objData.info.mainUuid, 'kubernetes',(imObj) => {
+      const childObjects: DataObject[] = this.LibNodeHelpers.getObjectByCustomFilter(objData.info.mainUuid, 'kubernetes',(imObj) => {
         return imObj.type === 'Endpoints' &&
           imObj.name === objData.name;
       });
@@ -420,7 +413,7 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
 
     if (objData.type === 'Pod') {
 
-      const childObjects: DataObject[] = await this.InfrastructureManagerObjectHelper.getObjectByCustomFilter(objData.info.mainUuid, 'kubernetes',(imObj) => {
+      const childObjects: DataObject[] = this.LibNodeHelpers.getObjectByCustomFilter(objData.info.mainUuid, 'kubernetes',(imObj) => {
         return imObj.type === 'Endpoints' &&
           imObj.info.data.subsets &&
           imObj.info.data.subsets.some(objSubset => {
@@ -447,11 +440,11 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
   /**
    * Gets adjacent Services from an Ingress/Endpoint node
    */
-  private async getAdjacentServices(objData: DataObject): Promise<string[]> {
+  private getAdjacentServices(objData: DataObject): string[] {
 
     if (objData.type === 'Ingress') {
 
-      const childObjects: DataObject[] = await this.InfrastructureManagerObjectHelper.getObjectByCustomFilter(objData.info.mainUuid, 'kubernetes',(imObj) => {
+      const childObjects: DataObject[] = this.LibNodeHelpers.getObjectByCustomFilter(objData.info.mainUuid, 'kubernetes',(imObj) => {
         return imObj.type === 'Service' &&
           imObj.info.data.metadata.namespace === objData.info.data.metadata.namespace &&
           (
@@ -467,7 +460,7 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
 
     if (objData.type === 'Endpoints') {
 
-      const childObjects: DataObject[] = await this.InfrastructureManagerObjectHelper.getObjectByCustomFilter(objData.info.mainUuid, 'kubernetes',(imObj) => {
+      const childObjects: DataObject[] = this.LibNodeHelpers.getObjectByCustomFilter(objData.info.mainUuid, 'kubernetes',(imObj) => {
         return imObj.type === 'Service' &&
           imObj.name === objData.name;
       });
@@ -480,9 +473,9 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
   /**
    * Gets adjacent Ingresses from a Service node
    */
-  private async getAdjacentIngresses(objData: DataObject): Promise<string[]> {
+  private getAdjacentIngresses(objData: DataObject): string[] {
 
-    const childObjects: DataObject[] = await this.InfrastructureManagerObjectHelper.getObjectByCustomFilter(objData.info.mainUuid, 'kubernetes',(imObj) => {
+    const childObjects: DataObject[] = this.LibNodeHelpers.getObjectByCustomFilter(objData.info.mainUuid, 'kubernetes',(imObj) => {
       return imObj.type === 'Ingress' &&
         imObj.info.data.metadata.namespace === objData.info.data.metadata.namespace &&
         (
@@ -499,7 +492,7 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
   /**
    * Gets adjacent PVCs from a Pod/PersistentVolume node
    */
-  private async getAdjacentPersistentVolumeClaims(objData: DataObject): Promise<string[]> {
+  private getAdjacentPersistentVolumeClaims(objData: DataObject): string[] {
 
     if (objData.type === 'PersistentVolume') {
       if (objData.info.data.status.phase !== 'Bound') return [];
@@ -510,10 +503,10 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
     if (objData.type === 'Pod') {
       if (!objData.info.data.spec.volumes) return [];
 
-      return objData.info.data.spec.volumes.map(async objVolume => {
+      const objects: string[] =objData.info.data.spec.volumes.map(objVolume => {
         if (!objVolume.persistentVolumeClaim) return null;
 
-        const foundPVCs: DataObject[] = await this.InfrastructureManagerObjectHelper.getObjectByCustomFilter(objData.info.mainUuid, 'kubernetes',(imObj) => {
+        const foundPVCs: DataObject[] = this.LibNodeHelpers.getObjectByCustomFilter(objData.info.mainUuid, 'kubernetes',(imObj) => {
           return imObj.type === 'PersistentVolumeClaim' &&
             imObj.name === objVolume.persistentVolumeClaim.claimName &&
             imObj.info.data.metadata.namespace === objData.info.data.metadata.namespace;
@@ -521,16 +514,19 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
 
         if (foundPVCs.length !== 0) return foundPVCs[0].info.uuid;
         return null;
-      }).filter(obj => obj !== null);
+
+      });
+
+      return objects.filter(o => o);
     }
   }
 
   /**
    * Gets adjacent PersistentVolume from a PersistentVolumeClaim node
    */
-  private async getAdjacentPersistentVolumes(objData: DataObject): Promise<string[]> {
+  private getAdjacentPersistentVolumes(objData: DataObject): string[] {
 
-    const childObjects: DataObject[] = await this.InfrastructureManagerObjectHelper.getObjectByCustomFilter(objData.info.mainUuid, 'kubernetes',(imObj) => {
+    const childObjects: DataObject[] = this.LibNodeHelpers.getObjectByCustomFilter(objData.info.mainUuid, 'kubernetes',(imObj) => {
       return imObj.type === 'PersistentVolume' &&
         imObj.info.data.spec.claimRef &&
         imObj.info.data.spec.claimRef.kind === 'PersistentVolumeClaim' &&
@@ -547,12 +543,12 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
   /**
    * Gets adjacent ServiceAccounts/Users/Groups from a RoleBinding/ClusterRoleBinding node
    */
-  private async getAdjacentRoleSubjects(objData: DataObject): Promise<string[]> {
+  private getAdjacentRoleSubjects(objData: DataObject): string[] {
     if (!objData.info.data.subjects) return [];
 
-    return objData.info.data.subjects.map(async subjectObj => {
+    const objects: string[] = objData.info.data.subjects.map(subjectObj => {
 
-      const foundSubjects: DataObject[] = await this.InfrastructureManagerObjectHelper.getObjectByCustomFilter(objData.info.mainUuid, 'kubernetes',(imObj) => {
+      const foundSubjects: DataObject[] = this.LibNodeHelpers.getObjectByCustomFilter(objData.info.mainUuid, 'kubernetes',(imObj) => {
         return imObj.type === subjectObj.kind &&
           imObj.name === subjectObj.name &&
           (subjectObj.namespace ? imObj.info.data.metadata.namespace === subjectObj.namespace : true);
@@ -560,15 +556,18 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
 
       if (foundSubjects.length !== 0) return foundSubjects[0].info.uuid;
       return null;
-    }).filter(obj => obj !== null);
+
+    });
+
+    return objects.filter(o => o);
   }
 
   /**
    * Gets adjacent RoleBinding/ClusterRoleBinding from a ServiceAccounts/Users/Groups node
    */
-  private async getAdjacentRoleBindingsFromSubjects(objData: DataObject): Promise<string[]> {
+  private getAdjacentRoleBindingsFromSubjects(objData: DataObject): string[] {
 
-    const childObjects: DataObject[] = await this.InfrastructureManagerObjectHelper.getObjectByCustomFilter(objData.info.mainUuid, 'kubernetes',(imObj) => {
+    const childObjects: DataObject[] = this.LibNodeHelpers.getObjectByCustomFilter(objData.info.mainUuid, 'kubernetes',(imObj) => {
       return (imObj.type === 'RoleBinding' || imObj.type === 'ClusterRoleBinding') &&
         imObj.info.data.subjects &&
         imObj.info.data.subjects.some(subObj => {
@@ -585,9 +584,9 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
   /**
    * Gets adjacent RoleBinding/ClusterRoleBinding from a Role node
    */
-  private async getAdjacentRoleBindingsFromRole(objData: DataObject): Promise<string[]> {
+  private getAdjacentRoleBindingsFromRole(objData: DataObject): string[] {
 
-    const childObjects: DataObject[] = await this.InfrastructureManagerObjectHelper.getObjectByCustomFilter(objData.info.mainUuid, 'kubernetes',(imObj) => {
+    const childObjects: DataObject[] = this.LibNodeHelpers.getObjectByCustomFilter(objData.info.mainUuid, 'kubernetes',(imObj) => {
       return (imObj.type === 'RoleBinding' || imObj.type === 'ClusterRoleBinding') &&
         imObj.info.data.roleRef &&
         imObj.info.data.roleRef.kind === objData.type &&
@@ -601,9 +600,9 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
   /**
    * Gets adjacent Role from a RoleBinding/ClusterRoleBinding node
    */
-  private async getAdjacentRole(objData: DataObject): Promise<string[]> {
+  private getAdjacentRole(objData: DataObject): string[] {
 
-    const childObjects: DataObject[] = await this.InfrastructureManagerObjectHelper.getObjectByCustomFilter(objData.info.mainUuid, 'kubernetes', (imObj) => {
+    const childObjects: DataObject[] = this.LibNodeHelpers.getObjectByCustomFilter(objData.info.mainUuid, 'kubernetes', (imObj) => {
       return imObj.type === objData.info.data.roleRef.kind &&
         imObj.name === objData.info.data.roleRef.name;
     });
@@ -754,103 +753,105 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
     );
   }
 
-  private async getNodeAdjacents(objData: DataObject): Promise<string[]> {
-    let adjacents = [];
+  private getNodeAdjacents(objData: DataObject): string[] {
+    let adjacent = [];
 
     // Get Parents
     if (['Pod', 'ReplicaSet', 'Job'].includes(objData.type)) {
-      const adjacentParent = this.getAdjacentParent(objData);
-      if (adjacentParent) adjacents.push(this.getAdjacentParent(objData));
+      const adjacentParent: string | void = this.getAdjacentParent(objData);
+      if (adjacentParent) adjacent.push(adjacentParent);
     }
 
     // Get Child
     if (['DaemonSet', 'StatefulSet', 'ReplicaSet', 'Deployment', 'CronJob', 'Job', 'Namespace', 'Folder'].includes(objData.type)) {
-      adjacents = [...adjacents, ...await this.getAdjacentChildrens(objData)];
+      adjacent = [...adjacent, ...this.getAdjacentChildrens(objData)];
     }
 
     // VMWare
     if (objData.type === 'HostSystem') {
-      adjacents = [...adjacents, ...this.getAdjacentVMs(objData)];
-      adjacents = [...adjacents, ...this.getAdjacentStoragePods(objData)];
-      adjacents = [...adjacents, ...await this.getAdjacentDatastores(objData)];
+      adjacent = [...adjacent, ...this.getAdjacentVMs(objData)];
+      adjacent = [...adjacent, ...this.getAdjacentStoragePods(objData)];
+      adjacent = [...adjacent, ...this.getAdjacentDatastores(objData)];
     }
 
     if (objData.type === 'VirtualMachine') {
-      adjacents = [...adjacents, ...await this.getAdjacentDisks(objData)];
-      adjacents = [...adjacents, ...await this.getAdjacentNetworks(objData)];
+      adjacent = [...adjacent, ...this.getAdjacentDisks(objData)];
+      adjacent = [...adjacent, ...this.getAdjacentNetworks(objData)];
     }
 
     if (objData.type === 'StoragePod') {
-      adjacents = [...adjacents, ...await this.getAdjacentDatastores(objData)];
+      adjacent = [...adjacent, ...this.getAdjacentDatastores(objData)];
     }
 
     if (objData.type === 'Datastore') {
 
       // Do not go further when mainNode is a VirtualMachine, otherwise this will get all VMs from this Datastore and so one
-      if (this.mainNode && this.mainNode.type === 'VirtualMachine') return adjacents;
+      if (this.mainNode && this.mainNode.type === 'VirtualMachine') return adjacent;
 
-      adjacents = [...adjacents, ...this.getAdjacentVMs(objData)];
+      adjacent = [...adjacent, ...this.getAdjacentVMs(objData)];
     }
 
     // Kubernetes
     if (objData.type === 'ConfigMap') {
-      adjacents = [...adjacents, ...await this.getAdjacentPods(objData)];
+      adjacent = [...adjacent, ...this.getAdjacentPods(objData)];
     }
 
     if (objData.type === 'Pod') {
-      adjacents = [...adjacents, ...await this.getAdjacentPersistentVolumeClaims(objData)];
-      adjacents = [...adjacents, ...await this.getAdjacentConfigMaps(objData)];
-      adjacents = [...adjacents, ...await this.getAdjacentEndpoints(objData)];
+      adjacent = [...adjacent, ...this.getAdjacentPersistentVolumeClaims(objData)];
+      adjacent = [...adjacent, ...this.getAdjacentConfigMaps(objData)];
+      adjacent = [...adjacent, ...this.getAdjacentEndpoints(objData)];
     }
 
     if (objData.type === 'Endpoints') {
-      adjacents = [...adjacents, ...await this.getAdjacentPods(objData)];
-      adjacents = [...adjacents, ...await this.getAdjacentServices(objData)];
+      adjacent = [...adjacent, ...this.getAdjacentPods(objData)];
+      adjacent = [...adjacent, ...this.getAdjacentServices(objData)];
     }
 
     if (objData.type === 'Service') {
-      adjacents = [...adjacents, ...await this.getAdjacentEndpoints(objData)];
-      adjacents = [...adjacents, ...await this.getAdjacentIngresses(objData)];
+      adjacent = [...adjacent, ...this.getAdjacentEndpoints(objData)];
+      adjacent = [...adjacent, ...this.getAdjacentIngresses(objData)];
     }
 
     if (objData.type === 'Ingress') {
-      adjacents = [...adjacents, ...await this.getAdjacentServices(objData)];
+      adjacent = [...adjacent, ...this.getAdjacentServices(objData)];
     }
 
     if (objData.type === 'PersistentVolumeClaim') {
-      adjacents = [...adjacents, ...await this.getAdjacentPods(objData)];
-      adjacents = [...adjacents, ...await this.getAdjacentPersistentVolumes(objData)];
+      adjacent = [...adjacent, ...this.getAdjacentPods(objData)];
+      adjacent = [...adjacent, ...this.getAdjacentPersistentVolumes(objData)];
     }
 
     if (objData.type === 'PersistentVolume') {
-      adjacents = [...adjacents, ...await this.getAdjacentPersistentVolumeClaims(objData)];
+      adjacent = [...adjacent, ...this.getAdjacentPersistentVolumeClaims(objData)];
     }
 
     if (objData.type === 'Role' || objData.type === 'ClusterRole') {
-      adjacents = [...adjacents, ...await this.getAdjacentRoleBindingsFromRole(objData)];
+      adjacent = [...adjacent, ...this.getAdjacentRoleBindingsFromRole(objData)];
     }
 
     if (objData.type === 'RoleBinding' || objData.type === 'ClusterRoleBinding') {
-      adjacents = [...adjacents, ...await this.getAdjacentRoleSubjects(objData)];
-      adjacents = [...adjacents, ...await this.getAdjacentRole(objData)];
+      adjacent = [...adjacent, ...this.getAdjacentRoleSubjects(objData)];
+      adjacent = [...adjacent, ...this.getAdjacentRole(objData)];
     }
 
     if (objData.type === 'ServiceAccount' || objData.type === 'Group' || objData.type === 'User') {
-      adjacents = [...adjacents, ...await this.getAdjacentRoleBindingsFromSubjects(objData)];
+      adjacent = [...adjacent, ...this.getAdjacentRoleBindingsFromSubjects(objData)];
     }
 
-    return adjacents;
+    return adjacent;
   }
 
   /**
    * Node init
    * ---------
    */
-  private async setNode(objData: DataObject): Promise<void> {
-    if (this.nodes[objData.info.uuid]) return;
+  private setNode(objData: DataObject): void {
+    if (this.nodes.some(n => n.id === objData.info.uuid)) return;
+
+    const nodeAdjacent: string[] = this.getNodeAdjacents(objData);
 
     // Set Basic node data
-    this.nodes[objData.info.uuid] = {
+    this.nodes.push({
       id: objData.info.uuid,
       nodeInfo: objData,
       label: objData.name,
@@ -860,16 +861,18 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
       stack: this.isTypeStacked(objData.type),
       metadata: this.getNodeMetadata(objData),
       metrics: this.getNodeMetrics(objData),
-      adjacency: await this.getNodeAdjacents(objData)
-    };
+      adjacency: nodeAdjacent
+    });
 
     // Set each adjacent node to nodes object
     this.setAdjacentNodes(objData);
+
+    return;
   }
 
-  async setNodeGraphNodes(graphType: string = 'all', objData?: DataObject): Promise<{ [key: string]: ImGraphNode }> {
+  async setNodeGraphNodes(graphType: string = 'all', objData?: DataObject): Promise<ImGraphNode[]> {
     this.graphType = graphType;
-    this.nodes = {};
+    this.nodes = [];
 
     // Return object
     if (objData) {
@@ -879,49 +882,61 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
     }
 
     if (this.graphType === 'all') {
-      const kubernetesPods: DataObject[] = await this.InfrastructureManagerObjectHelper.getObjectsByType(null, 'kubernetes', 'Pod');
-      kubernetesPods.forEach((podObj: DataObject) => this.setNode(podObj));
+      const kubernetesPods: DataObject[] = this.LibNodeHelpers.getObjectsByType(null, 'kubernetes', 'Pod');
+      for (const podObj of kubernetesPods) {
+        this.setNode(podObj);
+      }
 
-      const vmwareVMs: DataObject[] = await this.InfrastructureManagerObjectHelper.getObjectsByType(null, 'vmware', 'VirtualMachine');
-      vmwareVMs.forEach((vmObj: DataObject) => this.setNode(vmObj));
+      const vmwareVMs: DataObject[] = this.LibNodeHelpers.getObjectsByType(null, 'vmware', 'VirtualMachine');
+      for (const vmObj of vmwareVMs) {
+        this.setNode(vmObj);
+      }
 
-      const netappVolumes: DataObject[] = await this.InfrastructureManagerObjectHelper.getObjectsByType(null, 'netapp', 'volume');
-      netappVolumes.forEach((volObj: DataObject) => this.setNode(volObj));
+      const netappVolumes: DataObject[] = this.LibNodeHelpers.getObjectsByType(null, 'netapp', 'volume');
+      for (const volObj of netappVolumes) {
+        this.setNode(volObj);
+      }
 
-      const vmwareHosts: DataObject[] = await this.InfrastructureManagerObjectHelper.getObjectsByType(null, 'vmware', 'Host');
-      vmwareHosts.forEach((hostObj: DataObject) => this.setNode(hostObj));
+      const vmwareHosts: DataObject[] = this.LibNodeHelpers.getObjectsByType(null, 'vmware', 'Host');
+      for (const hostObj of vmwareHosts) {
+        this.setNode(hostObj);
+      }
 
-      const vmwareHostSystems: DataObject[] = await this.InfrastructureManagerObjectHelper.getObjectsByType(null, 'vmware', 'HostSystem');
-      vmwareHostSystems.forEach((hostSystemObj: DataObject) => this.setNode(hostSystemObj));
+      const vmwareHostSystems: DataObject[] = this.LibNodeHelpers.getObjectsByType(null, 'vmware', 'HostSystem');
+      for (const hostSystemObj of vmwareHostSystems) {
+        this.setNode(hostSystemObj);
+      }
     }
 
     // Return all object by topology type
     if (this.graphType === 'pods') {
-      const kubernetesPods: DataObject[] = await this.InfrastructureManagerObjectHelper.getObjectsByType(null, 'kubernetes', 'Pod');
-      kubernetesPods.forEach((podObj: DataObject) => this.setNode(podObj));
+      const kubernetesPods: DataObject[] = this.LibNodeHelpers.getObjectsByType(null, 'kubernetes', 'Pod');
+      kubernetesPods.map((podObj: DataObject) => this.setNode(podObj));
     }
 
     if (this.graphType === 'virtualmachines') {
-      const vmwareVMs: DataObject[] = await this.InfrastructureManagerObjectHelper.getObjectsByType(null, 'vmware', 'VirtualMachine');
-      vmwareVMs.forEach((vmObj: DataObject) => this.setNode(vmObj));
+      const vmwareVMs: DataObject[] = this.LibNodeHelpers.getObjectsByType(null, 'vmware', 'VirtualMachine');
+      vmwareVMs.map((vmObj: DataObject) => this.setNode(vmObj));
     }
 
     if (this.graphType === 'volumes') {
-      const netappVolumes: DataObject[] = await this.InfrastructureManagerObjectHelper.getObjectsByType(null, 'netapp', 'volume');
-      netappVolumes.forEach((volObj: DataObject) => this.setNode(volObj));
+      const netappVolumes: DataObject[] = this.LibNodeHelpers.getObjectsByType(null, 'netapp', 'volume');
+      netappVolumes.map((volObj: DataObject) => this.setNode(volObj));
     }
 
     if (this.graphType === 'hosts') {
-      const vmwareHosts: DataObject[] = await this.InfrastructureManagerObjectHelper.getObjectsByType(null, 'vmware', 'Host');
-      vmwareHosts.forEach((hostObj: DataObject) => this.setNode(hostObj));
+      const vmwareHosts: DataObject[] = this.LibNodeHelpers.getObjectsByType(null, 'vmware', 'Host');
+      vmwareHosts.map((hostObj: DataObject) => this.setNode(hostObj));
 
-      const vmwareHostSystems: DataObject[] = await this.InfrastructureManagerObjectHelper.getObjectsByType(null, 'vmware', 'HostSystem');
-      vmwareHostSystems.forEach((hostSystemObj: DataObject) => this.setNode(hostSystemObj));
+      const vmwareHostSystems: DataObject[] = this.LibNodeHelpers.getObjectsByType(null, 'vmware', 'HostSystem');
+      vmwareHostSystems.map((hostSystemObj: DataObject) => this.setNode(hostSystemObj));
     }
 
     if (this.graphType === 'processes') {
 
     }
+
+    console.log(this.nodes);
 
     return this.nodes;
   }
@@ -930,12 +945,18 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
     console.log($event);
   }
 
-  getTopologies() {
+  async getTopologies() {
     const topologies = [
       {
         hide_if_empty: false,
         name: 'All',
         rank: 0,
+        stats: {
+          edge_count: 1,
+          filtered_nodes: 2,
+          node_count: 3,
+          nonpseudo_node_count: 4
+        },
         options: [
           {
             defaultValue: 'all',
@@ -1041,11 +1062,11 @@ export class AnyOpsOSAppInfrastructureManagerNodeGraphService {
         ],
         rank: 1,
         stats: {
-          edge_count: 13,
-          filtered_nodes: 16,
-          node_count: 36,
-          nonpseudo_node_count: 35
-        },
+          edge_count: 1,
+          filtered_nodes: 2,
+          node_count: 3,
+          nonpseudo_node_count: 4
+        }
       },
 
       {

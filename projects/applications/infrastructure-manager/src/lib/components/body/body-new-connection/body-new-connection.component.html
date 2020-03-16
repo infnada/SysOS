@@ -1,4 +1,4 @@
-<aelweaves-anyopsos-ext-lib-weavescope [graphNodes]="setNodeGraphNodes()" [graphTopologies]="setNodeGraphTopologies()" (selectedTopology)="selectedTopologyChange($event)" (selectedNode)="selectedNodeChange($event)">
+<aldiagram-anyopsos-lib-diagram [graphNodes]="nodes$ | async" [graphTopologies]="topologies$ | async" (selectedTopology)="selectedTopologyChange($event)" (selectedNode)="selectedNodeChange($event)">
 
   <div class="col text-center" style="
     position: absolute;
@@ -7,7 +7,7 @@
     <button class="btn" type="button" mat-flat-button color="primary" (click)="scrollTo()">Add new node</button>
   </div>
 
-</aelweaves-anyopsos-ext-lib-weavescope>
+</aldiagram-anyopsos-lib-diagram>
 
 <div class="h-100" #scrollToElement>
   <ng-container *ngIf="!newConnectionType">
@@ -16,19 +16,19 @@
       <table class="table table-hover m-t-xl">
         <tbody>
         <tr class="cursor-pointer" (click)="setConnectionType('vmware')">
-          <th class="w-25 p-m"><img src="/assets/img/logos/vmware.png" width="95px"></th>
+          <th class="w-25 p-m"><img src="/assets/img/logos/vmware.png" width="95px" alt="Vmware"></th>
           <td class="lh-2">Adds vCenter Server (recommended), or standalone vSphere Hypervisor (ESX/ESXi)</td>
         </tr>
         <tr class="cursor-pointer" (click)="setConnectionType('kubernetes')">
-          <th class="w-25 p-m"><img src="/assets/img/logos/kubernetes.png" width="120px"></th>
+          <th class="w-25 p-m"><img src="/assets/img/logos/kubernetes.png" width="120px" alt="Kubernetes"></th>
           <td class="lh-2">Adds Kubernetes Container Orchestrator</td>
         </tr>
         <tr class="cursor-pointer" (click)="setConnectionType('docker')">
-          <th class="w-25 p-m"><img src="/assets/img/logos/docker.png" width="90px"></th>
+          <th class="w-25 p-m"><img src="/assets/img/logos/docker.png" width="90px" alt="Docker"></th>
           <td class="lh-2">Adds Standalone or Docker Swarm platform</td>
         </tr>
         <tr class="cursor-pointer" (click)="setConnectionType('netapp')">
-          <th class="w-25 p-m"><img src="/assets/img/logos/netapp.png" width="95px"></th>
+          <th class="w-25 p-m"><img src="/assets/img/logos/netapp.png" width="95px" alt="Netapp"></th>
           <td class="lh-2">Adds NetApp FAS/AFF series. NFS, Fibre Channel (FC) and iSCSI connectivity is supported</td>
         </tr>
         <tr class="cursor-pointer" (click)="setConnectionType('linux')">
@@ -128,19 +128,31 @@
 
       <mat-divider class="m-3"></mat-divider>
 
-      <mat-slide-toggle formControlName="save">
-        Save Connection in config file
-      </mat-slide-toggle>
+      <mat-form-field class="w-100">
+        <mat-label>-- Select a Hopping Server --</mat-label>
+        <mat-select formControlName="hopServerUuid">
+          <mat-option>None</mat-option>
+          <mat-option *ngFor="let connection of sshConnections" [value]="connection.uuid">
+            {{connection.description}} - {{connection.host}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <div class="mat-form-field-wrapper">
+        <div class="mat-form-field-subscript-wrapper">
+          <div class="mat-form-field-hint-wrapper" style="opacity: 1; transform: translateY(0%);" (click)="manageSshConnections()">
+            <div class="mat-form-field-hint-spacer"></div><div class="text-primary cursor-pointer mat-hint mat-right">Manage SSH Connections</div>
+          </div>
+        </div>
+      </div>
 
-      <br />
+      <span *ngIf="sshConnections.length === 0">Hopping servers are extracted from current list of SSH connections. Please add a connection to be able to select one.</span>
 
       <mat-slide-toggle formControlName="autologin" *ngIf="f.save">
         Auto Login
       </mat-slide-toggle>
 
       <div class="mt-3">
-        <button class="btn mr-3" type="button" mat-flat-button color="accent" *ngIf="f.save">Save</button>
-        <button class="btn mr-3" type="button" mat-flat-button color="accent" *ngIf="f.uuid">Save & Rescan</button>
+        <button class="btn mr-3" type="button" mat-flat-button color="accent" (click)="sendConnect(true)">Save</button>
         <button class="btn" type="submit" mat-flat-button color="primary">Connect</button>
       </div>
     </form>

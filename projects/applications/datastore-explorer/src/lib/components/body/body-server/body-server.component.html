@@ -1,24 +1,10 @@
-<div class="col folders__body" #serverBodyContainer>
+<div class="col folders__body" *ngIf="activeConnectionObjectUuid === null">
 
-  <aade-body-new-connection [application]="application" *ngIf="activeConnection === null || getActiveConnection().state === 'disconnected'"></aade-body-new-connection>
+  <span class="text-center p-4">Select a Datastore</span>
 
-  <ng-container *ngIf="activeConnection !== null && getActiveConnection().state !== 'disconnected'">
-
-    <aade-actions-server [application]="application"></aade-actions-server>
-
-    <div id="local_body">
-
-      <alfolder-anyopsos-lib-folder
-        [application]=application
-        subApplication="server"
-        [currentPath]=currentPath
-        [currentData]=currentData
-        [currentActive]=currentActive
-        [viewAsList]=viewAsList
-        [search]=search
-        [loadingData]=loadingData
-        [connection]="getActiveConnection()"></alfolder-anyopsos-lib-folder>
-
-    </div>
-  </ng-container>
 </div>
+
+<alfolder-explorer-main *ngIf="activeConnectionObjectUuid !== null"
+                        [application]="application"
+                        [connection]="getMainActiveConnection()"
+></alfolder-explorer-main>

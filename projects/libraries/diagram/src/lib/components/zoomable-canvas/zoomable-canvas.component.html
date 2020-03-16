@@ -1,0 +1,31 @@
+<div class="zoomable-canvas">
+  <svg #canvas [ngClass]="{'panning': isPanning$ | async}" (click)="handleMouseClick()">
+    <g class="zoom-content">
+      <g [attr.transform]="zoomStateToString$ | async">
+        <defs>
+          <marker
+            class="edge-marker"
+            id="end-arrow"
+            [attr.viewBox]="'1 0 10 10'"
+            [attr.refX]="(selectedNodeUuid$ | async) ? '35' : '40'"
+            [attr.refY]="'3.5'"
+            [attr.markerWidth]="(selectedNodeUuid$ | async) ? '10' : '30'"
+            [attr.markerHeight]="(selectedNodeUuid$ | async) ? '10' : '30'"
+            orient="auto">
+            <polygon class="link" points="0 0, 10 3.5, 0 7" />
+          </marker>
+        </defs>
+        <g class="tour-step-anchor elements-chart-elements" aldiagram-nodes-chart-elements></g>
+      </g>
+    </g>
+  </svg>
+  <div class="zoom-control">
+    <button class="zoom-in" type="button" (click)="handleZoomIn()">
+      <i class="fa fa-plus"></i>
+    </button>
+    <!--<Slider [value]="getSliderValue()" [max]="1" [step]="SLIDER_STEP" vertical onChange="handleChange()"></Slider>-->
+    <button class="zoom-out" type="button" (click)="handleZoomOut()">
+      <i class="fa fa-minus"></i>
+    </button>
+  </div>
+</div>

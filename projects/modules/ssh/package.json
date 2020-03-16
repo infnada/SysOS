@@ -10,7 +10,7 @@
     "validator": "^12.2.0"
   },
   "peerDependencies": {
-    "@anyopsos/module-get-path": "~0.0.1",
+    "@anyopsos/module-sys-get-path": "~0.0.1",
     "@anyopsos/module-terminal": "~0.0.1",
     "@anyopsos/module-socket": "~0.0.1"
   },

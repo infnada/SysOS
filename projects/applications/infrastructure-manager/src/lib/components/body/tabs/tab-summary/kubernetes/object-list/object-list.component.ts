@@ -1,10 +1,10 @@
 import {Component, Input, OnInit} from '@angular/core';
 
 import {MatTableDataSource} from '@anyopsos/lib-angular-material';
+import {AnyOpsOSLibNodeHelpersService} from '@anyopsos/lib-node';
+import {DataObject} from '@anyopsos/backend-core/app/types/data-object';
 
 import {AnyOpsOSAppInfrastructureManagerService} from '../../../../../../services/anyopsos-app-infrastructure-manager.service';
-import {AnyOpsOSAppInfrastructureManagerObjectHelperService} from '../../../../../../services/anyopsos-app-infrastructure-manager-object-helper.service';
-import {ImDataObject} from '../../../../../../types/im-data-object';
 
 class PeriodicElement {
 }
@@ -15,7 +15,7 @@ class PeriodicElement {
   styleUrls: ['./object-list.component.scss']
 })
 export class ObjectListComponent implements OnInit {
-  @Input() nmObject: ImDataObject;
+  @Input() nmObject: DataObject;
   @Input() listType: string;
 
   tableData: PeriodicElement[] = [
@@ -44,8 +44,8 @@ export class ObjectListComponent implements OnInit {
   displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
   dataSource = new MatTableDataSource<PeriodicElement>(this.tableData);
 
-  constructor(private InfrastructureManager: AnyOpsOSAppInfrastructureManagerService,
-              private InfrastructureManagerObjectHelper: AnyOpsOSAppInfrastructureManagerObjectHelperService) {
+  constructor(private readonly LibNodeHelpers: AnyOpsOSLibNodeHelpersService,
+              private InfrastructureManager: AnyOpsOSAppInfrastructureManagerService) {
   }
 
   ngOnInit(): void {
@@ -55,15 +55,20 @@ export class ObjectListComponent implements OnInit {
     return this.tableData.length === 0;
   }
 
-  setActiveObject(kubeObj: ImDataObject): void {
-    return this.InfrastructureManager.setActiveObject(kubeObj.info.uuid);
+  setActiveObject(kubeObj: DataObject): void {
+    return this.InfrastructureManager.setActiveObjectUuid(kubeObj.info.uuid);
   }
 
-  getChildObjectsByType(childType: string): ImDataObject[] {
-    return this.InfrastructureManagerObjectHelper.getChildObjectsByType(this.nmObject.info.mainUuid, childType, this.nmObject.info.obj);
+  getChildObjectsByType(childType: string): DataObject[] {
+    return this.LibNodeHelpers.getChildObjectsByType(
+      this.nmObject.info.mainUuid,
+      this.LibNodeHelpers.extractMainTypeFromObjectUuid(this.nmObject.info.mainUuid),
+      childType,
+      this.nmObject.info.obj
+    );
   }
 
-  getStatus(kubeObj: ImDataObject): {iconClass: string, iconName: string} {
+  getStatus(kubeObj: DataObject): {iconClass: string, iconName: string} {
     return {
       iconClass: 'asd',
       iconName: 'asd'

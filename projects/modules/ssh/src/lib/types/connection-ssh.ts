@@ -1,4 +1,4 @@
-import {Connection} from '@anyopsos/backend/app/types/connection';
+import {Connection} from '@anyopsos/backend-core/app/types/connection';
 
 export interface ConnectionSsh extends Connection {
   type: 'ssh';

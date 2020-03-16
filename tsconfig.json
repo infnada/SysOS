@@ -157,12 +157,6 @@
       "@anyopsos/ext-lib-theia/*": [
         "projects/external-libraries/theia/*"
       ],
-      "@anyopsos/ext-lib-weavescope": [
-        "projects/external-libraries/weavescope/src/public-api"
-      ],
-      "@anyopsos/ext-lib-weavescope/*": [
-        "projects/external-libraries/weavescope/*"
-      ],
       "@anyopsos/lib-angular-material": [
         "projects/libraries/angular-material/src/public-api"
       ],
@@ -187,11 +181,11 @@
       "@anyopsos/lib-desktop-task-bar/*": [
         "projects/libraries/desktop-task-bar/*"
       ],
-      "@anyopsos/lib-docker": [
-        "projects/libraries/docker/src/public-api"
+      "@anyopsos/lib-node-docker": [
+        "projects/libraries/node-docker/src/public-api"
       ],
-      "@anyopsos/lib-docker/*": [
-        "projects/libraries/docker/*"
+      "@anyopsos/lib-node-docker/*": [
+        "projects/libraries/node-docker/*"
       ],
       "@anyopsos/lib-file": [
         "projects/libraries/file/src/public-api"
@@ -223,11 +217,11 @@
       "@anyopsos/lib-folder/*": [
         "projects/libraries/folder/*"
       ],
-      "@anyopsos/lib-kubernetes": [
-        "projects/libraries/kubernetes/src/public-api"
+      "@anyopsos/lib-node-kubernetes": [
+        "projects/libraries/node-kubernetes/src/public-api"
       ],
-      "@anyopsos/lib-kubernetes/*": [
-        "projects/libraries/kubernetes/*"
+      "@anyopsos/lib-node-kubernetes/*": [
+        "projects/libraries/node-kubernetes/*"
       ],
       "@anyopsos/lib-loader": [
         "projects/libraries/loader/src/public-api"
@@ -247,11 +241,11 @@
       "@anyopsos/lib-modal/*": [
         "projects/libraries/modal/*"
       ],
-      "@anyopsos/lib-netapp": [
-        "projects/libraries/netapp/src/public-api"
+      "@anyopsos/lib-node-netapp": [
+        "projects/libraries/node-netapp/src/public-api"
       ],
-      "@anyopsos/lib-netapp/*": [
-        "projects/libraries/netapp/*"
+      "@anyopsos/lib-node-netapp/*": [
+        "projects/libraries/node-netapp/*"
       ],
       "@anyopsos/lib-pipes": [
         "projects/libraries/pipes/src/public-api"
@@ -277,11 +271,11 @@
       "@anyopsos/lib-service-injector/*": [
         "projects/libraries/service-injector/*"
       ],
-      "@anyopsos/lib-snmp": [
-        "projects/libraries/snmp/src/public-api"
+      "@anyopsos/lib-node-snmp": [
+        "projects/libraries/node-snmp/src/public-api"
       ],
-      "@anyopsos/lib-snmp/*": [
-        "projects/libraries/snmp/*"
+      "@anyopsos/lib-node-snmp/*": [
+        "projects/libraries/node-snmp/*"
       ],
       "@anyopsos/lib-ssh": [
         "projects/libraries/ssh/src/public-api"
@@ -313,11 +307,11 @@
       "@anyopsos/lib-utils/*": [
         "projects/libraries/utils/*"
       ],
-      "@anyopsos/lib-vmware": [
-        "projects/libraries/vmware/src/public-api"
+      "@anyopsos/lib-node-vmware": [
+        "projects/libraries/node-vmware/src/public-api"
       ],
-      "@anyopsos/lib-vmware/*": [
-        "projects/libraries/vmware/*"
+      "@anyopsos/lib-node-vmware/*": [
+        "projects/libraries/node-vmware/*"
       ],
       "@anyopsos/lib-workspace": [
         "projects/libraries/workspace/src/public-api"
@@ -349,11 +343,89 @@
       "@anyopsos/modal-default-question/*": [
         "projects/modals/default-question/*"
       ],
-      "@anyopsos/lib-linux": [
-        "projects/libraries/linux/src/public-api"
+      "@anyopsos/lib-node-linux": [
+        "projects/libraries/node-linux/src/public-api"
       ],
-      "@anyopsos/lib-linux/*": [
-        "projects/libraries/linux/*"
+      "@anyopsos/lib-node-linux/*": [
+        "projects/libraries/node-linux/*"
+      ],
+      "@anyopsos/lib-node": [
+        "projects/libraries/node/src/public-api"
+      ],
+      "@anyopsos/lib-node/*": [
+        "projects/libraries/node/*"
+      ],
+      "@anyopsos/lib-diagram": [
+        "projects/libraries/diagram/src/public-api"
+      ],
+      "@anyopsos/lib-diagram/*": [
+        "projects/libraries/diagram/*"
+      ],
+      "@anyopsos/modal-kubernetes-create-resource": [
+        "projects/modals/kubernetes-create-resource/src/public-api"
+      ],
+      "@anyopsos/modal-kubernetes-create-resource/*": [
+        "projects/modals/kubernetes-create-resource/*"
+      ],
+      "@anyopsos/modal-kubernetes-edit-resource": [
+        "projects/modals/kubernetes-edit-resource/src/public-api"
+      ],
+      "@anyopsos/modal-kubernetes-edit-resource/*": [
+        "projects/modals/kubernetes-edit-resource/*"
+      ],
+      "@anyopsos/modal-kubernetes-logs": [
+        "projects/modals/kubernetes-logs/src/public-api"
+      ],
+      "@anyopsos/modal-kubernetes-logs/*": [
+        "projects/modals/kubernetes-logs/*"
+      ],
+      "@anyopsos/modal-kubernetes-scale-resource": [
+        "projects/modals/kubernetes-scale-resource/src/public-api"
+      ],
+      "@anyopsos/modal-kubernetes-scale-resource/*": [
+        "projects/modals/kubernetes-scale-resource/*"
+      ],
+      "@anyopsos/modal-kubernetes-shell": [
+        "projects/modals/kubernetes-shell/src/public-api"
+      ],
+      "@anyopsos/modal-kubernetes-shell/*": [
+        "projects/modals/kubernetes-shell/*"
+      ],
+      "@anyopsos/modal-monitor-alarms": [
+        "projects/modals/monitor-alarms/src/public-api"
+      ],
+      "@anyopsos/modal-monitor-alarms/*": [
+        "projects/modals/monitor-alarms/*"
+      ],
+      "@anyopsos/modal-monitor-export": [
+        "projects/modals/monitor-export/src/public-api"
+      ],
+      "@anyopsos/modal-monitor-export/*": [
+        "projects/modals/monitor-export/*"
+      ],
+      "@anyopsos/modal-monitor-help": [
+        "projects/modals/monitor-help/src/public-api"
+      ],
+      "@anyopsos/modal-monitor-help/*": [
+        "projects/modals/monitor-help/*"
+      ],
+      "@anyopsos/modal-monitor-import": [
+        "projects/modals/monitor-import/src/public-api"
+      ],
+      "@anyopsos/modal-monitor-import/*": [
+        "projects/modals/monitor-import/*"
+      ],
+      "@anyopsos/modal-monitor-options": [
+        "projects/modals/monitor-options/src/public-api"
+      ],
+      "@anyopsos/modal-monitor-options/*": [
+        "projects/modals/monitor-options/*"
+      ],
+      "@anyopsos/modal-monitor-xss": [
+        "projects/modals/monitor-xss/src/public-api"
+      ],
+      "@anyopsos/modal-monitor-xss/*": [
+        "projects/modals/monitor-xss/*"
       ]
     }
   },

@@ -8,7 +8,7 @@
   "peerDependencies": {
     "@anyopsos/module-api-globals": "~0.0.1",
     "@anyopsos/module-credential": "~0.0.1",
-    "@anyopsos/module-netapp": "~0.0.1"
+    "@anyopsos/module-node-netapp": "~0.0.1"
   },
   "devDependencies": {
     "class-validator": "^0.11.0",

@@ -1,0 +1,21 @@
+<div class="p-2 mb-4">
+  <span>
+    Select YAML or JSON file specifying the resources to deploy to the namespace specified in the file.
+  </span>
+  <a href="https://kubernetes.io/docs/tasks/run-application/run-stateless-application-deployment/" target="_blank">
+    Learn more
+    <i class="material-icons" style="font-size: 14px">open_in_new</i>
+  </a>
+</div>
+
+<form [formGroup]="newObjectForm">
+  <mat-form-field class="w-100">
+    <ngx-mat-file-input #removableInput formControlName="objectFile" placeholder="Choose YAML or JSON file" required></ngx-mat-file-input>
+    <button mat-icon-button matSuffix *ngIf="!removableInput.empty" (click)="removableInput.clear($event)">
+      <mat-icon>clear</mat-icon>
+    </button>
+    <mat-error *ngIf="newObjectForm?.get('objectFile')?.hasError('required')">
+      Please select a file
+    </mat-error>
+  </mat-form-field>
+</form>

@@ -4,9 +4,9 @@ import {Directive, Input, EventEmitter, Output, ElementRef, HostListener} from '
   selector: '[alsspyScrollSpy]'
 })
 export class ScrollSpyDirective {
-
   @Input() private spiedTags = [];
-  @Output() sectionChange = new EventEmitter<string>();
+  @Output() private sectionChange = new EventEmitter<string>();
+
   private currentSection: string;
 
   constructor(private readonly el: ElementRef) {

@@ -2,8 +2,8 @@ import {Injectable} from '@angular/core';
 
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
-import {DataObject} from '@anyopsos/backend/app/types/data-object';
-import {VMWareVM} from '@anyopsos/module-vmware/src';
+import {DataObject} from '@anyopsos/backend-core/app/types/data-object';
+import {VMWareVM} from '@anyopsos/module-node-vmware';
 
 import {AnyOpsOSAppInfrastructureManagerService} from '../anyopsos-app-infrastructure-manager.service';
 import {MatDialogRef} from '@anyopsos/lib-angular-material';

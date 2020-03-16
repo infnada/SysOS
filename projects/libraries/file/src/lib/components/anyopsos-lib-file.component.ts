@@ -5,8 +5,8 @@ import {AnyOpsOSLibSelectableService} from '@anyopsos/lib-selectable';
 import {AnyOpsOSLibFileSystemUiService, AnyOpsOSLibFileSystemUiHelpersService} from '@anyopsos/lib-file-system-ui';
 import {Application} from '@anyopsos/lib-application';
 import {ContextMenuItem} from '@anyopsos/lib-types';
-import {Connection} from '@anyopsos/backend/app/types/connection';
-import {AnyOpsOSFile} from '@anyopsos/backend/app/types/anyopsos-file';
+import {Connection} from '@anyopsos/backend-core/app/types/connection';
+import {AnyOpsOSFile} from '@anyopsos/backend-core/app/types/anyopsos-file';
 
 @Component({
   selector: 'alfile-anyopsos-lib-file',
@@ -34,7 +34,7 @@ export class AnyOpsOSLibFileComponent implements AfterViewInit, OnChanges {
   private connectionUuid: string = null;
   private applicationType: 'local' | 'server' = 'local';
 
-  readonly contextMenuPosition = {x: '0px', y: '0px'};
+  contextMenuPosition = {x: '0px', y: '0px'};
   readonly fileContextMenuItems: ContextMenuItem[] = [
     {
       id: 0, text: '<i class="fas fa-upload"></i> Upload to Remote', action: (file: AnyOpsOSFile): void => {

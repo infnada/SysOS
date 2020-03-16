@@ -1,8 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 
 import {Application} from '@anyopsos/lib-application';
-
-import {ImDataObject} from '../../../types/im-data-object';
+import {DataObject} from '@anyopsos/backend-core/app/types/data-object';
 
 @Component({
   selector: 'aaim-body-snmp',
@@ -10,7 +9,7 @@ import {ImDataObject} from '../../../types/im-data-object';
   styleUrls: ['./body-snmp.component.scss']
 })
 export class BodySnmpComponent implements OnInit {
-  @Input() snmpObject: ImDataObject;
+  @Input() snmpObject: DataObject;
   @Input() application: Application;
 
   constructor() {

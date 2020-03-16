@@ -1,0 +1,27 @@
+<td class="text-center" style="vertical-align:middle" width="40%">
+  <b>{{alarm.chart}}</b><br/>&nbsp;<br/>
+  <img [src]="NETDATA.alarms.server + (!NETDATA.connection || NETDATA.connection.type === 'netdata' || NETDATA.connection.type === 'snapshot' ? '/api/v1/badge.svg' : '/api/monitor/badge/' + NETDATA.connection.uuid + '/' + NETDATA.connection.type + '/') + '?chart=' + alarm.chart + '&alarm=' + alarm.name + '&refresh=auto' | sanitizeUrl" height="20"/>
+  <br/><br/>
+  <span style="font-size: 18px">{{alarm.info}}</span>
+  <br/><br/>
+  role: <b>{{alarm.recipient}}</b>
+  <br/><br/>
+  <div class="action-button ripple" matTooltip="click to scroll the dashboard to the chart of this alarm" (click)="scrollToChartAfterHidingModal(alarm);"><i class="fab fa-periscope"></i></div>
+  <div class="action-button ripple" matTooltip="click to copy to the clipboard the URL of this badge" (click)="clipboardCopy(alarm);"><i class="fas fa-copy"></i></div>
+  <div class="action-button ripple" matTooltip="click to copy to the clipboard an auto-refreshing embed html element for this badge" (click)="clipboardCopyBadgeEmbed(alarm);"><i class="fas fa-copy"></i></div>
+</td>
+<td>
+  <table class="table">
+    <tr *ngIf="alarm.warn"><td width="10%" style="text-align:right">warning when</td><td><span style="font-family: monospace; color: #fe7d37; font-weight: bold;" [innerHTML]="alarm.warn"></span></td></tr>
+    <tr *ngIf="alarm.crit"><td width="10%" style="text-align:right">critical when</td><td><span style="font-family: monospace; color: #e05d44; font-weight: bold;" [innerHTML]="alarm.crit"></span></td></tr>
+    <tr *ngIf="alarm.lookup_after"><td width="10%" style="text-align:right">db lookup</td><td [innerHTML]="alarmLookupExplain(alarm)"></td></tr>
+    <tr *ngIf="alarm.calc"><td width="10%" style="text-align:right">calculation</td><td><span style="font-family: monospace;" [innerHTML]="alarm.calc"></span></td></tr>
+    <tr *ngIf="options.data.charts[alarm.chart].green"><td width="10%" style="text-align:right">green threshold</td><td><code>{{options.data.charts[alarm.chart].green}} {{options.data.charts[alarm.chart].units}}</code></td></tr>
+    <tr *ngIf="options.data.charts[alarm.chart].red"><td width="10%" style="text-align:right">red threshold</td><td><code>{{options.data.charts[alarm.chart].red}} {{options.data.charts[alarm.chart].units}}</code></td></tr>
+    <tr *ngIf="alarm.warn_repeat_every > 0"><td width="10%" style="text-align:right">repeat warning</td><td>{{NETDATA.seconds4human(alarm.warn_repeat_every)}}</td></tr>
+    <tr *ngIf="alarm.crit_repeat_every > 0"><td width="10%" style="text-align:right">repeat critical</td><td>{{NETDATA.seconds4human(alarm.crit_repeat_every)}}</td></tr>
+    <tr><td width="10%" style="text-align:right">check every</td><td>{{NETDATA.seconds4human(alarm.update_every, {space: '&nbsp;', negative_suffix: ''})}}</td></tr>
+    <tr *ngIf="alarm.warn || alarm.crit"><td width="10%" style="text-align:right">execute</td><td><span style="font-family: monospace;">{{alarm.exec}}</span><span [innerHTML]="getDelay(alarm)"></span></td></tr>
+    <tr><td width="10%" style="text-align:right">source</td><td><span style="font-family: monospace;">{{alarm.source}}</span></td></tr>
+  </table>
+</td>

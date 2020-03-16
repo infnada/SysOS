@@ -1,0 +1,30 @@
+{
+  "name": "@anyopsos/module-vault",
+  "version": "0.0.1",
+  "main": "src/index.ts",
+  "dependencies": {
+    "fs-extra": "^8.1.0",
+    "log4js": "^6.1.0",
+    "node-vault": "^0.9.13"
+  },
+  "peerDependencies": {
+    "@anyopsos/module-sys-constants": "~0.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^12.12.21",
+    "@types/node-vault": "^0.9.1",
+    "@types/fs-extra": "^8.1.0",
+    "typescript": "^3.7.4"
+  },
+  "homepage": "https://github.com/anyOpsOS/anyOpsOS#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anyOpsOS/anyOpsOS.git"
+  },
+  "bugs": "https://github.com/anyOpsOS/anyOpsOS/issues",
+  "keywords": [],
+  "description": "anyOpsOS module vault",
+  "author": "Isart Navarro <contact@isartnavarro.io> (https://isartnavarro.io)",
+  "license": "GPL-3.0-or-later",
+  "private": true
+}

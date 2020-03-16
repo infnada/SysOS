@@ -7,27 +7,27 @@
   </a>
   <a class="window__item separator" ></a>
   <a class="window__item" matTooltip="Edit connection" (click)="editConnection()">
-    <i class="fas fa-edit" [ngClass]="{'text-primary': activeConnection !== null}"></i>
+    <i class="fas fa-edit" [ngClass]="{'text-primary': activeConnectionUuid !== null}"></i>
   </a>
   <a class="window__item" matTooltip="Disconnect" (click)="disconnectConnection()">
-    <i class="fas fa-times" [ngClass]="{'text-danger': activeConnection !== null && getActiveConnection().state === 'connected'}"></i>
+    <i class="fas fa-times" [ngClass]="{'text-danger': activeConnectionUuid !== null && activeConnection.state === 'connected'}"></i>
   </a>
   <a class="window__item" matTooltip="Delete" (click)="deleteConnection()">
-    <i class="fas fa-trash" [ngClass]="{'text-danger': activeConnection !== null}"></i>
+    <i class="fas fa-trash" [ngClass]="{'text-danger': activeConnectionUuid !== null}"></i>
   </a>
   <a class="window__item separator"></a>
   <a class="window__item" matTooltip="Edit options" (click)="openOptionsModal()">
-    <i class="fas fa-cog" [ngClass]="{'text-primary': activeConnection !== null}"></i>
+    <i class="fas fa-cog" [ngClass]="{'text-primary': activeConnectionUuid !== null}"></i>
   </a>
   <a class="window__item" matTooltip="Alarms" (click)="openAlarmsModal()">
-    <i class="fas fa-bell" [ngClass]="{'text-primary': activeConnection !== null && !this.getActiveConnection().snapshotData}"></i>
+    <i class="fas fa-bell" [ngClass]="{'text-primary': activeConnectionUuid !== null && !activeConnection.snapshotData}"></i>
   </a>
   <a class="window__item separator"></a>
   <a class="window__item" matTooltip="import / load a netdata snapshot" (click)="openImportModal()">
     <i class="fas fa-download text-primary"></i>
   </a>
   <a class="window__item" matTooltip="export / save a netdata snapshot" (click)="openExportModal()">
-    <i class="fas fa-upload" [ngClass]="{'text-primary': activeConnection !== null}"></i>
+    <i class="fas fa-upload" [ngClass]="{'text-primary': activeConnectionUuid !== null}"></i>
   </a>
   <a class="window__item separator"></a>
   <a class="window__item" matTooltip="get help on using the charts" (click)="openHelpModal()">

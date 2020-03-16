@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 
-import {ImDataObject} from '../../../../../../types/im-data-object';
+import {DataObject} from '@anyopsos/backend-core/app/types/data-object';
 
 @Component({
   selector: 'aaim-kubernetes-object-detail',
@@ -8,7 +8,7 @@ import {ImDataObject} from '../../../../../../types/im-data-object';
   styleUrls: ['./kubernetes-object-detail.component.scss']
 })
 export class KubernetesObjectDetailComponent implements OnInit {
-  @Input() nmObject: ImDataObject;
+  @Input() nmObject: DataObject;
 
   constructor() {
   }

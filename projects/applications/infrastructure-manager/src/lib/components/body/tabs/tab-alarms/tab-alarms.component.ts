@@ -1,7 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
 
-import {AnyOpsOSAppInfrastructureVmwareTemplateHelpersService} from '../../../../services/vmware/anyopsos-app-infrastructure-vmware-template-helpers.service';
-import {ImDataObject} from '../../../../types/im-data-object';
+import {DataObject} from '@anyopsos/backend-core/app/types/data-object';
 
 @Component({
   selector: 'aaim-tab-alarms',
@@ -9,9 +8,9 @@ import {ImDataObject} from '../../../../types/im-data-object';
   styleUrls: ['./tab-alarms.component.scss']
 })
 export class TabAlarmsComponent implements OnInit {
-  @Input() nmObject: ImDataObject;
+  @Input() nmObject: DataObject;
 
-  constructor(public VmwareTemplateHelpers: AnyOpsOSAppInfrastructureVmwareTemplateHelpersService) {
+  constructor() {
   }
 
   ngOnInit(): void {

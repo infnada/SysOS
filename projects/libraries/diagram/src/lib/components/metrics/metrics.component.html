@@ -1,0 +1,16 @@
+<div class="metric-selector">
+  <div class="metric-selector-wrapper" (mouseleave)="onMouseOut()" *ngIf="availableMetrics">
+
+    <div
+      *ngFor="let metric of availableMetrics"
+      [attr.key]="metric.id"
+      class="metric-selector-action"
+      [ngClass]="{'metric-selector-action-selected': metric.label === selectedMetricType}"
+      (mouseover)="onMouseOver(metric)"
+      (click)="onMouseClick(metric)">
+      {{metric.label}}
+      <i class="fas fa-thumbtack" *ngIf="metric.label === pinnedMetricType"></i>
+    </div>
+  </div>
+
+</div>

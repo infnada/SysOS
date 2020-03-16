@@ -8,8 +8,8 @@ import {Application} from '@anyopsos/lib-application';
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
 import {AnyOpsOSLibFileSystemUiService, SendFileExchange} from '@anyopsos/lib-file-system-ui';
-import {Connection} from '@anyopsos/backend/app/types/connection';
-import {AnyOpsOSFile} from '@anyopsos/backend/app/types/anyopsos-file';
+import {Connection} from '@anyopsos/backend-core/app/types/connection';
+import {AnyOpsOSFile} from '@anyopsos/backend-core/app/types/anyopsos-file';
 
 import {AnyOpsOSLibFolderExplorerService} from '../../services/anyopsos-lib-folder-explorer.service';
 

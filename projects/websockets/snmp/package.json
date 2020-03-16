@@ -7,10 +7,10 @@
     "validator": "^12.1.0"
   },
   "peerDependencies": {
-    "@anyopsos/module-snmp": "~0.0.1"
+    "@anyopsos/module-node-snmp": "~0.0.1"
   },
   "devDependencies": {
-    "@anyopsos/backend": "~0.0.1",
+    "@anyopsos/backend-core": "~0.0.1",
     "socket.io": "^2.3.0",
     "socket-controllers": "https://github.com/anyOpsOS/socket-controllers.git#build",
     "typescript": "^3.7.4"

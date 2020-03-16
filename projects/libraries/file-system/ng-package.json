@@ -10,6 +10,6 @@
     "@anyopsos/lib-modal",
     "@anyopsos/lib-file-system-ui",
     "@anyopsos/module-config-file",
-    "@anyopsos/backend"
+    "@anyopsos/backend-core"
   ]
 }

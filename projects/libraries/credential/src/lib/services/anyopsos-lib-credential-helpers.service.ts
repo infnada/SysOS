@@ -1,5 +1,4 @@
 import {Injectable} from '@angular/core';
-import {take} from 'rxjs/operators';
 
 import {Credential} from '@anyopsos/module-credential';
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
@@ -19,8 +18,8 @@ export class AnyOpsOSLibCredentialHelpersService {
   /**
    * Gets a credential state by given credentialUuid
    */
-  async getCredentialByUuid(credentialUuid: string): Promise<Credential> {
-    const credentials: Credential[] = await this.getAllCredentials();
+  getCredentialByUuid(credentialUuid: string): Credential {
+    const credentials: Credential[] = this.getAllCredentials();
 
     const currentCredential: Credential = credentials.find((credential: Credential) => {
       return credential.uuid === credentialUuid;
@@ -36,8 +35,8 @@ export class AnyOpsOSLibCredentialHelpersService {
   /**
    * Returns all connections
    */
-  async getAllCredentials(): Promise<Credential[]> {
-    return this.LibCredentialState.credentials.pipe(take(1)).toPromise();
+  getAllCredentials(): Credential[] {
+    return this.LibCredentialState.$credentials.getValue();
   }
 
   /**

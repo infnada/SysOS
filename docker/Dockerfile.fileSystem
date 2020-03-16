@@ -1,0 +1,19 @@
+FROM registry.access.redhat.com/ubi8/ubi-minimal:8.1
+
+MAINTAINER anyOpsOS
+
+WORKDIR /var/www
+
+RUN microdnf -y update && \
+microdnf -y install nodejs && \
+npm install -g yarn
+
+COPY . ./dist
+
+ENV NODE_ENV production
+
+RUN yarn install
+
+EXPOSE 443
+
+ENTRYPOINT ["node", "dist/index.js"]

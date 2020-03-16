@@ -11,8 +11,8 @@ import {
 import {getLogger, Logger} from 'log4js';
 import {Socket} from 'socket.io';
 
-import {AnyOpsOSDockerModule} from '@anyopsos/module-docker';
-import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
+import {AnyOpsOSNodeDockerModule} from '@anyopsos/module-node-docker';
+import {BackendResponse} from '@anyopsos/backend-core/app/types/backend-response';
 
 const logger: Logger = getLogger('mainLog');
 
@@ -34,7 +34,7 @@ export class AnyOpsOSDockerWebsocketController {
                    @MessageBody() connectionData: { connectionUuid: string; workspaceUuid: string; }) {
     logger.info(`[Websocket docker] -> disconnect -> id [${id}], connectionUuid [${connectionData.connectionUuid}], workspaceUuid [${connectionData.workspaceUuid}]`);
 
-    const DockerModule: AnyOpsOSDockerModule = new AnyOpsOSDockerModule(userUuid, sessionUuid, connectionData.workspaceUuid, connectionData.connectionUuid);
+    const DockerModule: AnyOpsOSNodeDockerModule = new AnyOpsOSNodeDockerModule(userUuid, sessionUuid, connectionData.workspaceUuid, connectionData.connectionUuid);
 
     return DockerModule.disconnectConnection().then((result: BackendResponse) => {
       return result;
@@ -44,6 +44,7 @@ export class AnyOpsOSDockerWebsocketController {
   }
 
   @OnMessage('[docker-session]')
+  @ReturnAck()
   dockerNewSession(@ConnectedSocket() socket: Socket,
                    @SocketId() id: string,
                    @SocketSessionParam('userUuid') userUuid: string,
@@ -51,7 +52,7 @@ export class AnyOpsOSDockerWebsocketController {
                    @MessageBody() connectionData: { connectionUuid: string; workspaceUuid: string; }) {
     logger.info(`[Websocket docker] -> newSession -> id [${id}], connectionUuid [${connectionData.connectionUuid}], workspaceUuid [${connectionData.workspaceUuid}]`);
 
-    const DockerModule: AnyOpsOSDockerModule = new AnyOpsOSDockerModule(userUuid, sessionUuid, connectionData.workspaceUuid, connectionData.connectionUuid);
+    const DockerModule: AnyOpsOSNodeDockerModule = new AnyOpsOSNodeDockerModule(userUuid, sessionUuid, connectionData.workspaceUuid, connectionData.connectionUuid);
 
     return DockerModule.newConnection().then((result: BackendResponse) => {
       return result;

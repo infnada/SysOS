@@ -58,21 +58,21 @@ export class AnyOpsOSAppCredentialsManagerService {
     this.credentialsUpdated();
   }
 
-  getActiveCredential(): Promise<Credential | null> {
+  getActiveCredential(): Credential | null {
     if (this.dataStore.activeCredentialUuid === null) return null;
 
-    return this.LibCredentialHelpers.getCredentialByUuid(this.dataStore.activeCredentialUuid) as Promise<Credential>;
+    return this.LibCredentialHelpers.getCredentialByUuid(this.dataStore.activeCredentialUuid) as Credential;
   }
 
   /**
    * Called every time the credentials state is updated
    */
-  async credentialsUpdated(): Promise<void> {
+  credentialsUpdated(): void {
 
     if (!this.dataStore.activeCredentialUuid) {
       this.dataStore.activeCredential = null;
     } else {
-      this.dataStore.activeCredential = await this.LibCredentialHelpers.getCredentialByUuid(this.dataStore.activeCredentialUuid);
+      this.dataStore.activeCredential = this.LibCredentialHelpers.getCredentialByUuid(this.dataStore.activeCredentialUuid);
     }
 
     // broadcast data to subscribers
@@ -105,7 +105,7 @@ export class AnyOpsOSAppCredentialsManagerService {
   async deleteCredential(credentialUuid?: string): Promise<void> {
     if (!credentialUuid) credentialUuid = this.dataStore.activeCredentialUuid;
 
-    const currentCredential: Credential = await this.LibCredentialHelpers.getCredentialByUuid(credentialUuid);
+    const currentCredential: Credential = this.LibCredentialHelpers.getCredentialByUuid(credentialUuid);
     const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('question', this.bodyContainer,
       {
         title: `Delete credential ${currentCredential.description}`,

@@ -1,4 +1,4 @@
-<ng-container *ngIf="VmwareTemplateHelpers.getObjectType(nmObject) === 'VirtualMachine'">
+<ng-container *ngIf="nmObject.type === 'VirtualMachine'">
   <span class="d-block p-3">
     Data refreshed 3 minutes ago <i class="fas fa-exclamation-triangle text-warning"></i> Data must be refreshed <button class="btn text-uppercase" type="button" mat-flat-button color="primary">Scan now</button>
   </span>
@@ -47,11 +47,11 @@
   </div>
 </ng-container>
 
-<ng-container *ngIf="VmwareTemplateHelpers.getObjectType(nmObject) === 'Datacenter' || VmwareTemplateHelpers.getObjectType(nmObject) === 'ClusterComputeResource' || VmwareTemplateHelpers.getObjectType(nmObject) === 'HostSystem'">
+<ng-container *ngIf="nmObject.type === 'Datacenter' || nmObject.type === 'ClusterComputeResource' || nmObject.type === 'HostSystem'">
   <div class="container">
     <div class="row">
       <div class="col-4">
-        <mat-card *ngIf="VmwareTemplateHelpers.getObjectType(nmObject) === 'Datacenter' || VmwareTemplateHelpers.getObjectType(nmObject) === 'ClusterComputeResource'">
+        <mat-card *ngIf="nmObject.type === 'Datacenter' || nmObject.type === 'ClusterComputeResource'">
           <mat-card-title>
             1 Host(s)
             <mat-divider></mat-divider>
@@ -62,7 +62,7 @@
             </div>
           </mat-card-content>
         </mat-card>
-        <mat-card *ngIf="VmwareTemplateHelpers.getObjectType(nmObject) === 'HostSystem'">
+        <mat-card *ngIf="nmObject.type === 'HostSystem'">
           <mat-card-title>
             Installed on Host
             <mat-divider></mat-divider>
@@ -118,11 +118,11 @@
   </div>
 </ng-container>
 
-<ng-container *ngIf="VmwareTemplateHelpers.getObjectType(nmObject) === 'Datacenter'">
+<ng-container *ngIf="nmObject.type === 'Datacenter'">
 </ng-container>
 
-<ng-container *ngIf="VmwareTemplateHelpers.getObjectType(nmObject) === 'ClusterComputeResource'">
+<ng-container *ngIf="nmObject.type === 'ClusterComputeResource'">
 </ng-container>
 
-<ng-container *ngIf="VmwareTemplateHelpers.getObjectType(nmObject) === 'HostSystem'">
+<ng-container *ngIf="nmObject.type === 'HostSystem'">
 </ng-container>

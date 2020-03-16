@@ -9,11 +9,11 @@
   "peerDependencies": {
     "@anyopsos/module-config-file": "~0.0.1",
     "@anyopsos/module-credential": "~0.0.1",
-    "@anyopsos/module-get-path": "~0.0.1",
+    "@anyopsos/module-sys-get-path": "~0.0.1",
     "@anyopsos/module-ssh": "~0.0.1"
   },
   "devDependencies": {
-    "@anyopsos/backend": "~0.0.1",
+    "@anyopsos/backend-core": "~0.0.1",
     "socket.io": "^2.3.0",
     "socket-controllers": "https://github.com/anyOpsOS/socket-controllers.git#build",
     "typescript": "^3.7.4"

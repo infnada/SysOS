@@ -1,0 +1,125 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth
+  namespace: anyopsos
+  labels:
+    app: anyopsos-auth
+spec:
+  selector:
+    app: anyopsos-auth
+  type: ClusterIP
+  ports:
+    - port: 443
+      targetPort: 443
+      protocol: TCP
+      name: auth-api
+
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: auth
+  namespace: anyopsos
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+spec:
+  tls:
+    - hosts:
+      - auth.anyopsos.local
+  rules:
+    - host: auth.anyopsos.local
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: auth
+              servicePort: auth-api
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: anyopsos-auth
+  namespace: anyopsos
+  labels:
+    app: anyopsos-auth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: anyopsos-auth
+  template:
+    metadata:
+      labels:
+        app: anyopsos-auth
+    spec:
+      restartPolicy: Always
+      serviceAccountName: anyopsos-k8s-vault
+      volumes:
+        - name: certificates
+          secret:
+            secretName: anyopsos-certificates
+        - name: anyopsos-code
+          hostPath:
+            path: /c/Users/nada/WebstormProjects/anyOpsOS
+            type: Directory
+      containers:
+      - name: auth
+        image: anyopsos-auth
+        args: ["-stack-trace-limit=50"]
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+          - containerPort: 443
+        # Get image from local
+        imagePullPolicy: Never
+        env:
+          # Required to connect with Vault
+          - name: POD_SA
+            valueFrom:
+              fieldRef:
+                fieldPath: spec.serviceAccountName
+          - name: POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          # Add CA as trusted by nodejs
+          - name: NODE_EXTRA_CA_CERTS
+            value: /dev/shm/ca.cert
+          - name: NODE_ENV
+            value: development
+        volumeMounts:
+          # Certificates
+          - name: certificates
+            mountPath: /dev/shm/ca.cert
+            subPath: ca.cert
+            readOnly: true
+          - name: certificates
+            mountPath: /dev/shm/server.cert
+            subPath: auth.cert
+            readOnly: true
+          - name: certificates
+            mountPath: /dev/shm/server.key
+            subPath: auth.key
+            readOnly: true
+          - name: certificates
+            mountPath: /dev/shm/dhparam.pem
+            subPath: dhparam.pem
+            readOnly: true
+          # anyOpsOS Code
+          - name: anyopsos-code
+            mountPath: /var/www/dist
+            subPath: dist/anyOpsOS/auth/
+            readOnly: true
+          - name: anyopsos-code
+            mountPath: /var/www/node_modules
+            subPath: node_modules/
+            readOnly: true
+          - name: anyopsos-code
+            mountPath: /var/www/filesystem
+            subPath: dist/anyOpsOS/fileSystem/filesystem/
+            readOnly: true

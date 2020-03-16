@@ -5,7 +5,7 @@ import {takeUntil} from 'rxjs/operators';
 
 import {Application} from '@anyopsos/lib-application';
 import {AnyOpsOSLibFileSystemUiService} from '@anyopsos/lib-file-system-ui';
-import {Connection} from '@anyopsos/backend/app/types/connection';
+import {Connection} from '@anyopsos/backend-core/app/types/connection';
 
 import {AnyOpsOSLibFolderExplorerService} from '../../services/anyopsos-lib-folder-explorer.service';
 

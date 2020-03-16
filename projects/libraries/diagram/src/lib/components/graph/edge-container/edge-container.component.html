@@ -1,0 +1,9 @@
+<ng-container *ngIf="isAnimated; else notAnimated">
+  <!--<Motion [style]="getMotionStyle()">-->
+  <svg:g aldiagram-edge [edgeElement]="edgeElement" [path]="getEdgePath(true)" [thickness]="weakSpring(thickness)"></svg:g>
+  <!--</Motion>-->
+</ng-container>
+
+<ng-template #notAnimated>
+  <svg:g aldiagram-edge [edgeElement]="edgeElement" [path]="getEdgePath()" [thickness]="thickness"></svg:g>
+</ng-template>

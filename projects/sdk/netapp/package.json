@@ -5,7 +5,7 @@
   "dependencies": {
   },
   "peerDependencies": {
-    "@anyopsos/backend": "~0.0.1"
+    "@anyopsos/backend-core": "~0.0.1"
   },
   "devDependencies": {
     "@types/node": "^13.7.0",

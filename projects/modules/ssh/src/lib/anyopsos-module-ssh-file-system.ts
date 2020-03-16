@@ -5,9 +5,9 @@ import {FileEntry, Stats as SftpStats} from 'ssh2-streams';
 import {getLogger, Logger} from 'log4js';
 import {EventEmitter} from 'events';
 
-import {AnyOpsOSGetPathModule} from '@anyopsos/module-get-path';
-import {AnyOpsOSCredentialModule, KdbxCredential} from '@anyopsos/module-credential';
-import {AnyOpsOSFile} from '@anyopsos/backend/app/types/anyopsos-file';
+import {AnyOpsOSSysGetPathModule} from '@anyopsos/module-sys-get-path';
+import {AnyOpsOSCredentialModule, Credential} from '@anyopsos/module-credential';
+import {AnyOpsOSFile} from '@anyopsos/backend-core/app/types/anyopsos-file';
 
 import {AnyOpsOSSshSessionStateModule} from './anyopsos-module-ssh-session-state';
 import {AsyncSFTPWrapper} from './types/async-sftp-wrapper';
@@ -17,7 +17,7 @@ const logger: Logger = getLogger('mainLog');
 
 export class AnyOpsOSSshFileSystemModule {
 
-  private readonly GetPathModule: AnyOpsOSGetPathModule;
+  private readonly GetPathModule: AnyOpsOSSysGetPathModule;
   private readonly CredentialModule: AnyOpsOSCredentialModule;
   private readonly SshSessionStateModule: AnyOpsOSSshSessionStateModule;
   private readonly SftpWrapper: AsyncSFTPWrapper;
@@ -29,7 +29,7 @@ export class AnyOpsOSSshFileSystemModule {
 
     if (!this.userUuid || !this.sessionUuid || !this.workspaceUuid || !this.connectionUuid) throw new Error('invalid_constructor_params');
 
-    this.GetPathModule = new AnyOpsOSGetPathModule();
+    this.GetPathModule = new AnyOpsOSSysGetPathModule();
     this.CredentialModule = new AnyOpsOSCredentialModule(this.userUuid, this.sessionUuid, this.workspaceUuid);
     this.SshSessionStateModule = new AnyOpsOSSshSessionStateModule(this.userUuid, this.sessionUuid, this.workspaceUuid, this.connectionUuid);
     this.SftpWrapper = this.SshSessionStateModule.getSFTPWrapper();
@@ -114,7 +114,7 @@ export class AnyOpsOSSshFileSystemModule {
     if (srcPath.indexOf('\0') !== -1) throw new Error('param_security_stop');
     if (dstPath.indexOf('\0') !== -1) throw new Error('param_security_stop');
 
-    const realSrcPath: string = join(new AnyOpsOSGetPathModule().filesystem, srcPath);
+    const realSrcPath: string = join(new AnyOpsOSSysGetPathModule().filesystem, srcPath);
 
     const eventEmitter = new EventEmitter();
     const sendPercentage = (percentage: number): number => {
@@ -153,9 +153,9 @@ export class AnyOpsOSSshFileSystemModule {
     const downloadPath: string = join(dstPath, fileName);
 
     if (credentialUuid) {
-      const credential: KdbxCredential = await this.CredentialModule.getCredential(credentialUuid);
+      const credential: Credential = await this.CredentialModule.getCredential(credentialUuid);
       await this.SshSessionStateModule.execAsync(
-        'curl', ['-k', '--user', `${credential.fields.UserName}:${credential.fields.Password.getText()}`, '-o', downloadPath, fileUrl]
+        'curl', ['-k', '--user', `${credential.username}:${credential.password}`, '-o', downloadPath, fileUrl]
       );
     } else {
       await this.SshSessionStateModule.execAsync('curl', ['-k', '-o', downloadPath, fileUrl]);

@@ -4,9 +4,9 @@ import {Request, Response} from 'express';
 import {getLogger, Logger} from 'log4js';
 
 import {AnyOpsOSApiGlobalsModule} from '@anyopsos/module-api-globals';
-import {AnyOpsOSNetappModule} from '@anyopsos/module-netapp';
+import {AnyOpsOSNodeNetappModule} from '@anyopsos/module-node-netapp';
 import {NetappSdkFunctions, NetappSdkVfilerFunctions, NetappSdkFunctionsInput, NetappSdkVfilerFunctionsInput} from '@anyopsos/sdk-netapp';
-import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
+import {BackendResponse} from '@anyopsos/backend-core/app/types/backend-response';
 
 
 const logger: Logger = getLogger('mainLog');
@@ -30,7 +30,7 @@ export class AnyOpsOSNetappApiController {
                        @Param('vfiler', { required: false }) vfiler?: string) {
     logger.info(`[API NetApp] -> Call -> workspaceUuid [${workspaceUuid}], connectionUuid [${connectionUuid}]`);
 
-    const NetappModule: AnyOpsOSNetappModule = new AnyOpsOSNetappModule(userUuid, sessionUuid, workspaceUuid, connectionUuid);
+    const NetappModule: AnyOpsOSNodeNetappModule = new AnyOpsOSNodeNetappModule(userUuid, sessionUuid, workspaceUuid, connectionUuid);
     const ApiGlobalsModule: AnyOpsOSApiGlobalsModule = new AnyOpsOSApiGlobalsModule(request, response);
 
     let soapResult: BackendResponse;

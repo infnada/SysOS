@@ -1,0 +1,17 @@
+{
+  "extends": "../../../tslint.json",
+  "rules": {
+    "directive-selector": [
+      true,
+      "attribute",
+      "amkubernetesLogs",
+      "camelCase"
+    ],
+    "component-selector": [
+      true,
+      "element",
+      "amkubernetes-logs",
+      "kebab-case"
+    ]
+  }
+}

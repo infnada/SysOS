@@ -7,7 +7,6 @@ import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibFileSystemUiService, SendFileExchange} from '@anyopsos/lib-file-system-ui';
 
 import {AnyOpsOSAppSftpService} from '../../../services/anyopsos-app-sftp.service';
-import {ConnectionTypes} from '@anyopsos/backend/app/types/connection-types';
 
 @Component({
   selector: 'aasftp-body-exchange',

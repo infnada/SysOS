@@ -1,4 +1,4 @@
-import {v4 as uuid} from 'uuid';
+import {v4 as uuidv4} from 'uuid';
 
 import {AnyOpsOSConfigFileModule} from '@anyopsos/module-config-file';
 import {AnyOpsOSCredentialModule} from '@anyopsos/module-credential';
@@ -28,7 +28,7 @@ export class AnyOpsOSTerminalSessionStateModule {
    * Terminal Connections
    */
   async createSession(type: TerminalTypes): Promise<TerminalMap> {
-    const terminalUuid = await uuid();
+    const terminalUuid = uuidv4();
 
     const currentTerminal: Terminal = {
       uuid: terminalUuid,
@@ -44,7 +44,7 @@ export class AnyOpsOSTerminalSessionStateModule {
       userUuid: this.userUuid,
       workspaceUuid: this.workspaceUuid,
       connectionUuid: this.connectionUuid,
-      terminalUuid: terminalUuid,
+      terminalUuid,
       terminal: currentTerminal
     };
 

@@ -1,9 +1,9 @@
 import {AfterViewInit, Component, Input} from '@angular/core';
 
 import {Application} from '@anyopsos/lib-application';
-import {AnyOpsOSLibVmwareSoapApiService} from '@anyopsos/lib-vmware';
-import {VMWareVM} from '@anyopsos/module-vmware';
-import {DataObject} from '@anyopsos/backend/app/types/data-object';
+import {AnyOpsOSLibNodeVmwareSoapApiService} from '@anyopsos/lib-node-vmware';
+import {VMWareVM} from '@anyopsos/module-node-vmware';
+import {DataObject} from '@anyopsos/backend-core/app/types/data-object';
 
 import {AnyOpsOSExtLibJqueryService} from '@anyopsos/ext-lib-jquery';
 
@@ -28,7 +28,7 @@ export class BodyComponent implements AfterViewInit {
   currentVm: DataObject & { info: { data: VMWareVM } };
 
   constructor(private jQuery: AnyOpsOSExtLibJqueryService,
-              private readonly LibVmwareSoapApiService: AnyOpsOSLibVmwareSoapApiService,) {
+              private readonly LibNodeVmwareSoapApiService: AnyOpsOSLibNodeVmwareSoapApiService,) {
 
     this.WMKS = WmksLib(jQuery.$);
 
@@ -92,7 +92,7 @@ export class BodyComponent implements AfterViewInit {
 
       console.log(this.application.initData);
 
-      return this.LibVmwareSoapApiService.callSoapApi(this.application.initData.connection.uuid, 'AcquireTicket', {
+      return this.LibNodeVmwareSoapApiService.callSoapApi(this.application.initData.connection.uuid, 'AcquireTicket', {
         _this: {
           $type: 'VirtualMachine',
           _value: this.application.initData.vm.info.obj.name

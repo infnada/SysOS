@@ -5,7 +5,7 @@ import {BehaviorSubject, Observable} from 'rxjs';
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
 import {ConnectionSsh, ConnectionSftp} from '@anyopsos/module-ssh';
-import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
+import {BackendResponse} from '@anyopsos/backend-core/app/types/backend-response';
 
 // TODO extract it from '@anyopsos/module-ssh'
 const SSH_CONFIG_FILE = 'ssh.json';
@@ -16,7 +16,7 @@ const SSH_CONFIG_FILE = 'ssh.json';
 export class AnyOpsOSLibSshConnectionsStateService {
   private connectionsInitialized: boolean = false;
 
-  private readonly $connections: BehaviorSubject<(ConnectionSsh | ConnectionSftp)[]>;
+  readonly $connections: BehaviorSubject<(ConnectionSsh | ConnectionSftp)[]>;
   private dataStore: {
     connections: (ConnectionSsh | ConnectionSftp)[];
   };

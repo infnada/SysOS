@@ -8,7 +8,7 @@
   "peerDependencies": {
     "@anyopsos/module-api-globals": "~0.0.1",
     "@anyopsos/module-config-file": "~0.0.1",
-    "@anyopsos/module-get-path": "~0.0.1",
+    "@anyopsos/module-sys-get-path": "~0.0.1",
     "@anyopsos/module-http-forwarder": "~0.0.1",
     "@anyopsos/module-monitor": "~0.0.1"
   },

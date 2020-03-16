@@ -3,13 +3,14 @@ import {Injectable} from '@angular/core';
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
 import {MatDialogRef} from '@anyopsos/lib-angular-material';
-import {AnyOpsOSLibNetappSoapApiService, AnyOpsOSLibNetappSoapApiHelpersService} from '@anyopsos/lib-netapp';
-import {ConnectionNetapp, NetAppSnapshot, NetAppVolume, NetAppVserver} from '@anyopsos/module-netapp';
-import {DataObject} from '@anyopsos/backend/app/types/data-object';
-import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
+import {AnyOpsOSLibNodeHelpersService} from '@anyopsos/lib-node';
+import {AnyOpsOSLibNodeNetappSoapApiService, AnyOpsOSLibNodeNetappSoapApiHelpersService} from '@anyopsos/lib-node-netapp';
+import {ConnectionNetapp, NetAppSnapshot, NetAppVolume, NetAppVserver} from '@anyopsos/module-node-netapp';
+import {DataObject} from '@anyopsos/backend-core/app/types/data-object';
+import {BackendResponse} from '@anyopsos/backend-core/app/types/backend-response';
 
 import {AnyOpsOSAppInfrastructureManagerService} from '../anyopsos-app-infrastructure-manager.service';
-import {AnyOpsOSAppInfrastructureManagerObjectHelperService} from '../anyopsos-app-infrastructure-manager-object-helper.service';
+
 
 @Injectable({
   providedIn: 'root'
@@ -18,20 +19,20 @@ export class AnyOpsOSAppInfrastructureNetappNodeActionsService {
 
   constructor(private readonly logger: AnyOpsOSLibLoggerService,
               private readonly LibModal: AnyOpsOSLibModalService,
-              private readonly LibNetappSoapApiService: AnyOpsOSLibNetappSoapApiService,
-              private readonly LibNetappSoapApiHelpersService: AnyOpsOSLibNetappSoapApiHelpersService,
-              private readonly InfrastructureManager: AnyOpsOSAppInfrastructureManagerService,
-              private readonly InfrastructureManagerObjectHelper: AnyOpsOSAppInfrastructureManagerObjectHelperService) {
+              private readonly LibNodeHelpers: AnyOpsOSLibNodeHelpersService,
+              private readonly LibNodeNetappSoapApiService: AnyOpsOSLibNodeNetappSoapApiService,
+              private readonly LibNodeNetappSoapApiHelpersService: AnyOpsOSLibNodeNetappSoapApiHelpersService,
+              private readonly InfrastructureManager: AnyOpsOSAppInfrastructureManagerService) {
   }
 
   /**
    * Creates a NetApp Snapshot for a Volume
    */
   async createStorageSnapShot(volume: DataObject & { info: { data: NetAppVolume } }): Promise<void> {
-    this.logger.debug('Infrastructure Manager', 'Ask for create storage snapshot', arguments);
+    this.logger.debug('Infrastructure Manager', 'Ask for create storage snapshot');
 
-    const connection: ConnectionNetapp = await this.InfrastructureManager.getConnectionByUuid(volume.info.mainUuid, 'netapp') as ConnectionNetapp;
-    const vServer: DataObject & { info: { data: NetAppVserver } } = await this.InfrastructureManagerObjectHelper.getParentObjectByType(connection.uuid, 'netapp', 'vserver', volume.info.parent);
+    const connection: ConnectionNetapp = this.LibNodeHelpers.getConnectionByUuid(volume.info.mainUuid, 'netapp') as ConnectionNetapp;
+    const vServer: DataObject & { info: { data: NetAppVserver } } = this.LibNodeHelpers.getParentObjectByType(connection.uuid, 'netapp', 'vserver', volume.info.parent);
 
     const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('question', this.InfrastructureManager.getBodyContainerRef(), {
       title: 'Create storage snapshot',
@@ -47,7 +48,7 @@ export class AnyOpsOSAppInfrastructureNetappNodeActionsService {
       const littleModalRef: MatDialogRef<any> = await this.LibModal.openLittleModal(this.InfrastructureManager.getBodyContainerRef(), 'PLEASE WAIT', 'Creating volume snapshot');
 
       const snapshotName = vServer.name + '_anyOpsOS__' + new Date().toISOString().split('.')[0].replace(/:/g, '');
-      return this.LibNetappSoapApiService.callSoapApi(connection.uuid, 'snapshot-create', {
+      return this.LibNodeNetappSoapApiService.callSoapApi(connection.uuid, 'snapshot-create', {
         async: false,
         snapshot: snapshotName,
         volume: volume.name
@@ -64,7 +65,7 @@ export class AnyOpsOSAppInfrastructureNetappNodeActionsService {
         this.LibModal.changeModalText(littleModalRef.id, `Snapshot created successfully for volume ${volume.name}`);
 
         // Refresh volume data to fetch the new snapshot
-        return this.LibNetappSoapApiHelpersService.getVolumeData(volume);
+        return this.LibNodeNetappSoapApiHelpersService.getVolumeData(volume);
 
       }).catch((e) => {
         this.logger.error('Infrastructure Manager', 'createStorageSnapShot', null, e.description);
@@ -83,10 +84,10 @@ export class AnyOpsOSAppInfrastructureNetappNodeActionsService {
    * Deletes a NetApp Snapshot from a Volume
    */
   async deleteStorageSnapShot(snapshot: DataObject & { info: { data: NetAppSnapshot } }): Promise<void> {
-    this.logger.debug('Infrastructure Manager', 'Ask for delete storage snapshot', arguments);
+    this.logger.debug('Infrastructure Manager', 'Ask for delete storage snapshot');
 
-    const connection: ConnectionNetapp = await this.InfrastructureManager.getConnectionByUuid(snapshot.info.mainUuid, 'netapp') as ConnectionNetapp;
-    const volume: DataObject & { info: { data: NetAppVolume } } = await this.InfrastructureManagerObjectHelper.getParentObjectByType(connection.uuid, 'netapp', 'volume', snapshot.info.parent);
+    const connection: ConnectionNetapp = this.LibNodeHelpers.getConnectionByUuid(snapshot.info.mainUuid, 'netapp') as ConnectionNetapp;
+    const volume: DataObject & { info: { data: NetAppVolume } } = this.LibNodeHelpers.getParentObjectByType(connection.uuid, 'netapp', 'volume', snapshot.info.parent);
 
     const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('question', this.InfrastructureManager.getBodyContainerRef(), {
       title: 'Delete storage snapshot',
@@ -105,7 +106,7 @@ export class AnyOpsOSAppInfrastructureNetappNodeActionsService {
       this.logger.debug('Infrastructure Manager', 'Deleting storage snapshot');
       const littleModalRef: MatDialogRef<any> = await this.LibModal.openLittleModal(this.InfrastructureManager.getBodyContainerRef(), 'PLEASE WAIT', 'Deleting volume snapshot');
 
-      return this.LibNetappSoapApiService.callSoapApi(connection.uuid, 'snapshot-delete', {
+      return this.LibNodeNetappSoapApiService.callSoapApi(connection.uuid, 'snapshot-delete', {
         async: false,
         snapshot: snapshot.name,
         'snapshot-instance-uuid': snapshot.info.obj.name,
@@ -123,7 +124,7 @@ export class AnyOpsOSAppInfrastructureNetappNodeActionsService {
         this.LibModal.changeModalText(littleModalRef.id, `Snapshot ${snapshot.name} deleted successfully for volume ${volume.name}`);
 
         // Refresh volume data to fetch the new snapshot
-        return this.LibNetappSoapApiHelpersService.getVolumeData(volume);
+        return this.LibNodeNetappSoapApiHelpersService.getVolumeData(volume);
 
       }).catch((e) => {
         this.logger.error('Infrastructure Manager', 'deleteStorageSnapShot', null, e.description);

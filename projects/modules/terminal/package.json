@@ -6,7 +6,7 @@
     "uuid": "^3.3.3"
   },
   "peerDependencies": {
-    "@anyopsos/module-kubernetes": "~0.0.1"
+    "@anyopsos/module-node-kubernetes": "~0.0.1"
   },
   "devDependencies": {
     "@types/node": "^12.12.21",

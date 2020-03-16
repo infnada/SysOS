@@ -1,11 +1,12 @@
 import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
 
 import {MatChipInputEvent} from '@anyopsos/lib-angular-material';
+import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibUtilsService} from '@anyopsos/lib-utils';
+import {DataObject} from '@anyopsos/backend-core/app/types/data-object';
 
 import {AnyOpsOSAppInfrastructureManagerService} from '../../../../services/anyopsos-app-infrastructure-manager.service';
 import {AnyOpsOSAppInfrastructureManagerNodeGraphService} from '../../../../services/anyopsos-app-infrastructure-manager-node-graph.service';
-import {ImDataObject} from '../../../../types/im-data-object';
 
 export interface Tag {
   name: string;
@@ -19,7 +20,7 @@ export interface Tag {
 })
 export class TabSummaryComponent implements OnInit {
   @ViewChild('scrollToElement', {static: false}) scrollToElement: ElementRef<HTMLInputElement>;
-  @Input() nmObject: ImDataObject;
+  @Input() readonly nmObject: DataObject;
 
   private currentGraphTopology: string = null;
 
@@ -29,12 +30,24 @@ export class TabSummaryComponent implements OnInit {
     {name: 'tag', category: 'category'},
   ];
 
-  constructor(private Utils: AnyOpsOSLibUtilsService,
-              private InfrastructureManager: AnyOpsOSAppInfrastructureManagerService,
-              private InfrastructureManagerNodeGraph: AnyOpsOSAppInfrastructureManagerNodeGraphService) {
+  nodes$: Promise<any>;
+  topologies$: Promise<any>;
+
+  constructor(private readonly logger: AnyOpsOSLibLoggerService,
+              private readonly Utils: AnyOpsOSLibUtilsService,
+              private readonly InfrastructureManager: AnyOpsOSAppInfrastructureManagerService,
+              private readonly InfrastructureManagerNodeGraph: AnyOpsOSAppInfrastructureManagerNodeGraphService) {
   }
 
   ngOnInit(): void {
+
+    this.nodes$ = this.InfrastructureManagerNodeGraph.setNodeGraphNodes(this.currentGraphTopology, this.nmObject).catch((e: Error) => {
+      this.logger.error('InfrastructureManager', 'Error while getting graph nodes', null, e);
+    });
+
+    this.topologies$ = this.InfrastructureManagerNodeGraph.getTopologies().catch((e: Error) => {
+      this.logger.error('InfrastructureManager', 'Error while getting graph topologies', null, e);
+    });
   }
 
   // Tags
@@ -66,14 +79,6 @@ export class TabSummaryComponent implements OnInit {
    */
   scrollTo(): void {
     this.Utils.angularElementScrollTo(this.scrollToElement.nativeElement.parentElement.parentElement, true);
-  }
-
-  setNodeGraphNodes() {
-    return this.InfrastructureManagerNodeGraph.setNodeGraphNodes(this.currentGraphTopology, this.InfrastructureManager.getActiveObject());
-  }
-
-  setNodeGraphTopologies() {
-    return this.InfrastructureManagerNodeGraph.getTopologies();
   }
 
   selectedTopologyChange($event) {

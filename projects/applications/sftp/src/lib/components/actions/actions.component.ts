@@ -8,8 +8,6 @@ import {AnyOpsOSLibSshService} from '@anyopsos/lib-ssh';
 import {ConnectionSftp} from '@anyopsos/module-ssh';
 
 import {AnyOpsOSAppSftpService} from '../../services/anyopsos-app-sftp.service';
-import {ConnectionTypes} from '@anyopsos/backend/app/types/connection-types';
-
 
 @Component({
   selector: 'aasftp-actions',
@@ -17,9 +15,9 @@ import {ConnectionTypes} from '@anyopsos/backend/app/types/connection-types';
   styleUrls: ['./actions.component.scss']
 })
 export class ActionsComponent implements OnDestroy, OnInit {
-  @Input() application: Application;
+  @Input() private readonly application: Application;
 
-  private destroySubject$: Subject<void> = new Subject();
+  private readonly destroySubject$: Subject<void> = new Subject();
 
   activeConnectionUuid: string | null;
 

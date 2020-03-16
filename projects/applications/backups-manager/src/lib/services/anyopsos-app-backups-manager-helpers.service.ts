@@ -3,9 +3,9 @@ import {Injectable} from '@angular/core';
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {v4 as uuidv4} from 'uuid';
 
-import {AnyOpsOSLibNetappSoapApiService, AnyOpsOSLibNetappSoapApiHelpersService, AnyOpsOSLibNetappFileSystemService} from '@anyopsos/lib-netapp';
-import {AnyOpsOSLibVmwareSoapApiService, AnyOpsOSLibVmwareSoapApiHelpersService} from '@anyopsos/lib-vmware';
-import {VMWareFirewallRule} from '@anyopsos/module-vmware';
+import {AnyOpsOSLibNodeNetappSoapApiService, AnyOpsOSLibNodeNetappSoapApiHelpersService, AnyOpsOSLibNodeNetappFileSystemService} from '@anyopsos/lib-node-netapp';
+import {AnyOpsOSLibNodeVmwareSoapApiService, AnyOpsOSLibNodeVmwareSoapApiHelpersService} from '@anyopsos/lib-node-vmware';
+import {VMWareFirewallRule} from '@anyopsos/module-node-vmware';
 
 import {MountVolumeSnapshot} from '../types/mount-volume-snapshot';
 import {RestoreVolumeFiles} from '../types/restore-volume-files';
@@ -13,6 +13,8 @@ import {RestoreVmGuestFiles} from '../types/restore-vm-guest-files';
 import {VmInstantRecovery} from '../types/vm-instant-recovery';
 import {RestoreVm} from '../types/restore-vm';
 import {BackupVm} from '../types/backup-vm';
+import {BackendResponse} from '@anyopsos/backend-core/app/types/backend-response';
+import {AnyOpsOSFile} from '@anyopsos/backend-core/app/types/anyopsos-file';
 
 @Injectable({
   providedIn: 'root'
@@ -20,11 +22,11 @@ import {BackupVm} from '../types/backup-vm';
 export class AnyOpsOSAppBackupsManagerHelpersService {
 
   constructor(private readonly logger: AnyOpsOSLibLoggerService,
-              private readonly LibNetappSoapApiService: AnyOpsOSLibNetappSoapApiService,
-              private readonly LibNetappSoapApiHelpersService: AnyOpsOSLibNetappSoapApiHelpersService,
-              private readonly LibNetappFileSystemService: AnyOpsOSLibNetappFileSystemService,
-              private readonly LibVmwareSoapApiService: AnyOpsOSLibVmwareSoapApiService,
-              private readonly LibVmwareSoapApiHelpersService: AnyOpsOSLibVmwareSoapApiHelpersService) {
+              private readonly LibNodeNetappSoapApiService: AnyOpsOSLibNodeNetappSoapApiService,
+              private readonly LibNodeNetappSoapApiHelpersService: AnyOpsOSLibNodeNetappSoapApiHelpersService,
+              private readonly LibNodeNetappFileSystemService: AnyOpsOSLibNodeNetappFileSystemService,
+              private readonly LibNodeVmwareSoapApiService: AnyOpsOSLibNodeVmwareSoapApiService,
+              private readonly LibNodeVmwareSoapApiHelpersService: AnyOpsOSLibNodeVmwareSoapApiHelpersService) {
 
   }
 
@@ -152,7 +154,8 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
         // Power On VM
         this.logger.debug('Backups Manager', 'Powering on vm', loggerArgs);
 
-        return this.LibVmwareSoapApiService.callSoapApi(data.virtual.uuid, 'PowerOnVM_Task', {
+        // @ts-ignore TODO
+        return this.LibNodeVmwareSoapApiService.callSoapApi(data.virtual.uuid, 'PowerOnVM_Task', {
           _this: {
             $type: 'VirtualMachine',
             _value: data.vm.info.obj.name
@@ -192,7 +195,7 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
         // Power On VM
         this.logger.debug('Backups Manager', 'Powering on vm', loggerArgs);
 
-        return this.LibVmwareSoapApiService.callSoapApi(data.virtual.uuid, 'PowerOnVM_Task', {
+        return this.LibNodeVmwareSoapApiService.callSoapApi(data.virtual.uuid, 'PowerOnVM_Task', {
           _this: {
             $type: 'VirtualMachine',
             _value: data.vm.info.obj.name
@@ -504,7 +507,7 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
   checkLicenses(data: MountVolumeSnapshot | RestoreVolumeFiles | RestoreVmGuestFiles | VmInstantRecovery) {
     this.logger.debug('Backups Manager', 'Check storage licenses', arguments);
 
-    return this.LibNetappSoapApiService.callSoapApi(data.storage.uuid, 'license-v2-status-list-info', {}).then((res) => {
+    return this.LibNodeNetappSoapApiService.callSoapApi(data.storage.uuid, 'license-v2-status-list-info', {}).then((res) => {
       if (res.status === 'error') throw new Error('Failed to get licenses');
 
       const flexClone = res.data.filter(obj => {
@@ -538,7 +541,7 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
     // Create Volume Clone
     this.logger.debug('Backups Manager', 'Cloning volume from snapshot', arguments);
 
-    return this.LibNetappSoapApiService.callSoapApi(data.storage.uuid, 'volume-clone-create', {
+    return this.LibNodeNetappSoapApiService.callSoapApi(data.storage.uuid, 'volume-clone-create', {
       'parent-volume': data.volume.name,
       volume: data.volumeName,
       'space-reserve': 'none',
@@ -547,7 +550,7 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
       if (res.status === 'error') {
 
         // Error duplicated volume, try next.
-        if (res.error.errno === '17159') throw new Error('17159');
+        if (res.data.error.errno === '17159') throw new Error('17159');
 
         throw new Error('Failed to clone Volume');
       }
@@ -558,7 +561,7 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
       // Mount Volume Point
       this.logger.debug('Backups Manager', 'Mounting namespace of cloned volume', loggerArgs);
 
-      return this.LibNetappSoapApiService.callSoapApi(data.storage.uuid, 'volume-mount', {
+      return this.LibNodeNetappSoapApiService.callSoapApi(data.storage.uuid, 'volume-mount', {
         'activate-junction': true,
         'junction-path': '/' + data.volumeName,
         'volume-name': data.volumeName,
@@ -611,10 +614,11 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
 
     this.logger.debug('Backups Manager', 'Updating firewall rules', arguments);
 
-    return this.LibVmwareSoapApiHelpersService.getHostFirewallSystem(data.virtual.uuid, data.host.info.obj.name).then((firewallSystem) => {
+    return this.LibNodeVmwareSoapApiHelpersService.getHostFirewallSystem(data.virtual.uuid, data.host.info.obj.name).then((firewallSystem) => {
       if (firewallSystem.status === 'error') throw new Error('Failed to get Host firewallSystem from vCenter');
 
-      return this.LibVmwareSoapApiService.callSoapApi(data.virtual.uuid, 'UpdateRuleset', {
+      // @ts-ignore TODO
+      return this.LibNodeVmwareSoapApiService.callSoapApi(data.virtual.uuid, 'UpdateRuleset', {
         _this: {
           $type: 'HostFirewallSystem',
           _value: firewallSystem.data
@@ -633,7 +637,7 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
    */
   checkESXiFirewall(data: MountVolumeSnapshot | RestoreVolumeFiles | RestoreVmGuestFiles | VmInstantRecovery): Promise<any> {
 
-    return this.LibVmwareSoapApiHelpersService.getHostFirewallRules(data.virtual.uuid, data.host.info.obj.name).then((firewallRulesData) => {
+    return this.LibNodeVmwareSoapApiHelpersService.getHostFirewallRules(data.virtual.uuid, data.host.info.obj.name).then((firewallRulesData) => {
       if (firewallRulesData.status === 'error') throw new Error('Failed to get Host firewall rules from vCenter');
 
       console.log(firewallRulesData);
@@ -644,7 +648,7 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
       // Check if storage interface is NFS and which protocol versions are enabled
       if (data.iface.info.data['data-protocols']['data-protocol'] === 'nfs') {
 
-        return this.LibNetappSoapApiService.callSoapApi(data.storage.uuid, 'nfs-service-get', {}).then((serviceData) => {
+        return this.LibNodeNetappSoapApiService.callSoapApi(data.storage.uuid, 'nfs-service-get', {}).then((serviceData) => {
           if (serviceData.status === 'error') throw new Error('Failed to get NFS service status from Storage');
 
           // NFS v4.1
@@ -671,7 +675,7 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
 
     this.logger.debug('Backups Manager', 'Get Volume Exports', arguments);
 
-    return this.LibNetappSoapApiService.callSoapApi(data.storage.uuid, 'nfs-exportfs-list-rules-2', {
+    return this.LibNodeNetappSoapApiService.callSoapApi(data.storage.uuid, 'nfs-exportfs-list-rules-2', {
       pathname: `/${data.volumeName}`,
       persistent: true
     }).then((res) => {
@@ -688,12 +692,14 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
 
         // TODO: check connectivity from NFS node
         this.logger.debug('Backups Manager', 'Getting network system', loggerArgs);
-        return this.LibVmwareSoapApiHelpersService.getHostConfigManagerNetworkSystem(data.virtual.uuid, data.host.info.obj.name).then((networkSystemData) => {
+        return this.LibNodeVmwareSoapApiHelpersService.getHostConfigManagerNetworkSystem(data.virtual.uuid, data.host.info.obj.name).then((networkSystemData) => {
           if (networkSystemData.status === 'error') throw new Error('Failed to get networkSystem from vCenter');
 
           const networkSystem = networkSystemData.data;
-          return this.LibVmwareSoapApiHelpersService.getHostConfigManagerNetworkSystem(data.virtual.uuid, networkSystem);
-        }).then((networkInfo) => {
+          return this.LibNodeVmwareSoapApiHelpersService.getHostConfigManagerNetworkSystem(data.virtual.uuid, networkSystem);
+        }).then((networkInfo: BackendResponse & { data: any[]; }) => {
+
+          // @ts-ignore TODO
           if (res.status === 'error') throw new Error('Failed to get NetworkInfoConsoleVnic from vCenter');
 
           console.log(networkInfo);
@@ -707,7 +713,7 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
           if (esxiHostExport.length === 0) {
             this.logger.debug('Backups Manager', 'No Volume Export matched, create it', loggerArgs);
 
-            return this.LibNetappSoapApiService.callSoapApi(data.storage.uuid, 'export-rule-create', {
+            return this.LibNodeNetappSoapApiService.callSoapApi(data.storage.uuid, 'export-rule-create', {
               'client-match': esxiExportAddress,
               'policy-name': data.volume.info.data['volume-export-attributes'].policy,
               'ro-rule': {
@@ -751,8 +757,8 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
       this.logger.debug('Backups Manager', 'Getting datastore system', loggerArgs);
 
       return Promise.all([
-        this.LibVmwareSoapApiHelpersService.getHostConfigManagerDatastoreSystem(data.virtual.uuid, data.host.info.obj.name),
-        this.LibNetappSoapApiService.callSoapApi(data.storage.uuid, 'nfs-service-get', {})
+        this.LibNodeVmwareSoapApiHelpersService.getHostConfigManagerDatastoreSystem(data.virtual.uuid, data.host.info.obj.name),
+        this.LibNodeNetappSoapApiService.callSoapApi(data.storage.uuid, 'nfs-service-get', {})
       ]);
     }).then((res) => {
       if (res[0].status === 'error') throw new Error('Failed to get datastoreSystem from vCenter');
@@ -762,7 +768,8 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
 
       this.logger.debug('Backups Manager', 'Mount volume to ESXi', loggerArgs);
 
-      return this.LibVmwareSoapApiService.callSoapApi(data.virtual.uuid, 'CreateNasDatastore', {
+      // @ts-ignore TODO
+      return this.LibNodeVmwareSoapApiService.callSoapApi(data.virtual.uuid, 'CreateNasDatastore', {
         _this: {
           $type: 'HostDatastoreSystem',
           _value: datastoreSystem
@@ -806,7 +813,7 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
     vmPath = vmPath.substring(0, vmPath.lastIndexOf('/') + 1).substr(1);
 
     // Get VM in Datastore (check if exist)
-    return this.LibVmwareSoapApiHelpersService.getVMFileDataFromDatastore(
+    return this.LibNodeVmwareSoapApiHelpersService.getVMFileDataFromDatastore(
       data.virtual.uuid,
       esxiRestoredDatastore,
       data.datastorePath,
@@ -820,7 +827,8 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
       // TODO: check if VM with same name exists
       this.logger.debug('Backups Manager', 'Register VM to ESXi', loggerArgs);
 
-      return this.LibVmwareSoapApiService.callSoapApi(data.virtual.uuid, 'RegisterVM_Task', {
+      // @ts-ignore TODO
+      return this.LibNodeVmwareSoapApiService.callSoapApi(data.virtual.uuid, 'RegisterVM_Task', {
         _this: {
           $type: 'Folder',
           _value: data.folder.info.obj.name
@@ -851,7 +859,8 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
       const newVMUuid = uuidv4();
       this.logger.debug('Backups Manager', 'Reconfigure VM uuid', loggerArgs);
       // TODO
-      return this.LibVmwareSoapApiService.callSoapApi(data.virtual.uuid, 'ReconfigVM_Task', {
+      // @ts-ignore TODO
+      return this.LibNodeVmwareSoapApiService.callSoapApi(data.virtual.uuid, 'ReconfigVM_Task', {
         _this: {
           $type: 'VirtualMachine',
           _value: data.vm.info.obj.name
@@ -887,7 +896,7 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
 
     this.logger.debug('Backups Manager', 'Connection to vCenter using SOAP', arguments);
 
-    return this.LibVmwareSoapApiHelpersService.getVMPath(data.virtual.uuid, data.vm.info.obj.name).then((res) => {
+    return this.LibNodeVmwareSoapApiHelpersService.getVMPath(data.virtual.uuid, data.vm.info.obj.name).then((res) => {
       if (res && res.status === 'error') throw new Error('Failed to get VM path');
 
       const regex = /\[*]\s(.*)\/.*\.vmx/gi;
@@ -899,14 +908,15 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
 
       this.logger.debug('Backups Manager', 'Get VM runtime', loggerArgs);
 
-      return this.LibVmwareSoapApiHelpersService.getVMRuntime(data.virtual.uuid, data.vm.info.obj.name);
+      return this.LibNodeVmwareSoapApiHelpersService.getVMRuntime(data.virtual.uuid, data.vm.info.obj.name);
     }).then((res) => {
       if (res && res.status === 'error') throw new Error('Failed to get VM runtime');
 
       if (res.data.propSet.runtime.powerState === 'poweredOn') {
         this.logger.debug('Backups Manager', 'Powering off VM', loggerArgs);
 
-        return this.LibVmwareSoapApiService.callSoapApi(data.virtual.uuid, 'PowerOffVM_Task', {
+        // @ts-ignore TODO
+        return this.LibNodeVmwareSoapApiService.callSoapApi(data.virtual.uuid, 'PowerOffVM_Task', {
           _this: {
             $type: 'VirtualMachine',
             _value: data.vm.info.obj.name
@@ -922,14 +932,14 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
       this.logger.debug('Backups Manager', 'Get snapshot files from storage', loggerArgs);
 
       // TODO, folder recursive
-      return this.LibNetappFileSystemService.getFolder(`/vol/${data.volume.name}/.snapshot/${data.snapshot.name}/${vmPath}`);
-    }).then((res) => {
+      return this.LibNodeNetappFileSystemService.getFolder(`/vol/${data.volume.name}/.snapshot/${data.snapshot.name}/${vmPath}`, data.storage.uuid, data.vserver.name).toPromise();
+    }).then((res: BackendResponse & { data: AnyOpsOSFile[]; })=> {
       if (res.status === 'error') throw new Error('Failed to get Snapshot files');
 
       res.data.forEach((file: { name: string }) => {
         if (file.name.indexOf('.lck') >= 0) return;
 
-        sfrPromises.push(this.LibNetappSoapApiService.callSoapApi(data.storage.uuid, 'snapshot-restore-file', {
+        sfrPromises.push(this.LibNodeNetappSoapApiService.callSoapApi(data.storage.uuid, 'snapshot-restore-file', {
           path: '/vol/' + data.volume.name + '/' + vmPath + '/' + file.name,
           snapshot: data.snapshot.name,
           volume: data.volume.name
@@ -946,7 +956,8 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
 
       this.logger.debug('Backups Manager', 'Reloading VM', loggerArgs);
 
-      return this.LibVmwareSoapApiService.callSoapApi(data.virtual.uuid, 'Reload', {
+      // @ts-ignore TODO
+      return this.LibNodeVmwareSoapApiService.callSoapApi(data.virtual.uuid, 'Reload', {
         _this: {
           $type: 'VirtualMachine',
           _value: data.vm.info.obj.name
@@ -987,7 +998,7 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
 
     this.logger.debug('Backups Manager', 'Get all VM snapshots', arguments);
 
-    return this.LibVmwareSoapApiHelpersService.getVMSnapshots(data.virtual.uuid, data.vm.info.obj.name).then((res) => {
+    return this.LibNodeVmwareSoapApiHelpersService.getVMSnapshots(data.virtual.uuid, data.vm.info.obj.name).then((res) => {
       if (res.status === 'error') throw new Error('Failed to get VM Snapshots');
 
       // No snapshots found
@@ -1001,7 +1012,8 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
       if (lastSnapshot.name.startsWith('anyOpsOS_backup_')) {
         this.logger.debug('Backups Manager', 'Reverting VM to snapshot', loggerArgs);
 
-        return this.LibVmwareSoapApiService.callSoapApi(data.virtual.uuid, 'RevertToSnapshot_Task', {
+        // @ts-ignore TODO
+        return this.LibNodeVmwareSoapApiService.callSoapApi(data.virtual.uuid, 'RevertToSnapshot_Task', {
           _this: {
             $type: 'VirtualMachineSnapshot',
             _value: lastSnapshot.snapshot.name
@@ -1022,7 +1034,8 @@ export class AnyOpsOSAppBackupsManagerHelpersService {
       if (lastSnapshot.name.startsWith('anyOpsOS_backup_')) {
         this.logger.debug('Backups Manager', 'Deleting VM snapshot', loggerArgs);
 
-        return this.LibVmwareSoapApiService.callSoapApi(data.virtual.uuid, 'RemoveSnapshot_Task', {
+        // @ts-ignore TODO
+        return this.LibNodeVmwareSoapApiService.callSoapApi(data.virtual.uuid, 'RemoveSnapshot_Task', {
           _this: {
             $type: 'VirtualMachineSnapshot',
             _value: lastSnapshot.snapshot.name

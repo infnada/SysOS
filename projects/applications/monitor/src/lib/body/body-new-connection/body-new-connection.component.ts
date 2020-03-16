@@ -1,25 +1,30 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {Component, ElementRef, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {AbstractControl, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 
 import {Observable, Subject} from 'rxjs';
 import {map, startWith, takeUntil} from 'rxjs/operators';
 
+import {MatDialogRef} from '@anyopsos/lib-angular-material';
+import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {Application, AnyOpsOSLibApplicationService} from '@anyopsos/lib-application';
 import {AnyOpsOSLibServiceInjectorService} from '@anyopsos/lib-service-injector';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
 import {AnyOpsOSLibUtilsService} from '@anyopsos/lib-utils';
-import {ImDataObject} from '@anyopsos/app-infrastructure-manager';
+import {AnyOpsOSLibCredentialHelpersService} from '@anyopsos/lib-credential';
+import {AnyOpsOSLibSshHelpersService} from '@anyopsos/lib-ssh';
 import {Credential} from '@anyopsos/module-credential';
-import {MonitorConnection} from '@anyopsos/module-monitor';
+import {ConnectionSftp, ConnectionSsh} from '@anyopsos/module-ssh';
+import {ConnectionMonitor} from '@anyopsos/module-monitor';
+import {DataObject} from '@anyopsos/backend-core/app/types/data-object';
 
 import {AnyOpsOSAppMonitorService} from '../../services/anyopsos-app-monitor.service';
 
 interface LinkTo {
   type: string;
-  nodes: ImDataObject[];
+  nodes: DataObject[];
 }
 
-const nodesFilter = (opt: ImDataObject[], value: string | ImDataObject): ImDataObject[] => {
+const nodesFilter = (opt: DataObject[], value: string | DataObject): DataObject[] => {
   const filterValue = (typeof value === 'string' ? value.toLowerCase() : value.name.toLowerCase());
 
   return opt.filter(item => item.name.toLowerCase().indexOf(filterValue) === 0);
@@ -31,37 +36,53 @@ const nodesFilter = (opt: ImDataObject[], value: string | ImDataObject): ImDataO
   styleUrls: ['./body-new-connection.component.scss']
 })
 export class BodyNewConnectionComponent implements OnDestroy, OnInit {
-  @Input() application: Application;
+  @ViewChild('scrollToElement', {static: false}) readonly scrollToElement: ElementRef<HTMLInputElement>;
+  @Input() private readonly application: Application;
 
-  private destroySubject$: Subject<void> = new Subject();
-  private CredentialsManager;
+  private readonly destroySubject$: Subject<void> = new Subject();
   private InfrastructureManagerNodeGraph;
   private InfrastructureManagerObjectHelper;
 
-  private currentGraphTopology: string = null;
+  private currentGraphTopology: string = 'all';
 
   credentials: Credential[];
+  sshConnections: ConnectionSsh[];
   connectionForm: FormGroup;
-  submitted: boolean = false;
   newConnectionType: string = null;
 
   linkGroups: LinkTo[];
 
   linkToOptions: Observable<LinkTo[]>;
 
+  nodes$: Promise<any>;
+  topologies$: Promise<any>;
+
   constructor(private readonly formBuilder: FormBuilder,
+              private readonly logger: AnyOpsOSLibLoggerService,
               private readonly LibApplication: AnyOpsOSLibApplicationService,
-              private serviceInjector: AnyOpsOSLibServiceInjectorService,
               private readonly LibModal: AnyOpsOSLibModalService,
-              private Utils: AnyOpsOSLibUtilsService,
+              private readonly LibCredentialHelpers: AnyOpsOSLibCredentialHelpersService,
+              private readonly LibSshHelpers: AnyOpsOSLibSshHelpersService,
+              private readonly Utils: AnyOpsOSLibUtilsService,
+              private serviceInjector: AnyOpsOSLibServiceInjectorService,
               private Monitor: AnyOpsOSAppMonitorService) {
 
-    this.CredentialsManager = this.serviceInjector.get('AnyOpsOSAppCredentialsManagerService');
     this.InfrastructureManagerNodeGraph = this.serviceInjector.get('AnyOpsOSAppInfrastructureManagerNodeGraphService');
-    this.InfrastructureManagerObjectHelper = this.serviceInjector.get('AnyOpsOSAppInfrastructureManagerObjectHelperService');
   }
 
   ngOnInit(): void {
+
+    this.nodes$ = this.InfrastructureManagerNodeGraph.setNodeGraphNodes(this.currentGraphTopology).catch((e: Error) => {
+      this.logger.error('InfrastructureManager', 'Error while getting graph nodes', null, e);
+    });
+
+    this.topologies$ = this.InfrastructureManagerNodeGraph.getTopologies().catch((e: Error) => {
+      this.logger.error('InfrastructureManager', 'Error while getting graph topologies', null, e);
+    });
+
+    /**
+     * Create basic form
+     */
     this.connectionForm = this.formBuilder.group({
       description: ['', Validators.required],
       url: ['', [
@@ -78,12 +99,20 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
     });
 
     // Listen for credentials changes
-    this.CredentialsManager.credentials
+    this.LibCredentialHelpers.getAllCredentialsObserver()
       .pipe(takeUntil(this.destroySubject$)).subscribe((credentials: Credential[]) => this.credentials = credentials);
+
+    // Listen for connections changes
+    this.LibSshHelpers.getAllConnectionsObserver()
+      .pipe(takeUntil(this.destroySubject$)).subscribe((connections: (ConnectionSsh | ConnectionSftp)[]) => {
+
+      const sshConnections: ConnectionSsh[] = connections.filter((connection: ConnectionSsh | ConnectionSftp) => connection.type === 'ssh') as ConnectionSsh[];
+      this.onSshConnectionsChange(sshConnections);
+    });
 
     // Listen for activeConnection change
     this.Monitor.activeConnection
-      .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnectionUuid: string) => this.onActiveConnectionChange(activeConnectionUuid));
+      .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnection: ConnectionMonitor | null) => this.onActiveConnectionChange(activeConnection));
 
     this.generateLinkGroups();
   }
@@ -95,22 +124,26 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
     this.destroySubject$.next();
   }
 
-  private onActiveConnectionChange(activeConnectionUuid: string): void {
-    if (!activeConnectionUuid) {
+  private onSshConnectionsChange(connections: ConnectionSsh[]): void {
+    this.sshConnections = connections;
+
+    if (this.sshConnections.length === 0) return this.connectionForm.controls.hopServerUuid.disable();
+  }
+
+  private onActiveConnectionChange(activeConnection: ConnectionMonitor | null): void {
+
+    // Reset main Form
+    if (!activeConnection) {
       this.connectionForm.reset();
       return this.newConnectionType = null;
     }
 
-    this.newConnectionType = this.getActiveConnection().type;
+    // Set Form controls with currentCredential data
+    this.newConnectionType = activeConnection.type;
 
-    this.connectionForm.controls.description.setValue(this.getActiveConnection().description);
-    this.connectionForm.controls.url.setValue(this.getActiveConnection().url);
-    this.connectionForm.controls.withCredential.setValue(this.getActiveConnection().withCredential);
-    this.connectionForm.controls.credential.setValue(this.getActiveConnection().credential);
-    this.connectionForm.controls.save.setValue(this.getActiveConnection().save);
-    this.connectionForm.controls.autologin.setValue(this.getActiveConnection().autologin);
-    this.connectionForm.controls.uuid.setValue(this.getActiveConnection().uuid);
-    this.connectionForm.controls.type.setValue(this.getActiveConnection().type);
+    Object.keys(activeConnection).forEach((item) => {
+      if (this.connectionForm.controls[item]) this.connectionForm.controls[item].setValue(activeConnection[item]);
+    });
   }
 
   private generateLinkGroups() {
@@ -161,7 +194,7 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
   /**
    * mat-autocomplete displayWith
    */
-  displayFn(node?: ImDataObject): string | undefined {
+  displayFn(node?: DataObject): string | undefined {
     return node ? node.name : undefined;
   }
 
@@ -170,17 +203,26 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
     (this.connectionForm.controls.type as FormControl).setValue(type);
   }
 
-  sendConnect(saveOnly: boolean = false): void {
-    this.submitted = true;
+  async sendConnect(saveOnly: boolean = false): Promise<void> {
 
     // stop here if form is invalid
     if (this.connectionForm.invalid) return;
 
-    this.LibModal.openLittleModal('PLEASE WAIT', (saveOnly ? 'Saving connection...' : 'Connecting to server...'), '.window--monitor .window__main', 'plain').then(() => {
-      this.Monitor.connect(this.connectionForm.value, saveOnly);
-      this.submitted = false;
+    const littleModalRef: MatDialogRef<any> = await this.LibModal.openLittleModal(
+      this.Monitor.getBodyContainerRef(),
+      'PLEASE WAIT',
+      (saveOnly ? 'Saving connection...' : 'Connecting to server...')
+    );
 
-      if (saveOnly) this.connectionForm.reset();
+    this.Monitor.connect(this.connectionForm.value, saveOnly).then((connection: ConnectionMonitor) => {
+      this.Monitor.setActiveConnectionUuid(connection.uuid);
+
+      this.LibModal.closeModal(littleModalRef.id);
+    }).catch((e: any) => {
+      this.logger.error('Monitor', 'Error while connecting', null, e);
+
+      this.LibModal.changeModalType(littleModalRef.id, 'danger');
+      this.LibModal.changeModalText(littleModalRef.id, e);
     });
   }
 
@@ -188,23 +230,15 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
     this.LibApplication.openApplication('credentials-manager');
   }
 
-  getActiveConnection(): MonitorConnection {
-    return this.Monitor.getActiveConnection();
+  manageSshConnections(): void {
+    this.LibApplication.openApplication('ssh');
   }
 
   /**
-   * Weavescope graph
+   * Diagram graph
    */
   scrollTo(): void {
     this.Utils.scrollTo('monitor_main-body', true);
-  }
-
-  setNodeGraphNodes() {
-    return this.InfrastructureManagerNodeGraph.setNodeGraphNodes(this.currentGraphTopology);
-  }
-
-  setNodeGraphTopologies() {
-    return this.InfrastructureManagerNodeGraph.getTopologies();
   }
 
   selectedTopologyChange($event) {

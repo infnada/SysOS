@@ -13,11 +13,11 @@
     "@anyopsos/lib-folder",
     "@anyopsos/lib-logger",
     "@anyopsos/lib-modal",
-    "@anyopsos/lib-netapp",
+    "@anyopsos/lib-node-netapp",
     "@anyopsos/lib-selectable",
     "@anyopsos/lib-service-injector",
     "@anyopsos/lib-types",
-    "@anyopsos/lib-vmware",
+    "@anyopsos/lib-node-vmware",
     "@anyopsos/app-infrastructure-manager",
     "uuid",
     "ngx-socket-io"

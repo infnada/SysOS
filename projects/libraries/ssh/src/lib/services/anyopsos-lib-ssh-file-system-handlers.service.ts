@@ -5,8 +5,8 @@ import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibFileSystemUiService, CutCopyFile, SendFileExchange} from '@anyopsos/lib-file-system-ui';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
 import {ConnectionSftp} from '@anyopsos/module-ssh';
-import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
-import {AnyOpsOSFile} from '@anyopsos/backend/app/types/anyopsos-file';
+import {BackendResponse} from '@anyopsos/backend-core/app/types/backend-response';
+import {AnyOpsOSFile} from '@anyopsos/backend-core/app/types/anyopsos-file';
 
 import {AnyOpsOSLibSshFileSystemService} from './anyopsos-lib-ssh-file-system.service';
 

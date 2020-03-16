@@ -1,5 +1,6 @@
+<!-- TODO: Get Datastore/Volume status -->
 <div class="window__status">
-  <span class="text-muted" *ngIf="getActiveConnection()">{{getActiveConnection().host}}</span>
-  <span class="float-right text-danger" *ngIf="getActiveConnection() && getActiveConnection().state === 'disconnected'">Disconnected</span>
-  <span class="float-right text-success" *ngIf="getActiveConnection() && getActiveConnection().state !== 'disconnected'">{{getActiveConnection().state}}</span>
+  <span class="text-muted" *ngIf="activeConnectionObjectUuid">{{(getActiveConnectionObjectObs() | async)?.host}}</span>
+  <span class="float-right text-danger" *ngIf="(getActiveConnectionObjectObs() | async)?.state === 'disconnected'">Disconnected</span>
+  <span class="float-right text-success text-capitalize" *ngIf="(getActiveConnectionObjectObs() | async)?.state !== 'disconnected'">{{(getActiveConnectionObjectObs() | async)?.state}}</span>
 </div>

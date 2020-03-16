@@ -5,7 +5,7 @@ import {getLogger, Logger} from 'log4js';
 import {EventEmitter} from 'events';
 
 import {AnyOpsOSApiGlobalsModule} from '@anyopsos/module-api-globals';
-import {AnyOpsOSVmwareFileSystemModule} from '@anyopsos/module-vmware';
+import {AnyOpsOSNodeVmwareFileSystemModule} from '@anyopsos/module-node-vmware';
 
 
 const logger: Logger = getLogger('mainLog');
@@ -26,7 +26,7 @@ export class AnyOpsOSVmwareFileApiController {
                      @Param('dstPath') dstPath: string) {
     logger.info(`[API VmwareFile] -> Download file -> workspaceUuid [${workspaceUuid}], connectionUuid [${connectionUuid}], srcPath [${srcPath}], dstPath [${dstPath}]`);
 
-    const VmwareFileSystemModule: AnyOpsOSVmwareFileSystemModule = new AnyOpsOSVmwareFileSystemModule(userUuid, sessionUuid, workspaceUuid, connectionUuid);
+    const VmwareFileSystemModule: AnyOpsOSNodeVmwareFileSystemModule = new AnyOpsOSNodeVmwareFileSystemModule(userUuid, sessionUuid, workspaceUuid, connectionUuid);
     const ApiGlobalsModule: AnyOpsOSApiGlobalsModule = new AnyOpsOSApiGlobalsModule(request, response);
 
     const percentageEvent: EventEmitter = await VmwareFileSystemModule.getFile(srcPath, dstPath);
@@ -50,7 +50,7 @@ export class AnyOpsOSVmwareFileApiController {
                    @Param('dstPath') dstPath: string) {
     logger.info(`[API VmwareFile] -> Upload file -> workspaceUuid [${workspaceUuid}], connectionUuid [${connectionUuid}], srcPath [${srcPath}], dstPath [${dstPath}]`);
 
-    const VmwareFileSystemModule: AnyOpsOSVmwareFileSystemModule = new AnyOpsOSVmwareFileSystemModule(userUuid, sessionUuid, workspaceUuid, connectionUuid);
+    const VmwareFileSystemModule: AnyOpsOSNodeVmwareFileSystemModule = new AnyOpsOSNodeVmwareFileSystemModule(userUuid, sessionUuid, workspaceUuid, connectionUuid);
     const ApiGlobalsModule: AnyOpsOSApiGlobalsModule = new AnyOpsOSApiGlobalsModule(request, response);
 
     const percentageEvent: EventEmitter = await VmwareFileSystemModule.putFile(srcPath, dstPath);
@@ -80,7 +80,7 @@ export class AnyOpsOSVmwareFileApiController {
                   @BodyParam('permissions', { required: false }) permissions?: string) {
     logger.info(`[API VmwareFile] -> Rename/Move/Copy/Chown/Chmod file -> workspaceUuid [${workspaceUuid}], connectionUuid [${connectionUuid}], type [${type}], srcPath [${srcPath}], dstPath [${dstPath}], permissions [${permissions}]`);
 
-    const VmwareFileSystemModule: AnyOpsOSVmwareFileSystemModule = new AnyOpsOSVmwareFileSystemModule(userUuid, sessionUuid, workspaceUuid, connectionUuid);
+    const VmwareFileSystemModule: AnyOpsOSNodeVmwareFileSystemModule = new AnyOpsOSNodeVmwareFileSystemModule(userUuid, sessionUuid, workspaceUuid, connectionUuid);
     const ApiGlobalsModule: AnyOpsOSApiGlobalsModule = new AnyOpsOSApiGlobalsModule(request, response);
 
     // 'dst' is required by 'copy' | 'move' | 'rename'
@@ -110,7 +110,7 @@ export class AnyOpsOSVmwareFileApiController {
                    @Param('datacenterName') datacenterName: string) {
     logger.info(`[API VmwareFile] -> Delete file -> workspaceUuid [${workspaceUuid}], connectionUuid [${connectionUuid}], srcPath [${srcPath}]`);
 
-    const VmwareFileSystemModule: AnyOpsOSVmwareFileSystemModule = new AnyOpsOSVmwareFileSystemModule(userUuid, sessionUuid, workspaceUuid, connectionUuid);
+    const VmwareFileSystemModule: AnyOpsOSNodeVmwareFileSystemModule = new AnyOpsOSNodeVmwareFileSystemModule(userUuid, sessionUuid, workspaceUuid, connectionUuid);
     const ApiGlobalsModule: AnyOpsOSApiGlobalsModule = new AnyOpsOSApiGlobalsModule(request, response);
 
     await VmwareFileSystemModule.deleteFile(srcPath, datastoreName, datacenterName);

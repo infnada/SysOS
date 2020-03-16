@@ -1,0 +1,34 @@
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: anyopsos
+  namespace: anyopsos
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/websocket-services: "core"
+spec:
+  tls:
+    - hosts:
+        - anyopsos.local
+  rules:
+    - host: anyopsos.local
+      http:
+        paths:
+          - path: /api/(auth|credential|vault)
+            backend:
+              serviceName: auth
+              servicePort: auth-api
+          - path: /api/(file|folder|config-file)
+            backend:
+              serviceName: filesystem
+              servicePort: filesystem-api
+          - path: /socket.io/
+            backend:
+              serviceName: core
+              servicePort: core-api
+          - path: /
+            backend:
+              serviceName: core
+              servicePort: core-api

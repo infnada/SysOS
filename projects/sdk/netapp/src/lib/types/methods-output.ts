@@ -1,4 +1,4 @@
-import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
+import {BackendResponse} from '@anyopsos/backend-core/app/types/backend-response';
 
 // TODO
 export type NetappSdkFunctionsOutput<Action> =

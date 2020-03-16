@@ -1,30 +1,25 @@
 import {Injectable, ViewContainerRef} from '@angular/core';
 
+import {take} from 'rxjs/operators';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {Socket} from 'ngx-socket-io';
 import {v4 as uuidv4} from 'uuid';
 
+import {MatDialogRef} from '@anyopsos/lib-angular-material';
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
 import {AnyOpsOSLibApplicationService} from '@anyopsos/lib-application';
 
-import {AnyOpsOSLibVmwareHelpersService, AnyOpsOSLibVmwareService, AnyOpsOSLibVmwareConnectionsStateService} from '@anyopsos/lib-vmware';
-import {AnyOpsOSLibNetappHelpersService, AnyOpsOSLibNetappService, AnyOpsOSLibNetappConnectionsStateService} from '@anyopsos/lib-netapp';
-import {AnyOpsOSLibDockerHelpersService, AnyOpsOSLibDockerService, AnyOpsOSLibDockerConnectionsStateService} from '@anyopsos/lib-docker';
-import {AnyOpsOSLibKubernetesHelpersService, AnyOpsOSLibKubernetesService, AnyOpsOSLibKubernetesConnectionsStateService} from '@anyopsos/lib-kubernetes';
-import {AnyOpsOSLibLinuxHelpersService, AnyOpsOSLibLinuxService, AnyOpsOSLibLinuxConnectionsStateService} from '@anyopsos/lib-linux';
-import {AnyOpsOSLibSnmpHelpersService, AnyOpsOSLibSnmpService, AnyOpsOSLibSnmpConnectionsStateService} from '@anyopsos/lib-snmp';
+import {AnyOpsOSLibNodeHelpersService} from '@anyopsos/lib-node';
+import {AnyOpsOSLibNodeVmwareService, AnyOpsOSLibNodeVmwareConnectionsStateService} from '@anyopsos/lib-node-vmware';
+import {AnyOpsOSLibNodeNetappService, AnyOpsOSLibNodeNetappConnectionsStateService} from '@anyopsos/lib-node-netapp';
+import {AnyOpsOSLibNodeDockerService, AnyOpsOSLibNodeDockerConnectionsStateService} from '@anyopsos/lib-node-docker';
+import {AnyOpsOSLibNodeKubernetesService, AnyOpsOSLibNodeKubernetesConnectionsStateService} from '@anyopsos/lib-node-kubernetes';
+import {AnyOpsOSLibNodeLinuxService, AnyOpsOSLibNodeLinuxConnectionsStateService} from '@anyopsos/lib-node-linux';
+import {AnyOpsOSLibNodeSnmpService, AnyOpsOSLibNodeSnmpConnectionsStateService} from '@anyopsos/lib-node-snmp';
 
-import {ConnectionVmware} from '@anyopsos/module-vmware';
-import {ConnectionDocker} from '@anyopsos/module-docker';
-import {ConnectionKubernetes} from '@anyopsos/module-kubernetes';
-import {ConnectionSnmp} from '@anyopsos/module-snmp';
-import {ConnectionLinux} from '@anyopsos/module-linux';
-import {ConnectionNetapp} from '@anyopsos/module-netapp';
-
-import {ConnectionTypes} from '@anyopsos/backend/app/types/connection-types';
-import {DataObject} from '@anyopsos/backend/app/types/data-object';
-import {MatDialogRef} from '@anyopsos/lib-angular-material';
+import {ConnectionTypes} from '@anyopsos/backend-core/app/types/connection-types';
+import {DataObject} from '@anyopsos/backend-core/app/types/data-object';
 
 @Injectable({
   providedIn: 'root'
@@ -54,26 +49,21 @@ export class AnyOpsOSAppInfrastructureManagerService {
               private readonly LibModal: AnyOpsOSLibModalService,
               private readonly LibApplication: AnyOpsOSLibApplicationService,
 
-              private readonly LibVmware: AnyOpsOSLibVmwareService,
-              private readonly LibNetapp: AnyOpsOSLibNetappService,
-              private readonly LibDocker: AnyOpsOSLibDockerService,
-              private readonly LibKubernetes: AnyOpsOSLibKubernetesService,
-              private readonly LibSnmp: AnyOpsOSLibSnmpService,
-              private readonly LibLinux: AnyOpsOSLibLinuxService,
+              private readonly LibNodeHelpers: AnyOpsOSLibNodeHelpersService,
 
-              private readonly LibVmwareConnectionsState: AnyOpsOSLibVmwareConnectionsStateService,
-              private readonly LibNetappConnectionsState: AnyOpsOSLibNetappConnectionsStateService,
-              private readonly LibDockerConnectionsState: AnyOpsOSLibDockerConnectionsStateService,
-              private readonly LibKubernetesConnectionsState: AnyOpsOSLibKubernetesConnectionsStateService,
-              private readonly LibSnmpConnectionsState: AnyOpsOSLibSnmpConnectionsStateService,
-              private readonly LibLinuxConnectionsState: AnyOpsOSLibLinuxConnectionsStateService,
+              private readonly LibNodeVmware: AnyOpsOSLibNodeVmwareService,
+              private readonly LibNodeNetapp: AnyOpsOSLibNodeNetappService,
+              private readonly LibNodeDocker: AnyOpsOSLibNodeDockerService,
+              private readonly LibNodeKubernetes: AnyOpsOSLibNodeKubernetesService,
+              private readonly LibNodeSnmp: AnyOpsOSLibNodeSnmpService,
+              private readonly LibNodeLinux: AnyOpsOSLibNodeLinuxService,
 
-              private readonly LibVmwareHelpers: AnyOpsOSLibVmwareHelpersService,
-              private readonly LibNetappHelpers: AnyOpsOSLibNetappHelpersService,
-              private readonly LibDockerHelpers: AnyOpsOSLibDockerHelpersService,
-              private readonly LibKubernetesHelpers: AnyOpsOSLibKubernetesHelpersService,
-              private readonly LibSnmpHelpers: AnyOpsOSLibSnmpHelpersService,
-              private readonly LibLinuxHelpers: AnyOpsOSLibLinuxHelpersService) {
+              private readonly LibNodeVmwareConnectionsState: AnyOpsOSLibNodeVmwareConnectionsStateService,
+              private readonly LibNodeNetappConnectionsState: AnyOpsOSLibNodeNetappConnectionsStateService,
+              private readonly LibNodeDockerConnectionsState: AnyOpsOSLibNodeDockerConnectionsStateService,
+              private readonly LibNodeKubernetesConnectionsState: AnyOpsOSLibNodeKubernetesConnectionsStateService,
+              private readonly LibNodeSnmpConnectionsState: AnyOpsOSLibNodeSnmpConnectionsStateService,
+              private readonly LibNodeLinuxConnectionsState: AnyOpsOSLibNodeLinuxConnectionsStateService) {
 
     this.dataStore = { activeConnection: null, activeConnectionUuid: null, activeObject: null, activeObjectUuid: null };
     this.$activeConnection = new BehaviorSubject(this.dataStore.activeConnection);
@@ -104,14 +94,17 @@ export class AnyOpsOSAppInfrastructureManagerService {
   setActiveConnectionUuid(connectionUuid: string = null, connectionType: string = null): void {
     if (!connectionUuid != !connectionType) throw new Error('invalid_resource'); // XOR
 
+    // Do not update if not needed
+    if (this.dataStore.activeConnectionUuid === connectionUuid && this.activeConnectionType === connectionType) return;
+
+    // reset ActiveObjectUuid
+    if (!connectionUuid) this.setActiveObjectUuid();
+
     this.dataStore.activeConnectionUuid = connectionUuid;
     this.activeConnectionType = connectionType;
 
     // broadcast data to subscribers
     this.$activeConnectionUuid.next(Object.assign({}, this.dataStore).activeConnectionUuid);
-
-    // reset ActiveObjectUuid
-    this.setActiveObjectUuid();
 
     this.connectionsUpdated();
   }
@@ -120,7 +113,20 @@ export class AnyOpsOSAppInfrastructureManagerService {
    * Sets current activeObjectUuid state
    */
   setActiveObjectUuid(objectUuid: string = null): void {
+
+    // Do not update if not needed
+    if (this.dataStore.activeObjectUuid === objectUuid) return;
+
     this.dataStore.activeObjectUuid = objectUuid;
+
+    if (objectUuid) {
+      const mainUuid: string = this.LibNodeHelpers.extractMainUuidFromObjectUuid(objectUuid);
+      const mainType: string = this.LibNodeHelpers.extractMainTypeFromObjectUuid(objectUuid);
+
+      this.setActiveConnectionUuid(mainUuid, mainType)
+    } else {
+      this.connectionsUpdatedSetObject();
+    }
 
     // broadcast data to subscribers
     this.$activeObjectUuid.next(Object.assign({}, this.dataStore).activeObjectUuid);
@@ -129,88 +135,53 @@ export class AnyOpsOSAppInfrastructureManagerService {
   /**
    * Called every time the connections state is updated
    */
-  async connectionsUpdated(): Promise<void> {
+  connectionsUpdated(): void {
 
     if (!this.dataStore.activeConnectionUuid) {
       this.dataStore.activeConnection = null;
     } else {
-      if (this.activeConnectionType === 'vmware') this.dataStore.activeConnection = await this.LibVmwareHelpers.getConnectionByUuid(this.dataStore.activeConnectionUuid);
-      if (this.activeConnectionType === 'netapp') this.dataStore.activeConnection = await this.LibNetappHelpers.getConnectionByUuid(this.dataStore.activeConnectionUuid);
-      if (this.activeConnectionType === 'docker') this.dataStore.activeConnection = await this.LibDockerHelpers.getConnectionByUuid(this.dataStore.activeConnectionUuid);
-      if (this.activeConnectionType === 'kubernetes') this.dataStore.activeConnection = await this.LibKubernetesHelpers.getConnectionByUuid(this.dataStore.activeConnectionUuid);
-      if (this.activeConnectionType === 'linux') this.dataStore.activeConnection = await this.LibLinuxHelpers.getConnectionByUuid(this.dataStore.activeConnectionUuid);
-      if (this.activeConnectionType === 'snmp') this.dataStore.activeConnection = await this.LibSnmpHelpers.getConnectionByUuid(this.dataStore.activeConnectionUuid);
+      this.dataStore.activeConnection = this.LibNodeHelpers.getConnectionByUuid(this.dataStore.activeConnectionUuid, this.activeConnectionType);
     }
 
     // broadcast data to subscribers
     this.$activeConnection.next(Object.assign({}, this.dataStore).activeConnection);
+
+    this.connectionsUpdatedSetObject();
+  }
+
+  /**
+   * Called every time the connections state is updated
+   */
+  connectionsUpdatedSetObject(): void {
+
+    if (!this.dataStore.activeObjectUuid) {
+      this.dataStore.activeObject = null;
+    } else {
+     this.dataStore.activeObject = this.LibNodeHelpers.getObjectByUuid(this.dataStore.activeConnectionUuid, this.activeConnectionType, this.dataStore.activeObjectUuid);
+    }
+
+    // broadcast data to subscribers
+    this.$activeObject.next(Object.assign({}, this.dataStore).activeObject);
   }
 
   /**
    * Get current active connection
    */
-  async getActiveConnection(): Promise<ConnectionTypes | null> {
+  getActiveConnection(): ConnectionTypes | null {
     if (this.dataStore.activeConnectionUuid === null) return null;
 
-    if (this.activeConnectionType === 'vmware') return this.LibVmwareHelpers.getConnectionByUuid(this.dataStore.activeConnectionUuid);
-    if (this.activeConnectionType === 'netapp') return this.LibNetappHelpers.getConnectionByUuid(this.dataStore.activeConnectionUuid);
-    if (this.activeConnectionType === 'docker') return this.LibDockerHelpers.getConnectionByUuid(this.dataStore.activeConnectionUuid);
-    if (this.activeConnectionType === 'kubernetes') return this.LibKubernetesHelpers.getConnectionByUuid(this.dataStore.activeConnectionUuid);
-    if (this.activeConnectionType === 'linux') return this.LibLinuxHelpers.getConnectionByUuid(this.dataStore.activeConnectionUuid);
-    if (this.activeConnectionType === 'snmp') return this.LibSnmpHelpers.getConnectionByUuid(this.dataStore.activeConnectionUuid);
+    // We can use this.dataStore.activeConnection
+    return this.$activeConnection.getValue();
   }
 
   /**
    * Get current connection active object
    */
-  async getActiveObject(): Promise<DataObject | null> {
+  getActiveObject(): DataObject | null {
     if (this.dataStore.activeObjectUuid === null) return null;
 
-    const activeConnection: ConnectionTypes = await this.getActiveConnection();
-    return activeConnection.data.Data.find(obj => obj.info.uuid === this.dataStore.activeObjectUuid);
-  }
-
-  /**
-   * Return all connections
-   */
-  // TODO make tis as Promise.all to not affect performance
-  async getConnections(): Promise<ConnectionTypes[]> {
-    const vmwareConnections: ConnectionVmware[] = await this.LibVmwareHelpers.getAllConnections();
-    const netappConnections: ConnectionNetapp[] = await this.LibNetappHelpers.getAllConnections();
-    const dockerConnections: ConnectionDocker[] = await this.LibDockerHelpers.getAllConnections();
-    const kubernetesConnections: ConnectionKubernetes[] = await this.LibKubernetesHelpers.getAllConnections();
-    const linuxConnections: ConnectionLinux[] = await this.LibLinuxHelpers.getAllConnections();
-    const snmpConnections: ConnectionSnmp[] = await this.LibSnmpHelpers.getAllConnections();
-
-    return [...vmwareConnections, ...netappConnections, ...dockerConnections, ...kubernetesConnections, ...linuxConnections, ...snmpConnections];
-  }
-
-  /**
-   * Return all connections matching 'type'
-   */
-  async getConnectionsByType(connectionType: string): Promise<ConnectionTypes[]> {
-    if (!connectionType) throw new Error('invalid_resource');
-
-    if (connectionType === 'vmware') return this.LibVmwareHelpers.getAllConnections();
-    if (connectionType === 'netapp') return this.LibNetappHelpers.getAllConnections();
-    if (connectionType === 'docker') return this.LibDockerHelpers.getAllConnections();
-    if (connectionType === 'kubernetes') return this.LibKubernetesHelpers.getAllConnections();
-    if (connectionType === 'linux') return this.LibLinuxHelpers.getAllConnections();
-    if (connectionType === 'snmp') return this.LibSnmpHelpers.getAllConnections();
-  }
-
-  /**
-   * Get connection full object matching 'uuid'
-   */
-  async getConnectionByUuid(connectionUuid: string, connectionType: string): Promise<ConnectionTypes> {
-    if (!connectionUuid || !connectionType) throw new Error('invalid_resource');
-
-    if (connectionType === 'vmware') return this.LibVmwareHelpers.getConnectionByUuid(connectionUuid);
-    if (connectionType === 'netapp') return this.LibNetappHelpers.getConnectionByUuid(connectionUuid);
-    if (connectionType === 'docker') return this.LibDockerHelpers.getConnectionByUuid(connectionUuid);
-    if (connectionType === 'kubernetes') return this.LibKubernetesHelpers.getConnectionByUuid(connectionUuid);
-    if (connectionType === 'linux') return this.LibLinuxHelpers.getConnectionByUuid(connectionUuid);
-    if (connectionType === 'snmp') return this.LibSnmpHelpers.getConnectionByUuid(connectionUuid);
+    // We can use this.dataStore.activeObject
+    return this.$activeObject.getValue();
   }
 
   /**
@@ -228,12 +199,12 @@ export class AnyOpsOSAppInfrastructureManagerService {
 
     // Editing an existing connection
     if (connection.uuid) {
-      if (connection.type === 'vmware') await this.LibVmwareConnectionsState.patchFullConnection(connection);
-      if (connection.type === 'netapp') await this.LibNetappConnectionsState.patchFullConnection(connection);
-      if (connection.type === 'docker') await this.LibDockerConnectionsState.patchFullConnection(connection);
-      if (connection.type === 'kubernetes') await this.LibKubernetesConnectionsState.patchFullConnection(connection);
-      if (connection.type === 'linux') await this.LibLinuxConnectionsState.patchFullConnection(connection);
-      if (connection.type === 'snmp') await this.LibSnmpConnectionsState.patchFullConnection(connection);
+      if (connection.type === 'vmware') await this.LibNodeVmwareConnectionsState.patchFullConnection(connection);
+      if (connection.type === 'netapp') await this.LibNodeNetappConnectionsState.patchFullConnection(connection);
+      if (connection.type === 'docker') await this.LibNodeDockerConnectionsState.patchFullConnection(connection);
+      if (connection.type === 'kubernetes') await this.LibNodeKubernetesConnectionsState.patchFullConnection(connection);
+      if (connection.type === 'linux') await this.LibNodeLinuxConnectionsState.patchFullConnection(connection);
+      if (connection.type === 'snmp') await this.LibNodeSnmpConnectionsState.patchFullConnection(connection);
 
     // New connection received
     } else {
@@ -241,22 +212,22 @@ export class AnyOpsOSAppInfrastructureManagerService {
       connection.uuid = uuidv4();
       connection.state = 'disconnected';
 
-      if (connection.type === 'vmware') await this.LibVmwareConnectionsState.putConnection(connection);
-      if (connection.type === 'netapp') await this.LibNetappConnectionsState.putConnection(connection);
-      if (connection.type === 'docker') await this.LibDockerConnectionsState.putConnection(connection);
-      if (connection.type === 'kubernetes') await this.LibKubernetesConnectionsState.putConnection(connection);
-      if (connection.type === 'linux') await this.LibLinuxConnectionsState.putConnection(connection);
-      if (connection.type === 'snmp') await this.LibSnmpConnectionsState.putConnection(connection);
+      if (connection.type === 'vmware') await this.LibNodeVmwareConnectionsState.putConnection(connection);
+      if (connection.type === 'netapp') await this.LibNodeNetappConnectionsState.putConnection(connection);
+      if (connection.type === 'docker') await this.LibNodeDockerConnectionsState.putConnection(connection);
+      if (connection.type === 'kubernetes') await this.LibNodeKubernetesConnectionsState.putConnection(connection);
+      if (connection.type === 'linux') await this.LibNodeLinuxConnectionsState.putConnection(connection);
+      if (connection.type === 'snmp') await this.LibNodeSnmpConnectionsState.putConnection(connection);
     }
 
     // Connect to the server
     if (!saveOnly) {
-      if (connection.type === 'vmware') await this.LibVmware.sendConnect(connection.uuid);
-      if (connection.type === 'netapp') await this.LibNetapp.sendConnect(connection.uuid);
-      if (connection.type === 'docker') await this.LibDocker.sendConnect(connection.uuid);
-      if (connection.type === 'kubernetes') await this.LibKubernetes.sendConnect(connection.uuid);
-      if (connection.type === 'linux') await this.LibLinux.sendConnect(connection.uuid);
-      if (connection.type === 'snmp') await this.LibSnmp.sendConnect(connection.uuid);
+      if (connection.type === 'vmware') await this.LibNodeVmware.sendConnect(connection.uuid);
+      if (connection.type === 'netapp') await this.LibNodeNetapp.sendConnect(connection.uuid);
+      if (connection.type === 'docker') await this.LibNodeDocker.sendConnect(connection.uuid);
+      if (connection.type === 'kubernetes') await this.LibNodeKubernetes.sendConnect(connection.uuid);
+      if (connection.type === 'linux') await this.LibNodeLinux.sendConnect(connection.uuid);
+      if (connection.type === 'snmp') await this.LibNodeSnmp.sendConnect(connection.uuid);
     }
 
     return connection;
@@ -270,12 +241,12 @@ export class AnyOpsOSAppInfrastructureManagerService {
       connectionType = this.activeConnectionType;
     }
 
-    if (connectionType === 'vmware') await this.LibVmware.disconnectConnection(connectionUuid);
-    if (connectionType === 'netapp') await this.LibNetapp.disconnectConnection(connectionUuid);
-    if (connectionType === 'docker') await this.LibDocker.disconnectConnection(connectionUuid);
-    if (connectionType === 'kubernetes') await this.LibKubernetes.disconnectConnection(connectionUuid);
-    if (connectionType === 'linux') await this.LibLinux.disconnectConnection(connectionUuid);
-    if (connectionType === 'snmp') await this.LibSnmp.disconnectConnection(connectionUuid);
+    if (connectionType === 'vmware') await this.LibNodeVmware.disconnectConnection(connectionUuid);
+    if (connectionType === 'netapp') await this.LibNodeNetapp.disconnectConnection(connectionUuid);
+    if (connectionType === 'docker') await this.LibNodeDocker.disconnectConnection(connectionUuid);
+    if (connectionType === 'kubernetes') await this.LibNodeKubernetes.disconnectConnection(connectionUuid);
+    if (connectionType === 'linux') await this.LibNodeLinux.disconnectConnection(connectionUuid);
+    if (connectionType === 'snmp') await this.LibNodeSnmp.disconnectConnection(connectionUuid);
   }
 
   async deleteConnection(connectionUuid: string = null, connectionType: string = null): Promise<void> {
@@ -286,7 +257,7 @@ export class AnyOpsOSAppInfrastructureManagerService {
       connectionType = this.activeConnectionType;
     }
 
-    const currentConnection: ConnectionTypes = await this.getConnectionByUuid(connectionUuid, connectionType);
+    const currentConnection: ConnectionTypes = this.LibNodeHelpers.getConnectionByUuid(connectionUuid, connectionType);
     const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('question', this.bodyContainer,
       {
         title: `Delete connection ${currentConnection.description}`,
@@ -307,12 +278,12 @@ export class AnyOpsOSAppInfrastructureManagerService {
 
       this.setActiveConnectionUuid();
 
-      if (connectionType === 'vmware') await this.LibVmware.deleteConnection(connectionUuid);
-      if (connectionType === 'netapp') await this.LibNetapp.deleteConnection(connectionUuid);
-      if (connectionType === 'docker') await this.LibDocker.deleteConnection(connectionUuid);
-      if (connectionType === 'kubernetes') await this.LibKubernetes.deleteConnection(connectionUuid);
-      if (connectionType === 'linux') await this.LibLinux.deleteConnection(connectionUuid);
-      if (connectionType === 'snmp') await this.LibSnmp.deleteConnection(connectionUuid);
+      if (connectionType === 'vmware') await this.LibNodeVmware.deleteConnection(connectionUuid);
+      if (connectionType === 'netapp') await this.LibNodeNetapp.deleteConnection(connectionUuid);
+      if (connectionType === 'docker') await this.LibNodeDocker.deleteConnection(connectionUuid);
+      if (connectionType === 'kubernetes') await this.LibNodeKubernetes.deleteConnection(connectionUuid);
+      if (connectionType === 'linux') await this.LibNodeLinux.deleteConnection(connectionUuid);
+      if (connectionType === 'snmp') await this.LibNodeSnmp.deleteConnection(connectionUuid);
     });
   }
 
@@ -324,8 +295,8 @@ export class AnyOpsOSAppInfrastructureManagerService {
       connectionType = this.activeConnectionType;
     }
 
-    const currentConnection: ConnectionTypes = await this.getConnectionByUuid(connectionUuid, connectionType);
-    if (currentConnection.state === 'disconnected') return this.setActiveConnectionUuid(connectionUuid);
+    const currentConnection: ConnectionTypes = this.LibNodeHelpers.getConnectionByUuid(connectionUuid, connectionType);
+    if (currentConnection.state === 'disconnected') return this.setActiveConnectionUuid(connectionUuid, connectionType);
 
     const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('question', this.bodyContainer,
       {
@@ -343,14 +314,14 @@ export class AnyOpsOSAppInfrastructureManagerService {
     modalInstance.afterClosed().subscribe(async (result: boolean): Promise<void> => {
       if (result !== true) return;
 
-      if (connectionType === 'vmware') await this.LibVmware.disconnectConnection(connectionUuid);
-      if (connectionType === 'netapp') await this.LibNetapp.disconnectConnection(connectionUuid);
-      if (connectionType === 'docker') await this.LibDocker.disconnectConnection(connectionUuid);
-      if (connectionType === 'kubernetes') await this.LibKubernetes.disconnectConnection(connectionUuid);
-      if (connectionType === 'linux') await this.LibLinux.disconnectConnection(connectionUuid);
-      if (connectionType === 'snmp') await this.LibSnmp.disconnectConnection(connectionUuid);
+      if (connectionType === 'vmware') await this.LibNodeVmware.disconnectConnection(connectionUuid);
+      if (connectionType === 'netapp') await this.LibNodeNetapp.disconnectConnection(connectionUuid);
+      if (connectionType === 'docker') await this.LibNodeDocker.disconnectConnection(connectionUuid);
+      if (connectionType === 'kubernetes') await this.LibNodeKubernetes.disconnectConnection(connectionUuid);
+      if (connectionType === 'linux') await this.LibNodeLinux.disconnectConnection(connectionUuid);
+      if (connectionType === 'snmp') await this.LibNodeSnmp.disconnectConnection(connectionUuid);
 
-      this.setActiveConnectionUuid(connectionUuid);
+      this.setActiveConnectionUuid(connectionUuid, connectionType);
     });
   }
 

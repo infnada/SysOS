@@ -1,23 +1,16 @@
-import {
-  ConnectionVmware,
-  ConnectionNetapp,
-  ImDataObject,
-  NetAppSnapshot,
-  NetAppVolume,
-  NetAppVserver,
-  NetAppIface,
-  VMWareHost
-} from '@anyopsos/app-infrastructure-manager';
+import {ConnectionNetapp, NetAppIface, NetAppSnapshot, NetAppVolume, NetAppVserver} from '@anyopsos/module-node-netapp';
+import {ConnectionVmware, VMWareHost} from '@anyopsos/module-node-vmware';
+import {DataObject} from '@anyopsos/backend-core/app/types/data-object';
 
 export interface MountVolumeSnapshot {
   storage: ConnectionNetapp;
-  vserver: ImDataObject & { info: { data: NetAppVserver } };
-  volume: ImDataObject & { info: { data: NetAppVolume } };
-  snapshot: ImDataObject & { info: { data: NetAppSnapshot } };
+  vserver: DataObject & { info: { data: NetAppVserver } };
+  volume: DataObject & { info: { data: NetAppVolume } };
+  snapshot: DataObject & { info: { data: NetAppSnapshot } };
   uuid: string;
   virtual: ConnectionVmware;
-  host: ImDataObject & { info: { data: VMWareHost } };
-  iface: ImDataObject & { info: { data: NetAppIface } };
+  host: DataObject & { info: { data: VMWareHost } };
+  iface: DataObject & { info: { data: NetAppIface } };
   volumeName?: string;
   datastorePath?: string;
 }

@@ -1,19 +1,27 @@
-import {Controller, Get, Authorized, Req, Res, Post, BodyParam} from 'routing-controllers';
+import {Controller, Get, Authorized, Req, Res, Post, BodyParam, Put} from 'routing-controllers';
 import {SessionParam} from 'routing-controllers/decorator/SessionParam';
 import {Request, Response} from 'express';
 import {getLogger} from 'log4js';
 
+import {AOO_UNIQUE_COOKIE_NAME} from '@anyopsos/module-sys-constants';
 import {AnyOpsOSApiGlobalsModule} from '@anyopsos/module-api-globals';
-import {AnyOpsOSConfigFileModule} from '@anyopsos/module-config-file';
-import {AnyOpsOSGetPathModule} from '@anyopsos/module-get-path';
-import {AnyOpsOSCredentialModule, User} from '@anyopsos/module-credential';
-import {AnyOpsOSWorkspaceModule} from '@anyopsos/module-workspace';
+import {AnyOpsOSAuthModule} from '@anyopsos/module-auth';
+
 
 const logger = getLogger('mainLog');
 
+
+/**
+ * !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ * When modifying this API make sure to add the @Authorized() Decorator. Only the main Post request should not use it since its the main login API
+ * !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+ */
 @Controller('/api/auth')
 export class AnyOpsOSAuthApiController {
 
+  /**
+   * This path will return success if the user is @Authorized() (logged in) otherwise it will fail
+   */
   @Authorized()
   @Get('/')
   getAuth(@Req() request: Request,
@@ -25,6 +33,12 @@ export class AnyOpsOSAuthApiController {
     return ApiGlobalsModule.validResponse();
   }
 
+  /**
+   * Authenticates a user with a given username:password
+   * TODO: prevent brute force attacks to discover keys
+   * TODO: throttle
+   * TODO: if unsealing with wrong or correct key have different response times, return a response after random milliseconds
+   */
   @Post('/')
   async login(@Req() request: Request,
               @Res() response: Response,
@@ -33,32 +47,40 @@ export class AnyOpsOSAuthApiController {
               @BodyParam('password') password: string) {
     logger.info(`[API auth] -> Login -> user [${username}]`);
 
-    const ConfigFileModule: AnyOpsOSConfigFileModule = new AnyOpsOSConfigFileModule();
-    const GetPathModule: AnyOpsOSGetPathModule = new AnyOpsOSGetPathModule();
+    const AuthModule: AnyOpsOSAuthModule = new AnyOpsOSAuthModule();
     const ApiGlobalsModule: AnyOpsOSApiGlobalsModule = new AnyOpsOSApiGlobalsModule(request, response);
 
-    const mainConfig: { [key: string]: any; } = await ConfigFileModule.get(GetPathModule.mainConfig);
-
-    const users: User[] = await ConfigFileModule.get(GetPathModule.shadow) as User[];
-    const user: User | undefined = users.find((usr: User) => usr.username === username);
-    if (!user) return ApiGlobalsModule.invalidResponse('resource_not_found');
-
-    const WorkspaceModule: AnyOpsOSWorkspaceModule = new AnyOpsOSWorkspaceModule(user.uuid, sessionUuid);
-
-    // If no workspaceUuid is provided, load the default one
-    const workspaceUuid: string = WorkspaceModule.getDefaultWorkspaceUuid();
-
-    const CredentialModule: AnyOpsOSCredentialModule = new AnyOpsOSCredentialModule(user.uuid, sessionUuid, workspaceUuid);
-
-    const successLoad: boolean = await CredentialModule.loadCredentialDb(password);
-    if (!successLoad) return ApiGlobalsModule.invalidResponse('resource_invalid');
+    const loginResult: { successLogin: boolean; userUuid: string; } = await AuthModule.authenticateUser(username, password);
+    if (!loginResult.successLogin) return ApiGlobalsModule.invalidResponse('resource_invalid');
 
     // Logged in!
-    // @ts-ignore TODO
-    request.session.userUuid = user.uuid;
-    response.cookie(mainConfig.uniqueCookie, user.uuid, {signed: true});
+    request.session!.userUuid = loginResult.userUuid;
+    response.cookie(AOO_UNIQUE_COOKIE_NAME, loginResult.userUuid, { signed: true });
 
     return ApiGlobalsModule.validResponse();
+  }
+
+  /**
+   * Creates a new user
+   */
+  @Authorized()
+  @Put('/')
+  async createUser(@Req() request: Request,
+                   @Res() response: Response,
+                   @SessionParam('userUuid') userUuid: string,
+                   @SessionParam('id') sessionUuid: string,
+                   @BodyParam('username') username: string) {
+    logger.info(`[API auth] -> createUser -> user [${username}]`);
+
+    const AuthModule: AnyOpsOSAuthModule = new AnyOpsOSAuthModule(userUuid, sessionUuid);
+    const ApiGlobalsModule: AnyOpsOSApiGlobalsModule = new AnyOpsOSApiGlobalsModule(request, response);
+
+    const createResult: { successCreated: boolean; userUuid: string; } = await AuthModule.createUser(username);
+    if (!createResult.successCreated) return ApiGlobalsModule.invalidResponse('resource_invalid');
+
+    return ApiGlobalsModule.jsonDataResponse({
+      userUuid: createResult.userUuid
+    });
   }
 
 }

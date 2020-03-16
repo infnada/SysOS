@@ -1,0 +1,18 @@
+{
+  "backend": {
+    "file": {
+      "path": "/vault/file"
+    }
+  },
+  "listener": {
+    "tcp":{
+      "address": "0.0.0.0:8200",
+      "tls_disable": 0,
+      "tls_min_version": "tls12",
+      "tls_client_ca_file": "/dev/shm/ca.cert",
+      "tls_cert_file": "/dev/shm/vault.cert",
+      "tls_key_file": "/dev/shm/vault.key"
+    }
+  },
+  "ui": true
+}

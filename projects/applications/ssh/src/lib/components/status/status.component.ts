@@ -6,7 +6,7 @@ import {Application} from '@anyopsos/lib-application';
 import {ConnectionSsh} from '@anyopsos/module-ssh';
 
 import {AnyOpsOSAppSshService} from '../../services/anyopsos-app-ssh.service';
-import {ConnectionTypes} from '@anyopsos/backend/app/types/connection-types';
+import {ConnectionTypes} from '@anyopsos/backend-core/app/types/connection-types';
 
 @Component({
   selector: 'aassh-status',

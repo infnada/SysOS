@@ -1,0 +1,35 @@
+<almodal-body #modalBody>
+
+  <!-- Put modal content here -->
+  <p>{{object.type}} {{object.name}} will be updated to reflect the desired replicas count.</p>
+  <mat-form-field class="kd-margin-right">
+    <input [(ngModel)]="desired"
+           name="desired"
+           aria-label="Desired replicas"
+           placeholder="Desired replicas"
+           type="number"
+           min="0"
+           required
+           matInput>
+  </mat-form-field>
+  <mat-form-field>
+    <input [(ngModel)]="actual"
+           [disabled]="true"
+           name="actual"
+           aria-label="Actual replicas"
+           placeholder="Actual replicas"
+           type="number"
+           min="0"
+           required
+           matInput>
+  </mat-form-field>
+
+  <alutil-notice-box [icon]="'info'" [content]="noticeContent()"></alutil-notice-box>
+
+</almodal-body>
+
+<!-- Put footer buttons here -->
+<almodal-buttons>
+  <button class="btn" type="button" (click)="dialogRef.close()" mat-flat-button>Cancel</button>
+  <button class="btn" type="button" (click)="dialogRef.close(desired)" mat-flat-button color="primary">Scale</button>
+</almodal-buttons>

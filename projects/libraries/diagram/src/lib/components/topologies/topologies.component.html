@@ -1,0 +1,35 @@
+<div class="tour-step-anchor topologies-selector">
+
+  <ng-container *ngIf="currentTopology">
+    <div class="topologies-item" [attr.key]="topology.id" *ngFor="let topology of topologies$ | async">
+      <div
+        class="tour-step-anchor topologies-item-main topologies-item-{{topology.id}}"
+        [ngClass]="{'topologies-item-main-active': topology === currentTopology, 'topologies-item-main-matched': searchMatchesCount || 0}"
+        matTooltip="{{basicTopologyInfo(topology, searchMatchesCount || 0)}}"
+        [attr.rel]="topology.id"
+        (click)="onTopologyClick($event, topology)">
+        <div class="topologies-item-label">
+          {{topology.name}}
+        </div>
+      </div>
+      <div class="topologies-sub">
+
+        <ng-container *ngIf="topology.sub_topologies">
+          <div
+            class="topologies-sub-item topologies-item-{{subTopology.id}}"
+            [ngClass]="{'topologies-sub-item-active': subTopology === currentTopology, 'topologies-sub-item-matched': searchMatchesCount || 0}"
+            matTooltip="{{basicTopologyInfo(subTopology, searchMatchesCount || 0)}}"
+            [attr.key]="subTopology.id"
+            [attr.rel]="subTopology.id"
+            (click)="this.onTopologyClick($event, subTopology)"
+            *ngFor="let subTopology of topology.sub_topologies">
+            <div class="topologies-sub-item-label">
+              {{subTopology.name}}
+            </div>
+          </div>
+        </ng-container>
+
+      </div>
+    </div>
+  </ng-container>
+</div>

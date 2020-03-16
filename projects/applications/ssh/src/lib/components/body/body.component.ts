@@ -8,7 +8,7 @@ import {AnyOpsOSLibSshService, AnyOpsOSLibSshHelpersService, AnyOpsOSLibSshConne
 import {ConnectionSsh, ConnectionSftp} from '@anyopsos/module-ssh';
 
 import {AnyOpsOSAppSshService} from '../../services/anyopsos-app-ssh.service';
-import {ConnectionTypes} from '@anyopsos/backend/app/types/connection-types';
+import {ConnectionTypes} from '@anyopsos/backend-core/app/types/connection-types';
 
 @Component({
   encapsulation: ViewEncapsulation.None,

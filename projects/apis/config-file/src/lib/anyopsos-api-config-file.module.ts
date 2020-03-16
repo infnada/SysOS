@@ -26,6 +26,7 @@ export class AnyOpsOSConfigFileApiController {
     const ConfigFileModule: AnyOpsOSConfigFileModule = new AnyOpsOSConfigFileModule(userUuid, sessionUuid, workspaceUuid);
     const ApiGlobalsModule: AnyOpsOSApiGlobalsModule = new AnyOpsOSApiGlobalsModule(request, response);
 
+    // @ts-ignore TODO
     const getResult: ConfigFile | ConfigFileData = await ConfigFileModule.get(fileName, configUuid);
 
     return ApiGlobalsModule.jsonDataResponse(getResult);
@@ -45,6 +46,7 @@ export class AnyOpsOSConfigFileApiController {
     const ConfigFileModule: AnyOpsOSConfigFileModule = new AnyOpsOSConfigFileModule(userUuid, sessionUuid, workspaceUuid);
     const ApiGlobalsModule: AnyOpsOSApiGlobalsModule = new AnyOpsOSApiGlobalsModule(request, response);
 
+    // @ts-ignore TODO
     const putResult: ConfigFile | ConfigFileData = await ConfigFileModule.put(fileName, data, configUuid);
 
     return ApiGlobalsModule.jsonDataResponse(putResult);
@@ -64,6 +66,7 @@ export class AnyOpsOSConfigFileApiController {
     const ConfigFileModule: AnyOpsOSConfigFileModule = new AnyOpsOSConfigFileModule(userUuid, sessionUuid, workspaceUuid);
     const ApiGlobalsModule: AnyOpsOSApiGlobalsModule = new AnyOpsOSApiGlobalsModule(request, response);
 
+    // @ts-ignore TODO
     const patchResult: ConfigFile | { uuid: string; } = await ConfigFileModule.patch(fileName, data, configUuid);
 
     return ApiGlobalsModule.jsonDataResponse(patchResult);

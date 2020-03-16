@@ -4,8 +4,8 @@ import {Request, Response} from 'express';
 import {getLogger, Logger} from 'log4js';
 
 import {AnyOpsOSApiGlobalsModule} from '@anyopsos/module-api-globals';
-import {AnyOpsOSNetappFileSystemModule} from '@anyopsos/module-netapp';
-import {AnyOpsOSFile} from '@anyopsos/backend/app/types/anyopsos-file';
+import {AnyOpsOSNodeNetappFileSystemModule} from '@anyopsos/module-node-netapp';
+import {AnyOpsOSFile} from '@anyopsos/backend-core/app/types/anyopsos-file';
 
 
 const logger: Logger = getLogger('mainLog');
@@ -26,7 +26,7 @@ export class AnyOpsOSVmwareFolderApiController {
                         @Param('srcPath') srcPath: string) {
     logger.info(`[API VmwareFolder] -> Reading folder files -> workspaceUuid [${workspaceUuid}], connectionUuid [${connectionUuid}], srcPath [${srcPath}]`);
 
-    const NetappFileSystemModule: AnyOpsOSNetappFileSystemModule = new AnyOpsOSNetappFileSystemModule(userUuid, sessionUuid, workspaceUuid, connectionUuid);
+    const NetappFileSystemModule: AnyOpsOSNodeNetappFileSystemModule = new AnyOpsOSNodeNetappFileSystemModule(userUuid, sessionUuid, workspaceUuid, connectionUuid);
     const ApiGlobalsModule: AnyOpsOSApiGlobalsModule = new AnyOpsOSApiGlobalsModule(request, response);
 
     const pathData: AnyOpsOSFile[] = await NetappFileSystemModule.getFolder(vfiler, srcPath);
@@ -45,7 +45,7 @@ export class AnyOpsOSVmwareFolderApiController {
                            @Param('dstPath') dstPath: string) {
     logger.info(`[API VmwareFolder] -> Creating folder -> workspaceUuid [${workspaceUuid}], connectionUuid [${connectionUuid}], dstPath [${dstPath}]`);
 
-    const NetappFileSystemModule: AnyOpsOSNetappFileSystemModule = new AnyOpsOSNetappFileSystemModule(userUuid, sessionUuid, workspaceUuid, connectionUuid);
+    const NetappFileSystemModule: AnyOpsOSNodeNetappFileSystemModule = new AnyOpsOSNodeNetappFileSystemModule(userUuid, sessionUuid, workspaceUuid, connectionUuid);
     const ApiGlobalsModule: AnyOpsOSApiGlobalsModule = new AnyOpsOSApiGlobalsModule(request, response);
 
     await NetappFileSystemModule.putFolder(vfiler, dstPath);

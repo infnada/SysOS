@@ -1,4 +1,4 @@
-import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
+import {BackendResponse} from '@anyopsos/backend-core/app/types/backend-response';
 import {ManagedObjectReference} from './data/managed-object-reference';
 import {ClusterEnterMaintenanceResult} from './data/cluster-enter-maintenance-result';
 import {ClusterRuleInfo} from './data/cluster-rule-info';

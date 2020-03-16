@@ -1,0 +1,115 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: core
+  namespace: anyopsos
+  labels:
+    app: anyopsos-core
+spec:
+  selector:
+    app: anyopsos-core
+  type: ClusterIP
+  ports:
+    - port: 443
+      targetPort: 443
+      protocol: TCP
+      name: core-api
+
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: core
+  namespace: anyopsos
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+spec:
+  tls:
+    - hosts:
+        - core.anyopsos.local
+  rules:
+    - host: core.anyopsos.local
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: core
+              servicePort: core-api
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: anyopsos-core
+  namespace: anyopsos
+  labels:
+    app: anyopsos-core
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: anyopsos-core
+  template:
+    metadata:
+      labels:
+        app: anyopsos-core
+    spec:
+      restartPolicy: Always
+      volumes:
+        - name: certificates
+          secret:
+            secretName: anyopsos-certificates
+        - name: anyopsos-code
+          hostPath:
+            path: /c/Users/nada/WebstormProjects/anyOpsOS
+            type: Directory
+      containers:
+        - name: core
+          image: anyopsos-core
+          args: ["-stack-trace-limit=50"]
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+          ports:
+            - containerPort: 443
+          # Get image from local
+          imagePullPolicy: Never
+          env:
+            # Add CA as trusted by nodejs
+            - name: NODE_EXTRA_CA_CERTS
+              value: /dev/shm/ca.cert
+            - name: NODE_ENV
+              value: development
+          volumeMounts:
+            # Certificates
+            - name: certificates
+              mountPath: /dev/shm/ca.cert
+              subPath: ca.cert
+              readOnly: true
+            - name: certificates
+              mountPath: /dev/shm/server.cert
+              subPath: core.cert
+              readOnly: true
+            - name: certificates
+              mountPath: /dev/shm/server.key
+              subPath: core.key
+              readOnly: true
+            - name: certificates
+              mountPath: /dev/shm/dhparam.pem
+              subPath: dhparam.pem
+              readOnly: true
+            # anyOpsOS Code
+            - name: anyopsos-code
+              mountPath: /var/www/dist
+              subPath: dist/anyOpsOS/core/
+              readOnly: true
+            - name: anyopsos-code
+              mountPath: /var/www/node_modules
+              subPath: node_modules/
+              readOnly: true
+            - name: anyopsos-code
+              mountPath: /var/www/filesystem
+              subPath: dist/anyOpsOS/fileSystem/filesystem/
+              readOnly: true

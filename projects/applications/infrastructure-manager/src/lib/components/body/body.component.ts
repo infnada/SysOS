@@ -7,22 +7,22 @@ import {MatTreeFlatDataSource, MatTreeFlattener, MatMenuTrigger, FlatTreeControl
 import {Application} from '@anyopsos/lib-application';
 import {AnyOpsOSLibUtilsService} from '@anyopsos/lib-utils';
 import {ContextMenuItem} from '@anyopsos/lib-types';
+import {AnyOpsOSLibNodeTemplateHelpersService} from '@anyopsos/lib-node';
+import {DataObject} from '@anyopsos/backend-core/app/types/data-object';
+import {ConnectionTypes} from '@anyopsos/backend-core/app/types/connection-types';
 
 import {AnyOpsOSAppInfrastructureManagerService} from '../../services/anyopsos-app-infrastructure-manager.service';
 import {AnyOpsOSAppInfrastructureManagerTreeDataService} from '../../services/anyopsos-app-infrastructure-manager-tree-data.service';
 import {AnyOpsOSAppInfrastructureManagerContextMenusService} from '../../services/anyopsos-app-infrastructure-manager-context-menus.service';
-import {AnyOpsOSAppInfrastructureManagerTemplateHelperService} from '../../services/anyopsos-app-infrastructure-manager-template-helper.service';
 
 import {ImTreeNode} from '../../types/im-tree-node';
-import {ImDataObject} from '../../types/im-data-object';
-import {ConnectionTypes} from '../../types/connections/connection-types';
 
 interface InfrastructureManagerFlatNode {
   expandable: boolean;
   name: string;
-  uuid: string;
-  level: number;
   type: string;
+  info: { uuid: string; };
+  level: number;
 }
 
 @Component({
@@ -31,16 +31,16 @@ interface InfrastructureManagerFlatNode {
   styleUrls: ['./body.component.scss']
 })
 export class BodyComponent implements OnInit, OnDestroy {
-  @ViewChild(MatMenuTrigger, {static: false}) contextMenuTree: MatMenuTrigger;
-  @ViewChild('bodyContainer', {static: true}) bodyContainer: ViewContainerRef;
-  @Input() application: Application;
+  @ViewChild('bodyContainer', {static: true, read: ViewContainerRef}) private readonly bodyContainer: ViewContainerRef;
+  @ViewChild(MatMenuTrigger, {static: false}) readonly contextMenuTree: MatMenuTrigger;
+  @Input() readonly application: Application;
 
-  private destroySubject$: Subject<void> = new Subject();
+  private readonly destroySubject$: Subject<void> = new Subject();
 
   viewSide: boolean = true;
 
-  activeConnection: string = null;
-  activeObject: string = null;
+  activeConnectionUuid: string | null = null;
+  activeObjectUuid: string | null = null;
 
   contextMenuPosition = {x: '0px', y: '0px'};
 
@@ -51,27 +51,26 @@ export class BodyComponent implements OnInit, OnDestroy {
   private readonly treeFlattener: MatTreeFlattener<ImTreeNode, InfrastructureManagerFlatNode>;
   private expandedNodeSet: Set<string> = new Set();
 
-  private transformer = (node: ImTreeNode, level: number) => {
+  private readonly transformer = (node: ImTreeNode, level: number) => {
     return {
       expandable: !!node.children && node.children.length > 0,
       name: node.name,
       type: node.type,
-      uuid: node.uuid,
       info: node.info,
       level
     };
-  }
-  private getLevel = (node: InfrastructureManagerFlatNode) => node.level;
-  private isExpandable = (node: InfrastructureManagerFlatNode) => node.expandable;
-  private getChildren = (node: ImTreeNode): Observable<ImTreeNode[]> => observableOf(node.children);
-  hasChild = (_: number, nodeData: InfrastructureManagerFlatNode) => nodeData.expandable;
+  };
+  private readonly getLevel = (node: InfrastructureManagerFlatNode) => node.level;
+  private readonly isExpandable = (node: InfrastructureManagerFlatNode) => node.expandable;
+  private readonly getChildren = (node: ImTreeNode): Observable<ImTreeNode[]> => observableOf(node.children);
+  readonly hasChild = (_: number, nodeData: InfrastructureManagerFlatNode) => nodeData.expandable;
 
 
-  constructor(private Utils: AnyOpsOSLibUtilsService,
-              private InfrastructureManager: AnyOpsOSAppInfrastructureManagerService,
-              private InfrastructureManagerTreeData: AnyOpsOSAppInfrastructureManagerTreeDataService,
-              private InfrastructureContextMenus: AnyOpsOSAppInfrastructureManagerContextMenusService,
-              public InfrastructureManagerTemplateHelper: AnyOpsOSAppInfrastructureManagerTemplateHelperService) {
+  constructor(private readonly Utils: AnyOpsOSLibUtilsService,
+              private readonly InfrastructureManager: AnyOpsOSAppInfrastructureManagerService,
+              private readonly InfrastructureManagerTreeData: AnyOpsOSAppInfrastructureManagerTreeDataService,
+              private readonly InfrastructureContextMenus: AnyOpsOSAppInfrastructureManagerContextMenusService,
+              public readonly LibNodeTemplateHelpers: AnyOpsOSLibNodeTemplateHelpersService) {
 
     this.treeFlattener = new MatTreeFlattener(this.transformer, this.getLevel, this.isExpandable, this.getChildren);
     this.treeControl = new FlatTreeControl<InfrastructureManagerFlatNode>(this.getLevel, this.isExpandable);
@@ -84,15 +83,19 @@ export class BodyComponent implements OnInit, OnDestroy {
 
     // Listen for treeData change
     this.InfrastructureManagerTreeData.treeData
-      .pipe(takeUntil(this.destroySubject$)).subscribe(data => this.rebuildTreeForData(data));
+      .pipe(takeUntil(this.destroySubject$)).subscribe((data: ImTreeNode[]) => this.rebuildTreeForData(data));
 
     // Listen for activeObject change
-    this.InfrastructureManager.activeObject
-      .pipe(takeUntil(this.destroySubject$)).subscribe((activeObjectUuid: string) => this.activeObject = activeObjectUuid);
+    this.InfrastructureManager.activeObjectUuid
+      .pipe(takeUntil(this.destroySubject$)).subscribe((activeObjectUuid: string | null) => this.activeObjectUuid = activeObjectUuid);
+
+    // Listen for activeConnectionUuid change
+    this.InfrastructureManager.activeConnectionUuid
+      .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnectionUuid: string | null) => this.activeConnectionUuid = activeConnectionUuid);
 
     // Listen for activeConnection change
     this.InfrastructureManager.activeConnection
-      .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnectionUuid: string) => this.onActiveConnectionChange(activeConnectionUuid));
+      .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnection: ConnectionTypes | null) => this.onActiveConnectionChange(activeConnection));
 
     // Set Context Menus
     this.contextMenus = {
@@ -122,12 +125,11 @@ export class BodyComponent implements OnInit, OnDestroy {
     this.destroySubject$.next();
   }
 
-  private onActiveConnectionChange(activeConnectionUuid: string): void {
-    this.activeConnection = activeConnectionUuid;
+  private onActiveConnectionChange(activeConnection: ConnectionTypes | null): void {
 
     // Show Connection Form
-    if (this.activeConnection !== null && this.getActiveConnection().state === 'disconnected') {
-      setTimeout(() => this.Utils.scrollTo('infrastructure-manager_main-body', true), 100);
+    if (activeConnection?.state === 'disconnected') {
+      setTimeout(() => this.Utils.angularElementScrollTo(this.InfrastructureManager.getBodyContainerRef().element.nativeElement), 100);
     }
   }
 
@@ -191,21 +193,22 @@ export class BodyComponent implements OnInit, OnDestroy {
   /**
    * Connections data
    */
-  getActiveConnection(): ConnectionTypes {
-    return this.InfrastructureManager.getActiveConnection();
+  getActiveConnectionObs(): Observable<ConnectionTypes | null> {
+    return this.InfrastructureManager.activeConnection;
   }
 
-  getActiveObject(): ImDataObject {
-    return this.InfrastructureManager.getActiveObject();
+  getActiveObjectObs(): Observable<DataObject | null> {
+    return this.InfrastructureManager.activeObject;
   }
 
-  setActiveView(data: ImDataObject): void {
-    if (data.info.mainUuid) {
-      this.InfrastructureManager.setActiveConnection(data.info.mainUuid);
-      return this.InfrastructureManager.setActiveObject(data.info.uuid);
-    }
+  setActiveView(data: ImTreeNode): void {
 
-    return this.InfrastructureManager.setActiveConnection(data.info.uuid);
+    // Is a DataObject
+    // @ts-ignore TODO
+    if (data.info?.mainUuid) return this.InfrastructureManager.setActiveObjectUuid(data.info.uuid);
+
+    // Is a ConnectionType
+    return this.InfrastructureManager.setActiveConnectionUuid(data.info.uuid, data.info.obj.type);
   }
 
   /**
@@ -213,7 +216,7 @@ export class BodyComponent implements OnInit, OnDestroy {
    * after being rebuilt
    */
 
-  private rebuildTreeForData(data: any) {
+  private rebuildTreeForData(data: ImTreeNode[]) {
     this.rememberExpandedTreeNodes(this.treeControl, this.expandedNodeSet);
     this.dataSource.data = data;
     this.forgetMissingExpandedNodes(this.treeControl, this.expandedNodeSet);
@@ -222,10 +225,11 @@ export class BodyComponent implements OnInit, OnDestroy {
 
   private rememberExpandedTreeNodes(treeControl: FlatTreeControl<InfrastructureManagerFlatNode>, expandedNodeSet: Set<string>) {
     if (treeControl.dataNodes) {
-      treeControl.dataNodes.forEach((node) => {
+      treeControl.dataNodes.forEach((node: InfrastructureManagerFlatNode) => {
         if (treeControl.isExpandable(node) && treeControl.isExpanded(node)) {
+
           // capture latest expanded state
-          expandedNodeSet.add(node.uuid);
+          expandedNodeSet.add(node.info.uuid);
         }
       });
     }
@@ -234,8 +238,10 @@ export class BodyComponent implements OnInit, OnDestroy {
   private forgetMissingExpandedNodes(treeControl: FlatTreeControl<InfrastructureManagerFlatNode>, expandedNodeSet: Set<string>) {
     if (treeControl.dataNodes) {
       expandedNodeSet.forEach((nodeUuid) => {
+
         // maintain expanded node state
-        if (!treeControl.dataNodes.find((n) => n.uuid === nodeUuid)) {
+        if (!treeControl.dataNodes.find((node: InfrastructureManagerFlatNode) => node.info.uuid === nodeUuid)) {
+
           // if the tree doesn't have the previous node, remove it from the expanded list
           expandedNodeSet.delete(nodeUuid);
         }
@@ -247,7 +253,7 @@ export class BodyComponent implements OnInit, OnDestroy {
     if (!flatNodes || flatNodes.length === 0) return;
     const idSet = new Set(ids);
     return flatNodes.forEach((node) => {
-      if (idSet.has(node.uuid)) {
+      if (idSet.has(node.info.uuid)) {
         this.treeControl.expand(node);
       }
     });

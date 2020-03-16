@@ -6,7 +6,6 @@ import {AnyOpsOSLibAngularMaterialModule} from '@anyopsos/lib-angular-material';
 import {AnyOpsOSLibApplicationService} from '@anyopsos/lib-application';
 import {AnyOpsOSLibServiceInjectorService} from '@anyopsos/lib-service-injector';
 import {AnyOpsOSLibUtilsModule} from '@anyopsos/lib-utils';
-import {AnyOpsOSExtLibWeavescopeModule} from '@anyopsos/ext-lib-weavescope';
 
 import {ActionsComponent} from './components/actions/actions.component';
 import {BodyComponent} from './components/body/body.component';
@@ -18,7 +17,6 @@ import {StatusComponent} from './components/status/status.component';
 import {ChipsComponent} from './components/shared/chips/chips.component';
 
 import {AnyOpsOSAppInfrastructureManagerService} from './services/anyopsos-app-infrastructure-manager.service';
-import {AnyOpsOSAppInfrastructureManagerObjectHelperService} from './services/anyopsos-app-infrastructure-manager-object-helper.service';
 import {AnyOpsOSAppInfrastructureManagerNodeGraphService} from './services/anyopsos-app-infrastructure-manager-node-graph.service';
 import {AnyOpsOSAppInfrastructureManagerNodeLinkService} from './services/anyopsos-app-infrastructure-manager-node-link.service';
 
@@ -60,6 +58,7 @@ import {VcenterHaComponent} from './components/body/tabs/tab-summary/vmware/vcen
 import {VersionInformationComponent} from './components/body/tabs/tab-summary/vmware/version-information/version-information.component';
 import {StorageDrsComponent} from './components/body/tabs/tab-summary/vmware/storage-drs/storage-drs.component';
 import {SwitchFeaturesComponent} from './components/body/tabs/tab-summary/vmware/switch-features/switch-features.component';
+import {AnyOpsOSLibDiagramModule} from '@anyopsos/lib-diagram';
 
 @NgModule({
   declarations: [
@@ -108,29 +107,27 @@ import {SwitchFeaturesComponent} from './components/body/tabs/tab-summary/vmware
     StorageDrsComponent,
     SwitchFeaturesComponent
   ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    // Shared module import
-    AnyOpsOSExtLibWeavescopeModule,
-    AnyOpsOSLibAngularMaterialModule,
-    AnyOpsOSLibUtilsModule
-  ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        // Shared module import
+        AnyOpsOSLibAngularMaterialModule,
+        AnyOpsOSLibUtilsModule,
+        AnyOpsOSLibDiagramModule
+    ],
   exports: []
 })
 export class AnyOpsOSAppInfrastructureManagerModule {
   constructor(private serviceInjector: AnyOpsOSLibServiceInjectorService,
               private readonly LibApplication: AnyOpsOSLibApplicationService,
               private InfrastructureManager: AnyOpsOSAppInfrastructureManagerService,
-              private InfrastructureManagerObjectHelpers: AnyOpsOSAppInfrastructureManagerObjectHelperService,
               private InfrastructureManagerNodeLink: AnyOpsOSAppInfrastructureManagerNodeLinkService,
               private InfrastructureManagerNodeGraph: AnyOpsOSAppInfrastructureManagerNodeGraphService) {
 
     this.serviceInjector.set('AnyOpsOSAppInfrastructureManagerService', this.InfrastructureManager);
     this.serviceInjector.set('AnyOpsOSAppInfrastructureManagerNodeLinkService', this.InfrastructureManagerNodeLink);
     this.serviceInjector.set('AnyOpsOSAppInfrastructureManagerNodeGraphService', this.InfrastructureManagerNodeGraph);
-    this.serviceInjector.set('AnyOpsOSAppInfrastructureManagerObjectHelperService', this.InfrastructureManagerObjectHelpers);
 
     this.LibApplication.registerApplication({
       uuid: 'infrastructure-manager',

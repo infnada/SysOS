@@ -43,6 +43,8 @@ import {MatToolbarModule} from '@angular/material/toolbar';
 import {MatTooltipModule} from '@angular/material/tooltip';
 import {MatTreeModule} from '@angular/material/tree';
 
+import {MaterialFileInputModule} from 'ngx-material-file-input';
+
 export {MatChipInputEvent} from '@angular/material/chips';
 export {MatButtonToggleGroup} from '@angular/material/button-toggle';
 export {MatSort} from '@angular/material/sort';
@@ -52,9 +54,8 @@ export {MatMenuTrigger} from '@angular/material/menu';
 export {MatSnackBar} from '@angular/material/snack-bar';
 export {MatDialog, MatDialogConfig, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 
-export {CdkDragRelease, CdkDragStart, moveItemInArray} from '@angular/cdk/drag-drop';
+export {DragRefConfig, CdkDragStart, CdkDragRelease, CdkDragEnd, CdkDragEnter, CdkDragExit, CdkDragDrop, CdkDragMove, CdkDragSortEvent, moveItemInArray, transferArrayItem, copyArrayItem, DragDrop, DragRef, DropListRef} from '@angular/cdk/drag-drop';
 export {FlatTreeControl} from '@angular/cdk/tree';
-export {CdkDragDrop} from '@angular/cdk/drag-drop';
 export {COMMA, ENTER} from '@angular/cdk/keycodes';
 
 @NgModule({
@@ -103,6 +104,8 @@ export {COMMA, ENTER} from '@angular/cdk/keycodes';
     MatTreeModule,
     PortalModule,
     ScrollingModule,
+    // ngx-material-file-input
+    MaterialFileInputModule
   ],
   providers: [
     {

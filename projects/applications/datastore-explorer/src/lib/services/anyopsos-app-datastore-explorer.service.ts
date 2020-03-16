@@ -1,61 +1,50 @@
 import {Injectable, ViewContainerRef} from '@angular/core';
 
 import {BehaviorSubject, Observable} from 'rxjs';
-import {v4 as uuidv4} from 'uuid';
-import {Socket} from 'ngx-socket-io';
+import {take} from 'rxjs/operators';
 
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
-import {MatDialogRef} from '@anyopsos/lib-angular-material';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
-import {AnyOpsOSLibFileSystemService} from '@anyopsos/lib-file-system';
-import {AnyOpsOSLibVmwareService} from '@anyopsos/lib-vmware';
+import {AnyOpsOSLibNodeHelpersService} from '@anyopsos/lib-node';
+import {ConnectionVmware} from '@anyopsos/module-node-vmware';
+import {ConnectionNetapp} from '@anyopsos/module-node-netapp';
 
-import {DatastoreExplorerConnection} from '../types/datastore-explorer-connection';
+import {DatastoreExplorerConnectionObject} from '../types/datastore-explorer-connection-object';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AnyOpsOSAppDatastoreExplorerService {
-  private $connections: BehaviorSubject<DatastoreExplorerConnection[]>;
-  private $activeConnection: BehaviorSubject<string>;
-  private $viewExchange: BehaviorSubject<boolean>;
-  private dataStore: {  // This is where we will store our data in memory
-    connections: DatastoreExplorerConnection[],
-    activeConnection: string,
-    viewExchange: boolean
+  private readonly $activeConnectionObject: BehaviorSubject<DatastoreExplorerConnectionObject | null>;
+  private readonly $activeConnectionObjectUuid: BehaviorSubject<string | null>;
+  private readonly $viewExchange: BehaviorSubject<boolean>;
+  private dataStore: {
+    activeConnectionObject: DatastoreExplorerConnectionObject | null;
+    activeConnectionObjectUuid: string | null;
+    viewExchange: boolean;
   };
-  connections: Observable<any>;
-  activeConnection: Observable<any>;
-  viewExchange: Observable<any>;
+  readonly activeConnectionObject: Observable<DatastoreExplorerConnectionObject | null>;
+  readonly activeConnectionObjectUuid: Observable<string | null>;
+  readonly viewExchange: Observable<boolean>;
 
-  localBodyContainer: ViewContainerRef;
-  serverBodyContainer: ViewContainerRef;
+  private bodyContainer: ViewContainerRef;
 
-  constructor(private logger: AnyOpsOSLibLoggerService,
-              private socket: Socket,
-              private readonly LibFileSystem: AnyOpsOSLibFileSystemService,
+  constructor(private readonly logger: AnyOpsOSLibLoggerService,
               private readonly LibModal: AnyOpsOSLibModalService,
-              private VMWare: AnyOpsOSLibVmwareService) {
-    this.dataStore = {connections: [], activeConnection: null, viewExchange: false};
-    this.$connections = new BehaviorSubject(this.dataStore.connections);
-    this.$activeConnection = new BehaviorSubject(this.dataStore.activeConnection);
+              private readonly LibNodeHelpers: AnyOpsOSLibNodeHelpersService) {
+
+    this.dataStore = { activeConnectionObject: null, activeConnectionObjectUuid: null, viewExchange: false };
+    this.$activeConnectionObject = new BehaviorSubject(this.dataStore.activeConnectionObject);
+    this.$activeConnectionObjectUuid = new BehaviorSubject(this.dataStore.activeConnectionObjectUuid);
     this.$viewExchange = new BehaviorSubject(this.dataStore.viewExchange);
-    this.connections = this.$connections.asObservable();
-    this.activeConnection = this.$activeConnection.asObservable();
+    this.activeConnectionObject = this.$activeConnectionObject.asObservable();
+    this.activeConnectionObjectUuid = this.$activeConnectionObjectUuid.asObservable();
     this.viewExchange = this.$viewExchange.asObservable();
   }
 
   /**
-   * Sets the bodyContainerRef, this is used by Modals
+   * Show or hide Exchange tab
    */
-  setLocalBodyContainerRef(localBodyContainer: ViewContainerRef) {
-    this.localBodyContainer = localBodyContainer;
-  }
-
-  setServerBodyContainerRef(serverBodyContainer: ViewContainerRef) {
-    this.serverBodyContainer = serverBodyContainer;
-  }
-
   toggleExchange(): void {
     this.dataStore.viewExchange = !this.dataStore.viewExchange;
 
@@ -63,146 +52,63 @@ export class AnyOpsOSAppDatastoreExplorerService {
     this.$viewExchange.next(Object.assign({}, this.dataStore).viewExchange);
   }
 
-  getActiveConnection(): DatastoreExplorerConnection {
-    if (this.dataStore.activeConnection === null) return null;
-
-    return this.dataStore.connections.find(obj => obj.uuid === this.dataStore.activeConnection);
+  /**
+   * Setter & Getter of bodyContainerRef
+   * This is used by Modals
+   */
+  setBodyContainerRef(bodyContainer: ViewContainerRef): void {
+    this.bodyContainer = bodyContainer;
   }
 
-  getConnectionByUuid(connectionUuid: string): DatastoreExplorerConnection {
-    if (!connectionUuid) throw new Error('uuid');
-
-    return this.dataStore.connections.find(obj => obj.uuid === connectionUuid);
+  getBodyContainerRef(): ViewContainerRef {
+    return this.bodyContainer;
   }
 
-  setActiveConnection(connectionUuid: string = null): void {
-    this.dataStore.activeConnection = connectionUuid;
+  /**
+   * Updates current activeConnectionUuid state
+   */
+  setActiveConnectionObjectUuid(connectionUuid: string = null): void {
+    this.dataStore.activeConnectionObjectUuid = connectionUuid;
 
     // broadcast data to subscribers
-    this.$activeConnection.next(Object.assign({}, this.dataStore).activeConnection);
+    this.$activeConnectionObjectUuid.next(Object.assign({}, this.dataStore).activeConnectionObjectUuid);
+
+    this.connectionsUpdated();
   }
 
-  connect(connection: DatastoreExplorerConnection, littleModalRef: MatDialogRef<any>): Promise<any> {
-    if (!connection) throw new Error('connection_not_found');
+  getActiveConnection(): Promise<DatastoreExplorerConnectionObject | null> {
+    if (this.dataStore.activeConnectionObjectUuid === null) return null;
 
-    this.logger.debug('Datastore Explorer', 'Connect received', arguments);
+    // We can use this.dataStore.activeConnection
+    return this.activeConnectionObject.pipe(take(1)).toPromise();
+  }
 
-    // Editing an existing connection
-    if (connection.uuid) {
-      connection.state = 'disconnected';
+  getMainConnectionFromObject(connectionObject: string = null): ConnectionVmware | ConnectionNetapp | null {
+    if (!connectionObject) connectionObject = this.dataStore.activeConnectionObjectUuid;
+    if (!connectionObject) return null;
 
-      const currentConnectionIndex = this.dataStore.connections.findIndex((obj) => obj.uuid === connection.uuid);
-      this.dataStore.connections[currentConnectionIndex] = connection;
+    const mainUuid: string = this.LibNodeHelpers.extractMainUuidFromObjectUuid(this.dataStore.activeConnectionObjectUuid);
+    const mainType: string = this.LibNodeHelpers.extractMainTypeFromObjectUuid(this.dataStore.activeConnectionObjectUuid);
 
-    // New connection received
+    return this.LibNodeHelpers.getConnectionByUuid(mainUuid, mainType) as ConnectionVmware | ConnectionNetapp;
+  }
+
+  /**
+   * Called every time the Vmware & Netapp connections state is updated
+   */
+  connectionsUpdated(): void {
+
+    if (!this.dataStore.activeConnectionObjectUuid) {
+      this.dataStore.activeConnectionObject = null;
     } else {
-      connection = {
-        uuid: uuidv4(),
-        host: connection.host,
-        port: connection.port,
-        credential: connection.credential,
-        type: connection.type,
-        data: connection.data,
-        state: 'disconnected'
-      };
+      const mainUuid: string = this.LibNodeHelpers.extractMainUuidFromObjectUuid(this.dataStore.activeConnectionObjectUuid);
+      const mainType: string = this.LibNodeHelpers.extractMainTypeFromObjectUuid(this.dataStore.activeConnectionObjectUuid);
 
-      this.dataStore.connections.push(connection);
+      this.dataStore.activeConnectionObject = this.LibNodeHelpers.getObjectByUuid(mainUuid, mainType, this.dataStore.activeConnectionObjectUuid);
     }
 
     // broadcast data to subscribers
-    this.$connections.next(Object.assign({}, this.dataStore).connections);
-
-    this.setActiveConnection(connection.uuid);
-
-    return this.initConnection(littleModalRef).catch(e => {
-      // Show error on screen
-      this.LibModal.changeModalType(littleModalRef.id, 'danger');
-      this.LibModal.changeModalText(littleModalRef.id, e);
-    });
-  }
-
-  private initConnection(littleModalRef: MatDialogRef<any>): Promise<void> {
-
-    if (this.getActiveConnection().type === 'vmware') {
-      this.LibModal.changeModalText(littleModalRef.id, 'Connecting to Datastore...');
-
-      return this.VMWare.connectvCenterSoap(this.getActiveConnection()).then((data) => {
-        if (data.status === 'error') throw new Error('Failed to connect to vCenter');
-
-        this.getActiveConnection().state = 'connected';
-
-        this.LibModal.closeModal(littleModalRef.id);
-      });
-    }
-
-    if (this.getActiveConnection().type === 'netapp') {
-      this.getActiveConnection().state = 'connected';
-      return Promise.resolve();
-    }
-
-  }
-
-  disconnectConnection(connectionUuid?: string): void {
-    if (!connectionUuid) connectionUuid = this.dataStore.activeConnection;
-
-    this.logger.debug('Datastore Explorer', 'Disconnecting connection', arguments);
-
-    this.socket.emit('[session-disconnect]', {
-      type: 'datastore-explorer',
-      uuid: connectionUuid
-    });
-
-    this.getConnectionByUuid(connectionUuid).state = 'disconnected';
-
-    // broadcast data to subscribers
-    this.$connections.next(Object.assign({}, this.dataStore).connections);
-  }
-
-  async deleteConnection(connectionUuid?: string): Promise<void> {
-    const loggerArgs = arguments;
-
-    if (!connectionUuid) connectionUuid = this.dataStore.activeConnection;
-
-    const configFile = 'applications/datastore-explorer/config.json';
-
-    const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('question', this.serverBodyContainer,
-      {
-        title: `Delete connection ${this.getConnectionByUuid(connectionUuid).data.obj.name}`,
-        text: 'Remove the selected connection from the inventory?',
-        yes: 'Delete',
-        yesClass: 'warn',
-        no: 'Cancel',
-        boxContent: 'This action is permanent.',
-        boxClass: 'text-danger',
-        boxIcon: 'warning'
-      }
-    );
-
-    modalInstance.afterClosed().subscribe(async (result: boolean) => {
-      if (result === true) {
-
-        this.logger.debug('Datastore Explorer', 'Deleting connection', loggerArgs);
-
-        this.disconnectConnection(connectionUuid);
-        this.setActiveConnection(null);
-
-        this.LibFileSystem.deleteConfigFile(configFile, connectionUuid).subscribe(
-          () => {
-            this.dataStore.connections = this.dataStore.connections.filter((connection) => {
-              return connection.uuid !== connectionUuid;
-            });
-
-            // broadcast data to subscribers
-            this.$connections.next(Object.assign({}, this.dataStore).connections);
-
-            this.logger.debug('Datastore Explorer', 'Connection deleted successfully', loggerArgs);
-          },
-          error => {
-            this.logger.error('Datastore Explorer', 'Error while deleting connection', loggerArgs, error);
-          });
-
-      }
-    });
+    this.$activeConnectionObject.next(Object.assign({}, this.dataStore).activeConnectionObject);
   }
 
 }

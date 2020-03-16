@@ -41,9 +41,11 @@ export class AnyOpsOSCredentialApiController {
     const CredentialModule: AnyOpsOSCredentialModule = new AnyOpsOSCredentialModule(userUuid, sessionUuid, workspaceUuid);
     const ApiGlobalsModule: AnyOpsOSApiGlobalsModule = new AnyOpsOSApiGlobalsModule(request, response);
 
-    const credentialUuid: { uuid: string; } = await CredentialModule.putCredential(credential);
+    const credentialUuid: string = await CredentialModule.putCredential(credential);
 
-    return ApiGlobalsModule.jsonDataResponse(credentialUuid);
+    return ApiGlobalsModule.jsonDataResponse({
+      uuid: credentialUuid
+    });
   }
 
   @Patch('/:workspaceUuid/:credentialUuid')
@@ -63,7 +65,7 @@ export class AnyOpsOSCredentialApiController {
 
     await CredentialModule.patchCredential(credentialUuid, credential);
 
-    return ApiGlobalsModule.jsonDataResponse(credentialUuid);
+    return ApiGlobalsModule.jsonDataResponse(credential.uuid);
   }
 
   @Delete('/:workspaceUuid/:credentialUuid')

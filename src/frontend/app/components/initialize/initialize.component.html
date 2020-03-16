@@ -1,0 +1,82 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12 p-0">
+      <div class="min-vh-100 text-center m-0 bg-info d-flex flex-column justify-content-center">
+
+        <!-- Vault not initialized -->
+        <ng-container *ngIf="vaultState.initialized === false; else vaultSealed">
+
+          <ng-container *ngIf="!vaultResult; else initializeData">
+
+            <input [(ngModel)]="rootAccount"
+                   name="rootAccount"
+                   aria-label="Main Username"
+                   placeholder="Main Username"
+                   type="text"
+                   required
+                   matInput>
+
+            <button mat-flat-button color="primary" (click)="initializeVault()">Initialize Vault and create Root Account</button>
+
+          </ng-container>
+
+          <!-- Vault initialized -->
+          <ng-template #initializeData>
+
+            <button mat-flat-button color="primary" (click)="markStateChanged()">Continue</button>
+
+          </ng-template>
+
+        </ng-container>
+
+        <!-- Vault initialized but sealed -->
+        <ng-template #vaultSealed>
+
+          <ng-container *ngIf="vaultState.sealed === true; else noRootAccount">
+
+            <input [(ngModel)]="unsealKey"
+                   name="unsealKey"
+                   aria-label="Unseal Key"
+                   placeholder="Unseal Key"
+                   type="text"
+                   required
+                   matInput>
+
+            <button mat-flat-button color="primary" (click)="unsealVault()">Unseal Vault</button>
+
+          </ng-container>
+
+        </ng-template>
+
+        <!-- Vault initialized, unsealed, but no use -->
+        <ng-template #noRootAccount>
+
+          <ng-container *ngIf="!vaultResult; else accountData">
+
+            <input [(ngModel)]="rootAccount"
+                   name="rootAccount"
+                   aria-label="Main Username"
+                   placeholder="Main Username"
+                   type="text"
+                   required
+                   matInput>
+
+            <button mat-flat-button color="primary" (click)="createRootAccount()">Create Root Account</button>
+
+          </ng-container>
+
+          <!-- New Root Account created -->
+          <ng-template #accountData>
+
+            <button mat-flat-button color="primary" (click)="markStateChanged()">Continue</button>
+
+          </ng-template>
+
+        </ng-template>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+

@@ -13,7 +13,7 @@
   "license": "GPL-3.0-or-later",
   "private": true,
   "bin": {
-    "anyopsos": "./bin/anyopsos"
+    "anyopsos": "dist/bin/anyopsos"
   },
   "main": "./bin/anyopsos",
   "scripts": {

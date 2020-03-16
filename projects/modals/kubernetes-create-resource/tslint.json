@@ -1,0 +1,17 @@
+{
+  "extends": "../../../tslint.json",
+  "rules": {
+    "directive-selector": [
+      true,
+      "attribute",
+      "amkubernetesCreateResource",
+      "camelCase"
+    ],
+    "component-selector": [
+      true,
+      "element",
+      "amkubernetes-create-resource",
+      "kebab-case"
+    ]
+  }
+}

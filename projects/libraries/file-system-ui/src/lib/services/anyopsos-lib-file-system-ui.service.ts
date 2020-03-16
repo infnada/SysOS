@@ -3,7 +3,7 @@ import {Injectable, ViewContainerRef} from '@angular/core';
 import {BehaviorSubject, Observable, Subject} from 'rxjs';
 
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
-import {AnyOpsOSFile} from '@anyopsos/backend/app/types/anyopsos-file';
+import {AnyOpsOSFile} from '@anyopsos/backend-core/app/types/anyopsos-file';
 
 import {CutCopyFile} from '../types/cut-copy-file';
 import {FileSystemHandler} from '../types/file-system-handler';

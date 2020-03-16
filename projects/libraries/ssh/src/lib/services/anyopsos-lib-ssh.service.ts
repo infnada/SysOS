@@ -5,7 +5,7 @@ import {Socket} from 'ngx-socket-io';
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibWorkspaceService} from '@anyopsos/lib-workspace';
 import {ConnectionSsh, ConnectionSftp} from '@anyopsos/module-ssh';
-import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
+import {BackendResponse} from '@anyopsos/backend-core/app/types/backend-response';
 
 import {AnyOpsOSLibSshConnectionsStateService} from './anyopsos-lib-ssh-connections-state.service';
 import {AnyOpsOSLibSshHelpersService} from './anyopsos-lib-ssh-helpers.service';
@@ -28,12 +28,12 @@ export class AnyOpsOSLibSshService {
   async sendConnect(connectionUuid: string): Promise<void> {
     this.logger.debug('LibSsh', 'sendConnect -> Connecting...');
 
-    const currentConnection: ConnectionSsh | ConnectionSftp = await this.LibSshHelpers.getConnectionByUuid(connectionUuid);
+    const currentConnection: ConnectionSsh | ConnectionSftp = this.LibSshHelpers.getConnectionByUuid(connectionUuid);
     if (currentConnection.state === 'connected') throw new Error('already_connected');
 
     // If current connection have hopServerUuid, make sure it's Online and then Start the current connection
     if (currentConnection.hopServerUuid) {
-      const hopServer: ConnectionSsh = await this.LibSshHelpers.getConnectionByUuid(currentConnection.hopServerUuid, 'ssh') as ConnectionSsh;
+      const hopServer: ConnectionSsh = this.LibSshHelpers.getConnectionByUuid(currentConnection.hopServerUuid, 'ssh') as ConnectionSsh;
 
       if (hopServer.state === 'disconnected') await this.socketConnectServer(hopServer);
     }
@@ -135,7 +135,7 @@ export class AnyOpsOSLibSshService {
 
     return new Promise(async (resolve, reject) => {
 
-      const currentConnection: ConnectionSsh | ConnectionSftp = await this.LibSshHelpers.getConnectionByUuid(connectionUuid);
+      const currentConnection: ConnectionSsh | ConnectionSftp = this.LibSshHelpers.getConnectionByUuid(connectionUuid);
       if (currentConnection.state === 'disconnected') throw new Error('already_disconnected');
 
       this.socket.emit('[ssh-disconnect]', {
@@ -168,7 +168,7 @@ export class AnyOpsOSLibSshService {
 
     return new Promise(async (resolve, reject) => {
 
-      const currentConnection: ConnectionSsh | ConnectionSftp = await this.LibSshHelpers.getConnectionByUuid(connectionUuid);
+      const currentConnection: ConnectionSsh | ConnectionSftp = this.LibSshHelpers.getConnectionByUuid(connectionUuid);
       if (!currentConnection) {
         this.logger.error('LibSsh', 'deleteConnection -> Resource invalid', loggerArgs);
         throw new Error('resource_invalid');

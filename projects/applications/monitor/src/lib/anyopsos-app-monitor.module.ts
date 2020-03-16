@@ -8,7 +8,7 @@ import {AnyOpsOSLibApplicationService} from '@anyopsos/lib-application';
 import {AnyOpsOSLibScrollSpyModule} from '@anyopsos/lib-scroll-spy';
 import {AnyOpsOSLibPipesModule} from '@anyopsos/lib-pipes';
 import {AnyOpsOSLibServiceInjectorService} from '@anyopsos/lib-service-injector';
-import {AnyOpsOSExtLibWeavescopeModule} from '@anyopsos/ext-lib-weavescope';
+import {AnyOpsOSLibDiagramModule} from '@anyopsos/lib-diagram';
 
 import {ActionsComponent} from './actions/actions.component';
 import {BodyComponent} from './body/body.component';
@@ -33,8 +33,8 @@ import {AnyOpsOSAppMonitorService} from './services/anyopsos-app-monitor.service
     AnyOpsOSLibAngularMaterialModule,
     AnyOpsOSLibScrollSpyModule,
     AnyOpsOSLibPipesModule,
-    AnyOpsOSExtLibWeavescopeModule,
-    AnyOpsOSLibScrollSpyModule
+    AnyOpsOSLibScrollSpyModule,
+    AnyOpsOSLibDiagramModule
   ],
   exports: []
 })

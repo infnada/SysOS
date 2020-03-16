@@ -1,0 +1,17 @@
+{
+  "extends": "../../../tslint.json",
+  "rules": {
+    "directive-selector": [
+      true,
+      "attribute",
+      "ammonitorImport",
+      "camelCase"
+    ],
+    "component-selector": [
+      true,
+      "element",
+      "ammonitor-import",
+      "kebab-case"
+    ]
+  }
+}

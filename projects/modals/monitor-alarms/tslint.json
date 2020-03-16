@@ -1,0 +1,17 @@
+{
+  "extends": "../../../tslint.json",
+  "rules": {
+    "directive-selector": [
+      true,
+      "attribute",
+      "ammonitorAlarms",
+      "camelCase"
+    ],
+    "component-selector": [
+      true,
+      "element",
+      "ammonitor-alarms",
+      "kebab-case"
+    ]
+  }
+}

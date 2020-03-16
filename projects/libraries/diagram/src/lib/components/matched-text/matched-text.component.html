@@ -1,0 +1,17 @@
+<span matTooltip="{{text}}">
+
+  <ng-container *ngFor="let chunk of chunks">
+
+    <ng-container *ngIf="chunk.matched; else notMatched">
+      <span [style.background-color]="'hsla(191, 100%, 50%, 0.7)'" [style.border-radius]="'2px'">
+        <span>{{chunk.text}}</span>
+      </span>
+    </ng-container>
+
+    <ng-template #notMatched>
+      <span>{{chunk.text}}</span>
+    </ng-template>
+
+  </ng-container>
+
+</span>

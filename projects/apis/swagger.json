@@ -57,6 +57,39 @@
         "produces": [
           "text/html; charset=utf-8"
         ]
+      },
+      "put": {
+        "operationId": "AnyOpsOSAuthApiController.createUser",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Create user",
+        "tags": [
+          "Any Ops OS Auth Api"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "username": {
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
       }
     },
     "/api/config-file/{workspaceUuid}/{fileName}/{configUuid}": {
@@ -1709,6 +1742,94 @@
         "summary": "Get snmp",
         "tags": [
           "Any Ops OS Snmp Api"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/vault/": {
+      "get": {
+        "operationId": "AnyOpsOSVaultApiController.getVaultState",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Get vault state",
+        "tags": [
+          "Any Ops OS Vault Api"
+        ],
+        "parameters": [],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/vault/initialize": {
+      "post": {
+        "operationId": "AnyOpsOSVaultApiController.initializeVault",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Initialize vault",
+        "tags": [
+          "Any Ops OS Vault Api"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "username": {
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "text/html; charset=utf-8"
+        ]
+      }
+    },
+    "/api/vault/unseal": {
+      "post": {
+        "operationId": "AnyOpsOSVaultApiController.unsealVault",
+        "responses": {
+          "200": {
+            "description": "Successful response"
+          }
+        },
+        "summary": "Unseal vault",
+        "tags": [
+          "Any Ops OS Vault Api"
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "properties": {
+                "key": {
+                  "type": "string"
+                }
+              },
+              "required": [],
+              "type": "object"
+            }
+          }
+        ],
+        "consumes": [
+          "application/json"
         ],
         "produces": [
           "text/html; charset=utf-8"

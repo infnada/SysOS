@@ -14,7 +14,6 @@ import {Credential} from '@anyopsos/module-credential';
 import {ConnectionSsh, ConnectionSftp} from '@anyopsos/module-ssh';
 
 import {AnyOpsOSAppSftpService} from '../../../services/anyopsos-app-sftp.service';
-import {ConnectionTypes} from '@anyopsos/backend/app/types/connection-types';
 
 @Component({
   selector: 'aasftp-body-new-connection',
@@ -82,7 +81,7 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
     this.connectionForm.controls.hopServerUuid.enable();
   }
 
-  private async onActiveConnectionChange(activeConnectionUuid: string | null): Promise<void> {
+  private onActiveConnectionChange(activeConnectionUuid: string | null): void {
 
     // Reset main Form
     if (!activeConnectionUuid) {
@@ -95,7 +94,7 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
     }
 
     // Set Form controls with currentConnection data
-    const currentConnection: ConnectionSftp = await this.Sftp.getActiveConnection();
+    const currentConnection: ConnectionSftp = this.Sftp.getActiveConnection();
     Object.keys(currentConnection).forEach((item) => {
       if (this.connectionForm.controls[item]) this.connectionForm.controls[item].setValue(currentConnection[item]);
     });
@@ -139,9 +138,5 @@ export class BodyNewConnectionComponent implements OnDestroy, OnInit {
 
   manageSshConnections(): void {
     this.LibApplication.openApplication('ssh');
-  }
-
-  getActiveConnection(): Promise<ConnectionSftp> {
-    return this.Sftp.getActiveConnection();
   }
 }

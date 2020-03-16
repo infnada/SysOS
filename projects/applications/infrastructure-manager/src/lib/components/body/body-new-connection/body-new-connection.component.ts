@@ -1,18 +1,21 @@
 import {Component, ElementRef, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {AbstractControl, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {takeUntil} from 'rxjs/operators';
-import {Subject} from 'rxjs';
+import {interval, Observable, Subject} from 'rxjs';
 
+import {MatDialogRef} from '@anyopsos/lib-angular-material';
 import {Application, AnyOpsOSLibApplicationService} from '@anyopsos/lib-application';
-import {AnyOpsOSLibServiceInjectorService} from '@anyopsos/lib-service-injector';
+import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
+import {AnyOpsOSLibCredentialHelpersService} from '@anyopsos/lib-credential';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
 import {AnyOpsOSLibUtilsService} from '@anyopsos/lib-utils';
+import {AnyOpsOSLibSshHelpersService} from '@anyopsos/lib-ssh';
+import {ConnectionSsh, ConnectionSftp} from '@anyopsos/module-ssh';
 import {Credential} from '@anyopsos/module-credential';
+import {ConnectionTypes} from '@anyopsos/backend-core/app/types/connection-types';
 
 import {AnyOpsOSAppInfrastructureManagerService} from '../../../services/anyopsos-app-infrastructure-manager.service';
 import {AnyOpsOSAppInfrastructureManagerNodeGraphService} from '../../../services/anyopsos-app-infrastructure-manager-node-graph.service';
-
-import {ConnectionTypes} from '../../../types/connections/connection-types';
 
 @Component({
   selector: 'aaim-body-new-connection',
@@ -20,30 +23,41 @@ import {ConnectionTypes} from '../../../types/connections/connection-types';
   styleUrls: ['./body-new-connection.component.scss']
 })
 export class BodyNewConnectionComponent implements OnInit, OnDestroy {
-  @ViewChild('scrollToElement', {static: false}) scrollToElement: ElementRef<HTMLInputElement>;
-  @Input() application: Application;
+  @ViewChild('scrollToElement', {static: false}) readonly scrollToElement: ElementRef<HTMLInputElement>;
+  @Input() private readonly application: Application;
 
-  private destroySubject$: Subject<void> = new Subject();
-  private CredentialsManager;
-  private currentGraphTopology: string = null;
+  private readonly destroySubject$: Subject<void> = new Subject();
+  private currentGraphTopology: string = 'all';
 
   credentials: Credential[];
+  sshConnections: ConnectionSsh[];
   connectionForm: FormGroup;
-  submitted: boolean = false;
   newConnectionType: string = null;
 
-  constructor(private readonly formBuilder: FormBuilder,
-              private readonly LibApplication: AnyOpsOSLibApplicationService,
-              private serviceInjector: AnyOpsOSLibServiceInjectorService,
-              private readonly LibModal: AnyOpsOSLibModalService,
-              private Utils: AnyOpsOSLibUtilsService,
-              private InfrastructureManager: AnyOpsOSAppInfrastructureManagerService,
-              private InfrastructureManagerNodeGraph: AnyOpsOSAppInfrastructureManagerNodeGraphService) {
+  nodes$: Promise<any>;
+  topologies$: Promise<any>;
 
-    this.CredentialsManager = this.serviceInjector.get('AnyOpsOSAppCredentialsManagerService');
+  constructor(private readonly formBuilder: FormBuilder,
+              private readonly logger: AnyOpsOSLibLoggerService,
+              private readonly LibApplication: AnyOpsOSLibApplicationService,
+              private readonly LibModal: AnyOpsOSLibModalService,
+              private readonly LibCredentialHelpers: AnyOpsOSLibCredentialHelpersService,
+              private readonly LibSshHelpers: AnyOpsOSLibSshHelpersService,
+              private readonly Utils: AnyOpsOSLibUtilsService,
+              private readonly InfrastructureManager: AnyOpsOSAppInfrastructureManagerService,
+              private readonly InfrastructureManagerNodeGraph: AnyOpsOSAppInfrastructureManagerNodeGraphService) {
+
   }
 
   ngOnInit(): void {
+
+    this.nodes$ = this.InfrastructureManagerNodeGraph.setNodeGraphNodes(this.currentGraphTopology).catch((e: Error) => {
+      this.logger.error('InfrastructureManager', 'Error while getting graph nodes', null, e);
+    });
+
+    this.topologies$ = this.InfrastructureManagerNodeGraph.getTopologies().catch((e: Error) => {
+      this.logger.error('InfrastructureManager', 'Error while getting graph topologies', null, e);
+    });
 
     /**
      * Create basic form
@@ -56,10 +70,10 @@ export class BodyNewConnectionComponent implements OnInit, OnDestroy {
       host: [''],
       port: [0],
       credential: [''],
+      hopServerUuid: [null],
       type: ['', Validators.required],
       community: ['public'],
-      save: [true],
-      autologin: [true],
+      autoLogin: [true],
       uuid: [null]
     });
 
@@ -68,12 +82,20 @@ export class BodyNewConnectionComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroySubject$)).subscribe((type: string) => this.onFormTypeChanges(type));
 
     // Listen for credentials changes
-    this.CredentialsManager.credentials
+    this.LibCredentialHelpers.getAllCredentialsObserver()
       .pipe(takeUntil(this.destroySubject$)).subscribe((credentials: Credential[]) => this.credentials = credentials);
 
-    // Set Form data on activeConnection change
+    // Listen for connections changes
+    this.LibSshHelpers.getAllConnectionsObserver()
+      .pipe(takeUntil(this.destroySubject$)).subscribe((connections: (ConnectionSsh | ConnectionSftp)[]) => {
+
+      const sshConnections: ConnectionSsh[] = connections.filter((connection: ConnectionSsh | ConnectionSftp) => connection.type === 'ssh') as ConnectionSsh[];
+      this.onSshConnectionsChange(sshConnections);
+    });
+
+    // Listen for activeConnection change
     this.InfrastructureManager.activeConnection
-      .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnectionUuid: string) => this.onActiveConnectionChange(activeConnectionUuid));
+      .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnection: ConnectionTypes | null) => this.onActiveConnectionChange(activeConnection));
   }
 
 
@@ -84,64 +106,84 @@ export class BodyNewConnectionComponent implements OnInit, OnDestroy {
     this.destroySubject$.next();
   }
 
-  private onActiveConnectionChange(activeConnectionUuid: string): void {
-    if (!activeConnectionUuid) {
+  private onSshConnectionsChange(connections: ConnectionSsh[]): void {
+    this.sshConnections = connections;
+
+    if (this.sshConnections.length === 0) return this.connectionForm.controls.hopServerUuid.disable();
+  }
+
+  private onActiveConnectionChange(activeConnection: ConnectionTypes | null): void {
+
+    // Reset main Form
+    if (!activeConnection) {
       this.connectionForm.reset({
-        save: true,
-        autologin: true,
+        autoLogin: true,
         uuid: null
       });
+
       return this.newConnectionType = null;
     }
 
-    const currentConnection = this.getActiveConnection();
+    this.newConnectionType = activeConnection.type;
 
-    this.newConnectionType = currentConnection.type;
-
-    if (currentConnection.type === 'kubernetes' || currentConnection.type === 'docker') {
-      (this.f.clusterName as FormControl).setValue(currentConnection.clusterName);
-      (this.f.clusterServer as FormControl).setValue(currentConnection.clusterServer);
-      (this.f.clusterCa as FormControl).setValue(currentConnection.clusterCa);
+    if (activeConnection.type === 'kubernetes' || activeConnection.type === 'docker') {
+      (this.f.clusterName as FormControl).setValue(activeConnection.clusterName);
+      (this.f.clusterServer as FormControl).setValue(activeConnection.clusterServer);
+      (this.f.clusterCa as FormControl).setValue(activeConnection.clusterCa);
     } else {
-      (this.f.host as FormControl).setValue(currentConnection.host);
-      (this.f.port as FormControl).setValue(currentConnection.port);
+      (this.f.host as FormControl).setValue(activeConnection.host);
+      (this.f.port as FormControl).setValue(activeConnection.port);
     }
 
-    if (currentConnection.type === 'snmp') {
-      (this.f.community as FormControl).setValue(currentConnection.community);
+    if (activeConnection.type === 'snmp') {
+      (this.f.community as FormControl).setValue(activeConnection.community);
     } else {
-      (this.f.credential as FormControl).setValue(currentConnection.credential);
+      (this.f.credential as FormControl).setValue(activeConnection.credential);
     }
 
-    (this.f.description as FormControl).setValue(currentConnection.description);
-    (this.f.type as FormControl).setValue(currentConnection.type);
-    (this.f.save as FormControl).setValue(currentConnection.save);
-    (this.f.autologin as FormControl).setValue(currentConnection.autologin);
-    (this.f.uuid as FormControl).setValue(currentConnection.uuid);
+    (this.f.description as FormControl).setValue(activeConnection.description);
+    (this.f.type as FormControl).setValue(activeConnection.type);
+    (this.f.autoLogin as FormControl).setValue(activeConnection.autoLogin);
+    (this.f.hopServerUuid as FormControl).setValue(activeConnection.hopServerUuid);
+    (this.f.uuid as FormControl).setValue(activeConnection.uuid);
   }
 
   private onFormTypeChanges(type: string): void {
+
     if (type === 'kubernetes') {
       this.connectionForm.controls.clusterName.setValidators([Validators.required]);
       this.connectionForm.controls.clusterServer.setValidators([Validators.required]);
       this.connectionForm.controls.clusterCa.setValidators([Validators.required]);
-      this.connectionForm.controls.clusterName.updateValueAndValidity();
-      this.connectionForm.controls.clusterServer.updateValueAndValidity();
-      this.connectionForm.controls.clusterCa.updateValueAndValidity();
+
+      this.connectionForm.controls.host.setValidators([]);
+      this.connectionForm.controls.port.setValidators([]);
     } else {
       this.connectionForm.controls.host.setValidators([Validators.required]);
       this.connectionForm.controls.port.setValidators([Validators.required]);
-      this.connectionForm.controls.host.updateValueAndValidity();
-      this.connectionForm.controls.port.updateValueAndValidity();
+
+      this.connectionForm.controls.clusterName.setValidators([]);
+      this.connectionForm.controls.clusterServer.setValidators([]);
+      this.connectionForm.controls.clusterCa.setValidators([]);
     }
+
+    this.connectionForm.controls.clusterName.updateValueAndValidity();
+    this.connectionForm.controls.clusterServer.updateValueAndValidity();
+    this.connectionForm.controls.clusterCa.updateValueAndValidity();
+    this.connectionForm.controls.host.updateValueAndValidity();
+    this.connectionForm.controls.port.updateValueAndValidity();
 
     if (type === 'snmp') {
       this.connectionForm.controls.community.setValidators([Validators.required]);
-      this.connectionForm.controls.community.updateValueAndValidity();
+
+      this.connectionForm.controls.credential.setValidators([]);
     } else {
       this.connectionForm.controls.credential.setValidators([Validators.required]);
-      this.connectionForm.controls.credential.updateValueAndValidity();
+
+      this.connectionForm.controls.community.setValidators([]);
     }
+
+    this.connectionForm.controls.credential.updateValueAndValidity();
+    this.connectionForm.controls.community.updateValueAndValidity();
   }
 
   /**
@@ -158,32 +200,35 @@ export class BodyNewConnectionComponent implements OnInit, OnDestroy {
     );
   }
 
-  sendConnect(saveOnly: boolean = false): void {
-    this.submitted = true;
+  async sendConnect(saveOnly: boolean = false): Promise<void> {
 
     // stop here if form is invalid
     if (this.connectionForm.invalid) return;
 
-    this.LibModal.openLittleModal('PLEASE WAIT', (saveOnly ? 'Saving connection...' : 'Connecting to server...'), '.window--infrastructure-manager .window__main', 'plain').then(() => {
-      this.InfrastructureManager.connect(this.connectionForm.value, saveOnly);
-      this.submitted = false;
+    const littleModalRef: MatDialogRef<any> = await this.LibModal.openLittleModal(
+      this.InfrastructureManager.getBodyContainerRef(),
+      'PLEASE WAIT',
+      (saveOnly ? 'Saving connection...' : 'Connecting to server...')
+    );
 
-      if (saveOnly) {
-        this.connectionForm.reset({
-          save: true,
-          autologin: true,
-          uuid: null
-        });
-      }
+    this.InfrastructureManager.connect(this.connectionForm.value, saveOnly).then((connection: ConnectionTypes) => {
+      this.InfrastructureManager.setActiveConnectionUuid(connection.uuid, connection.type);
+
+      this.LibModal.closeModal(littleModalRef.id);
+    }).catch((e: any) => {
+      this.logger.error('InfrastructureManager', 'Error while connecting', null, e);
+
+      this.LibModal.changeModalType(littleModalRef.id, 'danger');
+      this.LibModal.changeModalText(littleModalRef.id, e);
     });
   }
 
-  manageCredentials() {
+  manageCredentials(): void {
     this.LibApplication.openApplication('credentials-manager');
   }
 
-  getActiveConnection(): ConnectionTypes {
-    return this.InfrastructureManager.getActiveConnection();
+  manageSshConnections(): void {
+    this.LibApplication.openApplication('ssh');
   }
 
   /**
@@ -191,14 +236,6 @@ export class BodyNewConnectionComponent implements OnInit, OnDestroy {
    */
   scrollTo(): void {
     this.Utils.angularElementScrollTo(this.scrollToElement.nativeElement.parentElement.parentElement, true);
-  }
-
-  setNodeGraphNodes() {
-    return this.InfrastructureManagerNodeGraph.setNodeGraphNodes(this.currentGraphTopology);
-  }
-
-  setNodeGraphTopologies() {
-    return this.InfrastructureManagerNodeGraph.getTopologies();
   }
 
   selectedTopologyChange($event) {

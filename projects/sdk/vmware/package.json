@@ -7,7 +7,7 @@
     "node-html-parser": "^1.2.1"
   },
   "peerDependencies": {
-    "@anyopsos/backend": "~0.0.1"
+    "@anyopsos/backend-core": "~0.0.1"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.1",

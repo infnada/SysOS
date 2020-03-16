@@ -1,0 +1,19 @@
+{
+  "$schema": "../../../node_modules/ng-packagr/ng-package.schema.json",
+  "dest": "../../../dist/libraries/diagram",
+  "lib": {
+    "entryFile": "src/public-api.ts"
+  },
+  "whitelistedNonPeerDependencies": [
+    "d3-drag",
+    "d3-format",
+    "d3-shape",
+    "d3-scale",
+    "d3-scale-chromatic",
+    "d3-selection",
+    "dagre",
+    "filesize",
+    "json-stable-stringify",
+    "lodash-es"
+  ]
+}

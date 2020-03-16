@@ -1,12 +1,12 @@
 import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 
-import {Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
+import {Observable, Subject} from 'rxjs';
 
 import {Application} from '@anyopsos/lib-application';
 
 import {AnyOpsOSAppDatastoreExplorerService} from '../../services/anyopsos-app-datastore-explorer.service';
-import {DatastoreExplorerConnection} from '../../types/datastore-explorer-connection';
+import {DatastoreExplorerConnectionObject} from '../../types/datastore-explorer-connection-object';
 
 @Component({
   selector: 'aade-actions',
@@ -14,20 +14,20 @@ import {DatastoreExplorerConnection} from '../../types/datastore-explorer-connec
   styleUrls: ['./actions.component.scss']
 })
 export class ActionsComponent implements OnDestroy, OnInit {
-  @Input() application: Application;
+  @Input() private readonly application: Application;
 
-  private destroySubject$: Subject<void> = new Subject();
+  private readonly destroySubject$: Subject<void> = new Subject();
 
-  activeConnection: string;
+  activeConnectionObjectUuid: string | null;
 
-  constructor(private DatastoreExplorer: AnyOpsOSAppDatastoreExplorerService) {
+  constructor(private readonly DatastoreExplorer: AnyOpsOSAppDatastoreExplorerService) {
   }
 
   ngOnInit(): void {
 
     // Listen for activeConnection change
-    this.DatastoreExplorer.activeConnection
-      .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnectionUuid: string) => this.activeConnection = activeConnectionUuid);
+    this.DatastoreExplorer.activeConnectionObjectUuid
+      .pipe(takeUntil(this.destroySubject$)).subscribe((activeConnectionObjectUuid: string | null) => this.activeConnectionObjectUuid = activeConnectionObjectUuid);
   }
 
   ngOnDestroy(): void {
@@ -36,29 +36,11 @@ export class ActionsComponent implements OnDestroy, OnInit {
     this.destroySubject$.next();
   }
 
-  getActiveConnection(): DatastoreExplorerConnection {
-    return this.DatastoreExplorer.getActiveConnection();
+  getActiveConnectionObs(): Observable<DatastoreExplorerConnectionObject | null> {
+    return this.DatastoreExplorer.activeConnectionObject;
   }
 
   toggleExchange(): void {
     this.DatastoreExplorer.toggleExchange();
-  }
-
-  newConnection(): void {
-
-    // even if activeConnection === null, set it again to reset possible Form changes
-    this.DatastoreExplorer.setActiveConnection(null);
-  }
-
-  disconnectConnection() {
-    if (this.activeConnection === null) return;
-
-    this.DatastoreExplorer.disconnectConnection();
-  }
-
-  deleteConnection() {
-    if (this.activeConnection === null) return;
-
-    this.DatastoreExplorer.deleteConnection();
   }
 }

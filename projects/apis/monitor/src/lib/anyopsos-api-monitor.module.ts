@@ -5,7 +5,7 @@ import {getLogger, Logger} from 'log4js';
 
 import {AnyOpsOSApiGlobalsModule} from '@anyopsos/module-api-globals';
 import {AnyOpsOSMonitorModule, MonitorConnectionTypes} from '@anyopsos/module-monitor';
-import {ForwarderResponse} from '@anyopsos/module-monitor/src';
+import {ForwarderResponse} from '@anyopsos/module-monitor';
 
 
 const logger: Logger = getLogger('mainLog');

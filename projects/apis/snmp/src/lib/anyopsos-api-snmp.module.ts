@@ -4,8 +4,8 @@ import {Request, Response} from 'express';
 import {getLogger, Logger} from 'log4js';
 
 import {AnyOpsOSApiGlobalsModule} from '@anyopsos/module-api-globals';
-import {AnyOpsOSSnmpModule} from '@anyopsos/module-snmp';
-import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
+import {AnyOpsOSNodeSnmpModule} from '@anyopsos/module-node-snmp';
+import {BackendResponse} from '@anyopsos/backend-core/app/types/backend-response';
 
 
 const logger: Logger = getLogger('mainLog');
@@ -25,7 +25,7 @@ export class AnyOpsOSSnmpApiController {
                 @Param('oid') oid: string | string[]) {
     logger.info(`[API snmp] -> -> Call -> workspaceUuid [${workspaceUuid}], connectionUuid [${connectionUuid}], oid [${oid}]`);
 
-    const SnmpModule: AnyOpsOSSnmpModule = new AnyOpsOSSnmpModule(userUuid, sessionUuid, workspaceUuid, connectionUuid);
+    const SnmpModule: AnyOpsOSNodeSnmpModule = new AnyOpsOSNodeSnmpModule(userUuid, sessionUuid, workspaceUuid, connectionUuid);
     const ApiGlobalsModule: AnyOpsOSApiGlobalsModule = new AnyOpsOSApiGlobalsModule(request, response);
 
     const soapResult: BackendResponse = await SnmpModule.getOid(oid);

@@ -50,7 +50,9 @@
   "workspaces": {
     "packages": [
       "src/frontend",
-      "src/backend",
+      "src/backend-core",
+      "src/backend-auth",
+      "src/backend-fileSystem",
       "cli",
       "projects/*/*"
     ]

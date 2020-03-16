@@ -8,8 +8,8 @@ import {AnyOpsOSLibUtilsService} from '@anyopsos/lib-utils';
 import {AnyOpsOSLibModalService} from '@anyopsos/lib-modal';
 
 import {AnyOpsOSAppInfrastructureManagerService} from '../../services/anyopsos-app-infrastructure-manager.service';
-import {ConnectionTypes} from '@anyopsos/backend/app/types/connection-types';
-import {DataObject} from '@anyopsos/backend/app/types/data-object';
+import {ConnectionTypes} from '@anyopsos/backend-core/app/types/connection-types';
+import {DataObject} from '@anyopsos/backend-core/app/types/data-object';
 
 @Component({
   selector: 'aaim-actions',
@@ -41,7 +41,7 @@ export class ActionsComponent implements OnDestroy, OnInit {
     this.destroySubject$.next();
   }
 
-  getActiveConnection(): Promise<ConnectionTypes | null> {
+  private getActiveConnection(): ConnectionTypes | null {
     return this.InfrastructureManager.getActiveConnection();
   }
 
@@ -49,7 +49,7 @@ export class ActionsComponent implements OnDestroy, OnInit {
     return this.InfrastructureManager.activeConnection;
   }
 
-  getActiveObject(): Promise<DataObject | null> {
+  private getActiveObject(): DataObject | null {
     return this.InfrastructureManager.getActiveObject();
   }
 
@@ -60,8 +60,8 @@ export class ActionsComponent implements OnDestroy, OnInit {
   /**
    * Button actions
    */
-  async goHome(): Promise<void> {
-    const currentConnection: ConnectionTypes | null = await this.getActiveConnection();
+  goHome(): void {
+    const currentConnection: ConnectionTypes | null = this.getActiveConnection();
 
     if (this.activeConnectionUuid === null || currentConnection?.state === 'disconnected') this.Utils.angularElementScrollTo(this.InfrastructureManager.getBodyContainerRef().element.nativeElement);
     if (this.activeConnectionUuid === null) return;
@@ -115,7 +115,7 @@ export class ActionsComponent implements OnDestroy, OnInit {
   async createResource() {
 
     const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal(
-      'infrastructure-manager-kubernetes-create-resource',
+      'kubernetes-create-resource',
       this.InfrastructureManager.getBodyContainerRef(),
       {}
     );
@@ -130,7 +130,7 @@ export class ActionsComponent implements OnDestroy, OnInit {
   async triggerResource() {
 
     const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal(
-      'infrastructure-manager-kubernetes-edit-resource',
+      'kubernetes-edit-resource',
       this.InfrastructureManager.getBodyContainerRef(),
       {
         object: this.getActiveObject()
@@ -147,7 +147,7 @@ export class ActionsComponent implements OnDestroy, OnInit {
   async editResource() {
 
     const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal(
-      'infrastructure-manager-kubernetes-edit-resource',
+      'kubernetes-edit-resource',
       this.InfrastructureManager.getBodyContainerRef(),
       {
         object: this.getActiveObject()
@@ -163,7 +163,7 @@ export class ActionsComponent implements OnDestroy, OnInit {
 
   async deleteResource() {
 
-    const activeObject: DataObject = await this.getActiveObject();
+    const activeObject: DataObject = this.getActiveObject();
 
     const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal('question', this.InfrastructureManager.getBodyContainerRef(),
       {
@@ -193,7 +193,7 @@ ${activeObject.type} ${activeObject.name}</code>`,
   async scaleResource() {
 
     const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal(
-      'infrastructure-manager-kubernetes-scale-resource',
+      'kubernetes-scale-resource',
       this.InfrastructureManager.getBodyContainerRef(),
       {
         object: this.getActiveObject()
@@ -210,7 +210,7 @@ ${activeObject.type} ${activeObject.name}</code>`,
   async getLogs() {
 
     const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal(
-      'infrastructure-manager-kubernetes-logs',
+      'kubernetes-logs',
       this.InfrastructureManager.getBodyContainerRef(),
       {
         object: this.getActiveObject()
@@ -227,7 +227,7 @@ ${activeObject.type} ${activeObject.name}</code>`,
   async execShell() {
 
     const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal(
-      'infrastructure-manager-kubernetes-shell',
+      'kubernetes-shell',
       this.InfrastructureManager.getBodyContainerRef(),
       {
         object: this.getActiveObject(),
@@ -245,7 +245,7 @@ ${activeObject.type} ${activeObject.name}</code>`,
   async attachShell() {
 
     const modalInstance: MatDialogRef<any> = await this.LibModal.openRegisteredModal(
-      'infrastructure-manager-kubernetes-shell',
+      'kubernetes-shell',
       this.InfrastructureManager.getBodyContainerRef(),
       {
         object: this.getActiveObject(),

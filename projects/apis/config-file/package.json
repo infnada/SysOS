@@ -4,14 +4,16 @@
   "main": "src/index.ts",
   "dependencies": {
     "log4js": "^6.1.0",
-    "class-validator": "^0.11.0"
+    "class-validator": "^0.11.0",
+    "proper-lockfile": "^4.1.1"
   },
   "peerDependencies": {
     "@anyopsos/module-api-globals": "~0.0.1",
-    "@anyopsos/module-get-path": "~0.0.1",
+    "@anyopsos/module-sys-get-path": "~0.0.1",
     "@anyopsos/module-config-file": "~0.0.1"
   },
   "devDependencies": {
+    "@types/proper-lockfile": "^4.1.1",
     "express": "^4.17.1",
     "routing-controllers": "https://github.com/anyOpsOS/routing-controllers.git#build",
     "typescript": "^3.7.4"

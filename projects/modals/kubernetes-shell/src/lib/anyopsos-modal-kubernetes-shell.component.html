@@ -1,0 +1,28 @@
+<almodal-body #modalBody>
+
+  <!-- Put modal content here -->
+  <div *ngIf="foundPods.length === 0" class="text-center p-3">No Containers found</div>
+
+  <ng-container *ngIf="foundPods.length !== 0">
+    <mat-form-field class="w-100 p-3">
+      <mat-label>Container</mat-label>
+      <mat-select placeholder="Container" [formControl]="containerForm">
+        <mat-select-trigger>
+          {{containerForm.value ? containerForm.value.pod.name + ' - ' + containerForm.value.container.name : ''}}
+        </mat-select-trigger>
+        <mat-optgroup *ngFor="let pod of foundPods" [label]="pod.name">
+          <mat-option *ngFor="let container of pod.info.data.spec.containers" [value]="{pod: pod, container: container}">{{container.name}}</mat-option>
+          <mat-option *ngFor="let container of pod.info.data.spec.initContainers" [value]="{pod: pod, container: container}">Init: {{container.name}}</mat-option>
+        </mat-optgroup>
+      </mat-select>
+    </mat-form-field>
+
+    <alterm-terminal [terminalType]="'container_shell'" [terminalUuid]="terminalUuid" (terminalUuidChange)="terminalUuidChanged($event)"></alterm-terminal>
+  </ng-container>
+
+</almodal-body>
+
+<!-- Put footer buttons here -->
+<almodal-buttons>
+  <button class="btn" type="button" (click)="dialogRef.close()" mat-flat-button>Close</button>
+</almodal-buttons>

@@ -17,7 +17,7 @@ import {Socket} from 'ngx-socket-io';
 import {AnyOpsOSLibLoggerService} from '@anyopsos/lib-logger';
 import {AnyOpsOSLibWorkspaceService} from '@anyopsos/lib-workspace';
 import {TerminalTypes} from '@anyopsos/module-terminal';
-import {BackendResponse} from '@anyopsos/backend/app/types/backend-response';
+import {BackendResponse} from '@anyopsos/backend-core/app/types/backend-response';
 
 import {AnyOpsOSLibTerminalService} from '../services/anyopsos-lib-terminal.service';
 import {Terminal as TerminalData} from '../types/terminal';
@@ -37,7 +37,7 @@ export class TerminalComponent implements OnChanges, OnDestroy, AfterViewInit {
   @Input() private readonly deleteOnDestroy: boolean = true;
   @Input() private terminalUuid: string;
   @Input() customTerminalMessage: string = null;
-  @Output() terminalUuidChange: EventEmitter<string> = new EventEmitter<string>();
+  @Output() private terminalUuidChange: EventEmitter<string> = new EventEmitter<string>();
 
   currentTerminal: TerminalData;
 
