@@ -1,3 +1,5 @@
+Moved to https://github.com/anyOpsOS/anyOpsOS
+
 # anyOpsOS
 
 > **_This is a SUPER Alpha release, do not use on production environment._**
